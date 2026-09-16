@@ -1,24 +1,4 @@
-"""Counterfactual: pace as a variance lever.
-
-How does possession count move the UNDERDOG's win probability? A game is a sum of
-~100 possessions per team. A favorite has a small per-possession edge; the more
-possessions played, the more reliably that edge accumulates (LLN), so favorites
-win more. FEWER possessions = more variance vs the edge = more upsets. The
-counterfactual: take the SAME matchup and ask its win prob at a different pace.
-
-Analytic model (normal approximation of the final margin):
-  margin ~ Normal(mu, sigma^2), mu = N*delta_pp, sigma^2 = 2*N*v_pp
-  P(fav win) = Phi(mu/sigma) = Phi( z0 * sqrt(N/N_ref) ), z0 = Phi^-1(p_fav_at_ref)
-  upset_prob(N) = 1 - Phi( z0 * sqrt(N/N_ref) )
-delta_pp (fav per-possession edge) and v_pp (per-poss variance) CANCEL: once a
-matchup is pinned by its win prob at N_ref, its upset prob at any pace depends only
-on sqrt(N/N_ref) -- isolating the mechanical pace effect with team strength fixed.
-N_ref + pace grid come from real NBA data on disk; delta_pp/v_pp are context only.
-
-DESCRIPTIVE / CALIBRATION analytic. edge_claimed=False. No $/ROI claims. An honest
-"the pace lever is small" verdict is a success.
-Usage: python -m scripts.platformkit.analytics_showcase.cf_pace_variance [--check]
-"""
+'Counterfactual: pace as a variance lever.\n\nHow does possession count move the UNDERDOG\'s win probability? A game is a sum of\n~100 possessions per team. A favorite has a small per-possession margin; the more\npossessions played, the more reliably that advantage accumulates (LLN), so favorites\nwin more. FEWER possessions = more variance vs the advantage = more upsets. The\ncounterfactual: take the SAME matchup and ask its win prob at a different pace.\n\nAnalytic model (normal approximation of the final margin):\n  margin ~ Normal(mu, sigma^2), mu = N*delta_pp, sigma^2 = 2*N*v_pp\n  P(fav win) = Phi(mu/sigma) = Phi( z0 * sqrt(N/N_ref) ), z0 = Phi^-1(p_fav_at_ref)\n  upset_prob(N) = 1 - Phi( z0 * sqrt(N/N_ref) )\ndelta_pp (fav per-possession margin) and v_pp (per-poss variance) CANCEL: once a\nmatchup is pinned by its win prob at N_ref, its upset prob at any pace depends only\non sqrt(N/N_ref) -- isolating the mechanical pace effect with team strength fixed.\nN_ref + pace grid come from real NBA data on disk; delta_pp/v_pp are context only.\n\nDESCRIPTIVE / CALIBRATION analytic. edge_claimed=False. No money/return claims. An honest\n"the pace lever is small" verdict is a success.\nUsage: python -m scripts.platformkit.analytics_showcase.cf_pace_variance [--check]\n'
 import argparse
 import json
 import os
@@ -186,7 +166,7 @@ def build_output(params: Dict[str, Any]) -> Dict[str, Any]:
         "assumptions": [
             "Margin ~ Normal (CLT over ~100 possessions; good for full games, weaker for "
             "short in-game windows).",
-            "COUNTERFACTUAL floor: per-possession edge and variance held pace-INVARIANT. Real "
+            'COUNTERFACTUAL floor: per-possession margin and variance held pace-INVARIANT. Real '
             "teams that push pace may also change shot quality; this isolates the mechanical "
             "variance effect only, not behavioral pace changes.",
             "Possessions independent; runs/autocorrelation would add variance and make the pace "
@@ -239,7 +219,7 @@ def make_plot(output: Dict[str, Any]) -> bool:
     ax.grid(True, alpha=0.3)
     fig.text(0.5, 0.005,
              f"Source: {output['source_artifact']}; as_of {output['as_of']}. "
-             "Formula: upset(N)=1-Phi(z0*sqrt(N/N_ref)). Counterfactual holds team edge fixed.",
+             'Formula: upset(N)=1-Phi(z0*sqrt(N/N_ref)). Counterfactual holds team advantage fixed.',
              ha="center", fontsize=7, color="gray")
     fig.tight_layout(rect=(0, 0.03, 1, 1))
     OUT_PNG.parent.mkdir(parents=True, exist_ok=True)

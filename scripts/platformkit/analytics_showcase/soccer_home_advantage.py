@@ -1,30 +1,4 @@
-"""soccer_home_advantage.py -- descriptive home-advantage decomposition for
-international soccer, using the neutral-site flag as a natural control.
-
-data/domains/soccer_intl/results.parquet carries a real `neutral` boolean per
-match. Splitting on it isolates true home-venue advantage (neutral=False)
-from a "neutral" baseline (neutral=True) that still shares crowd/travel/
-familiarity confounds -- it is not a clean zero-advantage control, just the
-best one available in this corpus (see confounds below).
-
-THE STORY (graduated from the committed mechanism ledger, CONFIRMED_LOCAL):
-home advantage is real and the true-home/neutral gap GREW over time, but not
-because true-home edge rose (flat: 0.6743 pre-2000 vs 0.6745 after) -- it grew
-because the NEUTRAL-venue edge COLLAPSED (0.4556 -> 0.1760), consistent with
-genuinely neutral tournament sites replacing quasi-home neutral games in the
-modern era. Biggest true-home edge is in Qualifiers (0.6234). Neutral games
-concentrate in Finals & continental play (8747 of 13075).
-
-Descriptive only. No edge/ROI/forecast claim (edge_claimed:false).
-
-Output: out/soccer_home_advantage.json (this committed JSON IS the recorded
-artifact -- --check reloads it and does not require data/ locally, i.e. is
-clone-safe).
-
-Usage:
-  python -m scripts.platformkit.analytics_showcase.soccer_home_advantage
-  python -m scripts.platformkit.analytics_showcase.soccer_home_advantage --check
-"""
+'soccer_home_advantage.py -- descriptive home-advantage decomposition for\ninternational soccer, using the neutral-site flag as a natural control.\n\ndata/domains/soccer_intl/results.parquet carries a real `neutral` boolean per\nmatch. Splitting on it isolates true home-venue advantage (neutral=False)\nfrom a "neutral" baseline (neutral=True) that still shares crowd/travel/\nfamiliarity confounds -- it is not a clean zero-advantage control, just the\nbest one available in this corpus (see confounds below).\n\nTHE STORY (graduated from the committed mechanism ledger, CONFIRMED_LOCAL):\nhome advantage is real and the true-home/neutral gap GREW over time, but not\nbecause true-home advantage rose (flat: 0.6743 pre-2000 vs 0.6745 after) -- it grew\nbecause the NEUTRAL-venue advantage COLLAPSED (0.4556 -> 0.1760), consistent with\ngenuinely neutral tournament sites replacing quasi-home neutral games in the\nmodern era. Biggest true-home advantage is in Qualifiers (0.6234). Neutral games\nconcentrate in Finals & continental play (8747 of 13075).\n\nDescriptive only. No advantage/return/forecast claim (edge_claimed:false).\n\nOutput: out/soccer_home_advantage.json (this committed JSON IS the recorded\nartifact -- --check reloads it and does not require data/ locally, i.e. is\nclone-safe).\n\nUsage:\n  python -m scripts.platformkit.analytics_showcase.soccer_home_advantage\n  python -m scripts.platformkit.analytics_showcase.soccer_home_advantage --check\n'
 import json
 import math
 import re

@@ -1,6 +1,6 @@
 {
  "source": "domains/*/knowledge/validation_ledger.jsonl (4 sports, premise-checked)",
- "note": "Every named mechanism we have tested, with its recorded verdict and evidence pointer. A NULL/REJECT/NOT_TESTABLE is honest market-efficiency evidence, not a failure. Measurement-hygiene artifact -- no $/edge/ROI claim. as_of is the recorded run_ts (null for runs that predate run_ts stamping).",
+ "note": "Every named mechanism we have tested, with its recorded verdict and evidence pointer. A NULL/REJECT/NOT_TESTABLE is honest market-efficiency evidence, not a failure. Measurement-hygiene artifact -- no money/advantage/return claim. as_of is the recorded run_ts (null for runs that predate run_ts stamping).",
  "verdict_buckets": {
   "confirmed": [
    "ARTIFACT_CONFIRMED",
@@ -707,7 +707,7 @@
      "effect": -0.1678,
      "p": 0.5470598329786256,
      "corpus": "linescores_derive_realized_team_games",
-     "evidence": "corpus=linescores_derive_realized_team_games; n=1313; paired one-sample t-test, home team's q4_margin minus its own avg Q1-Q3 per-quarter margin, gap=-0.1678 pts p=0.5471 (n=1313 home team-games); positive=Q4-specific home edge",
+     "evidence": "corpus=linescores_derive_realized_team_games; n=1313; paired one-sample t-test, home team's q4_margin minus its own avg Q1-Q3 per-quarter margin, gap=-0.1678 pts p=0.5471 (n=1313 home team-games); positive=Q4-specific home advantage",
      "as_of": "2026-07-10T08:41:58Z",
      "edge_claimed": false
     },
@@ -784,7 +784,7 @@
      "effect": null,
      "p": null,
      "corpus": "linescores_2024_25+2025_26_team_game_quarters",
-     "evidence": "corpus=linescores_2024_25+2025_26_team_game_quarters; Levene test, Q3 own-quarter-points stdev vs Q2/Q4, restricted to games close at half (|first_half_margin|<3, the sim's own margin-bucket-3 edge). 2024_25: n_close=468 Q3std=9.447 vs Q2std=6.089 (p=2.365e-18), vs Q4std=8.243 (p=0.001254); 2025_26: n_close=394 Q3std=9.004 vs Q2std=6.121 (p=6.021e-12), vs Q4std=8.798 (p=0.6719)",
+     "evidence": "corpus=linescores_2024_25+2025_26_team_game_quarters; Levene test, Q3 own-quarter-points stdev vs Q2/Q4, restricted to games close at half (|first_half_margin|<3, the sim's own margin-bucket-3 advantage). 2024_25: n_close=468 Q3std=9.447 vs Q2std=6.089 (p=2.365e-18), vs Q4std=8.243 (p=0.001254); 2025_26: n_close=394 Q3std=9.004 vs Q2std=6.121 (p=6.021e-12), vs Q4std=8.798 (p=0.6719)",
      "as_of": "2026-07-10T09:24:03Z",
      "edge_claimed": false
     },
@@ -1025,7 +1025,7 @@
      "effect": -0.07654,
      "p": 1.0357444985632e-48,
      "corpus": "savant_full__2025 (split-half by date)",
-     "evidence": "corpus=savant_full__2025 (split-half by date); n=24994; called-strike rate on taken edge-zone(11-14) pitches: pitcher's-count(0-2/1-2) n=21803 rate=0.0137 vs hitter's-count(3-0/3-1) n=3191 rate=0.0903",
+     "evidence": "corpus=savant_full__2025 (split-half by date); n=24994; called-strike rate on taken boundary-zone(11-14) pitches: pitcher's-count(0-2/1-2) n=21803 rate=0.0137 vs hitter's-count(3-0/3-1) n=3191 rate=0.0903",
      "as_of": "2026-07-10T09:01:43Z",
      "edge_claimed": false
     },
@@ -1036,7 +1036,7 @@
      "effect": -0.08067,
      "p": 2.516327694576037e-51,
      "corpus": "savant_full__2025 (split-half by date)",
-     "evidence": "corpus=savant_full__2025 (split-half by date); n=24348; called-strike rate on taken edge-zone(11-14) pitches: pitcher's-count(0-2/1-2) n=21242 rate=0.0121 vs hitter's-count(3-0/3-1) n=3106 rate=0.0927",
+     "evidence": "corpus=savant_full__2025 (split-half by date); n=24348; called-strike rate on taken boundary-zone(11-14) pitches: pitcher's-count(0-2/1-2) n=21242 rate=0.0121 vs hitter's-count(3-0/3-1) n=3106 rate=0.0927",
      "as_of": "2026-07-10T09:01:43Z",
      "edge_claimed": false
     },
@@ -1069,7 +1069,7 @@
      "effect": 0.10488,
      "p": 0.0,
      "corpus": "savant_full__2025",
-     "evidence": "corpus=savant_full__2025; n=702794; edge-zone(11-14) rate at strikes==2 (0.5677) vs strikes<2 (0.4628)",
+     "evidence": "corpus=savant_full__2025; n=702794; boundary-zone(11-14) rate at strikes==2 (0.5677) vs strikes<2 (0.4628)",
      "as_of": null,
      "edge_claimed": false
     },
@@ -1410,7 +1410,7 @@
      "effect": -0.00086,
      "p": 0.5046677203464223,
      "corpus": "savant_full__2023+2024+2025",
-     "evidence": "corpus=savant_full__2023+2024+2025; n=51; league-demeaned paired one-sample t-test, season3(2025)-season1(2023) called-strike-rate delta net of league-wide edge-zone rate that season, n=51 catchers (>=500 borderline takes/season, present all 3 seasons); RAW (non-adjusted) delta was -0.01299 p=9.12e-14 -- CONFIRMED_LOCAL on its own, but that magnitude matches the league-wide edge-zone rate shift (2023=0.0607 -> 2025=0.0485, delta=-0.0121) almost exactly, i.e. the raw signal is a league-wide confound (zone/rule/measurement shift), not catcher-specific decline -- the league-adjusted verdict above is the honest test of the row's actual (catcher-specific) claim",
+     "evidence": "corpus=savant_full__2023+2024+2025; n=51; league-demeaned paired one-sample t-test, season3(2025)-season1(2023) called-strike-rate delta net of league-wide boundary-zone rate that season, n=51 catchers (>=500 borderline takes/season, present all 3 seasons); RAW (non-adjusted) delta was -0.01299 p=9.12e-14 -- CONFIRMED_LOCAL on its own, but that magnitude matches the league-wide boundary-zone rate shift (2023=0.0607 -> 2025=0.0485, delta=-0.0121) almost exactly, i.e. the raw signal is a league-wide confound (zone/rule/measurement shift), not catcher-specific decline -- the league-adjusted verdict above is the honest test of the row's actual (catcher-specific) claim",
      "as_of": "2026-07-10T09:43:14Z",
      "edge_claimed": false
     },
@@ -2772,7 +2772,7 @@
      "effect": -0.0468,
      "p": 0.03470280574996565,
      "corpus": "matches_asof_setdetail_schedule_density_atp_wta",
-     "evidence": "corpus=matches_asof_setdetail_schedule_density_atp_wta; n=29229; logit p1_win ~ avg_games_per_set_asof_diff + rank_diff, coef=-0.0468 (coef/se=-2.11), n=29229 -- declared bar |coef|/se>=2 & p<0.05; direction is NEGATIVE (opposite the causal story: a bigger prior game-margin edge over the opponent predicts a LOWER win prob net of rank), echoing this ledger's other folklore-reversing rows (#11, #21, #28)",
+     "evidence": "corpus=matches_asof_setdetail_schedule_density_atp_wta; n=29229; logit p1_win ~ avg_games_per_set_asof_diff + rank_diff, coef=-0.0468 (coef/se=-2.11), n=29229 -- declared bar |coef|/se>=2 & p<0.05; direction is NEGATIVE (opposite the causal story: a bigger prior game-margin advantage over the opponent predicts a LOWER win prob net of rank), echoing this ledger's other folklore-reversing rows (#11, #21, #28)",
      "as_of": "2026-07-10T09:02:39Z",
      "edge_claimed": false
     },

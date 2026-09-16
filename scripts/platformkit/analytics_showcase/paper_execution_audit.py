@@ -1,17 +1,4 @@
-"""Paper-execution-quality audit for the rescued pod paper-trading ledger.
-
-Reads data/pod_backup_2026_07_20/frontend/clv_ledger.jsonl (83 rows) plus the
-settle-status snapshot and today-snapshot from the same backup, and reports
-EXECUTION-QUALITY analytics only: fill/placed counts, settle status split,
-divergence distribution (model_prob vs implied prob at the taken price, in
-probability points -- this is a pre-trade sizing signal, NOT realized CLV),
-and honest degrade notes for fields the corpus does not actually have
-(clv_pct is null for every row here -- no independent close feed was
-captured, so CLV itself could not be measured, only reported as such).
-
-Paper only. No dollar/ROI/bankroll claims anywhere in this output.
-edge_claimed=False always.
-"""
+'Paper-execution-quality audit for the rescued pod paper-trading ledger.\n\nReads data/pod_backup_2026_07_20/frontend/clv_ledger.jsonl (83 rows) plus the\nsettle-status snapshot and today-snapshot from the same backup, and reports\nEXECUTION-QUALITY analytics only: fill/placed counts, settle status split,\ndivergence distribution (model_prob vs implied prob at the taken price, in\nprobability points -- this is a pre-trade sizing signal, NOT realized CLV),\nand honest degrade notes for fields the corpus does not actually have\n(clv_pct is null for every row here -- no independent close feed was\ncaptured, so CLV itself could not be measured, only reported as such).\n\nPaper only. No money/return/bankroll claims anywhere in this output.\nedge_claimed=False always.\n'
 import argparse
 import json
 import os
@@ -89,7 +76,7 @@ def build_report(recs, settle_status, today_snapshot):
     report = {
         "generated_at": None,
         "edge_claimed": False,
-        "units": "probability points (not dollars, not ROI)",
+        "units": 'probability points (not money, not return)',
         "source_corpus": os.path.relpath(LEDGER_PATH, ROOT).replace("\\", "/"),
         "n_records": n,
         "n_placed": n_placed,
@@ -101,7 +88,7 @@ def build_report(recs, settle_status, today_snapshot):
         "divergence_at_placement_pp": divergence_stats,
         "divergence_honest_note": (
             "divergence = |model_prob - implied_prob(taken_decimal)| at the moment "
-            "the paper bet was logged. It measures how far the model's number sat "
+            "the paper record was logged. It measures how far the model's number sat "
             "from the price taken -- a pre-trade sizing input, not realized CLV."
         ),
         "realized_clv_pct": pct_stats(clv_values),
@@ -126,7 +113,7 @@ def build_report(recs, settle_status, today_snapshot):
             if k in today_snapshot
         },
         "honest_story": (
-            "This is a PAPER-only execution ledger (83 logged bets, all executed=False "
+            'This is a PAPER-only execution ledger (83 logged records, all executed=False '
             "-- none of these were real fills). Every row passed its exec_gate "
             "(0 suppressed-by-gate rows survive in this rescued corpus). 37/83 rows "
             "settled by final score; realized CLV is unmeasurable for all of them "
@@ -134,7 +121,7 @@ def build_report(recs, settle_status, today_snapshot):
             "-- the corpus honestly records clv_status='no_close' rather than backfilling "
             "a number. The only quantity this ledger can speak to is placement-time "
             "divergence (model vs taken price), reported in probability points, which "
-            "is a measurement of execution behavior, not a proven edge."
+            'is a measurement of execution behavior, not a proven advantage.'
         ),
     }
     return report

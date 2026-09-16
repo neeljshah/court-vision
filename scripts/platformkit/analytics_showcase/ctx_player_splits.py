@@ -1,32 +1,4 @@
-"""Context-conditioned player scoring efficiency (no context-blind metrics).
-
-Standing user directive: every player metric must carry its context. This module
-takes the ~50 highest-minute players and splits their TRUE SHOOTING % across three
-game contexts, then scores how context-sensitive each player is:
-
-  (a) opponent defensive tier  -- top-10 vs bottom-10 defenses (by points allowed / game, per season)
-  (b) home / away              -- is_home flag
-  (c) rest                     -- back-to-back (1 day) vs 2+ days rest (from game dates)
-
-TS% is aggregate (sum pts / (2*(sum fga + 0.44*sum fta))) within each cell, which is
-more stable than averaging per-game rates. A "context sensitivity score" is the mean of
-the available absolute TS% deltas across the three dimensions.
-
-DESCRIPTIVE_ONLY. Calibration/intelligence analytic. No edge/ROI/$ claims. An honest
-insufficient-sample verdict per cell is a success, not a gap.
-
-Floors: cells with n<10 player-games are marked insufficient and dropped from the
-sensitivity score. Players with fewer than 2 usable dimensions are reported but their
-sensitivity score is null.
-
-Input:  data/domains/basketball_nba/player_boxscores.parquet
-Output: scripts/platformkit/analytics_showcase/out/ctx_player_splits.json
-        docs/img/ctx_player_splits.png (top-15 most context-sensitive)
-
-Usage:
-    python -m scripts.platformkit.analytics_showcase.ctx_player_splits
-    python -m scripts.platformkit.analytics_showcase.ctx_player_splits --check
-"""
+'Context-conditioned player scoring efficiency (no context-blind metrics).\n\nStanding user directive: every player metric must carry its context. This module\ntakes the ~50 highest-minute players and splits their TRUE SHOOTING % across three\ngame contexts, then scores how context-sensitive each player is:\n\n  (a) opponent defensive tier  -- top-10 vs bottom-10 defenses (by points allowed / game, per season)\n  (b) home / away              -- is_home flag\n  (c) rest                     -- back-to-back (1 day) vs 2+ days rest (from game dates)\n\nTS% is aggregate (sum pts / (2*(sum fga + 0.44*sum fta))) within each cell, which is\nmore stable than averaging per-game rates. A "context sensitivity score" is the mean of\nthe available absolute TS% deltas across the three dimensions.\n\nDESCRIPTIVE_ONLY. Calibration/intelligence analytic. No advantage/return/money claims. An honest\ninsufficient-sample verdict per cell is a success, not a gap.\n\nFloors: cells with n<10 player-games are marked insufficient and dropped from the\nsensitivity score. Players with fewer than 2 usable dimensions are reported but their\nsensitivity score is null.\n\nInput:  data/domains/basketball_nba/player_boxscores.parquet\nOutput: scripts/platformkit/analytics_showcase/out/ctx_player_splits.json\n        docs/img/ctx_player_splits.png (top-15 most context-sensitive)\n\nUsage:\n    python -m scripts.platformkit.analytics_showcase.ctx_player_splits\n    python -m scripts.platformkit.analytics_showcase.ctx_player_splits --check\n'
 import json
 import sys
 from pathlib import Path

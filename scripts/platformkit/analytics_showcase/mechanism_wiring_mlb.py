@@ -1,29 +1,4 @@
-"""Declared MLB mechanism -> trigger wiring rows (DATA module).
-
-Same contract as ``mechanism_wiring.WIRING``: one row per CONFIRMED/REPLICATED
-section of ``domains/mlb/knowledge/mechanisms.md``. A row either names a
-persisted, leak-free as-of column or states, in data terms, why no trigger
-exists locally.
-
-Measured corpus facts behind every reason below (2026-09-01, this repo):
-
-- The frozen MLB corpus is ``data/domains/mlb/games.parquet`` x ``odds.parquet``,
-  27,983 games, 2010-04-04..2021-11-02.
-- Every persisted mechanism-ingredient artifact is 2022 or later:
-  ``platoon_split_index`` / ``umpire_zone_index`` / ``catcher_framing_index``
-  (season ``2022_2023``), ``sp_velo_states`` (2022-2023), ``bullpen_relief_chains``
-  (2022-2026), ``umpire_assignments`` (2026-07-09..2026-07-16), statcast
-  ``savant_full__2023..2026`` and ``statcast_fuller__2022/2023``,
-  ``carryover_asof__2023/2024``. None of them joins the frozen corpus window.
-- The only game-grain as-of columns that DO join it are
-  ``asof_features.sp_ra_diff_asof`` (94.91% of games) and
-  ``asof_inning.early_rate_diff_asof`` / ``late_rate_diff_asof`` (99.93%);
-  ``asof_park.parquet`` and ``asof_espn_box.parquet`` join 0 corpus games.
-  No CONFIRMED MLB mechanism's own ingredient is one of those three columns.
-
-Consequently every row here is NOT_TESTABLE. That is a wired state with a
-measured data reason, not a gap. DESCRIPTIVE_ONLY; no edge or ROI claim.
-"""
+"Declared MLB mechanism -> trigger wiring rows (DATA module).\n\nSame contract as ``mechanism_wiring.WIRING``: one row per CONFIRMED/REPLICATED\nsection of ``domains/mlb/knowledge/mechanisms.md``. A row either names a\npersisted, leak-free as-of column or states, in data terms, why no trigger\nexists locally.\n\nMeasured corpus facts behind every reason below (2026-09-01, this repo):\n\n- The frozen MLB corpus is ``data/domains/mlb/games.parquet`` x ``odds.parquet``,\n  27,983 games, 2010-04-04..2021-11-02.\n- Every persisted mechanism-ingredient artifact is 2022 or later:\n  ``platoon_split_index`` / ``umpire_zone_index`` / ``catcher_framing_index``\n  (season ``2022_2023``), ``sp_velo_states`` (2022-2023), ``bullpen_relief_chains``\n  (2022-2026), ``umpire_assignments`` (2026-07-09..2026-07-16), statcast\n  ``savant_full__2023..2026`` and ``statcast_fuller__2022/2023``,\n  ``carryover_asof__2023/2024``. None of them joins the frozen corpus window.\n- The only game-grain as-of columns that DO join it are\n  ``asof_features.sp_ra_diff_asof`` (94.91% of games) and\n  ``asof_inning.early_rate_diff_asof`` / ``late_rate_diff_asof`` (99.93%);\n  ``asof_park.parquet`` and ``asof_espn_box.parquet`` join 0 corpus games.\n  No CONFIRMED MLB mechanism's own ingredient is one of those three columns.\n\nConsequently every row here is NOT_TESTABLE. That is a wired state with a\nmeasured data reason, not a gap. DESCRIPTIVE_ONLY; no advantage or return claim.\n"
 from __future__ import annotations
 
 CORPUS = "data/domains/mlb/games.parquet x odds.parquet, 2010-04-04..2021-11-02, 27983 games"
@@ -44,12 +19,12 @@ ROWS: tuple[tuple[str, str], ...] = (
      "corpus on disk is data/cache/ingame/mlb_atbat_states__2022/2023.parquet, disjoint from "
      "the frozen 2010-2021 corpus, and no game-grain as-of column encodes it"),
     ("edge_zone_widening_in_two_strike_counts",
-     "edge-zone (Statcast zone 11-14) rate by count is a pitch-grain quantity recomputed by "
+     'boundary-zone (Statcast zone 11-14) rate by count is a pitch-grain quantity recomputed by '
      "domains/mlb/knowledge/validate_count_zone.py; no persisted as-of column exists and no "
      "local pitch corpus predates 2022"),
     ("two_strike_chase_rate_rise",
      "swing-and-out-of-zone rate at two strikes is the same pitch-grain quantity as the "
-     "edge-zone row, with the same absence: recomputed in memory, never persisted as a "
+     'boundary-zone row, with the same absence: recomputed in memory, never persisted as a '
      "game-grain as-of column"),
     ("first_pitch_strike_suppresses_walk_rate",
      "the conditioning and the outcome are both within-PA (first-pitch strike -> walk); the "

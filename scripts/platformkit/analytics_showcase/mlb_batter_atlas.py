@@ -1,34 +1,4 @@
-"""MLB batter atlas: one compact descriptive card per batter above a pitches-
-faced floor -- pitch mix seen, velo seen, zone profile (rulebook zone vs
-edge/chase), and contact quality (exit velo on batted balls). Same 2025
-statcast pull as mlb_pitch_atlas.py, batter side (grouped by `batter` instead
-of pitching team). DESCRIPTIVE_ONLY, no edge/ROI/$ claims -- see
-docs/JOB_EVIDENCE_PACKET.md.
-
-CONTACT_NOTE: launch_speed and estimated_woba_using_speedangle are populated
-only on pitches the batter actually put in play (batted-ball rows), not on
-every pitch -- contact-panel n is the batted-ball count, not pitches_faced.
-No swing/miss or launch_angle column exists in this pull (same gap
-mlb_pitch_atlas found), so whiff rate and a true barrel profile are not built
-here; the zone (rulebook 1-9 vs edge/chase 11-14) and exit-velo panels are the
-honest substitutes from fields that actually exist.
-
-Batter names come from data/domains/mlb/player_gamelogs.parquet (player_id ->
-player), the same id->name recipe domains/mlb/platoon_split_index.py already
-uses -- confirmed 671/671 2025 statcast batter ids resolve. Real name
-collisions exist in MLB (two different 2025 batters are both "Max Muncy",
-LAD vs ATH) -- disambiguated with team, falling back to batter_id if a team
-match still collides.
-
-Input:  data/cache/statcast/statcast_fuller__2025.parquet (columns-only read)
-        data/domains/mlb/player_gamelogs.parquet (columns-only read, names)
-Output: docs/img/atlas/mlb_batters/<slug>.png (one per eligible batter)
-        out/atlas_mlb_batters_manifest.json (via atlas_factory.write_manifest)
-
-Usage:
-    python -m scripts.platformkit.analytics_showcase.mlb_batter_atlas          # full build (ONE process, takes minutes)
-    python -m scripts.platformkit.analytics_showcase.mlb_batter_atlas --check  # fast: manifest count == disk PNGs + spot-open 2
-"""
+'MLB batter atlas: one compact descriptive card per batter above a pitches-\nfaced floor -- pitch mix seen, velo seen, zone profile (rulebook zone vs\nadvantage/chase), and contact quality (exit velo on batted balls). Same 2025\nstatcast pull as mlb_pitch_atlas.py, batter side (grouped by `batter` instead\nof pitching team). DESCRIPTIVE_ONLY, no advantage/return/money claims -- see\ndocs/JOB_EVIDENCE_PACKET.md.\n\nCONTACT_NOTE: launch_speed and estimated_woba_using_speedangle are populated\nonly on pitches the batter actually put in play (batted-ball rows), not on\nevery pitch -- contact-panel n is the batted-ball count, not pitches_faced.\nNo swing/miss or launch_angle column exists in this pull (same gap\nmlb_pitch_atlas found), so whiff rate and a true barrel profile are not built\nhere; the zone (rulebook 1-9 vs advantage/chase 11-14) and exit-velo panels are the\nhonest substitutes from fields that actually exist.\n\nBatter names come from data/domains/mlb/player_gamelogs.parquet (player_id ->\nplayer), the same id->name recipe domains/mlb/platoon_split_index.py already\nuses -- confirmed 671/671 2025 statcast batter ids resolve. Real name\ncollisions exist in MLB (two different 2025 batters are both "Max Muncy",\nLAD vs ATH) -- disambiguated with team, falling back to batter_id if a team\nmatch still collides.\n\nInput:  data/cache/statcast/statcast_fuller__2025.parquet (columns-only read)\n        data/domains/mlb/player_gamelogs.parquet (columns-only read, names)\nOutput: docs/img/atlas/mlb_batters/<slug>.png (one per eligible batter)\n        out/atlas_mlb_batters_manifest.json (via atlas_factory.write_manifest)\n\nUsage:\n    python -m scripts.platformkit.analytics_showcase.mlb_batter_atlas          # full build (ONE process, takes minutes)\n    python -m scripts.platformkit.analytics_showcase.mlb_batter_atlas --check  # fast: manifest count == disk PNGs + spot-open 2\n'
 import json
 from collections import Counter
 from pathlib import Path
@@ -98,7 +68,7 @@ def _render_velo_hist(ax, speeds: pd.Series) -> None:
 
 
 def _render_zone(ax, n_in: int, n_edge: int) -> None:
-    labels = ["in-zone\n1-9", "edge/chase\n11-14"]
+    labels = ["in-zone\n1-9", 'advantage/chase\n11-14']
     total = (n_in + n_edge) or 1
     pcts = [100 * n_in / total, 100 * n_edge / total]
     bars = ax.bar(labels, pcts, color=["#2a9d5c", "#c0392b"])

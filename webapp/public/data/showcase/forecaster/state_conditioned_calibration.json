@@ -1,6 +1,6 @@
 {
  "edge_claimed": false,
- "story": "Buckets every graded ingame prediction by model_prob band x game-state time bucket; ranked_worst_buckets is where the model is furthest from outcomes relative to the market, i.e. the improvement backlog.",
+ "story": "Buckets every graded ingame prediction by model_prob band x game-state time bucket; ranked_worst_buckets is where the model is furthest from outcomes relative to the closing reference forecast, i.e. the improvement backlog.",
  "sports": {
   "mlb": {
    "n_files": 227,

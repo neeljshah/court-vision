@@ -1,34 +1,4 @@
-"""clutch_context.py -- NBA late-game (Q4 + OT / clutch) per-36 rate SHIFTS,
-IF the boxscores parquet carried a period/clutch grain. It does NOT: the local
-player_boxscores.parquet is FULL-GAME aggregate. So this module is the
-HONEST-REFUSAL exhibit -- it probes the live schema, confirms the late-game
-grain is absent, and emits status:not_buildable naming exactly the fields a
-re-ingest would need. No fabricated late-game numbers, and NO chart.
-
-SCOPE (DESCRIPTIVE_ONLY, only once/if buildable): partition each player-game box
-line into full-game vs late-game (period >= 4, i.e. Q4 + OT) and report the
-per-36 rate SHIFT (late minus full) per player. It would NOT be a predictor, NOT
-a claim of clutch "skill", and NO market/ROI/$ edge -- purely a within-player
-descriptive of where late-game rates sit relative to the full-game baseline.
-
-WHY not buildable now (honest, not papered over): player_boxscores.parquet is
-written by domains/basketball_nba/ingest_boxscores.py, which SUMS the per-quarter
-cache data/cache/quarter_box/<game_id>_q<period>.json across quarters into ONE
-full-game row per (player, game). The per-period grain EXISTS in that raw cache
-but is discarded at ingest. Making this analytic buildable is an UPSTREAM
-data-layer change (re-ingest keeping a `period` column) -- out of scope for a
-read-only showcase module, which is why this emits a refusal instead of guessing
-late-game splits off full-game totals.
-
-FLOORS (declared; bind the analytic only once a late-game grain exists):
-  - MIN_LATE_MIN: total late-game minutes a player needs before being ranked.
-  - MIN_GAMES: qualifying games a player needs before being ranked.
-  - per-36 computed over SUMMED minutes at the grain, never per-game averaged.
-
-Truth source for claim discipline: docs/JOB_EVIDENCE_PACKET.md.
-Output: out/clutch_context.json (status: not_buildable | no_data). NO chart.
-CLI: python -m scripts.platformkit.analytics_showcase.clutch_context [--check]
-"""
+'clutch_context.py -- NBA late-game (Q4 + OT / clutch) per-36 rate SHIFTS,\nIF the boxscores parquet carried a period/clutch grain. It does NOT: the local\nplayer_boxscores.parquet is FULL-GAME aggregate. So this module is the\nHONEST-REFUSAL exhibit -- it probes the live schema, confirms the late-game\ngrain is absent, and emits status:not_buildable naming exactly the fields a\nre-ingest would need. No fabricated late-game numbers, and NO chart.\n\nSCOPE (DESCRIPTIVE_ONLY, only once/if buildable): partition each player-game box\nline into full-game vs late-game (period >= 4, i.e. Q4 + OT) and report the\nper-36 rate SHIFT (late minus full) per player. It would NOT be a predictor, NOT\na claim of clutch "skill", and NO market/return/money advantage -- purely a within-player\ndescriptive of where late-game rates sit relative to the full-game baseline.\n\nWHY not buildable now (honest, not papered over): player_boxscores.parquet is\nwritten by domains/basketball_nba/ingest_boxscores.py, which SUMS the per-quarter\ncache data/cache/quarter_box/<game_id>_q<period>.json across quarters into ONE\nfull-game row per (player, game). The per-period grain EXISTS in that raw cache\nbut is discarded at ingest. Making this analytic buildable is an UPSTREAM\ndata-layer change (re-ingest keeping a `period` column) -- out of scope for a\nread-only showcase module, which is why this emits a refusal instead of guessing\nlate-game splits off full-game totals.\n\nFLOORS (declared; bind the analytic only once a late-game grain exists):\n  - MIN_LATE_MIN: total late-game minutes a player needs before being ranked.\n  - MIN_GAMES: qualifying games a player needs before being ranked.\n  - per-36 computed over SUMMED minutes at the grain, never per-game averaged.\n\nTruth source for claim discipline: docs/JOB_EVIDENCE_PACKET.md.\nOutput: out/clutch_context.json (status: not_buildable | no_data). NO chart.\nCLI: python -m scripts.platformkit.analytics_showcase.clutch_context [--check]\n'
 import json
 from datetime import datetime, timezone
 from pathlib import Path
@@ -164,7 +134,7 @@ def check() -> int:
     assert data.get("status") in {
         "not_buildable", "no_data", "fields_present_analytic_not_implemented",
     }, data.get("status")
-    assert data.get("edge_claimed") is False, "must not claim an edge"
+    assert data.get("edge_claimed") is False, 'must not claim an advantage'
     assert data.get("chart") is None, "honest-refusal path emits NO chart"
     if data["status"] == "not_buildable":
         # the whole point: a refusal must NAME the fields it would need

@@ -1,19 +1,4 @@
-"""Residual anatomy: where does the model's error concentrate?
-
-Reuses the same joined ingame corpora as state_conditioned_calibration.py but
-reports it as an error-concentration exhibit: for each segment (sport x
-game-state time bucket x model_prob band) computes model residual
-(|model_prob - outcome|) mean and total absolute residual mass (mean_abs_err
-* n), then ranks segments by total mass -- i.e. where fixing the model would
-remove the most cumulative error, not just where the rate is worst on a thin
-segment. This is the public improvement-backlog exhibit.
-
-Corpora: data/cache/ingame_grade_joined/{mlb,soccer_intl}/*.jsonl (mlb_clean
-is a byte-identical duplicate of mlb -- skipped to avoid double counting).
-
-edge_claimed=False always. This is a calibration/error diagnostic, not a
-betting signal.
-"""
+"Residual anatomy: where does the model's error concentrate?\n\nReuses the same joined ingame corpora as state_conditioned_calibration.py but\nreports it as an error-concentration exhibit: for each segment (sport x\ngame-state time bucket x model_prob band) computes model residual\n(|model_prob - outcome|) mean and total absolute residual mass (mean_abs_err\n* n), then ranks segments by total mass -- i.e. where fixing the model would\nremove the most cumulative error, not just where the rate is worst on a thin\nsegment. This is the public improvement-backlog exhibit.\n\nCorpora: data/cache/ingame_grade_joined/{mlb,soccer_intl}/*.jsonl (mlb_clean\nis a byte-identical duplicate of mlb -- skipped to avoid double counting).\n\nedge_claimed=False always. This is a calibration/error diagnostic, not a\nforecast comparison signal.\n"
 import argparse
 import json
 import os

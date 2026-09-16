@@ -1,12 +1,12 @@
 {
  "status": "ok",
  "sport": "mlb",
- "caveat": "DESCRIPTIVE_ONLY: league release-speed distribution and in-season median-velo drift for the local 2025 statcast pull. Not a predictive, edge, or ROI claim -- nothing here is modeled, forecast, or priced. In-season velo ramp-up is a known physical effect, reported descriptively. See docs/JOB_EVIDENCE_PACKET.md.",
+ "caveat": "DESCRIPTIVE_ONLY: league release-speed distribution and in-season median-velo drift for the local 2025 statcast pull. Not a predictive, advantage, or return claim -- nothing here is modeled, forecast, or priced. In-season velo ramp-up is a known physical effect, reported descriptively. See docs/JOB_EVIDENCE_PACKET.md.",
  "floors": {
   "band_share_min_pitches_per_type": 500,
   "drift_min_pitches_per_cell": 200,
   "chart_top_n_pitch_types": 6,
-  "note": "pitch types / (type,month) cells below floor are dropped, not smoothed; thin edge-of-season months (Mar/Oct) typically fall below the cell floor and vanish"
+  "note": "pitch types / (type,month) cells below floor are dropped, not smoothed; thin advantage-of-season months (Mar/Oct) typically fall below the cell floor and vanish"
  },
  "source": "data/cache/statcast/statcast_fuller__2025.parquet",
  "n_pitches_raw": 693037,

@@ -51,7 +51,7 @@ CONFOUND = (
     "WITH/WITHOUT = ROSTER CONFOUND: this is NOT a causal player-impact estimate. "
     "Why a player missed games is entangled with injuries clustering, rest-game "
     "scheduling, blowout pulls, and a different replacement lineup -- none controlled "
-    "for. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+    'for. DESCRIPTIVE_ONLY, not a predictive or advantage claim.'
 )
 
 

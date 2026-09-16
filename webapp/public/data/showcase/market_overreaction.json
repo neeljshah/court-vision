@@ -67,7 +67,7 @@
  },
  "novelty": {
   "verdict": "INCREMENTAL",
-  "closest_prior_work": "Moskowitz (2021, Journal of Finance), 'Asset Pricing and Sports Betting' -- cross-sport (NBA/NFL/MLB/NHL/soccer) magnitude-bucketed price-move-vs-outcome test, ~50% open-to-close reversion. Choi & Hui (2014, JEBO) run the in-play soccer version, event-triggered by goals, finding underreaction to moderate surprises and overreaction to extreme ones.",
+  "closest_prior_work": "Moskowitz (2021, Journal of Finance), a cross-sport study of pricing in sports markets -- cross-sport (NBA/NFL/MLB/NHL/soccer) magnitude-bucketed price-move-vs-outcome test, ~50% open-to-close reversion. Choi & Hui (2014, JEBO) run the in-play soccer version, event-triggered by goals, finding underreaction to moderate surprises and overreaction to extreme ones.",
   "how_ours_differs": "Same bucketed-move-vs-outcome instrument, applied at consecutive-row (not event-triggered) grain in-game, to MLB + soccer_intl corpora we hold. Not a new method -- do not claim first-ever."
  }
 }

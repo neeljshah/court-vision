@@ -1,27 +1,4 @@
-"""Effective Sample Size (ESS) ledger -- how independent is our headline row count?
-
-Pure composition of ONE already-committed artifact (residual_autocorrelation.json):
-restates each corpus's n_records as how many effectively-independent observations
-it really is, using the ALREADY-MEASURED within-game lag-1 residual autocorrelation
-(rho). No new data, no new science -- just an honest re-statement of a number we
-already produced.
-
-Why this matters: the game outcome is TERMINAL and constant within a game, so the
-win-prob path is smooth and consecutive rows are near-duplicates (that is exactly
-what residual_autocorrelation.py measured). Two independence estimates:
-  * ESS_AR1   -- standard AR(1) effective-sample-size approximation from rho.
-  * n_games   -- the distinct within-game series count, a CONSERVATIVE anchor
-                 (can never claim more independent points than distinct games).
-The reported ess_anchor = min(ESS_AR1, n_games): never claim more independence
-than either estimate allows.
-
-DESCRIPTIVE_ONLY, edge_claimed=False -- this deflates our OWN sample sizes; it
-is not a signal, an edge, or a $/ROI claim of any kind.
-
-Usage:
-    python -m scripts.platformkit.analytics_showcase.ess_ledger
-    python -m scripts.platformkit.analytics_showcase.ess_ledger --check
-"""
+"Effective Sample Size (ESS) ledger -- how independent is our headline row count?\n\nPure composition of ONE already-committed artifact (residual_autocorrelation.json):\nrestates each corpus's n_records as how many effectively-independent observations\nit really is, using the ALREADY-MEASURED within-game lag-1 residual autocorrelation\n(rho). No new data, no new science -- just an honest re-statement of a number we\nalready produced.\n\nWhy this matters: the game outcome is TERMINAL and constant within a game, so the\nwin-prob path is smooth and consecutive rows are near-duplicates (that is exactly\nwhat residual_autocorrelation.py measured). Two independence estimates:\n  * ESS_AR1   -- standard AR(1) effective-sample-size approximation from rho.\n  * n_games   -- the distinct within-game series count, a CONSERVATIVE anchor\n                 (can never claim more independent points than distinct games).\nThe reported ess_anchor = min(ESS_AR1, n_games): never claim more independence\nthan either estimate allows.\n\nDESCRIPTIVE_ONLY, edge_claimed=False -- this deflates our OWN sample sizes; it\nis not a signal, an advantage, or a money/return claim of any kind.\n\nUsage:\n    python -m scripts.platformkit.analytics_showcase.ess_ledger\n    python -m scripts.platformkit.analytics_showcase.ess_ledger --check\n"
 import json
 import math
 import os
@@ -106,7 +83,7 @@ def build():
         "source_artifact": "scripts/platformkit/analytics_showcase/out/residual_autocorrelation.json",
         "confound": ("AR(1) is a first-order approximation of a smooth terminal-constant path, not "
                      "a full independence model; the distinct-game count is the conservative anchor. "
-                     "DESCRIPTIVE_ONLY -- this deflates our OWN sample sizes and makes no edge or ROI "
+                     'DESCRIPTIVE_ONLY -- this deflates our OWN sample sizes and makes no advantage or return '
                      "claim."),
         "corpora": corpora,
     }

@@ -1,33 +1,4 @@
-"""soccer_form_stability.py -- soccer_intl team-form rank stability (DESCRIPTIVE_ONLY).
-
-SCOPE: reads two soccer_intl team-form CLAIM STORES in data/cache/intel_claims/
-(read-only; only team+value pulled per ranking entry): soccer_intl_form_claims.jsonl
-(trailing-10 form win-rate, ONE as-of snapshot per national team) and
-soccer_intl_strength_claims.jsonl (walk-forward net-xG EW strength gf_ew-ga_ew,
-ONE as-of snapshot). Question: does a team's short-horizon FORM track its
-longer-horizon STRENGTH -- is the ordering stable across two independent lenses?
-A parallel-forms rank-stability (convergent-validity) read: tie-corrected Spearman
-rho + Pearson r over the shared, above-floor team population.
-
-NOT SUPPORTED (reported, never faked): a TRUE within-season temporal split-half
-(first-half vs second-half form) needs per-team form at >=2 disjoint chronological
-windows. Each store holds only ONE as-of snapshot (verified: 1 claim line each), so
-temporal_split_half is emitted status=NOT_AVAILABLE_IN_STORE with fields_needed.
-
-FLOORS (declared): inherits each claim's min_sample n_matches>=200 (below-floor
-teams pre-excluded upstream, never re-added); MIN_OVERLAP=30 (<30 shared teams ->
-degrade, no correlation/chart); upstream form win-rate is quantized to 1 decimal ->
-heavy ties -> tie_fraction reported as attenuation caveat + average-rank Spearman.
-
-DESCRIPTIVE_ONLY, edge_claimed=False: NOT a predictor -- soccer_intl PREDICTIVE gate
-is CLOSED upstream (NO_ADD_BEYOND_MARKET). No market/$/ROI edge. Truth source:
-docs/JOB_EVIDENCE_PACKET.md.
-
-Output: out/soccer_form_stability.json + ONE chart docs/img/soccer_form_stability.png
-Usage:
-    python -m scripts.platformkit.analytics_showcase.soccer_form_stability
-    python -m scripts.platformkit.analytics_showcase.soccer_form_stability --check
-"""
+"soccer_form_stability.py -- soccer_intl team-form rank stability (DESCRIPTIVE_ONLY).\n\nSCOPE: reads two soccer_intl team-form CLAIM STORES in data/cache/intel_claims/\n(read-only; only team+value pulled per ranking entry): soccer_intl_form_claims.jsonl\n(trailing-10 form win-rate, ONE as-of snapshot per national team) and\nsoccer_intl_strength_claims.jsonl (walk-forward net-xG EW strength gf_ew-ga_ew,\nONE as-of snapshot). Question: does a team's short-horizon FORM track its\nlonger-horizon STRENGTH -- is the ordering stable across two independent lenses?\nA parallel-forms rank-stability (convergent-validity) read: tie-corrected Spearman\nrho + Pearson r over the shared, above-floor team population.\n\nNOT SUPPORTED (reported, never faked): a TRUE within-season temporal split-half\n(first-half vs second-half form) needs per-team form at >=2 disjoint chronological\nwindows. Each store holds only ONE as-of snapshot (verified: 1 claim line each), so\ntemporal_split_half is emitted status=NOT_AVAILABLE_IN_STORE with fields_needed.\n\nFLOORS (declared): inherits each claim's min_sample n_matches>=200 (below-floor\nteams pre-excluded upstream, never re-added); MIN_OVERLAP=30 (<30 shared teams ->\ndegrade, no correlation/chart); upstream form win-rate is quantized to 1 decimal ->\nheavy ties -> tie_fraction reported as attenuation caveat + average-rank Spearman.\n\nDESCRIPTIVE_ONLY, edge_claimed=False: NOT a predictor -- soccer_intl PREDICTIVE gate\nis CLOSED upstream (NO_ADD_BEYOND_MARKET). No market/money/return advantage. Truth source:\ndocs/JOB_EVIDENCE_PACKET.md.\n\nOutput: out/soccer_form_stability.json + ONE chart docs/img/soccer_form_stability.png\nUsage:\n    python -m scripts.platformkit.analytics_showcase.soccer_form_stability\n    python -m scripts.platformkit.analytics_showcase.soccer_form_stability --check\n"
 import json
 import os
 import sys
@@ -215,7 +186,7 @@ def build():
     base["caveats"] = [
         "DESCRIPTIVE cross-lens rank concordance only -- NOT a temporal split-half "
         "and NOT a predictor of any future match; soccer_intl PREDICTIVE gate is "
-        "CLOSED upstream (NO_ADD_BEYOND_MARKET). No market/$/ROI edge claimed.",
+        'CLOSED upstream (NO_ADD_BEYOND_MARKET). No market/money/return advantage claimed.',
         "The two lenses differ in horizon (form=trailing 10 matches; strength=full EW "
         "history) -- read the correlation as convergent validity, not pure persistence.",
         "Upstream form win-rate is quantized to 1 decimal (tie_fraction_form=%s) -> "

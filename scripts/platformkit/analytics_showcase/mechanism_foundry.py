@@ -1,13 +1,4 @@
-"""One foundry row per declared mechanism, one charged trial per column-wired row.
-
-Every mechanism in ``mechanism_wiring.WIRING_BY_SPORT[sport]`` becomes a row. A row with a
-trigger column runs a close-free logistic trial over the frozen corpus and is
-charged to the cumulative-K ledger by ``run_backtest`` BEFORE any result is
-read; a row without one is emitted NOT_TESTABLE with its data reason. Verdicts
-are calibration language only (MATCH / BEHIND / INSUFFICIENT / NOT_TESTABLE) --
-no edge or ROI claim. ``--dry-run`` (``build(run_trials=False)``) queues the
-trigger rows as PENDING and charges the shared cumulative-K ledger nothing.
-"""
+'One foundry row per declared mechanism, one charged trial per column-wired row.\n\nEvery mechanism in ``mechanism_wiring.WIRING_BY_SPORT[sport]`` becomes a row. A row with a\ntrigger column runs a close-free logistic trial over the frozen corpus and is\ncharged to the cumulative-K ledger by ``run_backtest`` BEFORE any result is\nread; a row without one is emitted NOT_TESTABLE with its data reason. Verdicts\nare calibration language only (MATCH / BEHIND / INSUFFICIENT / NOT_TESTABLE) --\nno advantage or return claim. ``--dry-run`` (``build(run_trials=False)``) queues the\ntrigger rows as PENDING and charges the shared cumulative-K ledger nothing.\n'
 from __future__ import annotations
 
 import argparse

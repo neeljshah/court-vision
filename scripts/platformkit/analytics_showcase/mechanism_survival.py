@@ -1,14 +1,4 @@
-"""Mechanism survival analytics over domains/*/knowledge/validation_ledger.jsonl
-(4 sports, 291 rows total): what share of hypotheses tested confirm, broken out
-by sport and by mechanism category (keyword-bucketed on the hypothesis name).
-
-A NULL/REJECT is honest market-efficiency evidence, not a failure. No $/edge/ROI
-claim -- this is a calibration/measurement artifact, not a betting product.
-
-Usage:
-    python -m scripts.platformkit.analytics_showcase.mechanism_survival
-    python -m scripts.platformkit.analytics_showcase.mechanism_survival --check
-"""
+'Mechanism survival analytics over domains/*/knowledge/validation_ledger.jsonl\n(4 sports, 291 rows total): what share of hypotheses tested confirm, broken out\nby sport and by mechanism category (keyword-bucketed on the hypothesis name).\n\nA NULL/REJECT is honest market-efficiency evidence, not a failure. No money/advantage/return\nclaim -- this is a calibration/measurement artifact, not a forecast comparison product.\n\nUsage:\n    python -m scripts.platformkit.analytics_showcase.mechanism_survival\n    python -m scripts.platformkit.analytics_showcase.mechanism_survival --check\n'
 import argparse
 import collections
 import glob
@@ -90,7 +80,7 @@ def build():
         "note": (
             "Survival rate = share of TESTABLE hypotheses whose latest recorded verdict is "
             "CONFIRMED_LOCAL / CONFIRMED_LOCAL_incl_2026_OOS / REPLICATED. A NULL/REJECT is "
-            "honest market-efficiency evidence, not a failure. No $/edge/ROI claim."
+            'honest market-efficiency evidence, not a failure. No money/advantage/return claim.'
         ),
         "verdict_taxonomy": {
             "confirmed": sorted(CONFIRMED_VERDICTS),
@@ -105,7 +95,7 @@ def build():
         "novelty": {
             "verdict": "N/A -- this is an internal measurement-hygiene artifact (a scoreboard over our own "
                        "hypothesis ledger), not a market-facing analytic method. No prior-art search performed; "
-                       "the closest prior-art notes on file are for the market information-arrival curve "
+                       'the closest prior-art notes on file are for the closing reference forecast information-arrival curve '
                        "(INCREMENTAL vs arXiv 2606.07811) and the over/underreaction spectrum (INCREMENTAL vs "
                        "Moskowitz 2021 / Choi & Hui 2014) -- neither of those covers a hypothesis-survival "
                        "scoreboard, so this artifact carries no borrowed novelty claim of its own.",

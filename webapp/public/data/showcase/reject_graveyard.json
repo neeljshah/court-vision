@@ -1,6 +1,6 @@
 {
  "source": "scripts/platformkit/reject_ledger.py (data/frontend/reject_ledger.jsonl)",
- "note": "A REJECT/DEFER is honest market-efficiency evidence, not a failure. No $/edge/ROI claim.",
+ "note": "A REJECT/DEFER is honest market-efficiency evidence, not a failure. No money/advantage/return claim.",
  "full_history_row_count": 804,
  "latest_per_signal_graveyard_count": 68,
  "history_vs_latest_disclosure": "804 total recorded verdict rows across all reruns, vs 68 distinct (sport, signal) currently sitting on a REJECT-family verdict as of their latest test -- the gap is signals retested multiple times (asof-reclaim sweeps, re-gating) plus rows whose latest verdict flipped to SHIP.",

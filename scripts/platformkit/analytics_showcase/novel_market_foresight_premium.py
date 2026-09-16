@@ -1,24 +1,4 @@
-"""Novel stat #2 -- Market Foresight Premium (MFP).
-
-METRIC: per (sport, game-time checkpoint), the market's EXCESS resolving power
-over a scoreboard-only model, normalized per bit of uncertainty still left in
-the game. A rising MFP curve = the market prices in-game news the state-only
-model cannot see, and the gap grows as the game resolves.
-
-FORMULA (per sport, checkpoint t):
-    market_skill = (naive_brier - market_brier) / naive_brier
-    model_skill  = (naive_brier - model_brier)  / naive_brier
-    MFP(t)       = (market_skill - model_skill) / max(mean_entropy_market_bits(t), 0.15)
-
-Joins two committed instruments on (sport, checkpoint): info_arrival_curve.json
-carries the paired model/market/naive Brier; market_convergence.json carries the
-mean market Bernoulli entropy (bits). Only checkpoints present in BOTH are used.
-edge_claimed=False -- calibration/foresight, not a $ claim.
-
-Usage:
-    python -m scripts.platformkit.analytics_showcase.novel_market_foresight_premium
-    python -m scripts.platformkit.analytics_showcase.novel_market_foresight_premium --check
-"""
+"Novel stat #2 -- Market Foresight Premium (MFP).\n\nMETRIC: per (sport, game-time checkpoint), the closing reference forecast's EXCESS resolving power\nover a scoreboard-only model, normalized per bit of uncertainty still left in\nthe game. A rising MFP curve = the closing reference forecast prices in-game news the state-only\nmodel cannot see, and the gap grows as the game resolves.\n\nFORMULA (per sport, checkpoint t):\n    market_skill = (naive_brier - market_brier) / naive_brier\n    model_skill  = (naive_brier - model_brier)  / naive_brier\n    MFP(t)       = (market_skill - model_skill) / max(mean_entropy_market_bits(t), 0.15)\n\nJoins two committed instruments on (sport, checkpoint): info_arrival_curve.json\ncarries the paired model/market/naive Brier; market_convergence.json carries the\nmean market Bernoulli entropy (bits). Only checkpoints present in BOTH are used.\nedge_claimed=False -- calibration/foresight, not a money claim.\n\nUsage:\n    python -m scripts.platformkit.analytics_showcase.novel_market_foresight_premium\n    python -m scripts.platformkit.analytics_showcase.novel_market_foresight_premium --check\n"
 import json
 import os
 
@@ -45,7 +25,7 @@ PRIOR_ART_CITATION = (
     "PER-BIT normalization (the unpublished cross of the two separate literatures) is claimed."
 )
 DECLARED_CONFOUNDS = [
-    "'model' is one specific state-only forecaster, so MFP conflates genuine news the market "
+    "'model' is one specific state-only forecaster, so MFP conflates genuine news the closing reference forecast "
     "prices (lineups, momentum) with plain model misspecification.",
     "Entropy -> 0 late in a game would explode the ratio; the 0.15-bit floor caps that.",
     "mlb (inning) and soccer_intl (5-min bucket) only; different clock units, not equated.",
@@ -101,7 +81,7 @@ def build():
         "abbrev": "MFP",
         "edge_claimed": False,
         "descriptive_only": True,
-        "metric_definition": "The market's excess resolving power over a scoreboard-only model, per bit of uncertainty still left in the game, by checkpoint.",
+        "metric_definition": "The closing reference forecast's excess resolving power over a scoreboard-only model, per bit of uncertainty still left in the game, by checkpoint.",
         "formula": "MFP(t) = ((naive-market)/naive - (naive-model)/naive) / max(entropy_market_bits, 0.15)",
         "source_artifacts": [
             os.path.relpath(IN_BRIER, ROOT).replace("\\", "/"),

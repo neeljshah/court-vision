@@ -1,22 +1,4 @@
-"""NBA momentum tested -- an honest split curated from committed NBA verdicts.
-
-Pure filtering/grouping of ONE already-committed artifact (fwd_claim_scoreboard.json):
-picks specific basketball_nba claim families and splits them into what's REAL
-(structural fatigue/rest/clutch momentum-shaped effects, confirmed and replicated)
-vs what's NULL (individual game-to-game "hot/cold" carryover shapes). No new data,
-no new science -- just an honest curated re-statement of verdicts already on record.
-
-This is NOT "momentum is a myth." Structural effects (back-to-backs, three-in-four
-fatigue, clutch-lineup shortening, timeouts breaking runs) are real and some
-replicate independently. It's the individual streak/carryover shapes (player B2B
-scoring dips, foul-trouble shifts, rest-differential margin) that come back null.
-
-DESCRIPTIVE_ONLY, edge_claimed=False -- no $/ROI claim, no new corpus.
-
-Usage:
-    python -m scripts.platformkit.analytics_showcase.nba_momentum_tested
-    python -m scripts.platformkit.analytics_showcase.nba_momentum_tested --check
-"""
+'NBA momentum tested -- an honest split curated from committed NBA verdicts.\n\nPure filtering/grouping of ONE already-committed artifact (fwd_claim_scoreboard.json):\npicks specific basketball_nba claim families and splits them into what\'s REAL\n(structural fatigue/rest/clutch momentum-shaped effects, confirmed and replicated)\nvs what\'s NULL (individual game-to-game "hot/cold" carryover shapes). No new data,\nno new science -- just an honest curated re-statement of verdicts already on record.\n\nThis is NOT "momentum is a myth." Structural effects (back-to-backs, three-in-four\nfatigue, clutch-lineup shortening, timeouts breaking runs) are real and some\nreplicate independently. It\'s the individual streak/carryover shapes (player B2B\nscoring dips, foul-trouble shifts, rest-differential margin) that come back null.\n\nDESCRIPTIVE_ONLY, edge_claimed=False -- no money/return claim, no new corpus.\n\nUsage:\n    python -m scripts.platformkit.analytics_showcase.nba_momentum_tested\n    python -m scripts.platformkit.analytics_showcase.nba_momentum_tested --check\n'
 import json
 import math
 import os
@@ -140,7 +122,7 @@ def build():
                      "trouble shifts, rest-differential margin) come back null."),
         "method": ("Our own preregistered NBA tests, surfaced verbatim from the committed "
                    "forward-claim scoreboard. A verdict is a leak-free accuracy/effect finding "
-                   "vs an internal baseline -- never a betting edge. A NULL is not 'streaks do "
+                   "vs an internal baseline -- never a advantage. A NULL is not 'streaks do "
                    "not exist'; it is 'this shape carried no measurable signal past the "
                    "baseline'."),
         "source_artifact": "scripts/platformkit/analytics_showcase/out/fwd_claim_scoreboard.json",
@@ -151,7 +133,7 @@ def build():
             "effects are raw directional effects on the stated metric, not opponent/venue-"
             "adjusted;",
             "corpora and seasons differ per claim; each row shows its own corpus;",
-            "CONFIRMED/REPLICATED are descriptive accuracy findings, never a dollar-edge "
+            'CONFIRMED/REPLICATED are descriptive accuracy findings, never a money-advantage '
             "claim.",
         ],
     }

@@ -1,37 +1,4 @@
-"""home_away_anatomy.py -- NBA home/away split anatomy from the player box scores.
-
-DESCRIPTIVE_ONLY (truth source docs/JOB_EVIDENCE_PACKET.md). NO edge/ROI/$/
-forecast claim: every number describes games ALREADY PLAYED -- a home-minus-away
-mean is a split of past box scores, not a prediction and not a home-court edge.
-
-Two lenses off the SAME player-game grain (each parquet row = one player in one
-game; venue = the VERIFIED `is_home` flag, 0/1 -- the same column
-domains/basketball_nba/profiles/player_box_splits.py groups on):
-  1. LEAGUE-LEVEL per-stat delta (by season + pooled): home_mean(stat) -
-     away_mean(stat) over qualifying player-game rows, plus rel_delta_pct =
-     100*(home-away)/away for cross-stat comparison, for the counting box stats;
-     PLUS pooled shooting % (fg/fg3/ft = sum(makes)/sum(attempts)) home vs away
-     in percentage points. Unit = the average PLAYER-GAME (unweighted over
-     appearances; NOT minutes-weighted, NOT team-aggregated -- so the pts delta
-     is the per-player home bump, well below the ~2-3 pt TEAM home-court margin).
-  2. DISTRIBUTION across players (headline stat = pts): each qualifying player's
-     home_ppg - away_ppg, summarised (mean/std/quantiles/share positive) and the
-     biggest deviators BOTH ways (home boosters / road boosters).
-
-Floors (declared once, never tuned to output):
-  - PLAYER_GAMES_FLOOR = 15 home AND 15 away games to enter the per-player
-    distribution / deviators (matches player_box_splits.py VENUE_FLOOR=15).
-  - LEAGUE_MIN_SIDE_ROWS = 500 player-game rows EACH side for a season's league
-    deltas to report (thin/absent is_home coverage is flagged + suppressed).
-Negative placeholder player_ids (unresolved-lineup landmine) are dropped, same
-as the domain profiles. Diacritic-split player_ids (upstream name-join bug, same
-as box_value_index.py) can fragment one star across two ids -- noted, not fixed.
-
-Input:  data/domains/basketball_nba/player_boxscores.parquet (column-selective)
-Output: out/home_away_anatomy.json + docs/img/home_away_anatomy.png (ONE grouped
-        diverging bar: per-stat relative home-away delta, one group per season)
-Usage:  python -m scripts.platformkit.analytics_showcase.home_away_anatomy [--check]
-"""
+"home_away_anatomy.py -- NBA home/away split anatomy from the player box scores.\n\nDESCRIPTIVE_ONLY (truth source docs/JOB_EVIDENCE_PACKET.md). NO advantage/return/money/\nforecast claim: every number describes games ALREADY PLAYED -- a home-minus-away\nmean is a split of past box scores, not a prediction and not a home-court advantage.\n\nTwo lenses off the SAME player-game grain (each parquet row = one player in one\ngame; venue = the VERIFIED `is_home` flag, 0/1 -- the same column\ndomains/basketball_nba/profiles/player_box_splits.py groups on):\n  1. LEAGUE-LEVEL per-stat delta (by season + pooled): home_mean(stat) -\n     away_mean(stat) over qualifying player-game rows, plus rel_delta_pct =\n     100*(home-away)/away for cross-stat comparison, for the counting box stats;\n     PLUS pooled shooting % (fg/fg3/ft = sum(makes)/sum(attempts)) home vs away\n     in percentage points. Unit = the average PLAYER-GAME (unweighted over\n     appearances; NOT minutes-weighted, NOT team-aggregated -- so the pts delta\n     is the per-player home bump, well below the ~2-3 pt TEAM home-court margin).\n  2. DISTRIBUTION across players (headline stat = pts): each qualifying player's\n     home_ppg - away_ppg, summarised (mean/std/quantiles/share positive) and the\n     biggest deviators BOTH ways (home boosters / road boosters).\n\nFloors (declared once, never tuned to output):\n  - PLAYER_GAMES_FLOOR = 15 home AND 15 away games to enter the per-player\n    distribution / deviators (matches player_box_splits.py VENUE_FLOOR=15).\n  - LEAGUE_MIN_SIDE_ROWS = 500 player-game rows EACH side for a season's league\n    deltas to report (thin/absent is_home coverage is flagged + suppressed).\nNegative placeholder player_ids (unresolved-lineup landmine) are dropped, same\nas the domain profiles. Diacritic-split player_ids (upstream name-join bug, same\nas box_value_index.py) can fragment one star across two ids -- noted, not fixed.\n\nInput:  data/domains/basketball_nba/player_boxscores.parquet (column-selective)\nOutput: out/home_away_anatomy.json + docs/img/home_away_anatomy.png (ONE grouped\n        diverging bar: per-stat relative home-away delta, one group per season)\nUsage:  python -m scripts.platformkit.analytics_showcase.home_away_anatomy [--check]\n"
 import json
 
 import numpy as np
@@ -175,7 +142,7 @@ def build_output(df: pd.DataFrame) -> dict:
                        "league_min_side_rows": LEAGUE_MIN_SIDE_ROWS},
             "floors_tuned_to_output": False,
             "not_this": [
-                "NOT a forecast / home-court betting edge -- games already played",
+                'NOT a forecast / home-court advantage claim -- games already played',
                 "NOT the team home-court margin (this is the smaller per-player-game bump)",
                 "NOT minutes-weighted / pace / rest / opponent / role adjusted (raw means)",
             ],

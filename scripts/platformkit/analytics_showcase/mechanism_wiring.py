@@ -1,11 +1,4 @@
-"""Generic mechanism -> trigger wiring for the NBA mechanism ledger.
-
-One declared row per CONFIRMED/REPLICATED mechanism section. A row either names
-a persisted, leak-free as-of column (the trigger) or states, in data terms, why
-no trigger exists locally (NOT_TESTABLE -- a wired state, not a gap).
-
-DESCRIPTIVE_ONLY. No edge or ROI claim is made anywhere in this module.
-"""
+'Generic mechanism -> trigger wiring for the NBA mechanism ledger.\n\nOne declared row per CONFIRMED/REPLICATED mechanism section. A row either names\na persisted, leak-free as-of column (the trigger) or states, in data terms, why\nno trigger exists locally (NOT_TESTABLE -- a wired state, not a gap).\n\nDESCRIPTIVE_ONLY. No advantage or return claim is made anywhere in this module.\n'
 from __future__ import annotations
 
 from pathlib import Path

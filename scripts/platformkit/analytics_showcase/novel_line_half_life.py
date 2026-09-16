@@ -1,32 +1,4 @@
-"""Novel stat #1 -- Line Half-Life.
-
-METRIC: one interpretable per-sport constant -- "half of a sport's pre-game line
-motion is complete by X hours before tip." Computed from our own scraped
-pre-game line-history absorption instrument (micro_absorption.json).
-
-FORMULA:
-    bucket_move(b) = n(b) * mean_abs_move(b)   over the 4 horizon buckets
-                     (6h+, 3-6h, 1-3h, 0-1h)
-    total          = sum of the four bucket_move(b)
-    G(h)           = cumulative bucket_move at MORE than h hours before tip,
-                     as a fraction of total, cumulated far->near
-    half_life      = the hours-to-tip h at which G(h) crosses 0.50
-                     (linear interpolation between the two bracketing bucket
-                     boundaries: 6h, 3h, 1h, 0h)
-
-Reads only micro_absorption.json (a committed artifact); computes the derived
-half-life. edge_claimed=False -- descriptive line-timing, no $/ROI claim.
-
-OBSERVATION WINDOW: propagated verbatim from micro_absorption as
-`observation_window` (top level, and per row as `observation_window_*`). This
-stat is measured over a SHORT span of daily line-history files -- weeks, not
-seasons. The large n_move_pairs are dense snapshots inside that window; the
-half-life must never be quoted without it.
-
-Usage:
-    python -m scripts.platformkit.analytics_showcase.novel_line_half_life
-    python -m scripts.platformkit.analytics_showcase.novel_line_half_life --check
-"""
+'Novel stat #1 -- Line Half-Life.\n\nMETRIC: one interpretable per-sport constant -- "half of a sport\'s pre-game line\nmotion is complete by X hours before tip." Computed from our own scraped\npre-game line-history absorption instrument (micro_absorption.json).\n\nFORMULA:\n    bucket_move(b) = n(b) * mean_abs_move(b)   over the 4 horizon buckets\n                     (6h+, 3-6h, 1-3h, 0-1h)\n    total          = sum of the four bucket_move(b)\n    G(h)           = cumulative bucket_move at MORE than h hours before tip,\n                     as a fraction of total, cumulated far->near\n    half_life      = the hours-to-tip h at which G(h) crosses 0.50\n                     (linear interpolation between the two bracketing bucket\n                     boundaries: 6h, 3h, 1h, 0h)\n\nReads only micro_absorption.json (a committed artifact); computes the derived\nhalf-life. edge_claimed=False -- descriptive line-timing, no money/return claim.\n\nOBSERVATION WINDOW: propagated verbatim from micro_absorption as\n`observation_window` (top level, and per row as `observation_window_*`). This\nstat is measured over a SHORT span of daily line-history files -- weeks, not\nseasons. The large n_move_pairs are dense snapshots inside that window; the\nhalf-life must never be quoted without it.\n\nUsage:\n    python -m scripts.platformkit.analytics_showcase.novel_line_half_life\n    python -m scripts.platformkit.analytics_showcase.novel_line_half_life --check\n'
 import json
 import os
 
@@ -50,7 +22,7 @@ EXCLUDE_SPORTS = {"soccer"}
 PRIOR_ART_VERDICT = "NOVEL_PACKAGING"
 PRIOR_ART_CITATION = (
     "Line-movement timing (early-sharp vs late-injury/public money) is discussed "
-    "qualitatively everywhere (Boyd's Bets opening-vs-closing; PicksOffice; GamingToday); "
+    "qualitatively everywhere (Boyd's opening-vs-closing study opening-vs-closing; PicksOffice; GamingToday); "
     "price-impact half-life is a securities-microstructure staple (Kyle 1985; Amihud 2002). "
     "The underlying line-movement concept is NOT new; only the single per-sport half-life "
     "constant is the fresh packaging."

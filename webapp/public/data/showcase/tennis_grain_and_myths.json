@@ -3,7 +3,7 @@
  "descriptive_only": true,
  "edge_claimed": false,
  "headline": "Tennis momentum is real point-to-point but dies at the game grain; two tiebreak myths are null; altitude and travel effects are confirmed (altitude replicated across two disjoint year slices).",
- "method": "These are our own preregistered tennis tests, surfaced verbatim from the committed forward-claim scoreboard. A CONFIRMED_LOCAL/REPLICATED/NULL_LOCAL verdict is an accuracy/effect finding, not a betting edge.",
+ "method": "These are our own preregistered tennis tests, surfaced verbatim from the committed forward-claim scoreboard. A CONFIRMED_LOCAL/REPLICATED/NULL_LOCAL verdict is an accuracy/effect finding, not a advantage.",
  "source_artifact": "scripts/platformkit/analytics_showcase/out/fwd_claim_scoreboard.json",
  "stories": [
   {
@@ -64,7 +64,7 @@
      "n": 1281,
      "effect": 0.0035,
      "corpus": "slam_points",
-     "reading": "The 'serve first in the breaker' myth: no detectable edge from serve order."
+     "reading": "The 'serve first in the breaker' myth: no detectable advantage from serve order."
     }
    ]
   },
@@ -111,6 +111,6 @@
  "confounds": [
   "effect signs are raw directional effects on the stated metric, not opponent/surface-adjusted;",
   "corpora differ (slam point-level 2011-2015 vs match-level 2015-2025); each claim shows its own corpus;",
-  "CONFIRMED/NULL are OUR preregistered leak-free verdicts vs an internal baseline -- descriptive accuracy findings, never a dollar-edge claim."
+  "CONFIRMED/NULL are OUR preregistered leak-free verdicts vs an internal baseline -- descriptive accuracy findings, never a money-advantage claim."
  ]
 }

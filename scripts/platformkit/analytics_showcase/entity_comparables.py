@@ -1,20 +1,4 @@
-"""Most-similar-in-this-pack for every atlas entity card.
-
-Reads ONLY the 7 committed atlas manifests already in
-scripts/platformkit/analytics_showcase/out/. Zero new data, zero new
-science -- cosine similarity over the numeric key_numbers every entity in a
-pack has in common, after z-scoring each field within the pack.
-
-For each pack, the common field set is every numeric key_number (same
-selection rule as entity_percentiles: int/float not bool, key does not match
-`_id$`, key != "team_full_name") present on EVERY entity in the pack. A pack
-is skipped if fewer than MIN_FIELDS common fields survive or fewer than
-MIN_ENTITIES entities exist. Zero-variance fields are dropped before scoring.
-
-Usage:
-    python -m scripts.platformkit.analytics_showcase.entity_comparables
-    python -m scripts.platformkit.analytics_showcase.entity_comparables --check
-"""
+'Most-similar-in-this-pack for every atlas entity card.\n\nReads ONLY the 7 committed atlas manifests already in\nscripts/platformkit/analytics_showcase/out/. Zero new data, zero new\nscience -- cosine similarity over the numeric key_numbers every entity in a\npack has in common, after z-scoring each field within the pack.\n\nFor each pack, the common field set is every numeric key_number (same\nselection rule as entity_percentiles: int/float not bool, key does not match\n`_idmoney`, key != "team_full_name") present on EVERY entity in the pack. A pack\nis skipped if fewer than MIN_FIELDS common fields survive or fewer than\nMIN_ENTITIES entities exist. Zero-variance fields are dropped before scoring.\n\nUsage:\n    python -m scripts.platformkit.analytics_showcase.entity_comparables\n    python -m scripts.platformkit.analytics_showcase.entity_comparables --check\n'
 import json
 import math
 import os

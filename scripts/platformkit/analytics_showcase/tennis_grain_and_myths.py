@@ -1,17 +1,4 @@
-"""Tennis grain and myths -- three honest stories curated from committed tennis verdicts.
-
-Pure filtering/grouping of ONE already-committed artifact (fwd_claim_scoreboard.json):
-picks specific tennis claim families and groups them into three stories -- momentum's
-grain limit, two null tiebreak myths, and confirmed/replicated altitude+travel effects.
-No new data, no new science -- just an honest curated re-statement of verdicts already
-on the record.
-
-DESCRIPTIVE_ONLY, edge_claimed=False -- no $/ROI claim, no new corpus.
-
-Usage:
-    python -m scripts.platformkit.analytics_showcase.tennis_grain_and_myths
-    python -m scripts.platformkit.analytics_showcase.tennis_grain_and_myths --check
-"""
+"Tennis grain and myths -- three honest stories curated from committed tennis verdicts.\n\nPure filtering/grouping of ONE already-committed artifact (fwd_claim_scoreboard.json):\npicks specific tennis claim families and groups them into three stories -- momentum's\ngrain limit, two null tiebreak myths, and confirmed/replicated altitude+travel effects.\nNo new data, no new science -- just an honest curated re-statement of verdicts already\non the record.\n\nDESCRIPTIVE_ONLY, edge_claimed=False -- no money/return claim, no new corpus.\n\nUsage:\n    python -m scripts.platformkit.analytics_showcase.tennis_grain_and_myths\n    python -m scripts.platformkit.analytics_showcase.tennis_grain_and_myths --check\n"
 import json
 import math
 import os
@@ -44,7 +31,7 @@ STORY_SPECS = [
          "No evidence that tiebreak skill persists as a stable player trait.",
          "NULL_LOCAL", 206),
         ("tiebreak_serve_order_win_rate",
-         "The 'serve first in the breaker' myth: no detectable edge from serve order.",
+         "The 'serve first in the breaker' myth: no detectable advantage from serve order.",
          "NULL_LOCAL", 1281),
     ]),
     ("altitude_travel", "Altitude and travel, confirmed", [
@@ -129,7 +116,7 @@ def build():
                      "(altitude replicated across two disjoint year slices)."),
         "method": ("These are our own preregistered tennis tests, surfaced verbatim from the "
                    "committed forward-claim scoreboard. A CONFIRMED_LOCAL/REPLICATED/NULL_LOCAL "
-                   "verdict is an accuracy/effect finding, not a betting edge."),
+                   'verdict is an accuracy/effect finding, not a advantage.'),
         "source_artifact": "scripts/platformkit/analytics_showcase/out/fwd_claim_scoreboard.json",
         "stories": stories,
         "confounds": [
@@ -138,7 +125,7 @@ def build():
             "corpora differ (slam point-level 2011-2015 vs match-level 2015-2025); each claim "
             "shows its own corpus;",
             "CONFIRMED/NULL are OUR preregistered leak-free verdicts vs an internal baseline -- "
-            "descriptive accuracy findings, never a dollar-edge claim.",
+            'descriptive accuracy findings, never a money-advantage claim.',
         ],
     }
 

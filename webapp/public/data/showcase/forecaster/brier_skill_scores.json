@@ -5,7 +5,7 @@
  "floors": "n>=30 rows/grain for a BSS; climatology=const sport base rate; edge_claimed=False",
  "source_artifact": "data/cache/ingame_grade_joined/{mlb,soccer_intl}/*.jsonl (mlb_clean dup excluded)",
  "generated_at": "2026-07-25T11:12:35.314040+00:00",
- "honest_note": "BSS vs market is near or below 0 across sports and checkpoints -- the model does not beat the market's Brier. That null result is the POINT of this exhibit, not a defect. BSS vs climatology is strongly positive (model and market both crush the base-rate baseline), which is expected for in-game win-prob and is NOT an edge. Truth source: docs/JOB_EVIDENCE_PACKET.md.",
+ "honest_note": "BSS vs market is near or below 0 across sports and checkpoints -- the model does not beat the closing reference forecast's Brier. That null result is the POINT of this exhibit, not a defect. BSS vs climatology is strongly positive (model and market both crush the base-rate baseline), which is expected for in-game win-prob and is NOT an advantage. Truth source: docs/JOB_EVIDENCE_PACKET.md.",
  "sports": {
   "mlb": {
    "n_rows": 78986,
@@ -143,6 +143,6 @@
    }
   }
  },
- "verdict": "mlb: BSS(model vs market) in [-0.464, -0.079] -- model does not beat the market; BSS(model vs climatology) in [+0.011, +0.143] (BSS>0 means it beats that baseline). soccer_intl: BSS(model vs market) in [-1.079, -0.470] -- model does not beat the market; BSS(model vs climatology) in [-1.251, -0.297] (BSS>0 means it beats that baseline).",
+ "verdict": "mlb: BSS(model vs market) in [-0.464, -0.079] -- model does not beat the closing reference forecast; BSS(model vs climatology) in [+0.011, +0.143] (BSS>0 means it beats that baseline). soccer_intl: BSS(model vs market) in [-1.079, -0.470] -- model does not beat the closing reference forecast; BSS(model vs climatology) in [-1.251, -0.297] (BSS>0 means it beats that baseline).",
  "plot_written": true
 }

@@ -42,7 +42,7 @@ FINDINGS = [
     ("rim-deterrence", ["Who bends", "the shot chart."]),
     ("league-parity", ["How competitive", "is each season?"]),
     ("lineup-synergy", ["Greater than", "the sum of parts."]),
-    ("favorite-longshot", ["Is the market", "calibrated?"]),
+    ("favorite-longshot", ['Is the closing reference forecast', "calibrated?"]),
 ]
 
 W, H = 1200, 630
@@ -110,7 +110,7 @@ def _card(head_lines, tag_lines, kicker):
     # --- footer: url + honest rail ---
     foot_f = _font("georgia.ttf", 23)
     d.text((m, 552), "neeljshah.github.io/court-vision/analytics", font=foot_f, fill=INK3)
-    rail = "No dollar edge is claimed."
+    rail = 'No money advantage is claimed.'
     rw = d.textlength(rail, font=foot_f)
     d.text((W - m - rw, 552), rail, font=foot_f, fill=INK3)
     return img

@@ -1,7 +1,7 @@
 {
  "generated_at": "2026-07-25T11:13:31.118202+00:00",
  "edge_claimed": false,
- "units": "probability points (not dollars, not ROI)",
+ "units": "probability points (not money, not return)",
  "source_corpus": "data/pod_backup_2026_07_20/frontend/clv_ledger.jsonl",
  "n_records": 83,
  "n_placed": 83,
@@ -27,7 +27,7 @@
   "min": 0.010115,
   "max": 0.144071
  },
- "divergence_honest_note": "divergence = |model_prob - implied_prob(taken_decimal)| at the moment the paper bet was logged. It measures how far the model's number sat from the price taken -- a pre-trade sizing input, not realized CLV.",
+ "divergence_honest_note": "divergence = |model_prob - implied_prob(taken_decimal)| at the moment the paper record was logged. It measures how far the model's number sat from the price taken -- a pre-trade sizing input, not realized CLV.",
  "realized_clv_pct": null,
  "realized_clv_honest_note": "clv_pct is null for all 37 settled rows in this corpus -- no independent closing-price feed was captured for this channel, so realized CLV could not be measured (degraded honestly, not fabricated).",
  "clv_note_reasons": {
@@ -52,7 +52,7 @@
   "executed": false,
   "edge_claimed": false,
   "units": "probability",
-  "note": "settles OPEN paper_ingame bets against the realized final score (MLB via ticker->boxscore); units/probability only, no $; a game not yet final stays open. This is the missing in-game settle arm.",
+  "note": "settles OPEN paper_ingame records against the realized final score (MLB via ticker->boxscore); units/probability only, no money; a game not yet final stays open. This is the missing in-game settle arm.",
   "consecutive_zero_ticks": 8,
   "status": "OK"
  },
@@ -65,7 +65,7 @@
   "n_clv": 0,
   "executed": false,
   "edge_claimed": false,
-  "honest_note": "Today's PLACED paper bets (executed=False) and their running UNITS P&L. The money-makers are the tier-cleared staked bets; each is flat 1 unit at the taken price, so cumulative_units == sum of graded placed-bet unit_results (the reconcile() proof). 'How much you'd have made' is a paper track record in units, NOT realized profit and NOT a $ ROI; no edge is claimed. CLV (better-than-close) is the honest yardstick -- INSUFFICIENT_DATA means no close was captured. headline_clv_pct_or_INSUFFICIENT (median) is the headline number, not the longshot-inflated mean_clv_pct_or_INSUFFICIENT. n_settled_alltime is the graded (post-filter) count, smaller than the raw ledger's settled count by design."
+  "honest_note": "Today's PLACED paper records (executed=False) and their running UNITS P&L. The money-makers are the tier-cleared staked records; each is flat 1 unit at the taken price, so cumulative_units == sum of graded placed-record unit_results (the reconcile() proof). 'How much you'd have made' is a paper track record in units, NOT realized gains and NOT a money return; no advantage is claimed. CLV (better-than-close) is the honest yardstick -- INSUFFICIENT_DATA means no close was captured. headline_clv_pct_or_INSUFFICIENT (median) is the headline number, not the longshot-inflated mean_clv_pct_or_INSUFFICIENT. n_settled_alltime is the graded (post-filter) count, smaller than the raw ledger's settled count by design."
  },
- "honest_story": "This is a PAPER-only execution ledger (83 logged bets, all executed=False -- none of these were real fills). Every row passed its exec_gate (0 suppressed-by-gate rows survive in this rescued corpus). 37/83 rows settled by final score; realized CLV is unmeasurable for all of them because no independent close feed was wired for the paper_ingame channel -- the corpus honestly records clv_status='no_close' rather than backfilling a number. The only quantity this ledger can speak to is placement-time divergence (model vs taken price), reported in probability points, which is a measurement of execution behavior, not a proven edge."
+ "honest_story": "This is a PAPER-only execution ledger (83 logged records, all executed=False -- none of these were real fills). Every row passed its exec_gate (0 suppressed-by-gate rows survive in this rescued corpus). 37/83 rows settled by final score; realized CLV is unmeasurable for all of them because no independent close feed was wired for the paper_ingame channel -- the corpus honestly records clv_status='no_close' rather than backfilling a number. The only quantity this ledger can speak to is placement-time divergence (model vs taken price), reported in probability points, which is a measurement of execution behavior, not a proven advantage."
 }

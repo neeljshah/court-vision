@@ -40,7 +40,7 @@
     "mean": 0.1248,
     "p50": 0.1161,
     "p90": 0.2247,
-    "note": "abs(model_prob - market_prob) per tick; a calibration-gap MEASUREMENT, not an edge"
+    "note": "abs(model_prob - market_prob) per tick; a calibration-gap MEASUREMENT, not an advantage"
    }
   },
   "wnba": {

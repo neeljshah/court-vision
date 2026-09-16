@@ -832,7 +832,7 @@
   ]
  },
  "caveats": [
-  "DESCRIPTIVE cross-lens rank concordance only -- NOT a temporal split-half and NOT a predictor of any future match; soccer_intl PREDICTIVE gate is CLOSED upstream (NO_ADD_BEYOND_MARKET). No market/$/ROI edge claimed.",
+  "DESCRIPTIVE cross-lens rank concordance only -- NOT a temporal split-half and NOT a predictor of any future match; soccer_intl PREDICTIVE gate is CLOSED upstream (NO_ADD_BEYOND_MARKET). No market/money/return advantage claimed.",
   "The two lenses differ in horizon (form=trailing 10 matches; strength=full EW history) -- read the correlation as convergent validity, not pure persistence.",
   "Upstream form win-rate is quantized to 1 decimal (tie_fraction_form=0.9346) -> inflates ties + ATTENUATES rho toward 0; reported rho is tie-corrected (average-rank)."
  ],

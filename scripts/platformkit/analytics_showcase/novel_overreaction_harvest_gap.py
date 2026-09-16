@@ -1,25 +1,4 @@
-"""Novel stat #6 -- Overreaction Harvest Gap (OHG).
-
-METRIC (a self-critical diagnostic whose HONEST finding is a NULL): structural
-market overshoot exists at large in-game moves, but OUR model is NOT the tool
-that catches it. OHG crosses "the market is wrong" with "and we still can't cash
-it".
-
-FORMULA (per sport):
-    overreaction  = n-weighted mean |moved_to_minus_outcome| over the largest move
-                    buckets {3-6pt, 6-10pt, 10pt+}      (market_overreaction.json)
-    model_can_beat = model_closer_rate at the largest disagreement bucket (>=.10)
-                     (market_disagreement_profile.json)
-    OHG           = overreaction * (0.5 - model_can_beat)
-
-MANDATORY NO-EDGE FRAMING: OHG is reported as the honest null it is -- at max
-disagreement the market is usually RIGHT (model_closer_rate ~0.38 mlb / ~0.22
-soccer). OHG measures a FAILURE to harvest, NOT an available edge. edge_claimed=False.
-
-Usage:
-    python -m scripts.platformkit.analytics_showcase.novel_overreaction_harvest_gap
-    python -m scripts.platformkit.analytics_showcase.novel_overreaction_harvest_gap --check
-"""
+'Novel stat #6 -- Overreaction Harvest Gap (OHG).\n\nMETRIC (a self-critical diagnostic whose HONEST finding is a NULL): structural\nmarket overshoot exists at large in-game moves, but OUR model is NOT the tool\nthat catches it. OHG crosses "the closing reference forecast is wrong" with "and we still can\'t cash\nit".\n\nFORMULA (per sport):\n    overreaction  = n-weighted mean |moved_to_minus_outcome| over the largest move\n                    buckets {3-6pt, 6-10pt, 10pt+}      (market_overreaction.json)\n    model_can_beat = model_closer_rate at the largest disagreement bucket (>=.10)\n                     (market_disagreement_profile.json)\n    OHG           = overreaction * (0.5 - model_can_beat)\n\nMANDATORY NO-advantage FRAMING: OHG is reported as the honest null it is -- at max\ndisagreement the closing reference forecast is usually RIGHT (model_closer_rate ~0.38 mlb / ~0.22\nsoccer). OHG measures a FAILURE to harvest, NOT an available advantage. edge_claimed=False.\n\nUsage:\n    python -m scripts.platformkit.analytics_showcase.novel_overreaction_harvest_gap\n    python -m scripts.platformkit.analytics_showcase.novel_overreaction_harvest_gap --check\n'
 import json
 import os
 
@@ -41,14 +20,14 @@ MAX_DISAGREE_BUCKET = ">=.10"
 PRIOR_ART_VERDICT = "NOVEL_SELF_CRITICAL_CROSS"
 PRIOR_ART_CITATION = (
     "Overreaction/reversion is Moskowitz (2021, Journal of Finance, 'Asset Pricing and Sports "
-    "Betting') and Choi & Hui (2014, JEBO) -- market_overreaction.json's own block flags the "
+    "forecast comparison') and Choi & Hui (2014, JEBO) -- market_overreaction.json's own block flags the "
     "component INCREMENTAL. Disagreement skill is standard forecast verification. Crossing them "
-    "into 'the market is wrong AND we still can't cash it' is a measured-FAILURE diagnostic that "
-    "no one publishes (papers publish edges, not confessions). Do not claim the components as new."
+    "into 'the closing reference forecast is wrong AND we still can't cash it' is a measured-FAILURE diagnostic that "
+    'no one publishes (papers publish advantages, not confessions). Do not claim the components as new.'
 )
 DECLARED_CONFOUNDS = [
-    "MANDATORY: OHG is an honest NULL -- at max disagreement the market is usually right "
-    "(model_closer_rate 0.38 mlb / 0.22 soccer). It measures a FAILURE to harvest, NOT an edge.",
+    'MANDATORY: OHG is an honest NULL -- at max disagreement the closing reference forecast is usually right '
+    '(model_closer_rate 0.38 mlb / 0.22 soccer). It measures a FAILURE to harvest, NOT an advantage.',
     "consecutive-row grain, in-game; mlb + soccer_intl only.",
     "soccer tail buckets are tiny (n=21-103), so the soccer overreaction magnitude is noisy.",
 ]
@@ -103,7 +82,7 @@ def build():
         "edge_claimed": False,
         "descriptive_only": True,
         "is_honest_null": True,
-        "metric_definition": "Structural market overshoot at large in-game moves, scaled by how far short the model falls of the reference forecast at max disagreement -- a measured failure to harvest, not an edge.",
+        "metric_definition": 'Structural market overshoot at large in-game moves, scaled by how far short the model falls of the reference forecast at max disagreement -- a measured failure to harvest, not an advantage.',
         "formula": "OHG = (n-weighted mean |moved_to - outcome| over {3-6pt,6-10pt,10pt+}) * (0.5 - model_closer_rate at >=.10 disagreement).",
         "source_artifacts": [
             os.path.relpath(IN_OVER, ROOT).replace("\\", "/"),

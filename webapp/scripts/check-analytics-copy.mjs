@@ -8,7 +8,7 @@ const PROHIBITED_TOKEN_RE_G = new RegExp(PROHIBITED_TOKEN_RE.source, "gi");
 const SOURCE_ROOTS = ["app/(analytics)", "components/analytics", "lib/analytics"];
 // These adapters create prose that is rendered by the public derived-analysis views.
 export const SCAN_LIB_FILES = ["lib/analytics/researchStarRemoval.ts", "lib/analytics/researchLineupProxy.ts"];
-const DATA_TARGETS = ["public/data/showcase/site_manifest.json", "public/data/insights", "public/data/ask", "public/data/explainers", "public/data/papers", "public/data/audits"];
+export const DATA_TARGETS = ["public/data/showcase", "public/data/insights", "public/data/ask", "public/data/explainers", "public/data/papers", "public/data/audits"];
 
 function sourceFiles(root, directory) {
   const current = join(root, directory);
@@ -152,7 +152,8 @@ export function scanAnalyticsData(root = process.cwd()) {
   return DATA_TARGETS.flatMap((target) => dataFiles(root, target)).flatMap((absolute) => {
     const path = relative(root, absolute).replaceAll("\\", "/");
     const findings = [];
-    dataFindings(JSON.parse(readFileSync(absolute, "utf8")), path, "$", findings);
+    const source = readFileSync(absolute, "utf8").replace(/: NaN(?=\s*[,}])/g, ": null");
+    dataFindings(JSON.parse(source), path, "$", findings);
     return findings;
   });
 }

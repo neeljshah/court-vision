@@ -6,7 +6,7 @@
  "method": "ESS from the already-committed lag-1 within-game residual autocorrelation (rho); because the game outcome is terminal-constant the probability path is smooth, so consecutive rows are near-duplicates rather than independent draws. The distinct-game count is the conservative anchor and the AR(1) figure is an approximation, so the reported ess_anchor takes the minimum of the two.",
  "formula": "ESS_AR1 = n_rows * (1 - rho) / (1 + rho); CI inflation = sqrt(n_rows / ESS)",
  "source_artifact": "scripts/platformkit/analytics_showcase/out/residual_autocorrelation.json",
- "confound": "AR(1) is a first-order approximation of a smooth terminal-constant path, not a full independence model; the distinct-game count is the conservative anchor. DESCRIPTIVE_ONLY -- this deflates our OWN sample sizes and makes no edge or ROI claim.",
+ "confound": "AR(1) is a first-order approximation of a smooth terminal-constant path, not a full independence model; the distinct-game count is the conservative anchor. DESCRIPTIVE_ONLY -- this deflates our OWN sample sizes and makes no advantage or return claim.",
  "corpora": [
   {
    "sport": "mlb",

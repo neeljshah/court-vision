@@ -1,35 +1,4 @@
-"""league_parity_index.py -- season competitiveness / parity indices from NBA outcomes.
-
-DESCRIPTIVE_ONLY (see docs/JOB_EVIDENCE_PACKET.md). NO edge/ROI/$/forecast: every
-number describes seasons ALREADY PLAYED; a completed season's parity is not a
-prediction of the next one.
-
-Scope -- from the player box-score parquet (same team-game derivation as
-nba_matchup_grid.py): team-game points = sum of a team's players' `pts` per
-game_id; only game_ids with EXACTLY 2 distinct teams are used (all-star/malformed
-dropped, count reported); the higher score wins (ties -- NBA OT rules them out --
-are counted and excluded from margins). Per season, over every team that played
-(0-win teams INCLUDED), it reports win-share concentration (Gini, HHI + 1/N floor
-+ normalized), the games-normalized win_pct_stdev companion, and absolute-margin
-dispersion. Each metric's exact definition is in the JSON `methodology` block.
-
-DECLARED FLOORS (declared once, never tuned to output): MIN_GAMES_PER_SEASON --
-a season below it is a small-sample artifact, still reported but flagged
-meets_games_floor=false and EXCLUDED from the chart; CLOSE_GAME_PTS=5 defines a
-"close" game. Games are pooled AS PRESENT in the parquet (reg season + any
-playoff games, which inflate win concentration; no game-type flag to split);
-opponent-raw (no strength-of-schedule adjustment). The full caveat list is in the
-JSON `methodology.not_this` block.
-
-Input:  data/domains/basketball_nba/player_boxscores.parquet
-        (columns-only read: game_id, team, season, date, pts)
-Output: out/league_parity_index.json     (per-season indices + methodology)
-        docs/img/league_parity_index.png  (ONE win-share Lorenz-curve chart)
-
-Usage:
-    python -m scripts.platformkit.analytics_showcase.league_parity_index
-    python -m scripts.platformkit.analytics_showcase.league_parity_index --check
-"""
+'league_parity_index.py -- season competitiveness / parity indices from NBA outcomes.\n\nDESCRIPTIVE_ONLY (see docs/JOB_EVIDENCE_PACKET.md). NO advantage/return/money/forecast: every\nnumber describes seasons ALREADY PLAYED; a completed season\'s parity is not a\nprediction of the next one.\n\nScope -- from the player box-score parquet (same team-game derivation as\nnba_matchup_grid.py): team-game points = sum of a team\'s players\' `pts` per\ngame_id; only game_ids with EXACTLY 2 distinct teams are used (all-star/malformed\ndropped, count reported); the higher score wins (ties -- NBA OT rules them out --\nare counted and excluded from margins). Per season, over every team that played\n(0-win teams INCLUDED), it reports win-share concentration (Gini, HHI + 1/N floor\n+ normalized), the games-normalized win_pct_stdev companion, and absolute-margin\ndispersion. Each metric\'s exact definition is in the JSON `methodology` block.\n\nDECLARED FLOORS (declared once, never tuned to output): MIN_GAMES_PER_SEASON --\na season below it is a small-sample artifact, still reported but flagged\nmeets_games_floor=false and EXCLUDED from the chart; CLOSE_GAME_PTS=5 defines a\n"close" game. Games are pooled AS PRESENT in the parquet (reg season + any\nplayoff games, which inflate win concentration; no game-type flag to split);\nopponent-raw (no strength-of-schedule adjustment). The full caveat list is in the\nJSON `methodology.not_this` block.\n\nInput:  data/domains/basketball_nba/player_boxscores.parquet\n        (columns-only read: game_id, team, season, date, pts)\nOutput: out/league_parity_index.json     (per-season indices + methodology)\n        docs/img/league_parity_index.png  (ONE win-share Lorenz-curve chart)\n\nUsage:\n    python -m scripts.platformkit.analytics_showcase.league_parity_index\n    python -m scripts.platformkit.analytics_showcase.league_parity_index --check\n'
 import json
 
 import numpy as np

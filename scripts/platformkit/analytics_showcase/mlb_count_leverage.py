@@ -1,36 +1,4 @@
-"""MLB count-leverage showcase: ONE column-selective pass over the local 2025
-statcast pull -- how a pitcher's PITCH MIX and available per-pitch OUTCOME
-PROXIES shift across count-leverage classes.
-
-SCOPE (DESCRIPTIVE_ONLY): partitions every pitch by its count state into a
-pitcher-POV leverage PARTITION -- ahead (strikes>balls), even (strikes==balls),
-behind (balls>strikes) -- plus two OVERLAPPING putaway lenses that cut across
-that partition: two_strike (strikes==2) and three_ball (balls==3). For each
-class it reports the pitch-type mix and the outcome proxies this corpus can
-honestly support. It is NOT a predictor and claims NO market/ROI/$ edge -- it
-is a data-coverage / scouting descriptive over a completed 2025 pull.
-
-CORPUS LIMITS (honest, not papered over):
-  - `type` is S/B/X only: the "strike" rate here CONFLATES called + swinging +
-    foul strikes and CANNOT be split into swing/take -- this corpus has no
-    per-pitch swing/take/description column (see
-    domains/mlb/matchup/pitch_mix_profiles.py CORPUS LIMIT). So the proxies are
-    strike/ball/in-play SHARE and in-zone SHARE, nothing finer.
-  - in_zone_rate is from statcast `zone` (1-9 = in the 3x3 strike zone, 11-14 =
-    shadow/out); computed over NON-NULL zone only, denominator reported.
-
-FLOORS (declared):
-  - CLASS_MIN_N: a leverage class must clear this many pitches to be reported.
-  - Every proxy rate is over its own NON-NULL denominator (n_type / n_zone
-    reported per class), never over the raw class count.
-  - The chart plots only the overall top-CHART_TOP_PT pitch types (the mix-shift
-    signal); the full per-class top-MIX_TOP mix lives in the JSON. two_strike /
-    three_ball OVERLAP the partition (a lens, not additive) and are so labelled.
-
-Truth source for claim discipline: docs/JOB_EVIDENCE_PACKET.md.
-Output: out/mlb_count_leverage.json + docs/img/mlb_count_leverage.png.
-CLI: python -m scripts.platformkit.analytics_showcase.mlb_count_leverage [--check]
-"""
+'MLB count-leverage showcase: ONE column-selective pass over the local 2025\nstatcast pull -- how a pitcher\'s PITCH MIX and available per-pitch OUTCOME\nPROXIES shift across count-leverage classes.\n\nSCOPE (DESCRIPTIVE_ONLY): partitions every pitch by its count state into a\npitcher-POV leverage PARTITION -- ahead (strikes>balls), even (strikes==balls),\nbehind (balls>strikes) -- plus two OVERLAPPING putaway lenses that cut across\nthat partition: two_strike (strikes==2) and three_ball (balls==3). For each\nclass it reports the pitch-type mix and the outcome proxies this corpus can\nhonestly support. It is NOT a predictor and claims NO market/return/money advantage -- it\nis a data-coverage / scouting descriptive over a completed 2025 pull.\n\nCORPUS LIMITS (honest, not papered over):\n  - `type` is S/B/X only: the "strike" rate here CONFLATES called + swinging +\n    foul strikes and CANNOT be split into swing/take -- this corpus has no\n    per-pitch swing/take/description column (see\n    domains/mlb/matchup/pitch_mix_profiles.py CORPUS LIMIT). So the proxies are\n    strike/ball/in-play SHARE and in-zone SHARE, nothing finer.\n  - in_zone_rate is from statcast `zone` (1-9 = in the 3x3 strike zone, 11-14 =\n    shadow/out); computed over NON-NULL zone only, denominator reported.\n\nFLOORS (declared):\n  - CLASS_MIN_N: a leverage class must clear this many pitches to be reported.\n  - Every proxy rate is over its own NON-NULL denominator (n_type / n_zone\n    reported per class), never over the raw class count.\n  - The chart plots only the overall top-CHART_TOP_PT pitch types (the mix-shift\n    signal); the full per-class top-MIX_TOP mix lives in the JSON. two_strike /\n    three_ball OVERLAP the partition (a lens, not additive) and are so labelled.\n\nTruth source for claim discipline: docs/JOB_EVIDENCE_PACKET.md.\nOutput: out/mlb_count_leverage.json + docs/img/mlb_count_leverage.png.\nCLI: python -m scripts.platformkit.analytics_showcase.mlb_count_leverage [--check]\n'
 import json
 from datetime import datetime, timezone
 from pathlib import Path
@@ -74,7 +42,7 @@ CAVEAT = (
     "DESCRIPTIVE_ONLY count-leverage showcase over the local 2025 statcast pull: "
     "pitch-type mix and per-pitch outcome PROXIES (type S/B/X share, in-zone "
     "share) by count-leverage class. `type`==S conflates called+swinging+foul "
-    "(no per-pitch swing/take in this corpus). Not a predictor; no edge/ROI/$ claim."
+    '(no per-pitch swing/take in this corpus). Not a predictor; no advantage/return/money claim.'
 )
 
 

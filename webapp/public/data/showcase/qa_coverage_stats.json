@@ -13,7 +13,7 @@
   "n_entries": 87,
   "n_pass": 87,
   "n_fail": 0,
-  "honest_note": "Answer-quality regression bank over resolver_registry.resolve() -- fail-closed status/receipt checks only. A correct no_data/not_supported/ambiguous is a PASS, not a failure. Calibration/consistency measurement only; no edge/ROI claim."
+  "honest_note": "Answer-quality regression bank over resolver_registry.resolve() -- fail-closed status/receipt checks only. A correct no_data/not_supported/ambiguous is a PASS, not a failure. Calibration/consistency measurement only; no advantage/return claim."
  },
  "coverage_stress": {
   "source": "data/cache/analytics_verify/coverage_stress_report.json",

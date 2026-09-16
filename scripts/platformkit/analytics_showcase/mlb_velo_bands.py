@@ -1,33 +1,4 @@
-"""
-MLB velo bands (in-season drift): ONE column-selective pass over the local 2025
-statcast pull (statcast_fuller__2025.parquet) that measures the LEAGUE
-release-speed distribution two ways --
-
-  (a) velo-band shares per pitch type  -- what fraction of each pitch type's
-      pitches land in fixed 3-mph bands (a distribution shape, not a ranking);
-  (b) monthly median velo per pitch type -- an in-season drift descriptor
-      (velocity tends to ramp up from the cold March/April opening toward
-      mid-summer, then hold; reported descriptively, not modeled).
-
-DESCRIPTIVE_ONLY: this is a distribution / data-coverage exhibit. It does NOT
-model, forecast, price, or claim an edge on anything -- release_speed here is a
-raw physical measurement in mph, and the "drift" is a known ramp-up effect
-reported as-is. No edge/ROI/$ claim. See docs/JOB_EVIDENCE_PACKET.md.
-
-Floors (declared, applied):
-  - band-share table reports only pitch types with >= MIN_PT_PITCHES pitches;
-  - a monthly (pitch_type, month) drift cell is reported only with
-    >= MIN_CELL_PITCHES pitches;
-  - the chart plots the top-6 pitch types by total count.
-Thin edge-of-season months (Mar/Oct) typically fall below the cell floor and are
-DROPPED, not smoothed or extrapolated. Pitches with no pitch_type / no
-release_speed are excluded from both analyses (raw vs analyzed counts are both
-reported so the coverage gap is visible).
-
-Output: out/mlb_velo_bands.json + docs/img/mlb_velo_bands.png.
-Run:    python -m scripts.platformkit.analytics_showcase.mlb_velo_bands
-Check:  python -m scripts.platformkit.analytics_showcase.mlb_velo_bands --check
-"""
+'\nMLB velo bands (in-season drift): ONE column-selective pass over the local 2025\nstatcast pull (statcast_fuller__2025.parquet) that measures the LEAGUE\nrelease-speed distribution two ways --\n\n  (a) velo-band shares per pitch type  -- what fraction of each pitch type\'s\n      pitches land in fixed 3-mph bands (a distribution shape, not a ranking);\n  (b) monthly median velo per pitch type -- an in-season drift descriptor\n      (velocity tends to ramp up from the cold March/April opening toward\n      mid-summer, then hold; reported descriptively, not modeled).\n\nDESCRIPTIVE_ONLY: this is a distribution / data-coverage exhibit. It does NOT\nmodel, forecast, price, or claim an advantage on anything -- release_speed here is a\nraw physical measurement in mph, and the "drift" is a known ramp-up effect\nreported as-is. No advantage/return/money claim. See docs/JOB_EVIDENCE_PACKET.md.\n\nFloors (declared, applied):\n  - band-share table reports only pitch types with >= MIN_PT_PITCHES pitches;\n  - a monthly (pitch_type, month) drift cell is reported only with\n    >= MIN_CELL_PITCHES pitches;\n  - the chart plots the top-6 pitch types by total count.\nThin advantage-of-season months (Mar/Oct) typically fall below the cell floor and are\nDROPPED, not smoothed or extrapolated. Pitches with no pitch_type / no\nrelease_speed are excluded from both analyses (raw vs analyzed counts are both\nreported so the coverage gap is visible).\n\nOutput: out/mlb_velo_bands.json + docs/img/mlb_velo_bands.png.\nRun:    python -m scripts.platformkit.analytics_showcase.mlb_velo_bands\nCheck:  python -m scripts.platformkit.analytics_showcase.mlb_velo_bands --check\n'
 import calendar
 import json
 from pathlib import Path
@@ -58,7 +29,7 @@ BAND_LABELS = ["<80", "80-83", "83-86", "86-89", "89-92", "92-95", "95-98", "98-
 
 CAVEAT = (
     "DESCRIPTIVE_ONLY: league release-speed distribution and in-season median-velo "
-    "drift for the local 2025 statcast pull. Not a predictive, edge, or ROI claim -- "
+    'drift for the local 2025 statcast pull. Not a predictive, advantage, or return claim -- '
     "nothing here is modeled, forecast, or priced. In-season velo ramp-up is a known "
     "physical effect, reported descriptively. See docs/JOB_EVIDENCE_PACKET.md."
 )
@@ -68,7 +39,7 @@ FLOORS = {
     "chart_top_n_pitch_types": TOP_N_CHART,
     "note": (
         "pitch types / (type,month) cells below floor are dropped, not smoothed; thin "
-        "edge-of-season months (Mar/Oct) typically fall below the cell floor and vanish"
+        'advantage-of-season months (Mar/Oct) typically fall below the cell floor and vanish'
     ),
 }
 

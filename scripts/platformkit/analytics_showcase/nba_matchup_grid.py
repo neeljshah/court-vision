@@ -1,34 +1,4 @@
-"""nba_matchup_grid.py -- team-vs-team scoring grid from NBA box scores.
-
-DESCRIPTIVE_ONLY (see docs/JOB_EVIDENCE_PACKET.md). NO edge/ROI/$/forecast
-claim: every number here describes games ALREADY PLAYED, pooled across the
-seasons present in the box-score parquet (currently 3). A historical mean
-margin is not a prediction of any future meeting.
-
-What it builds, from the player box-score parquet:
-  - team-game points = sum of a team's players' `pts` within one game_id
-  - ONLY game_ids with EXACTLY 2 distinct teams are used (drops all-star /
-    malformed rows); the dropped count is reported in the JSON
-  - for each ordered team pairing (row, col), pooled over all their meetings:
-      mean_total  = mean(row_pts + col_pts)   -- symmetric: (A,B) == (B,A)
-      mean_margin = mean(row_pts - col_pts)    -- anti-symmetric: (A,B) == -(B,A)
-  - MASK (declared, NOT tuned to output): a pairing is reported/plotted only
-    where n_meetings >= MIN_MEETINGS (=2). This is a small-sample floor, not a
-    selection for predictiveness.
-
-Home/away is absent from this per-player table, so `mean_margin` pools home and
-away meetings together -- it is NOT a home-court split, and it is opponent-raw
-(no strength-of-schedule adjustment).
-
-Input:  data/domains/basketball_nba/player_boxscores.parquet
-        (columns-only read: game_id, team, season, date, pts)
-Output: out/nba_matchup_grid.json     (both grids as a pairing list + methodology)
-        docs/img/nba_matchup_grid.png  (ONE margin heatmap, diverging, masked)
-
-Usage:
-    python -m scripts.platformkit.analytics_showcase.nba_matchup_grid
-    python -m scripts.platformkit.analytics_showcase.nba_matchup_grid --check
-"""
+"nba_matchup_grid.py -- team-vs-team scoring grid from NBA box scores.\n\nDESCRIPTIVE_ONLY (see docs/JOB_EVIDENCE_PACKET.md). NO advantage/return/money/forecast\nclaim: every number here describes games ALREADY PLAYED, pooled across the\nseasons present in the box-score parquet (currently 3). A historical mean\nmargin is not a prediction of any future meeting.\n\nWhat it builds, from the player box-score parquet:\n  - team-game points = sum of a team's players' `pts` within one game_id\n  - ONLY game_ids with EXACTLY 2 distinct teams are used (drops all-star /\n    malformed rows); the dropped count is reported in the JSON\n  - for each ordered team pairing (row, col), pooled over all their meetings:\n      mean_total  = mean(row_pts + col_pts)   -- symmetric: (A,B) == (B,A)\n      mean_margin = mean(row_pts - col_pts)    -- anti-symmetric: (A,B) == -(B,A)\n  - MASK (declared, NOT tuned to output): a pairing is reported/plotted only\n    where n_meetings >= MIN_MEETINGS (=2). This is a small-sample floor, not a\n    selection for predictiveness.\n\nHome/away is absent from this per-player table, so `mean_margin` pools home and\naway meetings together -- it is NOT a home-court split, and it is opponent-raw\n(no strength-of-schedule adjustment).\n\nInput:  data/domains/basketball_nba/player_boxscores.parquet\n        (columns-only read: game_id, team, season, date, pts)\nOutput: out/nba_matchup_grid.json     (both grids as a pairing list + methodology)\n        docs/img/nba_matchup_grid.png  (ONE margin heatmap, diverging, masked)\n\nUsage:\n    python -m scripts.platformkit.analytics_showcase.nba_matchup_grid\n    python -m scripts.platformkit.analytics_showcase.nba_matchup_grid --check\n"
 import json
 
 import numpy as np

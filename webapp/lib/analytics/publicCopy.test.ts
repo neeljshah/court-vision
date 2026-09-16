@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { expect, it } from "vitest";
 // @ts-expect-error -- the executable scanner is deliberately dependency-free ESM.
-import { PROHIBITED_TOKEN_RE, scanAnalyticsCopy, scanAnalyticsData, scanSourceText } from "../../scripts/check-analytics-copy.mjs";
+import { DATA_TARGETS, PROHIBITED_TOKEN_RE, scanAnalyticsCopy, scanAnalyticsData, scanSourceText } from "../../scripts/check-analytics-copy.mjs";
 
 it("finds no prohibited calibration-product language in public copy", () => {
   expect(scanAnalyticsCopy()).toEqual([]);
@@ -11,6 +11,10 @@ it("finds no prohibited calibration-product language in public copy", () => {
 
 it("finds no prohibited calibration-product language in published data prose", () => {
   expect(scanAnalyticsData()).toEqual([]);
+});
+
+it("scans published showcase artifacts", () => {
+  expect(DATA_TARGETS).toContain("public/data/showcase");
 });
 
 it("flags inflections in JSX, literals, template literals, and metadata", () => {

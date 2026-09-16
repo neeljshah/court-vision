@@ -106,9 +106,7 @@ def _key_out_background(im_rgb):
 
 
 def _density_bbox(alpha, min_count):
-    """Bbox of rows/cols with more than min_count opaque px -- ignores a few
-    stray un-keyed shadow pixels near the canvas edge that would otherwise
-    pin the raw alpha bbox to the full canvas."""
+    'Bbox of rows/cols with more than min_count opaque px -- ignores a few\n    stray un-keyed shadow pixels near the canvas advantage that would otherwise\n    pin the raw alpha bbox to the full canvas.'
     opaque = alpha > 0
     rows = np.where(opaque.sum(axis=1) > min_count)[0]
     cols = np.where(opaque.sum(axis=0) > min_count)[0]

@@ -1,7 +1,7 @@
 {
  "status": "ok",
  "sport": "tennis",
- "caveat": "CALIBRATION only (held-out Brier / Diebold-Mariano test) -- never a market edge or $ claim. vs_close comparison, if any, is stated explicitly per block.",
+ "caveat": "CALIBRATION only (held-out Brier / Diebold-Mariano test) -- never a market advantage or money claim. vs_close comparison, if any, is stated explicitly per block.",
  "note": "tennis has a served live model but no ingame_grade_joined corpus locally -- this showcase surfaces the two REAL preregistered gate receipts that ARE present (pregame cross-corpus + ingame surface-context detail layer), not a recomputed ingame_grade summary.",
  "pregame_prior_cross_corpus": {
   "status": "ok",
@@ -10,7 +10,7 @@
   "design": "true cross-corpus A<->B; DM clustered by game_id",
   "base_model": "sigmoid((a+b*frac_elapsed)*state_diff); a,b FIT per corpus",
   "verdict": "REPLICATED",
-  "vs_close": "UNPROVEN -- CALIBRATION only (held-out Brier), not a market edge",
+  "vs_close": "UNPROVEN -- CALIBRATION only (held-out Brier), not a market advantage",
   "coverage": {
    "a_games": 29572,
    "a_states": 40516,
@@ -41,7 +41,7 @@
    "True cross-corpus: BASE slope (a,b) and blend surface w fit on the WHOLE train corpus, tested on the held-out OTHER corpus -- leak-free by construction.",
    "BASE slope FIT per corpus (scale-normalized) -- works for run/goal/point-diff; NO basketball constant.",
    "DM clustered by game_id -- per-state iid SE would over-state significance.",
-   "No in-play odds -> verdict is CALIBRATION (held-out Brier) vs a (state,time) BASE, never a market edge. No $ anywhere."
+   "No in-play odds -> verdict is CALIBRATION (held-out Brier) vs a (state,time) BASE, never a market advantage. No money anywhere."
   ]
  },
  "ingame_surface_context": {
@@ -52,7 +52,7 @@
   "base_model": "sigmoid((a+b*frac_elapsed)*state_diff)",
   "verdict": "REJECT",
   "reason": "surface-specific hold prior does not beat surface-blind on either tour.",
-  "vs_close": "UNPROVEN -- CALIBRATION only (held-out Brier), not a market edge",
+  "vs_close": "UNPROVEN -- CALIBRATION only (held-out Brier), not a market advantage",
   "planted_null_dies": true,
   "tours": {
    "atp": {

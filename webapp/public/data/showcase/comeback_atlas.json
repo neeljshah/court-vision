@@ -1,7 +1,7 @@
 {
  "edge_claimed": false,
  "source": "data/cache/calibration_grid/nba_reliability_map.json",
- "source_honest_note": "Calibration/reliability measurement only, never a $/ROI/edge claim. MARKET = Polymarket in-play price, same tick as the score state (nba_checkpoints_full.parquet already fuses them, no separate as-of join). MODEL = winprob_dispatch.dispatch('nba', ...) over predict_matchup.py, sampled per-bucket (--model-per-bucket; 0 = market-only pass). Tick-weighted aggregates, not game-weighted -- a bucket with more ticks from one game pulls its own average, stated here rather than hidden. can_price is a preregistered gate (n_games>=30 AND model_n>=10 AND |model-outcome|<=0.06); any bucket failing it returns can_price=False with the specific reason, never a guess.",
+ "source_honest_note": "Calibration/reliability measurement only, never a money/return/advantage claim. MARKET = Polymarket in-play price, same tick as the score state (nba_checkpoints_full.parquet already fuses them, no separate as-of join). MODEL = winprob_dispatch.dispatch('nba', ...) over predict_matchup.py, sampled per-bucket (--model-per-bucket; 0 = market-only pass). Tick-weighted aggregates, not game-weighted -- a bucket with more ticks from one game pulls its own average, stated here rather than hidden. can_price is a preregistered gate (n_games>=30 AND model_n>=10 AND |model-outcome|<=0.06); any bucket failing it returns can_price=False with the specific reason, never a guess.",
  "n_buckets_total": 84,
  "n_buckets_masked_n_lt_30": 7,
  "n_buckets_unmasked": 77,
@@ -1169,8 +1169,8 @@
  ],
  "novelty": {
   "verdict": "INCREMENTAL",
-  "closest_prior_work": "arXiv 2606.07811 (~Jun 2026), 'When Do Markets Fully Process Public Information? Evidence from Real-Time Prediction Markets' -- Kalshi/NBA contract-minute join of market price, a state-only model, and terminal outcome; measures how fully the market has absorbed realized game state.",
+  "closest_prior_work": "arXiv 2606.07811 (~Jun 2026), 'When Do Markets Fully Process Public Information? Evidence from Real-Time Prediction Markets' -- Kalshi/NBA contract-minute join of market price, a state-only model, and terminal outcome; measures how fully the closing reference forecast has absorbed realized game state.",
   "how_ours_differs": "Same three-way (model, market, outcome) join, reshaped into a 2D lead x time-remaining atlas instead of a single time-checkpoint curve, off our own held reliability-map corpus (nba_checkpoints_full.parquet via calibration_grid.nba_grid). Not a new method -- do not claim first-ever."
  },
- "story": "Reliability map reshaped into a lead x time-remaining grid: 84 state buckets, 7 below the n>=30-games mask. This is a calibration atlas (model vs market vs realized frequency by game state), not an edge/ROI claim."
+ "story": "Reliability map reshaped into a lead x time-remaining grid: 84 state buckets, 7 below the n>=30-games mask. This is a calibration atlas (model vs market vs realized frequency by game state), not an advantage/return claim."
 }

@@ -1,16 +1,4 @@
-"""Murphy decomposition (reliability/resolution/uncertainty) for model vs market,
-computed from the row-level joined grade corpora in data/cache/ingame_grade_joined/.
-
-Brier = reliability - resolution + uncertainty (10-bin decomposition, standard Murphy 1973).
-Answers: is the model's Brier gap vs market a CALIBRATION problem (fixable, reliability)
-or an INFORMATION problem (resolution -- market just knows more)?
-
-edge_claimed=False. Calibration-only analytic, no $/ROI claims.
-
-Usage:
-    python -m scripts.platformkit.analytics_showcase.murphy_decomposition
-    python -m scripts.platformkit.analytics_showcase.murphy_decomposition --check
-"""
+"Murphy decomposition (reliability/resolution/uncertainty) for model vs market,\ncomputed from the row-level joined grade corpora in data/cache/ingame_grade_joined/.\n\nBrier = reliability - resolution + uncertainty (10-bin decomposition, standard Murphy 1973).\nAnswers: is the model's Brier gap vs market a CALIBRATION problem (fixable, reliability)\nor an INFORMATION problem (resolution -- market just knows more)?\n\nedge_claimed=False. Calibration-only analytic, no money/return claims.\n\nUsage:\n    python -m scripts.platformkit.analytics_showcase.murphy_decomposition\n    python -m scripts.platformkit.analytics_showcase.murphy_decomposition --check\n"
 import argparse
 import glob
 import json

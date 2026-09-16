@@ -2,7 +2,7 @@
  "label": "DESCRIPTIVE_ONLY",
  "sport": "tennis",
  "status": "ok",
- "caveat": "Per-player surface-split transfer off the tennis surface-context snapshot store: the store's own clay_minus_hard (clay_wr - hard_wr) gap and grass_adapt (grass_wr - ov_wr) adaptability index, floored and summarized per tour x window. DESCRIPTIVE_ONLY -- describes matches already played, no forecast, no market/ROI/$ edge.",
+ "caveat": "Per-player surface-split transfer off the tennis surface-context snapshot store: the store's own clay_minus_hard (clay_wr - hard_wr) gap and grass_adapt (grass_wr - ov_wr) adaptability index, floored and summarized per tour x window. DESCRIPTIVE_ONLY -- describes matches already played, no forecast, no market/return/money advantage.",
  "truth_source": "docs/JOB_EVIDENCE_PACKET.md",
  "store": "tennis_surface_context snapshots (producer: scripts/platformkit/intel_validation/tennis_surface_context_claims.py)",
  "store_fields_used": {
@@ -18,7 +18,7 @@
   "opponent-strength NOT controlled -- surface draws are not random, a gap partly reflects scheduling/seeding, not surface skill alone",
   "retirement rows counted as DECIDED matches (winner column authoritative) -- upstream store choice",
   "Hard/Clay/Grass only; Unknown/Carpet excluded upstream",
-  "DESCRIPTIVE_ONLY -- describes matches already played; NOT a forecast, NO market/ROI/$ edge"
+  "DESCRIPTIVE_ONLY -- describes matches already played; NOT a forecast, NO market/return/money advantage"
  ],
  "combos": {
   "atp_career": {

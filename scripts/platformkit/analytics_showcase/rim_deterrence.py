@@ -1,34 +1,4 @@
-"""rim_deterrence.py -- descriptive rim-protection leaderboard from real NBA
-on/off zone splits.
-
-data/cache/team_system/lineups/zone_onoff_<season>.parquet carries, per
-player, the opponent's shot-zone mix and hit rate WITH the player on court vs
-off court. The headline metric here is the frequency delta:
-
-    rim_share_allowed_on - rim_share_allowed_off
-
-the share of the opponent's field-goal attempts that come at the rim when the
-player is on court, minus that same share when the player is off. A NEGATIVE
-delta means the opponent takes FEWER rim shots with the player on -- rim
-deterrence. Floor: min_on >= 500 (drop small-sample noise). Ranked ascending
-(most negative = best deterrent = rank 1). A secondary rim_efg delta (does
-the rim shot also go in less often) is reported alongside the headline number.
-
-THE STORY: the list is face-valid -- Wembanyama, Gobert, Jaren Jackson Jr.
-top it, matching the eye test. But on/off bundles the player's teammates and
-scheme into the delta: this is descriptive on-court ASSOCIATION, not isolated
-individual causation. Opponent-raw, no shot-quality model.
-
-Descriptive only. No edge/ROI claim (edge_claimed:false).
-
-Output: out/rim_deterrence.json (this committed JSON IS the recorded
-artifact -- --check reloads it and does not require data/ locally, i.e. is
-clone-safe).
-
-Usage:
-  python -m scripts.platformkit.analytics_showcase.rim_deterrence
-  python -m scripts.platformkit.analytics_showcase.rim_deterrence --check
-"""
+"rim_deterrence.py -- descriptive rim-protection leaderboard from real NBA\non/off zone splits.\n\ndata/cache/team_system/lineups/zone_onoff_<season>.parquet carries, per\nplayer, the opponent's shot-zone mix and hit rate WITH the player on court vs\noff court. The headline metric here is the frequency delta:\n\n    rim_share_allowed_on - rim_share_allowed_off\n\nthe share of the opponent's field-goal attempts that come at the rim when the\nplayer is on court, minus that same share when the player is off. A NEGATIVE\ndelta means the opponent takes FEWER rim shots with the player on -- rim\ndeterrence. Floor: min_on >= 500 (drop small-sample noise). Ranked ascending\n(most negative = best deterrent = rank 1). A secondary rim_efg delta (does\nthe rim shot also go in less often) is reported alongside the headline number.\n\nTHE STORY: the list is face-valid -- Wembanyama, Gobert, Jaren Jackson Jr.\ntop it, matching the eye test. But on/off bundles the player's teammates and\nscheme into the delta: this is descriptive on-court ASSOCIATION, not isolated\nindividual causation. Opponent-raw, no shot-quality model.\n\nDescriptive only. No advantage/return claim (edge_claimed:false).\n\nOutput: out/rim_deterrence.json (this committed JSON IS the recorded\nartifact -- --check reloads it and does not require data/ locally, i.e. is\nclone-safe).\n\nUsage:\n  python -m scripts.platformkit.analytics_showcase.rim_deterrence\n  python -m scripts.platformkit.analytics_showcase.rim_deterrence --check\n"
 import json
 import math
 import re

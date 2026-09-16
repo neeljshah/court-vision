@@ -185,7 +185,7 @@ def analyze_games(games: pd.DataFrame, sport: str) -> dict:
             "outcome_note": "Existing showcase joins are incompatible with this two-sided home-moneyline grain; tracking-to-close only.",
         },
         "cross_book_context": "SKIPPED: no cheap schema-stable multi-book join was used.",
-        "verdict": "Descriptive close-tracking summary only; no outcome or edge inference is made.",
+        "verdict": 'Descriptive close-tracking summary only; no outcome or advantage inference is made.',
     }
 
 

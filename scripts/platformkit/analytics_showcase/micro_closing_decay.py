@@ -1,23 +1,4 @@
-"""Market microstructure: how much sharper is the CLOSE than earlier prices?
-
-"Freshness is the moat," quantified. Per game we take the consensus devigged
-market P(home win) at four pre-start horizons -- T-24h/T-6h/T-1h/close -- and
-score each horizon's Brier + log-loss vs the settled outcome. A Brier that
-falls toward tip-off is the pre-game information gap (freshness), measured.
-
-DATA (READ-ONLY, gitignored -- absent from a fresh clone):
-  data/cache/line_history/<sport>/*.jsonl (captured_at, commence_time, side,
-  devigged_prob, game_id=ESPN id), joined by ESPN event_id to:
-  wnba -> data/domains/wnba/espn_scoreboard.parquet (home_win);
-  soccer_intl -> data/domains/soccer_intl/espn_finals.parquet (scores). Only
-  these two reconcile to an on-disk ESPN-keyed outcome table over the window;
-  the rest are reported not_joinable with a reason, never faked.
-
-HONESTY (binding): calibration-only. edge_claimed=False. No $/ROI. Small
-per-bucket n is labelled underpowered; an honest not_joinable is a SUCCESS.
-
-Usage: python -m scripts.platformkit.analytics_showcase.micro_closing_decay [--check]
-"""
+'Market microstructure: how much sharper is the CLOSE than earlier prices?\n\n"Freshness is the moat," quantified. Per game we take the consensus devigged\nmarket P(home win) at four pre-start horizons -- T-24h/T-6h/T-1h/close -- and\nscore each horizon\'s Brier + log-loss vs the settled outcome. A Brier that\nfalls toward tip-off is the pre-game information gap (freshness), measured.\n\nDATA (READ-ONLY, gitignored -- absent from a fresh clone):\n  data/cache/line_history/<sport>/*.jsonl (captured_at, commence_time, side,\n  devigged_prob, game_id=ESPN id), joined by ESPN event_id to:\n  wnba -> data/domains/wnba/espn_scoreboard.parquet (home_win);\n  soccer_intl -> data/domains/soccer_intl/espn_finals.parquet (scores). Only\n  these two reconcile to an on-disk ESPN-keyed outcome table over the window;\n  the rest are reported not_joinable with a reason, never faked.\n\nHONESTY (binding): calibration-only. edge_claimed=False. No money/return. Small\nper-bucket n is labelled underpowered; an honest not_joinable is a SUCCESS.\n\nUsage: python -m scripts.platformkit.analytics_showcase.micro_closing_decay [--check]\n'
 from __future__ import annotations
 
 import argparse
@@ -159,7 +140,7 @@ def make_plot(result: Dict[str, Any]) -> bool:
     ax.set_xticklabels(_ANCHOR_LABELS)
     ax.set_xlabel("horizon before tip-off (later = closer to start)")
     ax.set_ylabel("Brier (market devigged P(home) vs outcome)")
-    ax.set_title("Closing-price decay: is the market sharper as tip-off nears?")
+    ax.set_title('Closing-price decay: is the closing reference forecast sharper as tip-off nears?')
     ax.grid(True, alpha=0.3)
     if plotted:
         ax.legend(fontsize=8)

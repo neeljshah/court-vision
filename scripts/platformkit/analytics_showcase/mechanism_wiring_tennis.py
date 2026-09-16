@@ -1,29 +1,4 @@
-"""Declared TENNIS mechanism -> trigger wiring rows (DATA module).
-
-Same contract as ``mechanism_wiring.WIRING`` and ``mechanism_wiring_mlb.WIRING``:
-one row per CONFIRMED/REPLICATED section of ``domains/tennis/knowledge/
-mechanisms.md``. A row either names persisted, leak-free as-of column(s) that
-live in the scored corpus, or states in data terms why no such column exists.
-
-Measured corpus facts behind every row below (2026-09-03, this repo):
-
-- The scored tennis corpus is ``data/cache/combo/gate_corpus_tennis.parquet``
-  (41,886 rows, 2015-01-04..2025-12-17, two ``corpus_unit``s -- ATP 30,616 and
-  WTA 11,270, NEVER pooled) joined to the devigged decimal close by
-  ``scripts/platformkit/eval_gate/close_join.py`` (33,685 states with a close,
-  vintage SYNTHETIC per S34).
-- Its ONLY feature columns are ``p_base``, ``p_elo``, ``surface``,
-  ``p1_hold_pct_asof``, ``p2_hold_pct_asof``, ``diff_return_won_asof`` and
-  ``diff_break_pct_asof``. Its outcome ``y`` is the p1-win indicator.
-- Three CONFIRMED mechanisms have their own ingredient among those columns; the
-  other twenty are point-grain, in-match, or need a column
-  (hand, height, altitude, travel, round, seed, best_of, h2h, set detail,
-  schedule density) that is not in the scored corpus.
-
-DESCRIPTIVE_ONLY; no dollar or ROI claim anywhere. A trigger row here declares a
-column, not a result -- verdicts come from
-``mechanism_close_effect.py`` and are descriptive local effects, never claims.
-"""
+'Declared TENNIS mechanism -> trigger wiring rows (DATA module).\n\nSame contract as ``mechanism_wiring.WIRING`` and ``mechanism_wiring_mlb.WIRING``:\none row per CONFIRMED/REPLICATED section of ``domains/tennis/knowledge/\nmechanisms.md``. A row either names persisted, leak-free as-of column(s) that\nlive in the scored corpus, or states in data terms why no such column exists.\n\nMeasured corpus facts behind every row below (2026-09-03, this repo):\n\n- The scored tennis corpus is ``data/cache/combo/gate_corpus_tennis.parquet``\n  (41,886 rows, 2015-01-04..2025-12-17, two ``corpus_unit``s -- ATP 30,616 and\n  WTA 11,270, NEVER pooled) joined to the devigged decimal close by\n  ``scripts/platformkit/eval_gate/close_join.py`` (33,685 states with a close,\n  vintage SYNTHETIC per S34).\n- Its ONLY feature columns are ``p_base``, ``p_elo``, ``surface``,\n  ``p1_hold_pct_asof``, ``p2_hold_pct_asof``, ``diff_return_won_asof`` and\n  ``diff_break_pct_asof``. Its outcome ``y`` is the p1-win indicator.\n- Three CONFIRMED mechanisms have their own ingredient among those columns; the\n  other twenty are point-grain, in-match, or need a column\n  (hand, height, altitude, travel, round, seed, best_of, h2h, set detail,\n  schedule density) that is not in the scored corpus.\n\nDESCRIPTIVE_ONLY; no money or return claim anywhere. A trigger row here declares a\ncolumn, not a result -- verdicts come from\n``mechanism_close_effect.py`` and are descriptive local effects, never claims.\n'
 from __future__ import annotations
 
 CORPUS = ("data/cache/combo/gate_corpus_tennis.parquet x close_join, "

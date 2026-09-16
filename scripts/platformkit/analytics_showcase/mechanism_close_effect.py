@@ -1,20 +1,4 @@
-"""Descriptive local effect of a declared soccer/tennis mechanism trigger.
-
-Each declared trigger column is measured against the DEVIGGED CLOSE carried by
-``eval_gate.close_join.gate_corpus_states``: the close residual
-(``outcome - devig_close_prob``) is compared between the high and low halves of
-the trigger, per ``corpus_unit`` (tennis ATP and WTA are NEVER pooled). A row
-whose declared column is absent from the scored corpus is NOT_TESTABLE with the
-column named -- never dropped.
-
-Verdict vocabulary, exactly as the NBA/MLB wiring uses it:
-``CONFIRMED_LOCAL`` / ``NULL_LOCAL`` / ``NOT_TESTABLE``.
-
-CONFIRMED_LOCAL is a DESCRIPTIVE LOCAL EFFECT on a frozen corpus whose close
-carries a SYNTHETIC vintage (S34). It is NOT a scored claim, NOT walk-forward,
-and NOT charged to any ledger -- a scored verdict would require a charged trial.
-DESCRIPTIVE_ONLY; no dollar or ROI claim anywhere.
-"""
+'Descriptive local effect of a declared soccer/tennis mechanism trigger.\n\nEach declared trigger column is measured against the DEVIGGED CLOSE carried by\n``eval_gate.close_join.gate_corpus_states``: the close residual\n(``outcome - devig_close_prob``) is compared between the high and low halves of\nthe trigger, per ``corpus_unit`` (tennis ATP and WTA are NEVER pooled). A row\nwhose declared column is absent from the scored corpus is NOT_TESTABLE with the\ncolumn named -- never dropped.\n\nVerdict vocabulary, exactly as the NBA/MLB wiring uses it:\n``CONFIRMED_LOCAL`` / ``NULL_LOCAL`` / ``NOT_TESTABLE``.\n\nCONFIRMED_LOCAL is a DESCRIPTIVE LOCAL EFFECT on a frozen corpus whose close\ncarries a SYNTHETIC vintage (S34). It is NOT a scored claim, NOT walk-forward,\nand NOT charged to any ledger -- a scored verdict would require a charged trial.\nDESCRIPTIVE_ONLY; no money or return claim anywhere.\n'
 from __future__ import annotations
 
 import argparse

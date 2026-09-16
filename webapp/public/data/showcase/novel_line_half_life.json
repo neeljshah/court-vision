@@ -67,7 +67,7 @@
   "note": "Span of daily line_history files actually consumed. Counts (n_move_pairs, snapshots) are dense sampling INSIDE this window, not a long history."
  },
  "prior_art_verdict": "NOVEL_PACKAGING",
- "prior_art_citation": "Line-movement timing (early-sharp vs late-injury/public money) is discussed qualitatively everywhere (Boyd's Bets opening-vs-closing; PicksOffice; GamingToday); price-impact half-life is a securities-microstructure staple (Kyle 1985; Amihud 2002). The underlying line-movement concept is NOT new; only the single per-sport half-life constant is the fresh packaging.",
+ "prior_art_citation": "Line-movement timing (early-sharp vs late-injury/public money) is discussed qualitatively everywhere (Boyd's opening-vs-closing study opening-vs-closing; PicksOffice; GamingToday); price-impact half-life is a securities-microstructure staple (Kyle 1985; Amihud 2002). The underlying line-movement concept is NOT new; only the single per-sport half-life constant is the fresh packaging.",
  "declared_confounds": [
   "bucket_move sums ABSOLUTE per-tick moves -> this is churn/activity, not net price travel; back-and-forth noise and correlated consensus books inflate it.",
   "Only 4 coarse horizon buckets, so the 0.50 crossing is linearly interpolated.",

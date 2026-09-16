@@ -1,39 +1,4 @@
-"""Within-game residual autocorrelation: do the model's errors persist across a game?
-
-For every graded in-game series (grouped by game_id x side, ordered by ts) in the
-joined corpora, computes the lag-1 sample autocorrelation of the signed residual
-r_t = prob_t - outcome, for both the model and the market, then reports the
-DISTRIBUTION of that per-game lag-1 autocorr across games (mean, median,
-quartiles, share positive, share >= 0.9), model vs market, plus ONE chart.
-
-Honest scope -- what this is and is NOT:
-  * The outcome label is TERMINAL and constant within a game, so the residual
-    series is prob_t minus a constant; its lag-1 autocorrelation therefore equals
-    the serial correlation of the probability PATH itself. Strong positive
-    autocorrelation is EXPECTED (consecutive win-prob updates barely move).
-  * The exhibit's point is exactly that: it quantifies how far from independent
-    within-game rows are. High autocorr => the effective number of independent
-    observations per game is far below the row count, so any per-row Brier /
-    count-based confidence interval OVERSTATES the sample size. This is a
-    variance-of-estimate caveat, DESCRIPTIVE_ONLY, edge_claimed=False. It is NOT
-    a signal, an edge, or a $/ROI claim of any kind.
-
-Declared floors (a game-side series is used only if BOTH hold):
-  * >= N_MIN rows after ordering by ts (default 10).
-  * residual variance > VAR_EPS; a flat path has an undefined lag-1 autocorr and
-    is counted as "flat" (skipped), never as 0.
-
-Corpora: data/cache/ingame_grade_joined/{mlb,soccer_intl}/*.jsonl (mlb_clean is a
-byte-identical duplicate of mlb and is absent from the reused SPORTS map).
-Only these keys are consumed per row: game_id, side, ts, model_prob, market_prob,
-outcome. atlas_factory's compact-card helpers are deliberately not used here: this
-is a standalone distribution chart (like its sibling error-anatomy modules), not a
-2-4 panel entity card, and the card size-guard (<=60KB) would reject a full figure.
-
-Usage:
-    python -m scripts.platformkit.analytics_showcase.residual_autocorrelation
-    python -m scripts.platformkit.analytics_showcase.residual_autocorrelation --check
-"""
+'Within-game residual autocorrelation: do the model\'s errors persist across a game?\n\nFor every graded in-game series (grouped by game_id x side, ordered by ts) in the\njoined corpora, computes the lag-1 sample autocorrelation of the signed residual\nr_t = prob_t - outcome, for both the model and the closing reference forecast, then reports the\nDISTRIBUTION of that per-game lag-1 autocorr across games (mean, median,\nquartiles, share positive, share >= 0.9), model vs market, plus ONE chart.\n\nHonest scope -- what this is and is NOT:\n  * The outcome label is TERMINAL and constant within a game, so the residual\n    series is prob_t minus a constant; its lag-1 autocorrelation therefore equals\n    the serial correlation of the probability PATH itself. Strong positive\n    autocorrelation is EXPECTED (consecutive win-prob updates barely move).\n  * The exhibit\'s point is exactly that: it quantifies how far from independent\n    within-game rows are. High autocorr => the effective number of independent\n    observations per game is far below the row count, so any per-row Brier /\n    count-based confidence interval OVERSTATES the sample size. This is a\n    variance-of-estimate caveat, DESCRIPTIVE_ONLY, edge_claimed=False. It is NOT\n    a signal, an advantage, or a money/return claim of any kind.\n\nDeclared floors (a game-side series is used only if BOTH hold):\n  * >= N_MIN rows after ordering by ts (default 10).\n  * residual variance > VAR_EPS; a flat path has an undefined lag-1 autocorr and\n    is counted as "flat" (skipped), never as 0.\n\nCorpora: data/cache/ingame_grade_joined/{mlb,soccer_intl}/*.jsonl (mlb_clean is a\nbyte-identical duplicate of mlb and is absent from the reused SPORTS map).\nOnly these keys are consumed per row: game_id, side, ts, model_prob, market_prob,\noutcome. atlas_factory\'s compact-card helpers are deliberately not used here: this\nis a standalone distribution chart (like its sibling error-anatomy modules), not a\n2-4 panel entity card, and the card size-guard (<=60KB) would reject a full figure.\n\nUsage:\n    python -m scripts.platformkit.analytics_showcase.residual_autocorrelation\n    python -m scripts.platformkit.analytics_showcase.residual_autocorrelation --check\n'
 import argparse
 import json
 import os
@@ -148,7 +113,7 @@ def build_verdict(result):
         return "No sport had a usable game-side series meeting the floors."
     return " ".join(lines) + (" High positive values confirm within-game rows are far from "
                               "independent (effective sample size << row count); DESCRIPTIVE_ONLY, "
-                              "no edge/ROI claim.")
+                              'no advantage/return claim.')
 
 
 def make_chart(sports, out_png):
@@ -202,7 +167,7 @@ def run():
         "story": ("Within-game residuals are strongly positively autocorrelated for both model "
                   "and market because the outcome is terminal-constant and the probability path "
                   "is smooth; the exhibit quantifies how far from independent within-game rows "
-                  "are (effective sample size << row count). DESCRIPTIVE_ONLY, no edge/ROI claim."),
+                  'are (effective sample size << row count). DESCRIPTIVE_ONLY, no advantage/return claim.'),
         "sports": {},
         "skipped": [{"sport": "mlb_clean", "reason": "byte-identical duplicate of mlb -- absent from reused SPORTS map"}],
     }

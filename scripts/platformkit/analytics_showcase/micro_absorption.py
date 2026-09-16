@@ -1,43 +1,4 @@
-"""Market microstructure: pregame price-absorption speed, from our OWN scraped
-line history in data/cache/line_history/<sport>/<date>.jsonl.
-
-Each jsonl row is one book snapshot of one (game, market_type, side): it carries
-a devigged_prob, a captured_at timestamp, and the game's commence_time. We group
-rows into per-(game, market, side, book) SERIES, sort by captured_at, keep only
-PREGAME snapshots (captured strictly before commence), and measure three
-descriptive properties of how the market moves before tip/first-pitch:
-
-  1. inter-update intervals -- minutes between consecutive pregame snapshots of a
-     series (cadence of the feed / how often the price is refreshed).
-  2. move magnitude by time-to-start bucket -- mean |delta devigged_prob| between
-     consecutive snapshots, bucketed by minutes-to-commence.
-  3. final-hour movement share -- fraction of a series' total pregame absolute
-     movement that lands in the last hour before start.
-
-This is MARKET SCIENCE / observation only. It describes the market's own
-behavior; it is NOT a forecast, a signal, or an edge. edge_claimed=False. No
-$/ROI/profit claim -- truth source docs/JOB_EVIDENCE_PACKET.md and
-.claude/rules/no-edge-claims.md.
-
-SCOPE / FLOORS (declared, not tuned):
-  * A sport is reported only at n >= MIN_MOVES (=20) consecutive pregame move
-    pairs; otherwise it is marked insufficient_data.
-  * Only rows with captured_at STRICTLY before commence_time count (pregame).
-    Snapshots whose file replays already-started games contribute nothing.
-  * Single June-July 2026 corpus, single read, no CIs -- descriptive only.
-  * Absolute movement is in devigged-probability units, not price/line units.
-
-OBSERVATION WINDOW (declared, not assumed): this feed is a SHORT window, not a
-season or a multi-season history. The `observation_window` field (top level, plus
-per-sport) reports the exact span of daily files consumed -- start, end, distinct
-days, file count -- computed from the `<date>.jsonl` filenames actually globbed.
-Large move-pair counts here come from snapshot density inside that window, NOT
-from a long history; read every n alongside the window.
-
-Usage:
-    python -m scripts.platformkit.analytics_showcase.micro_absorption
-    python -m scripts.platformkit.analytics_showcase.micro_absorption --check
-"""
+"Market microstructure: pregame price-absorption speed, from our OWN scraped\nline history in data/cache/line_history/<sport>/<date>.jsonl.\n\nEach jsonl row is one book snapshot of one (game, market_type, side): it carries\na devigged_prob, a captured_at timestamp, and the game's commence_time. We group\nrows into per-(game, market, side, book) SERIES, sort by captured_at, keep only\nPREGAME snapshots (captured strictly before commence), and measure three\ndescriptive properties of how the closing reference forecast moves before tip/first-pitch:\n\n  1. inter-update intervals -- minutes between consecutive pregame snapshots of a\n     series (cadence of the feed / how often the price is refreshed).\n  2. move magnitude by time-to-start bucket -- mean |delta devigged_prob| between\n     consecutive snapshots, bucketed by minutes-to-commence.\n  3. final-hour movement share -- fraction of a series' total pregame absolute\n     movement that lands in the last hour before start.\n\nThis is MARKET SCIENCE / observation only. It describes the closing reference forecast's own\nbehavior; it is NOT a forecast, a signal, or an advantage. edge_claimed=False. No\nmoney/return/gains claim -- truth source docs/JOB_EVIDENCE_PACKET.md and\n.claude/rules/no-advantage-claims.md.\n\nSCOPE / FLOORS (declared, not tuned):\n  * A sport is reported only at n >= MIN_MOVES (=20) consecutive pregame move\n    pairs; otherwise it is marked insufficient_data.\n  * Only rows with captured_at STRICTLY before commence_time count (pregame).\n    Snapshots whose file replays already-started games contribute nothing.\n  * Single June-July 2026 corpus, single read, no CIs -- descriptive only.\n  * Absolute movement is in devigged-probability units, not price/line units.\n\nOBSERVATION WINDOW (declared, not assumed): this feed is a SHORT window, not a\nseason or a multi-season history. The `observation_window` field (top level, plus\nper-sport) reports the exact span of daily files consumed -- start, end, distinct\ndays, file count -- computed from the `<date>.jsonl` filenames actually globbed.\nLarge move-pair counts here come from snapshot density inside that window, NOT\nfrom a long history; read every n alongside the window.\n\nUsage:\n    python -m scripts.platformkit.analytics_showcase.micro_absorption\n    python -m scripts.platformkit.analytics_showcase.micro_absorption --check\n"
 import argparse
 import glob
 import json

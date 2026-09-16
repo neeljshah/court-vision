@@ -49,7 +49,7 @@
     "median": 0.116128,
     "mean": 0.124782,
     "p90": 0.224736,
-    "note": "abs(model_prob - market_prob) per tick -- a calibration-GAP MEASUREMENT, not an edge"
+    "note": "abs(model_prob - market_prob) per tick -- a calibration-GAP MEASUREMENT, not an advantage"
    },
    "brier": null,
    "brier_disclosure": "Brier is NULL by design: these rows have no resolved outcome; scoring would require fabricating labels."

@@ -1,22 +1,4 @@
-"""Mechanism-ledger EXPORT -- surface every verdict row we already committed.
-
-291 verdict rows live in domains/*/knowledge/validation_ledger.jsonl (4 sports)
-but nothing renders them. This dumps them: per sport, every named mechanism with
-its verdict, an evidence pointer (corpus + note), and as_of (run_ts if recorded);
-plus per-sport and overall verdict-bucket counts.
-
-A NULL / REJECT / NOT_TESTABLE is honest market-efficiency evidence, not a
-failure. This is a measurement-hygiene artifact, not a betting product -- no
-$/edge/ROI claim.
-
-The ledgers are COMMITTED (not under data/), so --check re-derives from source on
-a fresh clone. If the source is ever absent it falls back to structurally
-verifying the recorded out/ artifact (house convention).
-
-Usage:
-    python -m scripts.platformkit.analytics_showcase.mechanism_ledger_export
-    python -m scripts.platformkit.analytics_showcase.mechanism_ledger_export --check
-"""
+'Mechanism-ledger EXPORT -- surface every verdict row we already committed.\n\n291 verdict rows live in domains/*/knowledge/validation_ledger.jsonl (4 sports)\nbut nothing renders them. This dumps them: per sport, every named mechanism with\nits verdict, an evidence pointer (corpus + note), and as_of (run_ts if recorded);\nplus per-sport and overall verdict-bucket counts.\n\nA NULL / REJECT / NOT_TESTABLE is honest market-efficiency evidence, not a\nfailure. This is a measurement-hygiene artifact, not a forecast comparison product -- no\nmoney/advantage/return claim.\n\nThe ledgers are COMMITTED (not under data/), so --check re-derives from source on\na fresh clone. If the source is ever absent it falls back to structurally\nverifying the recorded out/ artifact (house convention).\n\nUsage:\n    python -m scripts.platformkit.analytics_showcase.mechanism_ledger_export\n    python -m scripts.platformkit.analytics_showcase.mechanism_ledger_export --check\n'
 import argparse
 import collections
 import glob
@@ -112,7 +94,7 @@ def build():
         "note": (
             "Every named mechanism we have tested, with its recorded verdict and evidence "
             "pointer. A NULL/REJECT/NOT_TESTABLE is honest market-efficiency evidence, not a "
-            "failure. Measurement-hygiene artifact -- no $/edge/ROI claim. as_of is the "
+            'failure. Measurement-hygiene artifact -- no money/advantage/return claim. as_of is the '
             "recorded run_ts (null for runs that predate run_ts stamping)."
         ),
         "verdict_buckets": {
@@ -151,7 +133,7 @@ def render_png(result, out_png):
     )
     ax.legend(loc="lower right", fontsize=8)
     fig.text(0.5, 0.01,
-             "NULL/REJECT/NOT_TESTABLE = honest market-efficiency evidence. No $/edge/ROI claim.",
+             'NULL/REJECT/NOT_TESTABLE = honest market-efficiency evidence. No money/advantage/return claim.',
              ha="center", fontsize=7, color="gray")
     fig.tight_layout(rect=[0, 0.05, 1, 1])
     os.makedirs(os.path.dirname(out_png), exist_ok=True)

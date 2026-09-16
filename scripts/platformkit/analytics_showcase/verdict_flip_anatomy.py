@@ -1,21 +1,4 @@
-"""Verdict flip anatomy -- dissect the claim families that changed their mind.
-
-Pure reshaping of ONE already-committed artifact (fwd_claim_scoreboard.json):
-pulls out the 5 flipped claim families and walks each one's verdict history in
-order, plus the 7 retracted families and what killed them. No new data, no new
-science -- just an honest re-statement of mind-changes already on the record.
-
-Why this matters: a claim family that flips (NULL -> CONFIRMED, or the reverse)
-looks alarming out of context. In a system that preregisters hypotheses and
-re-tests them as more data arrives, a flip is the self-grading process working
--- not a sign the earlier verdict was careless.
-
-DESCRIPTIVE_ONLY, edge_claimed=False -- no $/ROI claim, no new corpus.
-
-Usage:
-    python -m scripts.platformkit.analytics_showcase.verdict_flip_anatomy
-    python -m scripts.platformkit.analytics_showcase.verdict_flip_anatomy --check
-"""
+"Verdict flip anatomy -- dissect the claim families that changed their mind.\n\nPure reshaping of ONE already-committed artifact (fwd_claim_scoreboard.json):\npulls out the 5 flipped claim families and walks each one's verdict history in\norder, plus the 7 retracted families and what killed them. No new data, no new\nscience -- just an honest re-statement of mind-changes already on the record.\n\nWhy this matters: a claim family that flips (NULL -> CONFIRMED, or the reverse)\nlooks alarming out of context. In a system that preregisters hypotheses and\nre-tests them as more data arrives, a flip is the self-grading process working\n-- not a sign the earlier verdict was careless.\n\nDESCRIPTIVE_ONLY, edge_claimed=False -- no money/return claim, no new corpus.\n\nUsage:\n    python -m scripts.platformkit.analytics_showcase.verdict_flip_anatomy\n    python -m scripts.platformkit.analytics_showcase.verdict_flip_anatomy --check\n"
 import json
 import math
 import os

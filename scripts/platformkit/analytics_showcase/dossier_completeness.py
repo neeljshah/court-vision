@@ -1,11 +1,4 @@
-"""Completeness analytics over the per-player dossier corpus.
-
-Source: data/cache/profiles/PLAYER_REPORTS.json (1,249 dossiers, 28 categories
-each). Read-only. Writes out/dossier_completeness.json + docs/img PNG bar chart.
-
-Honesty: this measures DATA COMPLETENESS (how many of the 28 dossier sections
-are populated), not prediction accuracy or edge. No $/ROI content here.
-"""
+'Completeness analytics over the per-player dossier corpus.\n\nSource: data/cache/profiles/PLAYER_REPORTS.json (1,249 dossiers, 28 categories\neach). Read-only. Writes out/dossier_completeness.json + docs/img PNG bar chart.\n\nHonesty: this measures DATA COMPLETENESS (how many of the 28 dossier sections\nare populated), not prediction accuracy or advantage. No money/return content here.\n'
 import json
 from collections import Counter
 from pathlib import Path

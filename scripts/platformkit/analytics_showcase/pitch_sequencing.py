@@ -1,37 +1,4 @@
-"""MLB pitch-sequencing transition matrices: ONE column-selective pass over the
-local 2025 statcast pull -- for each count-leverage class, the pitch-to-pitch
-transition matrix P(next pitch type | previous pitch type) within a plate
-appearance.
-
-SCOPE (DESCRIPTIVE_ONLY): a transition is an adjacent (prev -> next) pitch pair
-INSIDE one plate appearance -- grouped by game_pk + at_bat_number + pitcher,
-ordered by pitch_number, with a STRICT pitch_number diff == 1 so a pitch missing
-from the pull never fabricates a false adjacency and a mid-PA pitching change
-never bridges two pitchers. Each transition is assigned to leverage classes by
-the COUNT ON THE NEXT (to) PITCH -- the decision state for the pitch being
-chosen -- reusing mlb_count_leverage's pitcher-POV partition: behind
-(balls>strikes), even, ahead (strikes>balls); plus two OVERLAPPING lenses,
-two_strike (strikes==2) and three_ball (balls==3); plus an unconditional "all"
-class. It is NOT a predictor and claims NO market/ROI/$ edge -- it is a
-scouting/sequencing descriptive over a completed 2025 pull.
-
-CORPUS LIMIT (honest): pitch_type is statcast's auto-classified code; missing/UNK
-codes and types outside the top-N set are dropped from the matrix axes (per-class
-`coverage` reported, never silently re-bucketed). Pitch-TYPE sequencing only (no
-swing/take split exists in this pull).
-
-FLOORS (declared):
-  - TOP_N: matrix axes are the top-N pitch types by league frequency; each class
-    reports `coverage` = share of its transitions with BOTH ends in that set.
-  - ROW_MIN_N: a previous-pitch row below this many transitions is flagged
-    below_floor (its conditional probs are still shown but marked noisy).
-  - CLASS_MIN_TRANS: a class below this many transitions is reported below_floor, no matrix.
-  - Every P(next|prev) uses row_n_from (all transitions from that prev type) as denom, so rows sum to <=1; the chart plots the "all"-class matrix only.
-
-Truth source for claim discipline: docs/JOB_EVIDENCE_PACKET.md.
-Output: out/pitch_sequencing.json + docs/img/pitch_sequencing.png.
-CLI: python -m scripts.platformkit.analytics_showcase.pitch_sequencing [--check]
-"""
+'MLB pitch-sequencing transition matrices: ONE column-selective pass over the\nlocal 2025 statcast pull -- for each count-leverage class, the pitch-to-pitch\ntransition matrix P(next pitch type | previous pitch type) within a plate\nappearance.\n\nSCOPE (DESCRIPTIVE_ONLY): a transition is an adjacent (prev -> next) pitch pair\nINSIDE one plate appearance -- grouped by game_pk + at_bat_number + pitcher,\nordered by pitch_number, with a STRICT pitch_number diff == 1 so a pitch missing\nfrom the pull never fabricates a false adjacency and a mid-PA pitching change\nnever bridges two pitchers. Each transition is assigned to leverage classes by\nthe COUNT ON THE NEXT (to) PITCH -- the decision state for the pitch being\nchosen -- reusing mlb_count_leverage\'s pitcher-POV partition: behind\n(balls>strikes), even, ahead (strikes>balls); plus two OVERLAPPING lenses,\ntwo_strike (strikes==2) and three_ball (balls==3); plus an unconditional "all"\nclass. It is NOT a predictor and claims NO market/return/money advantage -- it is a\nscouting/sequencing descriptive over a completed 2025 pull.\n\nCORPUS LIMIT (honest): pitch_type is statcast\'s auto-classified code; missing/UNK\ncodes and types outside the top-N set are dropped from the matrix axes (per-class\n`coverage` reported, never silently re-bucketed). Pitch-TYPE sequencing only (no\nswing/take split exists in this pull).\n\nFLOORS (declared):\n  - TOP_N: matrix axes are the top-N pitch types by league frequency; each class\n    reports `coverage` = share of its transitions with BOTH ends in that set.\n  - ROW_MIN_N: a previous-pitch row below this many transitions is flagged\n    below_floor (its conditional probs are still shown but marked noisy).\n  - CLASS_MIN_TRANS: a class below this many transitions is reported below_floor, no matrix.\n  - Every P(next|prev) uses row_n_from (all transitions from that prev type) as denom, so rows sum to <=1; the chart plots the "all"-class matrix only.\n\nTruth source for claim discipline: docs/JOB_EVIDENCE_PACKET.md.\nOutput: out/pitch_sequencing.json + docs/img/pitch_sequencing.png.\nCLI: python -m scripts.platformkit.analytics_showcase.pitch_sequencing [--check]\n'
 import json
 from datetime import datetime, timezone
 from pathlib import Path
@@ -73,7 +40,7 @@ CAVEAT = (
     "P(next pitch type | previous pitch type) within a plate appearance, one matrix "
     "per count-leverage class (leverage taken on the NEXT pitch). pitch_type is "
     "statcast's auto-classified code; matrix axes are the top-N league types "
-    "(per-class coverage reported). Not a predictor; no edge/ROI/$ claim."
+    '(per-class coverage reported). Not a predictor; no advantage/return/money claim.'
 )
 
 

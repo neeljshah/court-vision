@@ -1,42 +1,4 @@
-"""Declared SOCCER mechanism -> trigger wiring rows (DATA module).
-
-Same contract as ``mechanism_wiring.WIRING`` and ``mechanism_wiring_mlb.WIRING``:
-one row per CONFIRMED/REPLICATED section of ``domains/soccer/knowledge/
-mechanisms.md``. A row either names a persisted, leak-free as-of column that
-lives in the scored corpus, or states in data terms why no such column exists.
-
-Measured corpus facts behind every reason below (2026-09-03, this repo):
-
-- The scored soccer corpus is ``data/cache/combo/gate_corpus_soccer.parquet``
-  (25,834 rows, 2015-08-07..2026-05-24, six league ``corpus_unit``s
-  E0/E1/D1/F1/I1/SP1) joined to the devigged decimal close by
-  ``scripts/platformkit/eval_gate/close_join.py`` (16,322 states with a close,
-  vintage SYNTHETIC per S34).
-- Its feature columns are ``p_base``, ``p_over25``, the ten pregame shot/SOT
-  as-of columns it has always carried (``home_sot_for_l10``, ``away_sot_for_l10``,
-  ``diff_sot_for_asof``, ``diff_sot_against_asof``, ``diff_shots_for_asof``,
-  ``diff_shots_against_asof``, ``home_sot_ratio_for_asof``,
-  ``away_sot_ratio_for_asof``, ``home_n_prior``, ``away_n_prior``) and, since
-  gap **S53**, seventeen more as-of columns joined on ``event_id``: the eight
-  remaining ``asof_features`` per-side shot/SOT columns and the nine-column
-  as-of xG-PROXY family from ``data/domains/soccer/asof_xg_proxy.parquet``
-  (``diff_xg_supremacy_asof`` among them, 25,708 / 25,834 non-null).
-- Its outcome ``y`` is the OVER-2.5-total-goals indicator (mean 0.5154) and the
-  close is the devigged over/under 2.5 pair -- not a match-result label.
-- Fourteen of the fifteen CONFIRMED soccer mechanisms need an ingredient that is
-  StatsBomb event-grain (score state, possession id, shot type, PPDA, goal-kick
-  height, tactical shift), or lives on ``data/domains/soccer_intl/results.parquet``
-  (neutral venue, competition type). None of those is a column of the scored
-  corpus, and the soccer_intl frame shares **0** of its 49,477 rows with the
-  25,834 corpus matches on (date, home_team, away_team) -- so those three rows
-  cannot be joined even in principle.
-- The fifteenth (trailing xG supremacy) names an xG as-of column, which S53
-  joined onto the spine; it is the one row here that now carries a trigger.
-
-DESCRIPTIVE_ONLY; no dollar or ROI claim anywhere. A trigger row declares a
-column, not a result -- verdicts come from ``mechanism_close_effect.py`` and are
-descriptive local effects, never claims.
-"""
+'Declared SOCCER mechanism -> trigger wiring rows (DATA module).\n\nSame contract as ``mechanism_wiring.WIRING`` and ``mechanism_wiring_mlb.WIRING``:\none row per CONFIRMED/REPLICATED section of ``domains/soccer/knowledge/\nmechanisms.md``. A row either names a persisted, leak-free as-of column that\nlives in the scored corpus, or states in data terms why no such column exists.\n\nMeasured corpus facts behind every reason below (2026-09-03, this repo):\n\n- The scored soccer corpus is ``data/cache/combo/gate_corpus_soccer.parquet``\n  (25,834 rows, 2015-08-07..2026-05-24, six league ``corpus_unit``s\n  E0/E1/D1/F1/I1/SP1) joined to the devigged decimal close by\n  ``scripts/platformkit/eval_gate/close_join.py`` (16,322 states with a close,\n  vintage SYNTHETIC per S34).\n- Its feature columns are ``p_base``, ``p_over25``, the ten pregame shot/SOT\n  as-of columns it has always carried (``home_sot_for_l10``, ``away_sot_for_l10``,\n  ``diff_sot_for_asof``, ``diff_sot_against_asof``, ``diff_shots_for_asof``,\n  ``diff_shots_against_asof``, ``home_sot_ratio_for_asof``,\n  ``away_sot_ratio_for_asof``, ``home_n_prior``, ``away_n_prior``) and, since\n  gap **S53**, seventeen more as-of columns joined on ``event_id``: the eight\n  remaining ``asof_features`` per-side shot/SOT columns and the nine-column\n  as-of xG-PROXY family from ``data/domains/soccer/asof_xg_proxy.parquet``\n  (``diff_xg_supremacy_asof`` among them, 25,708 / 25,834 non-null).\n- Its outcome ``y`` is the OVER-2.5-total-goals indicator (mean 0.5154) and the\n  close is the devigged over/under 2.5 pair -- not a match-result label.\n- Fourteen of the fifteen CONFIRMED soccer mechanisms need an ingredient that is\n  StatsBomb event-grain (score state, possession id, shot type, PPDA, goal-kick\n  height, tactical shift), or lives on ``data/domains/soccer_intl/results.parquet``\n  (neutral venue, competition type). None of those is a column of the scored\n  corpus, and the soccer_intl frame shares **0** of its 49,477 rows with the\n  25,834 corpus matches on (date, home_team, away_team) -- so those three rows\n  cannot be joined even in principle.\n- The fifteenth (trailing xG supremacy) names an xG as-of column, which S53\n  joined onto the spine; it is the one row here that now carries a trigger.\n\nDESCRIPTIVE_ONLY; no money or return claim anywhere. A trigger row declares a\ncolumn, not a result -- verdicts come from ``mechanism_close_effect.py`` and are\ndescriptive local effects, never claims.\n'
 from __future__ import annotations
 
 CORPUS = ("data/cache/combo/gate_corpus_soccer.parquet x close_join, "

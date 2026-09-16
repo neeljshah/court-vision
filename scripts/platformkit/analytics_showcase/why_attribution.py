@@ -1,33 +1,4 @@
-"""Why-attribution: explain any in-game win-prob move by the state transition
-that produced it.
-
-Reads the committed state-conditioned calibration artifact
-(out/state_conditioned_calibration.json), which buckets every graded ingame
-prediction by (sport x game-state time bucket x model_prob band) and records
-mean_y -- the empirically-realized win rate for that state. The expected
-win-prob impact of a state transition A -> B is then mean_y(B) - mean_y(A):
-"the game was in state A (calibrated win prob mean_y(A)); it moved to state B
-(mean_y(B)); the move was worth that difference in win-prob points."
-
-Transitions are restricted to ADJACENT time buckets (early->mid->late for mlb,
-consecutive 15-min segments for soccer) so each row reads as a real forward
-move, e.g. "late-innings .4-.6 -> .2-.4 costs X win-prob points on average."
-
-This is NOT observed transition frequencies (that needs per-game trajectories);
-it is the calibrated win-prob difference between the two states, which is what
-attributes a move once you know which buckets it crossed.
-
-NBA is not buildable here: the only in-game NBA artifact is the checkpoint
-bench (last_run_ingame_nba_winprob.json), which reports checkpoint Brier but no
-per-state-bucket realized win rate -- so it carries no mean_y to difference.
-Recorded honestly as not_buildable (a null is a success).
-
-edge_claimed=False always. Calibration attribution, never a $/ROI claim.
-
-Usage:
-    python -m scripts.platformkit.analytics_showcase.why_attribution
-    python -m scripts.platformkit.analytics_showcase.why_attribution --check
-"""
+'Why-attribution: explain any in-game win-prob move by the state transition\nthat produced it.\n\nReads the committed state-conditioned calibration artifact\n(out/state_conditioned_calibration.json), which buckets every graded ingame\nprediction by (sport x game-state time bucket x model_prob band) and records\nmean_y -- the empirically-realized win rate for that state. The expected\nwin-prob impact of a state transition A -> B is then mean_y(B) - mean_y(A):\n"the game was in state A (calibrated win prob mean_y(A)); it moved to state B\n(mean_y(B)); the move was worth that difference in win-prob points."\n\nTransitions are restricted to ADJACENT time buckets (early->mid->late for mlb,\nconsecutive 15-min segments for soccer) so each row reads as a real forward\nmove, e.g. "late-innings .4-.6 -> .2-.4 costs X win-prob points on average."\n\nThis is NOT observed transition frequencies (that needs per-game trajectories);\nit is the calibrated win-prob difference between the two states, which is what\nattributes a move once you know which buckets it crossed.\n\nNBA is not buildable here: the only in-game NBA artifact is the checkpoint\nbench (last_run_ingame_nba_winprob.json), which reports checkpoint Brier but no\nper-state-bucket realized win rate -- so it carries no mean_y to difference.\nRecorded honestly as not_buildable (a null is a success).\n\nedge_claimed=False always. Calibration attribution, never a money/return claim.\n\nUsage:\n    python -m scripts.platformkit.analytics_showcase.why_attribution\n    python -m scripts.platformkit.analytics_showcase.why_attribution --check\n'
 import argparse
 import json
 import os

@@ -1,7 +1,7 @@
 {
  "status": "ok",
  "sport": "mlb",
- "caveat": "Descriptive data-coverage showcase only -- pitch-type mix, velo percentiles, and column completeness for the local 2025 statcast pull. Does NOT recompute any predictive-validity result. No edge/ROI/$ claim.",
+ "caveat": "Descriptive data-coverage showcase only -- pitch-type mix, velo percentiles, and column completeness for the local 2025 statcast pull. Does NOT recompute any predictive-validity result. No advantage/return/money claim.",
  "source": "data/cache/statcast/statcast_fuller__2025.parquet",
  "n_pitches": 693037,
  "pitch_type_distribution": [
@@ -262,7 +262,7 @@
   "n_folds": 8,
   "sign_holds_folds": 7,
   "caveat": "CORPUS DEVIATION: statcast_fuller__2022/2023 has no `description` column, so borderline called-strike rate is recomputed here via prereg_shift_framing.py's real build_taken_pitches/classify_borderline/load_savant on savant_full__2023/2024.parquet (the same corpus+functions mlb_framing_claims already uses) -- cutoffs shifted one season (2023/2024, not 2022/2023) to match data that exists. baseline = plain called-strike rate over ALL taken pitches (not just borderline), a declared naive non-borderline-aware proxy, not a trailing mean of the same outcome.",
-  "honest_note": "predictive-validity comparison only, against a declared naive baseline at the metric's natural grain, NOT vs the market close; DESCRIPTIVE_ONLY/UNDERPOWERED is a recorded honest outcome, not a failure",
+  "honest_note": "predictive-validity comparison only, against a declared naive baseline at the metric's natural grain, NOT vs the closing reference forecast close; DESCRIPTIVE_ONLY/UNDERPOWERED is a recorded honest outcome, not a failure",
   "cited_as": "context only -- this showcase does not recompute the rho above"
  }
 }

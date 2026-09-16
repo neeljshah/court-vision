@@ -1,21 +1,4 @@
-"""Calibration by market type: which market families can we actually SCORE?
-
-Compares calibration across market TYPES, not just sports. LABELED moneyline /
-game-winner markets from the joined grade corpora carry a resolved `outcome`, so
-we score model AND market Brier (+ 10-bin ECE) per type. The UNLABELED in-game
-TOTALS quote-tracks rescued from the pod carry no resolved outcome (live captures
-taken before the total settled), so we DISCLOSE that -- n + model-vs-market
-divergence only -- and never fabricate a Brier. The honest point: the scoreboard
-can only score market types whose corpora carry resolved labels.
-
-Scope: MLB moneyline, soccer match-result (2-way as graded), MLB totals.
-Floors (declared, not tuned): a LABELED type reports Brier/ECE only at n>=MIN_N
-(30); ECE = n-weighted |mean_p-mean_y| over N_BINS (10) bins; mlb_clean byte-dup
-excluded; divergence = abs(model_prob-market_prob) per row is a calibration-GAP
-MEASUREMENT, not an edge. edge_claimed=False. DESCRIPTIVE_ONLY.
-Truth source: docs/JOB_EVIDENCE_PACKET.md.
-Run: python -m scripts.platformkit.analytics_showcase.calibration_by_market_type [--check]
-"""
+'Calibration by market type: which market families can we actually SCORE?\n\nCompares calibration across market TYPES, not just sports. LABELED moneyline /\ngame-winner markets from the joined grade corpora carry a resolved `outcome`, so\nwe score model AND market Brier (+ 10-bin ECE) per type. The UNLABELED in-game\nTOTALS quote-tracks rescued from the pod carry no resolved outcome (live captures\ntaken before the total settled), so we DISCLOSE that -- n + model-vs-market\ndivergence only -- and never fabricate a Brier. The honest point: the scoreboard\ncan only score market types whose corpora carry resolved labels.\n\nScope: MLB moneyline, soccer match-result (2-way as graded), MLB totals.\nFloors (declared, not tuned): a LABELED type reports Brier/ECE only at n>=MIN_N\n(30); ECE = n-weighted |mean_p-mean_y| over N_BINS (10) bins; mlb_clean byte-dup\nexcluded; divergence = abs(model_prob-market_prob) per row is a calibration-GAP\nMEASUREMENT, not an advantage. edge_claimed=False. DESCRIPTIVE_ONLY.\nTruth source: docs/JOB_EVIDENCE_PACKET.md.\nRun: python -m scripts.platformkit.analytics_showcase.calibration_by_market_type [--check]\n'
 import argparse
 import glob
 import json
@@ -155,7 +138,7 @@ def measure_unlabeled(deriv_dir, desc):
             "median": round(stats.median(divergences), 6) if divergences else None,
             "mean": round(stats.mean(divergences), 6) if divergences else None,
             "p90": round(sorted(divergences)[min(len(divergences) - 1, int(round(0.9 * (len(divergences) - 1))))], 6) if divergences else None,
-            "note": "abs(model_prob - market_prob) per tick -- a calibration-GAP MEASUREMENT, not an edge",
+            "note": 'abs(model_prob - market_prob) per tick -- a calibration-GAP MEASUREMENT, not an advantage',
         },
         brier=None,
         brier_disclosure="Brier is NULL by design: these rows have no resolved outcome; scoring would require fabricating labels.",

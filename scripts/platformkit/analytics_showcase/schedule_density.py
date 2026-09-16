@@ -1,41 +1,4 @@
-"""NBA schedule-density analytics: b2b / 3-in-4 / 4-in-6 frequencies per
-team-season + the descriptive per-36 production gap under each class vs rested.
-
-DESCRIPTIVE_ONLY (see docs/JOB_EVIDENCE_PACKET.md) -- no edge/ROI/$ claims.
-DESCRIPTIVE COMPANION to the confirmed b2b mechanism receipt, NOT a
-re-measurement of it: the receipt -- CONFIRMED_LOCAL claim `b2b_rest_penalty`
-(effect=-1.73 pts/100 team ORtg, n=4732, p=0.0056) in
-domains/basketball_nba/knowledge/validation_ledger.jsonl, computed by
-scripts/team_system/effects_rest_b2b.py (team ORtg/eFG/pace vs 2+-day rest) --
-OWNS the significance-tested effect. This module independently derives the
-schedule classes from the boxscore `date` column and reports RAW pooled per-36
-means per class; it runs no test and no CI/p-value, and does NOT restate the
-receipt's -1.73 as its own result (that number is cited FROM the receipt).
-
-Density classes, assigned to the TRAILING game of each calendar-day window,
-within a season (one game per team per date). b2b: previous game exactly 1
-calendar day earlier (2nd leg). 3-in-4: >=3 games in the 4 calendar days
-ending on this game. 4-in-6: >=4 games in the 6 calendar days ending on it.
-The three OVERLAP (a b2b that closes a cluster is also 3-in-4) -- lenses, NOT
-a partition; counts are not additive. Baseline ("rested") = games in NONE of
-the three (>= 2 days rest, no compression), matching the receipt's baseline.
-The per-36 number reuses the frozen Win-Score-style box composite
-(WEIGHTS_PER36, imported VERBATIM from box_value_index.py; Berri 2006), at
-player-game grain; it is NOT BPM/EPM/RAPM.
-
-Declared floors (declared once, never tuned to any result):
-  - per-game minutes: a player-game enters the per-36 pool only at min >= MIN_PER_GAME_MINUTES
-  - team-season:      reported in the frequency table only at >= MIN_TEAM_GAMES team-games
-  - class delta:      a class reports a per-36 delta only at >= MIN_CLASS_PLAYER_GAMES player-games
-
-Input:  data/domains/basketball_nba/player_boxscores.parquet (columns-only read)
-Output: out/schedule_density.json  (per-team-season frequencies + per-36 deltas + methodology)
-        docs/img/schedule_density.png  (ONE chart: per-36 composite delta vs rested per class)
-
-Usage:
-    python -m scripts.platformkit.analytics_showcase.schedule_density
-    python -m scripts.platformkit.analytics_showcase.schedule_density --check
-"""
+'NBA schedule-density analytics: b2b / 3-in-4 / 4-in-6 frequencies per\nteam-season + the descriptive per-36 production gap under each class vs rested.\n\nDESCRIPTIVE_ONLY (see docs/JOB_EVIDENCE_PACKET.md) -- no advantage/return/money claims.\nDESCRIPTIVE COMPANION to the confirmed b2b mechanism receipt, NOT a\nre-measurement of it: the receipt -- CONFIRMED_LOCAL claim `b2b_rest_penalty`\n(effect=-1.73 pts/100 team ORtg, n=4732, p=0.0056) in\ndomains/basketball_nba/knowledge/validation_ledger.jsonl, computed by\nscripts/team_system/effects_rest_b2b.py (team ORtg/eFG/pace vs 2+-day rest) --\nOWNS the significance-tested effect. This module independently derives the\nschedule classes from the boxscore `date` column and reports RAW pooled per-36\nmeans per class; it runs no test and no CI/p-value, and does NOT restate the\nreceipt\'s -1.73 as its own result (that number is cited FROM the receipt).\n\nDensity classes, assigned to the TRAILING game of each calendar-day window,\nwithin a season (one game per team per date). b2b: previous game exactly 1\ncalendar day earlier (2nd leg). 3-in-4: >=3 games in the 4 calendar days\nending on this game. 4-in-6: >=4 games in the 6 calendar days ending on it.\nThe three OVERLAP (a b2b that closes a cluster is also 3-in-4) -- lenses, NOT\na partition; counts are not additive. Baseline ("rested") = games in NONE of\nthe three (>= 2 days rest, no compression), matching the receipt\'s baseline.\nThe per-36 number reuses the frozen Win-Score-style box composite\n(WEIGHTS_PER36, imported VERBATIM from box_value_index.py; Berri 2006), at\nplayer-game grain; it is NOT BPM/EPM/RAPM.\n\nDeclared floors (declared once, never tuned to any result):\n  - per-game minutes: a player-game enters the per-36 pool only at min >= MIN_PER_GAME_MINUTES\n  - team-season:      reported in the frequency table only at >= MIN_TEAM_GAMES team-games\n  - class delta:      a class reports a per-36 delta only at >= MIN_CLASS_PLAYER_GAMES player-games\n\nInput:  data/domains/basketball_nba/player_boxscores.parquet (columns-only read)\nOutput: out/schedule_density.json  (per-team-season frequencies + per-36 deltas + methodology)\n        docs/img/schedule_density.png  (ONE chart: per-36 composite delta vs rested per class)\n\nUsage:\n    python -m scripts.platformkit.analytics_showcase.schedule_density\n    python -m scripts.platformkit.analytics_showcase.schedule_density --check\n'
 import json
 from pathlib import Path
 

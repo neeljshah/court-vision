@@ -1,25 +1,4 @@
-"""NBA team atlas: one compact descriptive card per team (all 30) -- points/gm
-scoring composition by season, a box-score-only pace proxy by season, and the
-top-5 minutes-leaders' per-36 production (points+reb+ast per 36).
-
-DESCRIPTIVE_ONLY (see docs/JOB_EVIDENCE_PACKET.md) -- no edge/ROI/$ claims.
-"pace proxy" is FGA - OREB + TOV + 0.44*FTA per team-game (mean, per season) --
-the standard single-side box-score possession estimate, NOT the official NBA
-two-sided pace stat (that needs the opponent's DREB too, absent from this
-per-player table). "top-5 contributors" = the 5 players with the most total
-minutes logged for that team (team column already scopes rows to games played
-FOR that team, so a mid-season trade splits correctly); their per-36 rate is
-descriptive, not a performance ranking. Manifest counts are written verbatim,
-never inflated.
-
-Input:  data/domains/basketball_nba/player_boxscores.parquet (columns-only read)
-Output: docs/img/atlas/nba_teams/<abbr>.png (one per team, 30 total)
-        out/atlas_nba_teams_manifest.json (via atlas_factory.write_manifest)
-
-Usage:
-    python -m scripts.platformkit.analytics_showcase.nba_team_atlas          # full build (ONE process, ~1-2 min)
-    python -m scripts.platformkit.analytics_showcase.nba_team_atlas --check  # fast: validate manifest count == disk PNG count
-"""
+'NBA team atlas: one compact descriptive card per team (all 30) -- points/gm\nscoring composition by season, a box-score-only pace proxy by season, and the\ntop-5 minutes-leaders\' per-36 production (points+reb+ast per 36).\n\nDESCRIPTIVE_ONLY (see docs/JOB_EVIDENCE_PACKET.md) -- no advantage/return/money claims.\n"pace proxy" is FGA - OREB + TOV + 0.44*FTA per team-game (mean, per season) --\nthe standard single-side box-score possession estimate, NOT the official NBA\ntwo-sided pace stat (that needs the opponent\'s DREB too, absent from this\nper-player table). "top-5 contributors" = the 5 players with the most total\nminutes logged for that team (team column already scopes rows to games played\nFOR that team, so a mid-season trade splits correctly); their per-36 rate is\ndescriptive, not a performance ranking. Manifest counts are written verbatim,\nnever inflated.\n\nInput:  data/domains/basketball_nba/player_boxscores.parquet (columns-only read)\nOutput: docs/img/atlas/nba_teams/<abbr>.png (one per team, 30 total)\n        out/atlas_nba_teams_manifest.json (via atlas_factory.write_manifest)\n\nUsage:\n    python -m scripts.platformkit.analytics_showcase.nba_team_atlas          # full build (ONE process, ~1-2 min)\n    python -m scripts.platformkit.analytics_showcase.nba_team_atlas --check  # fast: validate manifest count == disk PNG count\n'
 import json
 from pathlib import Path
 

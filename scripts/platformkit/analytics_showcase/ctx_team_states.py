@@ -1,29 +1,4 @@
-"""Context-conditioning: NBA team performance by game state (front-runner vs comeback).
-
-From the running play-by-play scores in data/nba_ai.db (table play_by_play, sport='nba'),
-for each team-game we compute the halftime margin (team perspective) and the second-half
-margin. Split each team's games into "led at half" vs "trailed at half":
-
-  front_runner_2h_margin = mean second-half margin in games the team LED at half
-                           (positive => extends/holds leads)
-  comeback_2h_margin     = mean second-half margin in games the team TRAILED at half
-                           (positive => closes gaps when behind)
-
-Front-runner teams sit high on the "led at half" axis; comeback teams high on the
-"trailed at half" axis -- a quadrant scatter.
-
-HONEST FLOOR: this corpus is thin (26 games, most teams appear 1-2x), so per-team
-splits are near-empty. We enforce MIN_GAMES_PER_SPLIT and MASK teams below it rather
-than print unstable per-team numbers. The robust, buildable result is the LEAGUE-LEVEL
-mean-reversion stat over all team-games: does the second-half margin revert toward zero
-relative to the halftime margin? That is n=team_games strong and reported as the headline.
-
-Calibration/intelligence analytic. edge_claimed=False. No $/ROI claims.
-
-CLI:
-    python -m scripts.platformkit.analytics_showcase.ctx_team_states
-    python -m scripts.platformkit.analytics_showcase.ctx_team_states --check
-"""
+'Context-conditioning: NBA team performance by game state (front-runner vs comeback).\n\nFrom the running play-by-play scores in data/nba_ai.db (table play_by_play, sport=\'nba\'),\nfor each team-game we compute the halftime margin (team perspective) and the second-half\nmargin. Split each team\'s games into "led at half" vs "trailed at half":\n\n  front_runner_2h_margin = mean second-half margin in games the team LED at half\n                           (positive => extends/holds leads)\n  comeback_2h_margin     = mean second-half margin in games the team TRAILED at half\n                           (positive => closes gaps when behind)\n\nFront-runner teams sit high on the "led at half" axis; comeback teams high on the\n"trailed at half" axis -- a quadrant scatter.\n\nHONEST FLOOR: this corpus is thin (26 games, most teams appear 1-2x), so per-team\nsplits are near-empty. We enforce MIN_GAMES_PER_SPLIT and MASK teams below it rather\nthan print unstable per-team numbers. The robust, buildable result is the LEAGUE-LEVEL\nmean-reversion stat over all team-games: does the second-half margin revert toward zero\nrelative to the halftime margin? That is n=team_games strong and reported as the headline.\n\nCalibration/intelligence analytic. edge_claimed=False. No money/return claims.\n\nCLI:\n    python -m scripts.platformkit.analytics_showcase.ctx_team_states\n    python -m scripts.platformkit.analytics_showcase.ctx_team_states --check\n'
 from __future__ import annotations
 
 import json
@@ -142,7 +117,7 @@ def _league_stats(records: List[Dict[str, Any]]) -> Dict[str, Any]:
         "n_trailed": int(trailed.size),
         "interpretation": (
             "slope < 0 => 2nd-half margin reverts against the halftime lead (mean reversion); "
-            "~0 => leads persist; > 0 => leads compound. Descriptive stat, not an edge claim."),
+            '~0 => leads persist; > 0 => leads compound. Descriptive stat, not an advantage claim.'),
     }
 
 
@@ -234,7 +209,7 @@ def _render_png(data: Dict[str, Any], out_path: Path) -> bool:
     ax.set_title(
         "NBA team game-state quadrant (front-runner vs comeback)\n"
         "gray = below n>=%d-per-split floor (illustrative, not stable) | %d placed | "
-        "calibration analytic, not an edge claim" % (MIN_GAMES_PER_SPLIT, n_placed))
+        'calibration analytic, not an advantage claim' % (MIN_GAMES_PER_SPLIT, n_placed))
     fig.text(0.5, 0.005,
              "Source: %s | as_of %s | edge_claimed=False" % (
                  data.get("source_artifact", "data/nba_ai.db"), data.get("as_of")),

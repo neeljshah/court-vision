@@ -2,7 +2,7 @@
  "status": "ok",
  "source_claim_store": "data/cache/intel_claims/nba_lineup_context_claims.jsonl",
  "metric": "net_rating_delta = net_rating_on_per48 - net_rating_off_per48",
- "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim.",
+ "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim.",
  "seasons": {
   "2024_25": {
    "status": "ok",
@@ -33,7 +33,7 @@
      "player_name": "Nikola Joki\u0107",
      "net_rating_delta": 23.713,
      "min_on": 2570.89,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 2,
@@ -42,7 +42,7 @@
      "player_name": "Zion Williamson",
      "net_rating_delta": 15.772,
      "min_on": 857.25,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 3,
@@ -51,7 +51,7 @@
      "player_name": "Shai Gilgeous-Alexander",
      "net_rating_delta": 15.763,
      "min_on": 2597.69,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 4,
@@ -60,7 +60,7 @@
      "player_name": "John Collins",
      "net_rating_delta": 15.371,
      "min_on": 1220.49,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 5,
@@ -69,7 +69,7 @@
      "player_name": "Christian Braun",
      "net_rating_delta": 15.208,
      "min_on": 2675.32,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 6,
@@ -78,7 +78,7 @@
      "player_name": "Dorian Finney-Smith",
      "net_rating_delta": 14.944,
      "min_on": 1241.6,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 7,
@@ -87,7 +87,7 @@
      "player_name": "Day'Ron Sharpe",
      "net_rating_delta": 14.902,
      "min_on": 909.24,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 8,
@@ -96,7 +96,7 @@
      "player_name": "Giannis Antetokounmpo",
      "net_rating_delta": 14.231,
      "min_on": 2288.66,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 9,
@@ -105,7 +105,7 @@
      "player_name": "Richaun Holmes",
      "net_rating_delta": 14.126,
      "min_on": 534.15,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 10,
@@ -114,7 +114,7 @@
      "player_name": "Franz Wagner",
      "net_rating_delta": 13.851,
      "min_on": 2023.32,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 11,
@@ -123,7 +123,7 @@
      "player_name": "Mouhamed Gueye",
      "net_rating_delta": 13.562,
      "min_on": 532.76,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 12,
@@ -132,7 +132,7 @@
      "player_name": "Lonzo Ball",
      "net_rating_delta": 13.374,
      "min_on": 777.02,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 13,
@@ -141,7 +141,7 @@
      "player_name": "Jamal Murray",
      "net_rating_delta": 12.827,
      "min_on": 2418.39,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 14,
@@ -150,7 +150,7 @@
      "player_name": "Ivica Zubac",
      "net_rating_delta": 11.965,
      "min_on": 2624.41,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 15,
@@ -159,7 +159,7 @@
      "player_name": "Jalen Johnson",
      "net_rating_delta": 11.785,
      "min_on": 1284.18,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     }
    ],
    "bottom_15": [
@@ -170,7 +170,7 @@
      "player_name": "Craig Porter Jr.",
      "net_rating_delta": -19.206,
      "min_on": 513.27,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 352,
@@ -179,7 +179,7 @@
      "player_name": "Terance Mann",
      "net_rating_delta": -14.994,
      "min_on": 732.25,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 351,
@@ -188,7 +188,7 @@
      "player_name": "Dejounte Murray",
      "net_rating_delta": -14.5,
      "min_on": 1012.15,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 350,
@@ -197,7 +197,7 @@
      "player_name": "Kyle Kuzma",
      "net_rating_delta": -14.258,
      "min_on": 886.94,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 349,
@@ -206,7 +206,7 @@
      "player_name": "DeAndre Jordan",
      "net_rating_delta": -14.037,
      "min_on": 690.67,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 348,
@@ -215,7 +215,7 @@
      "player_name": "Andre Drummond",
      "net_rating_delta": -13.103,
      "min_on": 750.69,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 347,
@@ -224,7 +224,7 @@
      "player_name": "Kessler Edwards",
      "net_rating_delta": -13.001,
      "min_on": 608.37,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 346,
@@ -233,7 +233,7 @@
      "player_name": "Thomas Bryant",
      "net_rating_delta": -12.319,
      "min_on": 846.96,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 345,
@@ -242,7 +242,7 @@
      "player_name": "Julian Strawther",
      "net_rating_delta": -12.268,
      "min_on": 1383.6,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 344,
@@ -251,7 +251,7 @@
      "player_name": "Bradley Beal",
      "net_rating_delta": -12.044,
      "min_on": 1702.19,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 343,
@@ -260,7 +260,7 @@
      "player_name": "Olivier-Maxence Prosper",
      "net_rating_delta": -11.946,
      "min_on": 583.98,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 342,
@@ -269,7 +269,7 @@
      "player_name": "Jock Landale",
      "net_rating_delta": -11.562,
      "min_on": 500.09,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 341,
@@ -278,7 +278,7 @@
      "player_name": "Jarace Walker",
      "net_rating_delta": -11.437,
      "min_on": 1185.01,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 340,
@@ -287,7 +287,7 @@
      "player_name": "Jaime Jaquez Jr.",
      "net_rating_delta": -11.268,
      "min_on": 1368.4,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 339,
@@ -296,13 +296,13 @@
      "player_name": "Reed Sheppard",
      "net_rating_delta": -10.938,
      "min_on": 653.08,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     }
    ],
    "caveats": [
     "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY until an earned predictive-validity receipt says otherwise.",
     "net_rating_delta = net_rating_on_per48 - net_rating_off_per48 from data/cache/team_system/lineups/on_off_2024_25.parquet (stint-level attribution, 1230-game 2024_25 PBP corpus).",
-    "FULL POPULATION above floor, no top-N cap. DESCRIPTIVE_ONLY -- NOT a gate, no market/$ edge claimed."
+    "FULL POPULATION above floor, no top-N cap. DESCRIPTIVE_ONLY -- NOT a gate, no market/money advantage claimed."
    ]
   },
   "2025_26": {
@@ -334,7 +334,7 @@
      "player_name": "Victor Wembanyama",
      "net_rating_delta": 17.043,
      "min_on": 2489.02,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 2,
@@ -343,7 +343,7 @@
      "player_name": "Nikola Joki\u0107",
      "net_rating_delta": 16.504,
      "min_on": 2118.92,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 3,
@@ -352,7 +352,7 @@
      "player_name": "Aaron Gordon",
      "net_rating_delta": 14.853,
      "min_on": 892.65,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 4,
@@ -361,7 +361,7 @@
      "player_name": "Giannis Antetokounmpo",
      "net_rating_delta": 14.349,
      "min_on": 1039.23,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 5,
@@ -370,7 +370,7 @@
      "player_name": "CJ McCollum",
      "net_rating_delta": 13.751,
      "min_on": 1228.56,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 6,
@@ -379,7 +379,7 @@
      "player_name": "Kawhi Leonard",
      "net_rating_delta": 13.282,
      "min_on": 1894.69,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 7,
@@ -388,7 +388,7 @@
      "player_name": "Jalen Duren",
      "net_rating_delta": 13.142,
      "min_on": 1733.85,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 8,
@@ -397,7 +397,7 @@
      "player_name": "Dylan Cardwell",
      "net_rating_delta": 11.899,
      "min_on": 709.9,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 9,
@@ -406,7 +406,7 @@
      "player_name": "Jalen Smith",
      "net_rating_delta": 11.838,
      "min_on": 1095.39,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 10,
@@ -415,7 +415,7 @@
      "player_name": "Jrue Holiday",
      "net_rating_delta": 11.789,
      "min_on": 1517.17,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 11,
@@ -424,7 +424,7 @@
      "player_name": "Devin Carter",
      "net_rating_delta": 10.981,
      "min_on": 503.01,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 12,
@@ -433,7 +433,7 @@
      "player_name": "Jose Alvarado",
      "net_rating_delta": 10.806,
      "min_on": 606.39,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 13,
@@ -442,7 +442,7 @@
      "player_name": "Nique Clifford",
      "net_rating_delta": 10.736,
      "min_on": 1673.69,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 14,
@@ -451,7 +451,7 @@
      "player_name": "Derrick White",
      "net_rating_delta": 10.642,
      "min_on": 2624.96,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 15,
@@ -460,7 +460,7 @@
      "player_name": "Svi Mykhailiuk",
      "net_rating_delta": 10.588,
      "min_on": 1155.61,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     }
    ],
    "bottom_15": [
@@ -471,7 +471,7 @@
      "player_name": "Tre Mann",
      "net_rating_delta": -24.09,
      "min_on": 655.39,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 349,
@@ -480,7 +480,7 @@
      "player_name": "Zeke Nnaji",
      "net_rating_delta": -17.241,
      "min_on": 619.07,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 348,
@@ -489,7 +489,7 @@
      "player_name": "Corey Kispert",
      "net_rating_delta": -16.078,
      "min_on": 688.31,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 347,
@@ -498,7 +498,7 @@
      "player_name": "Ariel Hukporti",
      "net_rating_delta": -15.993,
      "min_on": 570.6,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 346,
@@ -507,7 +507,7 @@
      "player_name": "Terrence Shannon Jr.",
      "net_rating_delta": -14.992,
      "min_on": 553.23,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 345,
@@ -516,7 +516,7 @@
      "player_name": "Zach LaVine",
      "net_rating_delta": -13.919,
      "min_on": 1224.26,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 344,
@@ -525,7 +525,7 @@
      "player_name": "Caris LeVert",
      "net_rating_delta": -13.71,
      "min_on": 1032.01,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 343,
@@ -534,7 +534,7 @@
      "player_name": "Jonas Valan\u010di\u016bnas",
      "net_rating_delta": -12.802,
      "min_on": 835.28,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 342,
@@ -543,7 +543,7 @@
      "player_name": "Keaton Wallace",
      "net_rating_delta": -12.34,
      "min_on": 504.57,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 341,
@@ -552,7 +552,7 @@
      "player_name": "Bruce Brown",
      "net_rating_delta": -12.266,
      "min_on": 1905.1,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 340,
@@ -561,7 +561,7 @@
      "player_name": "Rayan Rupert",
      "net_rating_delta": -12.164,
      "min_on": 577.21,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 339,
@@ -570,7 +570,7 @@
      "player_name": "Buddy Hield",
      "net_rating_delta": -11.395,
      "min_on": 768.09,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 338,
@@ -579,7 +579,7 @@
      "player_name": "Drake Powell",
      "net_rating_delta": -11.368,
      "min_on": 1119.08,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 337,
@@ -588,7 +588,7 @@
      "player_name": "Isaiah Stewart",
      "net_rating_delta": -11.23,
      "min_on": 1273.39,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     },
     {
      "rank": 336,
@@ -597,13 +597,13 @@
      "player_name": "Isaac Okoro",
      "net_rating_delta": -11.006,
      "min_on": 1622.66,
-     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or edge claim."
+     "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY, not a predictive or advantage claim."
     }
    ],
    "caveats": [
     "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- who shares the floor with a player correlates with coach trust, opponent strength, and garbage-time usage, and none of those are controlled for here. DESCRIPTIVE_ONLY until an earned predictive-validity receipt says otherwise.",
     "net_rating_delta = net_rating_on_per48 - net_rating_off_per48 from data/cache/team_system/lineups/on_off_2025_26.parquet (stint-level attribution, 196-game 2025_26 PBP corpus).",
-    "FULL POPULATION above floor, no top-N cap. DESCRIPTIVE_ONLY -- NOT a gate, no market/$ edge claimed."
+    "FULL POPULATION above floor, no top-N cap. DESCRIPTIVE_ONLY -- NOT a gate, no market/money advantage claimed."
    ]
   }
  }

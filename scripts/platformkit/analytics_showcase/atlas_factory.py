@@ -1,24 +1,4 @@
-"""Shared card infrastructure for the analytics_showcase "atlas" family.
-
-Every atlas module (one per sport/entity-type) imports this file instead of
-re-inventing its own compact-card renderer or manifest writer. All cards are
-DESCRIPTIVE_ONLY (no edge/ROI claims -- see docs/JOB_EVIDENCE_PACKET.md) and
-must stay small: dpi<=90, target <=45KB/card, hard guard <=60KB (one retry at
-a lower dpi, then fail loud if still oversize).
-
-Usage (by every atlas module that wants a card) -- the check_all gotcha:
-check_all.py runs modules via `-m scripts.platformkit.analytics_showcase.X`,
-but a module can also be run as a bare script, so import this file both ways:
-
-    try:
-        from scripts.platformkit.analytics_showcase.atlas_factory import (
-            card_figure, write_manifest, slugify, card_path)
-    except ImportError:
-        from atlas_factory import card_figure, write_manifest, slugify, card_path
-
-Usage (this file):
-    python -m scripts.platformkit.analytics_showcase.atlas_factory --check
-"""
+'Shared card infrastructure for the analytics_showcase "atlas" family.\n\nEvery atlas module (one per sport/entity-type) imports this file instead of\nre-inventing its own compact-card renderer or manifest writer. All cards are\nDESCRIPTIVE_ONLY (no advantage/return claims -- see docs/JOB_EVIDENCE_PACKET.md) and\nmust stay small: dpi<=90, target <=45KB/card, hard guard <=60KB (one retry at\na lower dpi, then fail loud if still oversize).\n\nUsage (by every atlas module that wants a card) -- the check_all gotcha:\ncheck_all.py runs modules via `-m scripts.platformkit.analytics_showcase.X`,\nbut a module can also be run as a bare script, so import this file both ways:\n\n    try:\n        from scripts.platformkit.analytics_showcase.atlas_factory import (\n            card_figure, write_manifest, slugify, card_path)\n    except ImportError:\n        from atlas_factory import card_figure, write_manifest, slugify, card_path\n\nUsage (this file):\n    python -m scripts.platformkit.analytics_showcase.atlas_factory --check\n'
 import json
 import re
 from collections.abc import Callable, Sequence

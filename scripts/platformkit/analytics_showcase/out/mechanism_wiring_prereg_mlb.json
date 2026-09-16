@@ -28,7 +28,7 @@
     "trigger": null,
     "source_artifact": "(none)",
     "planned": "NOT_TESTABLE",
-    "reason": "edge-zone (Statcast zone 11-14) rate by count is a pitch-grain quantity recomputed by domains/mlb/knowledge/validate_count_zone.py; no persisted as-of column exists and no local pitch corpus predates 2022",
+    "reason": "boundary-zone (Statcast zone 11-14) rate by count is a pitch-grain quantity recomputed by domains/mlb/knowledge/validate_count_zone.py; no persisted as-of column exists and no local pitch corpus predates 2022",
     "as_of": null
   },
   {
@@ -36,7 +36,7 @@
     "trigger": null,
     "source_artifact": "(none)",
     "planned": "NOT_TESTABLE",
-    "reason": "swing-and-out-of-zone rate at two strikes is the same pitch-grain quantity as the edge-zone row, with the same absence: recomputed in memory, never persisted as a game-grain as-of column",
+    "reason": "swing-and-out-of-zone rate at two strikes is the same pitch-grain quantity as the boundary-zone row, with the same absence: recomputed in memory, never persisted as a game-grain as-of column",
     "as_of": null
   },
   {

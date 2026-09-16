@@ -18,7 +18,7 @@
   "n_led": 26,
   "mean_2h_margin_when_trailed_at_half": -1.346,
   "n_trailed": 26,
-  "interpretation": "slope < 0 => 2nd-half margin reverts against the halftime lead (mean reversion); ~0 => leads persist; > 0 => leads compound. Descriptive stat, not an edge claim."
+  "interpretation": "slope < 0 => 2nd-half margin reverts against the halftime lead (mean reversion); ~0 => leads persist; > 0 => leads compound. Descriptive stat, not an advantage claim."
  },
  "teams": [
   {

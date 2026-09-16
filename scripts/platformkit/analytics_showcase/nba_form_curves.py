@@ -1,32 +1,4 @@
-"""NBA player form curves: per-player 10-game rolling per-36 box-composite,
-league percentile context bands, and the biggest net risers/fallers.
-
-DESCRIPTIVE_ONLY (see docs/JOB_EVIDENCE_PACKET.md) -- no edge/ROI/$ claims.
-The "form" number is a 10-game, minute-weighted, per-36 rolling value of the
-frozen Win-Score-style box composite reused VERBATIM from box_value_index.py
-(WEIGHTS_PER36 -- Berri 2006 convention). It is NOT BPM/EPM/RAPM and NOT a
-live "hot/cold" or predictive signal. The "mover" delta is simply the net
-change between a player's FIRST and LAST retained 10-game window over the
-observed span -- a trajectory description, computed once, never tuned, and
-the two windows may abut when early low-minute windows are dropped (labeled,
-not claimed disjoint). Percentile bands are pooled over EVERY retained
-10-game window (player-game weighted), i.e. the league distribution of
-observed form states. Accented-name player_id fragmentation is a known
-upstream data issue (see box_value_index.py), carried through, not fixed here.
-
-Declared floors (declared once, never tuned to any result):
-  - per-game minutes: a game enters a window only if min >= MIN_PER_GAME_MINUTES
-  - window minutes:   a full 10-game window is kept only if total min >= MIN_WINDOW_MINUTES
-  - mover eligibility: a player needs >= 2*WINDOW qualifying games
-
-Input:  data/domains/basketball_nba/player_boxscores.parquet (columns-only read)
-Output: out/nba_form_curves.json  (bands + top/bottom movers + methodology)
-        docs/img/nba_form_curves.png  (ONE league-level movers chart)
-
-Usage:
-    python -m scripts.platformkit.analytics_showcase.nba_form_curves
-    python -m scripts.platformkit.analytics_showcase.nba_form_curves --check
-"""
+'NBA player form curves: per-player 10-game rolling per-36 box-composite,\nleague percentile context bands, and the biggest net risers/fallers.\n\nDESCRIPTIVE_ONLY (see docs/JOB_EVIDENCE_PACKET.md) -- no advantage/return/money claims.\nThe "form" number is a 10-game, minute-weighted, per-36 rolling value of the\nfrozen Win-Score-style box composite reused VERBATIM from box_value_index.py\n(WEIGHTS_PER36 -- Berri 2006 convention). It is NOT BPM/EPM/RAPM and NOT a\nlive "hot/cold" or predictive signal. The "mover" delta is simply the net\nchange between a player\'s FIRST and LAST retained 10-game window over the\nobserved span -- a trajectory description, computed once, never tuned, and\nthe two windows may abut when early low-minute windows are dropped (labeled,\nnot claimed disjoint). Percentile bands are pooled over EVERY retained\n10-game window (player-game weighted), i.e. the league distribution of\nobserved form states. Accented-name player_id fragmentation is a known\nupstream data issue (see box_value_index.py), carried through, not fixed here.\n\nDeclared floors (declared once, never tuned to any result):\n  - per-game minutes: a game enters a window only if min >= MIN_PER_GAME_MINUTES\n  - window minutes:   a full 10-game window is kept only if total min >= MIN_WINDOW_MINUTES\n  - mover eligibility: a player needs >= 2*WINDOW qualifying games\n\nInput:  data/domains/basketball_nba/player_boxscores.parquet (columns-only read)\nOutput: out/nba_form_curves.json  (bands + top/bottom movers + methodology)\n        docs/img/nba_form_curves.png  (ONE league-level movers chart)\n\nUsage:\n    python -m scripts.platformkit.analytics_showcase.nba_form_curves\n    python -m scripts.platformkit.analytics_showcase.nba_form_curves --check\n'
 import json
 from pathlib import Path
 

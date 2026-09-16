@@ -3,7 +3,7 @@
  "generated_at": "2026-07-24T21:46:01.294251+00:00",
  "descriptive_only": true,
  "edge_claimed": false,
- "headline": "Descriptive MLB Statcast-derived leaderboards (catcher/umpire out-of-zone strike rate, platoon on-base splits) for a fixed 2022-2023 corpus slice, shown beside two honest nulls -- an unstable park-factor read and a REJECTed umpire-totals gate -- with no predictive or edge claim anywhere.",
+ "headline": "Descriptive MLB Statcast-derived leaderboards (catcher/umpire out-of-zone strike rate, platoon on-base splits) for a fixed 2022-2023 corpus slice, shown beside two honest nulls -- an unstable park-factor read and a REJECTed umpire-totals gate -- with no predictive or advantage claim anywhere.",
  "observation_window": {
   "seasons": "2022_2023",
   "corpus_id": "statcast_fuller_v1",
@@ -479,6 +479,6 @@
   "OOZ strike rate is cruder than mixed-model framing and is NOT a called-strike/framing rate.",
   "2022-2023 fixed window; not current-season.",
   "platoon delta is raw on-base rate difference, not park/quality adjusted.",
-  "these are DESCRIPTIVE leaderboards; no predictive or edge claim is made."
+  "these are DESCRIPTIVE leaderboards; no predictive or advantage claim is made."
  ]
 }

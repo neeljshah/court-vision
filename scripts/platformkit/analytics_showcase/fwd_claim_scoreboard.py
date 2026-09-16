@@ -1,25 +1,4 @@
-"""Forward-graded claim scoreboard: every claim family's post-publication track record.
-
-The product IS the self-grading. From the per-sport validation ledgers
-(domains/<sport>/knowledge/validation_ledger.jsonl) this builds, for each claim
-family (sport x hypothesis), its verdict history over time, first-seen date,
-and current status -- verified / null / not_testable / retracted / provisional.
-Families whose verdict FLIPPED across runs (e.g. confirmed -> failed replication,
-or null -> confirmed) are surfaced explicitly: an honest retraction is the whole
-point, not a blemish.
-
-Headline honest ratio = nulls-or-worse vs confirms across families. A system that
-only ever "confirmed" would be lying; the ratio is the credibility receipt.
-
-edge_claimed=False. This is a calibration/honesty exhibit, not a betting signal.
-
-Data source: 4 git-tracked ledgers (present on a fresh clone). On the off chance
-they are absent, --check falls back to verifying the committed out/ artifact.
-
-Usage:
-    python -m scripts.platformkit.analytics_showcase.fwd_claim_scoreboard
-    python -m scripts.platformkit.analytics_showcase.fwd_claim_scoreboard --check
-"""
+'Forward-graded claim scoreboard: every claim family\'s post-publication track record.\n\nThe product IS the self-grading. From the per-sport validation ledgers\n(domains/<sport>/knowledge/validation_ledger.jsonl) this builds, for each claim\nfamily (sport x hypothesis), its verdict history over time, first-seen date,\nand current status -- verified / null / not_testable / retracted / provisional.\nFamilies whose verdict FLIPPED across runs (e.g. confirmed -> failed replication,\nor null -> confirmed) are surfaced explicitly: an honest retraction is the whole\npoint, not a blemish.\n\nHeadline honest ratio = nulls-or-worse vs confirms across families. A system that\nonly ever "confirmed" would be lying; the ratio is the credibility receipt.\n\nedge_claimed=False. This is a calibration/honesty exhibit, not a forecast comparison signal.\n\nData source: 4 git-tracked ledgers (present on a fresh clone). On the off chance\nthey are absent, --check falls back to verifying the committed out/ artifact.\n\nUsage:\n    python -m scripts.platformkit.analytics_showcase.fwd_claim_scoreboard\n    python -m scripts.platformkit.analytics_showcase.fwd_claim_scoreboard --check\n'
 import argparse
 import json
 import os

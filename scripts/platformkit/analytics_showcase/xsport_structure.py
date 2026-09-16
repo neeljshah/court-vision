@@ -1,26 +1,4 @@
-"""Cross-sport market structure: one methodology, four sports.
-
-Reads the per-sport in-game reliability maps
-(data/cache/calibration_grid/<sport>_reliability_map.json), which each carry the
-SAME bucket schema (market_mean_prob, outcome_rate, market_brier, n_ticks,
-n_games). Applies one methodology across NBA / MLB / soccer / tennis:
-
-  (a) favorite-longshot check -- in favorite buckets (market prob >= FAV) vs
-      longshot buckets (<= DOG), does the realized outcome_rate exceed / trail
-      the market-implied prob? Signed gap = outcome_rate - market_mean_prob.
-  (b) market calibration quality -- n_ticks-weighted ECE = |market_prob-outcome|
-      and n_ticks-weighted market Brier of the market-implied probs.
-  (c) comeback proxy -- in near-decided buckets (market prob >= DECIDED), the
-      realized frequency the heavy favorite still lost = 1 - outcome_rate.
-
-One table, one method, honest per-sport n. Tennis has no reliability map on disk
--> emitted as {"status":"not_buildable"} rather than guessed (precedent:
-aging_curve_lite). edge_claimed=False -- calibration/structure only, no $ claims.
-
-Usage:
-    python -m scripts.platformkit.analytics_showcase.xsport_structure
-    python -m scripts.platformkit.analytics_showcase.xsport_structure --check
-"""
+'Cross-sport market structure: one methodology, four sports.\n\nReads the per-sport in-game reliability maps\n(data/cache/calibration_grid/<sport>_reliability_map.json), which each carry the\nSAME bucket schema (market_mean_prob, outcome_rate, market_brier, n_ticks,\nn_games). Applies one methodology across NBA / MLB / soccer / tennis:\n\n  (a) favorite-longshot check -- in favorite buckets (market prob >= FAV) vs\n      longshot buckets (<= DOG), does the realized outcome_rate exceed / trail\n      the closing reference forecast-implied prob? Signed gap = outcome_rate - market_mean_prob.\n  (b) market calibration quality -- n_ticks-weighted ECE = |market_prob-outcome|\n      and n_ticks-weighted market Brier of the closing reference forecast-implied probs.\n  (c) comeback proxy -- in near-decided buckets (market prob >= DECIDED), the\n      realized frequency the heavy favorite still lost = 1 - outcome_rate.\n\nOne table, one method, honest per-sport n. Tennis has no reliability map on disk\n-> emitted as {"status":"not_buildable"} rather than guessed (precedent:\naging_curve_lite). edge_claimed=False -- calibration/structure only, no money claims.\n\nUsage:\n    python -m scripts.platformkit.analytics_showcase.xsport_structure\n    python -m scripts.platformkit.analytics_showcase.xsport_structure --check\n'
 import argparse
 import json
 import os

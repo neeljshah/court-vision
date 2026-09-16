@@ -1,22 +1,4 @@
-"""scripts.platformkit.analytics_showcase.comeback_atlas -- lead x time atlas
-of model vs market vs realized win rate, from the existing NBA state-bucket
-reliability map (calibration_grid.nba_grid output). Calibration measurement
-only, never a $/ROI/edge claim.
-
-Source: data/cache/calibration_grid/nba_reliability_map.json (built by
-`python -m scripts.platformkit.calibration_grid.nba_grid`), which already
-buckets every traded in-play tick by calibration_grid.buckets.nba_bucket
-(lead-magnitude band x time-remaining band) and prices a sample through the
-sanctioned winprob_dispatch resolver. This script only reshapes those
-buckets into a 2D (lead x time) grid and renders it -- it computes nothing
-new off raw ticks.
-
-n>=30 games mask (MIN_GAMES gate, same threshold nba_grid.py already applies
-via can_price): buckets below it are masked out of the heatmap and excluded
-from headline numbers, never silently dropped from the JSON.
-
-CLI: python -m scripts.platformkit.analytics_showcase.comeback_atlas
-"""
+'scripts.platformkit.analytics_showcase.comeback_atlas -- lead x time atlas\nof model vs market vs realized win rate, from the existing NBA state-bucket\nreliability map (calibration_grid.nba_grid output). Calibration measurement\nonly, never a money/return/advantage claim.\n\nSource: data/cache/calibration_grid/nba_reliability_map.json (built by\n`python -m scripts.platformkit.calibration_grid.nba_grid`), which already\nbuckets every traded in-play tick by calibration_grid.buckets.nba_bucket\n(lead-magnitude band x time-remaining band) and prices a sample through the\nsanctioned winprob_dispatch resolver. This script only reshapes those\nbuckets into a 2D (lead x time) grid and renders it -- it computes nothing\nnew off raw ticks.\n\nn>=30 games mask (MIN_GAMES gate, same threshold nba_grid.py already applies\nvia can_price): buckets below it are masked out of the heatmap and excluded\nfrom headline numbers, never silently dropped from the JSON.\n\nCLI: python -m scripts.platformkit.analytics_showcase.comeback_atlas\n'
 from __future__ import annotations
 
 import json
@@ -45,7 +27,7 @@ _NOVELTY = {
         "arXiv 2606.07811 (~Jun 2026), 'When Do Markets Fully Process Public "
         "Information? Evidence from Real-Time Prediction Markets' -- Kalshi/NBA "
         "contract-minute join of market price, a state-only model, and terminal "
-        "outcome; measures how fully the market has absorbed realized game state."),
+        'outcome; measures how fully the closing reference forecast has absorbed realized game state.'),
     "how_ours_differs": (
         "Same three-way (model, market, outcome) join, reshaped into a 2D lead x "
         "time-remaining atlas instead of a single time-checkpoint curve, off our "
@@ -116,7 +98,7 @@ def build_atlas(reliability_map_path: Optional[Path] = None) -> Dict[str, Any]:
         "story": (
             "Reliability map reshaped into a lead x time-remaining grid: %d state buckets, "
             "%d below the n>=30-games mask. This is a calibration atlas (model vs market vs "
-            "realized frequency by game state), not an edge/ROI claim." % (len(cells), n_masked)
+            'realized frequency by game state), not an advantage/return claim.' % (len(cells), n_masked)
         ),
     }
 
@@ -153,7 +135,7 @@ def _render_png(atlas: Dict[str, Any], out_path: Path) -> bool:
     ax.set_yticks(range(len(leads))); ax.set_yticklabels(leads)
     ax.set_xlabel("time-remaining band"); ax.set_ylabel("home-lead band")
     ax.set_title("Comeback atlas: model - market prob gap by (lead, time)\n"
-                  "gray = masked (n_games < %d) | calibration measurement, not edge" % MIN_GAMES)
+                  'gray = masked (n_games < %d) | calibration measurement, not advantage' % MIN_GAMES)
     for i in range(len(leads)):
         for j in range(len(times)):
             if mask_grid[i, j]:

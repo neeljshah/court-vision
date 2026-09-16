@@ -142,7 +142,7 @@
         "outcome_note": "Existing showcase joins are incompatible with this two-sided home-moneyline grain; tracking-to-close only."
       },
       "cross_book_context": "SKIPPED: no cheap schema-stable multi-book join was used.",
-      "verdict": "Descriptive close-tracking summary only; no outcome or edge inference is made.",
+      "verdict": "Descriptive close-tracking summary only; no outcome or advantage inference is made.",
       "status": "ok",
       "source": "data/domains/basketball_nba/odds.parquet",
       "source_columns": [
@@ -322,7 +322,7 @@
         "outcome_note": "Existing showcase joins are incompatible with this two-sided home-moneyline grain; tracking-to-close only."
       },
       "cross_book_context": "SKIPPED: no cheap schema-stable multi-book join was used.",
-      "verdict": "Descriptive close-tracking summary only; no outcome or edge inference is made.",
+      "verdict": "Descriptive close-tracking summary only; no outcome or advantage inference is made.",
       "status": "ok",
       "source": "data/domains/mlb/odds.parquet",
       "source_columns": [
@@ -546,7 +546,7 @@
         "outcome_note": "Existing showcase joins are incompatible with this two-sided home-moneyline grain; tracking-to-close only."
       },
       "cross_book_context": "SKIPPED: no cheap schema-stable multi-book join was used.",
-      "verdict": "Descriptive close-tracking summary only; no outcome or edge inference is made.",
+      "verdict": "Descriptive close-tracking summary only; no outcome or advantage inference is made.",
       "status": "ok",
       "source": "data/domains/tennis/odds.parquet",
       "source_columns": [

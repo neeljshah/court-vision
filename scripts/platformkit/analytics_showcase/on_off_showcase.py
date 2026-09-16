@@ -34,7 +34,7 @@ ROSTER_CONFOUND_CAVEAT = (
     "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- "
     "who shares the floor with a player correlates with coach trust, opponent "
     "strength, and garbage-time usage, and none of those are controlled for here. "
-    "DESCRIPTIVE_ONLY, not a predictive or edge claim."
+    'DESCRIPTIVE_ONLY, not a predictive or advantage claim.'
 )
 
 

@@ -16,7 +16,7 @@
    "claim": "One person -- Neel Shah -- directed a fleet of Claude agents to build and validate a production sports-forecasting system across 3,200+ commits (Mar-Jul 2026). He did not hand-type those commits, and he does not claim to have. The role is architect and director: a planner model orchestrates cheaper executor models under hard, automated ship gates that the agents cannot override. The load-bearin...",
    "strongest_receipt": {
     "source": "scripts/platformkit/analytics_showcase/out/reject_graveyard.json",
-    "label": "A REJECT/DEFER is honest market-efficiency evidence, not a failure. No $/edge/ROI claim."
+    "label": "A REJECT/DEFER is honest market-efficiency evidence, not a failure. No money/advantage/return claim."
    },
    "cited_artifacts": [
     "scripts/platformkit/analytics_showcase/out/reject_graveyard.json",
@@ -70,8 +70,8 @@
   {
    "slug": "calibration-decomposition",
    "bucket": "Calibration & market",
-   "title": "Decomposing my own Brier gap vs the market -- and publishing where the model is weakest",
-   "claim": "I don't just report that the market beats my in-game model -- I take my own Brier gap apart into its named components and publish the ranked list of exactly which game states my model handles worst. Two instruments do this:",
+   "title": "Decomposing my own Brier gap vs the closing reference forecast -- and publishing where the model is weakest",
+   "claim": "I don't just report that the closing reference forecast beats my in-game model -- I take my own Brier gap apart into its named components and publish the ranked list of exactly which game states my model handles worst. Two instruments do this:",
    "strongest_receipt": {
     "source": "scripts/platformkit/analytics_showcase/out/murphy_decomposition.json",
     "label": "mlb: model Brier 0.2377 is worse than market 0.2067 (gap=+0.0310); driven mainly by resolution (information, not fixable by recalibration) (reliability_gap=+0.0066, resolution_gap=-0.0235). soccer_intl: model Brier 0.2279 is worse than m..."
@@ -89,7 +89,7 @@
    "claim": "A finding that shows up once, on one slice of one corpus, is indistinguishable from a lucky calendar window or an overfit grid search. The discipline in this repo is: a hypothesis is not \"confirmed\" until the same effect, at the same pre-declared bar, reproduces on a second corpus that is independent of the one it was discovered on -- a disjoint season, a disjoint competition group, a disjoint ...",
    "strongest_receipt": {
     "source": "scripts/platformkit/analytics_showcase/out/mechanism_survival.json",
-    "label": "Survival rate = share of TESTABLE hypotheses whose latest recorded verdict is CONFIRMED_LOCAL / CONFIRMED_LOCAL_incl_2026_OOS / REPLICATED. A NULL/REJECT is honest market-efficiency evidence, not a failure. No $/edge/ROI claim."
+    "label": "Survival rate = share of TESTABLE hypotheses whose latest recorded verdict is CONFIRMED_LOCAL / CONFIRMED_LOCAL_incl_2026_OOS / REPLICATED. A NULL/REJECT is honest market-efficiency evidence, not a failure. No money/advantage/return claim."
    },
    "cited_artifacts": [
     "scripts/platformkit/analytics_showcase/out/mechanism_survival.json",
@@ -128,7 +128,7 @@
    "slug": "devig-stack",
    "bucket": "Calibration & market",
    "title": "The Devig Stack -- market math from scratch, used as the yardstick I grade against",
-   "claim": "A vigged sportsbook price is not a probability -- it carries the book's margin (the overround). To grade a forecaster against \"what the market really thinks\" you first have to strip that vig honestly, and the naive retail method (proportional / additive) is biased on favourite-longshot lines. So src/prediction/devig.py implements four methods from scratch and dispatches between them:",
+   "claim": "A vigged sportsbook price is not a probability -- it carries the book's margin (the overround). To grade a forecaster against \"what the closing reference forecast really thinks\" you first have to strip that vig honestly, and the naive retail method (proportional / additive) is biased on favourite-longshot lines. So src/prediction/devig.py implements four methods from scratch and dispatches between them:",
    "strongest_receipt": {
     "source": null,
     "label": "A vigged sportsbook price is not a probability -- it carries the book's margin (the overround)"
@@ -196,7 +196,7 @@
    "claim": "\"Teams on a back-to-back shoot worse.\" \"Momentum is real.\" \"Home dogs cover.\" Sports is drowning in folklore, and almost none of it is tested against leak-free data. This system turns each belief into a pre-registered hypothesis, runs it through the same refutation gate every signal faces, and records the verdict -- CONFIRMED, NULL, REJECT, or NOT_TESTABLE -- in an append-only ledger, one per s...",
    "strongest_receipt": {
     "source": "scripts/platformkit/analytics_showcase/out/mechanism_survival.json",
-    "label": "Survival rate = share of TESTABLE hypotheses whose latest recorded verdict is CONFIRMED_LOCAL / CONFIRMED_LOCAL_incl_2026_OOS / REPLICATED. A NULL/REJECT is honest market-efficiency evidence, not a failure. No $/edge/ROI claim."
+    "label": "Survival rate = share of TESTABLE hypotheses whose latest recorded verdict is CONFIRMED_LOCAL / CONFIRMED_LOCAL_incl_2026_OOS / REPLICATED. A NULL/REJECT is honest market-efficiency evidence, not a failure. No money/advantage/return claim."
    },
    "cited_artifacts": [
     "scripts/platformkit/analytics_showcase/out/mechanism_survival.json",
@@ -208,10 +208,10 @@
    "slug": "leak-instruments",
    "bucket": "Self-refutation & honesty",
    "title": "Leakage-Catching Instruments -- the harnesses built to refute my own results",
-   "claim": "In sports forecasting, a good-looking number is almost always a leak until proven otherwise: a feature that peeks at the future, a grader that reads the market instead of the model, a grid search that memorizes its holdout, a single lucky calendar window. So the machinery that matters is not any metric -- it is the set of instruments that assume every result is wrong and try to break it. This p...",
+   "claim": "In sports forecasting, a good-looking number is almost always a leak until proven otherwise: a feature that peeks at the future, a grader that reads the closing reference forecast instead of the model, a grid search that memorizes its holdout, a single lucky calendar window. So the machinery that matters is not any metric -- it is the set of instruments that assume every result is wrong and try to break it. This p...",
    "strongest_receipt": {
     "source": null,
-    "label": "In sports forecasting, a good-looking number is almost always a leak until proven otherwise: a feature that peeks at the future, a grader that reads the market instead of the model, a grid search that memorizes its holdout, a single lucky calendar window"
+    "label": "In sports forecasting, a good-looking number is almost always a leak until proven otherwise: a feature that peeks at the future, a grader that reads the closing reference forecast instead of the model, a grid search that memorizes its holdout, a single lucky calendar window"
    },
    "cited_artifacts": [],
    "edge_claimed": false
@@ -219,8 +219,8 @@
   {
    "slug": "market-disagreement",
    "bucket": "Self-refutation & honesty",
-   "title": "When the market out-forecasts us -- measured, bucketed, and published",
-   "claim": "We do not hide the cases where the market beats us. We instrument them. Two published analytics answer two honest questions:",
+   "title": "When the closing reference forecast out-forecasts us -- measured, bucketed, and published",
+   "claim": "We do not hide the cases where the closing reference forecast beats us. We instrument them. Two published analytics answer two honest questions:",
    "strongest_receipt": {
     "source": "scripts/platformkit/analytics_showcase/out/market_disagreement_profile.json",
     "label": "mlb: at largest disagreement (>=.10, n=33402), market usually right (model_closer_rate=0.377, model_brier=0.2827 vs market_brier=0.2103). soccer_intl: at largest disagreement (>=.10, n=4406), market usually right (model_closer_rate=0.215..."
@@ -304,7 +304,7 @@
    "slug": "retraction-story",
    "bucket": "Self-refutation & honesty",
    "title": "The Retraction Story -- I built the instruments that refuted my own headline numbers",
-   "claim": "The same person who built this system also built the instruments that refuted his own flagship numbers -- and documented the negative results in writing rather than quietly deleting them. The product is a calibrated predictor, not a betting-edge product. The strongest signal in the repo is not any metric; it is the self-refutation trail.",
+   "claim": "The same person who built this system also built the instruments that refuted his own flagship numbers -- and documented the negative results in writing rather than quietly deleting them. The product is a calibrated predictor, not a advantage-claim product. The strongest signal in the repo is not any metric; it is the self-refutation trail.",
    "strongest_receipt": {
     "source": "scripts/platformkit/analytics_showcase/out/honesty_exhibit.json",
     "label": "nulls (351) outnumber confirms (168) 2.1x -- we publish our nulls"

@@ -1,82 +1,82 @@
 {
-  "label": "market-microstructure MEASUREMENT (latency/cadence) -- NOT a trading signal",
-  "generated_at": "2026-07-24T18:45:18.178097Z",
-  "paths_tried": [
-    "C:\\Users\\neelj\\nba-ai-system\\data\\pod_backup_2026_07_20\\ingame_grade_deriv\\mlb",
-    "C:\\Users\\neelj\\nba-ai-system\\data\\pod_backup_2026_07_20\\tip_capture\\wnba\\ingame_*.jsonl"
-  ],
-  "sports": {
-    "mlb": {
-      "source": "ingame_grade_deriv/mlb (Kalshi total-market quote tracks)",
-      "observation_window": {
-        "source": "data/pod_backup_2026_07_20/ingame_grade_deriv/mlb/*.jsonl",
-        "ts_field": "ts",
-        "first": "2026-07-19T18:02:54+00:00",
-        "last": "2026-07-19T21:09:29+00:00",
-        "span_days": 0.13,
-        "note": "Rescued pod capture snapshot -- a single short window, NOT a season. Row/tick counts are large because capture is dense, not because the history is long."
-      },
-      "n_files": 5,
-      "n_rows": 2113,
-      "n_quote_tracks": 21,
-      "inter_tick_seconds": {
-        "n": 2092,
-        "median": 35.0,
-        "mean": 80.0,
-        "p50": 35.0,
-        "p90": 170.0
-      },
-      "price_move_size": {
-        "n": 1028,
-        "median": 0.02,
-        "mean": 0.0364,
-        "p50": 0.02,
-        "p90": 0.09,
-        "note": "abs delta in market_prob between consecutive ticks on same market line"
-      },
-      "model_vs_market_divergence": {
-        "n": 2113,
-        "median": 0.1161,
-        "mean": 0.1248,
-        "p50": 0.1161,
-        "p90": 0.2247,
-        "note": "abs(model_prob - market_prob) per tick; a calibration-gap MEASUREMENT, not an edge"
-      }
-    },
-    "wnba": {
-      "source": "tip_capture/wnba ingame_*.jsonl (Kalshi decimal-odds board snapshots)",
-      "observation_window": {
-        "source": "data/pod_backup_2026_07_20/tip_capture/wnba/ingame_*.jsonl",
-        "ts_field": "capture_ts",
-        "first": "2026-07-19T00:03:21.043582+00:00",
-        "last": "2026-07-20T01:04:41.444769+00:00",
-        "span_days": 1.04,
-        "note": "Rescued pod capture snapshot -- a single short window, NOT a season. Row/tick counts are large because capture is dense, not because the history is long."
-      },
-      "n_files": 2,
-      "n_rows": 479,
-      "capture_cadence_seconds": {
-        "n": 334,
-        "median": 87.9,
-        "mean": 269.7,
-        "p50": 87.8548,
-        "p90": 136.0399
-      },
-      "kalshi_overround": {
-        "n": 3803,
-        "median": 0.01,
-        "mean": 0.0244,
-        "p50": 0.01,
-        "p90": 0.03,
-        "note": "1/home_decimal + 1/away_decimal - 1, per event snapshot (spread/vig measurement)"
-      }
-    }
+ "label": "market-microstructure MEASUREMENT (latency/cadence) -- NOT a trading signal",
+ "generated_at": "2026-07-24T18:45:18.178097Z",
+ "paths_tried": [
+  "data/pod_backup_2026_07_20/ingame_grade_deriv/mlb",
+  "data/pod_backup_2026_07_20/tip_capture/wnba/ingame_*.jsonl"
+ ],
+ "sports": {
+  "mlb": {
+   "source": "ingame_grade_deriv/mlb (Kalshi total-market quote tracks)",
+   "observation_window": {
+    "source": "data/pod_backup_2026_07_20/ingame_grade_deriv/mlb/*.jsonl",
+    "ts_field": "ts",
+    "first": "2026-07-19T18:02:54+00:00",
+    "last": "2026-07-19T21:09:29+00:00",
+    "span_days": 0.13,
+    "note": "Rescued pod capture snapshot -- a single short window, NOT a season. Row/tick counts are large because capture is dense, not because the history is long."
+   },
+   "n_files": 5,
+   "n_rows": 2113,
+   "n_quote_tracks": 21,
+   "inter_tick_seconds": {
+    "n": 2092,
+    "median": 35.0,
+    "mean": 80.0,
+    "p50": 35.0,
+    "p90": 170.0
+   },
+   "price_move_size": {
+    "n": 1028,
+    "median": 0.02,
+    "mean": 0.0364,
+    "p50": 0.02,
+    "p90": 0.09,
+    "note": "abs delta in market_prob between consecutive ticks on same market line"
+   },
+   "model_vs_market_divergence": {
+    "n": 2113,
+    "median": 0.1161,
+    "mean": 0.1248,
+    "p50": 0.1161,
+    "p90": 0.2247,
+    "note": "abs(model_prob - market_prob) per tick; a calibration-gap MEASUREMENT, not an advantage"
+   }
   },
-  "status": "ok",
-  "observation_window": {
-    "corpus": "data/pod_backup_2026_07_20/ (rescued pod tick capture -- NOT data/cache/line_history)",
+  "wnba": {
+   "source": "tip_capture/wnba ingame_*.jsonl (Kalshi decimal-odds board snapshots)",
+   "observation_window": {
+    "source": "data/pod_backup_2026_07_20/tip_capture/wnba/ingame_*.jsonl",
+    "ts_field": "capture_ts",
     "first": "2026-07-19T00:03:21.043582+00:00",
     "last": "2026-07-20T01:04:41.444769+00:00",
-    "note": "Union of the per-sport windows below. Everything here describes one short rescued capture window, not a season."
+    "span_days": 1.04,
+    "note": "Rescued pod capture snapshot -- a single short window, NOT a season. Row/tick counts are large because capture is dense, not because the history is long."
+   },
+   "n_files": 2,
+   "n_rows": 479,
+   "capture_cadence_seconds": {
+    "n": 334,
+    "median": 87.9,
+    "mean": 269.7,
+    "p50": 87.8548,
+    "p90": 136.0399
+   },
+   "kalshi_overround": {
+    "n": 3803,
+    "median": 0.01,
+    "mean": 0.0244,
+    "p50": 0.01,
+    "p90": 0.03,
+    "note": "1/home_decimal + 1/away_decimal - 1, per event snapshot (spread/vig measurement)"
+   }
   }
+ },
+ "status": "ok",
+ "observation_window": {
+  "corpus": "data/pod_backup_2026_07_20/ (rescued pod tick capture -- NOT data/cache/line_history)",
+  "first": "2026-07-19T00:03:21.043582+00:00",
+  "last": "2026-07-20T01:04:41.444769+00:00",
+  "note": "Union of the per-sport windows below. Everything here describes one short rescued capture window, not a season."
+ }
 }

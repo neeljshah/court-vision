@@ -1,41 +1,4 @@
-"""Market convergence: do the model and the market AGREE more, and does
-predictive uncertainty COLLAPSE, as a game progresses?
-
-Companion to info_arrival_curve.py. That module measures each forecaster's
-Brier gap to the OUTCOME by game-time checkpoint. This one is outcome-free: it
-tracks two properties of the forecasts THEMSELVES per checkpoint --
-
-  * gap  = mean |model_prob - market_prob|  (disagreement between the two
-           estimators; does it narrow, widen, or stay flat over game time?)
-  * entropy = mean Bernoulli entropy H(p) in bits, for the market prob and the
-           model prob (predictive sharpness; how fast does uncertainty resolve?)
-
-Inputs (reused, field-selective): info_arrival_curve.load_rows reads only
-model_prob / market_prob / outcome / state_summary out of
-data/cache/ingame_grade_joined/{mlb,soccer_intl}/*.jsonl and parses the
-inning (mlb) / 5-min bucket (soccer_intl) checkpoint. We consume its rows and
-IGNORE the outcome -- gap and entropy are properties of the forecast pair, not
-of the result.
-
-SCOPE / FLOORS (declared, not tuned):
-  * A checkpoint is reported only at n >= MIN_N (=30) rows. info_arrival_curve
-    uses n>=5; we are deliberately more conservative for a stable mean.
-  * Entropy in bits (log2): 1.0 = max uncertainty at p=0.5, 0.0 = certain.
-  * Single-fold June-July 2026 corpus; no CIs; single reads are not durable.
-  * Input globs are read relative to cwd via the reused loader, so run from the
-    repo root (the `python -m ...` executor does).
-
-HONEST FRAMING: entropy decaying toward 0 late in a game is EXPECTED (scores
-diverge -> p -> 0/1), not a discovery -- it is reported as context. The
-descriptive point of interest is whether the model-market gap narrows as public
-information accumulates. DESCRIPTIVE_ONLY, edge_claimed=False. No $/ROI/edge
-claim -- truth source docs/JOB_EVIDENCE_PACKET.md, .claude/rules/no-edge-claims.md.
-
-NOVELTY: standard instrument. Agreement between two probabilistic forecasters
-and Shannon-entropy decay over event time are textbook descriptive measures;
-the only contribution is applying them to the MLB/soccer_intl joined corpora we
-hold. Do not claim a new method.
-"""
+"Market convergence: do the model and the closing reference forecast AGREE more, and does\npredictive uncertainty COLLAPSE, as a game progresses?\n\nCompanion to info_arrival_curve.py. That module measures each forecaster's\nBrier gap to the OUTCOME by game-time checkpoint. This one is outcome-free: it\ntracks two properties of the forecasts THEMSELVES per checkpoint --\n\n  * gap  = mean |model_prob - market_prob|  (disagreement between the two\n           estimators; does it narrow, widen, or stay flat over game time?)\n  * entropy = mean Bernoulli entropy H(p) in bits, for the closing reference forecast prob and the\n           model prob (predictive sharpness; how fast does uncertainty resolve?)\n\nInputs (reused, field-selective): info_arrival_curve.load_rows reads only\nmodel_prob / market_prob / outcome / state_summary out of\ndata/cache/ingame_grade_joined/{mlb,soccer_intl}/*.jsonl and parses the\ninning (mlb) / 5-min bucket (soccer_intl) checkpoint. We consume its rows and\nIGNORE the outcome -- gap and entropy are properties of the forecast pair, not\nof the result.\n\nSCOPE / FLOORS (declared, not tuned):\n  * A checkpoint is reported only at n >= MIN_N (=30) rows. info_arrival_curve\n    uses n>=5; we are deliberately more conservative for a stable mean.\n  * Entropy in bits (log2): 1.0 = max uncertainty at p=0.5, 0.0 = certain.\n  * Single-fold June-July 2026 corpus; no CIs; single reads are not durable.\n  * Input globs are read relative to cwd via the reused loader, so run from the\n    repo root (the `python -m ...` executor does).\n\nHONEST FRAMING: entropy decaying toward 0 late in a game is EXPECTED (scores\ndiverge -> p -> 0/1), not a discovery -- it is reported as context. The\ndescriptive point of interest is whether the model-market gap narrows as public\ninformation accumulates. DESCRIPTIVE_ONLY, edge_claimed=False. No money/return/advantage\nclaim -- truth source docs/JOB_EVIDENCE_PACKET.md, .claude/rules/no-advantage-claims.md.\n\nNOVELTY: standard instrument. Agreement between two probabilistic forecasters\nand Shannon-entropy decay over event time are textbook descriptive measures;\nthe only contribution is applying them to the MLB/soccer_intl joined corpora we\nhold. Do not claim a new method.\n"
 import argparse
 import json
 import math

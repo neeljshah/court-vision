@@ -1,21 +1,4 @@
-"""Blowout dynamics: when does a game become 'decided'?
-
-Per game in the joined grade corpora, order score ticks by game clock and find
-each margin threshold's POINT OF NO RETURN -- the first tick from which
-|home_score-away_score| stays >= threshold to the end (after the LAST reversion).
-Report WHEN (game clock + fraction of game elapsed) and in WHAT SHARE of games it
-happens, by sport x threshold. Describes games ALREADY PLAYED; reads only the
-score path from state_summary (scores + inning/half or minute), never model/market
-prob -- no calibration/forecast/edge claim. DESCRIPTIVE_ONLY, edge_claimed=False.
-
-Corpora: data/cache/ingame_grade_joined/{mlb,soccer_intl}/*.jsonl (read-only,
-game_id/ts/state_summary only; mlb_clean byte-dup not loaded). FLOORS (declared,
-not tuned): MIN_TICKS_PER_GAME=10; MIN_GAMES_PER_THRESHOLD=10 (a cell reports
-median/quartiles only at >=10 decided games, else keeps its n but is masked from
-chart+headline). Truth source: docs/JOB_EVIDENCE_PACKET.md. Outputs: out/
-blowout_dynamics.json + docs/img/blowout_dynamics.png (ONE figure, panel/sport).
-CLI: python -m scripts.platformkit.analytics_showcase.blowout_dynamics [--check]
-"""
+"Blowout dynamics: when does a game become 'decided'?\n\nPer game in the joined grade corpora, order score ticks by game clock and find\neach margin threshold's POINT OF NO RETURN -- the first tick from which\n|home_score-away_score| stays >= threshold to the end (after the LAST reversion).\nReport WHEN (game clock + fraction of game elapsed) and in WHAT SHARE of games it\nhappens, by sport x threshold. Describes games ALREADY PLAYED; reads only the\nscore path from state_summary (scores + inning/half or minute), never model/market\nprob -- no calibration/forecast/advantage claim. DESCRIPTIVE_ONLY, edge_claimed=False.\n\nCorpora: data/cache/ingame_grade_joined/{mlb,soccer_intl}/*.jsonl (read-only,\ngame_id/ts/state_summary only; mlb_clean byte-dup not loaded). FLOORS (declared,\nnot tuned): MIN_TICKS_PER_GAME=10; MIN_GAMES_PER_THRESHOLD=10 (a cell reports\nmedian/quartiles only at >=10 decided games, else keeps its n but is masked from\nchart+headline). Truth source: docs/JOB_EVIDENCE_PACKET.md. Outputs: out/\nblowout_dynamics.json + docs/img/blowout_dynamics.png (ONE figure, panel/sport).\nCLI: python -m scripts.platformkit.analytics_showcase.blowout_dynamics [--check]\n"
 import json
 import re
 from collections import defaultdict
@@ -173,7 +156,7 @@ def build_story(result):
         else:
             parts.append(head + phrase(cfg, cells[0]) + "; " + phrase(cfg, cells[-1])
                          + " -- later and rarer as the gap grows.")
-    return " ".join(parts) + " Descriptive game-flow only; no edge/ROI/$ claim."
+    return " ".join(parts) + ' Descriptive game-flow only; no advantage/return/money claim.'
 
 
 def make_plot(result):

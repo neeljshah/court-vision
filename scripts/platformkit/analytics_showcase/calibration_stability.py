@@ -1,35 +1,4 @@
-"""Bootstrap CI bands on 10-bin reliability curves (model vs market).
-
-Cluster-bootstraps the row-level joined grade corpora in
-data/cache/ingame_grade_joined/{mlb,soccer_intl}/*.jsonl to put a 95% CI on
-every reliability-diagram bin, model side and market side. Per bin it answers:
-is the gap between predicted and observed (mean_p vs mean_y) a REAL
-miscalibration, or just sampling noise?
-
-Why CLUSTER bootstrap (by game_id): one game contributes many autocorrelated
-per-timestamp rows, so a naive row-level resample understates the CIs
-(overconfident). The honest unit is the whole game -- draw games with
-replacement and re-bin each resample; the test is conservative on purpose.
-A bin is SIGNIFICANT only when it clears the games floor AND its gap CI
-excludes 0. Expect several populated bins to LOSE significance (within noise);
-the module prints whatever the bootstrap says.
-
-Scope + floors (DESCRIPTIVE_ONLY, edge_claimed=False -- docs/JOB_EVIDENCE_PACKET.md):
-  - Sports: mlb, soccer_intl (mlb_clean is a byte-identical dup, skipped).
-  - 10 equal-width bins over [0,1). Cluster unit: game_id.
-  - n_boot=1000, seed=20260722, CI = 95% percentile [2.5, 97.5].
-  - A bin needs >= 5 contributing games to be significance-eligible; below that
-    it is reported low_n and excluded from the tally. A sport under 30 games is
-    flagged low_power. No $/ROI/edge claim -- calibration-uncertainty only.
-
-atlas_factory note: its card family is for compact entity cards, not a
-CI-ribbon reliability diagram, so -- like sibling murphy_decomposition.py on
-the same corpora -- this module renders its own figure and does not import it.
-
-Usage:
-    python -m scripts.platformkit.analytics_showcase.calibration_stability
-    python -m scripts.platformkit.analytics_showcase.calibration_stability --check
-"""
+'Bootstrap CI bands on 10-bin reliability curves (model vs market).\n\nCluster-bootstraps the row-level joined grade corpora in\ndata/cache/ingame_grade_joined/{mlb,soccer_intl}/*.jsonl to put a 95% CI on\nevery reliability-diagram bin, model side and market side. Per bin it answers:\nis the gap between predicted and observed (mean_p vs mean_y) a REAL\nmiscalibration, or just sampling noise?\n\nWhy CLUSTER bootstrap (by game_id): one game contributes many autocorrelated\nper-timestamp rows, so a naive row-level resample understates the CIs\n(overconfident). The honest unit is the whole game -- draw games with\nreplacement and re-bin each resample; the test is conservative on purpose.\nA bin is SIGNIFICANT only when it clears the games floor AND its gap CI\nexcludes 0. Expect several populated bins to LOSE significance (within noise);\nthe module prints whatever the bootstrap says.\n\nScope + floors (DESCRIPTIVE_ONLY, edge_claimed=False -- docs/JOB_EVIDENCE_PACKET.md):\n  - Sports: mlb, soccer_intl (mlb_clean is a byte-identical dup, skipped).\n  - 10 equal-width bins over [0,1). Cluster unit: game_id.\n  - n_boot=1000, seed=20260722, CI = 95% percentile [2.5, 97.5].\n  - A bin needs >= 5 contributing games to be significance-eligible; below that\n    it is reported low_n and excluded from the tally. A sport under 30 games is\n    flagged low_power. No money/return/advantage claim -- calibration-uncertainty only.\n\natlas_factory note: its card family is for compact entity cards, not a\nCI-ribbon reliability diagram, so -- like sibling murphy_decomposition.py on\nthe same corpora -- this module renders its own figure and does not import it.\n\nUsage:\n    python -m scripts.platformkit.analytics_showcase.calibration_stability\n    python -m scripts.platformkit.analytics_showcase.calibration_stability --check\n'
 import argparse
 import glob
 import json

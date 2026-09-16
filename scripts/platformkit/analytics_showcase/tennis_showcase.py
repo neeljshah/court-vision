@@ -1,27 +1,4 @@
-"""
-Tennis showcase: reuses the ALREADY-COMPUTED tennis gate receipts -- does NOT
-recompute anything. Tennis has a served live model (4th live sport) but no
-ingame_grade_joined corpus locally, so this pulls the two real gate verdicts
-that DO exist on disk:
-
-1. pregame_prior cross-corpus (data/frontend/ingame/gate_tennis.json) --
-   true ATP<->WTA cross-corpus test of blend(p0, BASE, w) vs BASE alone.
-   verdict: REPLICATED (calibration only, no market comparison in this file).
-2. ingame_detail surface-context (data/frontend/ingame/surface_hold_verdict.json,
-   built here via `python -m domains.tennis.surface_hold_ingame_gate`) --
-   does a surface-specific hold% prior beat a surface-blind one as an in-game
-   detail layer? verdict: REJECT (honest null, both tours, planted-null control
-   passed). Prints as an example of a preregistered gate correctly killing a
-   plausible-sounding feature.
-
-Both verdicts are CALIBRATION-only (held-out Brier / DM test), never a market
-edge. If either receipt file is missing, that sport's block degrades to
-status:local_corpus_absent with the exact artifact path needed -- the honest
-refusal pattern, not a silent skip.
-
-Output: out/tennis_showcase.json (+ docs/img/tennis_showcase.png if either
-receipt has a numeric fold series to plot).
-"""
+"\nTennis showcase: reuses the ALREADY-COMPUTED tennis gate receipts -- does NOT\nrecompute anything. Tennis has a served live model (4th live sport) but no\ningame_grade_joined corpus locally, so this pulls the two real gate verdicts\nthat DO exist on disk:\n\n1. pregame_prior cross-corpus (data/frontend/ingame/gate_tennis.json) --\n   true ATP<->WTA cross-corpus test of blend(p0, BASE, w) vs BASE alone.\n   verdict: REPLICATED (calibration only, no market comparison in this file).\n2. ingame_detail surface-context (data/frontend/ingame/surface_hold_verdict.json,\n   built here via `python -m domains.tennis.surface_hold_ingame_gate`) --\n   does a surface-specific hold% prior beat a surface-blind one as an in-game\n   detail layer? verdict: REJECT (honest null, both tours, planted-null control\n   passed). Prints as an example of a preregistered gate correctly killing a\n   plausible-sounding feature.\n\nBoth verdicts are CALIBRATION-only (held-out Brier / DM test), never a market\nadvantage. If either receipt file is missing, that sport's block degrades to\nstatus:local_corpus_absent with the exact artifact path needed -- the honest\nrefusal pattern, not a silent skip.\n\nOutput: out/tennis_showcase.json (+ docs/img/tennis_showcase.png if either\nreceipt has a numeric fold series to plot).\n"
 import json
 from pathlib import Path
 
@@ -39,7 +16,7 @@ SURFACE_PATH = REPO / "data" / "frontend" / "ingame" / "surface_hold_verdict.jso
 
 CALIBRATION_CAVEAT = (
     "CALIBRATION only (held-out Brier / Diebold-Mariano test) -- never a market "
-    "edge or $ claim. vs_close comparison, if any, is stated explicitly per block."
+    'advantage or money claim. vs_close comparison, if any, is stated explicitly per block.'
 )
 
 

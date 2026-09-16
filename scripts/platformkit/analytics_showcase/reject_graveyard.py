@@ -1,19 +1,4 @@
-"""Analytics over the signal reject ledger (scripts/platformkit/reject_ledger.py):
-verdicts by reason category, by sport, over time.
-
-Reads the ledger's FULL recorded history (reject_ledger.load(), every row ever
-appended) -- NOT graveyard() which collapses to latest-verdict-per-signal. The
-gap between those two counts is disclosed explicitly in the output (a signal
-retested multiple times contributes one row per test to history, one row to
-the graveyard).
-
-A REJECT/DEFER/etc is honest market-efficiency evidence, not a failure. No
-$/edge/ROI claim. Source: data/frontend/reject_ledger.jsonl (via reject_ledger.py).
-
-Usage:
-    python -m scripts.platformkit.analytics_showcase.reject_graveyard
-    python -m scripts.platformkit.analytics_showcase.reject_graveyard --check
-"""
+"Analytics over the signal reject ledger (scripts/platformkit/reject_ledger.py):\nverdicts by reason category, by sport, over time.\n\nReads the ledger's FULL recorded history (reject_ledger.load(), every row ever\nappended) -- NOT graveyard() which collapses to latest-verdict-per-signal. The\ngap between those two counts is disclosed explicitly in the output (a signal\nretested multiple times contributes one row per test to history, one row to\nthe graveyard).\n\nA REJECT/DEFER/etc is honest market-efficiency evidence, not a failure. No\nmoney/advantage/return claim. Source: data/frontend/reject_ledger.jsonl (via reject_ledger.py).\n\nUsage:\n    python -m scripts.platformkit.analytics_showcase.reject_graveyard\n    python -m scripts.platformkit.analytics_showcase.reject_graveyard --check\n"
 import argparse
 import collections
 import json
@@ -73,7 +58,7 @@ def build():
 
     return {
         "source": "scripts/platformkit/reject_ledger.py (data/frontend/reject_ledger.jsonl)",
-        "note": "A REJECT/DEFER is honest market-efficiency evidence, not a failure. No $/edge/ROI claim.",
+        "note": 'A REJECT/DEFER is honest market-efficiency evidence, not a failure. No money/advantage/return claim.',
         "full_history_row_count": len(history),
         "latest_per_signal_graveyard_count": len(latest),
         "history_vs_latest_disclosure": (

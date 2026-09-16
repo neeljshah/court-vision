@@ -1,22 +1,4 @@
-"""Novel stat #4 -- Load-Bearing Index (LBI).
-
-METRIC: per team, its single most-indispensable player's win-prob dependence,
-under TWO independent estimators, plus an agreement flag. Gives a league
-fragility spectrum from "one-star-fragile" to "distributed".
-
-TWO ESTIMATORS (per team):
-    (a) Elo on/off  : delta_winprob = p_win_with - p_win_without   (cf_star_removal.json)
-    (b) raw with/without : delta_win_rate = win_rate_active - win_rate_missed, taken as the
-        team's MAX over qualified players                          (ctx_lineup_proxy.json)
-    agreement = the SAME player is ranked #1 by both estimators (name-normalized).
-
-Reads two committed artifacts; edge_claimed=False -- a DESCRIPTIVE fragility map,
-not a causal player-impact or edge claim.
-
-Usage:
-    python -m scripts.platformkit.analytics_showcase.novel_load_bearing_index
-    python -m scripts.platformkit.analytics_showcase.novel_load_bearing_index --check
-"""
+'Novel stat #4 -- Load-Bearing Index (LBI).\n\nMETRIC: per team, its single most-indispensable player\'s win-prob dependence,\nunder TWO independent estimators, plus an agreement flag. Gives a league\nfragility spectrum from "one-star-fragile" to "distributed".\n\nTWO ESTIMATORS (per team):\n    (a) Elo on/off  : delta_winprob = p_win_with - p_win_without   (cf_star_removal.json)\n    (b) raw with/without : delta_win_rate = win_rate_active - win_rate_missed, taken as the\n        team\'s MAX over qualified players                          (ctx_lineup_proxy.json)\n    agreement = the SAME player is ranked #1 by both estimators (name-normalized).\n\nReads two committed artifacts; edge_claimed=False -- a DESCRIPTIVE fragility map,\nnot a causal player-impact or advantage claim.\n\nUsage:\n    python -m scripts.platformkit.analytics_showcase.novel_load_bearing_index\n    python -m scripts.platformkit.analytics_showcase.novel_load_bearing_index --check\n'
 import json
 import os
 import unicodedata

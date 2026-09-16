@@ -67,7 +67,7 @@
   {
    "id": "brier_skill_scores",
    "title": "Brier Skill Scores",
-   "one_line": "mlb: BSS(model vs market) in [-0.464, -0.079] -- model does not beat the market; BSS(model vs climatology) in [+0.011, +0.143] (BSS>0 means it beats that baseline). soccer_intl: BSS(model vs market) in [-1.079, -0.470] -- model does not ...",
+   "one_line": "mlb: BSS(model vs market) in [-0.464, -0.079] -- model does not beat the closing reference forecast; BSS(model vs climatology) in [+0.011, +0.143] (BSS>0 means it beats that baseline). soccer_intl: BSS(model vs market) in [-1.079, -0.470] -- model does not ...",
    "out_path": "scripts/platformkit/analytics_showcase/out/brier_skill_scores.json",
    "chart_path": "docs/img/brier_skill_scores.png",
    "status": "ok",

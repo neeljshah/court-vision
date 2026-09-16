@@ -3,7 +3,7 @@
  "abbrev": "MFP",
  "edge_claimed": false,
  "descriptive_only": true,
- "metric_definition": "The market's excess resolving power over a scoreboard-only model, per bit of uncertainty still left in the game, by checkpoint.",
+ "metric_definition": "The closing reference forecast's excess resolving power over a scoreboard-only model, per bit of uncertainty still left in the game, by checkpoint.",
  "formula": "MFP(t) = ((naive-market)/naive - (naive-model)/naive) / max(entropy_market_bits, 0.15)",
  "source_artifacts": [
   "scripts/platformkit/analytics_showcase/out/info_arrival_curve.json",
@@ -13,7 +13,7 @@
  "prior_art_verdict": "INCREMENTAL",
  "prior_art_citation": "The absorption instrument (paired model/market/naive Brier by game-time) is arXiv 2606.07811 ('When Do Markets Fully Process Public Information', Kalshi/NBA), which info_arrival_curve.json's own novelty block flags INCREMENTAL. Entropy decay is textbook (Shannon). Do NOT claim first-ever on the components -- only the skill-gap-PER-BIT normalization (the unpublished cross of the two separate literatures) is claimed.",
  "declared_confounds": [
-  "'model' is one specific state-only forecaster, so MFP conflates genuine news the market prices (lineups, momentum) with plain model misspecification.",
+  "'model' is one specific state-only forecaster, so MFP conflates genuine news the closing reference forecast prices (lineups, momentum) with plain model misspecification.",
   "Entropy -> 0 late in a game would explode the ratio; the 0.15-bit floor caps that.",
   "mlb (inning) and soccer_intl (5-min bucket) only; different clock units, not equated."
  ],

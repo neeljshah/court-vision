@@ -1,26 +1,4 @@
-"""MLB pitch atlas: 3 card families from ONE column-selective pass over the
-local 2025 statcast pull (693,037 pitches) -- (a) one card per pitch type
-(19, incl. missing/rare codes), (b) one card per pitching staff (30 real MLB
-franchises), (c) one card per ball-strike count state (12), league-wide pitch
-mix. DESCRIPTIVE_ONLY, no edge/ROI/$ claims -- see docs/JOB_EVIDENCE_PACKET.md.
-
-Whiff proxy: no per-pitch swing/miss field exists here -- no `description`
-column, `type` merges called+swinging+foul into one "S" bucket, and `des`
-only fires on PA-ending pitches (would undercount whiffs that don't end the
-PA). All 3 families substitute the honest per-pitch outcome mix from `type`
-instead of fabricating a whiff number -- see WHIFF_NOTE.
-
-"Team" = the PITCHING team (home_team when inning_topbot=='Top' else
-away_team). AL/NL (All-Star placeholders) excluded from the raw 32 team
-codes to land on the 30 real franchises.
-
-Output: docs/img/atlas/mlb_pitch/{by_type,by_team,by_count}/<slug>.png (19+30+12)
-        out/atlas_mlb_pitch_manifest.json (61 entries, atlas_factory.write_manifest)
-
-Usage:
-    python -m scripts.platformkit.analytics_showcase.mlb_pitch_atlas          # full build (ONE process)
-    python -m scripts.platformkit.analytics_showcase.mlb_pitch_atlas --check  # manifest count == disk PNGs + spot-open 2
-"""
+'MLB pitch atlas: 3 card families from ONE column-selective pass over the\nlocal 2025 statcast pull (693,037 pitches) -- (a) one card per pitch type\n(19, incl. missing/rare codes), (b) one card per pitching staff (30 real MLB\nfranchises), (c) one card per ball-strike count state (12), league-wide pitch\nmix. DESCRIPTIVE_ONLY, no advantage/return/money claims -- see docs/JOB_EVIDENCE_PACKET.md.\n\nWhiff proxy: no per-pitch swing/miss field exists here -- no `description`\ncolumn, `type` merges called+swinging+foul into one "S" bucket, and `des`\nonly fires on PA-ending pitches (would undercount whiffs that don\'t end the\nPA). All 3 families substitute the honest per-pitch outcome mix from `type`\ninstead of fabricating a whiff number -- see WHIFF_NOTE.\n\n"Team" = the PITCHING team (home_team when inning_topbot==\'Top\' else\naway_team). AL/NL (All-Star placeholders) excluded from the raw 32 team\ncodes to land on the 30 real franchises.\n\nOutput: docs/img/atlas/mlb_pitch/{by_type,by_team,by_count}/<slug>.png (19+30+12)\n        out/atlas_mlb_pitch_manifest.json (61 entries, atlas_factory.write_manifest)\n\nUsage:\n    python -m scripts.platformkit.analytics_showcase.mlb_pitch_atlas          # full build (ONE process)\n    python -m scripts.platformkit.analytics_showcase.mlb_pitch_atlas --check  # manifest count == disk PNGs + spot-open 2\n'
 import json
 from pathlib import Path
 

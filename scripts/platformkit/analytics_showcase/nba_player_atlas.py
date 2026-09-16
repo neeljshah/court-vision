@@ -1,21 +1,4 @@
-"""NBA player atlas: one compact descriptive card per player above a minutes
-floor -- per-36 P/R/A by season, career shooting splits, a box-score-only
-usage proxy trend, and games/minutes workload by season.
-
-DESCRIPTIVE_ONLY (see docs/JOB_EVIDENCE_PACKET.md) -- no edge/ROI/$ claims.
-"usage proxy" here is (FGA + 0.44*FTA + TOV) per-36 from box-score columns
-only -- NOT team-normalized USG% (needs team FGA/FTA/TOV/pace, absent from
-this table) and NOT the src/prediction/usage_rate_model.py model output.
-Manifest counts are written verbatim, never inflated.
-
-Input:  data/domains/basketball_nba/player_boxscores.parquet (columns-only read)
-Output: docs/img/atlas/nba/<slug>.png (one per eligible player)
-        out/atlas_nba_manifest.json (via atlas_factory.write_manifest)
-
-Usage:
-    python -m scripts.platformkit.analytics_showcase.nba_player_atlas          # full build (ONE process, takes minutes)
-    python -m scripts.platformkit.analytics_showcase.nba_player_atlas --check  # fast: validate manifest count == disk PNG count
-"""
+'NBA player atlas: one compact descriptive card per player above a minutes\nfloor -- per-36 P/R/A by season, career shooting splits, a box-score-only\nusage proxy trend, and games/minutes workload by season.\n\nDESCRIPTIVE_ONLY (see docs/JOB_EVIDENCE_PACKET.md) -- no advantage/return/money claims.\n"usage proxy" here is (FGA + 0.44*FTA + TOV) per-36 from box-score columns\nonly -- NOT team-normalized USG% (needs team FGA/FTA/TOV/pace, absent from\nthis table) and NOT the src/prediction/usage_rate_model.py model output.\nManifest counts are written verbatim, never inflated.\n\nInput:  data/domains/basketball_nba/player_boxscores.parquet (columns-only read)\nOutput: docs/img/atlas/nba/<slug>.png (one per eligible player)\n        out/atlas_nba_manifest.json (via atlas_factory.write_manifest)\n\nUsage:\n    python -m scripts.platformkit.analytics_showcase.nba_player_atlas          # full build (ONE process, takes minutes)\n    python -m scripts.platformkit.analytics_showcase.nba_player_atlas --check  # fast: validate manifest count == disk PNG count\n'
 import json
 from pathlib import Path
 

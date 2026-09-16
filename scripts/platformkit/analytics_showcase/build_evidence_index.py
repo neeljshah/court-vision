@@ -1,19 +1,4 @@
-"""Evidence-index builder for the website evidence spine.
-
-Reads the committed evidence pages under docs/evidence/*.md and emits
-out/evidence_index.json: one honest row per claim (slug, bucket, title, the
-claim sentence, the single strongest receipt, and every cited artifact id).
-The webapp (evidence.server.ts) parses the full markdown itself; this builder
-owns only the editorial JOIN -- bucket assignment + the strongest-receipt pick.
-
-Paths in the output are REPO-RELATIVE only (clone-safe; never a box-local
-absolute like C:/Users/neelj/...). This repo never claims an edge, so every
-row carries edge_claimed=false.
-
-Run:   python -m scripts.platformkit.analytics_showcase.build_evidence_index
-Check: python -m scripts.platformkit.analytics_showcase.build_evidence_index --check
-Demo:  python -m scripts.platformkit.analytics_showcase.build_evidence_index --demo
-"""
+'Evidence-index builder for the website evidence spine.\n\nReads the committed evidence pages under docs/evidence/*.md and emits\nout/evidence_index.json: one honest row per claim (slug, bucket, title, the\nclaim sentence, the single strongest receipt, and every cited artifact id).\nThe webapp (evidence.server.ts) parses the full markdown itself; this builder\nowns only the editorial JOIN -- bucket assignment + the strongest-receipt pick.\n\nPaths in the output are REPO-RELATIVE only (clone-safe; never a box-local\nabsolute like C:/Users/neelj/...). This repo never claims an advantage, so every\nrow carries edge_claimed=false.\n\nRun:   python -m scripts.platformkit.analytics_showcase.build_evidence_index\nCheck: python -m scripts.platformkit.analytics_showcase.build_evidence_index --check\nDemo:  python -m scripts.platformkit.analytics_showcase.build_evidence_index --demo\n'
 import json
 import re
 import sys

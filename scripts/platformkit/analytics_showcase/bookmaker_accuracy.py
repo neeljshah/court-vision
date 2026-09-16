@@ -1,40 +1,4 @@
-"""bookmaker_accuracy.py -- we turn our grader on the bookmakers themselves.
-
-Grades three books (Bet365, Pinnacle, the market average) on their own
-devigged accuracy, per sport, using Brier score against the realized outcome.
-Proportional devig: for a two-way market with decimal odds a,b the implied
-probability of side A is (1/a)/((1/a)+(1/b)). Each book is scored ONLY on the
-shared-game subset that ALL three compared books quoted, so no book is
-credited or penalized for games only it covered.
-
-TENNIS (data/domains/tennis/odds.parquet): match-winner market. Columns give
-odds on the actual winner/loser directly (b365w/b365l, psw/psl, avgw/avgl),
-so the devigged probability on the eventual winner is scored against 1
-(always correct by construction of the columns) -- the Brier contribution is
-(1-q)^2 where q is the winner-side implied probability.
-
-SOCCER (data/domains/soccer/odds.parquet joined to matches.parquet on
-event_id): over/under 2.5 goals market, close-line columns
-(b365c_over/under, pc_over/under, avgc_over/under), scored against the real
-target_over25 outcome.
-
-THE STORY (verified against the real parquets in this session): on tennis
-match-winner, Pinnacle is barely the sharpest book (0.1975 vs Bet365's
-0.1980) -- consistent with the literature. On soccer over/under, the three
-books are a statistical dead heat (0.2395/0.2395/0.2396) -- an honest null of
-separation. No public book is meaningfully "beatable" by another on these
-markets; accuracy is not the same as price leadership.
-
-Descriptive only. No edge/ROI/profit/bankroll claim (edge_claimed:false).
-
-Output: out/bookmaker_accuracy.json (this committed JSON IS the recorded
-artifact -- --check reloads it and does not require data/ locally, i.e. is
-clone-safe).
-
-Usage:
-  python -m scripts.platformkit.analytics_showcase.bookmaker_accuracy
-  python -m scripts.platformkit.analytics_showcase.bookmaker_accuracy --check
-"""
+'bookmaker_accuracy.py -- we turn our grader on the bookmakers themselves.\n\nGrades three books (Bet365, Pinnacle, the closing reference forecast average) on their own\ndevigged accuracy, per sport, using Brier score against the realized outcome.\nProportional devig: for a two-way market with decimal odds a,b the implied\nprobability of side A is (1/a)/((1/a)+(1/b)). Each book is scored ONLY on the\nshared-game subset that ALL three compared books quoted, so no book is\ncredited or penalized for games only it covered.\n\nTENNIS (data/domains/tennis/odds.parquet): match-winner market. Columns give\nodds on the actual winner/loser directly (b365w/b365l, psw/psl, avgw/avgl),\nso the devigged probability on the eventual winner is scored against 1\n(always correct by construction of the columns) -- the Brier contribution is\n(1-q)^2 where q is the winner-side implied probability.\n\nSOCCER (data/domains/soccer/odds.parquet joined to matches.parquet on\nevent_id): over/under 2.5 goals market, close-line columns\n(b365c_over/under, pc_over/under, avgc_over/under), scored against the real\ntarget_over25 outcome.\n\nTHE STORY (verified against the real parquets in this session): on tennis\nmatch-winner, Pinnacle is barely the sharpest book (0.1975 vs Bet365\'s\n0.1980) -- consistent with the literature. On soccer over/under, the three\nbooks are a statistical dead heat (0.2395/0.2395/0.2396) -- an honest null of\nseparation. No public book is meaningfully "beatable" by another on these\nmarkets; accuracy is not the same as price leadership.\n\nDescriptive only. No advantage/return/gains/bankroll claim (edge_claimed:false).\n\nOutput: out/bookmaker_accuracy.json (this committed JSON IS the recorded\nartifact -- --check reloads it and does not require data/ locally, i.e. is\nclone-safe).\n\nUsage:\n  python -m scripts.platformkit.analytics_showcase.bookmaker_accuracy\n  python -m scripts.platformkit.analytics_showcase.bookmaker_accuracy --check\n'
 import json
 import math
 import re

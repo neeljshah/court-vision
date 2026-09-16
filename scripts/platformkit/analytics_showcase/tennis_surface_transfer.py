@@ -1,35 +1,4 @@
-"""
-Tennis surface-split transfer: per-player clay<->hard win-rate gap and grass
-adaptability, read straight off the tennis surface-context SNAPSHOT store and
-summarized as floored distributions + top/bottom leans.
-
-SCOPE (DESCRIPTIVE_ONLY): one column-selective pass over the four snapshot
-parquets the surface-context producer already wrote
-(tennis_surface_context_snapshot_{atp,wta}_{career,recent_form}.parquet). For
-each (tour x window) combo it reports, using the store's OWN derived fields:
-  - clay<->hard gap    = clay_minus_hard = clay_wr - hard_wr   (>0 = clay-leaning)
-  - grass adaptability = grass_adapt     = grass_wr - ov_wr    (>0 = over-performs on grass)
-as a distribution (mean/std/p10/p50/p90/min/max/share-positive) plus the top-5
-and bottom-5 players on each. It is NOT a forecast of any future match and
-claims NO market/ROI/$ edge -- it describes matches ALREADY PLAYED.
-
-FLOORS (declared -- copied VERBATIM from the producer's prereg floors,
-scripts/platformkit/intel_validation/tennis_surface_context_claims.py, never
-retuned here):
-  - clay<->hard gap: clay_n >= 25 AND hard_n >= 25 (MIN_GAP_FLOOR).
-  - grass adaptability: grass_n >= 15 (MIN_GRASS_FLOOR -- grass is scarce on
-    tour, a stricter floor would empty the ranking).
-A floor that empties a combo publishes NO ranking (honest skip), never [].
-
-CONFOUNDS (carried from the store, stated not papered over): opponent-strength
-is NOT controlled -- surface draws are not random, so a gap partly reflects
-scheduling/seeding, not surface skill alone; retirement rows are counted as
-decided matches; Hard/Clay/Grass only (Unknown/Carpet excluded upstream).
-
-Truth source for claim discipline: docs/JOB_EVIDENCE_PACKET.md.
-Output: out/tennis_surface_transfer.json + docs/img/tennis_surface_transfer.png.
-CLI: python -m scripts.platformkit.analytics_showcase.tennis_surface_transfer [--check]
-"""
+"\nTennis surface-split transfer: per-player clay<->hard win-rate gap and grass\nadaptability, read straight off the tennis surface-context SNAPSHOT store and\nsummarized as floored distributions + top/bottom leans.\n\nSCOPE (DESCRIPTIVE_ONLY): one column-selective pass over the four snapshot\nparquets the surface-context producer already wrote\n(tennis_surface_context_snapshot_{atp,wta}_{career,recent_form}.parquet). For\neach (tour x window) combo it reports, using the store's OWN derived fields:\n  - clay<->hard gap    = clay_minus_hard = clay_wr - hard_wr   (>0 = clay-leaning)\n  - grass adaptability = grass_adapt     = grass_wr - ov_wr    (>0 = over-performs on grass)\nas a distribution (mean/std/p10/p50/p90/min/max/share-positive) plus the top-5\nand bottom-5 players on each. It is NOT a forecast of any future match and\nclaims NO market/return/money advantage -- it describes matches ALREADY PLAYED.\n\nFLOORS (declared -- copied VERBATIM from the producer's prereg floors,\nscripts/platformkit/intel_validation/tennis_surface_context_claims.py, never\nretuned here):\n  - clay<->hard gap: clay_n >= 25 AND hard_n >= 25 (MIN_GAP_FLOOR).\n  - grass adaptability: grass_n >= 15 (MIN_GRASS_FLOOR -- grass is scarce on\n    tour, a stricter floor would empty the ranking).\nA floor that empties a combo publishes NO ranking (honest skip), never [].\n\nCONFOUNDS (carried from the store, stated not papered over): opponent-strength\nis NOT controlled -- surface draws are not random, so a gap partly reflects\nscheduling/seeding, not surface skill alone; retirement rows are counted as\ndecided matches; Hard/Clay/Grass only (Unknown/Carpet excluded upstream).\n\nTruth source for claim discipline: docs/JOB_EVIDENCE_PACKET.md.\nOutput: out/tennis_surface_transfer.json + docs/img/tennis_surface_transfer.png.\nCLI: python -m scripts.platformkit.analytics_showcase.tennis_surface_transfer [--check]\n"
 import json
 import math
 from pathlib import Path
@@ -59,7 +28,7 @@ CAVEAT = (
     "Per-player surface-split transfer off the tennis surface-context snapshot store: "
     "the store's own clay_minus_hard (clay_wr - hard_wr) gap and grass_adapt "
     "(grass_wr - ov_wr) adaptability index, floored and summarized per tour x window. "
-    "DESCRIPTIVE_ONLY -- describes matches already played, no forecast, no market/ROI/$ edge."
+    'DESCRIPTIVE_ONLY -- describes matches already played, no forecast, no market/return/money advantage.'
 )
 
 
@@ -184,7 +153,7 @@ def build_showcase() -> dict:
             "reflects scheduling/seeding, not surface skill alone",
             "retirement rows counted as DECIDED matches (winner column authoritative) -- upstream store choice",
             "Hard/Clay/Grass only; Unknown/Carpet excluded upstream",
-            "DESCRIPTIVE_ONLY -- describes matches already played; NOT a forecast, NO market/ROI/$ edge",
+            'DESCRIPTIVE_ONLY -- describes matches already played; NOT a forecast, NO market/return/money advantage',
         ],
         "combos": combos,
     }

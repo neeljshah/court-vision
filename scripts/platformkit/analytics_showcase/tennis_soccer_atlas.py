@@ -1,31 +1,4 @@
-"""tennis_soccer_atlas.py -- per-entity DESCRIPTIVE cards straight off two
-VERIFIED intel_claims ranking-claim families (read-only, no parquet touched):
-  tennis: data/cache/intel_claims/tennis_surface_context_claims.jsonl (ATP
-          only -- no WTA claim in this store; 5 metrics x 2 windows:
-          {hard,clay,grass}_wr, clay_minus_hard gap, grass_adapt, each x
-          {career, recent_form}, each independently floored per its own
-          criteria.min_sample)
-  soccer: data/cache/intel_claims/soccer_team_form_asof_claims.jsonl (11
-          metrics, one window=trailing10_asof_corpus_end, pooled across 6
-          divisions 2015-2026, full population -- 0 excluded below floor)
-
-Population = union of entities appearing in ANY metric's ranking (a player/
-team only needs to clear ONE metric's own floor to earn a card). A metric
-an entity does NOT clear renders as an explicit "n/a" bar and is counted in
-that entity's manifest `status` -- never fabricated, never silently
-dropped. Floors printed on every card come straight from each claim's own
-criteria.min_sample, not retuned or hardcoded here. Per-entity sample sizes
-(clay_n, hard_n, n_prior, ...) live in the claim store itself if a deeper
-per-number audit is needed -- not duplicated into key_numbers here.
-
-DESCRIPTIVE_ONLY, no edge/ROI/$ claim -- see docs/JOB_EVIDENCE_PACKET.md.
-
-Output: docs/img/atlas/{tennis,soccer}/<slug>.png
-        out/atlas_{tennis,soccer}_manifest.json
-Usage:
-    python -m scripts.platformkit.analytics_showcase.tennis_soccer_atlas          # full build (ONE process, minutes for hundreds of cards)
-    python -m scripts.platformkit.analytics_showcase.tennis_soccer_atlas --check  # fast: manifest count == disk PNGs + spot-open 2 cards/sport
-"""
+'tennis_soccer_atlas.py -- per-entity DESCRIPTIVE cards straight off two\nVERIFIED intel_claims ranking-claim families (read-only, no parquet touched):\n  tennis: data/cache/intel_claims/tennis_surface_context_claims.jsonl (ATP\n          only -- no WTA claim in this store; 5 metrics x 2 windows:\n          {hard,clay,grass}_wr, clay_minus_hard gap, grass_adapt, each x\n          {career, recent_form}, each independently floored per its own\n          criteria.min_sample)\n  soccer: data/cache/intel_claims/soccer_team_form_asof_claims.jsonl (11\n          metrics, one window=trailing10_asof_corpus_end, pooled across 6\n          divisions 2015-2026, full population -- 0 excluded below floor)\n\nPopulation = union of entities appearing in ANY metric\'s ranking (a player/\nteam only needs to clear ONE metric\'s own floor to earn a card). A metric\nan entity does NOT clear renders as an explicit "n/a" bar and is counted in\nthat entity\'s manifest `status` -- never fabricated, never silently\ndropped. Floors printed on every card come straight from each claim\'s own\ncriteria.min_sample, not retuned or hardcoded here. Per-entity sample sizes\n(clay_n, hard_n, n_prior, ...) live in the claim store itself if a deeper\nper-number audit is needed -- not duplicated into key_numbers here.\n\nDESCRIPTIVE_ONLY, no advantage/return/money claim -- see docs/JOB_EVIDENCE_PACKET.md.\n\nOutput: docs/img/atlas/{tennis,soccer}/<slug>.png\n        out/atlas_{tennis,soccer}_manifest.json\nUsage:\n    python -m scripts.platformkit.analytics_showcase.tennis_soccer_atlas          # full build (ONE process, minutes for hundreds of cards)\n    python -m scripts.platformkit.analytics_showcase.tennis_soccer_atlas --check  # fast: manifest count == disk PNGs + spot-open 2 cards/sport\n'
 import json
 from pathlib import Path
 

@@ -113,7 +113,7 @@ def build() -> dict:
             "Descriptive MLB Statcast-derived leaderboards (catcher/umpire out-of-zone "
             "strike rate, platoon on-base splits) for a fixed 2022-2023 corpus slice, "
             "shown beside two honest nulls -- an unstable park-factor read and a REJECTed "
-            "umpire-totals gate -- with no predictive or edge claim anywhere."
+            'umpire-totals gate -- with no predictive or advantage claim anywhere.'
         ),
         "observation_window": {
             "seasons": str(catcher["season"].iloc[0]),
@@ -167,7 +167,7 @@ def build() -> dict:
             "OOZ strike rate is cruder than mixed-model framing and is NOT a called-strike/framing rate.",
             "2022-2023 fixed window; not current-season.",
             "platoon delta is raw on-base rate difference, not park/quality adjusted.",
-            "these are DESCRIPTIVE leaderboards; no predictive or edge claim is made.",
+            'these are DESCRIPTIVE leaderboards; no predictive or advantage claim is made.',
         ],
     }
 

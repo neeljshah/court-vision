@@ -1,24 +1,4 @@
-"""Market information-arrival curve: model-vs-market Brier delta by game-time
-checkpoint, from ingame_grade_joined corpora (mlb, soccer_intl).
-
-Reads data/cache/ingame_grade_joined/{mlb,soccer_intl}/*.jsonl. Parses
-inning (mlb) / minute (soccer_intl) out of state_summary, buckets rows into
-game-time checkpoints, and computes per-checkpoint Brier for: our model,
-the live market, and a naive score-only baseline (logistic on score diff,
-no time-remaining/model signal at all).
-
-Story: does the market's calibration gap to our model shrink, grow, or stay
-flat as the game progresses? This is a MEASUREMENT of information absorption
-over time, not a $ edge claim -- see docs/JOB_EVIDENCE_PACKET.md and
-.claude/rules/no-edge-claims.md.
-
-PRIOR ART: arXiv 2606.07811 already runs the same instrument (contract-minute
-market vs state-only-model vs outcome join, NBA, 409k rows) and finds a 0.64
-response-per-benchmark-move contemporaneous absorption rate. Our contribution
-here is NOT a new method -- it's the same measurement applied to MLB/soccer
-corpora we actually hold, framed as a checkpoint curve rather than a single
-regression coefficient. VERDICT: INCREMENTAL.
-"""
+"Market information-arrival curve: model-vs-market Brier delta by game-time\ncheckpoint, from ingame_grade_joined corpora (mlb, soccer_intl).\n\nReads data/cache/ingame_grade_joined/{mlb,soccer_intl}/*.jsonl. Parses\ninning (mlb) / minute (soccer_intl) out of state_summary, buckets rows into\ngame-time checkpoints, and computes per-checkpoint Brier for: our model,\nthe live market, and a naive score-only baseline (logistic on score diff,\nno time-remaining/model signal at all).\n\nStory: does the closing reference forecast's calibration gap to our model shrink, grow, or stay\nflat as the game progresses? This is a MEASUREMENT of information absorption\nover time, not a money advantage claim -- see docs/JOB_EVIDENCE_PACKET.md and\n.claude/rules/no-advantage-claims.md.\n\nPRIOR ART: arXiv 2606.07811 already runs the same instrument (contract-minute\nmarket vs state-only-model vs outcome join, NBA, 409k rows) and finds a 0.64\nresponse-per-benchmark-move contemporaneous absorption rate. Our contribution\nhere is NOT a new method -- it's the same measurement applied to MLB/soccer\ncorpora we actually hold, framed as a checkpoint curve rather than a single\nregression coefficient. VERDICT: INCREMENTAL.\n"
 import glob
 import json
 import os

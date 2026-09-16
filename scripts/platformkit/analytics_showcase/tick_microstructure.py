@@ -129,7 +129,7 @@ def measure_mlb_deriv():
             "median": round(stats.median(divergences), 4) if divergences else None,
             "mean": round(stats.mean(divergences), 4) if divergences else None,
             **quantiles(divergences),
-            "note": "abs(model_prob - market_prob) per tick; a calibration-gap MEASUREMENT, not an edge",
+            "note": 'abs(model_prob - market_prob) per tick; a calibration-gap MEASUREMENT, not an advantage',
         },
     }, inter_tick_s, price_moves
 

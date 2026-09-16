@@ -118,6 +118,6 @@
    "reason": "byte-identical duplicate of mlb (per state_conditioned_calibration); not loaded"
   }
  ],
- "story": "mlb (178 games): a 2-runs gap becomes permanent by median inning 6.0 in 75% of games; a 5-runs gap becomes permanent by median inning 7.5 in 27% of games -- later and rarer as the gap grows. soccer_intl (29 games): a 1-goals gap becomes permanent by median minute 39.5 in 48% of games (only threshold above floor). Descriptive game-flow only; no edge/ROI/$ claim.",
+ "story": "mlb (178 games): a 2-runs gap becomes permanent by median inning 6.0 in 75% of games; a 5-runs gap becomes permanent by median inning 7.5 in 27% of games -- later and rarer as the gap grows. soccer_intl (29 games): a 1-goals gap becomes permanent by median minute 39.5 in 48% of games (only threshold above floor). Descriptive game-flow only; no advantage/return/money claim.",
  "plot_written": true
 }

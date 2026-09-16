@@ -1,38 +1,4 @@
-"""lineup_synergy.py -- descriptive five-man lineup-synergy ledger from the
-real NBA stint cache: which units beat the sum of their individual on/off
-parts?
-
-data/cache/team_system/lineups/lineup_synergy_2024_25.parquet carries, per
-five-man lineup, the observed net rating (net_per48) and an "expected"
-net rating built by summing the five members' individual on/off contributions
-(expected_net_per48). The headline metric is the residual:
-
-    synergy_residual = net_per48 - expected_net_per48
-
-A positive residual means the lineup OUTPERFORMS the sum of its parts (the
-five play better together than their individual on/off numbers predict); a
-negative residual means it underperforms. Filtered to qualifies==True (all
-five members individually qualified for on/off, min>=100ish on-court
-minutes). Player names resolved via on_off_2024_25.parquet's id->name map.
-
-THE STORY: the Grizzlies' Jackson-Morant-Bane-Edey-Wells five topped the
-league in 2024-25 at +24.32 net-per-48 above expected. But this is a single
-season (only 2024-25 has this stint cache), the minutes floor is low
-(~100 on-court minutes for some lineups -- noisy), and the "expected"
-baseline itself rests on member on/off splits, which are themselves
-roster-confounded. The residual is a descriptive ASSOCIATION, not proof of
-causal chemistry. Opponent-raw. Not a forecast.
-
-Descriptive only. No edge/ROI claim (edge_claimed:false).
-
-Output: out/lineup_synergy.json (this committed JSON IS the recorded
-artifact -- --check reloads it and does not require data/ locally, i.e. is
-clone-safe).
-
-Usage:
-  python -m scripts.platformkit.analytics_showcase.lineup_synergy
-  python -m scripts.platformkit.analytics_showcase.lineup_synergy --check
-"""
+'lineup_synergy.py -- descriptive five-man lineup-synergy ledger from the\nreal NBA stint cache: which units beat the sum of their individual on/off\nparts?\n\ndata/cache/team_system/lineups/lineup_synergy_2024_25.parquet carries, per\nfive-man lineup, the observed net rating (net_per48) and an "expected"\nnet rating built by summing the five members\' individual on/off contributions\n(expected_net_per48). The headline metric is the residual:\n\n    synergy_residual = net_per48 - expected_net_per48\n\nA positive residual means the lineup OUTPERFORMS the sum of its parts (the\nfive play better together than their individual on/off numbers predict); a\nnegative residual means it underperforms. Filtered to qualifies==True (all\nfive members individually qualified for on/off, min>=100ish on-court\nminutes). Player names resolved via on_off_2024_25.parquet\'s id->name map.\n\nTHE STORY: the Grizzlies\' Jackson-Morant-Bane-Edey-Wells five topped the\nleague in 2024-25 at +24.32 net-per-48 above expected. But this is a single\nseason (only 2024-25 has this stint cache), the minutes floor is low\n(~100 on-court minutes for some lineups -- noisy), and the "expected"\nbaseline itself rests on member on/off splits, which are themselves\nroster-confounded. The residual is a descriptive ASSOCIATION, not proof of\ncausal chemistry. Opponent-raw. Not a forecast.\n\nDescriptive only. No advantage/return claim (edge_claimed:false).\n\nOutput: out/lineup_synergy.json (this committed JSON IS the recorded\nartifact -- --check reloads it and does not require data/ locally, i.e. is\nclone-safe).\n\nUsage:\n  python -m scripts.platformkit.analytics_showcase.lineup_synergy\n  python -m scripts.platformkit.analytics_showcase.lineup_synergy --check\n'
 import json
 import math
 import re

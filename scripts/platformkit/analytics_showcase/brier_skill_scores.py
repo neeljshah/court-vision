@@ -1,36 +1,4 @@
-"""Brier Skill Score (BSS) vs two references, per sport x in-game checkpoint.
-
-Standard BSS = 1 - Brier / Brier_ref, computed from the row-level joined grade
-corpora in data/cache/ingame_grade_joined/{mlb,soccer_intl}/*.jsonl (mlb_clean
-is a byte-identical dup of mlb and is excluded -- the checkpoint bucketers we
-reuse only cover mlb + soccer_intl, so it never enters).
-
-Two references per grain:
-  * climatology  -- a constant forecast equal to the SPORT-level unconditional
-    base rate P(outcome=1); the SAME reference for every checkpoint. This is the
-    textbook climatology baseline ("beat someone who always guesses the long-run
-    frequency"). BSS_vs_clim is expected to be strongly POSITIVE, especially late
-    in the game, because seeing the score trivially beats the base rate. That is
-    NOT an edge -- it is what any competent in-game win-prob model does.
-  * market       -- the devigged market_prob on the same rows. BSS_vs_market is
-    expected to be NEAR OR BELOW 0: the model does not beat the market's Brier.
-    That null is the honest headline of this exhibit, not a defect.
-
-Checkpoints reuse the exact time-bucketers from state_conditioned_calibration
-(mlb: inning bands; soccer_intl: 15-min bands) so the whole showcase agrees on
-what a "checkpoint" is.
-
-Scope / floors (declared):
-  * DESCRIPTIVE_ONLY, edge_claimed=False. No $/ROI/profit claim anywhere.
-  * MIN_N = 30 graded rows per grain to report a BSS (a Brier from <30 rows is
-    too noisy to trust); sub-floor grains keep their Brier but BSS is null.
-  * Climatology divide-by-zero guarded (Brier_ref<=0 -> BSS null).
-  * Truth source for any claim: docs/JOB_EVIDENCE_PACKET.md.
-
-Usage:
-    python -m scripts.platformkit.analytics_showcase.brier_skill_scores
-    python -m scripts.platformkit.analytics_showcase.brier_skill_scores --check
-"""
+'Brier Skill Score (BSS) vs two references, per sport x in-game checkpoint.\n\nStandard BSS = 1 - Brier / Brier_ref, computed from the row-level joined grade\ncorpora in data/cache/ingame_grade_joined/{mlb,soccer_intl}/*.jsonl (mlb_clean\nis a byte-identical dup of mlb and is excluded -- the checkpoint bucketers we\nreuse only cover mlb + soccer_intl, so it never enters).\n\nTwo references per grain:\n  * climatology  -- a constant forecast equal to the SPORT-level unconditional\n    base rate P(outcome=1); the SAME reference for every checkpoint. This is the\n    textbook climatology baseline ("beat someone who always guesses the long-run\n    frequency"). BSS_vs_clim is expected to be strongly POSITIVE, especially late\n    in the game, because seeing the score trivially beats the base rate. That is\n    NOT an advantage -- it is what any competent in-game win-prob model does.\n  * market       -- the devigged market_prob on the same rows. BSS_vs_market is\n    expected to be NEAR OR BELOW 0: the model does not beat the closing reference forecast\'s Brier.\n    That null is the honest headline of this exhibit, not a defect.\n\nCheckpoints reuse the exact time-bucketers from state_conditioned_calibration\n(mlb: inning bands; soccer_intl: 15-min bands) so the whole showcase agrees on\nwhat a "checkpoint" is.\n\nScope / floors (declared):\n  * DESCRIPTIVE_ONLY, edge_claimed=False. No money/return/gains claim anywhere.\n  * MIN_N = 30 graded rows per grain to report a BSS (a Brier from <30 rows is\n    too noisy to trust); sub-floor grains keep their Brier but BSS is null.\n  * Climatology divide-by-zero guarded (Brier_ref<=0 -> BSS null).\n  * Truth source for any claim: docs/JOB_EVIDENCE_PACKET.md.\n\nUsage:\n    python -m scripts.platformkit.analytics_showcase.brier_skill_scores\n    python -m scripts.platformkit.analytics_showcase.brier_skill_scores --check\n'
 import argparse
 import glob
 import json
@@ -63,9 +31,9 @@ CHECKPOINT_ORDER = {
 
 HONEST_NOTE = (
     "BSS vs market is near or below 0 across sports and checkpoints -- the model does not "
-    "beat the market's Brier. That null result is the POINT of this exhibit, not a defect. "
+    "beat the closing reference forecast's Brier. That null result is the POINT of this exhibit, not a defect. "
     "BSS vs climatology is strongly positive (model and market both crush the base-rate "
-    "baseline), which is expected for in-game win-prob and is NOT an edge. "
+    'baseline), which is expected for in-game win-prob and is NOT an advantage. '
     "Truth source: docs/JOB_EVIDENCE_PACKET.md."
 )
 
@@ -211,7 +179,7 @@ def build_verdict(result):
         vc = [g["bss_model_vs_clim"] for g in grains.values() if g.get("bss_model_vs_clim") is not None]
         if not vm:
             continue
-        mkt = ("model does not beat the market" if max(vm) <= 0.01
+        mkt = ('model does not beat the closing reference forecast' if max(vm) <= 0.01
                else f"max {max(vm):+.3f} is within single-fold noise, not a validated edge (see JOB_EVIDENCE_PACKET)")
         lines.append(
             f"{sport}: BSS(model vs market) in [{min(vm):+.3f}, {max(vm):+.3f}] -- {mkt}; "

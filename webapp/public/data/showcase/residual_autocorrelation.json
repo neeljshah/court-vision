@@ -6,7 +6,7 @@
   "min_rows_per_game": 10,
   "min_residual_variance": 1e-09
  },
- "story": "Within-game residuals are strongly positively autocorrelated for both model and market because the outcome is terminal-constant and the probability path is smooth; the exhibit quantifies how far from independent within-game rows are (effective sample size << row count). DESCRIPTIVE_ONLY, no edge/ROI claim.",
+ "story": "Within-game residuals are strongly positively autocorrelated for both model and market because the outcome is terminal-constant and the probability path is smooth; the exhibit quantifies how far from independent within-game rows are (effective sample size << row count). DESCRIPTIVE_ONLY, no advantage/return claim.",
  "sports": {
   "mlb": {
    "n_files": 227,
@@ -646,6 +646,6 @@
    "reason": "byte-identical duplicate of mlb -- absent from reused SPORTS map"
   }
  ],
- "verdict": "mlb: median within-game lag-1 residual autocorr = model 0.981 (n=222 games), market 0.980 (n=225); share>=0.9 model 0.95 vs market 0.96. soccer_intl: median within-game lag-1 residual autocorr = model 0.962 (n=51 games), market 0.949 (n=51); share>=0.9 model 0.82 vs market 0.80. High positive values confirm within-game rows are far from independent (effective sample size << row count); DESCRIPTIVE_ONLY, no edge/ROI claim.",
+ "verdict": "mlb: median within-game lag-1 residual autocorr = model 0.981 (n=222 games), market 0.980 (n=225); share>=0.9 model 0.95 vs market 0.96. soccer_intl: median within-game lag-1 residual autocorr = model 0.962 (n=51 games), market 0.949 (n=51); share>=0.9 model 0.82 vs market 0.80. High positive values confirm within-game rows are far from independent (effective sample size << row count); DESCRIPTIVE_ONLY, no advantage/return claim.",
  "plot_written": true
 }

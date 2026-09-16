@@ -34,7 +34,7 @@ NEEDED_COLS = ["pitch_type", "release_speed"] + FRAMING_INGREDIENT_COLS
 CAVEAT = (
     "Descriptive data-coverage showcase only -- pitch-type mix, velo percentiles, "
     "and column completeness for the local 2025 statcast pull. Does NOT recompute "
-    "any predictive-validity result. No edge/ROI/$ claim."
+    'any predictive-validity result. No advantage/return/money claim.'
 )
 
 

@@ -1,15 +1,4 @@
-"""State-conditioned calibration: where is the model miscalibrated vs the market?
-
-Buckets every graded ingame prediction by (model_prob band) x (game-state time
-bucket, parsed from state_summary) and computes n-weighted calibration error
-(|mean_p - mean_y|) per bucket, for both the model and the market. The ranked
-worst-bucket list is the improvement backlog.
-
-Corpora: data/cache/ingame_grade_joined/{mlb,soccer_intl}/*.jsonl (mlb_clean
-is a byte-identical duplicate of mlb -- skipped to avoid double counting).
-
-edge_claimed=False always. This is a calibration diagnostic, not a betting signal.
-"""
+'State-conditioned calibration: where is the model miscalibrated vs the closing reference forecast?\n\nBuckets every graded ingame prediction by (model_prob band) x (game-state time\nbucket, parsed from state_summary) and computes n-weighted calibration error\n(|mean_p - mean_y|) per bucket, for both the model and the closing reference forecast. The ranked\nworst-bucket list is the improvement backlog.\n\nCorpora: data/cache/ingame_grade_joined/{mlb,soccer_intl}/*.jsonl (mlb_clean\nis a byte-identical duplicate of mlb -- skipped to avoid double counting).\n\nedge_claimed=False always. This is a calibration diagnostic, not a forecast comparison signal.\n'
 import argparse
 import glob
 import json
@@ -197,7 +186,7 @@ def run():
         "story": (
             "Buckets every graded ingame prediction by model_prob band x game-state "
             "time bucket; ranked_worst_buckets is where the model is furthest from "
-            "outcomes relative to the market, i.e. the improvement backlog."
+            'outcomes relative to the closing reference forecast, i.e. the improvement backlog.'
         ),
         "sports": {},
         "skipped": [],

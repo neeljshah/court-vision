@@ -1,14 +1,4 @@
-"""Market disagreement profile: bucket rows by |model_prob - market_prob| and
-report per-bucket n, model Brier, market Brier, outcome-agreement rate.
-
-Honest question: when the model disagrees with the market a lot, who is usually
-right? Reads the same row-level joined grade corpora as murphy_decomposition.py
-(data/cache/ingame_grade_joined/{mlb,soccer_intl}/*.jsonl). edge_claimed=False.
-
-Usage:
-    python -m scripts.platformkit.analytics_showcase.market_disagreement_profile
-    python -m scripts.platformkit.analytics_showcase.market_disagreement_profile --check
-"""
+'Market disagreement profile: bucket rows by |model_prob - market_prob| and\nreport per-bucket n, model Brier, market Brier, outcome-agreement rate.\n\nHonest question: when the model disagrees with the closing reference forecast a lot, who is usually\nright? Reads the same row-level joined grade corpora as murphy_decomposition.py\n(data/cache/ingame_grade_joined/{mlb,soccer_intl}/*.jsonl). edge_claimed=False.\n\nUsage:\n    python -m scripts.platformkit.analytics_showcase.market_disagreement_profile\n    python -m scripts.platformkit.analytics_showcase.market_disagreement_profile --check\n'
 import argparse
 import glob
 import json

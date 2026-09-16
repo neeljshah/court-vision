@@ -1,31 +1,4 @@
-"""Novel stat #5 -- Live-Clock Fraction (LCF).
-
-METRIC: one 0-1 axis per sport for "how long the game stays genuinely contested"
--- the fraction of the game clock that is still live before the score gap crosses
-a point-of-no-return, at each sport's near-median decisive threshold. Paired with
-comeback_rate as an independent decisiveness cross-check.
-
-FORMULA (per sport):
-    near-median threshold = the non-masked threshold whose decided_frac_of_games
-                            is closest to 0.50
-    LCF = decided_clockfrac_median at that threshold
-          (the share of the clock elapsed when the gap becomes permanent; HIGHER
-          = the game stays contested LATER)
-
-ORIENTATION NOTE: the deliverable is a single 0-1 axis where higher = stays
-contested later ("baseball stays contested later than soccer"). LCF is therefore
-the decided_clockfrac_median directly -- the live/contested portion of the clock --
-consistent with the metric name and headline. (A '1 - x' orientation would invert
-the axis and contradict both.)
-
-Reads blowout_dynamics.json + xsport_structure.json (committed). Buildable for
-mlb + soccer_intl only; nba/tennis have no blowout corpus -> honest not_buildable.
-edge_claimed=False -- descriptive game flow, no $/ROI claim.
-
-Usage:
-    python -m scripts.platformkit.analytics_showcase.novel_live_clock_fraction
-    python -m scripts.platformkit.analytics_showcase.novel_live_clock_fraction --check
-"""
+'Novel stat #5 -- Live-Clock Fraction (LCF).\n\nMETRIC: one 0-1 axis per sport for "how long the game stays genuinely contested"\n-- the fraction of the game clock that is still live before the score gap crosses\na point-of-no-return, at each sport\'s near-median decisive threshold. Paired with\ncomeback_rate as an independent decisiveness cross-check.\n\nFORMULA (per sport):\n    near-median threshold = the non-masked threshold whose decided_frac_of_games\n                            is closest to 0.50\n    LCF = decided_clockfrac_median at that threshold\n          (the share of the clock elapsed when the gap becomes permanent; HIGHER\n          = the game stays contested LATER)\n\nORIENTATION NOTE: the deliverable is a single 0-1 axis where higher = stays\ncontested later ("baseball stays contested later than soccer"). LCF is therefore\nthe decided_clockfrac_median directly -- the live/contested portion of the clock --\nconsistent with the metric name and headline. (A \'1 - x\' orientation would invert\nthe axis and contradict both.)\n\nReads blowout_dynamics.json + xsport_structure.json (committed). Buildable for\nmlb + soccer_intl only; nba/tennis have no blowout corpus -> honest not_buildable.\nedge_claimed=False -- descriptive game flow, no money/return claim.\n\nUsage:\n    python -m scripts.platformkit.analytics_showcase.novel_live_clock_fraction\n    python -m scripts.platformkit.analytics_showcase.novel_live_clock_fraction --check\n'
 import json
 import os
 

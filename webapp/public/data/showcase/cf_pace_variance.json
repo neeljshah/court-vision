@@ -205,7 +205,7 @@
  ],
  "assumptions": [
   "Margin ~ Normal (CLT over ~100 possessions; good for full games, weaker for short in-game windows).",
-  "COUNTERFACTUAL floor: per-possession edge and variance held pace-INVARIANT. Real teams that push pace may also change shot quality; this isolates the mechanical variance effect only, not behavioral pace changes.",
+  "COUNTERFACTUAL floor: per-possession margin and variance held pace-INVARIANT. Real teams that push pace may also change shot quality; this isolates the mechanical variance effect only, not behavioral pace changes.",
   "Possessions independent; runs/autocorrelation would add variance and make the pace lever slightly STRONGER than shown.",
   "v_pp anchor conflates matchup dispersion (upper bound); cancels in the headline formula, used only for MC validation/context. Two teams symmetric in variance."
  ],

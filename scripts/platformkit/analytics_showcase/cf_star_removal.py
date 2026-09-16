@@ -1,37 +1,4 @@
-"""
-Counterfactual star-removal win-probability deltas (NBA).
-
-QUESTION: "How many pregame win-probability points is each team's top player
-worth?" -- estimated by REMOVING the player's measured on/off net-rating
-contribution from the team's strength and re-pricing win prob through the
-repo's OWN Elo->prob curve.
-
-METHOD (declared, not tuned to output):
-  1. Team strength R = end-of-2024-25 Elo (data/models/elo_state.json).
-  2. Each team's "star" = its player with the largest on/off net_rating_delta
-     (data/cache/intel_claims/nba_lineup_context_claims.jsonl, 2024_25 slice,
-     already floored at min_on>=500 / n_games>=30 by the source claim).
-  3. star_elo = net_rating_delta * ELO_PER_NETRATING_POINT, converting the
-     on/off point swing into Elo points. Conversion is FROZEN and anchored to
-     the repo's own ELO_HFA=76 Elo ~ 3.0-pt home edge (76/3.0 = 25.33 Elo/pt),
-     NOT fit to make any name look bigger or smaller.
-  4. p_with     = elo_logistic(R - 1500)          [vs league-average, neutral]
-     p_without  = elo_logistic(R - star_elo - 1500)
-     delta_winprob = p_with - p_without.
-
-CEILING / HONESTY (declared on EVERY row):
-  On/off net_rating_delta OVERSTATES an individual's marginal value -- it is a
-  full-lineup on-vs-off swing entangled with the ROSTER CONFOUND (who else is on
-  the floor, coach trust, opponent strength, garbage time), none controlled for.
-  So these deltas are a CEILING, not a causal player-value estimate. The
-  net-rating->Elo conversion is itself a declared assumption. DESCRIPTIVE_ONLY,
-  edge_claimed=False -- NOT a betting/ROI claim.
-
-Output: out/cf_star_removal.json + docs/img/cf_star_removal.png (top-15).
-Usage:
-    python -m scripts.platformkit.analytics_showcase.cf_star_removal
-    python -m scripts.platformkit.analytics_showcase.cf_star_removal --check
-"""
+'\nCounterfactual star-removal win-probability deltas (NBA).\n\nQUESTION: "How many pregame win-probability points is each team\'s top player\nworth?" -- estimated by REMOVING the player\'s measured on/off net-rating\ncontribution from the team\'s strength and re-pricing win prob through the\nrepo\'s OWN Elo->prob curve.\n\nMETHOD (declared, not tuned to output):\n  1. Team strength R = end-of-2024-25 Elo (data/models/elo_state.json).\n  2. Each team\'s "star" = its player with the largest on/off net_rating_delta\n     (data/cache/intel_claims/nba_lineup_context_claims.jsonl, 2024_25 slice,\n     already floored at min_on>=500 / n_games>=30 by the source claim).\n  3. star_elo = net_rating_delta * ELO_PER_NETRATING_POINT, converting the\n     on/off point swing into Elo points. Conversion is FROZEN and anchored to\n     the repo\'s own ELO_HFA=76 Elo ~ 3.0-pt home advantage (76/3.0 = 25.33 Elo/pt),\n     NOT fit to make any name look bigger or smaller.\n  4. p_with     = elo_logistic(R - 1500)          [vs league-average, neutral]\n     p_without  = elo_logistic(R - star_elo - 1500)\n     delta_winprob = p_with - p_without.\n\nCEILING / HONESTY (declared on EVERY row):\n  On/off net_rating_delta OVERSTATES an individual\'s marginal value -- it is a\n  full-lineup on-vs-off swing entangled with the ROSTER CONFOUND (who else is on\n  the floor, coach trust, opponent strength, garbage time), none controlled for.\n  So these deltas are a CEILING, not a causal player-value estimate. The\n  net-rating->Elo conversion is itself a declared assumption. DESCRIPTIVE_ONLY,\n  edge_claimed=False -- NOT a forecast comparison/return claim.\n\nOutput: out/cf_star_removal.json + docs/img/cf_star_removal.png (top-15).\nUsage:\n    python -m scripts.platformkit.analytics_showcase.cf_star_removal\n    python -m scripts.platformkit.analytics_showcase.cf_star_removal --check\n'
 from __future__ import annotations
 
 import json
@@ -61,7 +28,7 @@ CEILING_CAVEAT = (
     "CEILING: on/off net_rating_delta overstates marginal individual value "
     "(ROSTER CONFOUND -- full-lineup on-vs-off swing, not controlled for "
     "teammates/opponent/coach-trust/garbage-time). net_rating->Elo conversion "
-    "is a declared frozen assumption. DESCRIPTIVE_ONLY, not a causal or edge claim."
+    'is a declared frozen assumption. DESCRIPTIVE_ONLY, not a causal or advantage claim.'
 )
 
 # Frozen NBA numeric team_id -> corpus/Elo abbreviation (stable league IDs).
@@ -159,7 +126,7 @@ def build() -> dict:
             "rating_to_prob_curve": "repo Elo logistic 1/(1+10^(-d/400))",
             "star_rating_removed": "on_off_net_rating_delta * ELO_PER_NETRATING_POINT",
             "elo_per_netrating_point": round(ELO_PER_NETRATING_POINT, 4),
-            "elo_per_netrating_point_anchor": "elo_config.ELO_HFA=76 Elo ~ 3.0-pt home edge (76/3.0)",
+            "elo_per_netrating_point_anchor": 'elo_config.ELO_HFA=76 Elo ~ 3.0-pt home advantage (76/3.0)',
             "reference_opponent_elo": REF_ELO,
             "site": "neutral",
             "weights_tuned_to_output": False,

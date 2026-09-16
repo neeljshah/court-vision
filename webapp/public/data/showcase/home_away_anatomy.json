@@ -13,7 +13,7 @@
   },
   "floors_tuned_to_output": false,
   "not_this": [
-   "NOT a forecast / home-court betting edge -- games already played",
+   "NOT a forecast / home-court advantage claim -- games already played",
    "NOT the team home-court margin (this is the smaller per-player-game bump)",
    "NOT minutes-weighted / pace / rest / opponent / role adjusted (raw means)"
   ],
