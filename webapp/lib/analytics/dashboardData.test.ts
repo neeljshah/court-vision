@@ -31,7 +31,7 @@ describe("public analytics snapshot normalization", () => {
     expect(data.markets.find(m => m.id === "mlb_moneyline")?.n_rows).toBe(78986);
   });
   it("keeps distinct pitch denominators and all catalog modules", () => {
-    expect(data.modules).toHaveLength(74);
+    expect(data.modules).toHaveLength(75);
     expect(data.pitches.distribution.find(p => p.pitch_type === "FF")?.n).toBe(220235);
     expect(data.pitches.velocity.find(p => p.pitch_type === "FF")?.n).toBe(220233);
     expect(data.coverage.rates).toHaveLength(28);

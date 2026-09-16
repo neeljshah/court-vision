@@ -68,6 +68,7 @@ describe("summarizeMeasurementCoverage", () => {
     const teams = getNbaTeamProfileResearch()[0];
     const teamCoverage = summarizeMeasurementCoverage(teams.rows, teams.fields);
     expect(teamCoverage.find(item => item.key === "pace_proxy")).toMatchObject({ total: 30, measured: 30, missing: 0, share: 1 });
-    expect(teamCoverage.find(item => item.key === "comeback_second_half_margin")).toMatchObject({ total: 30, measured: 18, missing: 12, share: 0.6 });
+    // every team sits below the published halftime split floor, so the masked margin never counts as measured
+    expect(teamCoverage.find(item => item.key === "comeback_second_half_margin")).toMatchObject({ total: 30, measured: 0, missing: 30, share: 0 });
   });
 });
