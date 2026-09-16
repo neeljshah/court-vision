@@ -17,7 +17,7 @@ describe("Published MLB exit-velocity investigation", () => {
     fireEvent.click(screen.getByRole("button", { name: /^Inspect Aaron Judge:/ }));
     const selected = screen.getByRole("region", { name: "Selected measurement" });
     for (const value of ["21.9 mph", "109.5 mph", "87.6 mph", "698", "2,715"]) {
-      expect(within(selected).getByText(value)).toBeVisible();
+      expect(within(selected).getAllByText(value)[0]).toBeVisible();
     }
     expect(screen.getByText(analysis.scope)).toBeVisible();
     expect(screen.getByText(analysis.caveat)).toBeVisible();

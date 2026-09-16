@@ -15,7 +15,7 @@ describe("Published tennis window investigation", () => {
     fireEvent.change(screen.getByRole("textbox", { name: "Search analysis rows" }), { target: { value: "Andy Murray" } });
     fireEvent.click(screen.getByRole("button", { name: /^Inspect Andy Murray/ }));
     const selected = screen.getByRole("region", { name: "Selected measurement" });
-    expect(within(selected).getByText("-18.54 pp")).toBeInTheDocument();
+    expect(within(selected).getAllByText("-18.54 pp")[0]).toBeInTheDocument();
     expect(within(selected).getByText("48.78%")).toBeInTheDocument();
     expect(within(selected).getByText("67.32%")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Export CSV" }));

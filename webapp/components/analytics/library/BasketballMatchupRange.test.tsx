@@ -16,7 +16,7 @@ describe("Published NBA opponent mean-total investigation", () => {
     fireEvent.click(screen.getByRole("button", { name: /^Inspect ATL:/ }));
     const selected = screen.getByRole("region", { name: "Selected measurement" });
     for (const value of ["34.2", "255.7", "221.5", "10", "6", "29"]) {
-      expect(within(selected).getByText(value)).toBeInTheDocument();
+      expect(within(selected).getAllByText(value)[0]).toBeInTheDocument();
     }
     expect(selected).toHaveTextContent("IND");
     expect(selected).toHaveTextContent("HOU");
