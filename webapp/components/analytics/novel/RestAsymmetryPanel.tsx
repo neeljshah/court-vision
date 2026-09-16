@@ -47,7 +47,7 @@ function Grid({ caption, columns, rows, note }: { caption: string; columns: stri
   return (
     <figure className="ra-fig">
       <figcaption>{caption}</figcaption>
-      <div className="ra-scroll">
+      <div className="ra-scroll" tabIndex={0} role="region" aria-label={`${caption} (scrollable table)`}>
         <table>
           <thead>
             <tr>{columns.map(column => <th key={column}>{column}</th>)}</tr>
