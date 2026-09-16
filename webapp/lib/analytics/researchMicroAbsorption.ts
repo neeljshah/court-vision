@@ -52,7 +52,7 @@ export function buildMicroAbsorptionResearch(source: MicroAbsorptionSource): Res
     fields: [f("mean_absolute_devigged_probability_movement", "Mean absolute devigged probability movement", "percent", 4), f("move_pairs", "Move pairs", "number", 0), f("series_used", "Series used", "number", 0)],
     rows: analysisRows,
     formula: "Mean absolute devigged probability movement is copied from the published mean_abs_move field. Move pairs is copied from the published n field.",
-    interpretation: "Compare the mean absolute devigged probability movement with move pairs within the same sport and time-to-close bucket.",
+    interpretation: "Compare the published mean absolute devigged probability movement with move pairs within the same sport and time-to-close bucket. The artifact records movement timing and does not identify its cause.",
     references: REFERENCES,
     novelty: "Derived analysis",
     asOf: asOf(source?.as_of),

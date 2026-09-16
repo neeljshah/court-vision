@@ -23,5 +23,15 @@ describe("ModuleEvidence", () => {
   it("does not offer an inspector for a module without one", () => {
     render(<ModuleEvidence moduleId="tennis_showcase" evidence={{ availability: "published", missingInputs: [], coverage: [], analyses: [{ id: "tennis-surface-support", title: "Surface Evidence Support" }] }} />);
     expect(screen.queryByRole("link", { name: /Open the interactive inspector/ })).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Market overreaction operands")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Micro absorption operands")).not.toBeInTheDocument();
+  });
+  it("mounts the overreaction operands for the market movement module", () => {
+    render(<ModuleEvidence moduleId="market_overreaction" evidence={{ availability: "published", missingInputs: [], coverage: [], analyses: [] }} />);
+    expect(screen.getByLabelText("Market overreaction operands")).toBeInTheDocument();
+  });
+  it("mounts the absorption operands for the time-to-close module", () => {
+    render(<ModuleEvidence moduleId="micro_absorption" evidence={{ availability: "published", missingInputs: [], coverage: [], analyses: [] }} />);
+    expect(screen.getByLabelText("Micro absorption operands")).toBeInTheDocument();
   });
 });

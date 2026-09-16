@@ -20,4 +20,11 @@ describe("time-to-close movement research", () => {
     expect(buildMicroAbsorptionResearch({ buckets_minutes: [{ label: "6h+" }], sports: { mlb: { status: "ok", n_series_used: 1, move_by_bucket: { "6h+": { n: 2, mean_abs_move: -0.1 } } } } })[0].rows).toEqual([]);
     expect(buildMicroAbsorptionResearch({})[0].rows).toEqual([]);
   });
+
+  it("does not attribute movement timing to a particular cause", () => {
+    const analysis = buildMicroAbsorptionResearch(source())[0];
+    const prose = [analysis.description, analysis.caveat, analysis.interpretation].join(" ");
+    expect(prose).not.toMatch(/lineup|scratch|sharp money|information actually arrives/i);
+    expect(analysis.interpretation).toContain("does not identify its cause");
+  });
 });

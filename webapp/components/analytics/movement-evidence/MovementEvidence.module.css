@@ -1,0 +1,15 @@
+.evidence { margin: 22px 0; border: 1px solid var(--rule); border-radius: var(--radius-card); background: var(--paper-raised); padding: 18px 20px; }
+.evidence h2 { margin: 2px 0 6px; font-family: var(--font-display); font-size: 22px; font-weight: 500; }
+.intro, .note { color: var(--ink-2); font-size: 14px; line-height: 1.55; }
+.note { margin-top: 12px; }
+.scroll { max-width: 100%; overflow-x: auto; margin-top: 14px; }
+.table { width: 100%; min-width: 810px; border-collapse: collapse; font-size: 12px; font-feature-settings: "tnum" 1; }
+.table caption { caption-side: top; padding: 0 0 8px; text-align: left; font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); }
+.table th, .table td { padding: 9px 10px; border-bottom: 1px solid var(--rule); text-align: right; vertical-align: top; white-space: nowrap; }
+.table th { font-family: var(--font-mono); font-size: 11px; font-weight: 500; color: var(--ink-3); }
+.table th:first-child, .table td:first-child { position: sticky; left: 0; z-index: 1; text-align: left; background: var(--paper-raised); box-shadow: 1px 0 0 var(--rule); }
+.table tbody tr:nth-child(even) td { background: var(--paper-tint); }
+.table tbody tr:nth-child(even) td:first-child { background: var(--paper-tint); }
+.table .left { text-align: left; }
+.unavailable { color: var(--signal-ink); }
+@media (max-width: 620px) { .evidence { padding: 16px; } .table { min-width: 760px; } }
