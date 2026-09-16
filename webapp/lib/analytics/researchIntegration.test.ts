@@ -8,11 +8,11 @@ const sourceRoot = resolve(__dirname, "../../public/data/showcase");
 
 describe("research analysis integration", () => {
   it("keeps the complete public registry structurally safe", () => {
-    expect(analyses).toHaveLength(46);
+    expect(analyses).toHaveLength(47);
     const ids = analyses.map((analysis) => analysis.id);
     expect(new Set(ids).size).toBe(ids.length);
     expect(ids.every((id) => /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id))).toBe(true);
-    expect(analyses.reduce((total, analysis) => total + analysis.rows.length, 0)).toBe(2432);
+    expect(analyses.reduce((total, analysis) => total + analysis.rows.length, 0)).toBe(2619);
     for (const analysis of analyses) {
       const fieldKeys = analysis.fields.map((field) => field.key);
       expect(fieldKeys.length).toBeGreaterThan(0);
