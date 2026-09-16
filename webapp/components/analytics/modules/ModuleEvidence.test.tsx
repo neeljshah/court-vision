@@ -1,0 +1,19 @@
+import { render, screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
+import { ModuleEvidence } from "./ModuleEvidence";
+describe("ModuleEvidence", () => {
+  it("states an unavailable finding and its missing input", () => {
+    render(<ModuleEvidence evidence={{ availability: "unavailable", headline: "This measurement cannot be published because ages are absent.", missingInputs: ["Age Source Found"], coverage: [], analyses: [] }} />);
+    expect(screen.getByLabelText("Published evidence status")).toHaveTextContent("cannot be published");
+    expect(screen.getByText(/Age Source Found/)).toBeInTheDocument();
+  });
+  it("renders coverage rows for a partial artifact", () => {
+    render(<ModuleEvidence evidence={{ availability: "partial", missingInputs: [], analyses: [], coverage: [{ population: "NBA", status: "ok", nGamesTotal: 12, nBucketsUsable: 2 }, { population: "TENNIS", status: "not_buildable", reason: "no map" }] }} />);
+    expect(screen.getByText("NBA")).toBeInTheDocument();
+    expect(screen.getByText("no map")).toBeInTheDocument();
+  });
+  it("links to a source module's interactive analysis", () => {
+    render(<ModuleEvidence evidence={{ availability: "published", missingInputs: [], coverage: [], analyses: [{ id: "tennis-surface-support", title: "Surface Evidence Support" }] }} />);
+    expect(screen.getByRole("link", { name: /Open the interactive analysis/ })).toHaveAttribute("href", "/analytics/research/tennis-surface-support");
+  });
+});

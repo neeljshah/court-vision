@@ -1,7 +1,7 @@
 import type { Sport } from "./dashboardTypes";
 export type LabField = { key: string; label: string; unit: "number" | "percent" | "pp" | "hours" | "mph"; digits?: number };
 export type LabRow = { id: string; label: string; group: string; values: Record<string, number | null>; note?: string };
-export type LabDataset = { id: string; title: string; sport: Sport; category: string; source: string; description: string; scope: string; caveat: string; status: string; fields: LabField[]; rows: LabRow[] };
+export type LabDataset = { id: string; title: string; sport: Sport; category: string; source: string; description: string; scope: string; caveat: string; status: string; fields: LabField[]; rows: LabRow[]; eligiblePopulation?: number; qualificationRule?: string; nQualifying?: number; note?: string };
 export type NovelCard = { stat_name: string; abbrev: string; module: string; formula: string; prior_art_verdict: string; headline: string; is_honest_null?: boolean };
 export type LabData = { datasets: LabDataset[]; novel: NovelCard[] };
 

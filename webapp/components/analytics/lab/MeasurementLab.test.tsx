@@ -33,6 +33,19 @@ beforeEach(() => window.history.replaceState(null, "", "/analytics/lab"));
 afterEach(() => vi.unstubAllGlobals());
 
 describe("MeasurementLab sport filtering and inspection", () => {
+  it("explains an empty published dataset, rather than offering a filter reset", () => {
+    const empty = { ...fixture, datasets: [{ ...fixture.datasets[0], id: "tennis-empty", sport: "tennis" as const, rows: [], status: "No qualifying rows", eligiblePopulation: 18, qualificationRule: "15 grass matches", nQualifying: 0, note: "Published WTA snapshot." }] };
+    render(<MeasurementLab data={empty} />);
+    expect(screen.getByText("Eligible population: 18. Qualification rule: 15 grass matches. Qualifying rows: 0.")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /tennis surface-support/i })).toHaveAttribute("href", "/analytics/research/tennis-surface-support");
+    expect(screen.queryByRole("button", { name: "Clear search and group" })).not.toBeInTheDocument();
+  });
+  it("offers to clear a search that removed published rows", () => {
+    render(<MeasurementLab data={fixture} />);
+    fireEvent.change(screen.getByLabelText("Search measurement rows"), { target: { value: "not present" } });
+    fireEvent.click(screen.getByRole("button", { name: "Clear search and group" }));
+    expect(screen.getByRole("status")).toHaveTextContent("3 rows");
+  });
   it("restores a distribution URL and preserves unavailable coverage", () => {
     window.history.replaceState(null, "", "?sport=mlb&dataset=cross-sport&view=distribution");
     render(<MeasurementLab data={fixture} />);
