@@ -114,7 +114,7 @@ export function Bars(props: BarsProps) {
           const right = b.value >= 0;
           const labelX = right ? Math.max(vx, zeroX) + 8 : Math.min(vx, zeroX) - 8;
           return (
-            <g key={b.label}>
+            <g key={`${i}-${b.label}`}>
               {/* category label */}
               <text
                 x={PAD.l - 12}
