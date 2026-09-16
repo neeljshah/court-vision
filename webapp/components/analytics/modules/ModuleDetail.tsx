@@ -7,7 +7,9 @@ import { VerdictLegend } from "@/components/analytics/VerdictLegend";
 import { artifactUrl, provenanceDate } from "@/lib/analytics/artifactProvenance";
 import { classifyModuleEvidence } from "@/lib/analytics/moduleEvidence";
 import { getPublishedChartPresentation } from "@/lib/analytics/publishedChartPresentation";
+import { noticesForModules } from "@/lib/analytics/dataIntegrity";
 import type { Cite, Insight, Mod, Out } from "@/app/(analytics)/analytics/m/[id]/page";
+import { DataIntegrityNotice } from "@/components/analytics/DataIntegrityNotice";
 import { ModuleEvidence } from "./ModuleEvidence";
 import { ModuleReadingGuide } from "./ModuleReadingGuide";
 
@@ -43,6 +45,7 @@ export function ModuleDetail({ mod, out, insight, subtitle }: { mod: Mod; out: O
   const useChartImage = !!chart && presentation.approved;
   const replacement = fallbackData(out);
   const evidence = classifyModuleEvidence(mod.id, mod.status, out);
+  const integrityNotices = noticesForModules([mod.id]);
   const source = cited[0]?.path || mod.out_path;
   const sourceHref = artifactUrl(source);
   const envelope: ScoutEnvelope = insight
@@ -53,6 +56,7 @@ export function ModuleDetail({ mod, out, insight, subtitle }: { mod: Mod; out: O
     <div className="mv-crumbs"><Link href="/analytics/browse">Browse</Link> &rsaquo; {mod.title}</div>
     {descriptive && <div className="mv-banner">Descriptive only - a measured pattern, not a forecast.</div>}
     <div className="mv-head"><div><div className="overline">Analytics module &middot; {asOf}</div><h1 className="serif">{insight?.title || mod.title}</h1>{subtitle && <p className="mv-sub">{subtitle}</p>}</div>{useChartImage && <a className="mv-dl" href={chart} target="_blank" rel="noopener">View full size</a>}</div>
+    <DataIntegrityNotice notices={integrityNotices} moduleIds={[mod.id]} />
     <VerdictLegend style={{ margin: "0 0 24px" }} />
     <div className="mv-grid"><div>
       {useChartImage && <Figure source={mod.out_path} asOf={mod.as_of} title={mod.title} verdict="descriptive_only"><img src={chart} alt={`${mod.title} chart`} style={{ width: "100%", height: "auto", display: "block" }} /></Figure>}

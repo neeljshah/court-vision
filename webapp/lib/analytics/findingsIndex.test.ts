@@ -11,4 +11,11 @@ describe("findingsIndex", () => {
     expect(new Set(registered).size).toBe(registered.length);
     expect(registered).toEqual(routes);
   });
+
+  it("registers the MLB in-game integrity exhibit with exposed artifacts", () => {
+    const finding = findingsIndex.find(entry => entry.slug === "ingame-join-integrity");
+    expect(finding).toMatchObject({ sport: "mlb", asOf: "2026-09-16" });
+    expect(finding?.artifactIds).toContain("state_conditioned_calibration");
+    expect(finding?.artifactIds).not.toContain("blowout_dynamics");
+  });
 });

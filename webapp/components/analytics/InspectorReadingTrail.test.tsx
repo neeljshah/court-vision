@@ -32,4 +32,11 @@ describe("InspectorReadingTrail", () => {
     const routes = new Set([...analysisDestinations.map((destination) => norm(destination.route)), ...readingEntries().map((entry) => norm(entry.href))]);
     for (const link of Array.from(trail.querySelectorAll("a"))) expect({ href: link.getAttribute("href"), known: routes.has(norm(link.getAttribute("href") || "")) }).toEqual({ href: link.getAttribute("href"), known: true });
   });
+
+  it("mounts the integrity notice only for an affected inspector", () => {
+    const { rerender } = render(<InspectorReadingTrail id="state-reliability" />);
+    expect(screen.getByRole("complementary", { name: "Data integrity" })).toHaveTextContent("state_conditioned_calibration");
+    rerender(<InspectorReadingTrail id="blowout-timing" />);
+    expect(screen.queryByRole("complementary", { name: "Data integrity" })).not.toBeInTheDocument();
+  });
 });

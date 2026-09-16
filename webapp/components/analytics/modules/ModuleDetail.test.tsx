@@ -38,4 +38,11 @@ describe("ModuleDetail", () => {
     expect(screen.queryByRole("img", { name: "Team states chart" })).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "View full size" })).not.toBeInTheDocument();
   });
+
+  it("mounts the integrity notice only for affected artifacts", () => {
+    const { rerender } = render(<ModuleDetail mod={{ ...mod, id: "state_conditioned_calibration" }} out={out} subtitle="Published state measurements." insight={null} />);
+    expect(screen.getByRole("complementary", { name: "Data integrity" })).toHaveTextContent("state_conditioned_calibration");
+    rerender(<ModuleDetail mod={mod} out={out} subtitle="When a lead becomes permanent." insight={null} />);
+    expect(screen.queryByRole("complementary", { name: "Data integrity" })).not.toBeInTheDocument();
+  });
 });

@@ -5,6 +5,8 @@ import Link from "next/link";
 import { PaperBlockView } from "./PaperBlocks";
 import { resolveRelated } from "@/lib/analytics/papers.server";
 import { readingMinutes, SPORT_LABELS, type Paper } from "@/lib/analytics/papers";
+import { noticesForPaper } from "@/lib/analytics/dataIntegrity";
+import { DataIntegrityNotice } from "@/components/analytics/DataIntegrityNotice";
 
 const kindLabels: Record<string, string> = {
   inspector: "Inspector", analysis: "Analysis", module: "Source module", paper: "Paper",
@@ -32,6 +34,8 @@ function EvidenceBox({ paper }: { paper: Paper }) {
 
 export function PaperArticle({ paper }: { paper: Paper }) {
   const related = resolveRelated(paper.related);
+  const integrityNotices = noticesForPaper(paper.evidence);
+  const evidenceModuleIds = paper.evidence.map(entry => entry.module);
   return (
     <article className="paper">
       <header className="paper-head">
@@ -47,6 +51,8 @@ export function PaperArticle({ paper }: { paper: Paper }) {
         <h2 id="paper-abstract-heading" className="overline">Abstract</h2>
         <p>{paper.abstract}</p>
       </section>
+
+      <DataIntegrityNotice notices={integrityNotices} moduleIds={evidenceModuleIds} />
 
       <nav className="paper-toc" aria-label="Sections">
         <p className="overline">Contents</p>

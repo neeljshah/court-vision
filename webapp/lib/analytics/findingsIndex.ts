@@ -26,6 +26,8 @@ const define = (slug: string, title: string, dek: string, sport: Sport, artifact
 });
 
 export const findingsIndex: Finding[] = [
+  // measured on 2026-09-16; the exposed artifacts' own dates are older than the measurement
+  { ...  define("ingame-join-integrity", "MLB in-game join integrity", "Mixed-game tick files and incomplete state rows recorded before calibration artifacts are regenerated.", "mlb", ["state_conditioned_calibration", "calibration_stability", "murphy_decomposition", "brier_skill_scores", "residual_anatomy", "calibration_by_market_type", "residual_autocorrelation", "calibration_over_time", "calibration_atlas", "market_disagreement_profile", "info_arrival_curve", "market_overreaction", "soccer_calibration_pack"], "2026-09-16"), asOf: "2026-09-16" },
   define("retraction", "Retractions", "The six numbers we took back, with what was wrong and the published correction.", "all", [], "2026-07-23"),
   define("effective-sample-size", "Effective sample size", "Why repeated within-game rows carry less independent information than their count suggests.", "mlb", ["ess_ledger"]),
   define("verdict-flips", "Verdict flips", "Claim families that changed verdict as more data arrived, in sequence.", "all", ["verdict_flip_anatomy"]),

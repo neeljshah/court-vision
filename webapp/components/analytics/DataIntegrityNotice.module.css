@@ -1,0 +1,28 @@
+.notice {
+  margin: 20px 0;
+  padding: 15px 18px;
+  border: 1px solid var(--rule-strong);
+  border-left: 3px solid var(--signal);
+  border-radius: var(--radius-card);
+  background: var(--paper-tint);
+  color: var(--ink-2);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.label {
+  margin-bottom: 5px;
+  color: var(--signal-ink);
+}
+
+.summary { margin: 0; }
+
+.artifacts {
+  margin: 10px 0 0;
+  padding-left: 18px;
+  color: var(--ink-2);
+}
+
+.artifacts li { margin-top: 2px; }
+
+.link { display: inline-block; margin-top: 10px; font-size: 13px; }

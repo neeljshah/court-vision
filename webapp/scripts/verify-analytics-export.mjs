@@ -18,6 +18,7 @@ const REQUIRED_ROUTES = [
   "/analytics/lab/",
   "/analytics/compare/",
   "/analytics/evidence/",
+  "/analytics/findings/ingame-join-integrity/",
   "/analytics/browse/",
   "/analytics/state-reliability/",
   "/analytics/pitch-sequencing/",
