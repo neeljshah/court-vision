@@ -3,7 +3,8 @@ import { expect, it } from "vitest";
 // @ts-expect-error -- the executable scanner is deliberately dependency-free ESM.
 import { scanRenderedText } from "../../../../../scripts/check-analytics-copy.mjs";
 import { resolveResearchSourceDestination } from "@/lib/analytics/researchSourceDestinations";
-import RetractionPage, { RETRACTIONS } from "./page";
+import RetractionPage from "./page";
+import { RETRACTIONS } from "./retractions";
 
 it("renders dated withdrawal records with evidence links and valid replacement language", () => {
   const { container } = render(<RetractionPage />);
