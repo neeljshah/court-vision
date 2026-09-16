@@ -6,11 +6,11 @@ const corpus = loadScoutCorpus();
 
 describe("loadScoutCorpus", () => {
   it("keeps curated answers and expands all public entity and module records", () => {
-    expect(corpus.length).toBe(2_125);
+    expect(corpus.length).toBe(2_126);
     expect(corpus.some((entry) => entry.q === "Does the model actually beat the betting market?")).toBe(true);
     expect(corpus.filter((entry) => entry.bucket === "public-entity-profile")).toHaveLength(1_549);
     expect(corpus.filter((entry) => entry.bucket === "public-analytics-module")).toHaveLength(74);
-    expect(corpus.filter((entry) => entry.bucket === "public-derived-analysis")).toHaveLength(37);
+    expect(corpus.filter((entry) => entry.bucket === "public-derived-analysis")).toHaveLength(38);
   });
 
   it("marks both curated full-season Brier answers as withdrawn corrections", () => {
