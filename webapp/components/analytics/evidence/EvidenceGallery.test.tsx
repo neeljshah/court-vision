@@ -11,6 +11,7 @@ const charts = [
 describe("EvidenceGallery", () => {
   it("combines text and documentation-status filters", () => {
     render(<EvidenceGallery charts={charts} />);
+    expect(screen.getAllByText("Partial documentation").some((el) => el.tagName !== "OPTION" && el.className.includes("partial"))).toBe(true);
     fireEvent.change(screen.getByRole("textbox", { name: "Search published charts" }), { target: { value: "beta" } });
     expect(screen.getByRole("status")).toHaveTextContent("1 published chart shown");
     fireEvent.change(screen.getByRole("combobox"), { target: { value: "published" } });

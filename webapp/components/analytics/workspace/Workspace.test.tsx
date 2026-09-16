@@ -8,6 +8,8 @@ const data = getDashboardData();
 describe("analytics workspace interactions", () => {
   it("switches quality metrics and preserves the unscorable state", () => {
     render(<Workspace data={data} />);
+    expect(screen.getByRole("group", { name: "Filter analytics by sport" })).toBeInTheDocument();
+    expect(screen.getByRole("group", { name: "Quality metric" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "ECE" }));
     expect(screen.getByRole("table", { name: "Mlb monthly ece measurements" })).toHaveTextContent("0.1165");
     expect(screen.getByText("Not scored")).toBeInTheDocument();

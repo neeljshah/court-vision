@@ -10,7 +10,7 @@ export function Quality({ data, sport }: { data: DashboardData; sport: Sport }) 
   const markets = data.markets.filter(m => sport === "all" || m.sport === sport);
   const history = data.history.filter(m => sport === "all" || m.sport === sport);
   return <div className="cv-quality"><Panel title="Model vs. market" eyebrow="Probability quality" source="calibration_by_market_type">
-    <div className="cv-chart-toolbar"><div className="cv-segment" aria-label="Quality metric">{(["brier", "ece"] as const).map(m => <button key={m} aria-pressed={metric === m} onClick={() => setMetric(m)}>{m.toUpperCase()}</button>)}</div><span className="cv-muted">Lower is better</span></div>
+    <div className="cv-chart-toolbar"><div className="cv-segment" role="group" aria-label="Quality metric">{(["brier", "ece"] as const).map(m => <button key={m} aria-pressed={metric === m} onClick={() => setMetric(m)}>{m.toUpperCase()}</button>)}</div><span className="cv-muted">Lower is better</span></div>
     <div className="cv-legend"><span><i className="cv-dot cv-model" />CourtVision model</span><span><i className="cv-dot cv-market" />Market baseline</span></div>
     {markets.length === 0 && <Empty>No market-type scores published for this sport in this snapshot. Explore its research and entity profiles below.</Empty>}
     {markets.map(m => <div className="cv-comparison" key={m.id}><div className="cv-chart-label"><strong>{m.sport === "mlb" ? "Baseball" : "Soccer"} <span>{m.id === "mlb_total" ? "Totals" : "Game winner"}</span></strong><span>{number(m.n_rows)} rows</span></div>{m.scored ? <>

@@ -13,6 +13,8 @@ it("renders every published distribution row", () => {
   expect(screen.getByText("ball")).toBeInTheDocument();
   expect(screen.getByText("40.7%")).toBeInTheDocument();
   expect(screen.getByLabelText("outcome mix % distribution")).toBeInTheDocument();
+  expect(screen.getByLabelText("outcome mix % distribution")).toHaveAttribute("role", "img");
+  expect(document.querySelectorAll("dl > div > dt")).toHaveLength(1);
 });
 
 it("states unavailable measurement coverage in one line", () => {

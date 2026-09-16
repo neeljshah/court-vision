@@ -7,10 +7,10 @@ export function DistributionSummary({ rows, field }: { rows: LabRow[]; field: La
   const data = summarizeDistribution(rows, field.key);
   return <section className="distribution-summary" aria-label="Measurement summary">
     <dl>
-      <div><dt>Measured rows</dt><dd>{data.measured}<small> / {data.total}</small></dd><span>{data.missing} unavailable</span></div>
-      <div><dt>Median</dt><dd>{display(data.median, field)}</dd><span>Middle ranked value</span></div>
-      <div><dt>Middle 50%</dt><dd className="distribution-interval">{data.measured ? `${display(data.q1, field)} to ${display(data.q3, field)}` : "Unavailable"}</dd><span>25th to 75th percentile</span></div>
-      <div><dt>Observed range</dt><dd className="distribution-interval">{data.measured ? `${display(data.min, field)} to ${display(data.max, field)}` : "Unavailable"}</dd><span>Minimum to maximum</span></div>
+      <div><dt>Measured rows</dt><dd>{data.measured}<small> / {data.total}</small><span>{data.missing} unavailable</span></dd></div>
+      <div><dt>Median</dt><dd>{display(data.median, field)}<span>Middle ranked value</span></dd></div>
+      <div><dt>Middle 50%</dt><dd className="distribution-interval">{data.measured ? `${display(data.q1, field)} to ${display(data.q3, field)}` : "Unavailable"}<span>25th to 75th percentile</span></dd></div>
+      <div><dt>Observed range</dt><dd className="distribution-interval">{data.measured ? `${display(data.min, field)} to ${display(data.max, field)}` : "Unavailable"}<span>Minimum to maximum</span></dd></div>
     </dl>
     <p>Summaries describe the filtered rows with equal row weight. Row counts are not independent game or event counts.</p>
   </section>;

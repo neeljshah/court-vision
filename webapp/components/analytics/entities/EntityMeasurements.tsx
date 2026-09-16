@@ -9,7 +9,7 @@ function Distribution({ label, rows }: Measurements["distributions"][number]) {
   const total = rows.reduce((sum, row) => sum + row.share, 0) || 1;
   return <section style={{ marginTop: 22 }}>
     <h2 className="serif" style={{ fontWeight: 500, fontSize: 20, marginBottom: 9 }}>{label}</h2>
-    <div aria-label={`${label} distribution`} style={{ display: "flex", height: 12, overflow: "hidden", borderRadius: 6, background: "var(--rule)" }}>
+    <div role="img" aria-label={`${label} distribution`} style={{ display: "flex", height: 12, overflow: "hidden", borderRadius: 6, background: "var(--rule)" }}>
       {rows.map((row, i) => <span key={row.key} title={`${row.key}: ${row.share.toFixed(1)}%`} style={{ width: `${row.share / total * 100}%`, background: i % 2 ? "var(--signal)" : "var(--accent)" }} />)}
     </div>
     <table style={{ width: "100%", borderCollapse: "collapse", marginTop: 10, fontSize: 13 }}><tbody>
@@ -25,9 +25,7 @@ export function EntityMeasurements({ measurements, sourceArtifact, asOf }: Props
     <dl style={{ display: "grid", gridTemplateColumns: "repeat(2,minmax(0,1fr))", gap: 1, background: "var(--rule)", border: "1px solid var(--rule)", borderRadius: 12 }}>
       {scalars.map((item) => <div key={item.key} style={{ background: "var(--paper-raised)", padding: "14px 16px" }}>
         <dt style={{ fontSize: 11, color: "var(--ink-3)", textTransform: "uppercase", letterSpacing: ".06em", fontWeight: 600 }}>{item.label}</dt>
-        <dd className="mono" style={{ margin: "7px 0", fontSize: "1.05rem", color: "var(--ink)" }}>{item.value}</dd>
-        {typeof item.percentile === "number" ? <><PercentileBar pct={item.percentile} nRanked={item.nRanked} /><div style={{ fontSize: 11, color: "var(--ink-3)", marginTop: 3 }}>pct {item.percentile} of {item.nRanked ?? "?"} measured</div></> : null}
-        <Receipt sourceArtifact={sourceArtifact} asOf={asOf} verdict="descriptive_only" label="descriptive_only" value={item.value} />
+        <dd className="mono" style={{ margin: "7px 0", fontSize: "1.05rem", color: "var(--ink)" }}>{item.value}{typeof item.percentile === "number" ? <><PercentileBar pct={item.percentile} nRanked={item.nRanked} /><div style={{ fontFamily: "var(--font-sans)", fontSize: 11, color: "var(--ink-3)", marginTop: 3 }}>pct {item.percentile} of {item.nRanked ?? "?"} measured</div></> : null}<Receipt sourceArtifact={sourceArtifact} asOf={asOf} verdict="descriptive_only" label="descriptive_only" value={item.value} /></dd>
       </div>)}
     </dl>
     {distributions.map(({ key, ...distribution }) => <Distribution key={key} {...distribution} />)}

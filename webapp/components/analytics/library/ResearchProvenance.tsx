@@ -73,7 +73,7 @@ export function ResearchProvenance({ row, fields, formula, resultField }: { row:
   const result = displayMeasurement(row.values[resultField.key], resultField);
   return <section className="research-provenance" aria-label="Calculation inputs">
     <p className="cv-eyebrow">Calculation inputs</p>
-    <dl>{operands(row, fields).map((operand) => <div key={operand.path}><dt>{operand.label}</dt><dd>{operand.value}</dd><details><summary>Source path</summary><code>{operand.path}</code></details></div>)}</dl>
+    <dl>{operands(row, fields).map((operand) => <div key={operand.path}><dt>{operand.label}</dt><dd>{operand.value}<details><summary>Source path</summary><code>{operand.path}</code></details></dd></div>)}</dl>
     <p className="research-provenance-result"><strong>{resultField.label}: {result}</strong><span>{substitutedFormula(formula, row, fields)}</span></p>
   </section>;
 }

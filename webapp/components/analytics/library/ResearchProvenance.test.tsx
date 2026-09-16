@@ -14,6 +14,7 @@ describe("ResearchProvenance", () => {
     expect(screen.getByLabelText("Calculation inputs")).toHaveTextContent("Numerator8");
     expect(screen.getByText("cells[].numerator")).toBeInTheDocument();
     expect(screen.getByText("cells[].denominator")).toBeInTheDocument();
+    expect(screen.getByText("cells[].numerator").closest("details")?.parentElement?.tagName).toBe("DD");
   });
 
   it("renders nothing when the analysis did not record provenance", () => {

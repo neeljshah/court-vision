@@ -13,6 +13,8 @@ it("reports measured coverage and percentage-point summaries without hiding miss
   expect(summary).toHaveTextContent("5 pp to 15 pp");
   expect(summary).toHaveTextContent("0 pp to 20 pp");
   expect(summary).toHaveTextContent("Row counts are not independent game or event counts");
+  expect(summary.querySelectorAll("dl > div")).toHaveLength(4);
+  expect(summary.querySelectorAll("dl > div > span")).toHaveLength(0);
 });
 
 it("provides an accessible bin table and calculation alongside the histogram", () => {

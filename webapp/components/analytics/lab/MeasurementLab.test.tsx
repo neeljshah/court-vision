@@ -33,6 +33,11 @@ beforeEach(() => window.history.replaceState(null, "", "/analytics/lab"));
 afterEach(() => vi.unstubAllGlobals());
 
 describe("MeasurementLab sport filtering and inspection", () => {
+  it("groups measurement view choices semantically", () => {
+    render(<MeasurementLab data={fixture} />);
+    expect(screen.getByRole("group", { name: "Measurement visualization" })).toBeInTheDocument();
+  });
+
   it("explains an empty published dataset, rather than offering a filter reset", () => {
     const empty = { ...fixture, datasets: [{ ...fixture.datasets[0], id: "tennis-empty", sport: "tennis" as const, rows: [], status: "No qualifying rows", eligiblePopulation: 18, qualificationRule: "15 grass matches", nQualifying: 0, note: "Published WTA snapshot." }] };
     render(<MeasurementLab data={empty} />);

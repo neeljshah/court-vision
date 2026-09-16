@@ -2,6 +2,11 @@
 @media(prefers-reduced-motion:reduce){.evidence-preview img,.evidence-preview span{transition:none}}.pipeline-ledger-stats dd{font-family:var(--font-mono)}
 .cv-workspace.evidence-dialog{padding:0}
 
+/* Proposed and partial chips retain a 6.39:1 contrast ratio in light mode. */
+.evidence-state.proposed,.evidence-status-chip.partial{color:#6b4b12;background:#f4e5c6}
+/* The dark pair is #f7d9a3 on #4c3515, measured at 8.43:1. */
+[data-theme="dark"] .evidence-state.proposed,[data-theme="dark"] .evidence-status-chip.partial{color:#f7d9a3;background:#4c3515}
+
 /* Ledger values are dates and identifiers, not prose: keep them intact on a
    narrow card and let the grid choose the number of columns. */
 .pipeline-ledger-stats{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
