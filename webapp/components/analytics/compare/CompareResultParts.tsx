@@ -1,13 +1,13 @@
 import Link from "next/link";
-import { formatMetric, formatPercentile, metricLabel, metricUnit, type ComparisonEntity } from "@/lib/analytics/comparisonData";
+import { formatMetric, formatPercentile, metricLabel, metricUnit, type ComparisonComparable, type ComparisonEntity } from "@/lib/analytics/comparisonData";
 
 function displayDate(value?: string): string | undefined {
   return value && /^\d{4}-\d{2}-\d{2}[ T]\d{2}:/.test(value) ? value.slice(0, 10) : value;
 }
 
-export function ProfileHeading({ entity, pack, label }: { entity: ComparisonEntity; pack: string; label: string }) {
+export function ProfileHeading({ entity, pack, label, comparables, hasPackComparables }: { entity: ComparisonEntity; pack: string; label: string; comparables?: ComparisonComparable[]; hasPackComparables: boolean }) {
   const asOf = displayDate(entity.asOf);
-  return <article className="compare-profile"><span className="compare-profile-label">{label}</span><div className="compare-monogram" aria-hidden="true">{entity.name.slice(0, 1)}</div><h2><Link href={`/analytics/players/${pack}/${entity.slug}`}>{entity.name}</Link></h2><p>{asOf ? `As of ${asOf}` : "No published as-of date"}</p>{entity.floors || entity.status ? <details className="compare-profile-evidence"><summary>Published evidence</summary>{entity.floors ? <p><b>Floors:</b> {entity.floors}</p> : null}{entity.status ? <p><b>Status:</b> {entity.status}</p> : null}</details> : null}</article>;
+  return <article className="compare-profile"><span className="compare-profile-label">{label}</span><div className="compare-monogram" aria-hidden="true">{entity.name.slice(0, 1)}</div><h2><Link href={`/analytics/players/${pack}/${entity.slug}`}>{entity.name}</Link></h2><p>{asOf ? `As of ${asOf}` : "No published as-of date"}</p>{entity.floors || entity.status ? <details className="compare-profile-evidence"><summary>Published evidence</summary>{entity.floors ? <p><b>Floors:</b> {entity.floors}</p> : null}{entity.status ? <p><b>Status:</b> {entity.status}</p> : null}</details> : null}<div className="compare-comparables"><span>Closest comparables</span>{comparables?.length ? <ul>{comparables.slice(0, 5).map((item) => <li key={item.slug}><Link href={`/analytics/players/${pack}/${item.slug}`}>{item.name}</Link><b>{item.score.toFixed(3)}</b></li>)}</ul> : <p>{hasPackComparables ? "No published comparable profiles for this profile." : "This pack has no published comparable profiles."}</p>}</div></article>;
 }
 
 export function MetricRow({ field, a, b, showRanks = true, nRanked }: { field: string; a: ComparisonEntity; b: ComparisonEntity; showRanks?: boolean; nRanked?: number }) {

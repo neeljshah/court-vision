@@ -21,14 +21,14 @@ const familyPitchManifest = { entries: [
 ] };
 const familyPitchPercentiles = { packs: { mlb_pitch: { n_in_pack: 6, fields: { n_pitches: { n_ranked: 6 } }, entities: { ff: { n_pitches: 90 }, sc: { n_pitches: 10 }, nyy: { n_pitches: 80 }, bos: { n_pitches: 60 }, count00: { n_pitches: 50 }, count12: { n_pitches: 40 } } } } };
 const datalistValues = (id: string) => Array.from(document.querySelectorAll(`#${id} option`)).map((option) => option.getAttribute("value"));
-const mockFamilyFetch = () => vi.mocked(fetch).mockImplementation((url: string) => Promise.resolve({ ok: true, json: async () => url.includes("atlas_mlb_pitch_manifest") ? familyPitchManifest : url.includes("percentiles") ? familyPitchPercentiles : comparables } as Response));
+const mockFamilyFetch = () => vi.mocked(fetch).mockImplementation((input: RequestInfo | URL, _init?: RequestInit) => { const url = String(input); return Promise.resolve({ ok: true, json: async () => url.includes("atlas_mlb_pitch_manifest") ? familyPitchManifest : url.includes("percentiles") ? familyPitchPercentiles : comparables } as Response); });
 
 describe("MLB atlas comparison controls", () => {
   beforeEach(() => { window.history.replaceState(null, "", "/analytics/compare"); vi.stubGlobal("fetch", vi.fn()); });
 
   it("shows count context for same-family pitch types without percentile claims", async () => {
     window.history.replaceState(null, "", "/analytics/compare?pack=mlb_pitch&a=ff&b=sc");
-    vi.mocked(fetch).mockImplementation((url: string) => Promise.resolve({ ok: true, json: async () => url.includes("atlas_mlb_pitch_manifest") ? pitchManifest : url.includes("percentiles") ? pitchPercentiles : comparables } as Response));
+    vi.mocked(fetch).mockImplementation((input: RequestInfo | URL, _init?: RequestInit) => { const url = String(input); return Promise.resolve({ ok: true, json: async () => url.includes("atlas_mlb_pitch_manifest") ? pitchManifest : url.includes("percentiles") ? pitchPercentiles : comparables } as Response); });
     render(<CompareExperience />);
     expect(await screen.findByRole("heading", { name: "Recorded count context" })).toBeInTheDocument();
     expect(screen.getByText("0.0%")).toBeInTheDocument();

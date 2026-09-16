@@ -20,9 +20,11 @@ export type RawPercentiles = {
 };
 export type RawComparables = {
   packs?: Record<string, {
-    entities?: Record<string, { similar?: Array<{ slug: string }> }>;
+    entities?: Record<string, { similar?: Array<{ slug: string; name?: string; score?: number }> }>;
   }>;
 };
+
+export type ComparisonComparable = { slug: string; name: string; score: number };
 
 export type ComparisonEntity = {
   slug: string;
@@ -41,6 +43,7 @@ export type ComparisonPack = {
   metricKeys: string[];
   nRankedByMetric?: Record<string, number>;
   entities: ComparisonEntity[];
+  comparablesByEntity?: Record<string, ComparisonComparable[]>;
   suggestedPair?: [string, string];
 };
 
@@ -106,8 +109,15 @@ export function normalizeComparisonPack(
       ? [[field, value]]
       : [];
   }));
+  const rawComparableEntities = comparables.packs?.[key]?.entities;
+  const comparablesByEntity = Object.fromEntries(Object.entries(rawComparableEntities || {}).map(([slug, entry]) => [slug, (entry.similar || []).flatMap((item) => (
+    typeof item.slug === "string" && typeof item.name === "string" && typeof item.score === "number" && Number.isFinite(item.score)
+      ? [{ slug: item.slug, name: item.name, score: item.score }] : []
+  ))]));
+  // suggestedPair is kept (additive contract): the first entity and its nearest published
+  // comparable, falling back to the next entity. marqueePair() is what the page prefers.
   const first = entries[0]?.slug;
-  const suggested = first && comparables.packs?.[key]?.entities?.[first]?.similar?.[0]?.slug;
+  const suggested = first && rawComparableEntities?.[first]?.similar?.[0]?.slug;
   const fallback = entries.find((item) => item.slug !== first)?.slug;
   return {
     key,
@@ -115,6 +125,7 @@ export function normalizeComparisonPack(
     metricKeys,
     nRankedByMetric,
     entities: entries,
+    comparablesByEntity: rawComparableEntities ? comparablesByEntity : undefined,
     suggestedPair: first && (suggested || fallback) ? [first, suggested || fallback!] : undefined,
   };
 }

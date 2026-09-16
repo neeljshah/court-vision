@@ -10,6 +10,7 @@ import {
 import { type TennisSurface } from "@/lib/analytics/tennisSurfaceComparison";
 import { mlbAtlasFamily, mlbAtlasFamilyOptions, parseMlbAtlasFamily, type MlbAtlasFamily } from "@/lib/analytics/mlbAtlasFamily";
 import { ComparisonResults } from "./ComparisonResults";
+import { marqueePair } from "@/lib/analytics/compareDefaults";
 
 const DATA_ROOT = "/data/showcase/";
 type RequestedPair = { pack: ComparisonPackKey; a?: string; b?: string; family?: MlbAtlasFamily };
@@ -132,8 +133,9 @@ export function CompareExperience() {
       setPairReady(false);
       return;
     }
-    const a = requested.pack === packKey && requested.a && valid.has(requested.a) ? requested.a : data.suggestedPair?.[0] || data.entities[0].slug;
-    const candidate = requested.pack === packKey && requested.b && valid.has(requested.b) && requested.b !== a ? requested.b : data.suggestedPair?.[1];
+    const defaults = marqueePair(packKey, data.entities);
+    const a = requested.pack === packKey && requested.a && valid.has(requested.a) ? requested.a : defaults?.[0] || data.entities[0].slug;
+    const candidate = requested.pack === packKey && requested.b && valid.has(requested.b) && requested.b !== a ? requested.b : defaults?.[1];
     const b = candidate && candidate !== a ? candidate : data.entities.find((entity) => entity.slug !== a)?.slug || a;
     const requestedPairFamily = packKey === "mlb_pitch" ? mlbAtlasFamily(data.entities.find((entity) => entity.slug === a)?.sourceEntity) : undefined;
     const linkedFamily = parseMlbAtlasFamily(new URL(window.location.href).searchParams.get("family"));

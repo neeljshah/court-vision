@@ -7,7 +7,7 @@ const manifest = { entries: [
   { entity: "Beta", card_path: "atlas/beta.png", floors: "beta published floor", key_numbers: { career_pts_per36: 14 } },
 ] };
 const percentiles = { packs: { nba_players: { n_in_pack: 2, fields: { career_pts_per36: { n_ranked: 2 } }, entities: { alpha: { career_pts_per36: 25 }, beta: { career_pts_per36: 75 } } } } };
-const comparables = { packs: { nba_players: { entities: { alpha: { similar: [{ slug: "beta" }] } } } } };
+const comparables = { packs: { nba_players: { entities: { alpha: { similar: [{ slug: "beta", name: "Beta", score: 0.75 }] } } } } };
 const invalidRankManifest = { entries: [
   { entity: "Alpha", card_path: "atlas/alpha.png", key_numbers: { null_raw: null, zero_raw: 0, nan_raw: NaN, infinite_raw: Infinity, out_of_range: 8 } },
   { entity: "Beta", card_path: "atlas/beta.png", key_numbers: { null_raw: 4, zero_raw: 2, nan_raw: 4, infinite_raw: 4, out_of_range: 4 } },
@@ -48,6 +48,11 @@ describe("CompareExperience controls", () => {
     expect(screen.getByRole("table")).toHaveAccessibleName("Published values and within-pack percentile ranks");
     expect(screen.getByRole("img", { name: "25th percentile visual bar" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Where these profiles separate" })).toBeInTheDocument();
+    expect(screen.getAllByText("Closest comparables")).toHaveLength(2);
+    expect(screen.getAllByRole("link", { name: "Beta" }).some((link) => link.getAttribute("href") === "/analytics/players/nba_players/beta")).toBe(true);
+    expect(screen.getByText("0.750")).toBeInTheDocument();
+    expect(screen.getByText("No published comparable profiles for this profile.")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Percentile ladder" })).toBeInTheDocument();
     expect(screen.getByText("1 shared axes")).toBeInTheDocument();
     expect(screen.getByText(/Higher means a higher raw measured value, never better/)).toBeInTheDocument();
     await waitFor(() => expect(window.location.search).toContain("pack=nba_players"));
@@ -87,7 +92,8 @@ describe("CompareExperience controls", () => {
     let rejectSoccer: (error: Error) => void = () => undefined;
     const pendingNba = new Promise<Response>((resolve) => { resolveNba = resolve; });
     const pendingSoccer = new Promise<Response>((_, reject) => { rejectSoccer = reject; });
-    vi.mocked(fetch).mockImplementation((url: string) => {
+    vi.mocked(fetch).mockImplementation((input: RequestInfo | URL, _init?: RequestInit) => {
+      const url = String(input);
       if (url.includes("atlas_nba_manifest")) return pendingNba;
       if (url.includes("atlas_soccer_manifest")) return pendingSoccer;
       return Promise.resolve({ ok: true, json: async () => url.includes("percentiles") ? percentiles : comparables } as Response);
@@ -119,7 +125,7 @@ describe("CompareExperience controls", () => {
   });
 
   it("renders ranks only for finite raw values and published 0-100 percentiles", async () => {
-    vi.mocked(fetch).mockImplementation((url: string) => Promise.resolve({ ok: true, json: async () => url.includes("atlas_nba_manifest") ? invalidRankManifest : url.includes("percentiles") ? invalidRankPercentiles : comparables } as Response));
+    vi.mocked(fetch).mockImplementation((input: RequestInfo | URL, _init?: RequestInit) => { const url = String(input); return Promise.resolve({ ok: true, json: async () => url.includes("atlas_nba_manifest") ? invalidRankManifest : url.includes("percentiles") ? invalidRankPercentiles : comparables } as Response); });
     render(<CompareExperience />);
     expect(await screen.findByText("0th percentile")).toBeInTheDocument();
     expect(screen.getByRole("img", { name: "0th percentile visual bar" })).toBeInTheDocument();
@@ -154,7 +160,7 @@ describe("CompareExperience controls", () => {
 
   it("restores a tennis surface deep link without serializing the default pack, updates it, and removes it outside tennis", async () => {
     window.history.replaceState({ next: true }, "", "/analytics/compare?pack=tennis&a=alpha&b=beta&surface=clay");
-    vi.mocked(fetch).mockImplementation((url: string) => Promise.resolve({ ok: true, json: async () => url.includes("atlas_tennis_manifest") ? tennisManifest : url.includes("percentiles") ? tennisPercentiles : comparables } as Response));
+    vi.mocked(fetch).mockImplementation((input: RequestInfo | URL, _init?: RequestInit) => { const url = String(input); return Promise.resolve({ ok: true, json: async () => url.includes("atlas_tennis_manifest") ? tennisManifest : url.includes("percentiles") ? tennisPercentiles : comparables } as Response); });
     render(<CompareExperience />);
     expect(await screen.findByRole("heading", { name: "Recorded surface history" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Clay" })).toHaveAttribute("aria-pressed", "true");
@@ -178,7 +184,8 @@ describe("CompareExperience controls", () => {
     let destinationAttempt = 0;
     const pendingDestination = new Promise<Response>((_, reject) => { rejectDestination = reject; });
     window.history.replaceState(null, "", "/analytics/compare?pack=tennis&a=alpha&b=beta&surface=hard");
-    vi.mocked(fetch).mockImplementation((url: string) => {
+    vi.mocked(fetch).mockImplementation((input: RequestInfo | URL, _init?: RequestInit) => {
+      const url = String(input);
       if (url.includes("atlas_tennis_manifest")) return Promise.resolve({ ok: true, json: async () => tennisManifest } as Response);
       if (url.includes("atlas_nba_manifest")) {
         destinationAttempt += 1;
