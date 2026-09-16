@@ -1,14 +1,28 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { matchesResearchPopulation, researchComparisonPolicy } from "@/lib/analytics/researchComparisonPolicy";
 import type { ResearchAnalysis } from "@/lib/analytics/researchTypes";
 
-type View = { metric: string; second: string; group: string; query: string; ascending: boolean; view: string; row: string };
-const defaults = (a: ResearchAnalysis): View => ({ metric: a.fields[0].key, second: a.fields[1]?.key || a.fields[0].key, group: "all", query: "", ascending: false, view: "rank", row: "" });
-const parameters = { metric: "metric", second: "y", group: "group", query: "q", ascending: "order", view: "view", row: "row" } as const;
+type View = { metric: string; second: string; group: string; population: string; query: string; ascending: boolean; view: string; row: string };
+const defaults = (a: ResearchAnalysis): View => {
+  const comparison = researchComparisonPolicy(a.rows);
+  return { metric: a.fields[0].key, second: a.fields[1]?.key || a.fields[0].key, group: "all", population: comparison.compatible ? "all" : comparison.populations.find(item => item.compatibility === "compatible")?.key || "all", query: "", ascending: false, view: "rank", row: "" };
+};
+const parameters = { metric: "metric", second: "y", group: "group", population: "population", query: "q", ascending: "order", view: "view", row: "row" } as const;
+
+function visibleRows(a: ResearchAnalysis, view: View) {
+  const comparison = researchComparisonPolicy(a.rows);
+  if (comparison.compatible) return a.rows.filter(row => view.group === "all" || row.group === view.group);
+  if (view.population === "all") return a.rows;
+  const population = comparison.populations.find(item => item.key === view.population);
+  return population ? a.rows.filter(row => matchesResearchPopulation(row, population)) : [];
+}
 
 function validateRow(a: ResearchAnalysis, next: View): View {
+  const comparison = researchComparisonPolicy(a.rows), initial = defaults(a);
+  if (!comparison.compatible && next.population !== "all" && !comparison.populations.some(item => item.key === next.population)) next.population = initial.population;
   const terms = next.query.toLowerCase().trim().split(/\s+/).filter(Boolean);
-  const selected = a.rows.find(r => r.id === next.row && (next.group === "all" || r.group === next.group) && terms.every(t => `${r.label} ${r.group} ${r.note || ""}`.toLowerCase().includes(t)));
+  const selected = visibleRows(a, next).find(r => r.id === next.row && terms.every(t => `${r.label} ${r.group} ${r.note || ""}`.toLowerCase().includes(t)));
   return { ...next, row: selected?.id || "" };
 }
 
@@ -17,6 +31,7 @@ function readView(a: ResearchAnalysis): View {
   if (a.fields.some(f => f.key === p.get("metric"))) next.metric = p.get("metric")!;
   if (a.fields.some(f => f.key === p.get("y"))) next.second = p.get("y")!;
   if (a.rows.some(r => r.group === p.get("group"))) next.group = p.get("group")!;
+  if (p.get("population")) next.population = p.get("population")!;
   next.query = p.get("q") || "";
   next.ascending = p.get("order") === "asc";
   if (["rank", "scatter", "table", "distribution"].includes(p.get("view") || "")) next.view = p.get("view")!;

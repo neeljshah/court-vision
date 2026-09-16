@@ -18,6 +18,13 @@ const replacement: ResearchAnalysis = {
 };
 
 const sameIdReplacement: ResearchAnalysis = { ...replacement, id: analysis.id };
+const multisport: ResearchAnalysis = {
+  ...analysis, id: "multisport",
+  rows: [
+    { id: "mlb", label: "MLB", group: "MLB", values: { score: 1, rate: 0.5 }, sourcePaths: ["checkpoints.mlb.1.model_brier"] },
+    { id: "soccer", label: "Soccer", group: "International soccer", values: { score: 2, rate: 0.25 }, sourcePaths: ["checkpoints.soccer_intl.15.model_brier"] },
+  ],
+};
 
 function State({ a, intent }: { a: ResearchAnalysis; intent?: "query" | "reset" | "multiple" }) {
   const { state, change, reset } = useResearchView(a);
@@ -122,5 +129,19 @@ describe("useResearchView hydration intent", () => {
     render(<StrictMode><State a={analysis} intent="query" /></StrictMode>);
 
     expect(view()).toMatchObject({ metric: "rate", query: "Alpha", view: "table" });
+  });
+
+  it("round-trips a valid population and drops an invalid one", () => {
+    window.history.replaceState(null, "", "?population=sport%3Dsoccer_intl");
+    render(<State a={multisport} />);
+    expect(view().population).toBe("sport=soccer_intl");
+    expect(new URLSearchParams(window.location.search).get("population")).toBe("sport=soccer_intl");
+
+    act(() => {
+      window.history.pushState(null, "", "?population=not-published");
+      window.dispatchEvent(new PopStateEvent("popstate"));
+    });
+    expect(view().population).toBe("sport=mlb");
+    expect(new URLSearchParams(window.location.search).get("population")).toBeNull();
   });
 });

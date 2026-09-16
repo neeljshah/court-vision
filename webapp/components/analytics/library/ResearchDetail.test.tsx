@@ -10,10 +10,34 @@ const analysis: ResearchAnalysis = {
   rows: [{ id: "1", label: "Alpha", group: "East", values: { score: 8, rate: 0.5 }, note: "steady", href: "/analytics/players/nba_players/alpha" }, { id: "2", label: "Beta", group: "West", values: { score: null, rate: 0.25 }, note: "missing score" }, { id: "3", label: "Gamma", group: "East", values: { score: 3, rate: 0.75 } }],
 };
 
+const brierAnalysis: ResearchAnalysis = {
+  ...analysis, id: "brier-skill-score-by-game-phase", title: "Brier skill score by sport and game phase", sport: "all",
+  rows: [
+    { id: "mlb-all", label: "MLB | all", group: "MLB", values: { score: 8, rate: 0.5 }, sourcePaths: ["sports.mlb.grains.all.brier_model"] },
+    { id: "mlb-early", label: "MLB | early", group: "MLB", values: { score: 3, rate: 0.25 }, sourcePaths: ["sports.mlb.grains.early.brier_model"] },
+    { id: "soccer-all", label: "International soccer | all", group: "International soccer", values: { score: 7, rate: 0.75 }, sourcePaths: ["sports.soccer_intl.grains.all.brier_model"] },
+    { id: "soccer-early", label: "International soccer | 0-15", group: "International soccer", values: { score: 2, rate: 0.4 }, sourcePaths: ["sports.soccer_intl.grains.0-15.brier_model"] },
+  ],
+};
+
 beforeEach(() => window.history.replaceState(null, "", "/analytics/research/nba-matchup-test/"));
 afterEach(() => vi.restoreAllMocks());
 
 describe("ResearchDetail", () => {
+  it("separates Brier whole-corpus estimates and requires an explicit all-rows table", () => {
+    render(<ResearchDetail analysis={brierAnalysis} related={[]} />);
+    expect(screen.getByRole("combobox", { name: "Population" })).toHaveValue("sport=mlb");
+    expect(screen.getByRole("status")).toHaveTextContent("1 matching row");
+    const population = screen.getByRole("combobox", { name: "Population" });
+    expect(within(population).getByRole("option", { name: "MLB" })).toBeInTheDocument();
+    expect(within(population).getByRole("option", { name: "International soccer" })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "Whole-corpus estimates" })).toHaveTextContent("MLB | all");
+    fireEvent.change(population, { target: { value: "all" } });
+    expect(screen.queryByRole("region", { name: "Measurement summary" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Data table" }));
+    expect(screen.getAllByRole("table")).toHaveLength(2);
+  });
+
   it("does not render source context for analyses without recorded sources", () => {
     render(<ResearchDetail analysis={analysis} related={[]} />);
     expect(screen.queryByLabelText("Source context")).not.toBeInTheDocument();
