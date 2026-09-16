@@ -27,7 +27,7 @@ export function buildCalibrationCheckpointResearch(manifest: CalibrationManifest
       id: `calibration-checkpoint-${slug || index + 1}`,
       label: `${typeof checkpoint.sport === "string" ? checkpoint.sport.toUpperCase() : "Published"} | ${entityName(entry)}`,
       group: typeof checkpoint.sport === "string" ? checkpoint.sport.toUpperCase() : "Published checkpoints",
-      values: { model_ece: model, market_ece: market, ece_gap_model_minus_market: model === null || market === null ? null : model - market, n: finite(values.n) ? values.n : null },
+      values: { model_ece: model, market_ece: market, ece_gap_model_minus_market: model === null || market === null ? null : Number((model - market).toFixed(6)), n: finite(values.n) ? values.n : null },
       note: typeof entry.floors === "string" ? entry.floors : undefined,
       href: `/analytics/players/calibration/${slug}`,
       sourcePaths: ["model_ece", "market_ece", "n"].map((key) => `entries[${index}].key_numbers.${key}`),
