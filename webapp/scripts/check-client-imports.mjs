@@ -66,9 +66,27 @@ for (const start of clientFiles) {
   }
 }
 
-if (failures.length) {
-  console.log(`FAIL client components reach node-only modules (${failures.length}):`);
-  for (const chain of failures) console.log("  " + chain);
+// Second trap: Next's build-time type check rejects any value export from a page/layout module
+// other than the documented ones ("Property 'X' is incompatible with index signature").
+const PAGE_EXPORTS = new Set(["default", "metadata", "generateMetadata", "generateStaticParams", "dynamic", "dynamicParams",
+  "revalidate", "fetchCache", "runtime", "preferredRegion", "maxDuration", "viewport", "generateViewport", "config"]);
+const strayExports = [];
+for (const [file, text] of source) {
+  if (!/[\\/]app[\\/].*[\\/](page|layout|template|error|loading|not-found)\.(tsx|ts|js)$/.test(file)) continue;
+  for (const match of text.matchAll(/^export\s+(?:const|let|var|function|class|async function)\s+([A-Za-z_$][\w$]*)/gm)) {
+    if (!PAGE_EXPORTS.has(match[1])) strayExports.push(`${relative(ROOT, file)} exports ${match[1]}`);
+  }
+}
+
+if (failures.length || strayExports.length) {
+  if (failures.length) {
+    console.log(`FAIL client components reach node-only modules (${failures.length}):`);
+    for (const chain of failures) console.log("  " + chain);
+  }
+  if (strayExports.length) {
+    console.log(`FAIL page/layout modules with non-standard exports (${strayExports.length}) -- move them to a sibling module:`);
+    for (const line of strayExports) console.log("  " + line);
+  }
   process.exit(1);
 }
-console.log(`OK ${clientFiles.length} client components, ${nodeOnly.size} node-only modules, no client chain reaches node:fs/node:path`);
+console.log(`OK ${clientFiles.length} client components, ${nodeOnly.size} node-only modules, no client chain reaches node:fs/node:path, no stray page exports`);
