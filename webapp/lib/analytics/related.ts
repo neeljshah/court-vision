@@ -3,13 +3,14 @@ import { getLibraryEntries } from "./libraryData";
 import { collectionMemberIds, readingCollections } from "./readingCollections";
 import { getResearchAnalyses } from "./researchData";
 import type { ResearchAnalysis } from "./researchTypes";
+import { isAuthoredPrerequisite, populationIdentifier } from "./readingRelationships";
 
 export type ReadingKind = "module" | "analysis" | "finding";
-export type RelatedPurpose = "prerequisite" | "same population" | "supporting source" | "next question";
+export type RelatedPurpose = "prerequisite" | "same population" | "same sport" | "supporting source" | "next question";
 export type RelatedLink = {
   id: string; title: string; kind: ReadingKind; sport: string; asOf: string | null; href: string; purpose: RelatedPurpose;
 };
-type Candidate = Omit<RelatedLink, "purpose"> & { sources?: string[]; artifacts?: string[] };
+type Candidate = Omit<RelatedLink, "purpose"> & { sources?: string[]; artifacts?: string[]; population: string };
 export type JoinedFindingTarget = Pick<RelatedLink, "id" | "title" | "href" | "kind">;
 
 const words = (title: string) => new Set(title.toLowerCase().match(/[a-z0-9]{4,}/g) || []);
@@ -23,12 +24,14 @@ function relation(current: Candidate, entry: Candidate): { score: number; purpos
   const directSource = currentSources.includes(entry.id) || entrySources.includes(current.id);
   const sharedArtifact = !!current.artifacts?.some((artifact) => entry.artifacts?.includes(artifact));
   const sameSport = current.sport !== "all" && entry.sport === current.sport;
+  const samePopulation = current.population === entry.population;
   const titleOverlap = overlap(current.title, entry.title);
   if (directSource) return { score: 400, purpose: "supporting source" };
-  if (sharedArtifact) return { score: 300, purpose: "prerequisite" };
+  if (sharedArtifact) return { score: 300, purpose: "supporting source" };
+  if (isAuthoredPrerequisite(current.id, entry.id)) return { score: 275, purpose: "prerequisite" };
   if (sharedCollection(current.id, entry.id)) return { score: 250, purpose: "next question" };
-  if (sameSport) return { score: 200, purpose: "same population" };
-  if (titleOverlap) return { score: 100, purpose: "prerequisite" };
+  if (samePopulation) return { score: 200, purpose: "same population" };
+  if (sameSport) return { score: 150, purpose: "same sport" };
   return null;
 }
 
@@ -50,9 +53,9 @@ export function readingEntries(): Candidate[] {
     ...library.map((entry) => {
       const analysis = entry.kind === "derived" ? analyses.get(entry.id) : undefined;
       const sources = analysis ? [analysis.source, ...(analysis.sources || []).map((source) => source.id)] : [entry.id];
-      return { id: entry.id, title: entry.title, kind: entry.kind === "source" ? "module" as const : "analysis" as const, sport: entry.sport, asOf: entry.asOf, href: entry.href, sources, artifacts: [entry.id, ...sources] };
+      return { id: entry.id, title: entry.title, kind: entry.kind === "source" ? "module" as const : "analysis" as const, sport: entry.sport, asOf: entry.asOf, href: entry.href, sources, artifacts: [entry.id, ...sources], population: populationIdentifier({ id: entry.id, sport: entry.sport, source: analysis?.source }) };
     }),
-    ...findingsIndex.map((finding) => ({ id: finding.slug, title: finding.title, kind: "finding" as const, sport: finding.sport, asOf: finding.asOf, href: `/analytics/findings/${finding.slug}/`, artifacts: finding.artifactIds })),
+    ...findingsIndex.map((finding) => ({ id: finding.slug, title: finding.title, kind: "finding" as const, sport: finding.sport, asOf: finding.asOf, href: `/analytics/findings/${finding.slug}/`, sources: finding.artifactIds, artifacts: finding.artifactIds, population: populationIdentifier({ id: finding.slug, sport: finding.sport, source: finding.artifactIds[0] }) })),
   ];
 }
 

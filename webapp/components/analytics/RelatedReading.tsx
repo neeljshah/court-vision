@@ -2,7 +2,7 @@ import Link from "next/link";
 import { relatedReading, type ReadingKind, type RelatedPurpose } from "@/lib/analytics/related";
 
 const labels: Record<ReadingKind, string> = { module: "Module", analysis: "Analysis", finding: "Finding" };
-const purposeLabels: Record<RelatedPurpose, string> = { prerequisite: "Prerequisite", "same population": "Same population", "supporting source": "Supporting source", "next question": "Next question" };
+const purposeLabels: Record<RelatedPurpose, string> = { prerequisite: "Prerequisite", "same population": "Same population", "same sport": "Same sport", "supporting source": "Supporting source", "next question": "Next question" };
 const sportLabel = (sport: string) => sport === "all" ? "Cross-sport" : sport.toUpperCase();
 
 export function RelatedReading({ kind, id }: { kind: ReadingKind; id: string }) {

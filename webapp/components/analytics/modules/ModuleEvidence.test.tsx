@@ -16,4 +16,12 @@ describe("ModuleEvidence", () => {
     render(<ModuleEvidence evidence={{ availability: "published", missingInputs: [], coverage: [], analyses: [{ id: "tennis-surface-support", title: "Surface Evidence Support" }] }} />);
     expect(screen.getByRole("link", { name: /Open the interactive analysis/ })).toHaveAttribute("href", "/analytics/research/tennis-surface-support");
   });
+  it("links the Murphy source module to its interactive inspector", () => {
+    render(<ModuleEvidence moduleId="murphy_decomposition" evidence={{ availability: "published", missingInputs: [], coverage: [], analyses: [] }} />);
+    expect(screen.getByRole("link", { name: /Open the interactive inspector/ })).toHaveAttribute("href", "/analytics/score-decomposition");
+  });
+  it("does not offer an inspector for a module without one", () => {
+    render(<ModuleEvidence moduleId="tennis_showcase" evidence={{ availability: "published", missingInputs: [], coverage: [], analyses: [{ id: "tennis-surface-support", title: "Surface Evidence Support" }] }} />);
+    expect(screen.queryByRole("link", { name: /Open the interactive inspector/ })).not.toBeInTheDocument();
+  });
 });

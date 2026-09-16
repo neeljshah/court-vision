@@ -1,5 +1,6 @@
 import { snapshot } from "@/lib/analytics/labHelpers";
 import { getResearchAnalyses } from "@/lib/analytics/researchData";
+import { inspectorSearchRecords } from "@/lib/analytics/analysisDestinations";
 export const dynamic = "force-static";
 export function GET() {
   const original = snapshot<{ records: unknown[] }>("search_records");
@@ -8,5 +9,5 @@ export function GET() {
     href: `/analytics/research/${a.id}`, type: "module",
     keywords: [a.sport, a.category, a.description, a.source, ...a.fields.map(f => f.label)],
   }));
-  return Response.json({ records: [...original.records, ...derived] });
+  return Response.json({ records: [...original.records, ...derived, ...inspectorSearchRecords()] });
 }
