@@ -1,4 +1,4 @@
-// Explainers index -- six method guides (DESIGN Sec 2 editorial
+// Explainers index -- method guides (DESIGN Sec 2 editorial
 // typography). Reads public/data/explainers/explainers.json at build time; every
 // number inside each essay is already verbatim-sourced there (see its own
 // generated_note + "cited" list) -- this index only lists them. No showcase JSON
@@ -11,8 +11,7 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Explainers",
-  description:
-    "Six long-form essays on how the possession simulator thinks, what calibration means, and why the graveyard of null results is the point.",
+  description: `${readEssays().length} long-form essays on how the possession simulator thinks, what calibration means, and why the graveyard of null results is the point.`,
 };
 
 type Essay = { slug: string; title: string; dek: string; cited: string[] };
@@ -83,7 +82,7 @@ export default function ExplainersIndexPage() {
       <p className="overline">Explainers</p>
       <h1 style={h1}>Guides to the methods</h1>
       <p style={lede}>
-        Six essays on how the possession simulator thinks, what calibration actually
+        {essays.length} essays on how the possession simulator thinks, what calibration actually
         means, why the graveyard of null results is the point, and what the on-page
         AI can and cannot tell you. Every number inside traces back to a committed
         artifact &mdash; see each essay&rsquo;s sources at the bottom of the page.

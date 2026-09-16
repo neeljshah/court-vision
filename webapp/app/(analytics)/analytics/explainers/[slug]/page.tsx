@@ -24,6 +24,8 @@ type Essay = {
   dek: string;
   body_md: string;
   cited: string[];
+  inspector?: { href: string; label: string };
+  next?: Array<{ href: string; label: string }>;
 };
 type CorpusEntry = { q: string; bucket?: string };
 
@@ -36,6 +38,7 @@ const EXPLAINERS_PATH = join(
 );
 const CORPUS_PATH = join(process.cwd(), "public", "data", "ask", "corpus.json");
 const EDGE_WORDS = /edge|\broi\b|profit|\$/i;
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 function readEssays(): Essay[] {
   const raw = readFileSync(EXPLAINERS_PATH, "utf8");
@@ -137,6 +140,14 @@ function renderBody(body: string): ReactNode[] {
   });
 }
 
+function publicArtifactHref(cited: string): string | null {
+  const artifact = cited.split(" -> ", 1)[0];
+  const publicPrefix = "webapp/public/";
+  return artifact.startsWith(publicPrefix)
+    ? `${BASE_PATH}/${artifact.slice(publicPrefix.length)}`
+    : null;
+}
+
 export const dynamicParams = false;
 
 export function generateStaticParams() {
@@ -205,6 +216,19 @@ const sourceItem: CSSProperties = {
   display: "block",
   marginTop: 6,
 };
+const inspectorWrap: CSSProperties = {
+  marginTop: 28,
+  padding: "14px 16px",
+  borderLeft: "2px solid var(--signal)",
+  background: "var(--paper-tint)",
+};
+const destinationList: CSSProperties = {
+  marginTop: 12,
+  paddingLeft: 18,
+  display: "flex",
+  flexDirection: "column",
+  gap: 6,
+};
 
 export default function ExplainerPage({ params }: { params: { slug: string } }) {
   const essays = readEssays();
@@ -229,13 +253,44 @@ export default function ExplainerPage({ params }: { params: { slug: string } }) 
 
         <div>{renderBody(essay.body_md)}</div>
 
+        {essay.inspector ? (
+          <div style={inspectorWrap}>
+            <p className="overline">Inspect the worked example</p>
+            <Link href={essay.inspector.href} style={backLink}>
+              {essay.inspector.label}
+            </Link>
+          </div>
+        ) : null}
+
+        {essay.next?.length ? (
+          <div style={{ marginTop: 32 }}>
+            <p className="overline">Where to go next</p>
+            <ul style={destinationList}>
+              {essay.next.map((destination) => (
+                <li key={destination.href}>
+                  <Link href={destination.href} style={backLink}>
+                    {destination.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+
         <div style={sourcesWrap}>
           <p className="overline">Sources</p>
-          {essay.cited.map((c) => (
-            <span key={c} style={sourceItem}>
-              {c}
-            </span>
-          ))}
+          {essay.cited.map((c) => {
+            const href = publicArtifactHref(c);
+            return href ? (
+              <a key={c} href={href} style={sourceItem}>
+                {c}
+              </a>
+            ) : (
+              <span key={c} style={sourceItem}>
+                {c}
+              </span>
+            );
+          })}
         </div>
 
         <ScoutQuestions questions={scoutQuestionsFor(essay)} heading="Ask Scout about this" />
