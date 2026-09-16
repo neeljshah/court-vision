@@ -1,8 +1,8 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import PapersIndex from "@/components/analytics/papers/PapersIndex";
 import { loadPapers } from "@/lib/analytics/papers.server";
-import { SPORT_LABELS } from "@/lib/analytics/papers";
+import { SPORT_LABELS, paperSports } from "@/lib/analytics/papers";
 import PapersIndexPage from "./page";
 
 describe("PapersIndexPage", () => {
@@ -45,5 +45,15 @@ describe("PapersIndexPage", () => {
     render(<PapersIndex papers={[]} />);
     expect(screen.getByText(/No papers are published yet/)).toBeInTheDocument();
     expect(screen.queryByRole("status")).not.toBeInTheDocument();
+  });
+
+  it("provides three resolvable start-here readings without a keyword wall", () => {
+    const papers = loadPapers();
+    const { container } = render(<PapersIndex papers={papers} />);
+    const startHere = screen.getByRole("region", { name: "A short route through the research record" });
+    const links = within(startHere).getAllByRole("link");
+    expect(links).toHaveLength(3);
+    links.forEach(link => expect(link).toHaveAttribute("href", expect.stringMatching(/\/analytics\/papers\/[a-z0-9-]+\/?$/)));
+    expect(container.querySelectorAll(".paper-chips button").length).toBeLessThanOrEqual(paperSports(papers).length + 1);
   });
 });

@@ -6,12 +6,22 @@ import {
 } from "@/lib/analytics/papers";
 import { paperViewSearch, readPaperViewState, type PaperViewState } from "@/lib/analytics/paperViewState";
 
+const START_HERE_SLUGS = [
+  "how-to-read-a-courtvision-paper",
+  "calibration-reliability-by-sport-and-state",
+  "how-proposed-signals-survive-testing",
+];
+
 export default function PapersIndex({ papers }: { papers: Paper[] }) {
   const [viewState, setViewState] = useState<PaperViewState>({ sport: "any", keyword: "any" });
   const [ready, setReady] = useState(false);
   const sports = paperSports(papers);
   const keywords = paperKeywords(papers);
   const visible = filterPapers(papers, viewState.sport, viewState.keyword);
+  const startHere = START_HERE_SLUGS.flatMap(slug => {
+    const paper = papers.find(entry => entry.slug === slug);
+    return paper ? [paper] : [];
+  });
   const update = (change: Partial<PaperViewState>) => {
     if (!ready) return;
     const next = { ...viewState, ...change };
@@ -46,6 +56,21 @@ export default function PapersIndex({ papers }: { papers: Paper[] }) {
         <p className="paper-empty">No papers are published yet. Each one appears here once its JSON passes the paper contract.</p>
       ) : (
         <>
+          <section className="paper-start" aria-labelledby="paper-start-heading">
+            <div>
+              <p className="overline">Start here</p>
+              <h2 id="paper-start-heading" className="serif">A short route through the research record</h2>
+              <p>Read the paper format first, then the calibration record, then the testing record.</p>
+            </div>
+            <ol>
+              {startHere.map(paper => (
+                <li key={paper.slug}>
+                  <Link href={paperHref(paper.slug)} prefetch={false}>{paper.title}</Link>
+                  <span>{paper.subtitle}</span>
+                </li>
+              ))}
+            </ol>
+          </section>
           <div className="paper-filters">
             <div className="paper-chips" role="group" aria-label="Filter by sport">
               <button type="button" disabled={!ready} aria-pressed={viewState.sport === "any"} onClick={() => update({ sport: "any" })}>All sports</button>
