@@ -105,6 +105,10 @@ export function buildSoccerFormGapResearch(atlas: SoccerFormGapAtlas): ResearchA
     ],
     rows,
     formula: "Home-minus-away PPG = published ppg_home_l10 - published ppg_away_l10, rounded to the source's four-decimal value precision.",
+    bindings: [
+      { operand: "ppg_home_l10", sourcePath: "entries[].key_numbers.ppg_home_l10", valueKey: "ppg_home_l10", label: "Home PPG, prior 10" },
+      { operand: "ppg_away_l10", sourcePath: "entries[].key_numbers.ppg_away_l10", valueKey: "ppg_away_l10", label: "Away PPG, prior 10" },
+    ],
     interpretation: "Positive values mean recorded home trailing-form PPG is higher; negative values mean recorded away trailing-form PPG is higher. Read both independently floored operands beside the difference.",
     references: REFERENCES,
     novelty: "Derived analysis",

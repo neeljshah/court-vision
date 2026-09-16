@@ -9,6 +9,7 @@ describe("Brier skill scores research", () => {
     expect(analysis).toMatchObject({ id: "brier-skill-score-by-game-phase", source: "brier_skill_scores", asOf: "2026-07-25" });
     expect(analysis.rows[0].values).toMatchObject({ model_brier: 0.24, model_vs_market_bss: -0.2, scored_rows: 40 });
     expect(analysis.rows[0].sourcePaths).toContain("sports.mlb.grains.all.bss_model_vs_market");
+    expect(analysis.bindings?.every(binding => binding.valueKey in analysis.rows[0].values)).toBe(true);
   });
 
   it("orders sport-phase rows and retains a flagged source row", () => {

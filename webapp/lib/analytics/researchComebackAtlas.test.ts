@@ -9,6 +9,7 @@ describe("comeback atlas research", () => {
     expect(analysis).toMatchObject({ id: "comeback-rates-deficit-time", source: "comeback_atlas" });
     expect(analysis.rows[0].values).toMatchObject({ comeback_share: 0.2, games: 40, ticks: 200 });
     expect(analysis.rows[0].sourcePaths).toContain("cells[].outcome_rate");
+    expect(analysis.bindings?.every(binding => binding.valueKey in analysis.rows[0].values || binding.valueKey in (analysis.rows[0].bindingValues || {}))).toBe(true);
   });
 
   it("orders deficit-time cells deterministically and retains flagged support", () => {

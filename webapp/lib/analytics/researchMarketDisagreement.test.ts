@@ -9,6 +9,7 @@ describe("market disagreement research", () => {
     expect(analysis).toMatchObject({ id: "market-disagreement-brier-by-bucket", source: "market_disagreement_profile" });
     expect(analysis.rows[0].values).toMatchObject({ model_brier: 0.2, market_brier: 0.18, scored_rows: 40 });
     expect(analysis.rows[0].sourcePaths).toContain("sports.mlb[].market_brier");
+    expect(analysis.bindings?.every(binding => binding.valueKey in analysis.rows[0].values)).toBe(true);
   });
 
   it("orders rows by sport and label", () => {

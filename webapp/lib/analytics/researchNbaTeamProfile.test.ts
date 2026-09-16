@@ -20,6 +20,7 @@ describe("NBA team profile research", () => {
     expect(row.values).toMatchObject({ pace_proxy: 99, fragility_delta_estimator_a: 0.2, fatigue_tax_pts_per100: -0.3, back_to_back_share: 0.2 });
     expect(row.sourcePaths).toContain("novel_load_bearing_index.results[].estimator_a_elo_onoff.delta_winprob");
     expect(row.href).toBe("/analytics/players/nba_teams/brooklyn");
+    expect(buildNbaTeamProfileResearch(source())[0].bindings?.every(binding => binding.valueKey in row.values)).toBe(true);
   });
 
   it("reports unmatched keys without removing atlas teams", () => {
