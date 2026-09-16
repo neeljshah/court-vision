@@ -52,8 +52,8 @@ describe("AskBox", () => {
   });
 
   it("labels a published module destination as the primary action", () => {
-    const module = [{ ...entries[0], bucket: "public-analytics-module", a: { ...entries[0].a, explore_path: "/analytics/m/calibration_over_time" } }];
-    render(<AskBox entries={module} tours={[]} />);
+    const moduleEntries = [{ ...entries[0], bucket: "public-analytics-module", a: { ...entries[0].a, explore_path: "/analytics/m/calibration_over_time" } }];
+    render(<AskBox entries={moduleEntries} tours={[]} />);
     fireEvent.change(screen.getByLabelText("Ask Scout a question"), { target: { value: "Known question" } });
     fireEvent.click(screen.getByRole("button", { name: "Search Scout's cited answers" }));
     expect(screen.getByRole("link", { name: "Open module" })).toHaveAttribute("href", "/analytics/m/calibration_over_time");
