@@ -34,6 +34,10 @@ const cap: CSSProperties = {
   flexWrap: "wrap",
 };
 
+function publicationDate(value: string): string {
+  return /^\d{4}-\d{2}-\d{2}(?:[ T].*)?$/.test(value) ? provenanceDate(value) : "Date not published.";
+}
+
 // CSS-only scroll affordance: a paper fade + soft shadow at each edge, shown ONLY
 // when the child actually overflows -- the local vs scroll background-attachment
 // mix self-hides the cue at the start/end and when nothing overflows. So a
@@ -144,7 +148,7 @@ export function Figure({
         <span aria-hidden style={{ color: "var(--rule-strong)" }}>
           &middot;
         </span>
-        <span>{provenanceDate(asOf)}</span>
+        <span>{publicationDate(asOf)}</span>
         {meta && (
           <>
             <span aria-hidden style={{ color: "var(--rule-strong)" }}>

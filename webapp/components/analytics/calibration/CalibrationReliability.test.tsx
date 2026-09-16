@@ -40,4 +40,11 @@ describe("CalibrationReliability", () => {
     expect(within(table).getAllByText("Model")).toHaveLength(1);
     expect(within(table).queryByText("Market")).not.toBeInTheDocument();
   });
+
+  it("restores the exact requested reliability bin from the URL", async () => {
+    const exactBinSeries: ReliabilitySeries[] = [{ ...series[0], bins: [...series[0].bins, { binLo: 0.5, binHi: 0.6, meanP: 0.5436, meanY: 0.4619, meanYCi: [0.3685, 0.5575], gap: -0.0818, gapCi: [-0.1736, 0.0137], n: 17652, nGames: 186, lowN: false }] }];
+    window.history.replaceState(null, "", "/analytics/calibration?sport=mlb&series=model&bin_lo=0.5&bin_hi=0.6");
+    render(<CalibrationReliability series={exactBinSeries} />);
+    expect(await screen.findByRole("heading", { name: "50% to 60% probability bin" })).toBeInTheDocument();
+  });
 });

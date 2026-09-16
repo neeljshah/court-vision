@@ -108,6 +108,13 @@ const FOOT_LINKS: Array<{ href: string; label: string }> = [
   { href: "/analytics/cross-sport-comparability", label: "Cross-sport comparability" },
 ];
 
+const FOOTER_GROUPS: Array<{ heading: string; links: Array<{ href: string; label: string }> }> = [
+  { heading: "Read", links: PILLARS },
+  { heading: "Inspect", links: FOOT_LINKS.slice(0, 5) },
+  { heading: "Reference", links: FOOT_LINKS.slice(5, 10).concat(FOOT_LINKS.slice(12)) },
+  { heading: "About", links: FOOT_LINKS.slice(10, 12) },
+];
+
 export default function AnalyticsRootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" data-theme="light" className={analyticsFontVars} suppressHydrationWarning>
@@ -147,6 +154,7 @@ export default function AnalyticsRootLayout({ children }: { children: ReactNode 
             <div className="a-foot-top">
               <span className="a-foot-mark"><BrandMark /></span>
               <span className="a-foot-name">CourtVision Analytics</span>
+              <span className="a-foot-brand-line">Published forecast measurements</span>
             </div>
             <p className="a-honesty">
               <span className="k">Scope and sources</span>{" "}
@@ -157,21 +165,16 @@ export default function AnalyticsRootLayout({ children }: { children: ReactNode 
             <p className="a-meta">
               dated static snapshot &middot; published source artifacts &middot; no live data
             </p>
-            {/* Primary onward nav from the foot of long pages: the mobile top nav
-                is non-sticky by design (it scrolls away), so a reader at the bottom
-                needs the six pillars here to jump on without scrolling back up. */}
-            <nav className="a-foot-links a-foot-pillars" aria-label="Sections">
-              {PILLARS.map((p) => (
-                <Link key={p.href} href={p.href} prefetch={false}>
-                  {p.label}
-                </Link>
-              ))}
-            </nav>
-            <nav className="a-foot-links" aria-label="Secondary">
-              {FOOT_LINKS.map((l) => (
-                <Link key={l.href} href={l.href} prefetch={false}>
-                  {l.label}
-                </Link>
+            <nav className="a-foot-grid" aria-label="Footer destinations">
+              {FOOTER_GROUPS.map((group) => (
+                <section className="a-foot-group" key={group.heading} aria-labelledby={`footer-${group.heading.toLowerCase()}`}>
+                  <h2 id={`footer-${group.heading.toLowerCase()}`}>{group.heading}</h2>
+                  <div className="a-foot-links">
+                    {group.links.map((link) => (
+                      <Link key={link.href} href={link.href} prefetch={false}>{link.label}</Link>
+                    ))}
+                  </div>
+                </section>
               ))}
             </nav>
             {/* Cross-product jump: leaves the Reading Room for the dark quant

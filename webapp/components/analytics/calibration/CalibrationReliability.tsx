@@ -5,6 +5,7 @@ import { linePath, linear, type Pt } from "@/components/analytics/charts/scale";
 import type { ReliabilityBin, ReliabilitySeries, ReliabilitySide } from "@/lib/analytics/calibrationReliability";
 
 type SeriesChoice = ReliabilitySide | "both";
+type BinRange = { lo: number; hi: number } | null;
 const sides: ReliabilitySide[] = ["model", "market"];
 const labels: Record<ReliabilitySide, string> = { model: "Model", market: "Market" };
 const colors: Record<ReliabilitySide, string> = { model: "var(--accent)", market: "var(--signal)" };
@@ -43,19 +44,29 @@ function validPoint(bin: ReliabilityBin): bin is ReliabilityBin & { meanP: numbe
   return bin.meanP !== null && bin.meanY !== null;
 }
 
-function readState(series: ReliabilitySeries[]): { sport: string; choice: SeriesChoice } {
+function readState(series: ReliabilitySeries[]): { sport: string; choice: SeriesChoice; binRange: BinRange } {
   const params = new URLSearchParams(window.location.search);
   const requestedSport = params.get("sport");
   const sport = series.some(item => item.sport === requestedSport) ? requestedSport! : series[0]?.sport || "";
   const requestedChoice = params.get("series");
   const choice: SeriesChoice = requestedChoice === "model" || requestedChoice === "market" || requestedChoice === "both" ? requestedChoice : "both";
-  return { sport, choice };
+  const requestedBinLo = params.get("bin_lo");
+  const requestedBinHi = params.get("bin_hi");
+  const binLo = Number(requestedBinLo);
+  const binHi = Number(requestedBinHi);
+  const binRange = requestedBinLo !== null && requestedBinHi !== null && Number.isFinite(binLo) && Number.isFinite(binHi) ? { lo: binLo, hi: binHi } : null;
+  return { sport, choice, binRange };
+}
+
+function matchesBinRange(bin: ReliabilityBin, range: BinRange): boolean {
+  return range !== null && bin.binLo === range.lo && bin.binHi === range.hi;
 }
 
 export function CalibrationReliability({ series }: { series: ReliabilitySeries[] }) {
   const sports = Array.from(new Set(series.map(item => item.sport)));
   const [sport, setSport] = useState(sports[0] || "");
   const [choice, setChoice] = useState<SeriesChoice>("both");
+  const [binRange, setBinRange] = useState<BinRange>(null);
   const [restored, setRestored] = useState(false);
 
   useEffect(() => {
@@ -63,6 +74,7 @@ export function CalibrationReliability({ series }: { series: ReliabilitySeries[]
       const next = readState(series);
       setSport(next.sport);
       setChoice(next.choice);
+      setBinRange(next.binRange);
       setRestored(true);
     };
     restore();
@@ -127,7 +139,7 @@ export function CalibrationReliability({ series }: { series: ReliabilitySeries[]
     </div>
     <div className="cr-worked-examples" aria-live="polite">
       {selected.map(item => {
-        const bin = item.bins[0];
+        const bin = item.bins.find(candidate => matchesBinRange(candidate, binRange)) || item.bins[0];
         if (!bin) return null;
         return <article key={item.side} className="cr-worked-example">
           <p className="cr-worked-label">{sportLabel(sport)} / {labels[item.side]} worked example</p>

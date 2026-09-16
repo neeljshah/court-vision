@@ -135,7 +135,7 @@ export default function TheLoopPage() {
       <header style={{ maxWidth: 720, marginBottom: 40 }}>
         <div className="overline" style={{ marginBottom: 12 }}>The self-improving system</div>
         <h1 style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "clamp(2.4rem,5.5vw,3.8rem)", lineHeight: 1.05, letterSpacing: "-.02em", color: "var(--ink)", marginBottom: 16 }}>
-          An AI that grades itself.
+          How proposed signals survive testing.
         </h1>
         <p style={{ ...lede, fontSize: 18, maxWidth: 620 }}>
           It proposes signals, tests them under a leak-free gate, and keeps every null, not-testable, and
@@ -173,7 +173,7 @@ export default function TheLoopPage() {
       </section>
 
       <section aria-label="Verdict flips" style={{ marginBottom: 56 }}>
-        <h2 style={{ ...h2, marginBottom: 8 }}>The system changes its own mind</h2>
+        <h2 style={{ ...h2, marginBottom: 8 }}>Five claim families changed verdict.</h2>
         <p style={{ ...lede, marginBottom: 20 }}>
           These families carried more than one verdict across reruns. The ledger keeps the whole sequence, not
           just the last word &mdash; the trail of a system re-testing itself as corpora grow.

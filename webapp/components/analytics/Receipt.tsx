@@ -25,6 +25,11 @@ function basename(p: string): string {
   return parts[parts.length - 1] || p;
 }
 
+function publicationDate(value: string | undefined): string | null {
+  if (!value) return null;
+  return /^\d{4}-\d{2}-\d{2}(?:[ T].*)?$/.test(value) ? provenanceDate(value) : "Date not published.";
+}
+
 const stamp: CSSProperties = {
   border: 0,
   background: "transparent",
@@ -98,7 +103,8 @@ export function Receipt(r: ReceiptData) {
     return () => document.removeEventListener("pointerdown", onDown);
   }, [open]);
   // Quiet resting token: prefer as_of, else value, else the artifact basename.
-  const resting = r.asOf ? provenanceDate(r.asOf) : r.value || basename(r.sourceArtifact);
+  const date = publicationDate(r.asOf);
+  const resting = date || r.value || basename(r.sourceArtifact);
   const sourceHref = artifactUrl(r.sourceArtifact);
   const dashed = r.verdict === "not_testable";
 
@@ -196,7 +202,7 @@ export function Receipt(r: ReceiptData) {
           ) : (
             <span style={path}>{r.sourceArtifact} (not published)</span>
           )}
-          <span style={{ ...path, marginTop: 2 }}>{provenanceDate(r.asOf)}</span>
+          <span style={{ ...path, marginTop: 2 }}>{date || "Date not published."}</span>
           <Link
             href="/analytics/the-loop"
             style={{

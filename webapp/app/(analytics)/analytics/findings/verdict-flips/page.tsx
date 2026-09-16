@@ -90,7 +90,7 @@ export default function VerdictFlipsPage() {
         </div>
       ) : null}
       {summary ? (
-        <p style={{ ...lede, fontSize: 13.5, color: "var(--ink-3)", marginTop: 10 }}>Most claims never flip; these few did.</p>
+        <p style={{ ...lede, fontSize: 13.5, color: "var(--ink-3)", marginTop: 10 }}>Five published examples changed verdict.</p>
       ) : null}
 
       {/* THE FLIPS -- one card per claim family, in the sequence it actually lived. */}
@@ -175,10 +175,7 @@ export default function VerdictFlipsPage() {
         <Receipt sourceArtifact={source_artifact || ""} asOf={generated_at || undefined} label="descriptive_only" verdict="descriptive_only" />
       </div>
 
-      <p style={{ ...lede, marginTop: 32 }}>
-        A verdict flip is the preregistered process working, not a failure. Each
-        row retains its dated verdict history and stated reason for the change.
-      </p>
+      <p style={{ ...lede, marginTop: 32 }}>Dated runs show timestamps; undated runs retain source order.</p>
     </div>
   );
 }

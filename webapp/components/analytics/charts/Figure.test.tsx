@@ -19,4 +19,9 @@ describe("Figure", () => {
     expect(screen.getByText("private_measurement.json (not published)")).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "private_measurement.json" })).not.toBeInTheDocument();
   });
+
+  it("treats a placeholder snapshot date as absent", () => {
+    render(<Figure source="data/showcase/blowout_dynamics.json" asOf="Published snapshot"><div>Chart</div></Figure>);
+    expect(screen.getByText("Date not published.")).toBeInTheDocument();
+  });
 });

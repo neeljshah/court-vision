@@ -124,12 +124,15 @@ main table { max-width: none; }
   background: radial-gradient(circle at 35% 30%, #e9e4da, #b9b0a3 60%, #8f8578); box-shadow: inset 0 0 0 2px #ccc4b6; }
 .a-foot-mark span { color: var(--signal); font-weight: 800; font-size: 13px; line-height: 1; transform: translateY(-1px); }
 .a-foot-name { font-family: var(--font-display); font-weight: 500; font-size: 17px; color: var(--ink); }
+.a-foot-brand-line { color: var(--ink-3); font-size: 12px; }
 .a-honesty { max-width: 680px; color: var(--ink-2); font-size: 14.5px; line-height: 1.6; }
 .a-honesty .k { font-weight: 700; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--signal-ink); }
 .a-meta { margin-top: 14px; font-family: var(--font-mono); font-size: 12px; color: var(--ink-3); }
-.a-foot-links { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 18px; font-size: 14px; font-weight: 500; }
+.a-foot-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin-top: 24px; }
+.a-foot-group h2 { color: var(--ink-3); font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.a-foot-links { display: flex; flex-direction: column; gap: 0; margin-top: 8px; font-size: 14px; font-weight: 500; }
 .a-foot-links a { color: var(--ink-2); }
-.a-foot-links a { min-height: 32px; display: inline-flex; align-items: center; }
+.a-foot-links a { min-height: 44px; display: inline-flex; align-items: center; }
 .a-foot-links a:hover, .a-foot-links a:focus-visible { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
 /* the six pillars read as the primary onward nav; the secondary links below sit lighter */
 .a-foot-pillars { margin-top: 24px; }
@@ -160,6 +163,7 @@ main table { max-width: none; }
      reads as broken. Theme persists once set, so top-of-page reach is enough. */
   .a-theme { margin-left: auto; }
   .navlinks { order: 3; flex-basis: 100%; margin-left: 0; overflow: visible; flex-wrap: wrap; gap: 6px 18px; padding-bottom: 2px; }
+  .a-foot-grid { grid-template-columns: 1fr; gap: 24px; }
   /* Match the product's 44px touch standard (Ask pills, jump chips) while the
      pillar row remains horizontally swipeable. */
   .navlinks a { min-height: 40px; display: inline-flex; align-items: center; padding: 4px 2px; }
