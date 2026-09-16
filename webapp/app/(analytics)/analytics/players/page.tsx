@@ -8,6 +8,9 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import Link from "next/link";
+import { atlasFieldDefinition } from "@/lib/analytics/atlasFieldDefinitions";
+import { getMlbPitchAtlasCohorts } from "@/lib/analytics/atlasResearchCohorts";
+import { getEntityMeasurementSchema } from "@/lib/analytics/entityMeasurementSchemas";
 import { asOfDate } from "@/lib/analytics/format";
 
 type KN = Record<string, unknown>;
@@ -172,6 +175,24 @@ const STYLES = `
 @media(max-width:720px){.pl-anchor{scroll-margin-top:16px}}
 `;
 
+function AtlasTableSection({ pack, entries, heading, id }: { pack: Pack; entries: Entry[]; heading: string; id: string }) {
+  const rows = withSlugs(entries);
+  const fields = getEntityMeasurementSchema(pack.slug, entries[0]).fields;
+  const fieldDefinitions = fields.map((key) => atlasFieldDefinition(pack.slug, key).label).join("; ");
+  const asOf = asOfDate(entries[0]?.as_of);
+  return <section id={id} className="pl-anchor pl-fsec" style={{ marginTop: 44 }}>
+    <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 6, flexWrap: "wrap" }}>
+      <span aria-hidden style={{ width: 9, height: 9, borderRadius: "50%", background: SPORT_COLOR[pack.sport] }} />
+      <h2 className="serif" style={{ fontWeight: 500, fontSize: 26 }}>{heading}</h2>
+      <span style={{ color: "var(--ink-3)", fontSize: 13 }}>{entries.length.toLocaleString()} cards{asOf ? ` \u00B7 as of ${asOf}` : ""}</span>
+    </div>
+    <p style={{ color: "var(--ink-3)", fontSize: 12, marginBottom: 14 }}>Published fields: {fieldDefinitions}.</p>
+    <div className="pl-tblwrap"><table className="pl-tbl"><thead><tr><th scope="col">Entity</th>{colKeys(entries).map((key) => <th key={key} scope="col">{label(key)}</th>)}</tr></thead>
+      <tbody>{rows.map(({ slug, entry }) => <tr key={slug} data-name={nameFor(entry).toLowerCase()}><td><Link href={`/analytics/players/${pack.slug}/${slug}`}>{nameFor(entry)}</Link></td>{colKeys(entries).map((key) => <td key={key} className="num">{fmtCell(key, entry.key_numbers[key])}</td>)}</tr>)}</tbody>
+    </table></div>
+  </section>;
+}
+
 export default function EntitiesIndexPage() {
   const packs = PACKS.map((p) => ({ pack: p, manifest: readManifest(p), insights: readInsights(p.slug) }));
   const totalCards = packs.reduce((n, x) => n + (x.manifest?.entries.length || 0), 0);
@@ -240,39 +261,10 @@ export default function EntitiesIndexPage() {
 
       {packs.map(({ pack, manifest }) => {
         if (!manifest || manifest.entries.length === 0) return null;
-        const rows = withSlugs(manifest.entries);
-        const cols = colKeys(manifest.entries);
-        // Collapse machine timestamps (soccer/tennis/calibration carry ISO micros +
-        // "+00:00") to a clean date, matching the entity detail page and DESIGN Sec.4;
-        // descriptive corpus labels ("2025-26 regular season ...") pass through.
-        const asOf = asOfDate(manifest.entries[0]?.as_of);
-        return (
-          <section key={pack.slug} id={pack.slug} className="pl-anchor pl-fsec" style={{ marginTop: 44 }}>
-            <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 14, flexWrap: "wrap" }}>
-              <span aria-hidden style={{ width: 9, height: 9, borderRadius: "50%", background: SPORT_COLOR[pack.sport] }} />
-              <h2 className="serif" style={{ fontWeight: 500, fontSize: 26 }}>{pack.label}</h2>
-              <span style={{ color: "var(--ink-3)", fontSize: 13 }}>{manifest.entries.length.toLocaleString()} cards{asOf ? ` \u00B7 as of ${asOf}` : ""}</span>
-            </div>
-            <div className="pl-tblwrap">
-              <table className="pl-tbl">
-                <thead>
-                  <tr>
-                    <th scope="col">Entity</th>
-                    {cols.map((c) => <th key={c} scope="col">{label(c)}</th>)}
-                  </tr>
-                </thead>
-                <tbody>
-                  {rows.map(({ slug, entry }) => (
-                    <tr key={slug} data-name={nameFor(entry).toLowerCase()}>
-                      <td><Link href={`/analytics/players/${pack.slug}/${slug}`}>{nameFor(entry)}</Link></td>
-                      {cols.map((c) => <td key={c} className="num">{fmtCell(c, entry.key_numbers[c])}</td>)}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
-        );
+        if (pack.slug !== "mlb_pitch") return <AtlasTableSection key={pack.slug} pack={pack} entries={manifest.entries} heading={pack.label} id={pack.slug} />;
+        return getMlbPitchAtlasCohorts(manifest.entries).map((cohort, index) => (
+          <AtlasTableSection key={cohort.id} pack={pack} entries={cohort.entries} heading={cohort.title} id={index === 0 ? pack.slug : cohort.id} />
+        ));
       })}
 
       {/* eslint-disable-next-line react/no-danger */}

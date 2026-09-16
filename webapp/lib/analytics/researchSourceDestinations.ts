@@ -13,7 +13,7 @@ const ATLAS_PACKS: Record<string, string> = {
   atlas_calibration_manifest: "calibration",
   atlas_mlb_batters_manifest: "mlb_batters",
   atlas_mlb_pitch_manifest: "mlb_pitch",
-  atlas_nba_manifest: "nba",
+  atlas_nba_manifest: "nba_players",
   atlas_nba_teams_manifest: "nba_teams",
   atlas_soccer_manifest: "soccer",
   atlas_tennis_manifest: "tennis",

@@ -23,7 +23,7 @@ import { entityObservationContext } from "@/lib/analytics/entityObservationConte
 import { packComparables, packJoins, packPercentiles } from "@/lib/analytics/showcaseData";
 
 type KN = Record<string, unknown>;
-type Entry = { entity: string; card_path: string; key_numbers: KN; floors?: string; as_of?: string };
+type Entry = { entity: string; card_path: string; key_numbers: KN; floors?: string; as_of?: string; card_type?: string };
 type Manifest = { descriptive_only?: boolean; entries: Entry[] };
 type Insight = {
   slug: string; display_name: string; one_liner: string;
@@ -157,7 +157,7 @@ export default function EntityPage({ params }: { params: { pack: string; slug: s
   const asOf = asOfDate(insight?.as_of || entry.as_of) || null;
   const observationContext = entityObservationContext(params.pack, entry);
   const pctPack = packPercentiles(params.pack) as unknown as EntityPercentilePack | null;
-  const measurements = entityMeasurements(params.pack, entry, params.slug, pctPack);
+  const measurements = entityMeasurements(params.pack, entry, params.slug, pctPack, manifest.entries);
   // entity_joins.json: only nba_teams/nba_players carry any; 137 of 482 player cards legitimately have none.
   const joinPack = packJoins(params.pack);
   const joinItems = joinPack?.entities[params.slug]?.items || [];
@@ -213,7 +213,7 @@ export default function EntityPage({ params }: { params: { pack: string; slug: s
         <div style={{ flex: "3 1 440px", minWidth: 0 }}>
           <EntityMeasurements measurements={measurements} sourceArtifact={`${REPO}/${pack.manifest}`} asOf={asOf || undefined} />
           {measurements.scalars.some((item) => typeof item.percentile === "number") ? <div style={{ marginTop: 10, fontSize: 13, color: "var(--ink-3)" }}>
-            Percentiles are within-pack ranks of the measured value; higher is only higher, not a quality judgement. <Receipt sourceArtifact={`${REPO}/entity_percentiles.json`} asOf={asOf || undefined} verdict="descriptive_only" label="descriptive_only" />
+            Percentiles are ranks within the compatible published cohort; higher is only higher, not a quality judgement. <Receipt sourceArtifact={`${REPO}/entity_percentiles.json`} asOf={asOf || undefined} verdict="descriptive_only" label="descriptive_only" />
           </div> : null}
           <ScoutNote envelope={envelope} />
           {insight?.three_things?.length ? (

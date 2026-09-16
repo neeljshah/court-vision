@@ -8,7 +8,7 @@ describe("research source destinations", () => {
 
   it("resolves atlas manifests to their published pack anchors", () => {
     expect(resolveResearchSourceDestination("atlas_nba_teams_manifest")).toEqual({ kind: "atlas", href: "/analytics/players#nba_teams" });
-    expect(resolveResearchSourceDestination("atlas_nba_manifest")).toEqual({ kind: "atlas", href: "/analytics/players#nba" });
+    expect(resolveResearchSourceDestination("atlas_nba_manifest")).toEqual({ kind: "atlas", href: "/analytics/players#nba_players" });
   });
 
   it("falls back to source JSON without fabricating a module route", () => {

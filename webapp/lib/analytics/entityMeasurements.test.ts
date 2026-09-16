@@ -47,4 +47,17 @@ describe("entityMeasurements", () => {
       expect.objectContaining({ key: "invented_signal", label: "Invented Signal", value: "99" }),
     ]));
   });
+
+  it("does not count other MLB cohorts as unpublished and ranks within the matching cohort", () => {
+    const rows = [
+      { entity: "pitch_type:CH", key_numbers: { n_pitches: 100 } },
+      { entity: "pitch_type:CS", key_numbers: { n_pitches: 50 } },
+      { entity: "team:ATH", key_numbers: { n_pitches: 1000 } },
+      { entity: "count:0-0", key_numbers: { n_pitches: 500 } },
+    ];
+    const result = entityMeasurements("mlb_pitch", rows[0], "ch", pct, rows);
+    expect(result.scalars.find((item) => item.key === "n_pitches")).toMatchObject({ percentile: 100, nRanked: 2 });
+    expect(result.unavailable.map((item) => item.key)).not.toContain("n_pitch_types_used");
+    expect(result.notApplicable.map((item) => item.key)).toContain("n_pitch_types_used");
+  });
 });
