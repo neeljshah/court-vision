@@ -144,7 +144,7 @@
     "story",
     "sports.mlb.n_records", "sports.mlb.n_files", "sports.mlb.n_skipped", "sports.mlb.segments[]",
     "sports.soccer_intl.n_records", "sports.soccer_intl.n_files", "sports.soccer_intl.n_skipped", "sports.soccer_intl.segments[]",
-    "skipped[0]"
+    "skipped[].sport", "skipped[].reason"
    ]
   },
   {
@@ -152,10 +152,10 @@
    "module": "state_conditioned_calibration",
    "asOf": null,
    "fields": [
-    "sports.mlb.buckets[] (source=model; time_bucket=early(inn1-3), prob_bucket=.4-.6)",
-    "sports.mlb.buckets[] (source=model; time_bucket=late(inn7+), prob_bucket=.8-1)",
-    "sports.soccer_intl.buckets[] (source=model; time_bucket=45-60, prob_bucket=0-.2)",
-    "sports.soccer_intl.buckets[] (source=model; time_bucket=75-90+, prob_bucket=0-.2)"
+    "sports.mlb.buckets[source=model,time_bucket=early(inn1-3),prob_bucket=.4-.6].n",
+    "sports.mlb.buckets[source=model,time_bucket=late(inn7+),prob_bucket=.8-1].n",
+    "sports.soccer_intl.buckets[source=model,time_bucket=45-60,prob_bucket=0-.2].n",
+    "sports.soccer_intl.buckets[source=model,time_bucket=75-90+,prob_bucket=0-.2].n"
    ]
   },
   {
@@ -166,7 +166,7 @@
     "method", "assumptions[]",
     "sports.mlb.n_transitions", "sports.mlb.transitions[]",
     "sports.soccer_intl.n_transitions", "sports.soccer_intl.transitions[]",
-    "biggest_drops[]", "biggest_gains[]", "verdict", "skipped[0]"
+    "biggest_drops[]", "biggest_gains[]", "verdict", "skipped[].sport", "skipped[].reason"
    ]
   }
  ],

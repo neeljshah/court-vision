@@ -529,14 +529,13 @@
     {
       "artifact": "mechanism_ledger_export.json",
       "module": "mechanism_ledger_export",
+      "path": "insights",
       "asOf": null,
       "fields": [
-        "by_sport.basketball_nba.mechanisms[0].effect",
-        "by_sport.basketball_nba.mechanisms[0].p",
-        "by_sport.basketball_nba.mechanisms[0].evidence",
-        "by_sport.basketball_nba.mechanisms[1].effect",
-        "by_sport.basketball_nba.mechanisms[1].p",
-        "by_sport.basketball_nba.mechanisms[1].evidence"
+        "headline_insight",
+        "what_it_means",
+        "cited[]",
+        "as_of"
       ]
     },
     {
@@ -567,8 +566,8 @@
       "module": "nba_consistency_profiles",
       "asOf": "2026-04-12",
       "fields": [
-        "caveat",
-        "not_this[1]"
+        "methodology.caveat",
+        "not_this[]"
       ]
     }
   ],

@@ -137,7 +137,7 @@
     "sports.soccer_intl.n_rows", "sports.soccer_intl.n_games",
     "sports.soccer_intl.sides.model_prob.brier", "sports.soccer_intl.sides.market_prob.brier",
     "sports.soccer_intl.sides.model_prob.n_significant_bins", "sports.soccer_intl.sides.market_prob.n_significant_bins",
-    "n_boot", "ci_pct", "cluster_unit", "skipped[0]"
+    "n_boot", "ci_pct", "cluster_unit"
    ]
   },
   {
@@ -147,10 +147,11 @@
    "fields": [
     "sports.mlb.n_records", "sports.mlb.n_files", "sports.mlb.n_skipped_no_state_field",
     "sports.mlb.model_ece_n_weighted", "sports.mlb.market_ece_n_weighted",
-    "sports.mlb.buckets[] (time_bucket=late(inn7+), all prob_bucket bands, both sources)",
+    "sports.mlb.buckets[time_bucket=late(inn7+)].prob_bucket",
+    "sports.mlb.buckets[time_bucket=late(inn7+)].source",
     "sports.soccer_intl.n_records", "sports.soccer_intl.n_skipped_no_state_field",
     "sports.soccer_intl.model_ece_n_weighted", "sports.soccer_intl.market_ece_n_weighted",
-    "ranked_worst_buckets[0]", "skipped[0]"
+    "ranked_worst_buckets[]", "skipped[].sport", "skipped[].reason"
    ]
   }
  ],

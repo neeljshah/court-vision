@@ -496,7 +496,8 @@
         "floors.top_n_pitch_types",
         "floors.row_min_n",
         "floors.class_min_transitions",
-        "by_class[all].row_n_from[FF]"
+        "by_class[class=all].top_transition.from",
+        "by_class[class=all].top_transition.n"
       ]
     }
   ],

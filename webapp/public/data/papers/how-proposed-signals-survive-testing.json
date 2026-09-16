@@ -471,13 +471,13 @@
     {
       "artifact": "mechanism_ledger_export.json",
       "module": "mechanism_ledger_export",
+      "path": "insights",
       "asOf": null,
       "fields": [
-        "verdict_buckets.confirmed",
-        "overall_counts.confirmed",
-        "overall_counts.null",
-        "overall_counts.not_testable",
-        "overall_counts.total"
+        "headline_insight",
+        "what_it_means",
+        "cited[]",
+        "as_of"
       ]
     }
   ],

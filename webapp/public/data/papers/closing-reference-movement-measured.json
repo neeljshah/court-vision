@@ -517,16 +517,16 @@
       "module": "micro_absorption",
       "asOf": "2026-07-25",
       "fields": [
-        "sports.<sport>.n_series_used",
-        "sports.<sport>.n_pregame_snapshots",
-        "sports.<sport>.n_move_pairs",
-        "sports.<sport>.interval_minutes.median",
-        "sports.<sport>.move_by_bucket.0-1h.mean_abs_move",
-        "sports.<sport>.move_by_bucket.6h+.mean_abs_move",
-        "sports.<sport>.final_hour_movement_share",
+        "sports[].n_series_used",
+        "sports[].n_pregame_snapshots",
+        "sports[].n_move_pairs",
+        "sports[].interval_minutes.median",
+        "sports[].move_by_bucket[\"0-1h\"].mean_abs_move",
+        "sports[].move_by_bucket[\"6h+\"].mean_abs_move",
+        "sports[].final_hour_movement_share",
         "sports.kbo.status",
         "sports.npb.status",
-        "sports.soccer.move_by_bucket.6h+.mean_abs_move"
+        "sports.soccer.move_by_bucket[\"6h+\"].mean_abs_move"
       ]
     },
     {
@@ -534,14 +534,14 @@
       "module": "market_overreaction",
       "asOf": null,
       "fields": [
-        "buckets.mlb.<bucket>.n",
-        "buckets.mlb.<bucket>.moved_to_price",
-        "buckets.mlb.<bucket>.outcome_rate",
-        "buckets.mlb.<bucket>.moved_to_minus_outcome",
-        "buckets.soccer_intl.<bucket>.n",
-        "buckets.soccer_intl.<bucket>.moved_to_price",
-        "buckets.soccer_intl.<bucket>.outcome_rate",
-        "buckets.soccer_intl.<bucket>.moved_to_minus_outcome",
+        "buckets.mlb[].n",
+        "buckets.mlb[].moved_to_price",
+        "buckets.mlb[].outcome_rate",
+        "buckets.mlb[].moved_to_minus_outcome",
+        "buckets.soccer_intl[].n",
+        "buckets.soccer_intl[].moved_to_price",
+        "buckets.soccer_intl[].outcome_rate",
+        "buckets.soccer_intl[].moved_to_minus_outcome",
         "novelty.verdict",
         "novelty.closest_prior_work"
       ]

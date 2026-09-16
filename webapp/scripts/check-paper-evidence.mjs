@@ -40,18 +40,38 @@ const findingIds = sourceIds(/define\(["']([^"']+)["']/g, [join(analytics, "find
 const inspectorIds = sourceIds(/\bid:\s*["']([^"']+)["']/g, [join(analytics, "analysisDestinations.ts")]);
 
 function segments(path) {
-  if (typeof path !== "string" || !path) return null;
+  if (typeof path !== "string" || !path || path.includes("<")) return null;
   const output = [];
-  for (const segment of path.split(".")) {
-    const match = /^([A-Za-z0-9_$-]+)((?:\[[^\]]*\])*)$/.exec(segment);
-    if (!match) return null;
-    output.push({ property: match[1], selectors: [...match[2].matchAll(/\[([^\]]*)\]/g)].map((entry) => entry[1]) });
+  let position = 0;
+  while (position < path.length) {
+    if (output.length) {
+      if (path[position] !== ".") return null;
+      position += 1;
+    }
+    const property = /^[A-Za-z0-9_$-]+/.exec(path.slice(position))?.[0] || null;
+    if (property) position += property.length;
+    else if (path[position] !== "[") return null;
+    const selectors = [];
+    while (path[position] === "[") {
+      const end = path.indexOf("]", position + 1);
+      if (end < 0) return null;
+      const selector = path.slice(position + 1, end);
+      if (selector.startsWith('"')) try { JSON.parse(selector); } catch { return null; }
+      selectors.push(selector);
+      position = end + 1;
+    }
+    if (!property && !selectors.length) return null;
+    output.push({ property, selectors });
   }
   return output;
 }
 
 function select(values, selector) {
-  if (selector === "") return values.flatMap((value) => Array.isArray(value) ? value : []);
+  if (selector === "") return values.flatMap((value) => Array.isArray(value) ? value : isBag(value) ? Object.values(value) : []);
+  if (selector.startsWith('"')) {
+    const key = JSON.parse(selector);
+    return values.flatMap((value) => isBag(value) && key in value ? [value[key]] : []);
+  }
   const separator = selector.indexOf("=");
   if (separator > 0) {
     const conditions = selector.split(",").map((part) => {
@@ -69,11 +89,16 @@ function fieldExists(value, path) {
   if (!parsed) return false;
   let values = [value];
   for (const segment of parsed) {
-    values = values.flatMap((entry) => isBag(entry) && segment.property in entry ? [entry[segment.property]] : []);
+    if (segment.property) values = values.flatMap((entry) => isBag(entry) && segment.property in entry ? [entry[segment.property]] : []);
     for (const selector of segment.selectors) values = select(values, selector);
     if (!values.length) return false;
   }
   return true;
+}
+
+function fieldProblem(path) {
+  if (path.includes("<")) return "contains an unsupported placeholder; use [] wildcard syntax";
+  return segments(path) ? null : "is not a valid field path";
 }
 
 function strings(value, into = []) {
@@ -103,7 +128,11 @@ function paperReason(paper) {
     const source = join(data, directory, entry.artifact);
     let artifact;
     try { artifact = JSON.parse(readFileSync(source, "utf8")); } catch { return `evidence[${index}] artifact ${entry.artifact} is unavailable in ${directory}`; }
-    for (const path of entry.fields) if (!fieldExists(artifact, path)) return `evidence[${index}] field path ${path} does not resolve in ${directory}/${entry.artifact}`;
+    for (const path of entry.fields) {
+      const problem = fieldProblem(path);
+      if (problem) return `evidence[${index}] field path ${path} ${problem}`;
+      if (!fieldExists(artifact, path)) return `evidence[${index}] field path ${path} does not resolve in ${directory}/${entry.artifact}`;
+    }
   }
   if (!Array.isArray(paper.related)) return "related must be a list";
   for (const link of paper.related) {
@@ -121,10 +150,17 @@ function paperReason(paper) {
 }
 
 let failures = 0;
+const unverifiable = [];
 for (const entry of names(papers)) {
   let reason;
   try { reason = paperReason(JSON.parse(readFileSync(join(papers, entry), "utf8"))); } catch { reason = "unparsable JSON"; }
   console.log(`${reason ? "FAIL" : "OK"} ${entry}${reason ? ` -- ${reason}` : ""}`);
-  if (reason) failures += 1;
+  if (reason) {
+    failures += 1;
+    unverifiable.push(`${entry} -- ${reason}`);
+  }
 }
+console.log("UNVERIFIABLE");
+if (unverifiable.length) unverifiable.forEach((entry) => console.log(entry));
+else console.log("none");
 if (failures) process.exit(1);

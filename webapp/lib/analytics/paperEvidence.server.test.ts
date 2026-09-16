@@ -52,4 +52,12 @@ describe("paper evidence resolution", () => {
     expect(fieldPathExists(value, "counts[balls=0,strikes=0].n")).toBe(true);
     expect(fieldPathExists(value, "by_class[three_ball].prob_matrix[FF][FF]")).toBe(true);
   });
+
+  it("resolves quoted bracket keys and rejects placeholders with guidance", () => {
+    expect(fieldPathExists({ grains: { "early(inn1-3)": { n: 10 } } }, 'grains["early(inn1-3)"].n')).toBe(true);
+    const paper = sample();
+    const evidence = paper.evidence as Array<{ fields: string[] }>;
+    evidence[0].fields = ["sports.<sport>.n_series_used"];
+    expect(validatePaperEvidence(paper, artifacts, references)).toMatch(/unsupported placeholder; use \[\] wildcard syntax/);
+  });
 });

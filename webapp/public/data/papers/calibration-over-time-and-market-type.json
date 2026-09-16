@@ -122,7 +122,8 @@
     "market_types.mlb_total.n_rows", "market_types.mlb_total.n_quote_tracks", "market_types.mlb_total.n_files",
     "market_types.mlb_total.has_outcome", "market_types.mlb_total.brier",
     "market_types.mlb_total.model_vs_market_divergence.median", "market_types.mlb_total.model_vs_market_divergence.mean", "market_types.mlb_total.model_vs_market_divergence.p90",
-    "skipped[0]"
+        "skipped[].market_type",
+        "skipped[].reason"
    ]
   },
   {

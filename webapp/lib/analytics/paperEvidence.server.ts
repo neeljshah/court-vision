@@ -32,20 +32,43 @@ export function resolveEvidenceArtifact(entry: PaperEvidence): ResolvedPaperEvid
   return null;
 }
 
-function segments(path: string): Array<{ property: string; selectors: string[] }> | null {
-  if (!path) return null;
-  const output: Array<{ property: string; selectors: string[] }> = [];
-  for (const segment of path.split(".")) {
-    const match = /^([A-Za-z0-9_$-]+)((?:\[[^\]]*\])*)$/.exec(segment);
-    if (!match) return null;
-    const selectors = [...match[2].matchAll(/\[([^\]]*)\]/g)].map((entry) => entry[1]);
-    output.push({ property: match[1], selectors });
+type Segment = { property: string | null; selectors: string[] };
+
+function segments(path: string): Segment[] | null {
+  if (!path || path.includes("<")) return null;
+  const output: Segment[] = [];
+  let position = 0;
+  while (position < path.length) {
+    if (output.length) {
+      if (path[position] !== ".") return null;
+      position += 1;
+    }
+    const property = /^[A-Za-z0-9_$-]+/.exec(path.slice(position))?.[0] || null;
+    if (property) position += property.length;
+    else if (path[position] !== "[") return null;
+    const selectors: string[] = [];
+    while (path[position] === "[") {
+      const end = path.indexOf("]", position + 1);
+      if (end < 0) return null;
+      const selector = path.slice(position + 1, end);
+      if (selector.startsWith('"')) {
+        try { JSON.parse(selector); } catch { return null; }
+      }
+      selectors.push(selector);
+      position = end + 1;
+    }
+    if (!property && !selectors.length) return null;
+    output.push({ property, selectors });
   }
   return output;
 }
 
 function select(values: unknown[], selector: string): unknown[] {
-  if (selector === "") return values.flatMap((value) => Array.isArray(value) ? value : []);
+  if (selector === "") return values.flatMap((value) => Array.isArray(value) ? value : isBag(value) ? Object.values(value) : []);
+  if (selector.startsWith('"')) {
+    const key = JSON.parse(selector) as string;
+    return values.flatMap((value) => isBag(value) && key in value ? [value[key]] : []);
+  }
   const separator = selector.indexOf("=");
   if (separator > 0) {
     const conditions = selector.split(",").map((part) => {
@@ -66,11 +89,17 @@ export function fieldPathExists(value: unknown, path: string): boolean {
   if (!parsed) return false;
   let values: unknown[] = [value];
   for (const segment of parsed) {
-    values = values.flatMap((entry) => isBag(entry) && segment.property in entry ? [entry[segment.property]] : []);
+    const property = segment.property;
+    if (property) values = values.flatMap((entry) => isBag(entry) && property in entry ? [entry[property]] : []);
     for (const selector of segment.selectors) values = select(values, selector);
     if (!values.length) return false;
   }
   return values.length > 0;
+}
+
+function fieldPathProblem(path: string): string | null {
+  if (path.includes("<")) return "contains an unsupported placeholder; use [] wildcard syntax";
+  return segments(path) ? null : "is not a valid field path";
 }
 
 /** Returns the first structural or evidence-resolution problem for a paper. */
@@ -87,6 +116,8 @@ export function validatePaperEvidence(
     const resolved = resolveEvidenceArtifact(entry);
     if (!resolved) return `evidence[${index}] artifact ${entry.artifact} is unavailable in ${entry.path || "showcase or insights"}`;
     for (const path of entry.fields) {
+      const problem = fieldPathProblem(path);
+      if (problem) return `evidence[${index}] field path ${path} ${problem}`;
       if (!fieldPathExists(resolved.value, path)) {
         return `evidence[${index}] field path ${path} does not resolve in ${resolved.directory}/${entry.artifact}`;
       }
