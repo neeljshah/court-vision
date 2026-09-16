@@ -27,6 +27,8 @@
   --signal: #B48336; --signal-ink: #8A641F;
   --confirmed: #327969; --confirmed-ink: #FFFFFF; --null: #768799; --null-ink: #61717E;
   --not-testable: #8F6A2D; --reject: #A6412F; --focus-ring: #2864D6;
+  --chart-diverging-neg: #17576B; --chart-diverging-mid: #FFFFFF; --chart-diverging-pos: #7A3829;
+  --chart-seq-low: #D9E9E5; --chart-seq-high: #155642; --chart-missing: #E8EEF1;
 }
 
 /* ---- dark (opt-in) ---- */
@@ -38,6 +40,8 @@
   --signal: #B78C45; --signal-ink: #D2AA64;
   --confirmed: #499C89; --confirmed-ink: #101921; --null: #728BA0; --null-ink: #A4B4C2;
   --not-testable: #B78C45; --reject: #D98466; --focus-ring: #76A5FF;
+  --chart-diverging-neg: #1A4C5D; --chart-diverging-mid: #17242F; --chart-diverging-pos: #60372E;
+  --chart-seq-low: #24413A; --chart-seq-high: #2A725B; --chart-missing: #263642;
 }
 
 /* ---- reset (scoped to this root only; terminal styles are never loaded here) ---- */

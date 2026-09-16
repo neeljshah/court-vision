@@ -33,6 +33,16 @@ function metricText(segment: ResidualSegment, metric: ResidualMetric): string {
   return mass(segment.totalAbsResidualMass);
 }
 
+function metricValue(segment: ResidualSegment, metric: ResidualMetric): number {
+  if (metric === "n") return segment.n ?? 0;
+  if (metric === "meanAbsResidual") return segment.meanAbsResidual;
+  return segment.totalAbsResidualMass;
+}
+
+function scaleStep(value: number, maximum: number): number {
+  return Math.min(4, Math.max(0, Math.round((maximum ? value / maximum : 0) * 4)));
+}
+
 function segmentLabel(segment: ResidualSegment): string {
   return `${segment.timeBucket}, ${segment.probBucket}`;
 }
@@ -90,6 +100,7 @@ export function ResidualAnatomy({ data }: { data: ResidualAnatomyData }) {
     </div>
     {data.sports.map(sport => {
       const selected = view.sport === sport.sport ? sport.segments.find(item => item.timeBucket === view.time && item.probBucket === view.prob) : undefined;
+      const metricMaximum = Math.max(0, ...sport.segments.map(item => metricValue(item, view.metric)));
       return <section className="ra-sport" key={sport.sport} aria-labelledby={`${sport.sport}-residual-title`}>
       <header className="ra-sport-head">
         <div><p>Forecasts grouped by game state</p><h2 id={`${sport.sport}-residual-title`}>{sportLabel(sport.sport)}</h2></div>
@@ -97,9 +108,11 @@ export function ResidualAnatomy({ data }: { data: ResidualAnatomyData }) {
       </header>
       <div className="ra-selected-view">
       <div className="ra-grid-wrap" role="region" aria-label={`${sportLabel(sport.sport)} residual grid`} data-scroll-region>
+        <p className="ra-scale-legend">Sequential scale: 0 to {view.metric === "n" ? count(metricMaximum) : view.metric === "meanAbsResidual" ? residual(metricMaximum) : mass(metricMaximum)} for {selectedMetric}; blank cells: no published segment.</p>
         <table className="ra-grid"><caption>{sportLabel(sport.sport)} time bucket by probability bucket. Blank cells have no published segment.</caption><thead><tr><th scope="col">Time bucket</th>{sport.probBuckets.map(bucket => <th scope="col" key={bucket}>{bucket}</th>)}</tr></thead><tbody>{sport.grid.map(row => <tr key={row.timeBucket}><th scope="row">{row.timeBucket}</th>{row.cells.map((segment, index) => {
           const selected = segment?.sport === view.sport && segment.timeBucket === view.time && segment.probBucket === view.prob;
-          return <td key={`${row.timeBucket}-${sport.probBuckets[index]}`}>{segment ? <button type="button" className={selected ? "ra-cell-selected" : undefined} aria-pressed={selected} aria-controls="ra-selected-segment" aria-label={`${sportLabel(sport.sport)} ${segmentLabel(segment)} ${selectedMetric}`} onClick={() => setView(current => ({ ...current, sport: segment.sport, time: segment.timeBucket, prob: segment.probBucket }))}>{metricText(segment, view.metric)}{selected && <span className="ra-selected-mark">Selected</span>}</button> : null}</td>;
+          const step = segment ? scaleStep(metricValue(segment, view.metric), metricMaximum) : 0;
+          return <td className={segment ? undefined : "ra-cell-missing"} key={`${row.timeBucket}-${sport.probBuckets[index]}`}>{segment ? <button type="button" className={`${selected ? "ra-cell-selected " : ""}ra-cell-seq-${step}`} aria-pressed={selected} aria-controls="ra-selected-segment" aria-label={`${sportLabel(sport.sport)} ${segmentLabel(segment)} ${selectedMetric}`} onClick={() => setView(current => ({ ...current, sport: segment.sport, time: segment.timeBucket, prob: segment.probBucket }))}>{metricText(segment, view.metric)}{selected && <span className="ra-selected-mark">Selected</span>}</button> : null}</td>;
         })}</tr>)}</tbody></table>
       </div>
       {selected && <Inspector segment={selected} />}

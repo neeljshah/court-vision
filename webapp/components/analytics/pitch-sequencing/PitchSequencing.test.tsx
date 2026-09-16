@@ -15,8 +15,16 @@ describe("PitchSequencing", () => {
 
   it("states masked rows and the published floor", () => {
     render(<PitchSequencing data={data} />);
+    expect(screen.getByTestId("pitch-sequencing-heatmap").querySelector(".ps-cell-missing")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /SL to FF: masked row/i }));
     expect(screen.getByText(/below the floor of 200 transitions/i)).toBeInTheDocument();
+  });
+
+  it("labels the shared probability scale and retains selected cells", () => {
+    render(<PitchSequencing data={data} />);
+    expect(screen.getByText(/Sequential scale: 0.0% to 30.0%/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "FF to SL: 30.0%" }));
+    expect(screen.getByTestId("pitch-sequencing-heatmap").querySelector(".ps-selected")).toBeInTheDocument();
   });
 
   it("retains the overlap explanation and unnormalized row note", () => {

@@ -18,23 +18,26 @@
 .ra-sport-head h2, .ra-inspector h2 { color: var(--ink); font-family: var(--font-display); font-size: 26px; font-weight: 500; line-height: 1.1; }
 .ra-sport-head dl, .ra-inspector dl { display: flex; gap: 20px; }
 .ra-sport-head dt, .ra-inspector dt { color: var(--ink-3); font-family: var(--font-mono); font-size: 10px; }
-.ra-sport-head dd, .ra-inspector dd { color: var(--ink); font-family: var(--font-mono); font-size: 14px; font-variant-numeric: tabular-nums; }
-.ra-grid-wrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: var(--radius-card); background: var(--paper-raised); }
+.ra-sport-head dd, .ra-inspector dd { color: var(--ink); font-family: var(--font-sans); font-size: 14px; font-variant-numeric: tabular-nums; }
+.ra-grid-wrap { max-height: 430px; overflow: auto; border: 1px solid var(--rule); border-radius: var(--radius-card); background: var(--paper-raised); }
 .ra-selected-view { display: grid; grid-template-columns: minmax(0, 1fr) minmax(250px, .44fr); align-items: start; gap: 16px; }
-.ra-grid { width: 100%; min-width: 680px; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.ra-scale-legend { margin: 12px 12px 0; color: var(--ink-2); font-size: 12px; line-height: 1.5; }
+.ra-grid { width: 100%; min-width: 680px; border-collapse: separate; border-spacing: 0; font-family: var(--font-sans); font-variant-numeric: tabular-nums; }
 .ra-grid caption { caption-side: top; padding: 0 0 10px; color: var(--ink-3); font-size: 12px; text-align: left; }
-.ra-grid th { background: var(--paper-tint); color: var(--ink-3); font-size: 11px; font-weight: 700; letter-spacing: .06em; padding: 10px 12px; text-align: left; }
+.ra-grid th { background: var(--paper-tint); color: var(--ink-3); font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: .06em; padding: 10px 12px; text-align: left; }
+.ra-grid thead th { position: sticky; top: 0; z-index: 2; }.ra-grid thead th:first-child { left: 0; z-index: 3; }.ra-grid tbody th { position: sticky; left: 0; z-index: 1; }
 .ra-grid td { width: 18%; min-width: 115px; height: 54px; border-top: 1px solid var(--rule); border-left: 1px solid var(--rule); padding: 5px; }
-.ra-grid button { width: 100%; min-height: 42px; border-radius: var(--radius-chip); font-family: var(--font-mono); font-size: 12px; font-variant-numeric: tabular-nums; }
+.ra-grid button { width: 100%; min-height: 42px; border-radius: var(--radius-chip); font-family: var(--font-sans); font-size: 12px; font-variant-numeric: tabular-nums; }
+.ra-cell-seq-0 { background: var(--chart-seq-low) !important; }.ra-cell-seq-1 { background: color-mix(in srgb, var(--chart-seq-low) 75%, var(--chart-seq-high)) !important; }.ra-cell-seq-2 { background: color-mix(in srgb, var(--chart-seq-low) 50%, var(--chart-seq-high)) !important; }.ra-cell-seq-3 { background: color-mix(in srgb, var(--chart-seq-low) 25%, var(--chart-seq-high)) !important; color: #FFFFFF !important; }.ra-cell-seq-4 { background: var(--chart-seq-high) !important; color: #FFFFFF !important; }.ra-cell-missing { background: var(--chart-missing); }
 .ra-grid button:hover, .ra-grid button:focus-visible { border-color: var(--accent); color: var(--accent); outline: 0; }
-.ra-grid button.ra-cell-selected { border: 2px solid var(--accent); background: var(--paper-tint); color: var(--ink); font-weight: 700; }
+.ra-grid button.ra-cell-selected { border: 2px solid var(--accent); font-weight: 700; }
 .ra-selected-mark { display: block; font-family: var(--font-sans); font-size: 9px; font-weight: 700; letter-spacing: .06em; line-height: 1; text-transform: uppercase; }
 .ra-rankings { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 16px; }
 .ra-rankings section { border-top: 1px solid var(--rule); padding-top: 10px; }
 .ra-rankings h3 { color: var(--ink); font-size: 13px; font-weight: 700; }
 .ra-rankings ol { margin: 8px 0 0 20px; color: var(--ink-2); font-size: 12px; }
 .ra-rankings li { display: flex; justify-content: space-between; gap: 12px; padding: 3px 0; }
-.ra-rankings strong { color: var(--ink); font-family: var(--font-mono); font-size: 11px; font-variant-numeric: tabular-nums; }
+.ra-rankings strong { color: var(--ink); font-family: var(--font-sans); font-size: 11px; font-variant-numeric: tabular-nums; }
 .ra-inspector { margin-top: 32px; padding: 20px 22px; border: 1px solid var(--rule-strong); border-radius: var(--radius-card); background: var(--paper-raised); }
 .ra-selected-view .ra-inspector { margin-top: 0; }
 .ra-inspector h2 { margin-top: 5px; }

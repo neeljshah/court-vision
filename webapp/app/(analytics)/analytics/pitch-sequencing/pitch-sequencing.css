@@ -13,7 +13,10 @@
 .ps-matrix { display: block; width: 100%; min-width: 724px; color: var(--ink-2); font-family: var(--font-mono); font-size: 11px; }
 .ps-axis { fill: var(--ink-2); font-size: 12px; }
 .ps-axis-label { fill: var(--ink-3); font-family: var(--font-sans); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.ps-scale-legend { margin: 14px 0 4px; color: var(--ink-2); font-size: 12px; line-height: 1.5; }
 .ps-cell { cursor: pointer; stroke: var(--paper-raised); stroke-width: 1; transition: stroke var(--dur-fast) var(--ease-ui), stroke-width var(--dur-fast) var(--ease-ui); }
+.ps-cell-seq-0, .ps-table-seq-0 { background: var(--chart-seq-low); fill: var(--chart-seq-low); }.ps-cell-seq-1, .ps-table-seq-1 { background: color-mix(in srgb, var(--chart-seq-low) 75%, var(--chart-seq-high)); fill: color-mix(in srgb, var(--chart-seq-low) 75%, var(--chart-seq-high)); }.ps-cell-seq-2, .ps-table-seq-2 { background: color-mix(in srgb, var(--chart-seq-low) 50%, var(--chart-seq-high)); fill: color-mix(in srgb, var(--chart-seq-low) 50%, var(--chart-seq-high)); }.ps-cell-seq-3, .ps-table-seq-3 { background: color-mix(in srgb, var(--chart-seq-low) 25%, var(--chart-seq-high)); fill: color-mix(in srgb, var(--chart-seq-low) 25%, var(--chart-seq-high)); }.ps-cell-seq-4, .ps-table-seq-4 { background: var(--chart-seq-high); fill: var(--chart-seq-high); }.ps-cell-missing, .ps-table-missing { background: var(--chart-missing); }
+.ps-value { fill: var(--ink); font-family: var(--font-sans); font-variant-numeric: tabular-nums; }.ps-value-seq-3, .ps-value-seq-4 { fill: #FFFFFF; }
 .ps-cell:hover, .ps-cell:focus { stroke: var(--accent); stroke-width: 2; }
 .ps-matrix g[role="button"]:focus .ps-cell { stroke: var(--accent); stroke-width: 2.5; }
 .ps-selected { stroke: var(--ink); stroke-width: 2.5; }
@@ -22,13 +25,13 @@
 .ps-detail p { margin-top: 8px; color: var(--ink-2); font-size: 14px; }
 .ps-detail dl { display: flex; flex-wrap: wrap; gap: 24px; margin-top: 14px; }
 .ps-detail dt { color: var(--ink-3); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
-.ps-detail dd { color: var(--ink); font-family: var(--font-mono); font-size: 15px; margin: 2px 0 0; }
-.ps-table-wrap { margin-top: 24px; overflow-x: auto; border: 1px solid var(--rule); border-radius: var(--radius-card); background: var(--paper-raised); }
-.ps-table { width: 100%; min-width: 620px; border-collapse: collapse; color: var(--ink-2); font-family: var(--font-mono); font-size: 12px; }
+.ps-detail dd { color: var(--ink); font-family: var(--font-sans); font-size: 15px; font-variant-numeric: tabular-nums; margin: 2px 0 0; }
+.ps-table-wrap { max-height: 430px; margin-top: 24px; overflow: auto; border: 1px solid var(--rule); border-radius: var(--radius-card); background: var(--paper-raised); }
+.ps-table { width: 100%; min-width: 620px; border-collapse: separate; border-spacing: 0; color: var(--ink-2); font-family: var(--font-sans); font-size: 12px; font-variant-numeric: tabular-nums; }
 .ps-table caption { padding: 14px 18px; color: var(--ink); font-family: var(--font-sans); font-size: 13px; font-weight: 700; text-align: left; }
 .ps-table th, .ps-table td { border-top: 1px solid var(--rule); padding: 10px 14px; text-align: right; white-space: nowrap; }
-.ps-table th { color: var(--ink-3); font-size: 11px; font-weight: 700; }
-.ps-table th:first-child { text-align: left; }
+.ps-table th { background: var(--paper-raised); color: var(--ink-3); font-size: 11px; font-weight: 700; }
+.ps-table thead th { position: sticky; top: 0; z-index: 2; }.ps-table th:first-child { text-align: left; font-family: var(--font-mono); }.ps-table thead th:first-child { left: 0; z-index: 3; }.ps-table tbody th { position: sticky; left: 0; z-index: 1; }
 .ps-table td[aria-label*="masked row"] { color: var(--ink-3); font-family: var(--font-sans); font-style: italic; }
 .ps-table td button { border: 0; background: transparent; color: inherit; cursor: pointer; font: inherit; text-align: inherit; }
 .ps-table td button[aria-pressed="true"] { color: var(--accent); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }

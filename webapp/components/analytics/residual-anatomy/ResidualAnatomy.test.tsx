@@ -30,6 +30,8 @@ describe("ResidualAnatomy", () => {
     render(<ResidualAnatomy data={data} />);
     expect(screen.getByRole("region", { name: "MLB residual grid" })).toBeInTheDocument();
     expect(screen.getByRole("region", { name: "International soccer residual grid" })).toBeInTheDocument();
+    expect(screen.getAllByText(/Sequential scale: 0 to/i)).toHaveLength(data.sports.length);
+    expect(screen.getByRole("region", { name: "MLB residual grid" }).querySelector(".ra-cell-missing")).toBeInTheDocument();
     expect(screen.getByText("12")).toBeInTheDocument();
     expect(screen.getByText("3")).toBeInTheDocument();
   });
@@ -51,6 +53,7 @@ describe("ResidualAnatomy", () => {
     expect(initial).toHaveAttribute("aria-pressed", "false");
     expect(selected).toHaveAttribute("aria-pressed", "true");
     expect(selected).toHaveAttribute("aria-controls", "ra-selected-segment");
+    expect(selected).toHaveClass("ra-cell-selected");
     expect(selected).toHaveTextContent("Selected");
     const inspector = screen.getByLabelText("Selected residual segment");
     expect(within(inspector).getByText("1")).toBeInTheDocument();
