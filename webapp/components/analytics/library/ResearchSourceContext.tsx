@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { sourceUrl } from "@/lib/analytics/dashboardTypes";
+import { base, sourceUrl } from "@/lib/analytics/dashboardTypes";
+import { resolveResearchSourceDestination } from "@/lib/analytics/researchSourceDestinations";
 import type { ResearchField, ResearchSource } from "@/lib/analytics/researchTypes";
 
 type SourceDocument = Record<string, unknown>;
@@ -49,6 +50,21 @@ function sourceFields(source: ResearchSource, fields: ResearchField[]): string[]
   return keys.map(key => fields.find(field => field.key === key)?.label || key);
 }
 
+export function sourceHref(id: string): string {
+  return resolveResearchSourceDestination(id).href;
+}
+
+function rowWindow(source: ResearchSource, fields: ResearchField[]): string {
+  const keys = source.fields || fields.filter(field => field.sourceId === source.id).map(field => field.key);
+  const labels = keys.flatMap(key => {
+    const windows = source.rowWindows?.[key] || [];
+    if (!windows.length) return [];
+    const label = fields.find(field => field.key === key)?.label || key;
+    return [`${label}: ${[...new Set(windows)].join(", ")}`];
+  });
+  return labels.join("; ") || "not recorded";
+}
+
 export function ResearchSourceContext({ sources, fields }: { sources?: ResearchSource[]; fields: ResearchField[] }) {
   const [periods, setPeriods] = useState<Record<string, string | null>>({});
   useEffect(() => {
@@ -65,16 +81,21 @@ export function ResearchSourceContext({ sources, fields }: { sources?: ResearchS
   if (!sources?.length) return null;
   return <section aria-label="Source context" style={{ borderTop: "1px solid var(--rule)", borderBottom: "1px solid var(--rule)", padding: "14px 0", marginBottom: 18 }}>
     <p className="cv-eyebrow">Source context</p>
-    <p className="cv-muted" style={{ margin: "4px 0 10px" }}>Snapshot dates and observation periods are reported separately because the contributing modules do not share one window.</p>
+    <p className="cv-muted" style={{ margin: "4px 0 10px" }}>Snapshot dates, source coverage, and selected row windows are reported separately because contributing modules do not share one window.</p>
     <ul style={{ listStyle: "none", display: "grid", gap: 10 }}>
-      {sources.map(source => <li key={source.id} style={{ display: "grid", gap: 2 }}>
-        {source.id.endsWith("_manifest")
-          ? <a href={sourceUrl(source.id)} target="_blank" rel="noreferrer" style={{ fontFamily: "var(--font-mono)", fontSize: 12 }}>{source.id}</a>
-          : <Link href={`/analytics/m/${source.id}`} style={{ fontFamily: "var(--font-mono)", fontSize: 12 }}>{source.id}</Link>}
+      {sources.map(source => {
+        const destination = resolveResearchSourceDestination(source.id);
+        const link = destination.kind === "json"
+          ? <a href={`${base}${destination.href}`} style={{ fontFamily: "var(--font-mono)", fontSize: 12 }}>{source.id}</a>
+          : <Link href={destination.href} style={{ fontFamily: "var(--font-mono)", fontSize: 12 }}>{source.id}</Link>;
+        return <li key={source.id} style={{ display: "grid", gap: 2 }}>
+        {link}
         <span className="cv-muted" style={{ fontSize: 13 }}>Snapshot date: {source.asOf || "not recorded"}</span>
-        <span className="cv-muted" style={{ fontSize: 13 }}>Observation period: {periods[source.id] || "not recorded"}</span>
+        <span className="cv-muted" style={{ fontSize: 13 }}>Source coverage: {periods[source.id] || "not recorded"}</span>
+        <span className="cv-muted" style={{ fontSize: 13 }}>Row window: {rowWindow(source, fields)}</span>
         <span className="cv-muted" style={{ fontSize: 13 }}>Feeds: {sourceFields(source, fields).join(", ") || "no measurements recorded"}</span>
-      </li>)}
+      </li>;
+      })}
     </ul>
   </section>;
 }
