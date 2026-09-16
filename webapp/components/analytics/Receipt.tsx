@@ -7,6 +7,7 @@
 // standalone /analytics/method page in the spec was never built).
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import Link from "next/link";
+import { artifactUrl, provenanceDate } from "@/lib/analytics/artifactProvenance";
 import { VerdictDot, type Verdict } from "./VerdictDot";
 
 export interface ReceiptData {
@@ -97,7 +98,8 @@ export function Receipt(r: ReceiptData) {
     return () => document.removeEventListener("pointerdown", onDown);
   }, [open]);
   // Quiet resting token: prefer as_of, else value, else the artifact basename.
-  const resting = r.asOf || r.value || basename(r.sourceArtifact);
+  const resting = r.asOf ? provenanceDate(r.asOf) : r.value || basename(r.sourceArtifact);
+  const sourceHref = artifactUrl(r.sourceArtifact);
   const dashed = r.verdict === "not_testable";
 
   // ponytail: decide the anchor side/vertical from the trigger's viewport rect on
@@ -187,10 +189,14 @@ export function Receipt(r: ReceiptData) {
               {r.corpus || ""}
             </span>
           ) : null}
-          <span style={path}>{r.sourceArtifact}</span>
-          {r.asOf ? (
-            <span style={{ ...path, marginTop: 2 }}>as_of {r.asOf}</span>
-          ) : null}
+          {sourceHref ? (
+            <a href={sourceHref} download style={path}>
+              {r.sourceArtifact}
+            </a>
+          ) : (
+            <span style={path}>{r.sourceArtifact} (not published)</span>
+          )}
+          <span style={{ ...path, marginTop: 2 }}>{provenanceDate(r.asOf)}</span>
           <Link
             href="/analytics/the-loop"
             style={{

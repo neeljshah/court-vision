@@ -5,12 +5,12 @@
 // prior-art verdict chip, the declared-confound count, and the receipt (source
 // artifact + as_of). Every number is lifted verbatim from the committed artifact --
 // nothing is computed here beyond picking which row leads the card. Descriptive
-// only, edge_claimed:false on every stat. ASCII only.
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { windowText } from "@/components/analytics/NovelStatPanel";
+import { artifactUrl, provenanceDate } from "@/lib/analytics/artifactProvenance";
 
 export const metadata: Metadata = {
   title: "Experimental measurements",
@@ -60,13 +60,11 @@ interface Lead {
   unit: string;
   caption: string;
   // The window the leading ROW was measured over, when the row carries its own
-  // (per-sport windows differ). Falls back to the artifact's window at render.
   window?: string;
 }
 
 // One picker per stat: which committed row leads the card. Values are printed as
 // they sit in the artifact (no rounding, no re-derivation) -- only the choice of
-// row is made here, and each caption names the row it came from.
 function leadOf(mod: string, d: Novel): Lead | null {
   const rows = (Array.isArray(d.results) ? d.results : []) as Row[];
   const top = (score: (r: Row) => number): Row | null =>
@@ -80,7 +78,6 @@ function leadOf(mod: string, d: Novel): Lead | null {
     return {
       value: s(r.half_life_label),
       unit: "hours before tip",
-      // The n sits INSIDE a short capture window; the two are printed together so
       // a six-figure count is never read as a season of history.
       caption: `${s(r.sport)} -- half of all pre-game line motion is complete by then; n=${n0(r.n_move_pairs)} move pairs ${w}, final-hour share ${s(r.final_hour_movement_share)}`,
       window: w,
@@ -138,8 +135,15 @@ function leadOf(mod: string, d: Novel): Lead | null {
   return null;
 }
 
-const asOfOf = (d: Novel, fallback: string) =>
-  typeof d.as_of === "string" && d.as_of ? d.as_of : fallback;
+function estimatorWindows(d: Novel): Array<[string, string]> {
+  if (!d.as_of || typeof d.as_of !== "object" || Array.isArray(d.as_of)) return [];
+  return Object.entries(d.as_of as Record<string, unknown>)
+    .filter(([, value]) => typeof value === "string" && value.length > 0)
+    .map(([key, value]) => [`${key.replace(/_/g, " ").replace(/\b\w/g, char => char.toUpperCase())}`, provenanceDate(value as string, "observation_window")]);
+}
+
+const snapshotDate = (d: Novel, fallback: string) =>
+  provenanceDate(typeof d.as_of === "string" ? d.as_of : fallback);
 
 const GATE: Array<[string, string]> = [
   ["Prior-art search", "The definition is searched against the published literature and the public analytics canon before anything is built. The verdict is written down even when it is unflattering -- INCREMENTAL means someone got most of the way here first, and the card says so."],
@@ -156,7 +160,7 @@ export default function NovelStatsPage() {
 
   const cards = stats.map((c) => {
     const d = readJson<Novel>(`${c.module}.json`) || {};
-    return { c, d, lead: leadOf(c.module, d), asOf: asOfOf(d, stamp) };
+    return { c, d, lead: leadOf(c.module, d), snapshot: snapshotDate(d, stamp), estimators: estimatorWindows(d) };
   });
 
   return (
@@ -175,7 +179,7 @@ export default function NovelStatsPage() {
       </p>
 
       <div className="nv-grid">
-        {cards.map(({ c, d, lead, asOf }, i) => (
+        {cards.map(({ c, d, lead, snapshot, estimators }, i) => (
           <article key={c.module} className={`nv-card${c.is_honest_null ? " is-null" : ""}`}>
             <div className="nv-top">
               <span className="mono nv-n">{String(i + 1).padStart(2, "0")}</span>
@@ -212,9 +216,10 @@ export default function NovelStatsPage() {
             <div className="nv-foot">
               <div className="mono nv-src">
                 {(c.source_artifacts || []).map((p) => (
-                  <div key={p}>{baseName(p)}</div>
+                  artifactUrl(p) ? <a key={p} href={artifactUrl(p) || undefined} download>{baseName(p)}</a> : <div key={p}>{baseName(p)} (not published)</div>
                 ))}
-                <div className="nv-asof">as of {asOf}</div>
+                <div className="nv-asof">{snapshot}</div>
+                {estimators.map(([label, value]) => <div className="nv-asof" key={label}>{label}: {value}</div>)}
                 {d.declared_confounds?.length ? (
                   <div className="nv-asof">{d.declared_confounds.length} confounds declared</div>
                 ) : null}

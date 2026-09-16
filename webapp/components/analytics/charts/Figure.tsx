@@ -5,6 +5,7 @@
 // Franklin 600 (serif is reserved for editorial headings, DESIGN Sec.11).
 
 import type { ReactNode, CSSProperties } from "react";
+import { artifactUrl, provenanceDate } from "@/lib/analytics/artifactProvenance";
 import { verdictColor } from "./scale";
 
 export interface FigureProps {
@@ -64,6 +65,7 @@ export function Figure({
   verdict,
   meta,
 }: FigureProps) {
+  const sourceHref = artifactUrl(source);
   return (
     <figure style={{ margin: 0, width: "100%", maxWidth: "100%" }}>
       {eyebrow && (
@@ -138,11 +140,11 @@ export function Figure({
             }}
           />
         )}
-        <span>{source}</span>
+        {sourceHref ? <a href={sourceHref} download>{source}</a> : <span>{source} (not published)</span>}
         <span aria-hidden style={{ color: "var(--rule-strong)" }}>
           &middot;
         </span>
-        <span>{asOf}</span>
+        <span>{provenanceDate(asOf)}</span>
         {meta && (
           <>
             <span aria-hidden style={{ color: "var(--rule-strong)" }}>

@@ -25,4 +25,9 @@ describe("ModuleDetail", () => {
     render(<ModuleDetail mod={{ ...mod, chart_path: undefined }} out={out} subtitle="When a lead becomes permanent." insight={null} />);
     expect(screen.getByText("This source has no chart. Its cited measurements appear below.")).toBeInTheDocument();
   });
+
+  it("states when a module date is not published", () => {
+    render(<ModuleDetail mod={{ ...mod, as_of: null as unknown as string }} out={out} subtitle="When a lead becomes permanent." insight={null} />);
+    expect(screen.getAllByText(/date not published/).length).toBeGreaterThan(0);
+  });
 });
