@@ -13,6 +13,7 @@ const REFERENCES: ResearchReference[] = [{
 const finite = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value);
 const record = (value: unknown): Entry => value && typeof value === "object" && !Array.isArray(value) ? value as Entry : {};
 const text = (value: unknown): string => typeof value === "string" ? value.trim() : "";
+const sourced = (sourceId: string, key: string, label: string, unit: "number" | "percent" | "pp", digits: number) => ({ ...f(key, label, unit, digits), sourceId });
 const TEAM_ALIASES: Record<string, string> = { BRK: "BKN", GS: "GSW", NO: "NOP", PHO: "PHX", SA: "SAS" };
 
 function teamKey(value: unknown): string {
@@ -124,11 +125,11 @@ function buildRows(source: TeamProfileSources): { rows: ResearchRow[]; coverage:
 export function buildNbaTeamProfileResearch(source: TeamProfileSources): ResearchAnalysis[] {
   const built = buildRows(source || {} as TeamProfileSources);
   const sources: ResearchSource[] = [
-    { id: "atlas_nba_teams_manifest", asOf: firstAsOf(record(source?.atlas)) },
-    { id: "novel_load_bearing_index", asOf: `estimator A ${asOf(record(source?.loadBearing).as_of && record(record(source.loadBearing).as_of).estimator_a)}; estimator B ${asOf(record(source?.loadBearing).as_of && record(record(source.loadBearing).as_of).estimator_b)}` },
-    { id: "novel_schedule_fatigue_tax", asOf: "not published" },
-    { id: "schedule_density", asOf: "not published; 2023-24 team-season rows" },
-    { id: "ctx_team_states", asOf: asOf(record(source?.states).as_of) },
+    { id: "atlas_nba_teams_manifest", asOf: firstAsOf(record(source?.atlas)), fields: ["pace_proxy", "points_per_game"] },
+    { id: "novel_load_bearing_index", asOf: "not published", fields: ["fragility_delta_estimator_a", "fragility_delta_estimator_b"] },
+    { id: "novel_schedule_fatigue_tax", asOf: "not published", fields: ["fatigue_tax_pts_per100"] },
+    { id: "schedule_density", asOf: "not published", fields: ["back_to_back_share"] },
+    { id: "ctx_team_states", asOf: asOf(record(source?.states).as_of), fields: ["halftime_games", "front_runner_second_half_margin", "comeback_second_half_margin"] },
   ];
   return [{
     id: "nba-team-profile-pace-fragility-fatigue-halftime",
@@ -143,7 +144,7 @@ export function buildNbaTeamProfileResearch(source: TeamProfileSources): Researc
     scope: `${built.rows.length} atlas teams. Sources: ${sources.map(item => `${item.id} (as of ${item.asOf})`).join("; ")}.`,
     caveat: `Join coverage: ${built.coverage}. The team atlas does not publish a defensive-identity numeric field, and the halftime source does not publish a mean halftime-margin field; its flagged front-runner and comeback second-half margins are retained with game counts instead. These modules use different windows and methods, so their values are not a common scale or a team ranking.`,
     status: "Descriptive cross-module profile",
-    fields: [f("pace_proxy", "Pace proxy", "number", 1), f("points_per_game", "Points per game", "number", 1), f("fragility_delta_estimator_a", "Fragility delta, estimator A", "pp", 2), f("fragility_delta_estimator_b", "Fragility delta, estimator B", "pp", 2), f("fatigue_tax_pts_per100", "Fatigue tax, points per 100", "number", 3), f("back_to_back_share", "Back-to-back share", "percent", 1), f("halftime_games", "Halftime-state games", "number", 0), f("front_runner_second_half_margin", "Front-runner second-half margin", "number", 2), f("comeback_second_half_margin", "Comeback second-half margin", "number", 2)],
+    fields: [sourced("atlas_nba_teams_manifest", "pace_proxy", "Pace proxy", "number", 1), sourced("atlas_nba_teams_manifest", "points_per_game", "Points per game", "number", 1), sourced("novel_load_bearing_index", "fragility_delta_estimator_a", "Fragility delta, estimator A", "pp", 2), sourced("novel_load_bearing_index", "fragility_delta_estimator_b", "Fragility delta, estimator B", "pp", 2), sourced("novel_schedule_fatigue_tax", "fatigue_tax_pts_per100", "Fatigue tax, points per 100", "number", 3), sourced("schedule_density", "back_to_back_share", "Back-to-back share", "percent", 1), sourced("ctx_team_states", "halftime_games", "Halftime-state games", "number", 0), sourced("ctx_team_states", "front_runner_second_half_margin", "Front-runner second-half margin", "number", 2), sourced("ctx_team_states", "comeback_second_half_margin", "Comeback second-half margin", "number", 2)],
     rows: built.rows,
     formula: "pace_proxy, points_per_game, fragility_delta_estimator_a, fragility_delta_estimator_b, fatigue_tax_pts_per100, back_to_back_share, halftime_games, front_runner_second_half_margin, and comeback_second_half_margin are copied from their named source fields; no values are combined or rescaled.",
     bindings: [

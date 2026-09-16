@@ -13,6 +13,7 @@ const REFERENCES: ResearchReference[] = [{
 const finite = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value);
 const record = (value: unknown): Entry => value && typeof value === "object" && !Array.isArray(value) ? value as Entry : {};
 const text = (value: unknown): string => typeof value === "string" ? value.trim() : "";
+const sourced = (sourceId: string, key: string, label: string, unit: "number" | "pp", digits: number) => ({ ...f(key, label, unit, digits), sourceId });
 const playerKey = (value: unknown): string => text(value).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
 const numberAt = (value: unknown, key: string): number | null => finite(record(value)[key]) ? record(value)[key] as number : null;
 const atlasAsOf = (source: Entry | undefined): string => {
@@ -101,7 +102,7 @@ export function buildNbaPlayerContextResearch(source: PlayerContextSources): Res
   const sourceCoverage = [...sourceTotals].map(([module, total]) => coverage(module, selected, total)).join("; ");
   const excludedNames = allCells.filter(cell => cell.modules.size === 1 && !cell.modules.has("atlas_nba_manifest")).map(cell => cell.name).sort((left, right) => left.localeCompare(right));
   const sources: ResearchSource[] = [
-    { id: "nba_consistency_profiles", asOf: text(source?.consistency?.as_of) || "not published" }, { id: "nba_q4_shift", asOf: text(source?.q4?.generated_at) || "not published" }, { id: "ctx_player_splits", asOf: "not published" }, { id: "on_off_showcase", asOf: "not published" }, { id: "atlas_nba_manifest", asOf: atlasAsOf(source?.atlas) },
+    { id: "nba_consistency_profiles", asOf: text(source?.consistency?.as_of) || "not published", fields: ["consistency_cv"] }, { id: "nba_q4_shift", asOf: text(source?.q4?.generated_at) || "not published", fields: ["q4_points_shift", "q4_rebounds_shift", "q4_assists_shift"] }, { id: "ctx_player_splits", asOf: "not published", fields: ["context_sensitivity", "home_away_ts_difference"] }, { id: "on_off_showcase", asOf: "not published", fields: ["net_rating_delta"] }, { id: "atlas_nba_manifest", asOf: atlasAsOf(source?.atlas), fields: ["career_points_per36", "career_rebounds_per36", "career_assists_per36"] },
   ];
   return [{
     id: "nba-player-context-consistency-q4-venue-onoff",
@@ -116,7 +117,7 @@ export function buildNbaPlayerContextResearch(source: PlayerContextSources): Res
     scope: `${rows.length} player names from at least ${minimumSources} published sources. Sources: ${sources.map(item => `${item.id} (as of ${item.asOf})`).join("; ")}.`,
     caveat: `The three-source join produced ${threeSourceRows.length} names, below the 40-row floor, so this analysis uses a two-source join. Join coverage among retained names: ${sourceCoverage}. Source-only names excluded from the join: ${excludedNames.join(", ") || "none"}. No alias map was needed; source windows, populations, and definitions differ.`,
     status: "Descriptive cross-module profile",
-    fields: [f("consistency_cv", "Consistency CV", "number", 4), f("q4_points_shift", "Q4 points shift per 36", "number", 2), f("q4_rebounds_shift", "Q4 rebounds shift per 36", "number", 2), f("q4_assists_shift", "Q4 assists shift per 36", "number", 2), f("context_sensitivity", "Context sensitivity", "number", 4), f("home_away_ts_difference", "Home minus away true-shooting difference", "pp", 2), f("net_rating_delta", "Net rating delta", "number", 3), f("career_points_per36", "Career points per 36", "number", 1), f("career_rebounds_per36", "Career rebounds per 36", "number", 1), f("career_assists_per36", "Career assists per 36", "number", 1)],
+    fields: [sourced("nba_consistency_profiles", "consistency_cv", "Consistency CV", "number", 4), sourced("nba_q4_shift", "q4_points_shift", "Q4 points shift per 36", "number", 2), sourced("nba_q4_shift", "q4_rebounds_shift", "Q4 rebounds shift per 36", "number", 2), sourced("nba_q4_shift", "q4_assists_shift", "Q4 assists shift per 36", "number", 2), sourced("ctx_player_splits", "context_sensitivity", "Context sensitivity", "number", 4), sourced("ctx_player_splits", "home_away_ts_difference", "Home minus away true-shooting difference", "pp", 2), sourced("on_off_showcase", "net_rating_delta", "Net rating delta", "number", 3), sourced("atlas_nba_manifest", "career_points_per36", "Career points per 36", "number", 1), sourced("atlas_nba_manifest", "career_rebounds_per36", "Career rebounds per 36", "number", 1), sourced("atlas_nba_manifest", "career_assists_per36", "Career assists per 36", "number", 1)],
     rows,
     formula: "consistency_cv, q4_points_shift, q4_rebounds_shift, q4_assists_shift, context_sensitivity, home_away_ts_difference, net_rating_delta, career_points_per36, career_rebounds_per36, and career_assists_per36 are copied from their named source fields. Q4 shifts are published Q4 minus Q1-Q3 values.",
     bindings: [

@@ -21,6 +21,9 @@ describe("NBA team profile research", () => {
     expect(row.sourcePaths).toContain("novel_load_bearing_index.results[].estimator_a_elo_onoff.delta_winprob");
     expect(row.href).toBe("/analytics/players/nba_teams/brooklyn");
     expect(buildNbaTeamProfileResearch(source())[0].bindings?.every(binding => binding.valueKey in row.values)).toBe(true);
+    const analysis = buildNbaTeamProfileResearch(source())[0];
+    expect(analysis.fields.find(field => field.key === "fatigue_tax_pts_per100")?.sourceId).toBe("novel_schedule_fatigue_tax");
+    expect(analysis.sources?.find(item => item.id === "schedule_density")?.fields).toEqual(["back_to_back_share"]);
   });
 
   it("reports unmatched keys without removing atlas teams", () => {

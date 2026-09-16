@@ -21,6 +21,9 @@ describe("NBA player context research", () => {
     expect(row.sourcePaths).toContain("ctx_player_splits.players[].context_sensitivity_score");
     expect(row.href).toBe("/analytics/players/nba_players/bravo");
     expect(buildNbaPlayerContextResearch(source())[0].bindings?.every(binding => binding.valueKey in row.values)).toBe(true);
+    const analysis = buildNbaPlayerContextResearch(source())[0];
+    expect(analysis.fields.find(field => field.key === "q4_points_shift")?.sourceId).toBe("nba_q4_shift");
+    expect(analysis.sources?.find(item => item.id === "on_off_showcase")?.fields).toEqual(["net_rating_delta"]);
   });
 
   it("reports a source-only player instead of silently adding it", () => {

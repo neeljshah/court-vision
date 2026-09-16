@@ -19,6 +19,7 @@ import { ScoutNote, type ScoutEnvelope } from "@/components/analytics/ScoutNote"
 import { ScoutQuestions } from "@/components/analytics/ScoutQuestions";
 import { asOfDate } from "@/lib/analytics/format";
 import { entityMeasurements, type EntityPercentilePack } from "@/lib/analytics/entityMeasurements";
+import { entityObservationContext } from "@/lib/analytics/entityObservationContext";
 import { packComparables, packJoins, packPercentiles } from "@/lib/analytics/showcaseData";
 
 type KN = Record<string, unknown>;
@@ -32,7 +33,7 @@ type Insight = {
 
 type Pack = { slug: string; manifest: string; label: string; sport: string; noun: string; related: string[] };
 const PACKS: Pack[] = [
-  { slug: "nba_players", manifest: "atlas_nba_manifest.json", label: "NBA players", sport: "NBA", noun: "career per-36 rates", related: ["player_metric_landscape", "nba_consistency_profiles", "aging_curve_lite"] },
+  { slug: "nba_players", manifest: "atlas_nba_manifest.json", label: "NBA players", sport: "NBA", noun: "measured per-36 rates", related: ["player_metric_landscape", "nba_consistency_profiles", "aging_curve_lite"] },
   { slug: "nba_teams", manifest: "atlas_nba_teams_manifest.json", label: "NBA teams", sport: "NBA", noun: "measured team rates", related: ["home_away_anatomy", "blowout_dynamics", "on_off_showcase"] },
   { slug: "mlb_batters", manifest: "atlas_mlb_batters_manifest.json", label: "MLB batters", sport: "MLB", noun: "measured plate-discipline and contact rates", related: ["statcast_showcase", "mlb_velo_bands"] },
   { slug: "mlb_pitch", manifest: "atlas_mlb_pitch_manifest.json", label: "MLB pitch types", sport: "MLB", noun: "measured pitch-level distributions", related: ["pitch_sequencing", "mlb_count_leverage"] },
@@ -154,6 +155,7 @@ export default function EntityPage({ params }: { params: { pack: string; slug: s
   // Machine timestamps (tennis cards carry ISO "2026-07-19T03:41:37...+00:00")
   // collapse to a clean date; descriptive labels pass through.
   const asOf = asOfDate(insight?.as_of || entry.as_of) || null;
+  const observationContext = entityObservationContext(params.pack, entry);
   const pctPack = packPercentiles(params.pack) as unknown as EntityPercentilePack | null;
   const measurements = entityMeasurements(params.pack, entry, params.slug, pctPack);
   // entity_joins.json: only nba_teams/nba_players carry any; 137 of 482 player cards legitimately have none.
@@ -204,6 +206,7 @@ export default function EntityPage({ params }: { params: { pack: string; slug: s
         <div className="overline">{pack.label} &middot; {pack.sport}{asOf ? ` \u00B7 as of ${asOf}` : ""}</div>
         <h1 className="serif" style={{ fontWeight: 500, fontSize: "clamp(2.4rem,5vw,3.4rem)", lineHeight: 1.05, letterSpacing: "-.02em", marginTop: 4 }}>{name}</h1>
         <div style={{ color: "var(--ink-2)", marginTop: 6, fontSize: 15 }}>Descriptive card &middot; conservative measured rates.</div>
+        {observationContext ? <p className="mono" style={{ color: "var(--ink-3)", marginTop: 8, fontSize: 12 }}>{observationContext}</p> : null}
       </header>
 
       <div style={{ display: "flex", flexWrap: "wrap", gap: 40, alignItems: "flex-start" }}>

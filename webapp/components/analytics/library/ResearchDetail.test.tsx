@@ -14,6 +14,11 @@ beforeEach(() => window.history.replaceState(null, "", "/analytics/research/nba-
 afterEach(() => vi.restoreAllMocks());
 
 describe("ResearchDetail", () => {
+  it("does not render source context for analyses without recorded sources", () => {
+    render(<ResearchDetail analysis={analysis} related={[]} />);
+    expect(screen.queryByLabelText("Source context")).not.toBeInTheDocument();
+  });
+
   it("exposes link-sharing updates through a polite live region without a second status role", () => {
     const { container } = render(<ResearchDetail analysis={analysis} related={[]} />);
     expect(container.querySelectorAll('.research-view-actions [aria-live="polite"]')).toHaveLength(1);

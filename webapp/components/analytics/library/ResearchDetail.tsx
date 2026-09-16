@@ -11,6 +11,7 @@ import { useResearchView } from "./useResearchView";
 import { LabTable, exportLabCSV } from "@/components/analytics/lab/LabTable";
 import { ResearchProvenance } from "./ResearchProvenance";
 import { MeasurementPosition } from "../lab/MeasurementPosition";
+import { ResearchSourceContext } from "./ResearchSourceContext";
 
 export default function ResearchDetail({ analysis: a, related }: { analysis: ResearchAnalysis; related: { id: string; title: string }[] }) {
   const { state, change, reset } = useResearchView(a);
@@ -35,8 +36,9 @@ export default function ResearchDetail({ analysis: a, related }: { analysis: Res
   };
   return <div className="cv-workspace research-page"><div className="cv-workspace-inner">
     <Link className="research-back" href={`/analytics/browse/?sport=${a.sport}&kind=derived`}><ArrowLeft size={15} /> Analytics library</Link>
-    <header className="research-heading"><p className="cv-eyebrow">{a.sport === "all" ? "Cross-sport" : a.sport.toUpperCase()} / {a.category}</p><h1>{a.title}</h1><p>{a.description}</p><div className="research-tags"><span>{a.novelty}</span><span>{a.rows.length} published rows</span><span>{a.fields.length} fields</span><span>{a.asOf ? `Source as of ${a.asOf.slice(0, 10)}` : "Date varies or is unrecorded; see scope"}</span></div></header>
+    <header className="research-heading"><p className="cv-eyebrow">{a.sport === "all" ? "Cross-sport" : a.sport.toUpperCase()} / {a.category}</p><h1>{a.title}</h1><p>{a.description}</p><div className="research-tags"><span>{a.novelty}</span><span>{a.rows.length} published rows</span><span>{a.fields.length} fields</span><span>{a.sources?.length ? "Source dates and observation windows below" : a.asOf ? `Source as of ${a.asOf.slice(0, 10)}` : "Date varies or is unrecorded; see scope"}</span></div></header>
     <div className="research-layout"><section className="cv-panel research-measurements" aria-label="Interactive analysis">
+      <ResearchSourceContext sources={a.sources} fields={a.fields} />
       <div className="research-panel-title"><div><p className="cv-eyebrow">Published measurements</p><h2>Choose a measurement</h2></div><button className="lab-export" disabled={!rows.length} onClick={() => exportLabCSV(a, rows)}><Download size={14} /> Export CSV</button></div>
       <div className="lab-controls"><label className="lab-field-label lab-primary-field">Measurement<select value={metric} onChange={e => change({ metric: e.target.value })}>{a.fields.map(f => <option key={f.key} value={f.key}>{f.label}</option>)}</select></label><label className="lab-field-label">Population<select value={group} onChange={e => change({ group: e.target.value, row: "" })}><option value="all">All published groups</option>{groups.map(g => <option key={g}>{g}</option>)}</select></label><label className="lab-field-label">Order<select value={ascending ? "asc" : "desc"} onChange={e => change({ ascending: e.target.value === "asc" })}><option value="desc">Highest first</option><option value="asc">Lowest first</option></select></label></div>
       <div className="research-chart-toolbar"><div className="cv-segment">{[["rank", "Ranked bars"], ["scatter", "Scatter plot"], ["table", "Data table"], ["distribution", "Distribution"]].map(([id, label]) => <button key={id} aria-pressed={view === id} onClick={() => change({ view: id })}>{label}</button>)}</div><label className="research-search"><Search size={14} /><span className="sr-only">Search analysis rows</span><input value={query} placeholder={a.id.includes("matchup") ? "Find a team or pairing" : "Find a row"} onChange={e => change({ query: e.target.value, row: "" })} /></label></div>

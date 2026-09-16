@@ -1,7 +1,8 @@
-import type { LabDataset } from "./labTypes";
+import type { LabDataset, LabField } from "./labTypes";
 
 export type ResearchReference = { title: string; url: string };
-export type ResearchSource = { id: string; asOf: string };
+export type ResearchSource = { id: string; asOf: string; fields?: string[] };
+export type ResearchField = LabField & { sourceId?: string };
 export type ResearchOperandBinding = { operand: string; sourcePath: string; valueKey: string; label: string };
 export type ResearchOperandValue = number | string | null;
 export type ResearchRow = LabDataset["rows"][number] & {
@@ -9,7 +10,8 @@ export type ResearchRow = LabDataset["rows"][number] & {
   href?: string;
   bindingValues?: Record<string, ResearchOperandValue>;
 };
-export type ResearchAnalysis = Omit<LabDataset, "rows"> & {
+export type ResearchAnalysis = Omit<LabDataset, "rows" | "fields"> & {
+  fields: ResearchField[];
   rows: ResearchRow[];
   question?: string;
   method?: string;
