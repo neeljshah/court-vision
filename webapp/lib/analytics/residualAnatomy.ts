@@ -67,12 +67,30 @@ function unique(values: string[]): string[] {
   return Array.from(new Set(values));
 }
 
+type ProbabilityInterval = { lower: number; upper: number };
+
+function probabilityInterval(label: string): ProbabilityInterval | null {
+  const match = label.match(/^\s*(\d+(?:\.\d+)?|\.\d+)\s*-\s*(\d+(?:\.\d+)?|\.\d+)\s*$/);
+  if (!match) return null;
+  const lower = Number(match[1]), upper = Number(match[2]);
+  return Number.isFinite(lower) && Number.isFinite(upper) && lower >= 0 && lower < upper && upper <= 1 ? { lower, upper } : null;
+}
+
+function orderedProbabilityBuckets(buckets: string[]): string[] {
+  return buckets.map((label, index) => ({ label, index, interval: probabilityInterval(label) })).sort((left, right) => {
+    if (left.interval && right.interval) return left.interval.lower - right.interval.lower || left.interval.upper - right.interval.upper || left.index - right.index;
+    if (left.interval) return -1;
+    if (right.interval) return 1;
+    return left.index - right.index;
+  }).map(item => item.label);
+}
+
 function buildSport(sport: string, value: unknown): ResidualSport | null {
   const raw = record(value);
   if (!raw) return null;
   const segments = Array.isArray(raw.segments) ? raw.segments.map(segmentFrom).filter((item): item is ResidualSegment => item !== null) : [];
   const timeBuckets = unique(segments.map(item => item.timeBucket));
-  const probBuckets = unique(segments.map(item => item.probBucket));
+  const probBuckets = orderedProbabilityBuckets(unique(segments.map(item => item.probBucket)));
   const lookup = new Map(segments.map(item => [`${item.timeBucket}\u0000${item.probBucket}`, item]));
   const grid = timeBuckets.map(timeBucket => ({
     timeBucket,

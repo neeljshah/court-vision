@@ -53,6 +53,7 @@ jobs:
           npx vitest run lib/analytics/measurementPosition.test.ts
           npx vitest run lib/analytics/measurementCoverage.test.ts
           npx vitest run lib/analytics/scatterSummary.test.ts
+          npx vitest run lib/analytics/residualAnatomy.test.ts
           npx vitest run lib/analytics/labComparisonPolicy.test.ts
           npx vitest run lib/analytics/pitchSequencing.test.ts
           npx vitest run lib/analytics/comparisonData.test.ts
