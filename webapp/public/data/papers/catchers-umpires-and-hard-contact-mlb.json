@@ -1,0 +1,597 @@
+{
+  "slug": "catchers-umpires-and-hard-contact-mlb",
+  "title": "Catchers, umpires and hard contact",
+  "subtitle": "Descriptive Statcast leaderboards, their sample-size floors, and why a leaderboard is not a forecast",
+  "authors": [
+    "CourtVision research"
+  ],
+  "date": "2026-09-16",
+  "sport": "mlb",
+  "keywords": [
+    "catchers",
+    "umpires",
+    "out-of-zone strike rate",
+    "exit velocity",
+    "contact quality",
+    "sample-size floors",
+    "descriptive leaderboards",
+    "shrinkage"
+  ],
+  "abstract": "This note reads three published MLB Statcast-derived leaderboards side by side: catcher out-of-zone called-strike rate, umpire out-of-zone called-strike rate (both from mlb_descriptive_leaderboards.json, a fixed 2022-2023 corpus slice, corpus_id statcast_fuller_v1), and batter contact quality measured as the 90th percentile of a batter's recorded exit velocity minus the mean of that same series (atlas_mlb_batters_manifest.json, 2025 season, floor pitches_faced_2025>=300). The catcher leaderboard qualifies 113 catchers at a floor of at least 500 out-of-zone called pitches (catcher_ooz.n_qualified, catcher_ooz.floor); the top rate is Rene Pinto at 31.5 percent (n=3448), the bottom shown is Drew Millas at 21.2 percent (n=585). The umpire leaderboard qualifies 102 umpires (umpire_ooz.n_qualified); the top rate, Randy Rosenberg at 31.4 percent, sits on the smallest listed sample of any umpire, n=506. The batter contact leaderboard covers 485 hitters (n_entries); the largest gap belongs to Brett Harris at 24.6 mph (336 pitches, 102 batted balls), the smallest to Luis Arraez at 14.2 mph on a far larger sample (2393 pitches, 1072 batted balls). A companion artifact (mlb_shrinkage.json) shows the catcher and umpire rates regress toward a 28.13 percent pooled mean under an empirical-Bayes prior (kappa 834.93 for catchers, 2830.5 for umpires), and a separate gate rejected umpire out-of-zone rate as a predictor of game totals. None of these three leaderboards is a forecast input here; they are descriptive rankings with published floors, read alongside the confounds that limit them.",
+  "sections": [
+    {
+      "id": "question",
+      "heading": "Question",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "A rate leaderboard ranks entities that cleared a fixed number of recorded events by their rate in one closed historical window. This note reads three such leaderboards: catcher out-of-zone called-strike rate, umpire out-of-zone called-strike rate (catcher_ooz and umpire_ooz in mlb_descriptive_leaderboards.json), and batter contact quality measured as p90 minus mean recorded exit velocity (atlas_mlb_batters_manifest.json). All three carry a published minimum-sample floor, and this note asks what each rate measures, what it confounds, why its floor exists, and why sitting at the top or bottom of one describes a fixed window rather than forecasting anything."
+        },
+        {
+          "type": "p",
+          "text": "The three leaderboards are read together deliberately. A catcher's out-of-zone strike rate and an umpire's describe the same physical event -- a pitch outside the strike zone nonetheless ruled a strike -- from two different participants, so neither is an isolated skill measure without the other side of the same call. The batter contact leaderboard asks a different question, the shape of one hitter's own exit-velocity distribution, but shares the other two's discipline: a published floor, a fixed window, and an explicit refusal to call the ranking predictive."
+        }
+      ]
+    },
+    {
+      "id": "data",
+      "heading": "Data and definitions",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "The catcher and umpire leaderboards come from mlb_descriptive_leaderboards.json (generated_at 2026-07-24T21:46:01Z; site module as_of 2026-07-24), drawn from a fixed 2022-2023 Statcast pull, corpus_id statcast_fuller_v1, observation_window.as_of 2026-07-05 (observation_window.seasons=2022_2023). The artifact's source_note states these leaderboards derive from local Statcast-derived parquets, this committed JSON being the recorded artifact, with no predictive or advantage claim (source_note). The umpire cut carries its own corpus_id, statcast_fuller_v1_x_probables, one step removed from the top-level corpus_id; the source does not document what that extra join changes (umpire_ooz.corpus_id)."
+        },
+        {
+          "type": "p",
+          "text": "The batter contact leaderboard comes from a separate 2025-season artifact, atlas_mlb_batters_manifest.json, generated_at 2026-07-23T01:25:10Z, covering 485 batters (n_entries). Every entry shares the same as_of date, 2025-09-28 (entries[].as_of), and each entry's floors field names the Statcast columns behind eligibility -- pitches_faced, launch_speed, estimated_woba_using_speedangle (entries[].floors). Both artifacts are pitch-level Statcast pulls, the family this site's statcast_showcase module describes (source data/cache/statcast/statcast_fuller__2025.parquet, 693037 pitches, sport mlb) -- not the MLB in-game price-tick corpus carrying a separate, documented data-integrity notice elsewhere on this site. That quarantine does not apply here."
+        },
+        {
+          "type": "p",
+          "text": "Catcher out-of-zone strike rate qualifies 113 catchers at a floor of at least 500 out-of-zone called pitches (catcher_ooz.n_qualified, catcher_ooz.floor = 'n_ooz_called>=500'). Umpire out-of-zone strike rate qualifies 102 umpires (umpire_ooz.n_qualified); the source publishes no separate floor for this group, though the smallest listed sample, Randy Rosenberg at n=506, sits close to the catcher group's 500-pitch threshold -- consistent with, but not confirmed as, the same floor. Batter contact quality qualifies 485 batters at a floor of at least 300 pitches faced in 2025 (entries[].floors = 'pitches_faced_2025>=300 (yields 485/671 batters)')."
+        }
+      ]
+    },
+    {
+      "id": "method",
+      "heading": "Method",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "Out-of-zone called-strike rate, as published here, counts any pitch outside the rulebook strike zone that is nonetheless ruled a strike -- called, swung on and missed, or fouled off -- as a fraction of every out-of-zone pitch a catcher received or an umpire worked (catcher_ooz.label, umpire_ooz.label), cruder than a model-based framing measure per the source. That single ratio confounds four things: umpire zone judgment, catcher receiving technique, pitcher command (how far outside the pitch actually was), and count (a batter takes a borderline pitch more readily on 3-0 than 0-2). None is separated out."
+        },
+        {
+          "type": "callout",
+          "label": "Definition",
+          "text": "Out-of-zone called-strike rate = out-of-zone pitches ruled a strike, divided by all out-of-zone pitches seen by that catcher or worked by that umpire, over the fixed 2022-2023 window (catcher_ooz.label, umpire_ooz.label). It is not adjusted for pitcher command, count, or how far outside the zone a pitch was; the source calls it cruder than a framing measure, not a framing or called-strike-skill rate."
+        },
+        {
+          "type": "p",
+          "text": "A single out-of-zone strike call has exactly one pitcher, one catcher, and one umpire attached to it, so a catcher's rate and an umpire's rate cannot both be read as independent skill numbers without acknowledging overlapping games. The published leaderboards are not paired by game or battery -- no joint catcher-umpire table exists -- so this note reads them as two views of one mechanism, not a matched comparison."
+        },
+        {
+          "type": "p",
+          "text": "P90 minus mean exit velocity subtracts a batter's mean recorded exit velocity from the 90th percentile of that same launch_speed series (avg_exit_velo, exit_velo_p90); it is a derived difference of two published fields, both already rounded to 0.1 mph. The mean describes the center of a batter's contact distribution; the gap to the 90th percentile describes how far his own top decile reaches above that center. Two batters can share a mean and differ sharply here: one with a fat right tail hits a meaningful share of balls much harder than his average, the other's hardest-hit balls barely clear it. Because the hardest-hit contact carries a disproportionate share of extra-base outcomes, the tail can say more about a contact-quality ceiling than the mean alone -- though this artifact measures only recorded exit velocity, not outcomes."
+        },
+        {
+          "type": "math",
+          "text": "p90_minus_mean_exit_velo (mph) = exit_velo_p90 - avg_exit_velo, both operands published to 0.1 mph over the same recorded launch_speed series"
+        },
+        {
+          "type": "p",
+          "text": "All three leaderboards use a minimum-event floor: 500 out-of-zone called pitches for catchers, an apparently similar unstated threshold for umpires, and 300 pitches faced for batter contact. A floor exists because a rate over a handful of events is dominated by sampling noise -- quantified directly in this site's shrinkage artifact (mlb_shrinkage.json): fitted kappa of 834.93 for catchers and 2830.5 for umpires (groups[key=catcher_ooz].kappa, groups[key=umpire_ooz].kappa) mean that even at n=500-2000, a meaningful share of an entity's raw rate is still pulled toward the pooled mean of 28.13 percent (groups[key=catcher_ooz].pooled_mean). Batter contact is not covered by this artifact at all, so its 300-pitch floor is the only published guard against small-sample noise there."
+        }
+      ]
+    },
+    {
+      "id": "results",
+      "heading": "Results",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "Table 1 lists the top and bottom six of the 113 qualified catchers by out-of-zone strike rate (catcher_ooz.top, catcher_ooz.bottom)."
+        },
+        {
+          "type": "table",
+          "caption": "Catcher out-of-zone called-strike rate (n_qualified=113, floor n_ooz_called>=500)",
+          "columns": [
+            "Catcher",
+            "Out-of-zone strike rate",
+            "Out-of-zone called pitches (n)"
+          ],
+          "rows": [
+            [
+              "Rene Pinto",
+              "31.5%",
+              "3448"
+            ],
+            [
+              "Austin Barnes",
+              "30.5%",
+              "6707"
+            ],
+            [
+              "Alejandro Kirk",
+              "30.5%",
+              "10963"
+            ],
+            [
+              "Patrick Bailey",
+              "30.4%",
+              "5657"
+            ],
+            [
+              "Roberto Perez",
+              "30.2%",
+              "1637"
+            ],
+            [
+              "Sandy Leon",
+              "30.2%",
+              "2537"
+            ],
+            [
+              "P.J. Higgins",
+              "25.0%",
+              "1946"
+            ],
+            [
+              "Elias Diaz",
+              "25.0%",
+              "14540"
+            ],
+            [
+              "Robinson Chirinos",
+              "24.6%",
+              "3989"
+            ],
+            [
+              "Carlos Perez",
+              "23.9%",
+              "1277"
+            ],
+            [
+              "Cooper Hummel",
+              "21.8%",
+              "914"
+            ],
+            [
+              "Drew Millas",
+              "21.2%",
+              "585"
+            ]
+          ],
+          "note": "Top six then bottom six of 15 published rows per side. Source: mlb_descriptive_leaderboards.json, catcher_ooz.top[]/catcher_ooz.bottom[], as_of 2026-07-24."
+        },
+        {
+          "type": "p",
+          "text": "Rene Pinto's top-ranked raw rate of 31.5 percent (n=3448) is confirmed in the shrinkage artifact at raw_rate 0.3147, and the same prior pulls it down to a shrunk_rate of 30.82 percent (groups[key=catcher_ooz].top_by_shrunk) -- the raw leaderboard's own top spot is already smaller once estimated sampling noise is removed. At the other end, four of the six lowest-rate catchers shown here -- P.J. Higgins, Carlos Perez (n=1277), Cooper Hummel, and Drew Millas -- are also named among the group's largest published regressions, all at n below 2000 (groups[key=catcher_ooz].biggest_regressors); Drew Millas's rate is pulled up 4.08 points to a shrunk rate of 25.28 percent, the largest movement in that group. A second Carlos Perez (n=2234, rate 25.3 percent) appears higher in the source's full bottom list; the source does not distinguish the two beyond sample size."
+        },
+        {
+          "type": "p",
+          "text": "Table 2 lists the top and bottom six of the 102 qualified umpires by the same out-of-zone strike-rate measure (umpire_ooz.top, umpire_ooz.bottom)."
+        },
+        {
+          "type": "table",
+          "caption": "Umpire out-of-zone called-strike rate (n_qualified=102)",
+          "columns": [
+            "Umpire",
+            "Out-of-zone strike rate",
+            "Out-of-zone called pitches (n)"
+          ],
+          "rows": [
+            [
+              "Randy Rosenberg",
+              "31.4%",
+              "506"
+            ],
+            [
+              "Bill Miller",
+              "30.8%",
+              "8815"
+            ],
+            [
+              "Laz Diaz",
+              "30.2%",
+              "7197"
+            ],
+            [
+              "Doug Eddings",
+              "30.2%",
+              "8181"
+            ],
+            [
+              "Andy Fletcher",
+              "30.0%",
+              "8328"
+            ],
+            [
+              "Lance Barrett",
+              "29.9%",
+              "8184"
+            ],
+            [
+              "John Bacon",
+              "26.7%",
+              "2933"
+            ],
+            [
+              "Pat Hoberg",
+              "26.6%",
+              "8269"
+            ],
+            [
+              "Mark Wegner",
+              "26.3%",
+              "6755"
+            ],
+            [
+              "Carlos Torres",
+              "26.0%",
+              "8472"
+            ],
+            [
+              "David Arrieta",
+              "25.9%",
+              "754"
+            ],
+            [
+              "Derek Thomas",
+              "25.2%",
+              "2608"
+            ]
+          ],
+          "note": "Top six then bottom six of 15 published rows per side. Source: mlb_descriptive_leaderboards.json, umpire_ooz.top[]/umpire_ooz.bottom[], as_of 2026-07-24."
+        },
+        {
+          "type": "p",
+          "text": "Randy Rosenberg tops the umpire list at 31.4 percent, on the smallest sample of any listed umpire, n=506; the shrinkage artifact confirms the same raw_rate (0.3142) and records the group's largest regression for it, a shrunk_rate of 28.63 percent, a 2.79-point movement, larger than any other umpire's (groups[key=umpire_ooz].biggest_regressors). David Arrieta and Derek Thomas, both in Table 2's bottom six, are also in that list, each moved up 1.51 to 1.79 points once shrunk. The pattern is consistent across Tables 1 and 2: the entity at the extreme of a raw-rate ranking is disproportionately likely to also carry a small sample and a large shrinkage-implied correction."
+        },
+        {
+          "type": "p",
+          "text": "This site separately tested whether an umpire's out-of-zone rate predicts a game's total runs, beyond a league-and-park baseline, across 103 umpires; the result was a REJECT -- a planted-null test with the umpire assignment shuffled produced an equal-or-larger improvement than the real assignment, read as ump identity not moving game totals (umpire_totals_gate.verdict, umpire_totals_gate.verdict_reason, umpire_totals_gate.n_umpires). The same artifact reports a second null: a park-factor field finite for none of its 29 rows (park_factor_null.n_rows=29, park_factor_null.n_finite_park_factor=0), too sparse to publish (park_factor_null.verdict). Both sit beside these leaderboards as a reminder the source publishes rankings it cannot validate as predictive right alongside ones it can rank."
+        },
+        {
+          "type": "p",
+          "text": "Table 3 lists the eight largest and eight smallest published gaps between a batter's 90th-percentile recorded exit velocity and his own mean, among the 485 batters who cleared the 300-pitches-faced floor (entries[].key_numbers)."
+        },
+        {
+          "type": "table",
+          "caption": "Batter contact quality: p90 minus mean exit velocity (n=485 eligible, floor pitches_faced_2025>=300)",
+          "columns": [
+            "Batter",
+            "P90 minus mean (mph)",
+            "Mean exit velo (mph)",
+            "P90 exit velo (mph)",
+            "Recorded batted balls (n)",
+            "Pitches faced (n)"
+          ],
+          "rows": [
+            [
+              "Brett Harris",
+              "24.6",
+              "78.3",
+              "102.9",
+              "102",
+              "336"
+            ],
+            [
+              "Blake Dunn",
+              "24.4",
+              "76.4",
+              "100.8",
+              "76",
+              "300"
+            ],
+            [
+              "Michael Helman",
+              "24.1",
+              "77.4",
+              "101.5",
+              "160",
+              "405"
+            ],
+            [
+              "Martin Maldonado",
+              "23.5",
+              "79.7",
+              "103.2",
+              "136",
+              "543"
+            ],
+            [
+              "Colson Montgomery",
+              "23.5",
+              "83.2",
+              "106.7",
+              "349",
+              "1088"
+            ],
+            [
+              "Jhonkensy Noel",
+              "23.4",
+              "83.8",
+              "107.2",
+              "191",
+              "532"
+            ],
+            [
+              "Giancarlo Stanton",
+              "23.3",
+              "86.3",
+              "109.6",
+              "294",
+              "1222"
+            ],
+            [
+              "Nate Eaton",
+              "23.3",
+              "81.2",
+              "104.5",
+              "117",
+              "338"
+            ],
+            [
+              "Steven Kwan",
+              "15.9",
+              "80.5",
+              "96.4",
+              "1001",
+              "2723"
+            ],
+            [
+              "Alex Freeland",
+              "15.9",
+              "83.7",
+              "99.6",
+              "105",
+              "429"
+            ],
+            [
+              "Keibert Ruiz",
+              "15.7",
+              "82.7",
+              "98.4",
+              "369",
+              "838"
+            ],
+            [
+              "Justin Turner",
+              "15.4",
+              "82.4",
+              "97.8",
+              "290",
+              "774"
+            ],
+            [
+              "Hyeseong Kim",
+              "15.3",
+              "80.9",
+              "96.2",
+              "214",
+              "660"
+            ],
+            [
+              "DJ LeMahieu",
+              "15.0",
+              "86.8",
+              "101.8",
+              "167",
+              "539"
+            ],
+            [
+              "Leo Rivas",
+              "14.5",
+              "80.9",
+              "95.4",
+              "126",
+              "521"
+            ],
+            [
+              "Luis Arraez",
+              "14.2",
+              "81.2",
+              "95.4",
+              "1072",
+              "2393"
+            ]
+          ],
+          "note": "Top eight then bottom eight of 485 eligible batters, ranked by the derived difference exit_velo_p90 minus avg_exit_velo. Source: atlas_mlb_batters_manifest.json, entries[].key_numbers, entries[].floors, entries[].as_of=2025-09-28."
+        },
+        {
+          "type": "p",
+          "text": "The pattern in Table 3 is visible without a statistical test: seven of the eight largest gaps belong to batters with fewer than 350 recorded batted balls (entries[].key_numbers.n_batted_balls), while six of the eight smallest belong to batters with 290 or more, including Luis Arraez (1072) and Steven Kwan (1001), well over 1000. The 300-pitch floor does not bound the batted-ball count directly: Blake Dunn clears it exactly yet has only 76 recorded batted balls behind his 24.4 mph gap, the second-largest published. A 90th-percentile statistic over roughly 70-100 values is considerably noisier than one over 1000, even though both cleared the same floor."
+        },
+        {
+          "type": "figure",
+          "module": "mlb_descriptive_leaderboards",
+          "caption": "Published catcher and umpire out-of-zone called-strike rate leaderboards, plus the park-factor null and the umpire-totals REJECT, all from a fixed 2022-2023 Statcast slice (mlb_descriptive_leaderboards.json)."
+        }
+      ]
+    },
+    {
+      "id": "checks",
+      "heading": "Robustness and what would falsify this",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "Every cross-reference checked between the leaderboard and the shrinkage artifact lines up: Rene Pinto's, Randy Rosenberg's, David Arrieta's, and Derek Thomas's n and raw rate match across mlb_descriptive_leaderboards.json and mlb_shrinkage.json to the rounding each publishes. A mismatch here would indicate a stale artifact or a data-pull error; none was found."
+        },
+        {
+          "type": "p",
+          "text": "Every regression checked matches the mechanism's direction: a raw rate above the group's 28.13 percent pooled mean is pulled down, one below it pulled up, across both biggest_regressors lists. A row breaking that pattern would point to a fitting error in the prior; none does here."
+        },
+        {
+          "type": "list",
+          "items": [
+            "A published shrunk version of the batter contact gap, collapsing toward zero for the lowest-batted-ball rows as the catcher and umpire rates do, would confirm the same mechanism there; it does not exist.",
+            "A joint catcher-umpire table showing the two rates move independently would separate their contributions; no such table is published.",
+            "A forward test of the contact gap against a later season, showing the ranking holds out of sample, would move this toward a stable measurement; none is published."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "limitations",
+      "heading": "Limitations",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "This is a description of three fixed leaderboards and their sample-size floors, not a validated skill measurement or a forecast input."
+        },
+        {
+          "type": "list",
+          "items": [
+            "Zone definition: out-of-zone is defined against the rulebook zone at the pitch's location, not any umpire's personal zone; no per-umpire boundary tolerance is published, so two umpires with different real zones could show similar rates for different reasons.",
+            "Season mixing: the catcher and umpire leaderboards mix all 2022-2023 games into one rate per entity, and the umpire cut's corpus_id differs from the top-level corpus_id in a way the source does not document.",
+            "Floors: the published floors differ across the three leaderboards and are event-count, not variance-based; Table 3 shows a batter can clear the pitches-faced floor with a batted-ball sample under 100.",
+            "Not a forecast input: the umpire rate was tested directly as a predictor of game totals and rejected (umpire_totals_gate.verdict); no equivalent test is published for the other two.",
+            "No shrinkage for batter contact: this leaderboard is not covered by the site's shrinkage artifact, so no small-sample-adjusted version of the gap is available."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "use",
+      "heading": "How to read this on the site",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "On the site, the mlb_descriptive_leaderboards module page carries the full 113-catcher and 102-umpire tables this note excerpts, plus the park-factor null and the umpire-totals REJECT in full; the atlas_mlb_batters_manifest data behind Table 3 is browsable per batter, including key_numbers fields not used here (velo_seen percentiles, average estimated wOBA on contact). The research-lab pages 'MLB catcher out-of-zone strike rate selections' and 'Batter exit velocity: P90 versus mean' present these same rows in sortable form. 'How sample size changes a rate leaderboard' works through the shrinkage mechanism referenced here in full, and 'Pitch velocity shape' covers the pitch-velocity side of this same 2025 Statcast pull. The count-context inspector page lets a reader check how count-leverage class shifts pitch mix, one of the confounds named above."
+        }
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "artifact": "mlb_descriptive_leaderboards.json",
+      "module": "mlb_descriptive_leaderboards",
+      "asOf": "2026-07-24",
+      "fields": [
+        "generated_at",
+        "source_note",
+        "observation_window.seasons",
+        "observation_window.corpus_id",
+        "observation_window.as_of",
+        "catcher_ooz.floor",
+        "catcher_ooz.n_qualified",
+        "catcher_ooz.top[].name",
+        "catcher_ooz.top[].n_ooz_called",
+        "catcher_ooz.top[].ooz_strike_rate",
+        "catcher_ooz.bottom[].name",
+        "catcher_ooz.bottom[].n_ooz_called",
+        "catcher_ooz.bottom[].ooz_strike_rate",
+        "umpire_ooz.corpus_id",
+        "umpire_ooz.n_qualified",
+        "umpire_ooz.top[].name",
+        "umpire_ooz.top[].n_ooz_called",
+        "umpire_ooz.top[].ooz_strike_rate",
+        "umpire_ooz.bottom[].name",
+        "umpire_ooz.bottom[].n_ooz_called",
+        "umpire_ooz.bottom[].ooz_strike_rate",
+        "umpire_totals_gate.verdict",
+        "umpire_totals_gate.verdict_reason",
+        "umpire_totals_gate.n_umpires",
+        "park_factor_null.verdict",
+        "park_factor_null.n_rows",
+        "park_factor_null.n_finite_park_factor",
+        "confounds"
+      ]
+    },
+    {
+      "artifact": "mlb_shrinkage.json",
+      "module": "mlb_shrinkage",
+      "asOf": "2026-07-24",
+      "fields": [
+        "groups[key=catcher_ooz].pooled_mean",
+        "groups[key=catcher_ooz].kappa",
+        "groups[key=catcher_ooz].n_entities",
+        "groups[key=catcher_ooz].biggest_regressors[].name",
+        "groups[key=catcher_ooz].biggest_regressors[].n",
+        "groups[key=catcher_ooz].biggest_regressors[].raw_rate",
+        "groups[key=catcher_ooz].biggest_regressors[].shrunk_rate",
+        "groups[key=catcher_ooz].biggest_regressors[].regression",
+        "groups[key=catcher_ooz].top_by_shrunk[].name",
+        "groups[key=catcher_ooz].top_by_shrunk[].raw_rate",
+        "groups[key=catcher_ooz].top_by_shrunk[].shrunk_rate",
+        "groups[key=umpire_ooz].pooled_mean",
+        "groups[key=umpire_ooz].kappa",
+        "groups[key=umpire_ooz].biggest_regressors[].name",
+        "groups[key=umpire_ooz].biggest_regressors[].n",
+        "groups[key=umpire_ooz].biggest_regressors[].raw_rate",
+        "groups[key=umpire_ooz].biggest_regressors[].shrunk_rate",
+        "groups[key=umpire_ooz].biggest_regressors[].regression"
+      ]
+    },
+    {
+      "artifact": "atlas_mlb_batters_manifest.json",
+      "module": "atlas_mlb_batters_manifest",
+      "asOf": "2026-07-23",
+      "dateMeaning": "snapshot",
+      "fields": [
+        "generated_at",
+        "n_entries",
+        "entries[].entity",
+        "entries[].key_numbers.batter_id",
+        "entries[].key_numbers.avg_exit_velo",
+        "entries[].key_numbers.exit_velo_p90",
+        "entries[].key_numbers.pitches_faced",
+        "entries[].key_numbers.n_batted_balls",
+        "entries[].floors",
+        "entries[].as_of"
+      ]
+    },
+    {
+      "artifact": "statcast_showcase.json",
+      "module": "statcast_showcase",
+      "asOf": null,
+      "dateMeaning": "not-published",
+      "fields": [
+        "source",
+        "n_pitches",
+        "sport",
+        "caveat"
+      ]
+    }
+  ],
+  "limitations": [
+    "Zone definition: out-of-zone is defined against the rulebook strike zone at the pitch's location, not against any individual umpire's personal zone, so two umpires with different real strike zones could show similar published rates for different underlying reasons.",
+    "Season mixing: the catcher and umpire leaderboards mix all 2022 and 2023 games into one rate per entity, and the umpire cut's own corpus_id differs from the top-level observation_window.corpus_id in a way the source does not document.",
+    "Floors: the published floors differ across the three leaderboards and are event-count floors, not variance-based floors; a batter can clear the pitches-faced floor while still having a recorded batted-ball sample under 100.",
+    "Not a forecast input: the umpire out-of-zone rate was tested directly as a predictor of game totals and rejected, and no equivalent forward test is published for the catcher or batter-contact leaderboards.",
+    "No shrinkage for batter contact: the batter contact-quality leaderboard is not covered by this site's shrinkage artifact, so no small-sample-adjusted version of the p90-minus-mean gap is available."
+  ],
+  "related": [
+    {
+      "kind": "module",
+      "id": "mlb_descriptive_leaderboards"
+    },
+    {
+      "kind": "module",
+      "id": "mlb_shrinkage"
+    },
+    {
+      "kind": "module",
+      "id": "statcast_showcase"
+    },
+    {
+      "kind": "analysis",
+      "id": "mlb-catcher-out-of-zone-strike-rate"
+    },
+    {
+      "kind": "analysis",
+      "id": "mlb-batter-p90-minus-mean-exit-velocity"
+    },
+    {
+      "kind": "inspector",
+      "id": "count-context"
+    },
+    {
+      "kind": "paper",
+      "id": "sample-size-and-rate-leaderboards-mlb"
+    },
+    {
+      "kind": "paper",
+      "id": "pitch-velocity-shape-by-type"
+    }
+  ]
+}
