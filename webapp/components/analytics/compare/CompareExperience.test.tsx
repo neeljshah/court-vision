@@ -81,10 +81,32 @@ describe("CompareExperience controls", () => {
     render(<CompareExperience />);
     await screen.findByLabelText("Profile A");
     const soccer = screen.getByRole("button", { name: "Soccer" });
-    expect(screen.getByRole("button", { name: "NBA" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("button", { name: "Basketball" })).toHaveAttribute("aria-pressed", "true");
     fireEvent.click(soccer);
     expect(soccer).toHaveAttribute("aria-pressed", "true");
     await waitFor(() => expect(window.location.search).toContain("pack=soccer"));
+  });
+
+  it("keeps the final rapid sport choice in the chip, pack control, and URL", async () => {
+    render(<CompareExperience />);
+    await screen.findByLabelText("Profile A");
+    fireEvent.click(screen.getByRole("button", { name: "Soccer" }));
+    fireEvent.click(screen.getByRole("button", { name: "Tennis" }));
+    fireEvent.click(screen.getByRole("button", { name: "Basketball" }));
+    fireEvent.click(screen.getByRole("button", { name: "Baseball" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Baseball" })).toHaveAttribute("aria-pressed", "true"));
+    expect(screen.getByRole("combobox", { name: "Pack" })).toHaveValue("mlb_batters");
+    expect(window.location.search).toBe("?pack=mlb_batters");
+  });
+
+  it("commits a datalist keyboard selection on Enter", async () => {
+    render(<CompareExperience />);
+    const a = await screen.findByLabelText("Profile A");
+    fireEvent.keyDown(a, { key: "ArrowDown", target: { value: "Beta" } });
+    fireEvent.keyDown(a, { key: "Enter", target: { value: "Beta" } });
+    await waitFor(() => expect(a).toHaveValue("Beta"));
+    expect(screen.getByLabelText("Profile B")).toHaveValue("Alpha");
+    expect(window.location.search).toContain("a=beta");
   });
 
   it("keeps a quick sport selection URL when the previous pack settles and the new load fails", async () => {
@@ -99,11 +121,11 @@ describe("CompareExperience controls", () => {
       return Promise.resolve({ ok: true, json: async () => url.includes("percentiles") ? percentiles : comparables } as Response);
     });
     render(<CompareExperience />);
-    await waitFor(() => expect(vi.mocked(fetch)).toHaveBeenCalledWith(expect.stringContaining("atlas_nba_manifest")));
+    await waitFor(() => expect(vi.mocked(fetch)).toHaveBeenCalledWith(expect.stringContaining("atlas_nba_manifest"), expect.any(Object)));
     fireEvent.click(screen.getByRole("button", { name: "Soccer" }));
     expect(window.location.search).toBe("?pack=soccer");
     resolveNba({ ok: true, json: async () => manifest } as Response);
-    await waitFor(() => expect(vi.mocked(fetch)).toHaveBeenCalledWith(expect.stringContaining("atlas_soccer_manifest")));
+    await waitFor(() => expect(vi.mocked(fetch)).toHaveBeenCalledWith(expect.stringContaining("atlas_soccer_manifest"), expect.any(Object)));
     expect(window.location.search).toBe("?pack=soccer");
     rejectSoccer(new Error("offline"));
     expect(await screen.findByRole("alert")).toHaveTextContent("could not be loaded");
@@ -120,7 +142,7 @@ describe("CompareExperience controls", () => {
     const a = await screen.findByLabelText("Profile A");
     await waitFor(() => expect(a).toHaveValue("Alpha"));
     fireEvent.change(a, { target: { value: "No Such Profile" } });
-    expect(screen.getByRole("status")).toHaveTextContent("Choose a published profile");
+    expect(screen.getByRole("status")).toHaveTextContent("No published profile named No Such Profile in this pack.");
     expect(screen.queryByText("25th percentile")).not.toBeInTheDocument();
   });
 
@@ -139,13 +161,13 @@ describe("CompareExperience controls", () => {
     render(<CompareExperience />);
     const a = await screen.findByLabelText("Profile A");
     await waitFor(() => expect(a).toHaveValue("Alpha"));
-    fireEvent.click(screen.getByRole("button", { name: "NBA" }));
+    fireEvent.click(screen.getByRole("button", { name: "Basketball" }));
     expect(screen.getByLabelText("Profile A")).toHaveValue("Alpha");
     expect(screen.getByLabelText("Profile B")).toHaveValue("Beta");
     expect(screen.getByRole("heading", { name: "Where these profiles separate" })).toBeInTheDocument();
     await waitFor(() => expect(window.location.search).toBe("?pack=nba_players&a=alpha&b=beta"));
     const settledQuery = window.location.search;
-    fireEvent.click(screen.getByRole("button", { name: "NBA" }));
+    fireEvent.click(screen.getByRole("button", { name: "Basketball" }));
     expect(window.location.search).toBe(settledQuery);
     expect(screen.getByLabelText("Profile A")).toHaveValue("Alpha");
     expect(screen.getByLabelText("Profile B")).toHaveValue("Beta");
@@ -174,7 +196,7 @@ describe("CompareExperience controls", () => {
     window.dispatchEvent(new PopStateEvent("popstate"));
     await waitFor(() => expect(screen.getByRole("button", { name: "Clay" })).toHaveAttribute("aria-pressed", "true"));
     await waitFor(() => expect(screen.getByLabelText("Profile A")).toHaveValue("Alpha (ATP)"));
-    fireEvent.click(screen.getByRole("button", { name: "NBA" }));
+    fireEvent.click(screen.getByRole("button", { name: "Basketball" }));
     await waitFor(() => expect(window.location.search).not.toContain("surface="));
     expect(window.history.state).toEqual({ next: true });
   });

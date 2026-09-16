@@ -41,7 +41,7 @@ describe("Soccer comparison navigation", () => {
   it("removes the soccer venue view when selecting another sport", async () => {
     render(<CompareExperience />);
     await screen.findByRole("region", { name: "Home and away form" });
-    fireEvent.click(screen.getByRole("button", { name: "NBA" }));
+    fireEvent.click(screen.getByRole("button", { name: "Basketball" }));
     await waitFor(() => expect(screen.getByLabelText("Profile A")).toHaveValue("Alpha"));
     expect(screen.queryByRole("region", { name: "Home and away form" })).not.toBeInTheDocument();
     expect(window.location.search).toContain("pack=nba_players");

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { ArrowLeftRight } from "lucide-react";
 import {
   COMPARISON_PACKS,
@@ -24,8 +24,8 @@ function packInfo(key: ComparisonPackKey) {
 }
 
 const SPORT_GROUPS = [
-  { key: "nba", label: "NBA", packs: ["nba_players", "nba_teams"] as ComparisonPackKey[] },
-  { key: "mlb", label: "MLB", packs: ["mlb_batters", "mlb_pitch"] as ComparisonPackKey[] },
+  { key: "nba", label: "Basketball", packs: ["nba_players", "nba_teams"] as ComparisonPackKey[] },
+  { key: "mlb", label: "Baseball", packs: ["mlb_batters", "mlb_pitch"] as ComparisonPackKey[] },
   { key: "soccer", label: "Soccer", packs: ["soccer"] as ComparisonPackKey[] },
   { key: "tennis", label: "Tennis", packs: ["tennis"] as ComparisonPackKey[] },
 ] as const;
@@ -56,8 +56,8 @@ function validComparables(value: unknown): value is RawComparables {
   return objectValue(value) && objectValue(value.packs);
 }
 
-async function fetchJson(path: string): Promise<unknown> {
-  const response = await fetch(publicPath(path));
+async function fetchJson(path: string, signal: AbortSignal): Promise<unknown> {
+  const response = await fetch(publicPath(path), { signal });
   if (!response.ok) throw new Error(`${path} unavailable`);
   return response.json();
 }
@@ -112,14 +112,16 @@ export function CompareExperience() {
   useEffect(() => {
     if (!urlReady) return;
     const info = packInfo(packKey);
-    let active = true;
+    const controller = new AbortController();
     setData(undefined);
     setError("");
-    Promise.all([fetchJson(info.manifest), fetchJson("entity_percentiles.json"), fetchJson("entity_comparables.json")]).then(([manifest, percentiles, comparables]) => {
+    Promise.all([fetchJson(info.manifest, controller.signal), fetchJson("entity_percentiles.json", controller.signal), fetchJson("entity_comparables.json", controller.signal)]).then(([manifest, percentiles, comparables]) => {
       if (!validManifest(manifest) || !validPercentiles(percentiles) || !validComparables(comparables)) throw new Error("invalid comparison schema");
-      if (active) setData(normalizeComparisonPack(packKey, manifest, percentiles, comparables));
-    }).catch(() => { if (active) setError("Published comparison artifacts could not be loaded."); });
-    return () => { active = false; };
+      if (!controller.signal.aborted) setData(normalizeComparisonPack(packKey, manifest, percentiles, comparables));
+    }).catch((reason: unknown) => {
+      if (!controller.signal.aborted && (!(reason instanceof DOMException) || reason.name !== "AbortError")) setError("Published comparison artifacts could not be loaded.");
+    });
+    return () => controller.abort();
   }, [packKey, retry, urlReady]);
 
   useEffect(() => {
@@ -169,7 +171,7 @@ export function CompareExperience() {
 
   const changePack = (value: string) => {
     const next = value as ComparisonPackKey;
-    if (next === packKey) return;
+    if (next === intendedPack.current) return;
     beginNavigation(next);
     setPairReady(false);
     setData(undefined);
@@ -256,9 +258,16 @@ export function CompareExperience() {
       if (packKey === "mlb_pitch") { setPairReady(Boolean(aSlug)); writeMlbUrl(explicitMlbFamily, aSlug || undefined, hit.slug); }
     }
   };
+  const commitA = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") chooseA(event.currentTarget.value);
+  };
+  const commitB = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") chooseB(event.currentTarget.value);
+  };
   const aMatchesInput = Boolean(a && aQuery.trim() && a.name.toLocaleLowerCase() === aQuery.trim().toLocaleLowerCase());
   const bMatchesInput = Boolean(b && bQuery.trim() && b.name.toLocaleLowerCase() === bQuery.trim().toLocaleLowerCase());
-  const noMatch = Boolean(data && (!aMatchesInput || !bMatchesInput));
+  const unmatchedQuery = !aMatchesInput ? aQuery.trim() : !bMatchesInput ? bQuery.trim() : "";
+  const noMatch = Boolean(data && unmatchedQuery);
 
   return (
     <section className="compare-experience" aria-label="Entity comparison controls and results">
@@ -271,15 +280,15 @@ export function CompareExperience() {
       <div className={`compare-controls${packKey === "mlb_pitch" ? " has-family" : ""}`}>
         <label><span>Pack</span><select value={packKey} onChange={(event) => changePack(event.target.value)}>{COMPARISON_PACKS.map((pack) => <option key={pack.key} value={pack.key}>{pack.label}</option>)}</select></label>
         {packKey === "mlb_pitch" ? <label className="compare-family"><span>Record type</span><select value={activeMlbFamily || ""} onChange={(event) => chooseMlbFamily(event.target.value)} aria-label="MLB atlas record type"><option value="">Choose a record type</option>{mlbAtlasFamilyOptions(data?.entities || []).map((option) => <option key={option.family} value={option.family}>{option.label} ({option.count})</option>)}</select></label> : null}
-        <label><span>Profile A</span><input list="compare-entities-a" value={aQuery} onChange={(event) => chooseA(event.target.value)} placeholder="Search a profile" aria-label="Profile A" />
+        <label><span>Profile A</span><input list="compare-entities-a" value={aQuery} onChange={(event) => chooseA(event.target.value)} onKeyDown={commitA} placeholder="Search a profile" aria-label="Profile A" />
           <datalist id="compare-entities-a">{selectableEntities.filter((entity) => packKey !== "mlb_pitch" || entity.slug !== bSlug).map((entity) => <option key={entity.slug} value={entity.name} />)}</datalist></label>
         <button className="compare-swap" type="button" onClick={swap} disabled={!a || !b} aria-label="Swap profile A and profile B"><ArrowLeftRight aria-hidden="true" size={15} /> Swap</button>
-        <label><span>Profile B</span><input list="compare-entities-b" value={bQuery} onChange={(event) => chooseB(event.target.value)} placeholder="Search a profile" aria-label="Profile B" />
+        <label><span>Profile B</span><input list="compare-entities-b" value={bQuery} onChange={(event) => chooseB(event.target.value)} onKeyDown={commitB} placeholder="Search a profile" aria-label="Profile B" />
           <datalist id="compare-entities-b">{selectableEntities.filter((entity) => entity.slug !== aSlug).map((entity) => <option key={entity.slug} value={entity.name} />)}</datalist></label>
       </div>
       <p className="compare-status">{data ? `${data.nInPack} profiles in ${info.label}.` : "Loading published pack data..."}</p>
       {error ? <p className="compare-error" role="alert">{error} <button type="button" onClick={() => setRetry((value) => value + 1)}>Retry</button></p> : null}
-      {noMatch ? <p className="compare-empty" role="status">Choose a published profile from the list.</p> : null}
+      {noMatch ? <p className="compare-empty" role="status">No published profile named {unmatchedQuery} in this pack.</p> : null}
       {pairReady && data?.key === packKey && a && b && aMatchesInput && bMatchesInput ? <ComparisonResults pack={data} a={a} b={b} manifest={info.manifest} sport={activeSport?.key} surface={surface} onSurfaceChange={setSurface} /> : null}
     </section>
   );
