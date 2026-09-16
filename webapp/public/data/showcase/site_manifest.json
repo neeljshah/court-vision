@@ -1,6 +1,6 @@
 {
  "generated_from": "scripts/platformkit/analytics_showcase/out",
- "module_count": 76,
+ "module_count": 77,
  "atlas_card_count": 1549,
  "checks_green": {
   "green": true,
@@ -557,6 +557,17 @@
    "status": "ok",
    "edge_claimed": false,
    "as_of": null,
+   "evidence_page": null
+  },
+  {
+   "id": "novel_pitch_repeat_excess",
+   "title": "Novel Pitch Repeat Excess",
+   "one_line": "Across 511,807 adjacent pitch pairs in the 2025 Statcast season a pitcher throws the same pitch type twice in a row 0.3533 of the time against the 0.3166 his own count-conditioned mix implies, an excess of 0.0367 (95 percent interval 0.0...",
+   "out_path": "scripts/platformkit/analytics_showcase/out/novel_pitch_repeat_excess.json",
+   "chart_path": null,
+   "status": "ok",
+   "edge_claimed": false,
+   "as_of": "2026-09-16",
    "evidence_page": null
   },
   {

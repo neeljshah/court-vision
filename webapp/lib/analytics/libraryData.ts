@@ -40,6 +40,7 @@ const SOURCE_SPORT: Record<string, Exclude<Sport, "all">> = {
   player_metric_landscape: "nba",
   rim_deterrence: "nba",
   schedule_density: "nba",
+  novel_pitch_repeat_excess: "mlb",
   pitch_sequencing: "mlb",
   statcast_showcase: "mlb",
 };

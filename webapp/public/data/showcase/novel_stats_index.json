@@ -2,7 +2,7 @@
  "edge_claimed": false,
  "generated_at": "2026-09-16T21:29:55.878078+00:00",
  "method": "composition only -- each card copied from its module's own novel_*.json output",
- "n_stats": 8,
+ "n_stats": 9,
  "stats": [
   {
    "stat_name": "Line Half-Life",
@@ -145,6 +145,23 @@
    "chart": "docs/img/novel_overreaction_harvest_gap.png",
    "n_results": 2,
    "artifact": "scripts/platformkit/analytics_showcase/out/novel_overreaction_harvest_gap.json"
+  },
+  {
+   "stat_name": "Repeat-Pitch Excess",
+   "abbrev": "RPE",
+   "module": "novel_pitch_repeat_excess",
+   "formula": "excess = mean over adjacent pairs of 1{type == previous type} minus (n(pitcher, count, previous type) - 1{type == previous type}) / (n(pitcher, count) - 1), by count class, raw count, previous pitch family, pitcher.",
+   "prior_art_verdict": "INCREMENTAL",
+   "prior_art_citation": "Pitch-to-pitch sequencing is well travelled: transition matrices of P(next type | previous type) are standard, and this repository already publishes one per count-leverage class in pitch_sequencing. What is added here is the baseline. A league transition matrix cannot say whether a repeat is frequent because the pitcher throws that pitch often or because he repeats it; the excess measured here subtracts that pitcher's own mix at that count with the destination pitch left out, so the two are separated. The outcome half is then measured on the same pairs with game-cluster intervals, and two of the three preregistered directions are contradicted and published anyway.",
+   "source_artifacts": [
+    "data/cache/statcast/statcast_fuller__2025.parquet",
+    "data/cache/statcast/savant_full__2025.parquet"
+   ],
+   "headline": "Across 511,807 adjacent pitch pairs in the 2025 Statcast season a pitcher throws the same pitch type twice in a row 0.3533 of the time against the 0.3166 his own count-conditioned mix implies, an excess of 0.0367 (95 percent interval 0.0348 to 0.0385). The excess is largest when he is behind (0.0476, n=180,871) and smallest at an even count (0.0165, n=127,054), and at the same count the repeated pitch draws MORE swings and misses than the switched pitch (+0.0098, interval 0.0079 to 0.0120).",
+   "n_results": 3,
+   "edge_claimed": false,
+   "artifact": "scripts/platformkit/analytics_showcase/out/novel_pitch_repeat_excess.json",
+   "is_honest_null": false
   },
   {
    "stat_name": "Rest Asymmetry",

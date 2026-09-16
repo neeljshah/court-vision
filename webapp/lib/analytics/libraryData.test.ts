@@ -11,7 +11,7 @@ describe("getLibraryEntries", () => {
 
   it("merges the complete source manifest with every derived analysis", () => {
     expect(entries.length).toBeGreaterThan(getResearchAnalyses().length);
-    expect(sources).toHaveLength(76);
+    expect(sources).toHaveLength(77);
     expect(new Set(entries.map(entry => entry.id)).size).toBe(entries.length);
     expect(derived).toHaveLength(getResearchAnalyses().length);
     expect(derived.reduce((sum, entry) => sum + (entry.rows ?? 0), 0)).toBe(getResearchAnalyses().reduce((sum, analysis) => sum + analysis.rows.length, 0));

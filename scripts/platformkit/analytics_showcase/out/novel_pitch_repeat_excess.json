@@ -1,0 +1,1135 @@
+{
+ "id": "novel_pitch_repeat_excess",
+ "title": "Repeat-pitch excess: the same pitch comes back more often than the mix implies",
+ "as_of": "2026-09-16",
+ "sport": "mlb",
+ "descriptive_only": true,
+ "headline": "Across 511,807 adjacent pitch pairs in the 2025 Statcast season a pitcher throws the same pitch type twice in a row 0.3533 of the time against the 0.3166 his own count-conditioned mix implies, an excess of 0.0367 (95 percent interval 0.0348 to 0.0385). The excess is largest when he is behind (0.0476, n=180,871) and smallest at an even count (0.0165, n=127,054), and at the same count the repeated pitch draws MORE swings and misses than the switched pitch (+0.0098, interval 0.0079 to 0.0120).",
+ "headline_insight": "Across 511,807 adjacent pitch pairs in the 2025 Statcast season a pitcher throws the same pitch type twice in a row 0.3533 of the time against the 0.3166 his own count-conditioned mix implies, an excess of 0.0367 (95 percent interval 0.0348 to 0.0385). The excess is largest when he is behind (0.0476, n=180,871) and smallest at an even count (0.0165, n=127,054), and at the same count the repeated pitch draws MORE swings and misses than the switched pitch (+0.0098, interval 0.0079 to 0.0120).",
+ "verdict": "Preregistered directions that survive the interval test: 1 of 3. (1) The repeat excess is 0.0367 overall, interval [0.0348, 0.0385] -- CONFIRMED. (2) Pitcher-ahead minus pitcher-behind is -0.0081, interval [-0.0113, -0.0049], so the excess is smaller in ahead counts than behind -- CONTRADICTED. (3) The count-class-standardized swing-and-miss difference is +0.0098, interval [0.0079, 0.012], so the repeated pitch draws more swings and misses -- CONTRADICTED; inside destination pitch family the same difference is +0.0172 (interval [0.0152, 0.0193]), so it is not only a type-mix artifact. Truncation check: on the first half of the season the overall excess is 0.0360 and the standardized swing-and-miss difference is +0.0091, both the same sign as the full season. Dropped from 514,630 adjacent pairs: 61 where the pitcher changed mid plate appearance, 2,384 carrying a null or non-pitch type code (a null code or one of PO, IN, UN), and 378 where the pitcher threw only one pitch at that count all season so no leave-one-out baseline exists, leaving 511,807 measured pairs.",
+ "is_honest_null": false,
+ "population": "Every pitch recorded in data/cache/statcast/statcast_fuller__2025.parquet (693,037 pitches), reduced to the 511,807 adjacent within-plate-appearance pairs thrown by one pitcher with a known pitch type on both halves and a leave-one-out baseline available, across 2,364 games and 864 pitchers.",
+ "unit_of_observation": "one adjacent pitch pair, that is pitch k and pitch k+1 inside the same plate appearance thrown by the same pitcher, labelled by the destination pitch; a plate appearance of m pitches contributes at most m-1 pairs",
+ "conditioning_variable": "the destination pitch's PRE-pitch count, the previous pitch's type and family, and the identity of the pitcher.",
+ "timing_guarantee": "Everything that assigns a pair to a cell is known before the destination pitch is thrown: the previous pitch type, the pre-pitch count and the pitcher. The count columns are not assumed to be pre-pitch, they are verified -- on every adjacent pair the destination count equals the previous count advanced by the previous pitch's own result, and that agreement is published in checks. The leave-one-out baseline is the one quantity NOT available in advance, since it uses the pitcher's whole-season mix at that count; it is a descriptive normalizer, not a forecast input, and nothing here is a prediction.",
+ "preregistered_claims": [
+  {
+   "id": 1,
+   "claim": "The repeat excess is positive overall.",
+   "expected_sign": "positive",
+   "quantity": "mean over all measured pairs of the repeat indicator minus the leave-one-out expected repeat probability",
+   "value": 0.0367,
+   "ci95": [
+    0.0348,
+    0.0385
+   ],
+   "excludes_zero": true,
+   "decision_rule": "CONFIRMED when the 95 percent interval excludes zero on the preregistered side, CONTRADICTED when it excludes zero on the other side, UNDECIDED when it contains zero",
+   "verdict": "CONFIRMED"
+  },
+  {
+   "id": 2,
+   "claim": "The repeat excess is larger in pitcher-ahead counts than in counts where the pitcher is behind.",
+   "expected_sign": "positive",
+   "quantity": "excess in pitcher-ahead counts minus excess in pitcher-behind counts, taken inside the same resample",
+   "value": -0.0081,
+   "ci95": [
+    -0.0113,
+    -0.0049
+   ],
+   "excludes_zero": true,
+   "decision_rule": "CONFIRMED when the 95 percent interval excludes zero on the preregistered side, CONTRADICTED when it excludes zero on the other side, UNDECIDED when it contains zero",
+   "verdict": "CONTRADICTED"
+  },
+  {
+   "id": 3,
+   "claim": "Repeated pitches draw a lower rate of swings and misses than switched pitches at the same count.",
+   "expected_sign": "negative",
+   "quantity": "count-class-standardized repeat-minus-switch difference in the swing-and-miss rate, each class weighted by its share of pairs",
+   "value": 0.0098,
+   "ci95": [
+    0.0079,
+    0.012
+   ],
+   "excludes_zero": true,
+   "decision_rule": "CONFIRMED when the 95 percent interval excludes zero on the preregistered side, CONTRADICTED when it excludes zero on the other side, UNDECIDED when it contains zero",
+   "verdict": "CONTRADICTED"
+  }
+ ],
+ "definitions": {
+  "excess": "observed repeat rate minus the leave-one-out expected repeat rate; the expectation for a pair whose previous pitch was type t at count c thrown by pitcher p is the share of type t among that pitcher's OTHER destination pitches at that same count: (n(p, c, t) - 1{this pitch is t}) / (n(p, c) - 1)",
+  "count_class": "pitcher ahead = strikes > balls; even = strikes == balls; pitcher behind = balls > strikes, all read off the destination pitch's pre-pitch count",
+  "pitch_families": {
+   "fastball": [
+    "FF",
+    "FA",
+    "FT",
+    "SI",
+    "FC"
+   ],
+   "breaking": [
+    "SL",
+    "ST",
+    "SV",
+    "CU",
+    "KC",
+    "CS",
+    "SC"
+   ],
+   "offspeed": [
+    "CH",
+    "FS",
+    "FO",
+    "EP",
+    "KN"
+   ]
+  },
+  "excluded_pitch_types": [
+   "PO",
+   "IN",
+   "UN"
+  ],
+  "swing_and_miss": "the per-pitch outcome code is swinging_strike or swinging_strike_blocked; a foul tip is contact and is NOT counted as a swing and miss",
+  "called_strike_plus_swing_and_miss": "the per-pitch outcome code is called_strike, swinging_strike or swinging_strike_blocked",
+  "weak_contact": "among destination pitches put in play with a tracked exit velocity, the share below 95 mph, the usual hard-hit threshold",
+  "outcome_code": "the per-pitch outcome code is the description column of savant_full__2025.parquet, joined one to one on game_pk, at_bat_number and pitch_number. The des column of the pitch table is the plate-appearance result line, populated only on the last pitch of a plate appearance, so it cannot define a per-pitch swing-and-miss."
+ },
+ "method": {
+  "interval": "percentile 95 percent interval from a bootstrap that resamples whole games with replacement, so every pair from one game moves together",
+  "n_boot": 2000,
+  "seed": 20260916,
+  "floor_pairs_per_cell": 500,
+  "adjacency": "strict pitch_number difference of 1 inside one (game_pk, at_bat_number), with the same pitcher on both halves",
+  "mask_rule": "a cell with fewer than 500 pairs keeps its count and publishes no rate or interval",
+  "cluster": "the game, so every pair from one game is resampled together"
+ },
+ "sources": [
+  "data/cache/statcast/statcast_fuller__2025.parquet",
+  "data/cache/statcast/savant_full__2025.parquet"
+ ],
+ "index_card": {
+  "stat_name": "Repeat-Pitch Excess",
+  "abbrev": "RPE",
+  "module": "novel_pitch_repeat_excess",
+  "formula": "excess = mean over adjacent pairs of 1{type == previous type} minus (n(pitcher, count, previous type) - 1{type == previous type}) / (n(pitcher, count) - 1), by count class, raw count, previous pitch family, pitcher.",
+  "prior_art_verdict": "INCREMENTAL",
+  "prior_art_citation": "Pitch-to-pitch sequencing is well travelled: transition matrices of P(next type | previous type) are standard, and this repository already publishes one per count-leverage class in pitch_sequencing. What is added here is the baseline. A league transition matrix cannot say whether a repeat is frequent because the pitcher throws that pitch often or because he repeats it; the excess measured here subtracts that pitcher's own mix at that count with the destination pitch left out, so the two are separated. The outcome half is then measured on the same pairs with game-cluster intervals, and two of the three preregistered directions are contradicted and published anyway.",
+  "source_artifacts": [
+   "data/cache/statcast/statcast_fuller__2025.parquet",
+   "data/cache/statcast/savant_full__2025.parquet"
+  ],
+  "headline": "Across 511,807 adjacent pitch pairs in the 2025 Statcast season a pitcher throws the same pitch type twice in a row 0.3533 of the time against the 0.3166 his own count-conditioned mix implies, an excess of 0.0367 (95 percent interval 0.0348 to 0.0385). The excess is largest when he is behind (0.0476, n=180,871) and smallest at an even count (0.0165, n=127,054), and at the same count the repeated pitch draws MORE swings and misses than the switched pitch (+0.0098, interval 0.0079 to 0.0120).",
+  "n_results": 3
+ },
+ "panels": {
+  "overall": {
+   "n_pairs": 511807,
+   "cells": [
+    {
+     "cell": "all pairs",
+     "n_pairs": 511807,
+     "repeat_rate": 0.3533,
+     "expected_repeat_rate": 0.3166,
+     "excess": 0.0367,
+     "ci95": [
+      0.0348,
+      0.0385
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "mask_reason": null
+    }
+   ]
+  },
+  "by_count_class": {
+   "n_pairs": 511807,
+   "cells": [
+    {
+     "cell": "pitcher behind",
+     "n_pairs": 180871,
+     "repeat_rate": 0.3871,
+     "expected_repeat_rate": 0.3394,
+     "excess": 0.0476,
+     "ci95": [
+      0.0451,
+      0.0502
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "mask_reason": null
+    },
+    {
+     "cell": "even",
+     "n_pairs": 127054,
+     "repeat_rate": 0.3176,
+     "expected_repeat_rate": 0.3011,
+     "excess": 0.0165,
+     "ci95": [
+      0.0137,
+      0.0195
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "mask_reason": null
+    },
+    {
+     "cell": "pitcher ahead",
+     "n_pairs": 203882,
+     "repeat_rate": 0.3455,
+     "expected_repeat_rate": 0.3059,
+     "excess": 0.0395,
+     "ci95": [
+      0.037,
+      0.042
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "mask_reason": null
+    }
+   ],
+   "contrast_ahead_minus_behind": {
+    "n_left": 203882,
+    "n_right": 180871,
+    "difference": -0.0081,
+    "rate_left": 0.0395,
+    "rate_right": 0.0476,
+    "ci95": [
+     -0.0113,
+     -0.0049
+    ],
+    "excludes_zero": true,
+    "masked": false
+   }
+  },
+  "by_count": {
+   "n_pairs": 511807,
+   "note": "the 0-0 count opens a plate appearance, so it is never the destination of an adjacent pair",
+   "cells": [
+    {
+     "cell": "0-1",
+     "n_pairs": 89680,
+     "repeat_rate": 0.3594,
+     "expected_repeat_rate": 0.2952,
+     "excess": 0.0643,
+     "ci95": [
+      0.0605,
+      0.0679
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "mask_reason": null
+    },
+    {
+     "cell": "0-2",
+     "n_pairs": 46549,
+     "repeat_rate": 0.3656,
+     "expected_repeat_rate": 0.3145,
+     "excess": 0.0511,
+     "ci95": [
+      0.0467,
+      0.0556
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "mask_reason": null
+    },
+    {
+     "cell": "1-0",
+     "n_pairs": 66849,
+     "repeat_rate": 0.4104,
+     "expected_repeat_rate": 0.3167,
+     "excess": 0.0937,
+     "ci95": [
+      0.0898,
+      0.0975
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "mask_reason": null
+    },
+    {
+     "cell": "1-1",
+     "n_pairs": 69358,
+     "repeat_rate": 0.3437,
+     "expected_repeat_rate": 0.292,
+     "excess": 0.0517,
+     "ci95": [
+      0.0478,
+      0.0558
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "mask_reason": null
+    },
+    {
+     "cell": "1-2",
+     "n_pairs": 67653,
+     "repeat_rate": 0.3131,
+     "expected_repeat_rate": 0.3143,
+     "excess": -0.0012,
+     "ci95": [
+      -0.0047,
+      0.0024
+     ],
+     "excludes_zero": false,
+     "masked": false,
+     "mask_reason": null
+    },
+    {
+     "cell": "2-0",
+     "n_pairs": 22496,
+     "repeat_rate": 0.3705,
+     "expected_repeat_rate": 0.3436,
+     "excess": 0.027,
+     "ci95": [
+      0.0211,
+      0.0327
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "mask_reason": null
+    },
+    {
+     "cell": "2-1",
+     "n_pairs": 35561,
+     "repeat_rate": 0.3256,
+     "expected_repeat_rate": 0.3148,
+     "excess": 0.0108,
+     "ci95": [
+      0.006,
+      0.0157
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "mask_reason": null
+    },
+    {
+     "cell": "2-2",
+     "n_pairs": 57696,
+     "repeat_rate": 0.2863,
+     "expected_repeat_rate": 0.3121,
+     "excess": -0.0258,
+     "ci95": [
+      -0.0295,
+      -0.0218
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "mask_reason": null
+    },
+    {
+     "cell": "3-0",
+     "n_pairs": 6841,
+     "repeat_rate": 0.508,
+     "expected_repeat_rate": 0.4663,
+     "excess": 0.0417,
+     "ci95": [
+      0.0339,
+      0.0495
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "mask_reason": null
+    },
+    {
+     "cell": "3-1",
+     "n_pairs": 14439,
+     "repeat_rate": 0.4284,
+     "expected_repeat_rate": 0.4055,
+     "excess": 0.0229,
+     "ci95": [
+      0.0159,
+      0.0297
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "mask_reason": null
+    },
+    {
+     "cell": "3-2",
+     "n_pairs": 34685,
+     "repeat_rate": 0.3748,
+     "expected_repeat_rate": 0.3534,
+     "excess": 0.0214,
+     "ci95": [
+      0.0168,
+      0.0261
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "mask_reason": null
+    }
+   ]
+  },
+  "by_previous_family": {
+   "n_pairs": 511807,
+   "cells": [
+    {
+     "cell": "fastball",
+     "n_pairs": 281801,
+     "repeat_rate": 0.3881,
+     "expected_repeat_rate": 0.3596,
+     "excess": 0.0285,
+     "ci95": [
+      0.026,
+      0.0308
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "mask_reason": null
+    },
+    {
+     "cell": "breaking",
+     "n_pairs": 160861,
+     "repeat_rate": 0.3089,
+     "expected_repeat_rate": 0.2654,
+     "excess": 0.0435,
+     "ci95": [
+      0.0408,
+      0.0464
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "mask_reason": null
+    },
+    {
+     "cell": "offspeed",
+     "n_pairs": 69145,
+     "repeat_rate": 0.3143,
+     "expected_repeat_rate": 0.2601,
+     "excess": 0.0541,
+     "ci95": [
+      0.0504,
+      0.0578
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "mask_reason": null
+    }
+   ]
+  },
+  "outcome_repeat_vs_switch": {
+   "n_pairs_with_outcome_code": 506784,
+   "n_in_play_pairs": 99500,
+   "swing_and_miss": {
+    "cells": [
+     {
+      "n_left": 69379,
+      "n_right": 109799,
+      "difference": -0.0051,
+      "rate_left": 0.0997,
+      "rate_right": 0.1047,
+      "ci95": [
+       -0.0079,
+       -0.0021
+      ],
+      "excludes_zero": true,
+      "masked": false,
+      "cell": "pitcher behind"
+     },
+     {
+      "n_left": 39949,
+      "n_right": 85859,
+      "difference": 0.0199,
+      "rate_left": 0.1464,
+      "rate_right": 0.1265,
+      "ci95": [
+       0.016,
+       0.0242
+      ],
+      "excludes_zero": true,
+      "masked": false,
+      "cell": "even"
+     },
+     {
+      "n_left": 69748,
+      "n_right": 132050,
+      "difference": 0.0168,
+      "rate_left": 0.1419,
+      "rate_right": 0.1251,
+      "ci95": [
+       0.0137,
+       0.0202
+      ],
+      "excludes_zero": true,
+      "masked": false,
+      "cell": "pitcher ahead"
+     }
+    ],
+    "standardized": {
+     "cell": "standardized over the cells above",
+     "difference": 0.0098,
+     "ci95": [
+      0.0079,
+      0.012
+     ],
+     "excludes_zero": true,
+     "n_pairs": 506784,
+     "masked": false,
+     "note": "each cell weighted by its share of the pairs in this panel"
+    }
+   },
+   "called_strike_plus_swing_and_miss": {
+    "cells": [
+     {
+      "n_left": 69379,
+      "n_right": 109799,
+      "difference": 0.0116,
+      "rate_left": 0.3036,
+      "rate_right": 0.292,
+      "ci95": [
+       0.0071,
+       0.0159
+      ],
+      "excludes_zero": true,
+      "masked": false,
+      "cell": "pitcher behind"
+     },
+     {
+      "n_left": 39949,
+      "n_right": 85859,
+      "difference": 0.0275,
+      "rate_left": 0.2324,
+      "rate_right": 0.2049,
+      "ci95": [
+       0.0227,
+       0.0324
+      ],
+      "excludes_zero": true,
+      "masked": false,
+      "cell": "even"
+     },
+     {
+      "n_left": 69748,
+      "n_right": 132050,
+      "difference": 0.0234,
+      "rate_left": 0.2132,
+      "rate_right": 0.1898,
+      "ci95": [
+       0.0197,
+       0.0273
+      ],
+      "excludes_zero": true,
+      "masked": false,
+      "cell": "pitcher ahead"
+     }
+    ],
+    "standardized": {
+     "cell": "standardized over the cells above",
+     "difference": 0.0203,
+     "ci95": [
+      0.0179,
+      0.0228
+     ],
+     "excludes_zero": true,
+     "n_pairs": 506784,
+     "masked": false,
+     "note": "each cell weighted by its share of the pairs in this panel"
+    }
+   },
+   "weak_contact": {
+    "cells": [
+     {
+      "n_left": 13435,
+      "n_right": 21766,
+      "difference": -0.0023,
+      "rate_left": 0.5413,
+      "rate_right": 0.5436,
+      "ci95": [
+       -0.0132,
+       0.0085
+      ],
+      "excludes_zero": false,
+      "masked": false,
+      "cell": "pitcher behind"
+     },
+     {
+      "n_left": 8211,
+      "n_right": 19183,
+      "difference": 0.0053,
+      "rate_left": 0.6067,
+      "rate_right": 0.6014,
+      "ci95": [
+       -0.0074,
+       0.0184
+      ],
+      "excludes_zero": false,
+      "masked": false,
+      "cell": "even"
+     },
+     {
+      "n_left": 12341,
+      "n_right": 24564,
+      "difference": 0.0037,
+      "rate_left": 0.6387,
+      "rate_right": 0.635,
+      "ci95": [
+       -0.0063,
+       0.0142
+      ],
+      "excludes_zero": false,
+      "masked": false,
+      "cell": "pitcher ahead"
+     }
+    ],
+    "standardized": {
+     "cell": "standardized over the cells above",
+     "difference": 0.002,
+     "ci95": [
+      -0.0043,
+      0.0085
+     ],
+     "excludes_zero": false,
+     "n_pairs": 99500,
+     "masked": false,
+     "note": "each cell weighted by its share of the pairs in this panel"
+    }
+   }
+  },
+  "outcome_within_destination_family": {
+   "n_pairs_with_outcome_code": 506784,
+   "cells": [
+    {
+     "n_left": 49496,
+     "n_right": 65266,
+     "difference": -0.0021,
+     "rate_left": 0.0754,
+     "rate_right": 0.0775,
+     "ci95": [
+      -0.005,
+      0.001
+     ],
+     "excludes_zero": false,
+     "masked": false,
+     "cell": "pitcher behind / fastball"
+    },
+    {
+     "n_left": 14090,
+     "n_right": 29735,
+     "difference": 0.0176,
+     "rate_left": 0.1561,
+     "rate_right": 0.1385,
+     "ci95": [
+      0.0109,
+      0.0246
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "cell": "pitcher behind / breaking"
+    },
+    {
+     "n_left": 5793,
+     "n_right": 14798,
+     "difference": 0.0125,
+     "rate_left": 0.1695,
+     "rate_right": 0.157,
+     "ci95": [
+      0.0006,
+      0.0235
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "cell": "pitcher behind / offspeed"
+    },
+    {
+     "n_left": 21465,
+     "n_right": 40543,
+     "difference": 0.0165,
+     "rate_left": 0.1133,
+     "rate_right": 0.0968,
+     "ci95": [
+      0.0112,
+      0.0218
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "cell": "even / fastball"
+    },
+    {
+     "n_left": 11869,
+     "n_right": 29352,
+     "difference": 0.0301,
+     "rate_left": 0.1842,
+     "rate_right": 0.1541,
+     "ci95": [
+      0.0223,
+      0.0382
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "cell": "even / breaking"
+    },
+    {
+     "n_left": 6615,
+     "n_right": 15964,
+     "difference": 0.0347,
+     "rate_left": 0.1861,
+     "rate_right": 0.1514,
+     "ci95": [
+      0.0239,
+      0.0459
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "cell": "even / offspeed"
+    },
+    {
+     "n_left": 37394,
+     "n_right": 55403,
+     "difference": 0.011,
+     "rate_left": 0.1078,
+     "rate_right": 0.0968,
+     "ci95": [
+      0.0071,
+      0.0152
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "cell": "pitcher ahead / fastball"
+    },
+    {
+     "n_left": 23259,
+     "n_right": 49613,
+     "difference": 0.0372,
+     "rate_left": 0.1836,
+     "rate_right": 0.1464,
+     "ci95": [
+      0.0314,
+      0.0429
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "cell": "pitcher ahead / breaking"
+    },
+    {
+     "n_left": 9095,
+     "n_right": 27034,
+     "difference": 0.0311,
+     "rate_left": 0.1752,
+     "rate_right": 0.144,
+     "ci95": [
+      0.0222,
+      0.0401
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "cell": "pitcher ahead / offspeed"
+    }
+   ],
+   "standardized": {
+    "cell": "standardized over the cells above",
+    "difference": 0.0172,
+    "ci95": [
+     0.0152,
+     0.0193
+    ],
+    "excludes_zero": true,
+    "n_pairs": 506784,
+    "masked": false,
+    "note": "each cell weighted by its share of the pairs in this panel"
+   }
+  },
+  "per_pitcher": {
+   "floor_pairs_per_pitcher": 500,
+   "n_pitchers": 389,
+   "n_pairs": 422478,
+   "top": [
+    {
+     "n_pairs": 765,
+     "repeat_rate": 0.4837,
+     "expected_repeat_rate": 0.2651,
+     "excess": 0.2185,
+     "ci95": [
+      0.1859,
+      0.2524
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "mask_reason": null,
+     "pitcher_id": 666171
+    },
+    {
+     "n_pairs": 738,
+     "repeat_rate": 0.5068,
+     "expected_repeat_rate": 0.3183,
+     "excess": 0.1885,
+     "ci95": [
+      0.1531,
+      0.2246
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "mask_reason": null,
+     "pitcher_id": 656271
+    },
+    {
+     "n_pairs": 671,
+     "repeat_rate": 0.4858,
+     "expected_repeat_rate": 0.3028,
+     "excess": 0.183,
+     "ci95": [
+      0.15,
+      0.2113
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "mask_reason": null,
+     "pitcher_id": 607481
+    },
+    {
+     "n_pairs": 1006,
+     "repeat_rate": 0.4036,
+     "expected_repeat_rate": 0.2419,
+     "excess": 0.1617,
+     "ci95": [
+      0.1256,
+      0.1938
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "mask_reason": null,
+     "pitcher_id": 671131
+    },
+    {
+     "n_pairs": 801,
+     "repeat_rate": 0.4682,
+     "expected_repeat_rate": 0.308,
+     "excess": 0.1601,
+     "ci95": [
+      0.1335,
+      0.1869
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "mask_reason": null,
+     "pitcher_id": 622554
+    },
+    {
+     "n_pairs": 2157,
+     "repeat_rate": 0.4098,
+     "expected_repeat_rate": 0.2583,
+     "excess": 0.1516,
+     "ci95": [
+      0.1261,
+      0.1769
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "mask_reason": null,
+     "pitcher_id": 686613
+    },
+    {
+     "n_pairs": 801,
+     "repeat_rate": 0.5406,
+     "expected_repeat_rate": 0.3903,
+     "excess": 0.1503,
+     "ci95": [
+      0.1116,
+      0.1859
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "mask_reason": null,
+     "pitcher_id": 660853
+    },
+    {
+     "n_pairs": 816,
+     "repeat_rate": 0.3505,
+     "expected_repeat_rate": 0.2039,
+     "excess": 0.1466,
+     "ci95": [
+      0.1205,
+      0.1752
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "mask_reason": null,
+     "pitcher_id": 663947
+    },
+    {
+     "n_pairs": 709,
+     "repeat_rate": 0.426,
+     "expected_repeat_rate": 0.2807,
+     "excess": 0.1452,
+     "ci95": [
+      0.1081,
+      0.182
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "mask_reason": null,
+     "pitcher_id": 666974
+    },
+    {
+     "n_pairs": 591,
+     "repeat_rate": 0.4772,
+     "expected_repeat_rate": 0.3356,
+     "excess": 0.1415,
+     "ci95": [
+      0.1014,
+      0.1816
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "mask_reason": null,
+     "pitcher_id": 670036
+    }
+   ],
+   "bottom": [
+    {
+     "n_pairs": 919,
+     "repeat_rate": 0.1926,
+     "expected_repeat_rate": 0.295,
+     "excess": -0.1024,
+     "ci95": [
+      -0.1291,
+      -0.0756
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "mask_reason": null,
+     "pitcher_id": 623474
+    },
+    {
+     "n_pairs": 880,
+     "repeat_rate": 0.2534,
+     "expected_repeat_rate": 0.3513,
+     "excess": -0.0979,
+     "ci95": [
+      -0.1241,
+      -0.0713
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "mask_reason": null,
+     "pitcher_id": 670955
+    },
+    {
+     "n_pairs": 1749,
+     "repeat_rate": 0.1189,
+     "expected_repeat_rate": 0.2087,
+     "excess": -0.0898,
+     "ci95": [
+      -0.1073,
+      -0.0727
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "mask_reason": null,
+     "pitcher_id": 571945
+    },
+    {
+     "n_pairs": 752,
+     "repeat_rate": 0.1915,
+     "expected_repeat_rate": 0.2716,
+     "excess": -0.0801,
+     "ci95": [
+      -0.0983,
+      -0.0625
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "mask_reason": null,
+     "pitcher_id": 693855
+    },
+    {
+     "n_pairs": 1683,
+     "repeat_rate": 0.2044,
+     "expected_repeat_rate": 0.2818,
+     "excess": -0.0774,
+     "ci95": [
+      -0.0985,
+      -0.0557
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "mask_reason": null,
+     "pitcher_id": 656876
+    },
+    {
+     "n_pairs": 1921,
+     "repeat_rate": 0.1921,
+     "expected_repeat_rate": 0.269,
+     "excess": -0.0769,
+     "ci95": [
+      -0.0986,
+      -0.0548
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "mask_reason": null,
+     "pitcher_id": 571578
+    },
+    {
+     "n_pairs": 1308,
+     "repeat_rate": 0.2645,
+     "expected_repeat_rate": 0.3355,
+     "excess": -0.071,
+     "ci95": [
+      -0.0958,
+      -0.0451
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "mask_reason": null,
+     "pitcher_id": 477132
+    },
+    {
+     "n_pairs": 562,
+     "repeat_rate": 0.2776,
+     "expected_repeat_rate": 0.3456,
+     "excess": -0.068,
+     "ci95": [
+      -0.1121,
+      -0.0285
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "mask_reason": null,
+     "pitcher_id": 700669
+    },
+    {
+     "n_pairs": 799,
+     "repeat_rate": 0.1927,
+     "expected_repeat_rate": 0.2599,
+     "excess": -0.0672,
+     "ci95": [
+      -0.0963,
+      -0.0398
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "mask_reason": null,
+     "pitcher_id": 542888
+    },
+    {
+     "n_pairs": 522,
+     "repeat_rate": 0.1935,
+     "expected_repeat_rate": 0.2584,
+     "excess": -0.0649,
+     "ci95": [
+      -0.1039,
+      -0.0242
+     ],
+     "excludes_zero": true,
+     "masked": false,
+     "mask_reason": null,
+     "pitcher_id": 669438
+    }
+   ],
+   "note": "pitcher_id is the MLBAM player id recorded in the source table, which carries no player name column"
+  },
+  "truncation_check": {
+   "cutoff_game_date": "2025-06-29",
+   "n_games": 1191,
+   "n_pairs": 256929,
+   "overall_excess": 0.036,
+   "excess_by_count_class": {
+    "pitcher behind": 0.047,
+    "even": 0.014,
+    "pitcher ahead": 0.0399
+   },
+   "whiff_difference_standardized": 0.0091,
+   "whiff_difference_by_count_class": {
+    "pitcher behind": -0.0063,
+    "even": 0.0173,
+    "pitcher ahead": 0.0177
+   },
+   "note": "the leave-one-out baseline is recomputed inside the truncated corpus, so this is a full rebuild rather than a filter of the full-season pairs"
+  }
+ },
+ "checks": {
+  "pitches_in_source": 693037,
+  "adjacent_pairs": 514630,
+  "pitches_that_start_no_pair": 178407,
+  "dropped_pitcher_changed_mid_plate_appearance": 61,
+  "dropped_unknown_or_non_pitch_type": 2384,
+  "dropped_only_pitch_at_that_count_for_that_pitcher": 378,
+  "pairs_measured": 511807,
+  "prepitch_count_check": {
+   "rule": "on an adjacent pair the destination balls and strikes must equal the previous count advanced by the previous pitch's own result: a ball adds one ball, a strike adds one strike capped at two, a pitch put in play ends the plate appearance so it can never be the first half of a pair",
+   "n_pairs_checked": 514630,
+   "balls_advance_agreement": 1.0,
+   "strikes_advance_agreement": 1.0,
+   "verified": true
+  },
+  "pitches_without_outcome_code": 6801,
+  "measured_pairs_without_outcome_code": 5023,
+  "n_games": 2364,
+  "n_pitchers": 864,
+  "raw_counts_observed": [
+   "0-1",
+   "0-2",
+   "1-0",
+   "1-1",
+   "1-2",
+   "2-0",
+   "2-1",
+   "2-2",
+   "3-0",
+   "3-1",
+   "3-2"
+  ],
+  "raw_counts_absent": [
+   "0-0"
+  ],
+  "raw_counts_absent_reason": "the 0-0 count opens a plate appearance, so it is never the destination of an adjacent pair",
+  "pitch_families": {
+   "fastball": [
+    "FF",
+    "FA",
+    "FT",
+    "SI",
+    "FC"
+   ],
+   "breaking": [
+    "SL",
+    "ST",
+    "SV",
+    "CU",
+    "KC",
+    "CS",
+    "SC"
+   ],
+   "offspeed": [
+    "CH",
+    "FS",
+    "FO",
+    "EP",
+    "KN"
+   ]
+  },
+  "in_play_pairs_with_tracked_exit_velocity": 99500
+ },
+ "what_it_means": "A pitcher returns to the pitch he just threw more often than his own selection rate at that count would produce by chance, and that is not a league-mix artifact because the mix it is measured against is his own. The outcome half then contradicts the intuition that a hitter who has just seen a pitch handles it better.",
+ "how_to_read": "Every row reports n_pairs first, then the observed repeat rate, the leave-one-out expected rate and their difference with a game-cluster interval. A row below the floor is masked and keeps its count. In the outcome panels the difference is repeat minus switch inside the same cell, taken inside every resample, so the interval is paired.",
+ "why_it_matters": "It separates two things a transition matrix leaves fused -- how often a pitcher throws a type at a count, and how often he repeats it -- and then asks whether the repeated pitch is punished.",
+ "caveat": "Descriptive conditional frequencies, not a forecast and not a causal estimate. pitch_type is Statcast's automatic classification, so a misclassified pitch becomes a spurious switch. The repeat and switch groups differ in their destination type mix, which is why the outcome difference is published inside destination pitch family as well. Sequence choice is confounded with the count path that produced it, the hitter, the catcher and the score state, none of which are controlled here. One season, one league.",
+ "cited": [
+  {
+   "path": "webapp/public/data/insights/novel_pitch_repeat_excess.json",
+   "field": "panels.overall.cells[0] excess / ci95",
+   "value": "0.0367 [0.0348, 0.0385]"
+  },
+  {
+   "path": "webapp/public/data/insights/novel_pitch_repeat_excess.json",
+   "field": "panels.by_count_class.contrast_ahead_minus_behind difference",
+   "value": -0.0081
+  },
+  {
+   "path": "webapp/public/data/insights/novel_pitch_repeat_excess.json",
+   "field": "panels.outcome_repeat_vs_switch.swing_and_miss.standardized difference",
+   "value": 0.0098
+  },
+  {
+   "path": "webapp/public/data/insights/novel_pitch_repeat_excess.json",
+   "field": "preregistered_claims[] verdict",
+   "value": "CONFIRMED, CONTRADICTED, CONTRADICTED"
+  },
+  {
+   "path": "webapp/public/data/insights/novel_pitch_repeat_excess.json",
+   "field": "checks.prepitch_count_check.verified",
+   "value": true
+  }
+ ]
+}

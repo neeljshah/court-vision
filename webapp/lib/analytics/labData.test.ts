@@ -49,7 +49,7 @@ describe("measurement lab source contracts", () => {
       expect(new Set(d.rows.map(r => r.id)).size).toBe(d.rows.length);
       expect(d.rows.every(r => Object.values(r.values).every(v => v === null || Number.isFinite(v)))).toBe(true);
     }
-    expect(data.novel).toHaveLength(8);
+    expect(data.novel).toHaveLength(9);
   });
   it("ranks numeric rows without coercing null and preserves true zero", () => {
     const rows = [{ id: "a", label: "Missing", group: "x", values: { n: null } }, { id: "b", label: "Zero", group: "x", values: { n: 0 } }, { id: "c", label: "Negative", group: "x", values: { n: -1 } }];

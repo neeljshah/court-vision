@@ -1,4 +1,4 @@
-// Novel statistics -- the six prior-art-gated, adversarially re-derived stats this
+// Novel statistics -- the prior-art-gated, adversarially re-derived stats this
 // system published that did not exist before it. Build-time server component: reads
 // public/data/showcase/novel_stats_index.json + each module's own novel_*.json and
 // renders name/abbrev, the headline number LARGE, the one-line definition, the
@@ -12,13 +12,14 @@ import Link from "next/link";
 import { windowText } from "@/components/analytics/NovelStatPanel";
 import { artifactUrl, provenanceDate } from "@/lib/analytics/artifactProvenance";
 
+const DATA = join(process.cwd(), "public", "data", "showcase");
+const countWord = (n: number) => { const w = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"][n] || String(n); return w.charAt(0).toUpperCase() + w.slice(1); };
+const publishedCount = () => { try { return (JSON.parse(readFileSync(join(DATA, "novel_stats_index.json"), "utf8")) as { stats?: unknown[] }).stats?.length || 0; } catch { return 0; } };
 export const metadata: Metadata = {
   title: "Experimental measurements",
-  description:
-    "Six published experimental measurements, each checked against prior art and published with its declared confounds.",
+  description: `${countWord(publishedCount())} published experimental measurements, each checked against prior art and published with its declared confounds.`,
 };
 
-const DATA = join(process.cwd(), "public", "data", "showcase");
 
 interface Card {
   stat_name: string;
@@ -166,7 +167,7 @@ export default function NovelStatsPage() {
   return (
     <div className="wrap nv">
       <p className="overline">Experimental measurements</p>
-      <h1 className="serif nv-h1">Six published experimental measurements</h1>
+      <h1 className="serif nv-h1">{countWord(stats.length)} published experimental measurements</h1>
       <p className="nv-lede">
         Each one was searched against prior art before it was built, re-derived a
         second time to try to break it, and published with the confounds that could
