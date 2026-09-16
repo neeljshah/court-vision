@@ -45,4 +45,10 @@ describe("ModuleDetail", () => {
     rerender(<ModuleDetail mod={{ ...mod, id: "novel_rest_asymmetry" }} out={out} subtitle="Rest differential frequencies." insight={null} />);
     expect(screen.queryByRole("complementary", { name: "Data integrity" })).not.toBeInTheDocument();
   });
+
+  it("mounts paper backlinks in the existing related reading area", () => {
+    render(<ModuleDetail mod={mod} out={out} subtitle="When a lead becomes permanent." insight={null} />);
+    const papers = screen.getAllByRole("link").filter((link) => /\/analytics\/papers\//.test(link.getAttribute("href") || ""));
+    expect(papers.length).toBeGreaterThan(0);
+  });
 });

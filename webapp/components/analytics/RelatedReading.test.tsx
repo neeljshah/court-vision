@@ -18,4 +18,10 @@ describe("RelatedReading", () => {
     expect(screen.getByRole("link", { name: /Observation dependence/ })).toHaveAttribute("href", "/analytics/observation-dependence");
     expect(screen.getByText(/Prerequisite: Read the effective sample size finding first/)).toBeInTheDocument();
   });
+
+  it("keeps paper backlinks in the existing reading area", () => {
+    render(<RelatedReading kind="module" id="blowout_dynamics" />);
+    const papers = screen.getAllByRole("link").filter((link) => /\/analytics\/papers\//.test(link.getAttribute("href") || ""));
+    expect(papers.length).toBeGreaterThan(0);
+  });
 });

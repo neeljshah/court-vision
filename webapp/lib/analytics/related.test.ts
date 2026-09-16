@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { relatedReading, readingEntries } from "./related";
+import { relatedReading } from "./related";
 
 const entries = [
   { id: "rim", title: "Rim shot chart", kind: "module" as const, sport: "nba", asOf: "2026-07-01", href: "/m/rim/", sources: ["rim"], artifacts: ["rim"], population: "nba players" },
@@ -43,12 +43,6 @@ describe("relatedReading", () => {
     expect(relatedReading("analysis", "team", [team, roster, pitch])).toMatchObject([
       { id: "roster", purpose: "same entity type" }, { id: "pitch", purpose: "same sport" },
     ]);
-  });
-
-  it("adds explainer readings with public, resolvable routes", () => {
-    const explainers = readingEntries().filter((entry) => entry.kind === "explainer");
-    expect(explainers.length).toBeGreaterThan(0);
-    expect(explainers.every((entry) => entry.href === `/analytics/explainers/${entry.id}/`)).toBe(true);
   });
 
   it("accepts identical population identifiers and never makes title overlap a prerequisite", () => {

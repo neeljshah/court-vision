@@ -1,7 +1,7 @@
 import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { analysisDestinations } from "@/lib/analytics/analysisDestinations";
-import { readingEntries } from "@/lib/analytics/related";
+import { bestPaperForInspector, readingEntries } from "@/lib/analytics/related.server";
 import { InspectorReadingTrail } from "./InspectorReadingTrail";
 
 const trails = [
@@ -28,7 +28,10 @@ describe("InspectorReadingTrail", () => {
     const norm = (href: string) => href.replace(/\/$/, "");
     expect(norm(within(readFirst!).getByRole("link").getAttribute("href") || "")).toBe(norm(prerequisiteHref));
     expect(norm(within(nextQuestion!).getByRole("link").getAttribute("href") || "")).toBe(norm(nextHref));
-    expect(trail.querySelectorAll(".related-reading-card").length).toBeLessThanOrEqual(3);
+    const paper = bestPaperForInspector(id);
+    const analysisLines = within(trail).getAllByText((_, element) => element?.tagName === "P" && element.textContent?.startsWith("Read the analysis:") === true);
+    expect(analysisLines).toHaveLength(paper ? 1 : 0);
+    if (paper) expect(within(analysisLines[0].closest("p")!).getByRole("link")).toHaveAttribute("href", expect.stringMatching(new RegExp(`/analytics/papers/${paper.id}/?$`)));
     const routes = new Set([...analysisDestinations.map((destination) => norm(destination.route)), ...readingEntries().map((entry) => norm(entry.href))]);
     for (const link of Array.from(trail.querySelectorAll("a"))) expect({ href: link.getAttribute("href"), known: routes.has(norm(link.getAttribute("href") || "")) }).toEqual({ href: link.getAttribute("href"), known: true });
   });

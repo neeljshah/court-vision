@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { analysisDestinations } from "@/lib/analytics/analysisDestinations";
 import { noticesForInspector } from "@/lib/analytics/dataIntegrity";
-import { relatedReading, readingEntries } from "@/lib/analytics/related";
+import { bestPaperForInspector, paperBacklinks, readingEntries, relatedReadingFor } from "@/lib/analytics/related.server";
 import { RelatedReadingLinks } from "./RelatedReading";
 import { DataIntegrityNotice } from "./DataIntegrityNotice";
 
@@ -10,7 +10,9 @@ export function InspectorReadingTrail({ id }: { id: string }) {
   if (!inspector) return null;
   const prerequisite = inspector.prerequisiteId ? readingEntries().find((entry) => entry.id === inspector.prerequisiteId) : undefined;
   const next = inspector.nextId ? analysisDestinations.find((destination) => destination.id === inspector.nextId) : undefined;
-  const links = relatedReading("inspector", id).slice(0, 3);
+  const paper = bestPaperForInspector(id);
+  const backlinks = paperBacklinks("inspector", id);
+  const links = [...backlinks, ...relatedReadingFor("inspector", id).filter((link) => !backlinks.some((backlink) => backlink.id === link.id && backlink.kind === link.kind)).slice(0, 3)];
   const integrityNotices = noticesForInspector(id);
   return <>
     <DataIntegrityNotice notices={integrityNotices} moduleIds={inspector.sourceModuleIds} />
@@ -18,6 +20,7 @@ export function InspectorReadingTrail({ id }: { id: string }) {
     <p className="overline">Reading trail</p>
     {inspector.prerequisiteId ? <p style={{ marginTop: 6 }}>Read first: {prerequisite ? <Link href={prerequisite.href}>{inspector.prerequisite}</Link> : inspector.prerequisite}</p> : null}
     {next ? <p style={{ marginTop: 4 }}>Next question: <Link href={next.route}>{inspector.nextQuestion}</Link></p> : null}
+    {paper ? <p style={{ marginTop: 4 }}>Read the analysis: <Link href={paper.href}>{paper.title}</Link></p> : null}
     {links.length ? <RelatedReadingLinks links={links} /> : null}
     </section>
   </>;
