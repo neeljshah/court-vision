@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ScoutQuestions } from "@/components/analytics/ScoutQuestions";
 import { findingMeta } from "@/lib/analytics/og";
 import { resolveResearchSourceDestination } from "@/lib/analytics/researchSourceDestinations";
-import { RETRACTIONS, type Retraction } from "./retractions";
+import { RETRACTIONS } from "./retractions";
 
 export const metadata: Metadata = {
   title: "The Retraction Story",
@@ -54,6 +54,11 @@ const replacementBody: CSSProperties = { ...rowBody, color: "var(--ink)" };
 const evidenceLink: CSSProperties = {
   fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--ink-3)", textUnderlineOffset: 3,
 };
+const citationBox: CSSProperties = {
+  marginTop: 4, padding: "10px 12px", background: "var(--paper-tint)", border: "1px solid var(--rule)",
+  borderRadius: "var(--radius-card)", fontSize: 13, lineHeight: 1.55, color: "var(--ink-2)",
+};
+const citationMeta: CSSProperties = { fontFamily: "var(--font-mono)", fontSize: 11.5, color: "var(--ink-3)", marginTop: 5 };
 
 export default function RetractionPage() {
   return (
@@ -72,7 +77,6 @@ export default function RetractionPage() {
 
       <div style={{ marginTop: 8 }}>
         {RETRACTIONS.map((retraction) => {
-          const evidenceHref = resolveResearchSourceDestination(retraction.evidenceSourceId).href;
           return (
           <article id={retraction.id} key={retraction.id} style={card}>
             <div style={cardHead}>
@@ -86,9 +90,18 @@ export default function RetractionPage() {
             <p style={rowLabel}>Replacement</p>
             <p style={replacementBody}>{retraction.replacement}</p>
             <p style={rowLabel}>Evidence citation</p>
-            <Link href={evidenceHref} style={evidenceLink}>
-              {retraction.evidenceArtifact}
-            </Link>
+            <div style={citationBox}>
+              <p><strong style={{ color: "var(--ink)" }}>No published evidence document.</strong> {retraction.citation.document} is the cited withdrawal record, but it is not published on this site.</p>
+              <p style={citationMeta}>Section: {retraction.citation.section}</p>
+              <p style={citationMeta}>Date: {retraction.citation.date} | Sport: {retraction.citation.sportsCovered.join(", ")}</p>
+              <p style={citationMeta}>Measures: {retraction.citation.measurementIdentity}</p>
+            </div>
+            <p style={rowLabel}>Related reading</p>
+            {retraction.relatedReading.map((reading) => (
+              <p key={reading.sourceId} style={{ ...rowBody, marginTop: 3 }}>
+                <Link href={resolveResearchSourceDestination(reading.sourceId).href} style={evidenceLink}>{reading.label}</Link>
+              </p>
+            ))}
           </article>
           );
         })}

@@ -2,11 +2,10 @@ import { render, screen, within } from "@testing-library/react";
 import { expect, it } from "vitest";
 // @ts-expect-error -- the executable scanner is deliberately dependency-free ESM.
 import { scanRenderedText } from "../../../../../scripts/check-analytics-copy.mjs";
-import { resolveResearchSourceDestination } from "@/lib/analytics/researchSourceDestinations";
 import RetractionPage from "./page";
-import { RETRACTIONS } from "./retractions";
+import { RETRACTIONS, validateRetractionCitations } from "./retractions";
 
-it("renders dated withdrawal records with evidence links and valid replacement language", () => {
+it("renders dated withdrawal records with evidence citations and related reading", () => {
   const { container } = render(<RetractionPage />);
   const articles = screen.getAllByRole("article");
 
@@ -18,11 +17,47 @@ it("renders dated withdrawal records with evidence links and valid replacement l
     expect(record.getByText(retraction.status)).toBeInTheDocument();
     expect(record.getByText(retraction.withdrawnOn)).toBeInTheDocument();
     expect(record.getByText(retraction.replacement)).toBeInTheDocument();
-    expect(record.getByRole("link", { name: retraction.evidenceArtifact })).toHaveAttribute(
-      "href", resolveResearchSourceDestination(retraction.evidenceSourceId).href,
-    );
+    expect(record.getByText("Evidence citation")).toBeInTheDocument();
+    expect(record.getAllByText((_, element) => element?.tagName === "P" && (element.textContent || "").includes(retraction.citation.document)).length).toBeGreaterThan(0);
+    expect(record.getByText(`Section: ${retraction.citation.section}`)).toBeInTheDocument();
+    expect(record.getByText(`Date: ${retraction.citation.date} | Sport: ${retraction.citation.sportsCovered.join(", ")}`)).toBeInTheDocument();
+    expect(record.getByText(`Measures: ${retraction.citation.measurementIdentity}`)).toBeInTheDocument();
+    expect(record.getByText("No published evidence document.")).toBeInTheDocument();
+    expect(record.getByText("Related reading")).toBeInTheDocument();
+    retraction.relatedReading.forEach((reading) => {
+      expect(record.getByRole("link", { name: reading.label })).toBeInTheDocument();
+    });
   });
 
   expect(within(articles[1]).getByText(/Brier score 0\.141 \(unitless\)/)).toBeInTheDocument();
   expect(scanRenderedText(container.textContent || "")).toEqual([]);
+});
+
+it("keeps citations dated and scoped to the withdrawn NBA measurement", () => {
+  validateRetractionCitations(RETRACTIONS);
+
+  RETRACTIONS.forEach((retraction) => {
+    expect(retraction.citation.sportsCovered).toContain(retraction.sport);
+    expect(retraction.citation.document).toBeTruthy();
+    expect(retraction.citation.section).toBeTruthy();
+    expect(retraction.citation.date).toBeTruthy();
+    expect(retraction.citation.measurementIdentity).toBeTruthy();
+  });
+
+  expect(RETRACTIONS.find((entry) => entry.id === "end-of-third-quarter-brier")?.citation.document)
+    .not.toBe("state_conditioned_calibration.json");
+  expect(() => validateRetractionCitations([{ ...RETRACTIONS[0], citation: {
+    ...RETRACTIONS[0].citation, sportsCovered: ["MLB"],
+  } }])).toThrow(/does not cover NBA/);
+});
+
+it("keeps retracted values only inside withdrawn sentences", () => {
+  const { container } = render(<RetractionPage />);
+  const text = container.textContent || "";
+  const retractedValues = ["18.38", "0.119", "54.57", "78.11", "8.94", "0.79", "0.06"];
+
+  retractedValues.forEach((value) => {
+    expect(RETRACTIONS.some((retraction) => retraction.withdrawnMeasurement.includes(value))).toBe(true);
+    expect(text.match(new RegExp(value.replace(".", "\\."), "g"))).toHaveLength(1);
+  });
 });
