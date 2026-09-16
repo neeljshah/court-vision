@@ -1,14 +1,12 @@
 """Rest asymmetry: the schedule differential, not the shared load.
 
-Descriptive conditional frequencies only. For every NBA regular-season game in
-data/domains/basketball_nba/games.parquet the rest differential
+Descriptive conditional frequencies only. The rest differential
 (rest_days_home - rest_days_away) is a schedule fact fixed before tip-off; the
-home win is the outcome. Reports the home win frequency per rest cell with a
-game-cluster bootstrap 95 percent interval, the season-by-season stability of
-that gradient, whether SYMMETRIC congestion moves anything, and -- on the
-subset carrying a recorded pregame moneyline -- observed frequency minus the
-devigged market forecast. Cells below the floor keep their count and are
-masked. No forecasting and no advantage claim.
+home win is the outcome. Reports the frequency per rest cell with a game-cluster
+bootstrap interval, its season stability, whether SYMMETRIC congestion moves
+anything, and -- on the subset carrying a recorded pregame moneyline pair --
+observed frequency minus the devigged reference forecast. A cell below the floor
+keeps its count and is masked. No forecasting and no advantage claim.
 
 Run: python scripts/platformkit/novel_rest_asymmetry.py
 """
@@ -25,8 +23,10 @@ NBA = REPO / "data" / "domains" / "basketball_nba"
 GAMES_PATH, ODDS_PATH, FINALS_PATH = NBA / "games.parquet", NBA / "odds.parquet", NBA / "game_finals_corrected.parquet"
 OUT_INSIGHT = REPO / "webapp" / "public" / "data" / "insights" / "novel_rest_asymmetry.json"
 OUT_MODULE = REPO / "scripts" / "platformkit" / "analytics_showcase" / "out" / "novel_rest_asymmetry.json"
+OUT_SHOWCASE = REPO / "webapp" / "public" / "data" / "showcase" / "novel_rest_asymmetry.json"
 
-AS_OF = "2026-09-16"
+AS_OF, REVISION = "2026-09-16", 2
+CHANGELOG = "revision 2: a contrast is masked when EITHER side of the difference is below the floor; missing-outcome and missing-rest exclusions are reported separately; the odds join is checked for duplicate game ids; the moneyline is described as a recorded pregame reference forecast without a quote timestamp."
 MIN_GAMES_PER_CELL = 30
 N_BOOT, SEED = 2000, 20260916
 CELLS = ["away +2 or more", "away +1", "equal", "home +1", "home +2 or more"]
@@ -42,20 +42,20 @@ TEXT = {
     "title": "Rest asymmetry: the differential moves outcomes, the shared load does not",
     "unit_of_observation": "one game",
     "conditioning_variable": "rest differential = rest_days_home - rest_days_away, a schedule quantity fixed before tip-off, binned into five cells; and for the congestion panel, whether both, one or neither side played the previous day.",
-    "timing_guarantee": "Every conditioning variable is a property of the schedule that is known before the opening tip: rest days come from the gap to each team's previous game date, and the moneyline is the recorded pregame quote. Nothing observed during or after the game enters a cell assignment.",
-    "what_it_means": "Rest is a relative quantity here. A team that is better rested than its opponent wins more often, and the frequency climbs with the size of that advantage, but two tired teams play out almost exactly like two fresh teams. The pooled gradient is also a four-season average that one season does not reproduce.",
-    "how_to_read": "Each cell reports n_games first, then the observed home win frequency and its game-cluster bootstrap interval. The contrast panel subtracts the equal-rest cell on the same resample, so its interval is paired. In the market panel a gap whose interval contains zero means the recorded pregame forecast and the observed frequency agree within noise for that cell.",
+    "timing_guarantee": "Every conditioning variable is a property of the schedule that is known before the opening tip: rest days come from the gap to each team's previous game date. The moneyline pair is a recorded pregame reference forecast without a quote timestamp, so where it sits inside the pregame window is unknown. Nothing observed during or after the game enters a cell assignment.",
+    "what_it_means": "Rest is a relative quantity here. A team that is better rested than its opponent wins more often, and the frequency climbs with the size of that advantage. At an equal differential the observed home-win share is nearly identical whether both sides are on a back-to-back or neither is; that similarity does not establish absence of fatigue, only that it is not visible in this outcome share. The pooled gradient is also a four-season average that one season does not reproduce.",
+    "how_to_read": "Each cell reports n_games first, then the observed home win frequency and its game-cluster bootstrap interval. The contrast panel is a difference between two SEPARATE groups of games taken inside every bootstrap replicate, so its interval carries the joint resampling noise of both groups; it is not a paired within-game comparison, and a contrast is masked when either side is below the floor. In the market panel a gap whose interval contains zero means the recorded pregame reference forecast and the observed frequency agree within noise for that cell.",
     "why_it_matters": "It separates a schedule state that tracks outcomes from one that does not, and it shows the limit of the local corpus: the seasons with the clearest gradient are the seasons with no recorded price, so the pricing question stays open.",
     "caveat": "Descriptive conditional frequencies, not a forecast and not a causal estimate. Rest differential is confounded with travel, opponent strength and where a game sits in a road trip, none of which are controlled here. The market panel covers one season only.",
     "cells": "<= -2 away +2 or more; -1 away +1; 0 equal; +1 home +1; >= +2 home +2 or more",
     "back_to_back": "rest_days == 1; at an equal differential this is symmetric, so the mixed congestion cell is empty by construction",
-    "market_forecast": "two-way devigged home probability from the recorded pregame American moneyline pair, normalized so home plus away equals 1",
+    "market_forecast": "two-way devigged home probability from the recorded American moneyline pair, normalized so home plus away equals 1; the source table carries no quote timestamp, so this is a recorded pregame reference forecast without a quote timestamp and not specifically the close",
     "gap": "observed home win frequency in the cell minus the mean devigged market forecast in the same cell",
     "interval": "percentile 95 percent interval from a bootstrap that resamples whole game clusters with replacement",
     "congestion_note": "restricted to games at an equal rest differential",
 }
-HEADLINE = "Across %d NBA games the home win frequency rises from %.4f when the visitor is the better-rested side by two or more days (n=%d) to %.4f when the home side is (n=%d), a %.4f spread, while two teams sharing the same congestion move nothing: at an equal differential both on a back-to-back win %.4f (n=%d) against %.4f (n=%d) when neither is."
-VERDICT = "The differential is what moves the frequency, not the load. Pooled over %d games the gradient is monotone across all five cells, and only the %s contrast against equal rest has a bootstrap interval that excludes zero. It is not stable season to season: the home-rested-minus-away-rested gradient clears 5 points in %d of %d seasons and is %s. The %d games that carry a recorded pregame moneyline are all from %s, and there the observed-minus-market gap %s in every unmasked rest cell. So this corpus cannot separate 'the recorded forecast already carries the rest state' from 'this season had no gradient to carry'; the pricing question is recorded as a null, not as a finding."
+HEADLINE = "Across %d NBA games the home win frequency rises from %.4f when the visitor is the better-rested side by two or more days (n=%d) to %.4f when the home side is (n=%d), a %.4f spread, while the two symmetric-congestion groups show no visible difference: at an equal differential both on a back-to-back win %.4f (n=%d) against %.4f (n=%d) when neither is."
+VERDICT = "The differential tracks the frequency; the two symmetric-congestion groups look alike, which is no visible difference rather than an absence of fatigue. Pooled over %d games the gradient is monotone across all five cells, and only the %s contrast against equal rest has a bootstrap interval that excludes zero. It is not stable season to season: the home-rested-minus-away-rested gradient clears 5 points in %d of %d seasons and is %s. The %d games that carry a recorded pregame reference forecast are all from %s, and there the observed-minus-forecast gap %s in every unmasked rest cell. So this corpus cannot separate 'the recorded forecast already carries the rest state' from 'this season had no gradient to carry'; the pricing question is recorded as a null, not as a finding."
 
 
 def rest_cell(diff: float) -> str:
@@ -66,15 +66,14 @@ def rest_cell(diff: float) -> str:
 def load_games(path: Path = GAMES_PATH) -> pd.DataFrame:
     """Schedule spine: one row per game with its pre-tip rest state and outcome."""
     raw = pd.read_parquet(path)
-    games = raw.dropna(subset=["home_win", "rest_days_home", "rest_days_away"]).copy()
-    games.attrs["dropped_missing_rest"] = int(len(raw) - len(games))
+    resolved = raw.dropna(subset=["home_win"])
+    games = resolved.dropna(subset=["rest_days_home", "rest_days_away"]).copy()
+    games.attrs["coverage"] = {"games_in_source": int(len(raw)), "dropped_games_missing_outcome": int(len(raw) - len(resolved)), "dropped_games_missing_rest": int(len(resolved) - len(games))}
     games["rest_diff"] = games["rest_days_home"] - games["rest_days_away"]
     games["cell"] = games["rest_diff"].map(rest_cell)
     home_b2b, away_b2b = games["home_b2b"].astype(bool), games["away_b2b"].astype(bool)
-    games["congestion"] = np.where(home_b2b & away_b2b, CONGESTION[0],
-                                   np.where(~home_b2b & ~away_b2b, CONGESTION[2], CONGESTION[1]))
-    games["side"] = np.where(games["rest_diff"] > 0, SIDES[2],
-                             np.where(games["rest_diff"] < 0, SIDES[0], SIDES[1]))
+    games["congestion"] = np.where(home_b2b & away_b2b, CONGESTION[0], np.where(~home_b2b & ~away_b2b, CONGESTION[2], CONGESTION[1]))
+    games["side"] = np.where(games["rest_diff"] > 0, SIDES[2], np.where(games["rest_diff"] < 0, SIDES[0], SIDES[1]))
     games["join_date"] = pd.to_datetime(games["date"]).dt.strftime("%Y-%m-%d")
     return games
 
@@ -94,7 +93,12 @@ def load_market(games: pd.DataFrame, path: Path = ODDS_PATH) -> pd.DataFrame:
     odds["join_date"] = pd.to_datetime(odds["date"]).dt.strftime("%Y-%m-%d")
     odds["market_prob"] = devig(odds["home_ml"].to_numpy(), odds["away_ml"].to_numpy())
     keys = ["join_date", "home_team", "away_team"]
-    return games.merge(odds[keys + ["market_prob"]], on=keys, how="inner")
+    merged = games.merge(odds[keys + ["market_prob"]], on=keys, how="inner")
+    dupes = int(merged["game_id"].duplicated().sum())
+    if dupes:
+        raise ValueError("odds join is not one row per game: %d duplicate game ids" % dupes)
+    merged.attrs["duplicate_game_ids"] = dupes
+    return merged
 
 
 def replicates(cluster_ids, n_boot: int = N_BOOT, seed: int = SEED) -> list:
@@ -154,11 +158,11 @@ def contrast_panel(frame: pd.DataFrame, floor: int = MIN_GAMES_PER_CELL) -> list
     point = _rates(codes, y, np.arange(len(frame)), len(CELLS))
     draws = np.vstack([_rates(codes, y, idx, len(CELLS)) for idx in reps])
     intervals = _ci(draws - draws[:, [EQUAL_IDX]])
-    rows = []
+    thin_baseline, rows = int(counts[EQUAL_IDX]) < floor, []
     for i, label in enumerate(CELLS):
         if i == EQUAL_IDX:
             continue
-        masked, span = int(counts[i]) < floor, intervals[i]
+        masked, span = thin_baseline or int(counts[i]) < floor, intervals[i]
         rows.append({"cell": label, "n_games": int(counts[i]),
                      "delta_vs_equal": None if masked else round(float(point[i] - point[EQUAL_IDX]), 4),
                      "ci95": [None, None] if masked else span, "masked": masked,
@@ -206,8 +210,7 @@ def checks(games: pd.DataFrame, market: pd.DataFrame, path: Path = FINALS_PATH) 
         finals = pd.read_parquet(path)[["game_id", "home_win_true"]]
         joined = games.merge(finals, on="game_id", how="inner")
         out["label_crosscheck_n"] = int(len(joined))
-        out["label_agreement"] = round(float((joined["home_win"].astype(bool)
-                                              == joined["home_win_true"].astype(bool)).mean()), 4)
+        out["label_agreement"] = round(float((joined["home_win"].astype(bool) == joined["home_win_true"].astype(bool)).mean()), 4)
     except (OSError, ValueError, KeyError) as err:
         out["label_crosscheck_n"], out["label_agreement"] = 0, None
         out["label_crosscheck_note"] = "corrected finals table unreadable: %s" % type(err).__name__
@@ -215,7 +218,10 @@ def checks(games: pd.DataFrame, market: pd.DataFrame, path: Path = FINALS_PATH) 
     out["schedule_panel_seasons"] = sorted(str(s) for s in games["season"].unique())
     out["congestion_mixed_n"] = int((games.loc[games["rest_diff"].eq(0), "congestion"] == CONGESTION[1]).sum())
     out["rest_days_capped_at"] = float(max(games["rest_days_home"].max(), games["rest_days_away"].max()))
-    out["dropped_games_missing_rest"] = int(games.attrs.get("dropped_missing_rest", 0))
+    out.update(games.attrs.get("coverage", {}))
+    out["priced_games"] = int(len(market))
+    out["duplicate_game_ids_after_odds_join"] = int(market.attrs.get("duplicate_game_ids", 0))
+    out["join_keys"] = "date, home_team, away_team; the join must leave one row per game_id"
     return out
 
 
@@ -250,15 +256,15 @@ def build() -> dict:
         else "separates from zero in " + ", ".join(off))
     return {
         "id": "novel_rest_asymmetry", "title": TEXT["title"], "as_of": AS_OF, "sport": "nba",
+        "revision": REVISION, "changelog": CHANGELOG,
         "descriptive_only": True, "headline": headline, "headline_insight": headline,
         "verdict": verdict,
         "population": "NBA regular-season games recorded in data/domains/basketball_nba/games.parquet, seasons %s, %d games with a resolved home_win label." % (", ".join(audit["schedule_panel_seasons"]), len(games)),
         "unit_of_observation": TEXT["unit_of_observation"],
         "conditioning_variable": TEXT["conditioning_variable"],
         "timing_guarantee": TEXT["timing_guarantee"],
-        "definitions": {"rest_days": "days since that team's previous game, capped at %.0f in the source table" % audit["rest_days_capped_at"],
-                        "cells": TEXT["cells"], "back_to_back": TEXT["back_to_back"],
-                        "market_forecast": TEXT["market_forecast"], "gap_observed_minus_market": TEXT["gap"]},
+        "definitions": {"rest_days": "days since that team's previous game, capped at %.0f in the source table" % audit["rest_days_capped_at"], "cells": TEXT["cells"],
+                        "back_to_back": TEXT["back_to_back"], "market_forecast": TEXT["market_forecast"], "gap_observed_minus_market": TEXT["gap"]},
         "method": {"interval": TEXT["interval"], "n_boot": N_BOOT, "seed": SEED, "floor_games_per_cell": MIN_GAMES_PER_CELL, "mask_rule": "a cell with fewer than %d games keeps its count and reports no frequency or interval" % MIN_GAMES_PER_CELL},
         "sources": SOURCES, "is_honest_null": False,
         "index_card": {"stat_name": "Rest Asymmetry", "abbrev": "RA", "module": "novel_rest_asymmetry", "formula": FORMULA, "prior_art_verdict": "INCREMENTAL", "prior_art_citation": PRIOR_ART, "source_artifacts": SOURCES, "headline": headline, "n_results": len(cells)},
@@ -273,10 +279,8 @@ def build() -> dict:
         "what_it_means": TEXT["what_it_means"], "how_to_read": TEXT["how_to_read"],
         "why_it_matters": TEXT["why_it_matters"], "caveat": TEXT["caveat"],
         "cited": [
-            _cite("panels.rest_differential.cells[4] home_win_frequency / n_games",
-                  "%s / %s" % (high["home_win_frequency"], high["n_games"])),
-            _cite("panels.rest_differential.cells[0] home_win_frequency / n_games",
-                  "%s / %s" % (low["home_win_frequency"], low["n_games"])),
+            _cite("panels.rest_differential.cells[4] home_win_frequency / n_games", "%s / %s" % (high["home_win_frequency"], high["n_games"])),
+            _cite("panels.rest_differential.cells[0] home_win_frequency / n_games", "%s / %s" % (low["home_win_frequency"], low["n_games"])),
             _cite("panels.symmetric_congestion.cells home_win_frequency (both / neither)", "%s / %s (gap %s)" % (both["home_win_frequency"], neither["home_win_frequency"], congestion_gap)),
             _cite("panels.market_residual.n_games", int(len(market))),
         ],
@@ -284,9 +288,9 @@ def build() -> dict:
 
 
 def main() -> None:
-    """Build the artifact and write it to the insights tree and to the publisher source."""
+    """Build the artifact and write identical bytes to all three published copies."""
     artifact = json.dumps(build(), indent=1, ensure_ascii=True) + "\n"
-    for path in (OUT_INSIGHT, OUT_MODULE):
+    for path in (OUT_INSIGHT, OUT_MODULE, OUT_SHOWCASE):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(artifact, encoding="utf-8")
         print("wrote %s" % path.relative_to(REPO).as_posix())

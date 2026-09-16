@@ -25,10 +25,17 @@ describe("ModuleEvidence", () => {
     expect(screen.queryByRole("link", { name: /Open the interactive inspector/ })).not.toBeInTheDocument();
     expect(screen.queryByLabelText("Market overreaction operands")).not.toBeInTheDocument();
     expect(screen.queryByLabelText("Micro absorption operands")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Rest asymmetry panels")).not.toBeInTheDocument();
   });
   it("mounts the overreaction operands for the market movement module", () => {
     render(<ModuleEvidence moduleId="market_overreaction" evidence={{ availability: "published", missingInputs: [], coverage: [], analyses: [] }} />);
     expect(screen.getByLabelText("Market overreaction operands")).toBeInTheDocument();
+  });
+  it("mounts the rest-asymmetry panels for the module whose artifact publishes panels", () => {
+    render(<ModuleEvidence moduleId="novel_rest_asymmetry" evidence={{ availability: "published", missingInputs: [], coverage: [], analyses: [] }} />);
+    const panel = screen.getByLabelText("Rest asymmetry panels");
+    expect(panel).toHaveTextContent("Schedule population: 4,793 games");
+    expect(panel).toHaveTextContent("Priced population: 1,103 games");
   });
   it("mounts the absorption operands for the time-to-close module", () => {
     render(<ModuleEvidence moduleId="micro_absorption" evidence={{ availability: "published", missingInputs: [], coverage: [], analyses: [] }} />);

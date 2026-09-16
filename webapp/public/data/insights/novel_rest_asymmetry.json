@@ -3,19 +3,21 @@
  "title": "Rest asymmetry: the differential moves outcomes, the shared load does not",
  "as_of": "2026-09-16",
  "sport": "nba",
+ "revision": 2,
+ "changelog": "revision 2: a contrast is masked when EITHER side of the difference is below the floor; missing-outcome and missing-rest exclusions are reported separately; the odds join is checked for duplicate game ids; the moneyline is described as a recorded pregame reference forecast without a quote timestamp.",
  "descriptive_only": true,
- "headline": "Across 4793 NBA games the home win frequency rises from 0.4944 when the visitor is the better-rested side by two or more days (n=180) to 0.6409 when the home side is (n=259), a 0.1465 spread, while two teams sharing the same congestion move nothing: at an equal differential both on a back-to-back win 0.5510 (n=245) against 0.5518 (n=2394) when neither is.",
- "headline_insight": "Across 4793 NBA games the home win frequency rises from 0.4944 when the visitor is the better-rested side by two or more days (n=180) to 0.6409 when the home side is (n=259), a 0.1465 spread, while two teams sharing the same congestion move nothing: at an equal differential both on a back-to-back win 0.5510 (n=245) against 0.5518 (n=2394) when neither is.",
- "verdict": "The differential is what moves the frequency, not the load. Pooled over 4793 games the gradient is monotone across all five cells, and only the home +2 or more contrast against equal rest has a bootstrap interval that excludes zero. It is not stable season to season: the home-rested-minus-away-rested gradient clears 5 points in 3 of 4 seasons and is flat or reversed in 2025-26. The 1103 games that carry a recorded pregame moneyline are all from 2025-26, and there the observed-minus-market gap stays inside its 95 percent interval of zero in every unmasked rest cell. So this corpus cannot separate 'the recorded forecast already carries the rest state' from 'this season had no gradient to carry'; the pricing question is recorded as a null, not as a finding.",
+ "headline": "Across 4793 NBA games the home win frequency rises from 0.4944 when the visitor is the better-rested side by two or more days (n=180) to 0.6409 when the home side is (n=259), a 0.1465 spread, while the two symmetric-congestion groups show no visible difference: at an equal differential both on a back-to-back win 0.5510 (n=245) against 0.5518 (n=2394) when neither is.",
+ "headline_insight": "Across 4793 NBA games the home win frequency rises from 0.4944 when the visitor is the better-rested side by two or more days (n=180) to 0.6409 when the home side is (n=259), a 0.1465 spread, while the two symmetric-congestion groups show no visible difference: at an equal differential both on a back-to-back win 0.5510 (n=245) against 0.5518 (n=2394) when neither is.",
+ "verdict": "The differential tracks the frequency; the two symmetric-congestion groups look alike, which is no visible difference rather than an absence of fatigue. Pooled over 4793 games the gradient is monotone across all five cells, and only the home +2 or more contrast against equal rest has a bootstrap interval that excludes zero. It is not stable season to season: the home-rested-minus-away-rested gradient clears 5 points in 3 of 4 seasons and is flat or reversed in 2025-26. The 1103 games that carry a recorded pregame reference forecast are all from 2025-26, and there the observed-minus-forecast gap stays inside its 95 percent interval of zero in every unmasked rest cell. So this corpus cannot separate 'the recorded forecast already carries the rest state' from 'this season had no gradient to carry'; the pricing question is recorded as a null, not as a finding.",
  "population": "NBA regular-season games recorded in data/domains/basketball_nba/games.parquet, seasons 2022-23, 2023-24, 2024-25, 2025-26, 4793 games with a resolved home_win label.",
  "unit_of_observation": "one game",
  "conditioning_variable": "rest differential = rest_days_home - rest_days_away, a schedule quantity fixed before tip-off, binned into five cells; and for the congestion panel, whether both, one or neither side played the previous day.",
- "timing_guarantee": "Every conditioning variable is a property of the schedule that is known before the opening tip: rest days come from the gap to each team's previous game date, and the moneyline is the recorded pregame quote. Nothing observed during or after the game enters a cell assignment.",
+ "timing_guarantee": "Every conditioning variable is a property of the schedule that is known before the opening tip: rest days come from the gap to each team's previous game date. The moneyline pair is a recorded pregame reference forecast without a quote timestamp, so where it sits inside the pregame window is unknown. Nothing observed during or after the game enters a cell assignment.",
  "definitions": {
   "rest_days": "days since that team's previous game, capped at 10 in the source table",
   "cells": "<= -2 away +2 or more; -1 away +1; 0 equal; +1 home +1; >= +2 home +2 or more",
   "back_to_back": "rest_days == 1; at an equal differential this is symmetric, so the mixed congestion cell is empty by construction",
-  "market_forecast": "two-way devigged home probability from the recorded pregame American moneyline pair, normalized so home plus away equals 1",
+  "market_forecast": "two-way devigged home probability from the recorded American moneyline pair, normalized so home plus away equals 1; the source table carries no quote timestamp, so this is a recorded pregame reference forecast without a quote timestamp and not specifically the close",
   "gap_observed_minus_market": "observed home win frequency in the cell minus the mean devigged market forecast in the same cell"
  },
  "method": {
@@ -43,7 +45,7 @@
    "data/domains/basketball_nba/odds.parquet",
    "data/domains/basketball_nba/game_finals_corrected.parquet"
   ],
-  "headline": "Across 4793 NBA games the home win frequency rises from 0.4944 when the visitor is the better-rested side by two or more days (n=180) to 0.6409 when the home side is (n=259), a 0.1465 spread, while two teams sharing the same congestion move nothing: at an equal differential both on a back-to-back win 0.5510 (n=245) against 0.5518 (n=2394) when neither is.",
+  "headline": "Across 4793 NBA games the home win frequency rises from 0.4944 when the visitor is the better-rested side by two or more days (n=180) to 0.6409 when the home side is (n=259), a 0.1465 spread, while the two symmetric-congestion groups show no visible difference: at an equal differential both on a back-to-back win 0.5510 (n=245) against 0.5518 (n=2394) when neither is.",
   "n_results": 5
  },
  "panels": {
@@ -443,10 +445,15 @@
   ],
   "congestion_mixed_n": 0,
   "rest_days_capped_at": 10.0,
-  "dropped_games_missing_rest": 53
+  "games_in_source": 4846,
+  "dropped_games_missing_outcome": 0,
+  "dropped_games_missing_rest": 53,
+  "priced_games": 1103,
+  "duplicate_game_ids_after_odds_join": 0,
+  "join_keys": "date, home_team, away_team; the join must leave one row per game_id"
  },
- "what_it_means": "Rest is a relative quantity here. A team that is better rested than its opponent wins more often, and the frequency climbs with the size of that advantage, but two tired teams play out almost exactly like two fresh teams. The pooled gradient is also a four-season average that one season does not reproduce.",
- "how_to_read": "Each cell reports n_games first, then the observed home win frequency and its game-cluster bootstrap interval. The contrast panel subtracts the equal-rest cell on the same resample, so its interval is paired. In the market panel a gap whose interval contains zero means the recorded pregame forecast and the observed frequency agree within noise for that cell.",
+ "what_it_means": "Rest is a relative quantity here. A team that is better rested than its opponent wins more often, and the frequency climbs with the size of that advantage. At an equal differential the observed home-win share is nearly identical whether both sides are on a back-to-back or neither is; that similarity does not establish absence of fatigue, only that it is not visible in this outcome share. The pooled gradient is also a four-season average that one season does not reproduce.",
+ "how_to_read": "Each cell reports n_games first, then the observed home win frequency and its game-cluster bootstrap interval. The contrast panel is a difference between two SEPARATE groups of games taken inside every bootstrap replicate, so its interval carries the joint resampling noise of both groups; it is not a paired within-game comparison, and a contrast is masked when either side is below the floor. In the market panel a gap whose interval contains zero means the recorded pregame reference forecast and the observed frequency agree within noise for that cell.",
  "why_it_matters": "It separates a schedule state that tracks outcomes from one that does not, and it shows the limit of the local corpus: the seasons with the clearest gradient are the seasons with no recorded price, so the pricing question stays open.",
  "caveat": "Descriptive conditional frequencies, not a forecast and not a causal estimate. Rest differential is confounded with travel, opponent strength and where a game sits in a road trip, none of which are controlled here. The market panel covers one season only.",
  "cited": [

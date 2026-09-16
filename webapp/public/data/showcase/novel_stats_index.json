@@ -158,7 +158,7 @@
     "data/domains/basketball_nba/odds.parquet",
     "data/domains/basketball_nba/game_finals_corrected.parquet"
    ],
-   "headline": "Across 4793 NBA games the home win frequency rises from 0.4944 when the visitor is the better-rested side by two or more days (n=180) to 0.6409 when the home side is (n=259), a 0.1465 spread, while two teams sharing the same congestion move nothing: at an equal differential both on a back-to-back win 0.5510 (n=245) against 0.5518 (n=2394) when neither is.",
+   "headline": "Across 4793 NBA games the home win frequency rises from 0.4944 when the visitor is the better-rested side by two or more days (n=180) to 0.6409 when the home side is (n=259), a 0.1465 spread, while the two symmetric-congestion groups show no visible difference: at an equal differential both on a back-to-back win 0.5510 (n=245) against 0.5518 (n=2394) when neither is.",
    "n_results": 5,
    "edge_claimed": false,
    "artifact": "scripts/platformkit/analytics_showcase/out/novel_rest_asymmetry.json",
