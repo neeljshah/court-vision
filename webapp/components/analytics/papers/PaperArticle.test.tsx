@@ -88,6 +88,16 @@ describe("PaperArticle", () => {
     expect(card).toHaveAttribute("href", expect.stringMatching(/\/analytics\/m\/state_conditioned_calibration\/?$/));
   });
 
+  it("uses published data rather than a disapproved chart image", () => {
+    const paper = {
+      ...fixture,
+      sections: [{ id: "results", heading: "Results", blocks: [{ type: "figure" as const, module: "ctx_team_states", caption: "A reviewed data fallback." }]}],
+    };
+    render(<PaperArticle paper={paper} />);
+    expect(screen.getByTestId("published-data-figure")).toBeInTheDocument();
+    expect(screen.queryByRole("img", { name: /Ctx Team States chart/ })).not.toBeInTheDocument();
+  });
+
   it("builds a table of contents that points at every section", () => {
     render(<PaperArticle paper={fixture} />);
     const toc = screen.getByRole("navigation", { name: "Sections" });

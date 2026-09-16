@@ -118,6 +118,8 @@
       "artifact": "calibration_stability.json",
       "module": "calibration_stability",
       "asOf": "2026-07-23",
+      "path": "showcase",
+      "dateMeaning": "snapshot",
       "fields": [
         "sports.mlb.sides.model_prob.brier",
         "sports.mlb.sides.market_prob.brier",
@@ -145,6 +147,8 @@
       "artifact": "state_conditioned_calibration.json",
       "module": "state_conditioned_calibration",
       "asOf": null,
+      "path": "showcase",
+      "dateMeaning": "not-published",
       "fields": [
         "sports.mlb.n_files",
         "sports.mlb.n_records",

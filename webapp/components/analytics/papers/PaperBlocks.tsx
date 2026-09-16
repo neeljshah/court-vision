@@ -4,6 +4,7 @@
 import Link from "next/link";
 import { Figure } from "@/components/analytics/charts/Figure";
 import { paperFigure } from "@/lib/analytics/papers.server";
+import { getPublishedChartPresentation } from "@/lib/analytics/publishedChartPresentation";
 import type { PaperBlock } from "@/lib/analytics/papers";
 
 function TableBlock({ block }: { block: Extract<PaperBlock, { type: "table" }> }) {
@@ -33,12 +34,28 @@ function TableBlock({ block }: { block: Extract<PaperBlock, { type: "table" }> }
 
 function FigureBlock({ block }: { block: Extract<PaperBlock, { type: "figure" }> }) {
   const published = paperFigure(block.module);
-  if (published?.chartSrc) {
+  const presentation = getPublishedChartPresentation(block.module);
+  if (published?.chartSrc && presentation.approved) {
     return (
       <div className="paper-figure">
         <Figure source={published.source} asOf={published.asOf} title={published.title} verdict="descriptive_only">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={published.chartSrc} alt={`${published.title} chart`} style={{ width: "100%", height: "auto", display: "block" }} />
+        </Figure>
+        <p className="paper-caption">{block.caption}</p>
+      </div>
+    );
+  }
+  if (published?.chartSrc) {
+    return (
+      <div className="paper-figure">
+        <Figure source={published.source} asOf={published.asOf} title={published.title} note={presentation.reason} verdict="descriptive_only">
+          <div data-testid="published-data-figure" style={{ border: "1px solid var(--rule)", borderRadius: "var(--radius-card)", background: "var(--paper-tint)", padding: 12 }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontFamily: "var(--font-mono)", fontSize: 12 }}>
+              <thead><tr>{published.fallback.headers.map(header => <th key={header} style={{ color: "var(--ink-3)", textAlign: "left", padding: "6px 4px" }}>{header.replaceAll("_", " ")}</th>)}</tr></thead>
+              <tbody>{published.fallback.rows.map((row, index) => <tr key={index}>{published.fallback.headers.map(header => <td key={header} style={{ borderTop: "1px solid var(--rule)", padding: "6px 4px" }}>{String(row[header] ?? "-")}</td>)}</tr>)}</tbody>
+            </table>
+          </div>
         </Figure>
         <p className="paper-caption">{block.caption}</p>
       </div>

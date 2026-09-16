@@ -18,8 +18,16 @@ export type PaperBlock =
   | { type: "math"; text: string };
 
 export type PaperSection = { id: string; heading: string; blocks: PaperBlock[] };
-export type PaperEvidence = { artifact: string; module: string; asOf: string | null; fields: string[] };
+export type PaperEvidencePath = "showcase" | "insights";
+export type PaperDateMeaning = "snapshot" | "window" | "not-published";
+export type PaperEvidence = {
+  artifact: string; module: string; asOf: string | null; fields: string[];
+  path?: PaperEvidencePath; dateMeaning?: PaperDateMeaning;
+};
 export type PaperRelated = { kind: PaperRelatedKind; id: string };
+export type PaperReferences = {
+  analysisIds?: ReadonlySet<string>; findingIds?: ReadonlySet<string>; paperIds?: ReadonlySet<string>;
+};
 
 export type Paper = {
   slug: string; title: string; subtitle: string; authors: string[]; date: string;
@@ -30,6 +38,8 @@ export type Paper = {
 const SPORTS = new Set<string>(["all", "nba", "mlb", "soccer_intl", "tennis"]);
 const RELATED_KINDS = new Set<string>(["inspector", "analysis", "module", "paper", "finding"]);
 const BLOCK_TYPES = new Set<string>(["p", "list", "table", "figure", "callout", "math"]);
+const EVIDENCE_PATHS = new Set<string>(["showcase", "insights"]);
+const DATE_MEANINGS = new Set<string>(["snapshot", "window", "not-published"]);
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 const PRINTABLE_ASCII = /^[\x20-\x7E\n\t]*$/;
@@ -80,6 +90,8 @@ function evidenceReason(entry: unknown, index: number, artifacts: ReadonlySet<st
   if (!filled(item.artifact) || !filled(item.module)) return `${where} needs an artifact and a source id`;
   if (!strings(item.fields)) return `${where} needs at least one field path`;
   if (item.asOf !== null && !filled(item.asOf)) return `${where} needs an asOf date or null`;
+  if (item.path !== undefined && (typeof item.path !== "string" || !EVIDENCE_PATHS.has(item.path))) return `${where} path must be showcase or insights`;
+  if (item.dateMeaning !== undefined && (typeof item.dateMeaning !== "string" || !DATE_MEANINGS.has(item.dateMeaning))) return `${where} dateMeaning is not recognized`;
   return artifacts.has(item.artifact) ? null : `${where} names ${item.artifact}, which is not a published artifact`;
 }
 
@@ -92,7 +104,7 @@ export function paperStrings(value: unknown, into: string[] = []): string[] {
 }
 
 /** Returns null when the value is a valid paper, otherwise the reason it is excluded. */
-export function validatePaper(value: unknown, artifacts: ReadonlySet<string>): string | null {
+export function validatePaper(value: unknown, artifacts: ReadonlySet<string>, references?: PaperReferences): string | null {
   const item = bag(value);
   if (!item) return "not a JSON object";
   if (!filled(item.slug) || !SLUG.test(item.slug)) return "slug must be lower-case kebab-case";
@@ -103,9 +115,13 @@ export function validatePaper(value: unknown, artifacts: ReadonlySet<string>): s
   if (!strings(item.keywords)) return "keywords must be a non-empty list";
   if (!strings(item.limitations)) return "limitations must be a non-empty list";
   if (!Array.isArray(item.sections) || item.sections.length === 0) return "sections is empty";
+  const sectionIds = new Set<string>();
   for (let index = 0; index < item.sections.length; index += 1) {
     const reason = sectionReason(item.sections[index], index);
     if (reason) return reason;
+    const section = item.sections[index] as Bag;
+    if (sectionIds.has(section.id as string)) return `duplicate section id ${section.id}`;
+    sectionIds.add(section.id as string);
   }
   if (!Array.isArray(item.evidence) || item.evidence.length === 0) return "evidence is empty";
   for (let index = 0; index < item.evidence.length; index += 1) {
@@ -120,6 +136,9 @@ export function validatePaper(value: unknown, artifacts: ReadonlySet<string>): s
     }
     if (target.kind === "module" && !artifacts.has(`${target.id}.json`)) return `related module ${target.id} has no published module page`;
     if (target.kind === "inspector" && !analysisDestinations.some(entry => entry.id === target.id)) return `related inspector ${target.id} is not registered`;
+    if (target.kind === "analysis" && references?.analysisIds && !references.analysisIds.has(target.id)) return `related analysis ${target.id} is not registered`;
+    if (target.kind === "finding" && references?.findingIds && !references.findingIds.has(target.id)) return `related finding ${target.id} is not registered`;
+    if (target.kind === "paper" && references?.paperIds && !references.paperIds.has(target.id)) return `related paper ${target.id} is not published`;
   }
   for (const text of paperStrings(item)) {
     if (!PRINTABLE_ASCII.test(text)) return `non-ASCII text in ${JSON.stringify(text.slice(0, 40))}`;
