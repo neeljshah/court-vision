@@ -111,10 +111,10 @@ export default function TheLoopPage() {
   const scout: ScoutEnvelope = {
     status: "ok",
     prose:
-      `Confirms are not the product -- the self-grading is. Of ${families} tracked families, ` +
+      `The ledger retains confirmed, null, untestable and retracted claims. Of ${families} tracked families, ` +
       `**${verified}** are verified and **${graveyard}** sit in the graveyard as nulls, not-testables, or ` +
       `retractions, kept in the same ledger they are confirmed from. ` +
-            `**${stats.flips}** changed their own verdict when new evidence arrived.`,
+            `**${stats.flips}** have more than one recorded verdict.`,
     chips: [
       fwdChip({ value: String(verified), label: "verified families", verdict: "confirmed" }),
       fwdChip({ value: String(graveyard), label: "kept in the ledger (null / not-testable / retracted)", verdict: "null" }),
@@ -155,7 +155,7 @@ export default function TheLoopPage() {
           <StatCell num={families.toLocaleString("en-US")} label="claim families tracked" chip={fwdChip({ value: String(families), label: "self-grading scoreboard" })} />
           <StatCell num={String(verified)} label="verified (confirmed)" chip={fwdChip({ value: String(verified), label: "verified families", verdict: "confirmed" })} />
           <StatCell num={String(graveyard)} label="null, not-testable, or retracted" chip={fwdChip({ value: String(graveyard), label: "kept in the ledger", verdict: "null" })} />
-          <StatCell num={String(stats.flips)} label="changed their own verdict" chip={fwdChip({ value: String(stats.flips), label: "self-corrections", verdict: "not_testable" })} />
+          <StatCell num={String(stats.flips)} label="with more than one recorded verdict" chip={fwdChip({ value: String(stats.flips), label: "self-corrections", verdict: "not_testable" })} />
         </div>
         <p style={{ ...lede, marginTop: 18, display: "flex", flexWrap: "wrap", alignItems: "baseline", gap: "4px 10px" }}>
           <span>

@@ -15,8 +15,8 @@ export default function StateReliabilityPage() {
   const artifactDate = sports[0]?.artifactDate;
   return <div className="sr-page">
     <p className="sr-kicker">Measurement / State-conditioned reliability</p>
-    <h1>Inspect reliability across the published game-state grid.</h1>
-    <p className="sr-lede">State-conditioned reliability is a different object from aggregate reliability: it groups published forecasts by both game phase and probability band. Use the grids to compare the recorded model and reference rows without assuming their matching labels identify the same predictions.</p>
+    <h1>Where calibration changes during the game.</h1>
+    <p className="sr-lede">Calibration can differ between early and late game states. This view groups published forecasts by both game phase and probability band. Use the grids to compare the recorded model and reference rows without assuming their matching labels identify the same predictions.</p>
     <p className="sr-lede">For aggregate reliability bins and bootstrap intervals, see <Link href="/analytics/calibration">Calibration reliability</Link>. Those bins summarize a different published grouping.</p>
     <p className="sr-artifact-date">Artifact date: {artifactDate || "date not published"}</p>
     <StateReliability sports={sports} />

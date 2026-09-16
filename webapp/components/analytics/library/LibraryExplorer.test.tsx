@@ -18,7 +18,7 @@ describe("LibraryExplorer", () => {
   it("combines search, sport, and collection filters and restores them from the URL", async () => {
     window.history.replaceState(null, "", "/analytics/browse/?sport=nba&kind=derived&q=pace%20formula");
     render(<LibraryExplorer entries={entries} />);
-    await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent('1 entry including shared diagnostics matching "pace formula"'));
+    await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent('1 entry including checks used across sports matching "pace formula"'));
     expect(screen.getByRole("heading", { name: "NBA Pace Formula" })).toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "MLB Pitch Source" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Basketball" })).toHaveAttribute("aria-pressed", "true");
@@ -60,7 +60,7 @@ describe("LibraryExplorer", () => {
     expect(window.location.search).toContain("collection=forecast-calibration");
     window.history.replaceState(null, "", "/analytics/browse/?sport=nba&kind=derived&q=pace");
     window.dispatchEvent(new PopStateEvent("popstate"));
-    await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent('1 entry including shared diagnostics matching "pace"'));
+    await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent('1 entry including checks used across sports matching "pace"'));
   });
 
   it("restores page two from the URL and shows page one for an invalid page", async () => {

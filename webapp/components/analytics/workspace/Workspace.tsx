@@ -9,17 +9,17 @@ import { Coverage } from "./Coverage";
 import { Panel } from "./Primitives";
 import { Benchmarks, WalkForward } from "./Benchmarks";
 import { WorkspaceIntro } from "./WorkspaceIntro";
+import type { HomeCalibrationExample } from "@/lib/analytics/homeCalibrationExample";
 
 const views = [ { id: "overview", label: "Overview", Icon: ChartNoAxesCombined }, { id: "quality", label: "Model quality", Icon: Layers3 }, { id: "research", label: "Research ledger", Icon: FlaskConical }, { id: "entities", label: "Entity atlas", Icon: Users }, { id: "coverage", label: "Data coverage", Icon: Database }, { id: "library", label: "All analytics", Icon: BookOpen } ];
-export default function Workspace({ data }: { data: DashboardData }) {
+export default function Workspace({ data, calibrationExample }: { data: DashboardData; calibrationExample: HomeCalibrationExample | null }) {
   const [sport, setSport] = useState<Sport>("all"); const [view, setActiveView] = useState("overview");
   const setView = (id: string) => { setActiveView(id); if (id === "library") setSport("all"); };
   const records = data.mechanisms.filter(m => sport === "all" || m.sport === sport);
   const entities = data.entities.filter(e => sport === "all" || e.sport === sport);
   return <div className="cv-workspace cv-overview"><div className="cv-workspace-inner">
-    <WorkspaceIntro />
+    <WorkspaceIntro example={calibrationExample} />
     <div className="cv-controls"><div className="cv-sports" role="group" aria-label="Filter analytics by sport">{SPORTS.map(s => <button key={s.id} onClick={() => setSport(s.id)} aria-pressed={sport === s.id} disabled={view === "library"}>{s.label}</button>)}</div><span className="cv-snapshot"><span />Historical snapshots <b>2026</b></span></div>
-    <div className="cv-stat-grid"><button onClick={() => setView("entities")}><Users size={18} /><span>Entity profiles</span><strong>{number(entities.length)}</strong><small>Players, teams & statistical profiles <ArrowUpRight size={13} /></small></button><button onClick={() => setView("research")}><FlaskConical size={18} /><span>Research records</span><strong>{number(records.length)}</strong><small>Published verdicts and evidence <ArrowUpRight size={13} /></small></button><button onClick={() => { window.location.href = `${base}/analytics/browse/?kind=derived`; }}><Layers3 size={18} /><span>Derived analyses</span><strong>{data.analyses.length}</strong><small>Interactive analyses from published snapshots <ArrowUpRight size={13} /></small></button><button onClick={() => setView("library")}><BookOpen size={18} /><span>Published source modules</span><strong>{data.modules.length}</strong><small>Published modules across all sports <ArrowUpRight size={13} /></small></button><div><Database size={18} /><span>Snapshot checks</span><strong>{data.checks ? data.checks.pass : "--"}<em>/{data.checks ? data.checks.total : "--"}</em></strong><small>Recorded in the July manifest</small></div></div>
     <nav className="cv-view-nav" aria-label="Analytics workspace views">{views.map(({ id, label, Icon }) => <button key={id} aria-pressed={view === id} onClick={() => setView(id)}><Icon size={16} />{label}</button>)}</nav>
     <div className="cv-view" key={view}>
       {view === "overview" && sport === "nba" && <div className="cv-benchmarks"><WalkForward data={data.walkForward} /></div>}
@@ -30,6 +30,6 @@ export default function Workspace({ data }: { data: DashboardData }) {
       {view === "entities" && <Entities entities={data.entities} sport={sport} />}
       {view === "coverage" && <Coverage data={data} sport={sport} />}
       {view === "library" && <Catalog modules={data.modules} />}
-    </div><div className="cv-bottom-note"><Database size={16} /><p>This workspace reads published snapshots. Dates and populations vary by source. Snapshot checks describe recorded results, not current system health.</p><a href={`${base}/analytics/about/`}>Methodology <ArrowUpRight size={14} /></a></div>
+    </div><div className="cv-stat-grid"><button onClick={() => setView("entities")}><Users size={18} /><span>Entity profiles</span><strong>{number(entities.length)}</strong><small>Players, teams & statistical profiles <ArrowUpRight size={13} /></small></button><button onClick={() => setView("research")}><FlaskConical size={18} /><span>Research records</span><strong>{number(records.length)}</strong><small>Published verdicts and evidence <ArrowUpRight size={13} /></small></button><button onClick={() => { window.location.href = `${base}/analytics/browse/?kind=derived`; }}><Layers3 size={18} /><span>Derived analyses</span><strong>{data.analyses.length}</strong><small>Interactive analyses from published snapshots <ArrowUpRight size={13} /></small></button><button onClick={() => setView("library")}><BookOpen size={18} /><span>Published source modules</span><strong>{data.modules.length}</strong><small>Published modules across all sports <ArrowUpRight size={13} /></small></button><div><Database size={18} /><span>Snapshot checks</span><strong>{data.checks ? data.checks.pass : "--"}<em>/{data.checks ? data.checks.total : "--"}</em></strong><small>Recorded in the July manifest</small></div></div><div className="cv-bottom-note"><Database size={16} /><p>This workspace reads published snapshots. Dates and populations vary by source. Snapshot checks describe recorded results, not current system health.</p><a href={`${base}/analytics/about/`}>Methodology <ArrowUpRight size={14} /></a></div>
   </div></div>;
 }

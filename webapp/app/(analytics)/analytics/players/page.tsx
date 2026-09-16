@@ -242,8 +242,8 @@ export default function EntitiesIndexPage() {
         ))}
       </nav>
 
-      <section aria-label="Insight-backed entities" className="pl-fsec" style={{ marginBottom: 8, marginTop: 20 }}>
-        <h2 className="serif" style={{ fontWeight: 500, fontSize: 28, marginBottom: 4 }}>Insight-backed</h2>
+      <section aria-label="Profiles with accompanying analysis" className="pl-fsec" style={{ marginBottom: 8, marginTop: 20 }}>
+        <h2 className="serif" style={{ fontWeight: 500, fontSize: 28, marginBottom: 4 }}>Profiles with accompanying analysis</h2>
         <p style={{ color: "var(--ink-3)", fontSize: 14, marginBottom: 18 }}>{marquee.length} entities Scout has already read and cited.</p>
         <div className="pl-marq">
           {marquee.map(({ ins, sport, packLabel }) => {
