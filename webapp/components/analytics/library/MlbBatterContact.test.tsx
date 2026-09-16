@@ -43,4 +43,18 @@ describe("Published MLB exit-velocity investigation", () => {
     expect(screen.getByRole("status")).toHaveTextContent("485 matching rows;");
     expect(window.location.search).toBe("?utm_source=shared");
   });
+
+  it("returns keyboard focus to the scatter point after closing its measurement", () => {
+    window.history.replaceState(null, "", "?q=Aaron+Judge&view=scatter");
+    render(<ResearchDetail analysis={analysis} related={[]} />);
+    const point = screen.getByRole("button", { name: /^Inspect Aaron Judge:/ });
+    point.focus();
+    fireEvent.keyDown(point, { key: "Enter" });
+    const selected = screen.getByRole("region", { name: "Selected measurement" });
+    expect(selected).toHaveFocus();
+    fireEvent.keyDown(selected, { key: "Escape" });
+    expect(screen.queryByRole("region", { name: "Selected measurement" })).not.toBeInTheDocument();
+    expect(point).toHaveFocus();
+    expect(point).toHaveAttribute("tabindex", "0");
+  });
 });

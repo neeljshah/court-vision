@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
+import { useState } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { RankedPlot, ScatterPlot } from "./LabPlot";
 import type { LabField, LabRow } from "@/lib/analytics/labTypes";
@@ -29,6 +30,40 @@ describe("LabPlot", () => {
     fireEvent.keyDown(point, { key: " " });
     fireEvent.keyDown(point, { key: "Enter" });
     expect(onSelect).toHaveBeenCalledTimes(2);
+  });
+
+  it("keeps one scatter point in tab order and roves through source-order points", () => {
+    const onSelect = vi.fn();
+    render(<ScatterPlot rows={Array.from({ length: 24 }, (_, i) => row(`row-${i}`, i, i + 1))} x={x} y={y} onSelect={onSelect} />);
+    const points = screen.getAllByRole("button", { name: /^Inspect ROW/ });
+    expect(points.filter(point => point.getAttribute("tabindex") === "0")).toHaveLength(1);
+    points[0].focus();
+    fireEvent.keyDown(points[0], { key: "ArrowRight" });
+    expect(points[1]).toHaveFocus();
+    fireEvent.keyDown(points[1], { key: "ArrowLeft" });
+    expect(points[0]).toHaveFocus();
+    fireEvent.keyDown(points[0], { key: "End" });
+    expect(points[23]).toHaveFocus();
+    fireEvent.keyDown(points[23], { key: "Home" });
+    expect(points[0]).toHaveFocus();
+    fireEvent.keyDown(points[0], { key: "Enter" });
+    fireEvent.keyDown(points[0], { key: " " });
+    expect(onSelect).toHaveBeenCalledTimes(2);
+    expect(screen.getByText(/Arrow keys to move through paired rows in the current row order/)).toBeInTheDocument();
+  });
+
+  it("recovers a valid tab stop when filtering removes the active point", () => {
+    function FilteredScatter() {
+      const [rows, setRows] = useState([row("first", 1, 2), row("active", 2, 3), row("last", 3, 4)]);
+      return <><button onClick={() => setRows([rows[0], rows[2]])}>Remove active point</button><ScatterPlot rows={rows} x={x} y={y} onSelect={() => {}} /></>;
+    }
+    render(<FilteredScatter />);
+    const active = screen.getByRole("button", { name: /^Inspect ACTIVE/ });
+    fireEvent.focus(active);
+    fireEvent.click(screen.getByRole("button", { name: "Remove active point" }));
+    const points = screen.getAllByRole("button", { name: /^Inspect/ });
+    expect(points.filter(point => point.getAttribute("tabindex") === "0")).toHaveLength(1);
+    expect(screen.getByRole("button", { name: /^Inspect FIRST/ })).toHaveAttribute("tabindex", "0");
   });
 
   it("draws mixed-sign bars from zero and omits nonnumeric rows", () => {
