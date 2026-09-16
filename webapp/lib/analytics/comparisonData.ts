@@ -19,12 +19,32 @@ export type RawPercentiles = {
   }>;
 };
 export type RawComparables = {
+  method?: string;
+  skipped_packs?: Array<{
+    pack?: string;
+    reason?: string;
+    n_entities?: number;
+    n_common_fields?: number;
+  }>;
   packs?: Record<string, {
-    entities?: Record<string, { similar?: Array<{ slug: string; name?: string; score?: number }> }>;
+    n_in_pack?: number;
+    fields_used?: string[];
+    dropped_zero_variance?: string[];
+    entities?: Record<string, {
+      similar?: Array<{ slug: string; name?: string; score?: number }>;
+      antipode?: { slug: string; name?: string; score?: number };
+    }>;
   }>;
 };
 
 export type ComparisonComparable = { slug: string; name: string; score: number };
+export type ComparisonSkippedPack = { reason: string; nEntities?: number; nCommonFields: number };
+export type ComparisonMethodology = {
+  method?: string;
+  fieldsUsed: string[];
+  droppedZeroVariance: string[];
+  skipped?: ComparisonSkippedPack;
+};
 
 export type ComparisonEntity = {
   slug: string;
@@ -44,6 +64,8 @@ export type ComparisonPack = {
   nRankedByMetric?: Record<string, number>;
   entities: ComparisonEntity[];
   comparablesByEntity?: Record<string, ComparisonComparable[]>;
+  antipodeByEntity?: Record<string, ComparisonComparable>;
+  comparableContext?: ComparisonMethodology;
   suggestedPair?: [string, string];
 };
 
@@ -110,10 +132,26 @@ export function normalizeComparisonPack(
       : [];
   }));
   const rawComparableEntities = comparables.packs?.[key]?.entities;
+  const rawComparablePack = comparables.packs?.[key];
   const comparablesByEntity = Object.fromEntries(Object.entries(rawComparableEntities || {}).map(([slug, entry]) => [slug, (entry.similar || []).flatMap((item) => (
     typeof item.slug === "string" && typeof item.name === "string" && typeof item.score === "number" && Number.isFinite(item.score)
       ? [{ slug: item.slug, name: item.name, score: item.score }] : []
   ))]));
+  const antipodeByEntity = Object.fromEntries(Object.entries(rawComparableEntities || {}).flatMap(([slug, entry]) => {
+    const antipode = entry.antipode;
+    return typeof antipode?.slug === "string" && typeof antipode.name === "string" && typeof antipode.score === "number" && Number.isFinite(antipode.score)
+      ? [[slug, { slug: antipode.slug, name: antipode.name, score: antipode.score }]]
+      : [];
+  }));
+  const skipped = comparables.skipped_packs?.find((item) => item.pack === key);
+  const comparableContext = rawComparablePack || skipped ? {
+    method: comparables.method,
+    fieldsUsed: (rawComparablePack?.fields_used || []).filter((field): field is string => typeof field === "string"),
+    droppedZeroVariance: (rawComparablePack?.dropped_zero_variance || []).filter((field): field is string => typeof field === "string"),
+    skipped: skipped && typeof skipped.reason === "string" && typeof skipped.n_common_fields === "number" && Number.isInteger(skipped.n_common_fields) && skipped.n_common_fields >= 0
+      ? { reason: skipped.reason, nEntities: skipped.n_entities, nCommonFields: skipped.n_common_fields }
+      : undefined,
+  } : undefined;
   // suggestedPair is kept (additive contract): the first entity and its nearest published
   // comparable, falling back to the next entity. marqueePair() is what the page prefers.
   const first = entries[0]?.slug;
@@ -126,6 +164,8 @@ export function normalizeComparisonPack(
     nRankedByMetric,
     entities: entries,
     comparablesByEntity: rawComparableEntities ? comparablesByEntity : undefined,
+    antipodeByEntity: Object.keys(antipodeByEntity).length ? antipodeByEntity : undefined,
+    comparableContext,
     suggestedPair: first && (suggested || fallback) ? [first, suggested || fallback!] : undefined,
   };
 }
