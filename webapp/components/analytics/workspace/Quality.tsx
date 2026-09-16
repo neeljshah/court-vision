@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Link from "next/link";
 import type { DashboardData, Sport } from "@/lib/analytics/dashboardTypes";
 import { number, humanize } from "@/lib/analytics/dashboardTypes";
 import { Empty, Panel } from "./Primitives";
@@ -17,6 +18,7 @@ export function Quality({ data, sport }: { data: DashboardData; sport: Sport }) 
       <p className="cv-chart-context">{m.description}. Shared axis 0-0.50.</p>
     </> : <div className="cv-unscored"><b>Not scored</b><span>{m.reason}</span></div>}</div>)}
     <p className="cv-footnote">{metric === "brier" ? "Brier measures squared probability error, including calibration and resolution." : "ECE measures the weighted gap between forecast probability and observed frequency across 10 bins."} Rows can include multiple observations of a game; they are not independent games. These comparisons do not establish betting returns.</p>
+    <Link href="/analytics/calibration" className="cv-text-button">Inspect every reliability bin</Link>
   </Panel><Panel title="How quality changes over time" eyebrow="Monthly snapshots" source="calibration_over_time">
     <p className="cv-muted">Same metric, separate sport cohorts. Only the two published months are shown.</p>
     {history.length === 0 ? <Empty>No monthly quality series published for this sport.</Empty> : <div className="cv-history-grid">{(["mlb", "soccer"] as const).filter(s => sport === "all" || sport === s).map(s => {

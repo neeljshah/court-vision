@@ -88,6 +88,7 @@ const PILLARS: Array<{ href: string; label: string }> = [
 // Footer secondary links -- keep About / Explainers / Retractions reachable from
 // every page (they are not top-nav pillars but must not be orphaned URLs).
 const FOOT_LINKS: Array<{ href: string; label: string }> = [
+  { href: "/analytics/calibration", label: "Calibration" },
   { href: "/analytics/forecaster", label: "Forecaster" },
   { href: "/analytics/the-loop", label: "Research loop" },
   { href: "/analytics/novel", label: "Experimental metrics" },
