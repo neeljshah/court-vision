@@ -14,6 +14,17 @@ function MeasurementPreview({ values, label }: { values: number[]; label: string
   </svg><span>{label} / source-order preview</span></div>;
 }
 
+function SourceEvidence({ entry }: { entry: LibraryEntry }) {
+  const summary = entry.sourceSummary;
+  if (!summary) return null;
+  return <div className="library-source-evidence">
+    <div className="library-source-date"><span>Snapshot</span><time>{entry.asOf || "Date not published"}</time>{summary.availability !== "published" && <b>{summary.availability}</b>}</div>
+    <p className="library-source-scope">{summary.scope}</p>
+    {summary.measurements.length > 0 && <dl className="library-measurements">{summary.measurements.slice(0, 3).map(item => <div key={item.label}><dt>{item.label}</dt><dd>{item.value}</dd></div>)}</dl>}
+    {summary.previewRows[0] && <dl className="library-labelled-preview">{summary.previewRows[0].slice(0, 3).map(item => <div key={item.label}><dt>{item.label}</dt><dd>{item.value}</dd></div>)}</dl>}
+  </div>;
+}
+
 export default function LibraryExplorer({ entries }: { entries: LibraryEntry[] }) {
   const [sport, setSport] = useState<Sport>("all"), [kind, setKind] = useState("all"), [query, setQuery] = useState(""), [page, setPage] = useState(0);
   useEffect(() => {
@@ -36,7 +47,7 @@ export default function LibraryExplorer({ entries }: { entries: LibraryEntry[] }
       <div className="library-toolbar"><div><p className="cv-eyebrow"><SlidersHorizontal size={13} /> Find your next investigation</p><h2>The analytics collection</h2></div><label className="library-search"><Search size={17} /><span className="sr-only">Search analytics library</span><input value={query} onChange={e => update(sport, kind, e.target.value)} placeholder="Search a metric, formula, or question" /></label></div>
       <div className="library-filters"><div className="cv-sports" aria-label="Library sport">{SPORTS.map(s => <button key={s.id} aria-pressed={sport === s.id} onClick={() => update(s.id, kind, query)}>{s.label}</button>)}</div><label>Collection<select value={kind} onChange={e => update(sport, e.target.value, query)}><option value="all">All entries</option><option value="derived">Derived analyses</option><option value="source">Source modules</option></select></label></div>
       <div className="library-count"><p role="status">{matched.length} {matched.length === 1 ? "entry" : "entries"}{sport !== "all" ? " including shared diagnostics" : ""}{query ? ` matching "${query}"` : ""}</p><span>Derived analyses use published snapshots; methods remain inspectable.</span></div>
-      {visible.length ? <div className="library-grid">{visible.map(e => <Link href={e.href} key={`${e.kind}-${e.id}`} className={`library-card library-card-${e.kind}`}><div className="library-card-meta"><span>{e.sport === "all" ? "Shared / cross-sport" : e.sport.toUpperCase()}</span><span>{e.kind === "derived" ? "Derived analysis" : "Source module"}</span></div><h3>{e.title}</h3><p>{e.description}</p><MeasurementPreview values={e.preview} label={e.previewLabel} /><div className="library-card-footer"><span>{e.rows === null ? e.status.replace(/_/g, " ") : `${e.rows.toLocaleString("en-US")} rows / ${e.fields} fields`}</span><ArrowUpRight size={19} /></div></Link>)}</div> : <div className="cv-empty">No analytics match these filters. Try fewer search terms or another collection.<button onClick={() => update("all", "all", "")}>Reset filters</button></div>}
+      {visible.length ? <div className="library-grid">{visible.map(e => <Link href={e.href} key={`${e.kind}-${e.id}`} className={`library-card library-card-${e.kind}`}><div className="library-card-meta"><span>{e.sport === "all" ? "Shared / cross-sport" : e.sport.toUpperCase()}</span><span>{e.kind === "derived" ? "Derived analysis" : "Source module"}</span></div><h3>{e.title}</h3><p>{e.description}</p>{e.kind === "source" ? <SourceEvidence entry={e} /> : <MeasurementPreview values={e.preview} label={e.previewLabel} />}<div className="library-card-footer"><span>{e.rows === null ? e.status.replace(/_/g, " ") : `${e.rows.toLocaleString("en-US")} rows / ${e.fields} fields`}</span><ArrowUpRight size={19} /></div></Link>)}</div> : <div className="cv-empty">No analytics match these filters. Try fewer search terms or another collection.<button onClick={() => update("all", "all", "")}>Reset filters</button></div>}
       <nav className="library-pagination" aria-label="Library pages"><button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={!safePage}>Previous</button><span>Page {safePage + 1} of {pages}</span><button onClick={() => setPage(p => Math.min(pages - 1, p + 1))} disabled={safePage + 1 >= pages}>Next</button></nav>
     </section>
   </div></div>;

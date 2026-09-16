@@ -19,6 +19,8 @@ describe("getLibraryEntries", () => {
     expect(derived.every(entry => entry.href === `/analytics/research/${entry.id}/`)).toBe(true);
     expect(entries.every(entry => entry.preview.every(Number.isFinite))).toBe(true);
     expect(entries.every(entry => !/^(?:DESCRIPTIVE_ONLY|NOT_TESTABLE|CONFIRMED_LOCAL)$/.test(entry.description))).toBe(true);
+    expect(sources.every(entry => entry.sourceSummary?.scope)).toBe(true);
+    expect(sources.find(entry => entry.id === "statcast_showcase")?.sourceSummary?.scope).toBe("693,037 pitches, 19 pitch types");
   });
 
   it("classifies non-prefixed single-sport sources explicitly", () => {

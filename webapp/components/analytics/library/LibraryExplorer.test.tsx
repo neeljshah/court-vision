@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import LibraryExplorer from "./LibraryExplorer";
 import type { LibraryEntry } from "@/lib/analytics/libraryTypes";
 
-const entry = (id: string, title: string, sport: LibraryEntry["sport"], kind: LibraryEntry["kind"], keywords: string): LibraryEntry => ({ id, title, sport, kind, keywords, description: `${title} description`, category: "Methods", status: "published", href: `/analytics/research/${id}/`, asOf: null, rows: 4, fields: 2, preview: [1, 2], previewLabel: "Published values" });
+const entry = (id: string, title: string, sport: LibraryEntry["sport"], kind: LibraryEntry["kind"], keywords: string): LibraryEntry => ({ id, title, sport, kind, keywords, description: `${title} description`, category: "Methods", status: "published", href: `/analytics/research/${id}/`, asOf: kind === "source" ? "2026-07-25" : null, rows: 4, fields: 2, preview: [1, 2], previewLabel: "Published values", sourceSummary: kind === "source" ? { asOf: "2026-07-25", scope: "42 observed games", measurements: [{ label: "Games", value: "42" }], availability: "partial", previewRows: [[{ label: "Team", value: "A" }]] } : undefined });
 const entries: LibraryEntry[] = [
   entry("nba-formula", "NBA Pace Formula", "nba", "derived", "pace formula possession"),
   entry("mlb-source", "MLB Pitch Source", "mlb", "source", "velocity pitch"),
@@ -36,5 +36,13 @@ describe("LibraryExplorer", () => {
     fireEvent.click(screen.getByRole("button", { name: "Reset filters" }));
     expect(screen.getByRole("status")).toHaveTextContent("4 entries");
     expect(window.location.search).toBe("");
+  });
+
+  it("shows a source snapshot, evidence measures, and availability label", () => {
+    render(<LibraryExplorer entries={entries} />);
+    expect(screen.getAllByText("2026-07-25")).not.toHaveLength(0);
+    expect(screen.getAllByText("42 observed games")).not.toHaveLength(0);
+    expect(screen.getAllByText("partial")).not.toHaveLength(0);
+    expect(screen.getAllByText("Team")).not.toHaveLength(0);
   });
 });

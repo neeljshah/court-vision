@@ -3,6 +3,7 @@ import { snapshot } from "./labHelpers";
 import { getResearchAnalyses } from "./researchData";
 import type { Sport } from "./dashboardTypes";
 import type { LibraryEntry } from "./libraryTypes";
+import { summarizeLibrarySource } from "./librarySourceSummaries";
 
 const SOURCE_SPORT: Record<string, Exclude<Sport, "all">> = {
   aging_curve_lite: "nba",
@@ -49,11 +50,14 @@ export function getLibraryEntries(): LibraryEntry[] {
     previewLabel: a.fields[0].label,
   }));
   const manifest = snapshot<{ modules: { id: string; title: string; one_line: string; status: string; as_of: string | null }[] }>("site_manifest");
-  const sources: LibraryEntry[] = manifest.modules.map(m => ({
+  const sources: LibraryEntry[] = manifest.modules.map(m => {
+    const sourceSummary = summarizeLibrarySource(m.id, snapshot<Record<string, unknown>>(m.id), m.status);
+    return ({
     id: m.id, title: m.title, description: sourceDescription(m.one_line),
     category: moduleCategory(m.id), sport: sourceSport(m.id),
-    kind: "source", status: m.status, href: `/analytics/m/${m.id}/`, asOf: m.as_of,
-    keywords: m.id.replace(/_/g, " "), rows: null, fields: null, preview: [], previewLabel: "",
-  }));
+    kind: "source", status: m.status, href: `/analytics/m/${m.id}/`, asOf: m.as_of || sourceSummary.asOf,
+    keywords: m.id.replace(/_/g, " "), rows: null, fields: null, preview: [], previewLabel: "", sourceSummary,
+    });
+  });
   return [...derived, ...sources];
 }
