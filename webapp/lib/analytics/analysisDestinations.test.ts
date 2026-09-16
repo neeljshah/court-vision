@@ -3,6 +3,7 @@ import { join } from "node:path";
 import { snapshot } from "./labHelpers";
 import { describe, expect, it } from "vitest";
 import { analysisDestinations, inspectorSearchRecords } from "./analysisDestinations";
+import { readingEntries } from "./related";
 
 describe("analysis destinations", () => {
   it("points only to fixed inspector routes and published source modules", () => {
@@ -18,6 +19,16 @@ describe("analysis destinations", () => {
       expect(destination.populationId).not.toBe("");
       expect(destination.prerequisite).not.toBe("");
       expect(destination.nextQuestion).not.toBe("");
+      expect(destination.nextId).not.toBeNull();
+    });
+  });
+
+  it("resolves every authored prerequisite and next question id", () => {
+    const entryIds = new Set(readingEntries().map((entry) => entry.id));
+    const inspectorIds = new Set(analysisDestinations.map((destination) => destination.id));
+    analysisDestinations.forEach(destination => {
+      if (destination.prerequisiteId) expect(entryIds.has(destination.prerequisiteId)).toBe(true);
+      if (destination.nextId) expect(inspectorIds.has(destination.nextId)).toBe(true);
     });
   });
 

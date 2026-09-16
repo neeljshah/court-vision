@@ -4,15 +4,31 @@ import { analysisDestinations } from "@/lib/analytics/analysisDestinations";
 import { readingEntries } from "@/lib/analytics/related";
 import { InspectorReadingTrail } from "./InspectorReadingTrail";
 
+const trails = [
+  ["calibration", "/analytics/findings/reliability/", "/analytics/observation-dependence"],
+  ["state-reliability", "/analytics/calibration", "/analytics/residual-anatomy"],
+  ["pitch-sequencing", "/analytics/research/mlb-pitch-mix-concentration/", "/analytics/count-context"],
+  ["count-context", "/analytics/research/mlb-count-contrast/", "/analytics/pitch-sequencing"],
+  ["score-decomposition", "/analytics/calibration", "/analytics/cross-sport-comparability"],
+  ["observation-dependence", "/analytics/findings/effective-sample-size/", "/analytics/state-reliability"],
+  ["residual-anatomy", "/analytics/observation-dependence", "/analytics/score-decomposition"],
+  ["blowout-timing", "/analytics/research/comeback-rates-deficit-time/", "/analytics/state-contrasts"],
+  ["state-contrasts", "/analytics/blowout-timing", "/analytics/observation-dependence"],
+  ["cross-sport-comparability", "/analytics/calibration", "/analytics/calibration"],
+] as const;
+
 describe("InspectorReadingTrail", () => {
-  it("links state reliability to its prerequisite, next inspector, and three related readings", () => {
-    render(<InspectorReadingTrail id="state-reliability" />);
+  it.each(trails)("follows the authored reading trail for %s", (id, prerequisiteHref, nextHref) => {
+    render(<InspectorReadingTrail id={id} />);
     const trail = screen.getByRole("region", { name: "Reading trail" });
-    expect(within(trail).getByText(/Read first:/)).toBeInTheDocument();
-    expect(within(trail).getByRole("link", { name: /Read the calibration reliability bins/i })).toHaveAttribute("href", expect.stringMatching(/^\/analytics\/calibration\/?$/));
-    expect(within(trail).getByRole("link", { name: /Which time and probability cells/i })).toHaveAttribute("href", expect.stringMatching(/^\/analytics\/score\-decomposition\/?$/));
-    expect(trail.querySelectorAll(".related-reading-card").length).toBeLessThanOrEqual(3);
+    const readFirst = within(trail).getByText(/Read first:/).closest("p");
+    const nextQuestion = within(trail).getByText(/Next question:/).closest("p");
+    expect(readFirst).not.toBeNull();
+    expect(nextQuestion).not.toBeNull();
     const norm = (href: string) => href.replace(/\/$/, "");
+    expect(norm(within(readFirst!).getByRole("link").getAttribute("href") || "")).toBe(norm(prerequisiteHref));
+    expect(norm(within(nextQuestion!).getByRole("link").getAttribute("href") || "")).toBe(norm(nextHref));
+    expect(trail.querySelectorAll(".related-reading-card").length).toBeLessThanOrEqual(3);
     const routes = new Set([...analysisDestinations.map((destination) => norm(destination.route)), ...readingEntries().map((entry) => norm(entry.href))]);
     for (const link of Array.from(trail.querySelectorAll("a"))) expect({ href: link.getAttribute("href"), known: routes.has(norm(link.getAttribute("href") || "")) }).toEqual({ href: link.getAttribute("href"), known: true });
   });

@@ -6,7 +6,9 @@ export type AnalysisDestination = {
   sport: "all" | "nba" | "mlb";
   populationId: string;
   prerequisite: string;
+  prerequisiteId: string | null;
   nextQuestion: string;
+  nextId: string | null;
   sourceModuleIds: readonly string[];
 };
 
@@ -19,7 +21,9 @@ export const analysisDestinations: readonly AnalysisDestination[] = [
     sport: "all",
     populationId: "cross_sport_calibration_bins",
     prerequisite: "Read the reliability finding before comparing published bins.",
+    prerequisiteId: "reliability",
     nextQuestion: "Where do repeated observations reduce the distinct support behind a bin?",
+    nextId: "observation-dependence",
     sourceModuleIds: ["calibration_stability"],
   },
   {
@@ -30,7 +34,9 @@ export const analysisDestinations: readonly AnalysisDestination[] = [
     sport: "all",
     populationId: "state_conditioned_calibration_buckets",
     prerequisite: "Read the calibration reliability bins before comparing state-conditioned cells.",
-    nextQuestion: "Which time and probability cells carry the least support behind their gap?",
+    prerequisiteId: "calibration",
+    nextQuestion: "Which published game states carry the largest recorded absolute residuals?",
+    nextId: "residual-anatomy",
     sourceModuleIds: ["state_conditioned_calibration"],
   },
   {
@@ -41,7 +47,9 @@ export const analysisDestinations: readonly AnalysisDestination[] = [
     sport: "mlb",
     populationId: "mlb_pitch_sequences",
     prerequisite: "Read the pitch-type distribution before interpreting a transition row.",
+    prerequisiteId: "mlb-pitch-mix-concentration",
     nextQuestion: "Which count states change the published pitch sequence?",
+    nextId: "count-context",
     sourceModuleIds: ["pitch_sequencing"],
   },
   {
@@ -52,7 +60,9 @@ export const analysisDestinations: readonly AnalysisDestination[] = [
     sport: "mlb",
     populationId: "mlb_count_leverage_classes",
     prerequisite: "Read the count-state cards before comparing pitch mixes across leverage classes.",
+    prerequisiteId: "mlb-count-contrast",
     nextQuestion: "Which previous pitch changes the next-pitch probability inside a count class?",
+    nextId: "pitch-sequencing",
     sourceModuleIds: ["mlb_count_leverage"],
   },
   {
@@ -63,7 +73,9 @@ export const analysisDestinations: readonly AnalysisDestination[] = [
     sport: "all",
     populationId: "cross_sport_score_decomposition_rows",
     prerequisite: "Read the calibration reliability view before assigning meaning to a Brier component.",
-    nextQuestion: "How much of the recorded score differs after binned reconstruction?",
+    prerequisiteId: "calibration",
+    nextQuestion: "Which published reliability components can be compared across sports?",
+    nextId: "cross-sport-comparability",
     sourceModuleIds: ["murphy_decomposition"],
   },
   {
@@ -74,7 +86,9 @@ export const analysisDestinations: readonly AnalysisDestination[] = [
     sport: "all",
     populationId: "cross_sport_residual_series",
     prerequisite: "Read the effective sample size finding before treating repeated ticks as separate evidence.",
-    nextQuestion: "Which residual patterns remain after the repeated observations are made visible?",
+    prerequisiteId: "effective-sample-size",
+    nextQuestion: "Which time and probability cells carry the least support behind their gap?",
+    nextId: "state-reliability",
     sourceModuleIds: ["residual_autocorrelation"],
   },
   {
@@ -85,7 +99,9 @@ export const analysisDestinations: readonly AnalysisDestination[] = [
     sport: "nba",
     populationId: "nba_game_state_residual_rows",
     prerequisite: "Read observation dependence before comparing state rows by their repeated ticks.",
-    nextQuestion: "Which game states carry the largest recorded absolute residuals?",
+    prerequisiteId: "observation-dependence",
+    nextQuestion: "How does the published Brier score separate into its recorded components?",
+    nextId: "score-decomposition",
     sourceModuleIds: ["residual_anatomy"],
   },
   {
@@ -96,7 +112,9 @@ export const analysisDestinations: readonly AnalysisDestination[] = [
     sport: "nba",
     populationId: "nba_games",
     prerequisite: "Read comeback rates by deficit and time remaining before treating a margin as permanent.",
-    nextQuestion: "When does a published margin remain in place through the final clock?",
+    prerequisiteId: "comeback-rates-deficit-time",
+    nextQuestion: "How do adjacent published score and clock states differ?",
+    nextId: "state-contrasts",
     sourceModuleIds: ["blowout_dynamics"],
   },
   {
@@ -107,7 +125,9 @@ export const analysisDestinations: readonly AnalysisDestination[] = [
     sport: "nba",
     populationId: "nba_state_contrasts",
     prerequisite: "Read blowout timing before comparing adjacent margin and clock states.",
-    nextQuestion: "How do adjacent published state buckets differ without implying a causal threshold?",
+    prerequisiteId: "blowout-timing",
+    nextQuestion: "How much independent support remains when observations repeat within a game?",
+    nextId: "observation-dependence",
     sourceModuleIds: ["why_attribution"],
   },
   {
@@ -118,7 +138,9 @@ export const analysisDestinations: readonly AnalysisDestination[] = [
     sport: "all",
     populationId: "cross_sport_reliability_rows",
     prerequisite: "Read each sport's calibration reliability before comparing components across sports.",
-    nextQuestion: "Which sports publish a reference the model can be held against?",
+    prerequisiteId: "calibration",
+    nextQuestion: "How closely do published forecast bins align with observed outcomes?",
+    nextId: "calibration",
     sourceModuleIds: ["kernel_transfer"],
   },
 ];
