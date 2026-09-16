@@ -28,7 +28,7 @@ describe("ModuleDetail", () => {
 
   it("states when a module date is not published", () => {
     render(<ModuleDetail mod={{ ...mod, as_of: null as unknown as string }} out={out} subtitle="When a lead becomes permanent." insight={null} />);
-    expect(screen.getAllByText(/date not published/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/date not published/i).length).toBeGreaterThan(0);
   });
 
   it("uses a data figure instead of an unapproved PNG", () => {

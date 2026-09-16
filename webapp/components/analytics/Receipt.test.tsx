@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { Receipt } from "./Receipt";
 
@@ -24,7 +24,13 @@ describe("Receipt", () => {
 
   it("treats a placeholder snapshot date as absent", () => {
     render(<Receipt sourceArtifact="blowout_dynamics.json" asOf="Published snapshot" verdict="descriptive_only" />);
-    fireEvent.click(screen.getByRole("button", { name: /date not published/i }));
-    expect(screen.getAllByText("Date not published.")).toHaveLength(2);
+    fireEvent.click(screen.getByRole("button", { name: /receipt/i }));
+    expect(screen.getByText("Date not published.")).toBeInTheDocument();
+  });
+
+  it("shows a published ISO date without accepting an arbitrary label", () => {
+    render(<Receipt sourceArtifact="blowout_dynamics.json" asOf="2026-07-25" verdict="descriptive_only" />);
+    const button = screen.getByRole("button", { name: /receipt/i });
+    expect(within(button).getByText("Snapshot generated 2026-07-25")).toBeInTheDocument();
   });
 });

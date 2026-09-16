@@ -7,14 +7,14 @@
 // standalone /analytics/method page in the spec was never built).
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import Link from "next/link";
-import { artifactUrl, provenanceDate } from "@/lib/analytics/artifactProvenance";
+import { artifactUrl, describeDate, type ProvenanceDate } from "@/lib/analytics/artifactProvenance";
 import { VerdictDot, type Verdict } from "./VerdictDot";
 
 export interface ReceiptData {
   value?: string; // the number this receipt stamps (optional)
   label?: string; // measurement label, e.g. CONFIRMED_LOCAL / descriptive_only
   sourceArtifact: string; // committed artifact path
-  asOf?: string; // e.g. 2026-04-12
+  asOf?: ProvenanceDate; // e.g. 2026-04-12
   n?: number; // sample size, when known
   corpus?: string; // corpus name, when known
   verdict: Verdict;
@@ -23,11 +23,6 @@ export interface ReceiptData {
 function basename(p: string): string {
   const parts = p.split(/[\\/]/);
   return parts[parts.length - 1] || p;
-}
-
-function publicationDate(value: string | undefined): string | null {
-  if (!value) return null;
-  return /^\d{4}-\d{2}-\d{2}(?:[ T].*)?$/.test(value) ? provenanceDate(value) : "Date not published.";
 }
 
 const stamp: CSSProperties = {
@@ -103,8 +98,9 @@ export function Receipt(r: ReceiptData) {
     return () => document.removeEventListener("pointerdown", onDown);
   }, [open]);
   // Quiet resting token: prefer as_of, else value, else the artifact basename.
-  const date = publicationDate(r.asOf);
-  const resting = date || r.value || basename(r.sourceArtifact);
+  const date = describeDate(r.asOf, "snapshot");
+  const hasPublishedDate = date !== "Date not published.";
+  const resting = hasPublishedDate ? date : r.value || basename(r.sourceArtifact);
   const sourceHref = artifactUrl(r.sourceArtifact);
   const dashed = r.verdict === "not_testable";
 
@@ -202,7 +198,7 @@ export function Receipt(r: ReceiptData) {
           ) : (
             <span style={path}>{r.sourceArtifact} (not published)</span>
           )}
-          <span style={{ ...path, marginTop: 2 }}>{date || "Date not published."}</span>
+          <span style={{ ...path, marginTop: 2 }}>{date}</span>
           <Link
             href="/analytics/the-loop"
             style={{

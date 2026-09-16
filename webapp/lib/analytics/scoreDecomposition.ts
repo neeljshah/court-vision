@@ -5,6 +5,7 @@ export type DecompositionSide = "model" | "market";
 
 export interface DecompositionRow {
   side: DecompositionSide;
+  n: number | null;
   brier: number | null;
   reliability: number | null;
   resolution: number | null;
@@ -15,6 +16,7 @@ export interface DecompositionRow {
 
 export interface DecompositionSport {
   sport: string;
+  nRows: number | null;
   rows: DecompositionRow[];
 }
 
@@ -26,6 +28,10 @@ function numberOrNull(value: unknown): number | null {
   return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
 
+function roundSix(value: number): number {
+  return Number(value.toFixed(6));
+}
+
 function rowFrom(side: DecompositionSide, value: unknown): DecompositionRow | null {
   const raw = record(value);
   if (!raw) return null;
@@ -33,12 +39,13 @@ function rowFrom(side: DecompositionSide, value: unknown): DecompositionRow | nu
   const reconstructedBrier = numberOrNull(raw.reconstructed_brier);
   return {
     side,
+    n: numberOrNull(raw.n),
     brier,
     reliability: numberOrNull(raw.reliability),
     resolution: numberOrNull(raw.resolution),
     uncertainty: numberOrNull(raw.uncertainty),
     reconstructedBrier,
-    remainder: brier === null || reconstructedBrier === null ? null : reconstructedBrier - brier,
+    remainder: brier === null || reconstructedBrier === null ? null : roundSix(reconstructedBrier - brier),
   };
 }
 
@@ -53,7 +60,7 @@ export function buildScoreDecomposition(value: unknown): DecompositionSport[] {
     const rows = (["model", "market"] as const)
       .map(side => rowFrom(side, raw[`${side}_prob`]))
       .filter((item): item is DecompositionRow => item !== null);
-    return rows.length ? [{ sport, rows }] : [];
+    return rows.length ? [{ sport, nRows: numberOrNull(raw.n_rows), rows }] : [];
   });
 }
 

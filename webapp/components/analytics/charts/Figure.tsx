@@ -5,12 +5,12 @@
 // Franklin 600 (serif is reserved for editorial headings, DESIGN Sec.11).
 
 import type { ReactNode, CSSProperties } from "react";
-import { artifactUrl, provenanceDate } from "@/lib/analytics/artifactProvenance";
+import { artifactUrl, describeDate, type ProvenanceDate } from "@/lib/analytics/artifactProvenance";
 import { verdictColor } from "./scale";
 
 export interface FigureProps {
   source: string;
-  asOf: string;
+  asOf: ProvenanceDate;
   children: ReactNode;
   title?: string;
   eyebrow?: string;
@@ -21,6 +21,11 @@ export interface FigureProps {
   verdict?: string;
   /** extra receipt facts appended after the source, e.g. "n=4732". */
   meta?: string;
+  /** Published source denominator; each value retains its row or game meaning. */
+  nRows?: number | null;
+  nGames?: number | null;
+  /** Multiple published populations can retain their individual denominators. */
+  denominator?: string;
 }
 
 const cap: CSSProperties = {
@@ -34,8 +39,13 @@ const cap: CSSProperties = {
   flexWrap: "wrap",
 };
 
-function publicationDate(value: string): string {
-  return /^\d{4}-\d{2}-\d{2}(?:[ T].*)?$/.test(value) ? provenanceDate(value) : "Date not published.";
+function denominatorText(nRows: number | null | undefined, nGames: number | null | undefined, published: string | undefined): string {
+  if (published) return published;
+  const values = [
+    Number.isFinite(nRows) && nRows! >= 0 ? `n rows=${nRows!.toLocaleString("en-US")}` : null,
+    Number.isFinite(nGames) && nGames! >= 0 ? `n games=${nGames!.toLocaleString("en-US")}` : null,
+  ].filter((value): value is string => value !== null);
+  return values.length ? values.join("; ") : "n not published";
 }
 
 // CSS-only scroll affordance: a paper fade + soft shadow at each edge, shown ONLY
@@ -68,6 +78,9 @@ export function Figure({
   note,
   verdict,
   meta,
+  nRows,
+  nGames,
+  denominator,
 }: FigureProps) {
   const sourceHref = artifactUrl(source);
   return (
@@ -148,7 +161,11 @@ export function Figure({
         <span aria-hidden style={{ color: "var(--rule-strong)" }}>
           &middot;
         </span>
-        <span>{publicationDate(asOf)}</span>
+        <span>{describeDate(asOf, "snapshot")}</span>
+        <span aria-hidden style={{ color: "var(--rule-strong)" }}>
+          &middot;
+        </span>
+        <span>{denominatorText(nRows, nGames, denominator)}</span>
         {meta && (
           <>
             <span aria-hidden style={{ color: "var(--rule-strong)" }}>

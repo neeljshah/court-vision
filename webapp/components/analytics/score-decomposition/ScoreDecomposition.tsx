@@ -16,6 +16,10 @@ function sideLabel(side: DecompositionRow["side"]): string {
   return side === "model" ? "Model" : "Market";
 }
 
+function sample(value: number | null, label = "n"): string {
+  return value === null ? "n not published" : `${label}=${value.toLocaleString("en-US")}`;
+}
+
 function rowId(sport: string, row: DecompositionRow): string {
   return `${sport}-${row.side}`;
 }
@@ -25,7 +29,7 @@ function ComponentChart({ sports }: { sports: DecompositionSport[] }) {
   const values = rows.flatMap(item => COMPONENTS.map(component => item.row[component.key] ?? 0));
   const maximum = Math.max(...values, 0.01);
   const width = Math.max(620, 120 + rows.length * 150);
-  const height = 300;
+  const height = 316;
   const sy = linear(0, maximum, 242, 38);
   return <svg className="sd-chart" viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Murphy decomposition components by sport and population" data-testid="score-decomposition-chart">
     {[0, maximum / 2, maximum].map(value => <g key={value}><line x1="58" x2={width - 24} y1={sy(value)} y2={sy(value)} className="sd-grid" /><text x="48" y={sy(value) + 4} textAnchor="end">{value.toFixed(3)}</text></g>)}
@@ -39,6 +43,7 @@ function ComponentChart({ sports }: { sports: DecompositionSport[] }) {
         })}
         <text className="sd-axis" x={start + 44} y="262" textAnchor="middle">{sportLabel(sport)}</text>
         <text className="sd-axis" x={start + 44} y="278" textAnchor="middle">{sideLabel(row.side)}</text>
+        <text className="sd-axis" x={start + 44} y="294" textAnchor="middle">{sample(row.n)}</text>
       </g>;
     })}
   </svg>;
@@ -48,14 +53,14 @@ export function ScoreDecomposition({ sports }: { sports: DecompositionSport[] })
   if (!sports.length) return <p className="sd-empty">No published score-decomposition rows are available in this snapshot.</p>;
   return <section className="sd-shell" aria-label="Brier score decomposition">
     <div className="sd-legend">{COMPONENTS.map(component => <span key={component.key}><i style={{ background: component.color }} />{component.label}</span>)}</div>
-    <Figure source="public/data/showcase/murphy_decomposition.json" asOf="Published snapshot" title="Binned Murphy components" subtitle="Each group preserves a separate published model or market population. Resolution is shown as a component; the audit table keeps its subtraction explicit.">
+    <Figure source="public/data/showcase/murphy_decomposition.json" asOf={null} title="Binned Murphy components" subtitle="Each group preserves a separate published model or market population. Resolution is shown as a component; the audit table keeps its subtraction explicit." denominator={sports.map(item => `${sportLabel(item.sport)} ${sample(item.nRows, "n rows")}`).join("; ")}>
       <ComponentChart sports={sports} />
     </Figure>
     <div className="sd-table-wrap" role="region" aria-label="Brier reconstruction audit" data-scroll-region>
-      <table className="sd-table"><caption>Published Brier reconstruction audit</caption><thead><tr><th>Sport</th><th>Population</th><th>Brier</th><th>Reconstructed Brier</th><th>Remainder</th></tr></thead><tbody>{sports.flatMap(item => item.rows.map(row => <tr key={rowId(item.sport, row)}><td>{sportLabel(item.sport)}</td><td>{sideLabel(row.side)}</td><td>{formatDecompositionValue(row.brier)}</td><td>{formatDecompositionValue(row.reconstructedBrier)}</td><td>{formatDecompositionValue(row.reconstructedBrier)} - {formatDecompositionValue(row.brier)} = <strong>{formatDecompositionValue(row.remainder)}</strong></td></tr>))}</tbody></table>
+      <table className="sd-table"><caption>Published Brier reconstruction audit</caption><thead><tr><th>Sport</th><th>Sport n rows</th><th>Population</th><th>Population n</th><th>Brier</th><th>Reconstructed Brier (derived)</th><th>Signed remainder (derived)</th></tr></thead><tbody>{sports.flatMap(item => item.rows.map(row => <tr key={rowId(item.sport, row)}><td>{sportLabel(item.sport)}</td><td>{sample(item.nRows, "n rows")}</td><td>{sideLabel(row.side)}</td><td>{sample(row.n)}</td><td>{formatDecompositionValue(row.brier)}</td><td>{formatDecompositionValue(row.reconstructedBrier)}</td><td>{formatDecompositionValue(row.reconstructedBrier)} - {formatDecompositionValue(row.brier)} = <strong>{formatDecompositionValue(row.remainder)}</strong></td></tr>))}</tbody></table>
     </div>
     <p className="sd-note">The reconstruction is computed from ten probability bins. A binned reconstruction can differ from the published Brier; this table reports that signed remainder without assigning a cause to it.</p>
-    <p className="sd-source-fields">Source fields: murphy_decomposition.json -&gt; sports[sport].model_prob and market_prob: brier, reliability, resolution, uncertainty, reconstructed_brier. Remainder = reconstructed_brier - brier.</p>
+    <p className="sd-source-fields">Source fields: murphy_decomposition.json -&gt; sports[sport].n_rows; model_prob and market_prob: n, brier, reliability, resolution, uncertainty, reconstructed_brier. Reconstructed Brier and signed remainder are shown as derived values; remainder = reconstructed_brier - brier.</p>
   </section>;
 }
 

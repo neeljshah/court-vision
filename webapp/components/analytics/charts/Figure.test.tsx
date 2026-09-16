@@ -24,4 +24,14 @@ describe("Figure", () => {
     render(<Figure source="data/showcase/blowout_dynamics.json" asOf="Published snapshot"><div>Chart</div></Figure>);
     expect(screen.getByText("Date not published.")).toBeInTheDocument();
   });
+
+  it("prints published row and game denominators", () => {
+    render(<Figure source="data/showcase/blowout_dynamics.json" asOf="2026-07-25" nRows={78986} nGames={1234}><div>Chart</div></Figure>);
+    expect(screen.getByText("n rows=78,986; n games=1,234")).toBeInTheDocument();
+  });
+
+  it("marks an absent denominator explicitly", () => {
+    render(<Figure source="data/showcase/blowout_dynamics.json" asOf="2026-07-25"><div>Chart</div></Figure>);
+    expect(screen.getByText("n not published")).toBeInTheDocument();
+  });
 });

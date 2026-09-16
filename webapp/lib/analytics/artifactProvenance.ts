@@ -1,6 +1,8 @@
 import siteManifest from "@/public/data/showcase/site_manifest.json";
 
-type DateKind = "snapshot" | "observation_window";
+export type DateKind = "snapshot" | "window";
+export type ObservationWindow = { start: string; end: string };
+export type ProvenanceDate = string | ObservationWindow | null | undefined;
 
 type ManifestModule = {
   id: string;
@@ -22,6 +24,23 @@ function basePath(): string {
   return (process.env.NEXT_PUBLIC_BASE_PATH || "").replace(/\/$/, "");
 }
 
+function isoDate(value: string): string | null {
+  const match = /^(\d{4})-(\d{2})-(\d{2})(?:T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:\d{2})?)?$/.exec(value);
+  if (!match) return null;
+  const [year, month, day] = match.slice(1, 4).map(Number);
+  const parsed = new Date(Date.UTC(year, month - 1, day));
+  return parsed.getUTCFullYear() === year && parsed.getUTCMonth() === month - 1 && parsed.getUTCDate() === day
+    ? value.slice(0, 10)
+    : null;
+}
+
+function windowDates(value: ProvenanceDate): ObservationWindow | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const start = isoDate(value.start);
+  const end = isoDate(value.end);
+  return start && end ? { start, end } : null;
+}
+
 /** Returns the exported JSON URL only for artifacts listed in the committed manifest. */
 export function artifactUrl(source: string | null | undefined, base = basePath()): string | null {
   if (!source) return null;
@@ -30,10 +49,17 @@ export function artifactUrl(source: string | null | undefined, base = basePath()
   return `${base}/data/showcase/${name}`;
 }
 
-/** Labels dates by meaning so a snapshot stamp is never presented as an observation period. */
-export function provenanceDate(value: string | null | undefined, kind: DateKind = "snapshot"): string {
-  if (!value) return "date not published";
-  if (/^(snapshot generated:|observation window:|date not published$)/.test(value)) return value;
-  const date = /^\d{4}-\d{2}-\d{2}[ T]\d{2}:/.test(value) ? value.slice(0, 10) : value;
-  return kind === "observation_window" ? `observation window: ${date}` : `snapshot generated: ${date}`;
+/** Formats only published ISO dates; a snapshot stamp is never promoted to a window. */
+export function describeDate(value: ProvenanceDate, kind: DateKind): string {
+  if (kind === "snapshot") {
+    const date = typeof value === "string" ? isoDate(value) : null;
+    return date ? `Snapshot generated ${date}` : "Date not published.";
+  }
+  const window = windowDates(value);
+  return window ? `Observation window ${window.start} to ${window.end}` : "Date not published.";
+}
+
+/** Compatibility wrapper for older consumers while they adopt describeDate. */
+export function provenanceDate(value: ProvenanceDate, kind: DateKind | "observation_window" = "snapshot"): string {
+  return describeDate(value, kind === "observation_window" ? "window" : kind);
 }
