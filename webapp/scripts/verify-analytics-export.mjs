@@ -19,6 +19,8 @@ const REQUIRED_ROUTES = [
   "/analytics/compare/",
   "/analytics/evidence/",
   "/analytics/browse/",
+  "/analytics/pitch-sequencing/",
+  "/analytics/score-decomposition/",
 ];
 const BUDGETS = new Map([
   ["/analytics/", 200_000],

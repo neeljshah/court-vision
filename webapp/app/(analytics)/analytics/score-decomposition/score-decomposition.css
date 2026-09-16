@@ -1,0 +1,22 @@
+.sd-page { max-width: 1120px; margin: 0 auto; padding: 48px 24px 64px; }
+.sd-kicker { color: var(--ink-3); font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.sd-page h1 { margin: 8px 0 16px; color: var(--ink); font-family: var(--font-display); font-size: clamp(2.2rem, 5vw, 3.5rem); font-weight: 500; letter-spacing: -.035em; line-height: 1.03; }
+.sd-intro { max-width: 760px; color: var(--ink-2); font-size: 17px; line-height: 1.7; }
+.sd-shell { margin-top: 36px; }
+.sd-legend { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 14px; color: var(--ink-3); font-size: 12px; }
+.sd-legend span { align-items: center; display: inline-flex; gap: 6px; }
+.sd-legend i { border-radius: 2px; display: inline-block; height: 10px; width: 10px; }
+.sd-chart { display: block; min-width: 620px; width: 100%; color: var(--ink-3); font-family: var(--font-mono); font-size: 11px; }
+.sd-grid { stroke: var(--rule); stroke-width: 1; }
+.sd-axis { fill: var(--ink-2); font-family: var(--font-sans); font-size: 11px; }
+.sd-table-wrap { margin-top: 28px; overflow-x: auto; border: 1px solid var(--rule); border-radius: var(--radius-card); background: var(--paper-raised); }
+.sd-table { width: 100%; min-width: 900px; border-collapse: collapse; color: var(--ink); font-size: 13px; font-variant-numeric: tabular-nums; }
+.sd-table caption { caption-side: top; padding: 0 0 10px; color: var(--ink-3); font-size: 12px; text-align: left; }
+.sd-table th { background: var(--paper-tint); color: var(--ink-3); font-size: 10px; font-weight: 700; letter-spacing: .08em; padding: 12px 14px; text-align: left; text-transform: uppercase; white-space: nowrap; }
+.sd-table td { border-top: 1px solid var(--rule); padding: 12px 14px; white-space: nowrap; }
+.sd-table td:nth-child(n+3) { font-family: var(--font-mono); }
+.sd-table strong { color: var(--ink); font-weight: 700; }
+.sd-note { max-width: 790px; margin-top: 16px; padding-left: 14px; border-left: 2px solid var(--signal); color: var(--ink-2); font-size: 14px; line-height: 1.65; }
+.sd-source-fields { margin-top: 18px; color: var(--ink-3); font-family: var(--font-mono); font-size: 11px; line-height: 1.6; }
+.sd-empty { margin-top: 20px; border: 1px dashed var(--rule-strong); border-radius: var(--radius-card); color: var(--ink-3); padding: 24px; }
+@media (max-width: 680px) { .sd-page { padding: 34px 16px 48px; } .sd-page h1 { font-size: 2.35rem; } }

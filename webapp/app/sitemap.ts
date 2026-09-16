@@ -22,7 +22,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     hrefs = [];
   }
   // The home + hub roots always belong in, even if the index failed to load.
-  const roots = ["/analytics", "/analytics/ask", "/analytics/lab", "/analytics/compare", "/analytics/evidence", "/analytics/findings", "/analytics/players", "/analytics/browse"];
+  const roots = ["/analytics", "/analytics/ask", "/analytics/lab", "/analytics/compare", "/analytics/evidence", "/analytics/findings", "/analytics/players", "/analytics/browse", "/analytics/pitch-sequencing", "/analytics/score-decomposition"];
   const seen = new Set<string>();
   const urls: MetadataRoute.Sitemap = [];
   const research = getResearchAnalyses().map(a => `/analytics/research/${a.id}`);

@@ -1,0 +1,28 @@
+.ps-page { max-width: 1120px; margin: 0 auto; padding: 48px 24px 64px; }
+.ps-kicker, .ps-detail-label { color: var(--ink-3); font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.ps-page h1 { margin: 8px 0 16px; color: var(--ink); font-family: var(--font-display); font-size: clamp(2.2rem, 5vw, 3.5rem); font-weight: 500; letter-spacing: -.035em; line-height: 1.03; }
+.ps-intro { max-width: 760px; color: var(--ink-2); font-size: 17px; line-height: 1.7; }
+.ps-shell { margin-top: 36px; }
+.ps-controls { display: flex; flex-wrap: wrap; gap: 8px; }
+.ps-controls button { min-height: 36px; border: 1px solid var(--rule-strong); border-radius: var(--radius-btn); background: var(--paper-raised); color: var(--ink-2); cursor: pointer; font: 700 12px var(--font-mono); padding: 0 12px; }
+.ps-controls button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent); color: var(--accent-ink-on); }
+.ps-definition, .ps-coverage, .ps-partition { margin-top: 12px; color: var(--ink-2); font-size: 14px; line-height: 1.6; }
+.ps-coverage { color: var(--ink-3); font-family: var(--font-mono); font-size: 12px; }
+.ps-partition { max-width: 760px; padding-left: 14px; border-left: 2px solid var(--signal); }
+.ps-matrix-wrap { min-width: 724px; padding: 4px; }
+.ps-matrix { display: block; width: 100%; min-width: 724px; color: var(--ink-2); font-family: var(--font-mono); font-size: 11px; }
+.ps-axis { fill: var(--ink-2); font-size: 12px; }
+.ps-axis-label { fill: var(--ink-3); font-family: var(--font-sans); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.ps-cell { cursor: pointer; stroke: var(--paper-raised); stroke-width: 1; transition: stroke var(--dur-fast) var(--ease-ui), stroke-width var(--dur-fast) var(--ease-ui); }
+.ps-cell:hover, .ps-cell:focus { stroke: var(--accent); stroke-width: 2; }
+.ps-matrix g[role="button"]:focus .ps-cell { stroke: var(--accent); stroke-width: 2.5; }
+.ps-selected { stroke: var(--ink); stroke-width: 2.5; }
+.ps-detail { margin-top: 24px; border: 1px solid var(--rule); border-radius: var(--radius-card); background: var(--paper-raised); padding: 18px 20px; }
+.ps-detail h3 { margin-top: 3px; color: var(--ink); font-family: var(--font-display); font-size: 1.4rem; font-weight: 500; }
+.ps-detail p { margin-top: 8px; color: var(--ink-2); font-size: 14px; }
+.ps-detail dl { display: flex; flex-wrap: wrap; gap: 24px; margin-top: 14px; }
+.ps-detail dt { color: var(--ink-3); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.ps-detail dd { color: var(--ink); font-family: var(--font-mono); font-size: 15px; margin: 2px 0 0; }
+.ps-source-fields { margin-top: 18px; color: var(--ink-3); font-family: var(--font-mono); font-size: 11px; line-height: 1.6; }
+.ps-empty { margin-top: 20px; border: 1px dashed var(--rule-strong); border-radius: var(--radius-card); color: var(--ink-3); padding: 24px; }
+@media (max-width: 680px) { .ps-page { padding: 34px 16px 48px; } .ps-page h1 { font-size: 2.35rem; } .ps-detail { padding: 16px; } }
