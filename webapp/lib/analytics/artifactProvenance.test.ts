@@ -29,3 +29,9 @@ describe("artifact provenance", () => {
     expect(describeDate(artifact?.as_of, "window")).toBe("Date not published.");
   });
 });
+
+it("keeps a labelled season window and still rejects placeholders", () => {
+  expect(describeDate("2025-26 regular season (through 2026-04-12)", "window")).toBe("Observation window 2025-26 regular season (through 2026-04-12)");
+  expect(describeDate("Published snapshot", "window")).toBe("Date not published.");
+  expect(describeDate("unknown", "window")).toBe("Date not published.");
+});

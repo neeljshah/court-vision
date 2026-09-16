@@ -56,7 +56,17 @@ export function describeDate(value: ProvenanceDate, kind: DateKind): string {
     return date ? `Snapshot generated ${date}` : "Date not published.";
   }
   const window = windowDates(value);
-  return window ? `Observation window ${window.start} to ${window.end}` : "Date not published.";
+  if (window) return `Observation window ${window.start} to ${window.end}`;
+  // A published window may be a labelled span ("2024-25 regular season (through 2026-04-12)"); keep it
+  // when it names a year and is not a placeholder, otherwise say so.
+  const label = typeof value === "string" ? value.trim() : "";
+  return labelledWindow(label) ? `Observation window ${label}` : "Date not published.";
+}
+
+const PLACEHOLDER_LABEL = /^(published snapshot|snapshot|n\/a|na|none|unknown|tbd|-+)$/i;
+function labelledWindow(label: string): boolean {
+  // an ISO stamp is a snapshot, never a window; a labelled span must name a year and not be a placeholder
+  return label.length > 0 && label.length <= 120 && isoDate(label) === null && /(19|20)[0-9]{2}/.test(label) && !PLACEHOLDER_LABEL.test(label);
 }
 
 /** Compatibility wrapper for older consumers while they adopt describeDate. */
