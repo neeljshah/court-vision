@@ -49,6 +49,13 @@ describe("loadScoutCorpus", () => {
     expect(ohtani?.a.answer).toContain("mph");
     expect(ohtani?.a.answer).toContain("not a current projection or live feed");
     expect(ohtani?.a.explore_path).toBe("/analytics/players/mlb_batters/shohei_ohtani");
+    expect(ohtani?.entity).toEqual({ name: "Shohei Ohtani", pack: "mlb_batters", slug: "shohei_ohtani" });
+  });
+
+  it("adds one Atlas identity record to every generated entity profile", () => {
+    const identities = corpus.flatMap((entry) => entry.entity ? [entry.entity] : []);
+    expect(identities).toHaveLength(1_549);
+    expect(new Set(identities.map((entity) => `${entity.pack}:${entity.slug}`)).size).toBe(1_549);
   });
 
   it("gives every generated profile and module a validated reading destination", () => {

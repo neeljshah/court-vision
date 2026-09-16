@@ -59,6 +59,20 @@ describe("AskBox", () => {
     expect(screen.getByRole("link", { name: "Open module" })).toHaveAttribute("href", "/analytics/m/calibration_over_time");
   });
 
+  it("renders a recognized pair's compare route as the primary action", () => {
+    const pairEntries = [
+      { ...entries[0], q: "Nikola Jokic profile", entity: { name: "Nikola Jokic", pack: "nba_players", slug: "nikola_jokic" } },
+      { ...entries[0], q: "Giannis Antetokounmpo profile", entity: { name: "Giannis Antetokounmpo", pack: "nba_players", slug: "giannis_antetokounmpo" } },
+    ];
+    render(<AskBox entries={pairEntries} tours={[]} />);
+    fireEvent.change(screen.getByLabelText("Ask Scout a question"), { target: { value: "Compare Jokic and Giannis" } });
+    fireEvent.click(screen.getByRole("button", { name: "Search Scout's cited answers" }));
+
+    expect(screen.getByRole("link", { name: "Compare Nikola Jokic and Giannis Antetokounmpo" })).toHaveAttribute(
+      "href", "/analytics/compare?pack=nba_players&a=nikola_jokic&b=giannis_antetokounmpo"
+    );
+  });
+
   it("does not repeat a suggested question in the follow-up panel", () => {
     const withFollowUp = [...entries, { ...entries[0], q: "Try another question" }];
     render(<AskBox entries={withFollowUp} tours={[{ label: "Start here", questions: ["Try another question"] }]} />);

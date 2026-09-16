@@ -76,6 +76,31 @@ describe("resolveQuestion", () => {
     expect(result?.kind).not.toBe("direct");
   });
 
+  it.each(["Jokic Giannis", "Compare Jokic and Giannis"])("keeps the requested identities for %s", (query) => {
+    const jokic = { name: "Nikola Jokic", pack: "nba_players", slug: "nikola_jokic" };
+    const giannis = { name: "Giannis Antetokounmpo", pack: "nba_players", slug: "giannis_antetokounmpo" };
+    const pairQuestion = "Which published records cover Nikola Jokic and Giannis Antetokounmpo?";
+    const lukaQuestion = "How does Luka Doncic compare with Nikola Jokic?";
+    const entityEntries: AskEntry[] = [
+      { q: "Nikola Jokic profile", alt_phrasings: [], tags: ["nba"], bucket: "public-entity-profile", entity: jokic, a: { status: "ok", answer: "Nikola Jokic profile.", source_artifact: "jokic.json" } },
+      { q: "Giannis Antetokounmpo profile", alt_phrasings: [], tags: ["nba"], bucket: "public-entity-profile", entity: giannis, a: { status: "ok", answer: "Giannis profile.", source_artifact: "giannis.json" } },
+      { q: "How does Giannis affect team production?", alt_phrasings: [], tags: ["nba"], bucket: "players-teams", a: { status: "ok", answer: "Nikola Jokic is mentioned only in this answer.", source_artifact: "giannis-team.json" } },
+      { q: lukaQuestion, alt_phrasings: [], tags: ["nba"], bucket: "players-teams", a: { status: "ok", answer: "Published comparison.", source_artifact: "luka-jokic.json" } },
+      { q: pairQuestion, alt_phrasings: [], tags: ["nba"], bucket: "players-teams", a: { status: "ok", answer: "Published pair note.", source_artifact: "pair.json" } },
+    ];
+    const result = resolveQuestion(query, entityEntries);
+
+    expect(result).toMatchObject({
+      kind: "related",
+      entry: { q: pairQuestion },
+      compareOffer: {
+        label: "Compare Nikola Jokic and Giannis Antetokounmpo",
+        href: "/analytics/compare?pack=nba_players&a=nikola_jokic&b=giannis_antetokounmpo",
+      },
+    });
+    expect(result?.entry?.q).not.toBe(lukaQuestion);
+  });
+
   it("returns an explicit empty result for unsupported topics", () => {
     expect(resolveQuestion("how do cricket fielding positions work", entries)).toEqual({
       entry: null,

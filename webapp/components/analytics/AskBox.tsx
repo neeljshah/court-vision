@@ -77,6 +77,9 @@ function AnswerEnvelope({ result, query, onAsk, excludedQuestions }: {
         <Marker neutral />
         <div>
           <div style={questionStyle}>{query}</div>
+          {result.compareOffer ? <div style={{ ...chipRow, margin: "0 0 10px" }}>
+            <Link href={result.compareOffer.href} style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)" }}>{result.compareOffer.label}</Link>
+          </div> : null}
           <div style={answerStyle}>
             {unavailable ? (
               <><strong style={{ color: "var(--ink)" }}>Scout's public corpus is unavailable.</strong> No answer can be verified until its committed sources load.</>
@@ -111,6 +114,7 @@ function AnswerEnvelope({ result, query, onAsk, excludedQuestions }: {
         {related ? <div style={{ ...questionStyle, fontStyle: "italic" }}>{entry.q}</div> : null}
         <div style={answerStyle}>{typeset(entry.a.answer)}</div>
         <div style={chipRow}>
+          {result.compareOffer ? <Link href={result.compareOffer.href} style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)" }}>{result.compareOffer.label}</Link> : null}
           {explorePath ? <Link href={explorePath} style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)" }}>{destinationLabel}</Link> : null}
           <Receipt {...receiptFor(entry.a)} />
           <a href={`${BASE_PATH}${sourceHref}`} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: "var(--accent)" }}>{publicArtifact ? "Open published source" : "Open published answer record"}</a>

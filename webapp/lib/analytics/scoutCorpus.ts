@@ -3,9 +3,10 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { AskEntry } from "./askSearch";
+import { entrySlugs } from "./comparisonData";
 import { getResearchAnalyses } from "./researchData";
 
-type RawEntry = { entity: string; card_path: string; key_numbers: Record<string, unknown>; as_of: string | null };
+type RawEntry = { entity: string; card_path: string; key_numbers: Record<string, unknown>; as_of?: string | null };
 type Manifest = { entries: RawEntry[] };
 type Metric = { key: string; label: string; unit: string; scale?: number };
 type Pack = { file: string; routePack: string; sport: string; kind: string; metrics: Metric[] };
@@ -75,21 +76,6 @@ function format(value: number, metric: Metric): string {
   return `${scaled.toFixed(precision)} ${metric.unit}`;
 }
 
-function slugify(value: string): string {
-  return value.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
-}
-
-function entrySlugs(entries: RawEntry[]): Array<{ entry: RawEntry; slug: string }> {
-  const seen = new Set<string>();
-  return entries.map((entry) => {
-    let slug = (entry.card_path.split(/[\\/]/).pop() || "").replace(/\.[a-z0-9]+$/i, "");
-    if (!slug || seen.has(slug)) slug = slugify(entry.entity);
-    if (!slug || seen.has(slug)) throw new Error(`Duplicate or missing Scout entity route slug for ${entry.entity}`);
-    seen.add(slug);
-    return { entry, slug };
-  });
-}
-
 function entityEntry(pack: Pack, entry: RawEntry, slug: string, aliases: Set<string>): AskEntry {
   const name = cleanName(entry.entity);
   const values = pack.metrics.flatMap((metric) => {
@@ -108,6 +94,7 @@ function entityEntry(pack: Pack, entry: RawEntry, slug: string, aliases: Set<str
     alt_phrasings: alternates,
     tags: [pack.sport, pack.kind, "public-profile", ...words(name)],
     bucket: "public-entity-profile",
+    entity: { name: entry.entity, pack: pack.routePack, slug },
     a: {
       status: "ok",
       answer: values.length
@@ -121,7 +108,9 @@ function entityEntry(pack: Pack, entry: RawEntry, slug: string, aliases: Set<str
 }
 
 function entityEntries(): AskEntry[] {
-  const records = PACKS.flatMap((pack) => entrySlugs(entriesFrom(`showcase/${pack.file}.json`)).map(({ entry, slug }) => ({ pack, entry, slug })));
+  const records = PACKS.flatMap((pack) => entrySlugs(entriesFrom(`showcase/${pack.file}.json`).map((entry) => ({
+    ...entry, as_of: entry.as_of || undefined,
+  }))).map(({ entry, slug }) => ({ pack, entry, slug })));
   const counts = new Map<string, number>();
   records.forEach(({ entry }) => {
     const surname = words(entry.entity).at(-1);

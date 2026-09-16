@@ -1,5 +1,6 @@
 // Grounded client-side retrieval for Ask Scout's committed answer corpus.
 // It ranks corpus fields only; it never generates or alters an answer.
+import { entityForms, normalizeEntityName, resolveEntityIntent, type AtlasEntity } from "./askEntityIntent";
 
 export type AskStatus = "ok" | "no_data" | "refused";
 
@@ -17,6 +18,7 @@ export interface AskEntry {
   tags: string[];
   bucket: string;
   a: AskAnswer;
+  entity?: AtlasEntity;
 }
 
 type MatchKind = "direct" | "related" | "none" | "unavailable";
@@ -25,6 +27,7 @@ export interface ResolvedQuestion {
   entry: AskEntry | null;
   kind: MatchKind;
   followUps: string[];
+  compareOffer?: { label: string; href: string };
 }
 
 const STOP = new Set(
@@ -67,6 +70,25 @@ function norm(value: string): string {
     .replace(/[^a-z0-9\s]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function entryMentionsEntity(entry: AskEntry, entity: AtlasEntity): boolean {
+  if (entry.entity?.pack === entity.pack && entry.entity.slug === entity.slug) return true;
+  const searchable = normalizeEntityName(`${entry.q} ${(entry.alt_phrasings || []).join(" ")}`);
+  return entityForms(entity).some((form) => ` ${searchable} `.includes(` ${form} `));
+}
+
+function supportsEntities(entry: AskEntry, entities: AtlasEntity[]): boolean {
+  return entities.every((entity) => entryMentionsEntity(entry, entity));
+}
+
+function comparisonOffer(entities: AtlasEntity[]): ResolvedQuestion["compareOffer"] {
+  if (entities.length !== 2 || entities[0].pack !== entities[1].pack) return undefined;
+  const [first, second] = entities;
+  return {
+    label: `Compare ${first.name} and ${second.name}`,
+    href: `/analytics/compare?pack=${encodeURIComponent(first.pack)}&a=${encodeURIComponent(first.slug)}&b=${encodeURIComponent(second.slug)}`,
+  };
 }
 
 function tokens(value: string): string[] {
@@ -180,14 +202,14 @@ function matchesStaticQuestion(queryTerms: string[], entry: AskEntry): boolean {
   });
 }
 
-function followUps(entries: AskEntry[], selected: AskEntry, queryTerms: string[]): string[] {
+function followUps(entries: AskEntry[], selected: AskEntry, queryTerms: string[], entities: AtlasEntity[]): string[] {
   const selectedTerms = new Set(
     tokens(`${selected.q} ${selected.alt_phrasings.join(" ")} ${selected.tags.join(" ")}`)
   );
   const selectedSpecific = Array.from(selectedTerms).filter((term) => !FOLLOWUP_GENERIC.has(term) && !SPORT_TERMS.has(term));
   const selectedSports = new Set(tokens(selected.tags.join(" ")).filter((term) => SPORT_TERMS.has(term)));
   return entries
-    .filter((entry) => entry.q !== selected.q && entry.a.status === "ok" &&
+    .filter((entry) => entry.q !== selected.q && entry.a.status === "ok" && supportsEntities(entry, entities) &&
       (!selected.a.explore_path || entry.a.source_artifact === selected.a.source_artifact))
     .map((entry) => {
       const entryTerms = new Set(tokens(`${entry.q} ${entry.alt_phrasings.join(" ")} ${entry.tags.join(" ")}`));
@@ -214,11 +236,19 @@ export function resolveQuestion(query: string, entries: AskEntry[]): ResolvedQue
   const queryTerms = tokens(query);
   if (!queryTerms.length) return null;
   if (!entries.length) return { entry: null, kind: "unavailable", followUps: [] };
+  const intent = resolveEntityIntent(query, entries.flatMap((entry) => entry.entity ? [entry.entity] : []));
+  const offer = intent.isComparison ? comparisonOffer(intent.entities) : undefined;
 
   // The site has no current-data feed. Prefer the curated scope refusal before a
   // static player card can be mistaken for an answer about a live or latest event.
-  const staticExact = entries.find((entry) => entry.a.status === "ok" && matchesStaticQuestion(queryTerms, entry));
-  if (staticExact) return { entry: staticExact, kind: "direct", followUps: followUps(entries, staticExact, queryTerms) };
+  const staticExact = entries.find((entry) => entry.a.status === "ok" &&
+    supportsEntities(entry, intent.entities) && matchesStaticQuestion(queryTerms, entry));
+  if (staticExact) return {
+    entry: staticExact,
+    kind: offer ? "related" : "direct",
+    followUps: followUps(entries, staticExact, queryTerms, intent.entities),
+    compareOffer: offer,
+  };
   if (TEMPORAL_QUERY.test(query) && !staticExact) {
     const scope = entries.find((entry) =>
       entry.a.status === "no_data" && entry.tags.includes("live") && entry.tags.includes("scope")
@@ -233,15 +263,17 @@ export function resolveQuestion(query: string, entries: AskEntry[]): ResolvedQue
       frequencies.set(term, (frequencies.get(term) || 0) + 1);
     });
   });
-  const best = indexed
+  const eligible = intent.entities.length ? indexed.filter((item) => supportsEntities(item.entry, intent.entities)) : indexed;
+  const best = eligible
     .map((item) => candidateFor(query, queryTerms, item, frequencies))
     .sort((a, b) => b.score - a.score || a.item.entry.q.localeCompare(b.item.entry.q))[0];
 
-  if (!best || best.matchedTerms.size === 0) return { entry: null, kind: "none", followUps: [] };
+  if (!best || best.matchedTerms.size === 0) return { entry: null, kind: "none", followUps: [], compareOffer: offer };
   const entry = best.item.entry;
   return {
     entry,
-    kind: isDirect(queryTerms, best, frequencies) ? "direct" : "related",
-    followUps: followUps(entries, entry, queryTerms),
+    kind: offer ? "related" : isDirect(queryTerms, best, frequencies) ? "direct" : "related",
+    followUps: followUps(entries, entry, queryTerms, intent.entities),
+    compareOffer: offer,
   };
 }
