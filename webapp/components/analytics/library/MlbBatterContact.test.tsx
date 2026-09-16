@@ -16,8 +16,15 @@ describe("Published MLB exit-velocity investigation", () => {
     expect(screen.getByRole("status")).toHaveTextContent("1 matching row;");
     fireEvent.click(screen.getByRole("button", { name: /^Inspect Aaron Judge:/ }));
     const selected = screen.getByRole("region", { name: "Selected measurement" });
-    for (const value of ["21.9 mph", "109.5 mph", "87.6 mph", "698", "2,715"]) {
-      expect(within(selected).getAllByText(value)[0]).toBeVisible();
+    for (const [label, value] of [
+      ["P90 minus mean exit velocity", "21.9 mph"],
+      ["P90 recorded exit velocity", "109.5 mph"],
+      ["Mean recorded exit velocity", "87.6 mph"],
+      ["Recorded exit-velocity rows", "698"],
+      ["Pitches faced", "2,715"],
+    ]) {
+      const term = within(selected).getByText(label, { selector: "dt" });
+      expect(within(term.parentElement!).getByText(value, { selector: "dd" })).toBeVisible();
     }
     expect(screen.getByText(analysis.scope)).toBeVisible();
     expect(screen.getByText(analysis.caveat)).toBeVisible();

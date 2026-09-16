@@ -15,9 +15,14 @@ describe("Published tennis window investigation", () => {
     fireEvent.change(screen.getByRole("textbox", { name: "Search analysis rows" }), { target: { value: "Andy Murray" } });
     fireEvent.click(screen.getByRole("button", { name: /^Inspect Andy Murray/ }));
     const selected = screen.getByRole("region", { name: "Selected measurement" });
-    expect(within(selected).getAllByText("-18.54 pp")[0]).toBeInTheDocument();
-    expect(within(selected).getByText("48.78%")).toBeInTheDocument();
-    expect(within(selected).getByText("67.32%")).toBeInTheDocument();
+    for (const [label, value] of [
+      ["Recent minus career", "-18.54 pp"],
+      ["Recent win rate", "48.78%"],
+      ["Career win rate", "67.32%"],
+    ]) {
+      const term = within(selected).getByText(label, { selector: "dt" });
+      expect(within(term.parentElement!).getByText(value, { selector: "dd" })).toBeInTheDocument();
+    }
     fireEvent.click(screen.getByRole("button", { name: "Export CSV" }));
     const [dataset, rows] = exportCSV.mock.calls[0];
     expect(dataset.source).toBe("atlas_tennis_manifest");

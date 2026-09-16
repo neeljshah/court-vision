@@ -15,8 +15,16 @@ describe("Published NBA opponent mean-total investigation", () => {
     fireEvent.change(screen.getByRole("textbox", { name: "Search analysis rows" }), { target: { value: "ATL" } });
     fireEvent.click(screen.getByRole("button", { name: /^Inspect ATL:/ }));
     const selected = screen.getByRole("region", { name: "Selected measurement" });
-    for (const value of ["34.2", "255.7", "221.5", "10", "6", "29"]) {
-      expect(within(selected).getAllByText(value)[0]).toBeInTheDocument();
+    for (const [label, value] of [
+      ["High-low mean-total range", "34.2"],
+      ["Highest opponent mean total", "255.7"],
+      ["Lowest opponent mean total", "221.5"],
+      ["Selected high-end pair meetings", "10"],
+      ["Selected low-end pair meetings", "6"],
+      ["Opponents represented", "29"],
+    ]) {
+      const term = within(selected).getByText(label, { selector: "dt" });
+      expect(within(term.parentElement!).getByText(value, { selector: "dd" })).toBeInTheDocument();
     }
     expect(selected).toHaveTextContent("IND");
     expect(selected).toHaveTextContent("HOU");
