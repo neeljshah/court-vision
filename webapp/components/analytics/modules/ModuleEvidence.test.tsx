@@ -26,6 +26,7 @@ describe("ModuleEvidence", () => {
     expect(screen.queryByLabelText("Market overreaction operands")).not.toBeInTheDocument();
     expect(screen.queryByLabelText("Micro absorption operands")).not.toBeInTheDocument();
     expect(screen.queryByLabelText("Rest asymmetry panels")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Starter rest absorption panels")).not.toBeInTheDocument();
   });
   it("mounts the overreaction operands for the market movement module", () => {
     render(<ModuleEvidence moduleId="market_overreaction" evidence={{ availability: "published", missingInputs: [], coverage: [], analyses: [] }} />);
@@ -36,6 +37,15 @@ describe("ModuleEvidence", () => {
     const panel = screen.getByLabelText("Rest asymmetry panels");
     expect(panel).toHaveTextContent("Schedule population: 4,793 games");
     expect(panel).toHaveTextContent("Priced population: 1,103 games");
+  });
+  it("mounts starter-rest panels without replacing the rest-asymmetry panels", () => {
+    const evidence = { availability: "published" as const, missingInputs: [], coverage: [], analyses: [] };
+    const { rerender } = render(<ModuleEvidence moduleId="novel_starter_rest_absorption" evidence={evidence} />);
+    expect(screen.getByLabelText("Starter rest absorption panels")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Rest asymmetry panels")).not.toBeInTheDocument();
+    rerender(<ModuleEvidence moduleId="novel_rest_asymmetry" evidence={evidence} />);
+    expect(screen.getByLabelText("Rest asymmetry panels")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Starter rest absorption panels")).not.toBeInTheDocument();
   });
   it("mounts the absorption operands for the time-to-close module", () => {
     render(<ModuleEvidence moduleId="micro_absorption" evidence={{ availability: "published", missingInputs: [], coverage: [], analyses: [] }} />);
