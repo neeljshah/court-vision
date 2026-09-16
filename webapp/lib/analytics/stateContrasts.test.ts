@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { deltaPercentagePoints, buildStateContrasts, contrastsForPair } from "./stateContrasts";
+import { deltaPercentagePoints, buildStateContrasts, contrastsForPair, sameBandContrasts } from "./stateContrasts";
 import { loadStateContrasts } from "./stateContrasts.server";
 
 describe("state contrast data", () => {
@@ -27,6 +27,15 @@ describe("state contrast data", () => {
       to: { time: "mid(inn4-6)", probabilityBand: "0-.2", meanOutcomeFrequency: 0.2063, n: 2079 },
       minSupportN: 2079,
     });
+  });
+
+  it("finds the 8 MLB and 17 soccer same-band contrasts without changing denominators", () => {
+    const sports = loadStateContrasts();
+    const mlb = sports.find(sport => sport.sport === "mlb")?.contrasts || [];
+    const soccer = sports.find(sport => sport.sport === "soccer_intl")?.contrasts || [];
+    expect(sameBandContrasts(mlb)).toHaveLength(8);
+    expect(sameBandContrasts(soccer)).toHaveLength(17);
+    expect(sameBandContrasts(mlb)[0]).toMatchObject({ from: { n: 2458 }, to: { n: 4413 }, minSupportN: 2458 });
   });
 
   it("returns no rows for a missing sport", () => {

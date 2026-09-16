@@ -21,6 +21,12 @@ describe("blowout timing data", () => {
     expect(sports.find(sport => sport.sport === "soccer_intl")).toMatchObject({ unit: "goals", clockField: "minute" });
   });
 
+  it("preserves each sport's eligibility counts and the published floors", () => {
+    const sports = loadBlowoutTiming();
+    expect(sports.find(sport => sport.sport === "mlb")).toMatchObject({ nGamesRaw: 178, nGamesUsable: 178, minTicksFloor: 10, minGamesPerThreshold: 10 });
+    expect(sports.find(sport => sport.sport === "soccer_intl")).toMatchObject({ nGamesRaw: 29, nGamesUsable: 29, minTicksFloor: 10, minGamesPerThreshold: 10 });
+  });
+
   it("derives incidence from decided games and total games on a fixture", () => {
     const parsed = buildBlowoutTiming({ sports: { fixture: { unit: "points", clock_field: "minute", thresholds: [{ threshold: 8, n_games_total: 3, n_games_decided: 1, decided_frac_of_games: 0.9 }] } } });
     expect(parsed[0].thresholds[0].incidence).toBe(0.333333);

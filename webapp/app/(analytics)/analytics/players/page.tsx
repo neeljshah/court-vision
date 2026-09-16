@@ -186,7 +186,7 @@ export default function EntitiesIndexPage() {
         <h1 className="serif" style={{ fontWeight: 500, fontSize: "clamp(2.4rem,5vw,3.4rem)", lineHeight: 1.05, letterSpacing: "-.02em", margin: "6px 0 10px" }}>Entities</h1>
         <p style={{ maxWidth: 680, color: "var(--ink-2)", fontSize: 18, lineHeight: 1.6 }}>
           {totalCards.toLocaleString()} descriptive cards across {new Set(PACKS.map((p) => p.sport)).size - 1} sports.
-          Each card is measured history, held to conservative sample floors &mdash; per-36 rates, surface splits, pitch distributions &mdash;
+          Each profile includes observations meeting the stated sample requirements &mdash; per-36 rates, surface splits, pitch distributions &mdash;
           not a projection. {marquee.length} carry a precomputed Scout read; the rest are in the pack tables below.
         </p>
         <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "var(--paper-tint)", border: "1px solid var(--rule-strong)", borderRadius: 8, padding: "8px 14px", fontSize: 13, color: "var(--ink-2)", marginTop: 16 }}>

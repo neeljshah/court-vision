@@ -7,7 +7,7 @@ import type { ResidualAnatomyData, ResidualMetric, ResidualSegment, ResidualSpor
 const METRICS: Array<{ key: ResidualMetric; label: string }> = [
   { key: "n", label: "Rows" },
   { key: "meanAbsResidual", label: "Mean absolute residual" },
-  { key: "totalAbsResidualMass", label: "Total absolute residual mass" },
+  { key: "totalAbsResidualMass", label: "Sum of absolute forecast errors" },
 ];
 
 function sportLabel(sport: string): string {
@@ -70,7 +70,7 @@ export function ResidualAnatomy({ data }: { data: ResidualAnatomyData }) {
     </div>
     {data.sports.map(sport => <section className="ra-sport" key={sport.sport} aria-labelledby={`${sport.sport}-residual-title`}>
       <header className="ra-sport-head">
-        <div><p>Published segmentation</p><h2 id={`${sport.sport}-residual-title`}>{sportLabel(sport.sport)}</h2></div>
+        <div><p>Forecasts grouped by game state</p><h2 id={`${sport.sport}-residual-title`}>{sportLabel(sport.sport)}</h2></div>
         <dl><div><dt>n_records</dt><dd>{count(sport.nRecords)}</dd></div><div><dt>n_skipped</dt><dd>{count(sport.nSkipped)}</dd></div></dl>
       </header>
       <div className="ra-grid-wrap" role="region" aria-label={`${sportLabel(sport.sport)} residual grid`} data-scroll-region>

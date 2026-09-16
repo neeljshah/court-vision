@@ -19,8 +19,8 @@ it("flags inflections in JSX, literals, template literals, and metadata", () => 
   expect(findings).toHaveLength(3);
 });
 
-it("allows only declared retracted figures, not retraction-page prose", () => {
+it("flags prohibited language even when it appears in a retraction record", () => {
   const path = "app/(analytics)/analytics/findings/retraction/page.tsx";
-  expect(scanSourceText(path, `const figures = [{ retracted: "ROI result" }];`)).toEqual([]);
+  expect(scanSourceText(path, `const figures = [{ retracted: "ROI result" }];`)).toHaveLength(1);
   expect(scanSourceText(path, `const explanation = "The betting method was invalid.";`)).toHaveLength(1);
 });

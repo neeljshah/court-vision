@@ -43,8 +43,8 @@ describe("ResidualAnatomy", () => {
 
   it("shows all three published values for an inspected cell", () => {
     render(<ResidualAnatomy data={data} />);
-    const initial = screen.getByRole("button", { name: "MLB early, 0-.2 Total absolute residual mass" });
-    const selected = screen.getByRole("button", { name: "MLB late, .2-.4 Total absolute residual mass" });
+    const initial = screen.getByRole("button", { name: "MLB early, 0-.2 Sum of absolute forecast errors" });
+    const selected = screen.getByRole("button", { name: "MLB late, .2-.4 Sum of absolute forecast errors" });
     expect(initial).toHaveAttribute("aria-pressed", "true");
     fireEvent.click(selected);
     expect(initial).toHaveAttribute("aria-pressed", "false");

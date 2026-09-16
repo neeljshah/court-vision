@@ -248,7 +248,7 @@ export function AskBox({ entries, tours }: { entries: AskEntry[]; tours: AskTour
         ))}
       </section>
       <p style={{ fontSize: 13, color: "var(--ink-3)", margin: "8px 0 28px" }}>
-        No LLM runs here. This is a local router over a committed answer corpus; it cannot answer beyond that evidence.
+        Scout searches published answers and links each result to its source.
       </p>
     </div>
   );

@@ -20,4 +20,9 @@ describe("ModuleDetail", () => {
     render(<ModuleDetail mod={mod} out={out} subtitle="When a lead becomes permanent." insight={null} />);
     expect(screen.queryByRole("heading", { name: "How to read this figure" })).not.toBeInTheDocument();
   });
+
+  it("uses plain language when a published source has no chart", () => {
+    render(<ModuleDetail mod={{ ...mod, chart_path: undefined }} out={out} subtitle="When a lead becomes permanent." insight={null} />);
+    expect(screen.getByText("This source has no chart. Its cited measurements appear below.")).toBeInTheDocument();
+  });
 });

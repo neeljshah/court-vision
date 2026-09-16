@@ -30,3 +30,11 @@ it("renders the published comparable method and most distant profiles", () => {
   expect(screen.getByRole("link", { name: "Zeta" })).toBeInTheDocument();
   expect(screen.getByRole("heading", { name: "Largest measured differences" })).toBeInTheDocument();
 });
+
+it("uses plain language when profiles do not share a measurement", () => {
+  const pack: ComparisonPack = {
+    key: "nba_players", nInPack: 2, metricKeys: ["unshared"], entities: [a, b],
+  };
+  render(<ComparisonResults pack={pack} a={a} b={b} manifest="atlas_nba_manifest.json" surface="hard" onSurfaceChange={() => undefined} />);
+  expect(screen.getByText("These profiles have no numerical measurements in common.")).toBeInTheDocument();
+});

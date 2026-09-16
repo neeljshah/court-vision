@@ -108,7 +108,7 @@ describe("AskBox", () => {
     fireEvent.change(screen.getByLabelText("Ask Scout a question"), { target: { value: "Different available question" } });
     fireEvent.click(screen.getByRole("button", { name: "Search Scout's cited answers" }));
 
-    expect(screen.getByText(/Scout searches published answers with source links./)).toBeInTheDocument();
+    expect(screen.getByText("Scout searches published answers and links each result to its source.")).toBeInTheDocument();
     expect(screen.getByText("Closest available question:")).toBeInTheDocument();
   });
 });

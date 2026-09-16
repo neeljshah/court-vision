@@ -36,7 +36,7 @@ type Retraction = {
 // table ever changes.
 const RETRACTIONS: Retraction[] = [
   {
-    retracted: "+18.38% pregame ROI on 1,535 walk-forward bets vs real closing lines",
+    retracted: "The invalid +18.38% evaluation across 1,535 walk-forward closing-line records",
     whatWasWrong:
       "Invalid grading method, confirmed at the source-code level. The grader chose a direction from the devigged close and never read the model because the evaluation CSV had no prediction column; it also used an unavailable fixed conversion and tuned filters in-sample on the same file.",
     proofArtifact: "JOB_EVIDENCE_PACKET s4 (model's own unfiltered measurement: -2.00%)",
@@ -44,7 +44,7 @@ const RETRACTIONS: Retraction[] = [
       "No durable probability-score improvement was measured against real closing lines. Every candidate measurement, including assists, was ultimately rejected or retracted by the same gates.",
   },
   {
-    retracted: "0.119 end-of-Q3 in-play Brier, \"inside Pinnacle's range\"",
+    retracted: "The leak-inflated 0.119 end-of-Q3 Brier evaluation, corrected to about 0.141",
     whatWasWrong:
       "Leak-inflated and mis-sourced. Two features were computed from fourth-quarter data, so the model predicting Q4 was peeking at Q4; the cited file actually reported 0.1354, a different number.",
     proofArtifact:
@@ -53,7 +53,7 @@ const RETRACTIONS: Retraction[] = [
       "Leak-free walk-forward end-of-Q3 Brier ~0.141, after removing the Q4 feature leak found in the pipeline. Framed as a leak caught, not a competitive number.",
   },
   {
-    retracted: "+54.57% ROI / 78.11% hit on 55,073 in-play bets",
+    retracted: "The +54.57% / 78.11% L5-proxy result across 55,073 in-play records",
     whatWasWrong:
       "Graded against an L5 line proxy rather than real closing lines. It was a model-quality ceiling on a soft proxy, not an externally validated evaluation.",
     proofArtifact: "JOB_EVIDENCE_PACKET s4",
@@ -61,7 +61,7 @@ const RETRACTIONS: Retraction[] = [
       "On a soft L5 proxy the in-play backtest reaches that ceiling. It remains a model-quality ceiling, not a realized probability evaluation.",
   },
   {
-    retracted: "Aggregate CLV +8.94pp",
+    retracted: "The circular aggregate +8.94pp closing-line movement calculation",
     whatWasWrong:
       "Circular -- computed on the same model-unused, devig-direction corpus. No real Pinnacle-close CLV exists yet; a full-season backtest shows CLV about zero vs real closes.",
     proofArtifact: "JOB_EVIDENCE_PACKET s4 (full-season backtest: CLV ~= 0 vs real closes)",
@@ -69,7 +69,7 @@ const RETRACTIONS: Retraction[] = [
       "Real closing-line CLV cannot be measured yet. The methodology that will measure it exists; no CLV figure is quoted until it can be.",
   },
   {
-    retracted: "Steals/blocks prop grid search: training R^2 ~0.79",
+    retracted: "The leak-driven steals and blocks training R^2 of about 0.79, with holdout R^2 about 0.06",
     whatWasWrong:
       "Textbook leakage: the ~0.79 training R^2 collapsed to ~0.06 on a leak-free holdout.",
     proofArtifact:
@@ -78,7 +78,7 @@ const RETRACTIONS: Retraction[] = [
       "Caught and hard-corrected a leakage-driven overfit. The corrective regularization takes precedence over the stale tuned parameters, so the mistake cannot silently reappear.",
   },
   {
-    retracted: "The assists ROI edge (the strongest surviving candidate)",
+    retracted: "The assists conclusion withdrawn on 2026-07-21 after it failed in the playoffs",
     whatWasWrong:
       "Regime-dependent -- it broke in the playoffs -- and was retracted 2026-07-21. The historical record remains subject to the same calibration review.",
     proofArtifact: "JOB_EVIDENCE_PACKET s3 (historical record only, in the gate artifacts)",
@@ -202,7 +202,7 @@ export default function RetractionPage() {
           <article key={r.retracted} style={card}>
             <div style={retractHead}>
               <span style={retractTag}>Retracted</span>
-              <p style={retractedLine}>{r.retracted}</p>
+              <h2 style={retractedLine}>{r.retracted}</h2>
             </div>
             <p style={rowLabel}>What was wrong</p>
             <p style={rowBody}>{r.whatWasWrong}</p>

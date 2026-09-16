@@ -107,6 +107,11 @@ export function contrastsForPair(sports: StateContrastSport[], sport: string, pa
   return sports.find(item => item.sport === sport)?.contrasts.filter(contrast => timePair(contrast).id === pairId) || [];
 }
 
+/** Keeps only observations that use the same published forecast band at both times. */
+export function sameBandContrasts(contrasts: StateContrast[]): StateContrast[] {
+  return contrasts.filter(contrast => contrast.from.probabilityBand === contrast.to.probabilityBand);
+}
+
 export function deltaPercentagePoints(delta: number): number {
   return rounded(delta * 100);
 }

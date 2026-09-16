@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Figure } from "@/components/analytics/charts/Figure";
-import { contrastsForPair, deltaPercentagePoints, type StateContrast, type StateContrastSport } from "@/lib/analytics/stateContrasts";
+import { contrastsForPair, deltaPercentagePoints, sameBandContrasts, type StateContrast, type StateContrastSport } from "@/lib/analytics/stateContrasts";
 
 const SOURCE = "public/data/showcase/why_attribution.json";
 
@@ -38,7 +38,18 @@ export function StateContrasts({ sports }: { sports: StateContrastSport[] }) {
   const pairs = selectedSport?.adjacentTimePairs || [];
   const [pairId, setPairId] = useState(pairs[0]?.id || "");
   const selectedPair = pairs.find(pair => pair.id === pairId) || pairs[0];
-  const rows = selectedSport && selectedPair ? contrastsForPair(sports, selectedSport.sport, selectedPair.id) : [];
+  const [bandScope, setBandScope] = useState("same");
+  const [sort, setSort] = useState<"difference" | "support">("difference");
+  const pairRows = selectedSport && selectedPair ? contrastsForPair(sports, selectedSport.sport, selectedPair.id) : [];
+  const originBands = Array.from(new Set(pairRows.map(row => row.from.probabilityBand)));
+  const scopedRows = bandScope === "same"
+    ? sameBandContrasts(pairRows)
+    : bandScope === "all"
+      ? pairRows
+      : pairRows.filter(row => row.from.probabilityBand === bandScope);
+  const rows = [...scopedRows].sort((a, b) => sort === "difference"
+    ? Math.abs(b.winprobDelta) - Math.abs(a.winprobDelta) || b.minSupportN - a.minSupportN
+    : b.minSupportN - a.minSupportN || Math.abs(b.winprobDelta) - Math.abs(a.winprobDelta));
   const scale = maxDelta(rows);
 
   if (!sports.length) return <p className="sc-empty">No published state contrasts are available in this snapshot.</p>;
@@ -47,19 +58,22 @@ export function StateContrasts({ sports }: { sports: StateContrastSport[] }) {
     const next = sports.find(item => item.sport === nextSport);
     setSport(nextSport);
     setPairId(next?.adjacentTimePairs[0]?.id || "");
+    setBandScope("same");
   }
 
   return <section className="sc-shell" aria-label="State contrast explorer">
-    <p className="sc-definition">These are BETWEEN-BUCKET differences in outcome frequency, not transition frequencies and not paired movements within individual games.</p>
+    <p className="sc-definition">These are BETWEEN-BUCKET differences in outcome frequency, not transition frequencies and not paired movements within individual games. Holding the forecast band fixed still does not follow identical games across time buckets.</p>
     <div className="sc-controls">
       <label>Sport<select aria-label="State contrast sport" value={selectedSport?.sport || ""} onChange={event => chooseSport(event.target.value)}>{sports.map(item => <option key={item.sport} value={item.sport}>{sportLabel(item.sport)}</option>)}</select></label>
       <label>Adjacent time buckets<select aria-label="Adjacent time buckets" value={selectedPair?.id || ""} onChange={event => setPairId(event.target.value)}>{pairs.map(pair => <option key={pair.id} value={pair.id}>{pairLabel(pair.fromTime, pair.toTime)}</option>)}</select></label>
+      <label>Same forecast band<select aria-label="Same forecast band" value={bandScope} onChange={event => setBandScope(event.target.value)}><option value="same">Same forecast band</option><option value="all">All forecast-band contrasts</option>{originBands.map(band => <option key={band} value={band}>Origin band {band}</option>)}</select></label>
+      <label>Sort rows<select aria-label="Sort state contrasts" value={sort} onChange={event => setSort(event.target.value as "difference" | "support")}><option value="difference">Largest difference</option><option value="support">Minimum support</option></select></label>
     </div>
-    {selectedSport && selectedPair ? <Figure source={SOURCE} asOf="published snapshot" title={`${sportLabel(selectedSport.sport)} bucket contrasts`} subtitle={`Each row compares independent published populations from ${pairLabel(selectedPair.fromTime, selectedPair.toTime)}. The bar is scaled only within this selected time-pair.`} verdict="descriptive_only">
+    {selectedSport && selectedPair ? <Figure source={SOURCE} asOf="published snapshot" title={`${sportLabel(selectedSport.sport)} bucket contrasts`} subtitle={`Each row compares published bucket populations from ${pairLabel(selectedPair.fromTime, selectedPair.toTime)}. The bar is scaled only within this selected time-pair.`} verdict="descriptive_only">
       <div className="sc-table-wrap" role="region" aria-label={`${sportLabel(selectedSport.sport)} state contrasts`} data-scroll-region>
         <table className="sc-table">
           <caption>Published contrasts from {selectedPair.fromTime} to {selectedPair.toTime}. Both state populations remain visible.</caption>
-          <thead><tr><th scope="col">From state</th><th scope="col">Outcome frequency</th><th scope="col">n</th><th scope="col">To state</th><th scope="col">Outcome frequency</th><th scope="col">n</th><th scope="col">Difference</th><th scope="col">Minimum support</th></tr></thead>
+          <thead><tr><th scope="col">From state</th><th scope="col">Outcome frequency</th><th scope="col">Forecast observations</th><th scope="col">To state</th><th scope="col">Outcome frequency</th><th scope="col">Forecast observations</th><th scope="col">Difference</th><th scope="col">Minimum support</th></tr></thead>
           <tbody>{rows.map((row, index) => {
             const points = deltaPercentagePoints(row.winprobDelta);
             return <tr key={`${stateLabel(row, "from")}-${stateLabel(row, "to")}-${index}`}>

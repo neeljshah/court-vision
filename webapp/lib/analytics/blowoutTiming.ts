@@ -17,6 +17,10 @@ export type BlowoutTimingSport = {
   sport: string;
   unit: string;
   clockField: string;
+  nGamesRaw: number;
+  nGamesUsable: number;
+  minTicksFloor: number;
+  minGamesPerThreshold: number | null;
   thresholds: BlowoutTimingThreshold[];
 };
 
@@ -74,10 +78,15 @@ export function buildBlowoutTiming(value: unknown): BlowoutTimingSport[] {
     const source = record(entry);
     const unit = typeof source?.unit === "string" ? source.unit : null;
     const clockField = typeof source?.clock_field === "string" ? source.clock_field : null;
+    const nGamesRaw = count(source?.n_games_raw);
+    const nGamesUsable = count(source?.n_games_usable);
+    const minTicksFloor = count(source?.min_ticks_floor);
     const rows = Array.isArray(source?.thresholds) ? source.thresholds.flatMap(row => {
       const parsed = thresholdFrom(row, minimum);
       return parsed ? [parsed] : [];
     }) : [];
-    return unit && clockField && rows.length ? [{ sport, unit, clockField, thresholds: rows }] : [];
+    return unit && clockField && rows.length
+      ? [{ sport, unit, clockField, nGamesRaw, nGamesUsable, minTicksFloor, minGamesPerThreshold: minimum, thresholds: rows }]
+      : [];
   });
 }

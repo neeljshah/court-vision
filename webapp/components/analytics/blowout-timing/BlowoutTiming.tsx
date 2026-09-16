@@ -25,6 +25,16 @@ function ThresholdLabel({ row, unit }: { row: BlowoutTimingThreshold; unit: stri
   return <span className="bt-threshold mono">{row.threshold} {unit}</span>;
 }
 
+function Eligibility({ sport }: { sport: BlowoutTimingSport }) {
+  return <p className="bt-eligibility">
+    Published eligibility: <span className="mono">{sport.nGamesRaw.toLocaleString()} raw games</span>,
+    {" "}<span className="mono">{sport.nGamesUsable.toLocaleString()} usable games</span> with at least
+    {" "}<span className="mono">{sport.minTicksFloor.toLocaleString()} parseable score ticks</span>; each threshold
+    needs <span className="mono">{sport.minGamesPerThreshold?.toLocaleString() || "the published floor"} decided games</span>{" "}
+    for clock quartiles.
+  </p>;
+}
+
 function IncidencePanel({ sport }: { sport: BlowoutTimingSport }) {
   return <section className="bt-panel" aria-labelledby={`bt-incidence-${sport.sport}`}>
     <h3 id={`bt-incidence-${sport.sport}`}>Incidence</h3>
@@ -67,6 +77,7 @@ export function BlowoutTiming({ sports }: { sports: BlowoutTimingSport[] }) {
     {sports.map(sport => <section className="bt-sport" key={sport.sport} aria-labelledby={`bt-${sport.sport}`}>
       <h2 id={`bt-${sport.sport}`}>{sportLabel(sport.sport)}</h2>
       <Figure source={SOURCE} asOf="published snapshot" title={`${sportLabel(sport.sport)} lasting-lead frequency and timing`} subtitle={`Thresholds are expressed in ${sport.unit}; the reported clock is ${sport.clockField}.`} verdict="descriptive_only">
+        <Eligibility sport={sport} />
         <div className="bt-panels"><IncidencePanel sport={sport} /><TimingPanel sport={sport} /></div>
       </Figure>
     </section>)}

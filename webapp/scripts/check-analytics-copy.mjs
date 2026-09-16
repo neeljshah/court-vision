@@ -32,11 +32,6 @@ function isNonProseLiteral(literal) {
     || /^(?:[A-Za-z0-9._-]+\/)+[A-Za-z0-9._-]+$/.test(value);
 }
 
-function permittedRetractionFigure(path, source, index) {
-  const lineStart = source.lastIndexOf("\n", index) + 1;
-  return path.endsWith("/findings/retraction/page.tsx") && /\bretracted:\s*$/.test(source.slice(lineStart, index));
-}
-
 function withoutComments(source) {
   let result = "";
   let quote = "";
@@ -97,7 +92,7 @@ export function scanSourceText(path, source) {
       }
     }
     const literal = code.slice(index, end);
-    if (!permittedRetractionFigure(path, source, index) && !isNonProseLiteral(literal) && hasForbiddenToken(literal)) {
+    if (!isNonProseLiteral(literal) && hasForbiddenToken(literal)) {
       findings.push({ file: path, line: lineAt(source, index), text: literal });
     }
     index = end - 1;
@@ -107,6 +102,12 @@ export function scanSourceText(path, source) {
     if (hasForbiddenToken(match[1])) findings.push({ file: path, line: lineAt(source, index), text: match[1] });
   }
   return findings;
+}
+
+/** Checks text after rendering, where JSX literals are no longer available. */
+export function scanRenderedText(value) {
+  FORBIDDEN.lastIndex = 0;
+  return Array.from(value.matchAll(FORBIDDEN), (match) => match[0]);
 }
 
 export function scanAnalyticsCopy(root = process.cwd()) {

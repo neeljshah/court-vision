@@ -12,6 +12,7 @@
 .bt-panel h3 { color: var(--ink); font-size: 16px; font-weight: 650; }
 .bt-panel-copy { margin-top: 5px; color: var(--ink-2); font-size: 13px; line-height: 1.55; }
 .bt-unit-line, .bt-scale-note { margin-top: 10px; color: var(--ink-3); font-size: 12px; line-height: 1.5; }
+.bt-eligibility { margin: 0 0 16px; color: var(--ink-3); font-size: 12px; line-height: 1.6; }
 .bt-rows { margin-top: 16px; }
 .bt-row { display: grid; grid-template-columns: 64px minmax(150px, 1fr) 158px; gap: 10px; align-items: center; min-height: 42px; padding: 8px 0; border-top: 1px solid var(--rule); }
 .bt-row:first-child { border-top: 0; }

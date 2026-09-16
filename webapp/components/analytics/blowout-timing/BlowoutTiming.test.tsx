@@ -4,8 +4,8 @@ import { BlowoutTiming } from "./BlowoutTiming";
 import type { BlowoutTimingSport } from "@/lib/analytics/blowoutTiming";
 
 const sports: BlowoutTimingSport[] = [
-  { sport: "mlb", unit: "runs", clockField: "inning", thresholds: [{ threshold: 2, nGamesTotal: 20, nGamesDecided: 10, incidence: 0.5, publishedIncidence: 0.5, masked: false, maskReason: null, p25: 4, median: 6, p75: 8 }] },
-  { sport: "soccer_intl", unit: "goals", clockField: "minute", thresholds: [{ threshold: 1, nGamesTotal: 29, nGamesDecided: 14, incidence: 0.482759, publishedIncidence: 0.4828, masked: false, maskReason: null, p25: 22.75, median: 39.5, p75: 56.25 }, { threshold: 2, nGamesTotal: 29, nGamesDecided: 3, incidence: 0.103448, publishedIncidence: 0.1034, masked: true, maskReason: "Below the published minimum of 10 decided games.", p25: null, median: null, p75: null }] },
+  { sport: "mlb", unit: "runs", clockField: "inning", nGamesRaw: 178, nGamesUsable: 178, minTicksFloor: 10, minGamesPerThreshold: 10, thresholds: [{ threshold: 2, nGamesTotal: 20, nGamesDecided: 10, incidence: 0.5, publishedIncidence: 0.5, masked: false, maskReason: null, p25: 4, median: 6, p75: 8 }] },
+  { sport: "soccer_intl", unit: "goals", clockField: "minute", nGamesRaw: 29, nGamesUsable: 29, minTicksFloor: 10, minGamesPerThreshold: 10, thresholds: [{ threshold: 1, nGamesTotal: 29, nGamesDecided: 14, incidence: 0.482759, publishedIncidence: 0.4828, masked: false, maskReason: null, p25: 22.75, median: 39.5, p75: 56.25 }, { threshold: 2, nGamesTotal: 29, nGamesDecided: 3, incidence: 0.103448, publishedIncidence: 0.1034, masked: true, maskReason: "Below the published minimum of 10 decided games.", p25: null, median: null, p75: null }] },
 ];
 
 describe("BlowoutTiming", () => {
@@ -39,5 +39,14 @@ describe("BlowoutTiming", () => {
     expect(bars.every(bar => bar.getAttribute("aria-hidden") === "true")).toBe(true);
     expect(screen.getByText("10 / 20 (50.0%)")).toBeInTheDocument();
     expect(screen.getByText("4 inning / 6 inning / 8 inning")).toBeInTheDocument();
+  });
+
+  it("shows raw and usable game counts beside the panels with both floors", () => {
+    render(<BlowoutTiming sports={sports} />);
+    const eligibility = screen.getAllByText((_, element) => Boolean(element?.classList.contains("bt-eligibility")));
+    expect(eligibility).toHaveLength(2);
+    expect(eligibility[0]).toHaveTextContent("178 raw games, 178 usable games with at least 10 parseable score ticks");
+    expect(eligibility[1]).toHaveTextContent("29 raw games, 29 usable games with at least 10 parseable score ticks");
+    expect(eligibility.every(item => item.textContent?.includes("10 decided games for clock quartiles"))).toBe(true);
   });
 });
