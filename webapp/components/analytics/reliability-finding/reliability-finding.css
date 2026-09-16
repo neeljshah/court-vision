@@ -1,0 +1,19 @@
+.rf-shell { max-width: 960px; }
+.rf-page-title { margin-top: 8px; color: var(--ink); font-family: var(--font-display); font-size: clamp(2rem, 4vw, 2.75rem); font-weight: 500; letter-spacing: -.015em; line-height: 1.08; }
+.rf-page-lede { max-width: 760px; margin-top: 16px; color: var(--ink-2); font-size: 18px; line-height: 1.6; }
+.rf-headline { margin-top: 20px; padding: 16px 20px; border-left: 3px solid var(--accent); border-radius: var(--radius-card); background: var(--paper-tint); color: var(--ink); font-size: 16px; font-weight: 600; line-height: 1.55; }
+.rf-intro, .rf-detail, .rf-links, .rf-denominator { color: var(--ink-2); line-height: 1.65; }
+.rf-intro { margin-top: 16px; max-width: 760px; }
+.rf-sport { margin-top: 36px; }
+.rf-sport h2 { color: var(--ink); font-family: var(--font-display); font-size: 24px; font-weight: 500; }
+.rf-denominator { margin-top: 8px; font-family: var(--font-mono); font-size: 13px; }
+.rf-table-wrap { margin-top: 14px; max-width: 100%; overflow-x: auto; }
+.rf-table { width: 100%; min-width: 850px; border-collapse: collapse; font-feature-settings: "tnum" 1; }
+.rf-table caption { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.rf-table th { padding: 8px 12px; border-bottom: 1px solid var(--rule-strong); color: var(--ink-3); font-size: 11px; letter-spacing: .06em; text-align: left; text-transform: uppercase; white-space: nowrap; }
+.rf-table td { padding: 11px 12px; border-bottom: 1px solid var(--rule); color: var(--ink); font-family: var(--font-mono); font-size: 12px; vertical-align: top; }
+.rf-table td:last-child { font-family: var(--font-sans); min-width: 255px; }
+.rf-detail { margin-top: 12px; max-width: 800px; font-size: 14px; }
+.rf-links { margin-top: 28px; font-size: 14px; }
+.rf-receipt { margin-top: 24px; }
+.rf-empty { color: var(--ink-2); }
