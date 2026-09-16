@@ -1,0 +1,180 @@
+{
+  "slug": "halftime-margins-and-the-second-half-nba",
+  "title": "Halftime margins and the second half",
+  "subtitle": "What running-score halftime margins say about second-half margins in the NBA, and why the per-team version is masked",
+  "authors": ["CourtVision research"],
+  "date": "2026-09-16",
+  "sport": "nba",
+  "keywords": ["halftime margin", "second half", "running score", "mean reversion", "team context", "NBA"],
+  "abstract": "This paper measures how a team's second-half scoring margin relates to its halftime scoring margin in NBA games, using running play-by-play scores recorded in ctx_team_states.json (source_artifact: data/nba_ai.db :: play_by_play, sport='nba'; as of 2026-05-21 16:05:11). These are NBA running-score artifacts, not the MLB in-game tick corpus that the site's data-integrity registry quarantines, so that MLB/soccer review flag does not apply here. The corpus covers 26 games, split into 52 team-games (one row per team per game) after ties and degenerate games are dropped. Across all 52 team-games, a simple linear fit of second-half margin on halftime margin has a slope of 0.2885 (intercept about 0.0, Pearson r 0.2266): halftime margin explains only a small share of the variance in second-half margin, and its size does not carry forward anywhere near one-to-one. Grouped the other way, the 26 team-games that led at half average a second-half margin of +1.346 points and the 26 that trailed average -1.346 (an exact mirror image, since one game's second half is zero-sum between its two teams). A per-team version of this same relationship needs each team to clear a floor of 2 games in both the led-at-half and trailed-at-half splits; the artifact's own team_verdict reports that 0 of 30 teams do, because most teams appear in only 1-3 games. This is a description of what a scoreboard-only measurement -- conditioned on score, not on possessions, lineups, or pace -- shows in this specific 26-game corpus. It is not a forecast, and no team-level version of it is currently supported.",
+  "sections": [
+    {
+      "id": "question",
+      "heading": "Question",
+      "blocks": [
+        { "type": "p", "text": "An NBA team that is ahead at halftime does not always stay ahead by the same amount; the scoreboard keeps moving for another 24 minutes of game time. This paper asks a narrow, descriptive question about that second half: across the games in one published corpus, how does a team's second-half scoring margin relate to its halftime scoring margin, at the league level and, separately, for each of the 30 teams." },
+        { "type": "p", "text": "The league-level version of this question is answerable from the published corpus. The per-team version -- does this particular team's second half tend to extend or reverse its own halftime leads -- is the more useful question for anyone trying to read a specific team's tendencies, and it is exactly the version the source artifact says it cannot yet support for any of the 30 teams. Both readings come from the same file, so this paper walks through what is measurable now, what a per-team reading would require, and why the floor is not cleared." },
+        { "type": "p", "text": "A halftime margin, on its own, only reports the score; it says nothing about how many possessions produced that score, which five players were on the floor, or the pace of play in either half. That distinction is defined precisely in the next section, because it shapes what this paper can and cannot claim." }
+      ]
+    },
+    {
+      "id": "data",
+      "heading": "Data and definitions",
+      "blocks": [
+        { "type": "p", "text": "The source artifact is ctx_team_states.json (module id ctx_team_states, published in webapp/public/data/showcase; as of 2026-05-21 16:05:11 per the site manifest, matching the artifact's own as_of field). Its source_artifact field names data/nba_ai.db :: play_by_play (sport='nba') -- an NBA running play-by-play score table, not the MLB in-game tick corpus that the site's data-integrity registry (dataIntegrity.ts) flags for MLB and international-soccer rows; that flag does not attach to this artifact's sport or its rows." },
+        { "type": "p", "text": "The artifact's own method field describes the construction directly: 'halftime margin & second-half margin per team-game from running pbp scores; split each team's games by led/trailed at half.' Each of the corpus's 26 games (n_games) contributes two team-game rows -- one per team -- for 52 team-games total (n_team_games). Home and away are assigned by score-increment votes, and the source's floors_and_assumptions list records that ties and degenerate games are dropped before that assignment; halftime is defined as the end of the second period, and a final score includes overtime when a game has one." },
+        { "type": "callout", "label": "Definition", "text": "A running score margin is the point differential (team points minus opponent points) read directly off the continuously updated play-by-play score at one recorded moment. Halftime here means the score at the end of period 2; final includes overtime when a game has one. It conditions only on the score at that moment -- it says nothing about how many possessions produced that score, which players were on the floor, or the pace of play in either half. Two teams can reach the same halftime margin through very different possession counts and lineups, and this artifact cannot distinguish those cases." },
+        { "type": "p", "text": "comeback_atlas.json was read in full as a possible cross-reference. Its 84 published cells (n_buckets_total) group NBA in-play ticks by lead-band and time-remaining band, each carrying a model probability, a market probability, and an outcome rate -- a different measurement with no halftime-margin or second-half-margin field, so it carries no rows this paper can use. For transparency: dataIntegrity.ts lists comeback_atlas among artifacts still under review for MLB and international-soccer rows; this artifact's own cells are NBA-only, so that caveat describes no row used here, but it is disclosed since the module id is shared across the site's integrity registry." },
+        { "type": "p", "text": "The site's team-profile analysis (lib/analytics/researchNbaTeamProfile.ts, analysis id nba-team-profile-pace-fragility-fatigue-halftime) joins this same ctx_team_states artifact onto atlas_nba_teams_manifest, the 30-team anchor module, by team abbreviation. That join is where the per-team masking described below actually surfaces on the site; the atlas itself carries only pace and scoring fields and no halftime data of its own." }
+      ]
+    },
+    {
+      "id": "method",
+      "heading": "Method",
+      "blocks": [
+        { "type": "p", "text": "At the league level, the artifact's league_mean_reversion object reports two summaries of the same 52 team-games. The first is a simple linear fit of second-half margin on halftime margin: slope_2h_on_half = 0.2885, intercept = -0.0, pearson_r = 0.2266. The second is a categorical split: the 26 team-games where a team led at half (n_led) average a second-half margin of +1.346 (mean_2h_margin_when_led_at_half), and the 26 where a team trailed (n_trailed) average -1.346 (mean_2h_margin_when_trailed_at_half). Both summaries are already computed and published in the artifact; this paper restates them, plus their trivial relationship to each other, and computes nothing new beyond that." },
+        { "type": "p", "text": "The +1.346 / -1.346 symmetry is not two independent findings -- it follows from how the rows are built. Within a single game, the team that led at half and the team that trailed at half share one second half, and a second half is zero-sum between the two teams on the floor: whatever one team's second-half margin is, the other team's second-half margin (from its own scoreboard) is the exact negative. Averaging the leading team's rows and the trailing team's rows across the same 26 games therefore produces exact mirror images by construction, not by measurement." },
+        { "type": "p", "text": "The per-team reading applies a stricter test. The source publishes min_games_per_split = 2 and, for each team, n_led_at_half and n_trailed_at_half plus a masked_below_floor flag. The team-profile join (researchNbaTeamProfile.ts, function hasQualifiedHalftimeSupport) only carries a team's front_runner_2h_margin and comeback_2h_margin into a comparable column when both of that team's split counts meet the floor and masked_below_floor is false; otherwise the join emits null for both margins and records the raw, disclosed values in a separate, unranked field (halftime_source_disclosure) rather than dropping them silently. A team failing the floor in only one split (say, 3 games led at half but 0 trailed) is masked exactly the same as a team failing in both." }
+      ]
+    },
+    {
+      "id": "results",
+      "heading": "Results",
+      "blocks": [
+        { "type": "p", "text": "Read at the league level, the two halftime states do not reverse sign in the second half on average -- the team that led at half is still, on average, slightly ahead in the second half, and the team that trailed is still slightly behind. But the size of that continuation is small next to typical per-team halftime swings (the front-runner and comeback rows below range as wide as +25.5 to -17.5), and the linear fit's slope of 0.2885 with a Pearson r of 0.2266 means halftime margin explains only a small share of second-half margin's variance across these 52 team-games. Neither the artifact nor this paper publishes a standard deviation, confidence interval, or quartile spread around either of the two group means; the table below shows exactly what is published and no more." },
+        { "type": "table", "caption": "NBA: second-half margin by halftime-margin band, league level (all 52 team-games)", "columns": ["Halftime-margin band", "Team-games (n)", "Mean second-half margin (pts)", "Dispersion"], "rows": [
+          ["Led at half", "26", "+1.346", "not published (no SD or CI in this artifact)"],
+          ["Trailed at half", "26", "-1.346", "not published (no SD or CI in this artifact)"]
+        ], "note": "Source: ctx_team_states.json league_mean_reversion (mean_2h_margin_when_led_at_half, n_led, mean_2h_margin_when_trailed_at_half, n_trailed); as of 2026-05-21 16:05:11. The two rows are mirror images by construction: within one game, the team that led at half and the team that trailed at half share a single zero-sum second half, so their second-half margins are exact negatives of each other." },
+        { "type": "math", "text": "second_half_margin (points) = 0.2885 * halftime_margin + (-0.0); Pearson r = 0.2266; n = 52 team-games" },
+        { "type": "figure", "module": "ctx_team_states", "caption": "Published per-team halftime and second-half margin rows (ctx_team_states module); every row is masked below the source's own split floor." },
+        { "type": "p", "text": "Splitting the same 52 team-games by team shows why no team-level version of this relationship is currently published. Every one of the 30 teams in the artifact's teams[] list carries masked_below_floor = true; the artifact's own team_verdict states it directly: '0 teams meet the n>=2-per-split floor (led AND trailed at half): per-team front-runner vs comeback separation is NOT buildable from this 26-game corpus.' The n_teams_placed_on_quadrant field, published at 0, is the same fact as a single number. Most teams in this corpus appear in only 1 to 3 games total, so clearing a floor of 2 games in both the led-at-half and trailed-at-half splits at once is arithmetically out of reach for nearly every team; a team would need at least 4 total games split evenly, and even CLE, the team with the most games here (3), has all three on one side of the split (3 led, 0 trailed) and is masked for the opposite reason." },
+        { "type": "table", "caption": "NBA: the halftime-state mask, all 30 teams (floor = min_games_per_split)", "columns": ["Team", "Games (n)", "Led at half (n)", "Trailed at half (n)", "Required per split", "Masked below floor"], "rows": [
+          ["ATL", "2", "1", "1", "2", "Yes"],
+          ["BKN", "2", "1", "1", "2", "Yes"],
+          ["BOS", "2", "2", "0", "2", "Yes"],
+          ["CHA", "2", "0", "2", "2", "Yes"],
+          ["CHI", "2", "0", "2", "2", "Yes"],
+          ["CLE", "3", "3", "0", "2", "Yes"],
+          ["DAL", "1", "0", "1", "2", "Yes"],
+          ["DEN", "2", "0", "2", "2", "Yes"],
+          ["DET", "2", "1", "1", "2", "Yes"],
+          ["GSW", "2", "2", "0", "2", "Yes"],
+          ["HOU", "2", "1", "1", "2", "Yes"],
+          ["IND", "2", "0", "2", "2", "Yes"],
+          ["LAC", "2", "1", "1", "2", "Yes"],
+          ["LAL", "1", "1", "0", "2", "Yes"],
+          ["MEM", "2", "2", "0", "2", "Yes"],
+          ["MIA", "1", "0", "1", "2", "Yes"],
+          ["MIL", "2", "2", "0", "2", "Yes"],
+          ["MIN", "2", "0", "2", "2", "Yes"],
+          ["NOP", "1", "1", "0", "2", "Yes"],
+          ["NYK", "2", "1", "1", "2", "Yes"],
+          ["OKC", "1", "1", "0", "2", "Yes"],
+          ["ORL", "2", "2", "0", "2", "Yes"],
+          ["PHI", "2", "0", "2", "2", "Yes"],
+          ["PHX", "1", "1", "0", "2", "Yes"],
+          ["POR", "1", "0", "1", "2", "Yes"],
+          ["SAC", "1", "1", "0", "2", "Yes"],
+          ["SAS", "1", "1", "0", "2", "Yes"],
+          ["TOR", "2", "1", "1", "2", "Yes"],
+          ["UTA", "2", "0", "2", "2", "Yes"],
+          ["WAS", "2", "0", "2", "2", "Yes"]
+        ], "note": "Source: ctx_team_states.json teams[] (all 30 entries) and min_games_per_split; as of 2026-05-21 16:05:11. masked_below_floor is true for every row; team_verdict: 0 teams meet the floor in both splits, so n_teams_placed_on_quadrant = 0." }
+      ]
+    },
+    {
+      "id": "checks",
+      "heading": "Robustness and what would falsify this",
+      "blocks": [
+        { "type": "p", "text": "The clearest way this reading would change is more games per team. If a future snapshot of this corpus gave most teams 8-10 games with a reasonable mix of leading and trailing at half, the same min_games_per_split = 2 floor could plausibly be cleared for a meaningful share of the league, and the per-team comparison the artifact's schema anticipates (front_runner_2h_margin against comeback_2h_margin) would become buildable rather than universally masked." },
+        { "type": "p", "text": "The league-level slope and Pearson r are estimated on only 52 team-games (26 independent games, since each game supplies a mirrored pair), a small sample for a regression coefficient; a wider corpus could move 0.2885 and 0.2266 either way. The artifact publishes no season label, so this paper cannot say whether the 26 games are one season or several; season mixing could shape the slope rather than a stable within-season pattern." },
+        { "type": "callout", "label": "Verdict", "text": "At the league level, halftime margin and second-half margin are weakly, positively associated (the same sign persists on average, but the fit is loose: r = 0.2266) in this 26-game corpus. At the team level, the published corpus does not support a per-team reading at all -- 0 of 30 teams clear the floor in both splits. Both statements describe this snapshot; neither is a prediction for a specific upcoming game or team." },
+        { "type": "p", "text": "comeback_atlas.json's lead-band/time-band cells were checked as a possible independent cross-reference and do not carry a comparable halftime-versus-second-half field, so no second, independent estimate of this specific relationship exists on the site today." }
+      ]
+    },
+    {
+      "id": "limitations",
+      "heading": "Limitations",
+      "blocks": [
+        { "type": "list", "items": [
+          "Garbage time is not separated out: second-half margins in games that are already effectively decided can reflect reduced-intensity play and bench units, and this artifact does not flag or exclude those minutes.",
+          "Lineup changes are invisible to a score-only measurement: a halftime or second-half margin says nothing about which players were on the floor, foul trouble, rest, or injury substitutions; this artifact carries no lineup field.",
+          "There is no possession count: the margin is a raw point differential, not adjusted for the number of possessions either side used, so two teams at the same halftime margin may have played at very different paces.",
+          "Season mixing cannot be ruled out: the artifact and manifest publish no season label for these 26 games, so whether the corpus spans one season or several is unknown, and no season-level trend can be assessed.",
+          "The +1.346 / -1.346 means are mirror images by construction (one game's second half is zero-sum between its two teams), not independently sampled populations, so their symmetry is definitional, not confirmation.",
+          "The per-team version is fully masked: all 30 teams sit below the 2-games-per-split floor in at least one split, so only the league aggregate is readable; the slope and r describe an association in one snapshot, not a mechanism, with no walk-forward or out-of-sample replication."
+        ] }
+      ]
+    },
+    {
+      "id": "use",
+      "heading": "How to read this on the site",
+      "blocks": [
+        { "type": "p", "text": "The ctx_team_states module page renders the same published per-team rows and league summary this paper reads from, including the masked_below_floor flag on every team. The nba-team-profile-pace-fragility-fatigue-halftime analysis places these same halftime columns alongside each team's pace, scoring, fragility, and fatigue measurements, with the halftime columns null for every team and the raw disclosed values available only in that analysis's source-disclosure text." },
+        { "type": "p", "text": "The cross-sport-comparability inspector is the one published inspector whose scope includes the NBA alongside MLB, soccer, and tennis; it carries a different measurement (a gate for comparing reliability components across sports) and does not restate this paper's halftime-margin numbers. Readers interested in adjacent NBA framings of a game's arc should see the comebacks-by-deficit-and-time paper (a different in-play state variable: deficit size and clock time, not halftime score) and the form-curves-and-consistency-nba paper (game-to-game consistency across a season, not within-game halftime-to-final movement); neither paper's numbers should be read back into this one." }
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "artifact": "ctx_team_states.json",
+      "module": "ctx_team_states",
+      "asOf": "2026-05-21 16:05:11",
+      "fields": [
+        "source_artifact",
+        "method",
+        "min_games_per_split",
+        "n_games",
+        "n_team_games",
+        "n_teams_placed_on_quadrant",
+        "team_verdict",
+        "league_mean_reversion.slope_2h_on_half",
+        "league_mean_reversion.intercept",
+        "league_mean_reversion.pearson_r",
+        "league_mean_reversion.mean_2h_margin_when_led_at_half",
+        "league_mean_reversion.n_led",
+        "league_mean_reversion.mean_2h_margin_when_trailed_at_half",
+        "league_mean_reversion.n_trailed",
+        "league_mean_reversion.interpretation",
+        "teams[].team",
+        "teams[].n_games",
+        "teams[].n_led_at_half",
+        "teams[].n_trailed_at_half",
+        "teams[].front_runner_2h_margin",
+        "teams[].comeback_2h_margin",
+        "teams[].masked_below_floor",
+        "floors_and_assumptions[]"
+      ]
+    },
+    {
+      "artifact": "comeback_atlas.json",
+      "module": "comeback_atlas",
+      "asOf": null,
+      "fields": [
+        "n_buckets_total",
+        "mask_rule",
+        "cells[].lead_band",
+        "cells[].time_band",
+        "cells[].n_games",
+        "cells[].outcome_rate"
+      ]
+    }
+  ],
+  "limitations": [
+    "Garbage time is not separated out: second-half margins in games that are already effectively decided can reflect reduced-intensity play and bench units, and this artifact does not flag or exclude those minutes.",
+    "Lineup changes are invisible to a score-only measurement: a halftime or second-half margin says nothing about which players were on the floor, foul trouble, rest, or injury substitutions; this artifact carries no lineup field.",
+    "There is no possession count: the margin is a raw point differential, not adjusted for the number of possessions either side used, so two teams at the same halftime margin may have played at very different paces.",
+    "Season mixing cannot be ruled out: the artifact and manifest publish no season label for these 26 games, so whether the corpus spans one season or several is unknown, and no season-level trend can be assessed.",
+    "The league-level +1.346 / -1.346 means are mirror images of each other by construction (one game's second half is zero-sum between its two teams), not two independently sampled populations, so their symmetry is definitional rather than an independent confirmation.",
+    "The per-team version of this relationship is fully masked: every one of the 30 teams sits below the 2-games-per-split floor in at least one split, so only the league aggregate is currently readable, and a slope of 0.2885 with r = 0.2266 describes an association across 52 team-games in one snapshot, not a mechanism, and has no walk-forward or out-of-sample replication behind it."
+  ],
+  "related": [
+    { "kind": "module", "id": "ctx_team_states" },
+    { "kind": "module", "id": "atlas_nba_teams_manifest" },
+    { "kind": "analysis", "id": "nba-team-profile-pace-fragility-fatigue-halftime" },
+    { "kind": "inspector", "id": "cross-sport-comparability" },
+    { "kind": "paper", "id": "comebacks-by-deficit-and-time" },
+    { "kind": "paper", "id": "form-curves-and-consistency-nba" }
+  ]
+}
