@@ -84,7 +84,7 @@ function AnswerEnvelope({ result, query, onAsk, excludedQuestions }: {
             {unavailable ? (
               <><strong style={{ color: "var(--ink)" }}>Scout's public corpus is unavailable.</strong> No answer can be verified until its committed sources load.</>
             ) : (
-              <><strong style={{ color: "var(--ink)" }}>No verified result.</strong> Scout only searches its committed public corpus. Try a player, team, sport, or a metric such as calibration, Brier score, pitch mix, or home advantage.</>
+              <><strong style={{ color: "var(--ink)" }}>No verified result.</strong> Scout searches published questions and answers. Try a player, team, sport, or a metric such as calibration, Brier score, pitch mix, or home advantage.</>
             )}
           </div>
         </div>
