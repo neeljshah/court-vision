@@ -4,6 +4,10 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { Receipt, type ReceiptData } from "./Receipt";
 import Link from "next/link";
+
+// Source JSON files are static assets, not routes: a plain anchor (base-path prefixed by hand)
+// avoids the router prefetching them as RSC payloads (a 404 per click on the exported site).
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 import type { Verdict } from "./VerdictDot";
 import { typeset } from "@/lib/analytics/format";
 import {
@@ -109,7 +113,7 @@ function AnswerEnvelope({ result, query, onAsk, excludedQuestions }: {
         <div style={chipRow}>
           {explorePath ? <Link href={explorePath} style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)" }}>{destinationLabel}</Link> : null}
           <Receipt {...receiptFor(entry.a)} />
-          <Link href={sourceHref} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: "var(--accent)" }}>{publicArtifact ? "Open published source" : "Open published answer record"}</Link>
+          <a href={`${BASE_PATH}${sourceHref}`} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: "var(--accent)" }}>{publicArtifact ? "Open published source" : "Open published answer record"}</a>
         </div>
         {followUps.length > 0 ? (
           <div style={{ marginTop: 16 }}>
