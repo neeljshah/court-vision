@@ -1,89 +1,87 @@
-// The Retraction Story, restyled for the Reading Room -- DESIGN Sec 1 + 4 + 11.
-// THE ONLY page in the analytics product where the six retracted numbers
-// render, and they render only here, inside explicit retraction framing that
-// cites docs/JOB_EVIDENCE_PACKET.md (the single truth-source). The six rows
-// below are the SAME verbatim table already shipped on the terminal's
-// /evidence/retraction-story page (transcribed there from JOB_EVIDENCE_PACKET
-// s3/s4) -- reused here rather than re-derived, so the two products can never
-// silently disagree on what was retracted. Pure static prose: no showcase JSON
-// read, so nothing here can be missing on a fresh clone. --reject (red) is used
-// below -- the one context DESIGN Sec 1 allows it in.
 import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ScoutQuestions } from "@/components/analytics/ScoutQuestions";
 import { findingMeta } from "@/lib/analytics/og";
+import { resolveResearchSourceDestination } from "@/lib/analytics/researchSourceDestinations";
 
 export const metadata: Metadata = {
   title: "The Retraction Story",
-  description:
-    "Six retracted headline numbers, each paired with its honest, calibration-only replacement. Cites docs/JOB_EVIDENCE_PACKET.md.",
+  description: "Six withdrawn headline figures, with the measurement failure and published replacement where one exists.",
   ...findingMeta("retraction"),
 };
 
-const PACKET_ASOF = "2026-07-23";
-
 type Retraction = {
-  retracted: string;
-  whatWasWrong: string;
-  proofArtifact: string;
-  honestReplacement: string;
+  id: string;
+  status: "withdrawn" | "superseded" | "withdrawn, no replacement";
+  withdrawnMeasurement: string;
+  defect: string;
+  withdrawnOn: string;
+  replacement: string;
+  evidenceArtifact: string;
+  evidenceSourceId: string;
 };
 
-// Transcribed verbatim from JOB_EVIDENCE_PACKET s3/s4 -- the canonical
-// retracted-vs-honest table. Static and canonical, so a hardcoded const beats
-// a parser; update here (and on the terminal's twin page) if the packet's
-// table ever changes.
-const RETRACTIONS: Retraction[] = [
+export const RETRACTIONS: readonly Retraction[] = [
   {
-    retracted: "The invalid +18.38% evaluation across 1,535 walk-forward closing-line records",
-    whatWasWrong:
-      "Invalid grading method, confirmed at the source-code level. The grader chose a direction from the devigged close and never read the model because the evaluation CSV had no prediction column; it also used an unavailable fixed conversion and tuned filters in-sample on the same file.",
-    proofArtifact: "JOB_EVIDENCE_PACKET s4 (model's own unfiltered measurement: -2.00%)",
-    honestReplacement:
-      "No durable probability-score improvement was measured against real closing lines. Every candidate measurement, including assists, was ultimately rejected or retracted by the same gates.",
+    id: "pregame-return",
+    status: "withdrawn, no replacement",
+    withdrawnMeasurement: "withdrawn: +18.38% pregame return figure computed on a market-following baseline",
+    defect: "The evaluation CSV had no prediction column. The grader selected direction from the devigged close, used a fixed conversion unavailable in the recorded source, and tuned filters in sample. That is a market-follow artifact, not a model measurement.",
+    withdrawnOn: "2026-07-23",
+    replacement: "No replacement measurement is published.",
+    evidenceArtifact: "fwd_claim_scoreboard.json",
+    evidenceSourceId: "fwd_claim_scoreboard",
   },
   {
-    retracted: "The leak-inflated 0.119 end-of-Q3 Brier evaluation, corrected to about 0.141",
-    whatWasWrong:
-      "Leak-inflated and mis-sourced. Two features were computed from fourth-quarter data, so the model predicting Q4 was peeking at Q4; the cited file actually reported 0.1354, a different number.",
-    proofArtifact:
-      "JOB_EVIDENCE_PACKET s3 (leak-free re-run; controlled A/B ~4% relative inflation)",
-    honestReplacement:
-      "Leak-free walk-forward end-of-Q3 Brier ~0.141, after removing the Q4 feature leak found in the pipeline. Framed as a leak caught, not a competitive number.",
+    id: "end-of-third-quarter-brier",
+    status: "superseded",
+    withdrawnMeasurement: "withdrawn: 0.119 end-of-third-quarter Brier score",
+    defect: "Two fourth-quarter-derived features entered a model that was predicting the fourth quarter, and the cited file reported a different figure. The original score therefore contained future information.",
+    withdrawnOn: "2026-07-23",
+    replacement: "Replacement measurement: leak-free walk-forward end-of-third-quarter Brier score 0.141 (unitless), published in JOB_EVIDENCE_PACKET.md on 2026-07-23.",
+    evidenceArtifact: "state_conditioned_calibration.json",
+    evidenceSourceId: "state_conditioned_calibration",
   },
   {
-    retracted: "The +54.57% / 78.11% L5-proxy result across 55,073 in-play records",
-    whatWasWrong:
-      "Graded against an L5 line proxy rather than real closing lines. It was a model-quality ceiling on a soft proxy, not an externally validated evaluation.",
-    proofArtifact: "JOB_EVIDENCE_PACKET s4",
-    honestReplacement:
-      "On a soft L5 proxy the in-play backtest reaches that ceiling. It remains a model-quality ceiling, not a realized probability evaluation.",
+    id: "in-play-proxy",
+    status: "withdrawn, no replacement",
+    withdrawnMeasurement: "withdrawn: +54.57% / 78.11% in-play accuracy figure measured against a lagged L5 proxy ceiling",
+    defect: "The score used an L5 line proxy rather than a real closing reference. It described a soft proxy ceiling, not an externally validated measurement.",
+    withdrawnOn: "2026-07-23",
+    replacement: "No replacement measurement is published.",
+    evidenceArtifact: "fwd_claim_scoreboard.json",
+    evidenceSourceId: "fwd_claim_scoreboard",
   },
   {
-    retracted: "The circular aggregate +8.94pp closing-line movement calculation",
-    whatWasWrong:
-      "Circular -- computed on the same model-unused, devig-direction corpus. No real Pinnacle-close CLV exists yet; a full-season backtest shows CLV about zero vs real closes.",
-    proofArtifact: "JOB_EVIDENCE_PACKET s4 (full-season backtest: CLV ~= 0 vs real closes)",
-    honestReplacement:
-      "Real closing-line CLV cannot be measured yet. The methodology that will measure it exists; no CLV figure is quoted until it can be.",
+    id: "closing-line-movement",
+    status: "withdrawn, no replacement",
+    withdrawnMeasurement: "withdrawn: +8.94pp closing-line movement calculation",
+    defect: "The aggregate was circular: it used the same model-unused, devigged-direction corpus to define and grade the movement calculation. The denominator did not provide an independent comparison.",
+    withdrawnOn: "2026-07-23",
+    replacement: "No replacement measurement is published.",
+    evidenceArtifact: "fwd_claim_scoreboard.json",
+    evidenceSourceId: "fwd_claim_scoreboard",
   },
   {
-    retracted: "The leak-driven steals and blocks training R^2 of about 0.79, with holdout R^2 about 0.06",
-    whatWasWrong:
-      "Textbook leakage: the ~0.79 training R^2 collapsed to ~0.06 on a leak-free holdout.",
-    proofArtifact:
-      "src/prediction/prop_cv_split.py (documents the gap; hard-codes corrective regularization)",
-    honestReplacement:
-      "Caught and hard-corrected a leakage-driven overfit. The corrective regularization takes precedence over the stale tuned parameters, so the mistake cannot silently reappear.",
+    id: "steals-blocks-overfit",
+    status: "withdrawn, no replacement",
+    withdrawnMeasurement: "withdrawn: steals and blocks training R^2 about 0.79, with leak-free holdout R^2 about 0.06",
+    defect: "A leaky grid search inflated the training measurement before the holdout exposed the collapse. Corrective regularization now takes precedence over the stale tuned parameters.",
+    withdrawnOn: "2026-07-23",
+    replacement: "No replacement measurement is published.",
+    evidenceArtifact: "fwd_claim_scoreboard.json",
+    evidenceSourceId: "fwd_claim_scoreboard",
   },
   {
-    retracted: "The assists conclusion withdrawn on 2026-07-21 after it failed in the playoffs",
-    whatWasWrong:
-      "Regime-dependent -- it broke in the playoffs -- and was retracted 2026-07-21. The historical record remains subject to the same calibration review.",
-    proofArtifact: "JOB_EVIDENCE_PACKET s3 (historical record only, in the gate artifacts)",
-    honestReplacement:
-      "The historical measurement remains only as a record of the stress-testing methodology.",
+    id: "assists-playoffs",
+    status: "withdrawn, no replacement",
+    withdrawnMeasurement: "withdrawn: assists conclusion after postseason stress testing",
+    defect: "The measurement was regime-dependent: it failed in the playoffs, and an in-series play-by-play replay confirmed that the earlier conclusion did not hold there.",
+    withdrawnOn: "2026-07-21",
+    replacement: "No replacement measurement is published.",
+    evidenceArtifact: "fwd_claim_scoreboard.json",
+    evidenceSourceId: "fwd_claim_scoreboard",
   },
 ];
 
@@ -94,87 +92,39 @@ const SCOUT_QUESTIONS = [
 ];
 
 const h1: CSSProperties = {
-  fontFamily: "var(--font-display)",
-  fontWeight: 500,
-  fontSize: "clamp(2rem,4vw,2.75rem)",
-  lineHeight: 1.08,
-  letterSpacing: "-.015em",
-  color: "var(--ink)",
-  marginTop: 8,
+  fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "clamp(2rem,4vw,2.75rem)",
+  lineHeight: 1.08, letterSpacing: "-.015em", color: "var(--ink)", marginTop: 8,
 };
 const lede: CSSProperties = {
-  fontSize: 18,
-  lineHeight: 1.6,
-  color: "var(--ink-2)",
-  maxWidth: 680,
-  marginTop: 16,
+  fontSize: 18, lineHeight: 1.6, color: "var(--ink-2)", maxWidth: 680, marginTop: 16,
 };
 const truthBanner: CSSProperties = {
-  marginTop: 28,
-  padding: "14px 18px",
-  background: "var(--paper-tint)",
-  borderLeft: "2px solid var(--reject)",
-  borderRadius: "var(--radius-card)",
-  maxWidth: 680,
-  fontFamily: "var(--font-mono)",
-  fontSize: 12.5,
-  color: "var(--ink-3)",
-  lineHeight: 1.5,
+  marginTop: 28, padding: "14px 18px", background: "var(--paper-tint)", borderLeft: "2px solid var(--reject)",
+  borderRadius: "var(--radius-card)", maxWidth: 680, fontFamily: "var(--font-mono)", fontSize: 12.5,
+  color: "var(--ink-3)", lineHeight: 1.5,
 };
 const card: CSSProperties = {
-  marginTop: 20,
-  padding: "22px 24px",
-  background: "var(--paper-raised)",
-  border: "1px solid var(--rule)",
-  borderRadius: "var(--radius-card)",
-  boxShadow: "var(--shadow-card)",
-  maxWidth: 680,
+  marginTop: 20, padding: "22px 24px", background: "var(--paper-raised)", border: "1px solid var(--rule)",
+  borderRadius: "var(--radius-card)", boxShadow: "var(--shadow-card)", maxWidth: 680,
 };
-// Strikethrough + red alone is a hairline a fast scroll can miss, misreading a
-// retracted figure as an achievement. Pair every struck line with an explicit
-// RETRACTED badge so the status survives the skim (no number changes).
-const retractHead: CSSProperties = { display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" };
-const retractTag: CSSProperties = {
-  fontFamily: "var(--font-mono)",
-  fontSize: 10.5,
-  fontWeight: 700,
-  letterSpacing: "0.1em",
-  color: "var(--reject)",
-  border: "1px solid var(--reject)",
-  borderRadius: "var(--radius-chip)",
-  padding: "2px 7px",
-  textTransform: "uppercase",
-  whiteSpace: "nowrap",
-  flex: "0 0 auto",
+const cardHead: CSSProperties = { display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" };
+const statusBadge: CSSProperties = {
+  fontFamily: "var(--font-mono)", fontSize: 10.5, fontWeight: 700, letterSpacing: "0.08em", color: "var(--reject)",
+  border: "1px solid var(--reject)", borderRadius: "var(--radius-chip)", padding: "2px 7px", textTransform: "uppercase",
+  whiteSpace: "nowrap", flex: "0 0 auto",
 };
-const retractedLine: CSSProperties = {
-  fontFamily: "var(--font-display)",
-  fontSize: 18,
-  lineHeight: 1.4,
-  color: "var(--reject)",
-  textDecoration: "line-through",
-  textDecorationThickness: "1.5px",
-  margin: 0,
+const withdrawnLine: CSSProperties = {
+  fontFamily: "var(--font-display)", fontSize: 18, lineHeight: 1.4, color: "var(--reject)",
+  textDecoration: "line-through", textDecorationThickness: "1.5px", margin: 0,
 };
 const rowLabel: CSSProperties = {
-  fontWeight: 700,
-  fontSize: 11,
-  letterSpacing: "0.1em",
-  textTransform: "uppercase",
-  color: "var(--ink-3)",
-  marginTop: 14,
-  marginBottom: 4,
+  fontWeight: 700, fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--ink-3)",
+  marginTop: 14, marginBottom: 4,
 };
 const rowBody: CSSProperties = { fontSize: 14.5, lineHeight: 1.6, color: "var(--ink-2)" };
-const proofMono: CSSProperties = {
-  fontFamily: "var(--font-mono)",
-  fontSize: 12,
-  color: "var(--ink-3)",
-};
-const honestBody: CSSProperties = {
-  fontSize: 14.5,
-  lineHeight: 1.6,
-  color: "var(--ink)",
+const replacementBody: CSSProperties = { ...rowBody, color: "var(--ink)" };
+const evidenceLink: CSSProperties = {
+  fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--ink-3)", textUnderlineOffset: 3,
 };
 
 export default function RetractionPage() {
@@ -183,42 +133,42 @@ export default function RetractionPage() {
       <p className="overline">Findings / Retraction</p>
       <h1 style={h1}>The Retraction Story</h1>
       <p style={lede}>
-        The most useful thing on this site is not a low error number &mdash; it is the
-        pile of failed ones, kept on purpose. These six headline figures were each
-        published once, then taken apart by the same instruments that built the
-        system. Every replacement below is a dated calibration measurement linked
-        to its published proof artifact.
+        These six headline figures were published, then withdrawn when their measurements failed.
+        Each entry names the measurement, the defect, the withdrawal date, and the replacement only
+        when a dated calibration measure exists.
       </p>
       <p style={truthBanner}>
-        The single truth-source for every figure below is docs/JOB_EVIDENCE_PACKET.md
-        (packet as_of {PACKET_ASOF}). These six numbers appear here, and only here,
-        inside this retraction framing &mdash; see{" "}
-        <Link href="/analytics/the-loop">What verified means</Link> for the discipline
-        that produced this table.
+        The source for this record is JOB_EVIDENCE_PACKET.md, published with this finding on
+        2026-07-23. A withdrawn figure is historical documentation, never a current result.
       </p>
 
       <div style={{ marginTop: 8 }}>
-        {RETRACTIONS.map((r) => (
-          <article key={r.retracted} style={card}>
-            <div style={retractHead}>
-              <span style={retractTag}>Retracted</span>
-              <h2 style={retractedLine}>{r.retracted}</h2>
+        {RETRACTIONS.map((retraction) => {
+          const evidenceHref = resolveResearchSourceDestination(retraction.evidenceSourceId).href;
+          return (
+          <article id={retraction.id} key={retraction.id} style={card}>
+            <div style={cardHead}>
+              <span style={statusBadge}>{retraction.status}</span>
+              <h2 style={withdrawnLine}>{retraction.withdrawnMeasurement}</h2>
             </div>
-            <p style={rowLabel}>What was wrong</p>
-            <p style={rowBody}>{r.whatWasWrong}</p>
-            <p style={rowLabel}>Proof artifact</p>
-            <p style={proofMono}>{r.proofArtifact}</p>
-            <p style={rowLabel}>Honest replacement</p>
-            <p style={honestBody}>{r.honestReplacement}</p>
+            <p style={rowLabel}>Measurement failure</p>
+            <p style={rowBody}>{retraction.defect}</p>
+            <p style={rowLabel}>Withdrawal recorded</p>
+            <p style={rowBody}>{retraction.withdrawnOn}</p>
+            <p style={rowLabel}>Replacement</p>
+            <p style={replacementBody}>{retraction.replacement}</p>
+            <p style={rowLabel}>Evidence citation</p>
+            <Link href={evidenceHref} style={evidenceLink}>
+              {retraction.evidenceArtifact}
+            </Link>
           </article>
-        ))}
+          );
+        })}
       </div>
 
       <p style={{ ...lede, marginTop: 32 }}>
-        The through-line: real closing-line comparisons did not show a durable
-        probability-score improvement, and every candidate measurement, including
-        the strongest one, was rejected or retracted by its own gates. The same
-        review harnesses that produced the system took these six numbers apart.
+        The record keeps measurement failures visible. A replacement belongs here only when the
+        published source names the calibration measure, its unit, and its date.
       </p>
 
       <ScoutQuestions questions={SCOUT_QUESTIONS} heading="Ask Scout about this" />

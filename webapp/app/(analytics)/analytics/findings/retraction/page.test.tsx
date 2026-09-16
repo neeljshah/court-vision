@@ -1,15 +1,27 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { expect, it } from "vitest";
 // @ts-expect-error -- the executable scanner is deliberately dependency-free ESM.
 import { scanRenderedText } from "../../../../../scripts/check-analytics-copy.mjs";
-import RetractionPage from "./page";
+import { resolveResearchSourceDestination } from "@/lib/analytics/researchSourceDestinations";
+import RetractionPage, { RETRACTIONS } from "./page";
 
-it("renders retraction headings whose text clears the public-copy token check", () => {
+it("renders dated withdrawal records with evidence links and valid replacement language", () => {
   const { container } = render(<RetractionPage />);
-  const headings = screen.getAllByRole("heading", { level: 2 });
+  const articles = screen.getAllByRole("article");
 
-  expect(headings).toHaveLength(6);
-  expect(headings[0]).toHaveTextContent("+18.38%");
-  expect(headings[5]).toHaveTextContent("2026-07-21");
+  expect(articles).toHaveLength(RETRACTIONS.length);
+  RETRACTIONS.forEach((retraction, index) => {
+    const record = within(articles[index]);
+
+    expect(record.getByText(retraction.withdrawnMeasurement)).toBeInTheDocument();
+    expect(record.getByText(retraction.status)).toBeInTheDocument();
+    expect(record.getByText(retraction.withdrawnOn)).toBeInTheDocument();
+    expect(record.getByText(retraction.replacement)).toBeInTheDocument();
+    expect(record.getByRole("link", { name: retraction.evidenceArtifact })).toHaveAttribute(
+      "href", resolveResearchSourceDestination(retraction.evidenceSourceId).href,
+    );
+  });
+
+  expect(within(articles[1]).getByText(/Brier score 0\.141 \(unitless\)/)).toBeInTheDocument();
   expect(scanRenderedText(container.textContent || "")).toEqual([]);
 });
