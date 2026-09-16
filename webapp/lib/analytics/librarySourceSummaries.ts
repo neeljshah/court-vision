@@ -1,15 +1,16 @@
+import type { LibraryAvailability } from "./libraryTypes";
+
 export type PreviewPair = { label: string; value: string };
 export type LibrarySourceSummary = {
   asOf: string | null;
   scope: string;
   measurements: PreviewPair[];
-  availability: "published" | "partial" | "unavailable";
+  availability: LibraryAvailability;
   previewRows: PreviewPair[][];
 };
 
 type Artifact = Record<string, unknown>;
 const number = (value: unknown) => typeof value === "number" && Number.isFinite(value) ? value : null;
-const integer = (value: unknown) => number(value) !== null && Number.isInteger(value as number) ? value as number : null;
 const label = (key: string) => key.replace(/^n_/, "").replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
 const format = (value: number) => value.toLocaleString("en-US", { maximumFractionDigits: Math.abs(value) < 10 ? 2 : 0 });
 const measure = (data: Artifact, ...keys: string[]): PreviewPair[] => keys.flatMap(key => {
@@ -23,14 +24,64 @@ const rows = (items: unknown, keys: string[]): PreviewPair[][] => !Array.isArray
   return values.length ? [values] : [];
 });
 
+type ContainerEvidence = { populated: Array<{ label: string; count: number }>; empty: number; hasScalar: boolean; statuses: string[]; unavailable: boolean };
+
+function isMeasurementContainer(path: string[], items: unknown[]): boolean {
+  const key = path[path.length - 1] || "";
+  return items.some(item => item && typeof item === "object") || path[0] === "sports"
+    || /rows|entries|players|teams|cells|table|distribution|buckets|observations|top_|bottom_|by_|frequencies/.test(key);
+}
+
+function populationLabel(path: string[], items: unknown[]): string {
+  const last = path[path.length - 1] || "rows";
+  const sample = items.find(item => item && typeof item === "object") as Artifact | undefined;
+  const noun = sample && "bucket" in sample ? "buckets" : /^(top|bottom)_\d+$/.test(last) ? "player rows" : "rows";
+  if (path.length >= 2 && path[0] === "sports") {
+    const sport = path[1] === "mlb" ? "MLB" : path[1] === "nba" ? "NBA" : label(path[1]);
+    return `${sport} ${items.length} ${noun}`;
+  }
+  if (/^(top|bottom)_\d+$/.test(last)) return `${label(last).toLowerCase()} ${noun}`;
+  return `${label(last)} ${items.length} ${noun}`;
+}
+
+function inspectContainers(value: unknown, path: string[] = [], evidence: ContainerEvidence = { populated: [], empty: 0, hasScalar: false, statuses: [], unavailable: false }): ContainerEvidence {
+  if (Array.isArray(value)) {
+    if (!isMeasurementContainer(path, value)) return evidence;
+    if (value.length) evidence.populated.push({ label: populationLabel(path, value), count: value.length });
+    else evidence.empty += 1;
+    return evidence;
+  }
+  if (!value || typeof value !== "object") return evidence;
+  for (const [key, child] of Object.entries(value as Artifact)) {
+    if (key === "status" && typeof child === "string") evidence.statuses.push(child.toLowerCase());
+    if (key === "not_buildable" && child === true) evidence.unavailable = true;
+    if (number(child) !== null) evidence.hasScalar = true;
+    if (child && typeof child === "object") inspectContainers(child, [...path, key], evidence);
+  }
+  return evidence;
+}
+
+function scalarFacts(data: Artifact): PreviewPair[] {
+  const found: PreviewPair[] = [];
+  const visit = (value: unknown, path: string[] = []) => {
+    if (Array.isArray(value) || !value || typeof value !== "object" || found.length >= 4) return;
+    for (const [key, child] of Object.entries(value as Artifact)) {
+      if (number(child) !== null && found.length < 4) found.push({ label: label([...path, key].join(" ")), value: format(child as number) });
+      else if (child && typeof child === "object") visit(child, [...path, key]);
+    }
+  };
+  visit(data);
+  return found;
+}
+
 function genericSummary(data: Artifact): Pick<LibrarySourceSummary, "scope" | "measurements" | "previewRows"> {
-  const numbers = Object.entries(data).filter(([, value]) => integer(value) !== null).slice(0, 4)
-    .map(([key, value]) => ({ label: label(key), value: format(value as number) }));
-  const arrays = Object.entries(data).filter(([, value]) => Array.isArray(value));
-  const arrayFacts = arrays.slice(0, Math.max(0, 4 - numbers.length)).map(([key, value]) => ({ label: label(key), value: `${(value as unknown[]).length.toLocaleString("en-US")} entries` }));
-  const firstRows = arrays.flatMap(([, value]) => rows(value, Object.keys((value as unknown[])[0] || {}).slice(0, 3))).slice(0, 2);
-  const facts = [...numbers, ...arrayFacts];
-  return { scope: facts.length ? facts.slice(0, 2).map(f => `${f.value} ${f.label.toLowerCase()}`).join(", ") : "Published artifact", measurements: facts, previewRows: firstRows };
+  const evidence = inspectContainers(data);
+  const topLevelArrays = Object.entries(data).filter(([, value]) => Array.isArray(value))
+    .map(([key, value]) => ({ label: label(key), value: `${(value as unknown[]).length.toLocaleString("en-US")} entries` }));
+  const facts = [...scalarFacts(data), ...topLevelArrays].slice(0, 4);
+  const scope = evidence.populated.length ? evidence.populated.slice(0, 2).map(item => item.label).join(", ")
+    : facts.length ? facts.slice(0, 2).map(item => `${item.value} ${item.label.toLowerCase()}`).join(", ") : "No published measurements";
+  return { scope, measurements: facts, previewRows: [] };
 }
 
 function adapter(id: string, data: Artifact): Pick<LibrarySourceSummary, "scope" | "measurements" | "previewRows"> | null {
@@ -38,7 +89,7 @@ function adapter(id: string, data: Artifact): Pick<LibrarySourceSummary, "scope"
     case "statcast_showcase": return { scope: `${format(data.n_pitches as number)} pitches, ${(data.pitch_type_distribution as unknown[]).length} pitch types`, measurements: measure(data, "n_pitches"), previewRows: rows(data.pitch_type_distribution, ["pitch_type", "n", "pct"]) };
     case "ctx_player_splits": return { scope: `${(data.coverage as Artifact).players_analysed} players, ${(data.coverage as Artifact).seasons} seasons`, measurements: measure(data.coverage as Artifact, "players_analysed", "seasons"), previewRows: rows(data.players, ["player_name", "total_games", "overall_ts_pct", "context_sensitivity_score"]) };
     case "ctx_lineup_proxy": return { scope: `${format(data.n_qualified as number)} qualified players, 2025-26`, measurements: measure(data, "n_qualified"), previewRows: rows(data.players, ["player_name", "n_active", "delta_win_rate"]) };
-    case "on_off_showcase": { const seasons = data.seasons as Artifact; const first = Object.values(seasons)[0] as Artifact; return { scope: `${Object.keys(seasons).length} seasons of on/off context`, measurements: measure(first, "n_considered", "n_ranked"), previewRows: rows(first.top_15, ["player_name", "net_rating_delta", "min_on"]) }; }
+    case "on_off_showcase": { const seasons = data.seasons as Artifact; const first = Object.values(seasons)[0] as Artifact; return { scope: `${Object.keys(seasons).length} seasons: ${(first.top_15 as unknown[]).length} top and ${(first.bottom_15 as unknown[]).length} bottom player rows`, measurements: measure(first, "n_considered", "n_ranked"), previewRows: rows(first.top_15, ["player_name", "net_rating_delta", "min_on"]) }; }
     case "comeback_atlas": return { scope: `${format(data.n_buckets_unmasked as number)} published buckets, ${format(data.n_buckets_total as number)} total`, measurements: measure(data, "n_buckets_total", "n_buckets_unmasked", "n_buckets_masked_n_lt_30"), previewRows: rows(data.cells, ["label", "n_games", "model_brier"]) };
     case "schedule_density": return { scope: `${(data.per_team_season_frequencies as unknown[]).length} team-seasons`, measurements: [{ label: "Team seasons", value: String((data.per_team_season_frequencies as unknown[]).length) }], previewRows: rows(data.per_team_season_frequencies, ["team", "season", "games"]) };
     case "pitch_sequencing": return { scope: `${format(data.n_pitches_kept as number)} pitches, ${format(data.n_transitions as number)} transitions`, measurements: measure(data, "n_pitches_total", "n_pitches_kept", "n_transitions"), previewRows: (data.pitch_types as unknown[]).slice(0, 2).map(value => [{ label: "Pitch Type", value: String(value) }]) };
@@ -53,9 +104,12 @@ function adapter(id: string, data: Artifact): Pick<LibrarySourceSummary, "scope"
 
 export function summarizeLibrarySource(id: string, data: Artifact, manifestStatus?: string): LibrarySourceSummary {
   const detail = adapter(id, data) || genericSummary(data);
+  const evidence = inspectContainers(data);
   const status = String(data.status || manifestStatus || "").toLowerCase();
-  const hasRows = Object.values(data).some(value => Array.isArray(value) && value.length > 0);
-  const availability = data.not_buildable === true || /not_buildable|unavailable/.test(status) || !hasRows ? "unavailable" : status === "partial" ? "partial" : "published";
+  const nestedStatus = evidence.unavailable || evidence.statuses.some(value => value !== status && /not_buildable|unavailable|partial/.test(value));
+  const explicitlyUnavailable = data.not_buildable === true || /not_buildable|unavailable/.test(status);
+  const availability: LibraryAvailability = explicitlyUnavailable || (!evidence.populated.length && !evidence.hasScalar) ? "unavailable"
+    : evidence.empty > 0 || status === "partial" || nestedStatus ? "partial" : "published";
   const asOf = [data.as_of, data.generated_at, data.created_at].find(value => typeof value === "string") as string | undefined;
   return { asOf: asOf || null, availability, ...detail };
 }

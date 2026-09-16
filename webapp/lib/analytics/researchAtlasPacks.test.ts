@@ -40,4 +40,22 @@ describe("atlas pack research", () => {
     expect(analysis.fields.map((item) => item.key)).toEqual(["n_pitches"]);
     expect(analysis.rows[0].values).toEqual({ n_pitches: 100 });
   });
+
+  it("excludes identifiers and preserves explicit percentage definitions", () => {
+    const analysis = buildAtlasResearch({ ...pack, key: "tennis" }, { entries: [{
+      entity: "Player", card_path: "player.png", key_numbers: { player_id: 7, hard_wr_career: 0.612, clay_minus_hard_career: 0.06 },
+    }] });
+    expect(analysis.fields).toEqual(expect.arrayContaining([
+      expect.objectContaining({ key: "hard_wr_career", label: "Hard-court win rate, career", unit: "percent" }),
+      expect.objectContaining({ key: "clay_minus_hard_career", unit: "pp" }),
+    ]));
+    expect(analysis.fields.map((item) => item.key)).not.toContain("player_id");
+    expect(analysis.rows[0].values).toMatchObject({ hard_wr_career: 0.612, clay_minus_hard_career: 0.06 });
+  });
+
+  it("keeps unknown values as numbers rather than inferring a percentage", () => {
+    const analysis = buildAtlasResearch(pack, { entries: [{ entity: "Player", card_path: "player.png", key_numbers: { new_rate: 0.612 } }] });
+    expect(analysis.fields[0]).toMatchObject({ key: "new_rate", label: "New Rate", unit: "number" });
+    expect(analysis.rows[0].values.new_rate).toBe(0.612);
+  });
 });

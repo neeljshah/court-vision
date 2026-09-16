@@ -21,7 +21,19 @@ describe("summarizeLibrarySource", () => {
     expect(summary.measurements).toContainEqual({ label: "Games", value: "42" });
     expect(summary.measurements).toContainEqual({ label: "Observations", value: "1 entries" });
   });
-  it("marks non-buildable or empty artifacts unavailable", () => {
+  it("finds named nested row populations", () => {
+    const summary = summarizeLibrarySource("other", { sports: { mlb: Array.from({ length: 8 }, (_, index) => ({ bucket: String(index) })), soccer: Array.from({ length: 8 }, (_, index) => ({ bucket: String(index) })) } });
+    expect(summary).toMatchObject({ availability: "published", scope: "MLB 8 buckets, Soccer 8 buckets" });
+  });
+  it("publishes scalar-only summaries and marks a populated artifact partial when a section is empty", () => {
+    expect(summarizeLibrarySource("other", { summary: { n_games: 42, model_ece: 0.03 } }).availability).toBe("published");
+    expect(summarizeLibrarySource("other", { sports: { mlb: [{ bucket: "all" }], soccer: [] } }).availability).toBe("partial");
+    expect(summarizeLibrarySource("other", { sports: { mlb: { status: "ok", n: 8 }, soccer: { status: "not_buildable" } } }).availability).toBe("partial");
+    expect(summarizeLibrarySource("other", { summary: { n_games: 8 }, omitted_section: { not_buildable: true } }).availability).toBe("partial");
+  });
+  it("marks non-buildable, explicit unavailable, or empty artifacts unavailable", () => {
     expect(summarizeLibrarySource("other", { not_buildable: true, rows: [] }).availability).toBe("unavailable");
+    expect(summarizeLibrarySource("other", { status: "unavailable", rows: [{ value: 1 }] }).availability).toBe("unavailable");
+    expect(summarizeLibrarySource("other", { rows: [], summary: {} }).availability).toBe("unavailable");
   });
 });

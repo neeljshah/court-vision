@@ -1,5 +1,6 @@
 import type { Sport } from "./dashboardTypes";
 import type { LibrarySourceSummary } from "./librarySourceSummaries";
+export type LibraryAvailability = "published" | "partial" | "unavailable";
 export type LibraryEntry = {
   id: string; title: string; description: string; category: string; sport: Sport;
   kind: "derived" | "source"; status: string; href: string; asOf: string | null;

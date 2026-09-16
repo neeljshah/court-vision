@@ -1,4 +1,5 @@
 import { field as f, snapshot } from "./labHelpers";
+import { atlasFieldDefinition } from "./atlasFieldDefinitions";
 import { entrySlugs, entityName, type RawEntry } from "./comparisonData";
 import type { LabField } from "./labTypes";
 import type { ResearchAnalysis, ResearchReference, ResearchRow } from "./researchTypes";
@@ -21,31 +22,23 @@ const REFERENCES: ResearchReference[] = [{
 }];
 
 const finite = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value);
-const percentKey = (key: string) => /pct|rate|_wr_/.test(key);
-const pointKey = (key: string) => /clay_minus_hard|grass_adapt/.test(key);
-
-function labelFor(key: string): string {
-  return key.replace(/_/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase())
-    .replace(/\bPct\b/g, "Percent").replace(/\bPer36\b/g, "Per 36");
+function fieldFor(pack: string, key: string): LabField {
+  const definition = atlasFieldDefinition(pack, key);
+  if (definition.isDifference) return f(key, definition.label, "pp", definition.decimals);
+  if (definition.unit === "percent-already" || definition.unit === "fraction-as-percent") return f(key, definition.label, "percent", definition.decimals);
+  if (definition.unit === "mph") return f(key, definition.label, "mph", definition.decimals);
+  return f(key, definition.label, "number", definition.decimals);
 }
 
-function fieldFor(key: string): LabField {
-  if (pointKey(key)) return f(key, labelFor(key), "pp", 2);
-  if (percentKey(key)) return f(key, labelFor(key), "percent", 2);
-  if (/velo/.test(key)) return f(key, labelFor(key), "mph", 1);
-  return f(key, labelFor(key), "number", /(^|_)(n|id|games|minutes|seasons|pitches|balls|strikes)(_|$)/.test(key) ? 0 : 2);
-}
-
-function displayedValue(value: unknown, key: string): number | null {
+function displayedValue(pack: string, value: unknown, key: string): number | null {
   if (!finite(value)) return null;
-  if (pointKey(key)) return value;
-  if (percentKey(key)) return /pct/.test(key) ? value / 100 : value;
+  if (atlasFieldDefinition(pack, key).unit === "percent-already") return value / 100;
   return value;
 }
 
-function scalarKeys(entries: RawEntry[]): string[] {
+function scalarKeys(pack: string, entries: RawEntry[]): string[] {
   return [...new Set(entries.flatMap((entry) => Object.entries(entry.key_numbers || {})
-    .flatMap(([key, value]) => finite(value) ? [key] : [])))].sort();
+    .flatMap(([key, value]) => finite(value) && !atlasFieldDefinition(pack, key).isIdentifier ? [key] : [])))].sort();
 }
 
 function dates(entries: RawEntry[]): string | undefined {
@@ -59,12 +52,12 @@ function floors(entries: RawEntry[]): string {
 
 export function buildAtlasResearch(pack: AtlasPack, manifest: AtlasManifest): ResearchAnalysis {
   const entries = manifest.entries || [];
-  const keys = scalarKeys(entries);
+  const keys = scalarKeys(pack.key, entries);
   const rows: ResearchRow[] = entrySlugs(entries).map(({ slug, entry }, index) => ({
     id: `${pack.key}-${slug || index + 1}`,
     label: entityName(entry),
     group: pack.noun,
-    values: Object.fromEntries(keys.map((key) => [key, displayedValue(entry.key_numbers?.[key], key)])),
+    values: Object.fromEntries(keys.map((key) => [key, displayedValue(pack.key, entry.key_numbers?.[key], key)])),
     note: typeof entry.floors === "string" ? entry.floors : undefined,
     href: `/analytics/players/${pack.key}/${slug}`,
     sourcePaths: keys.map((key) => `entries[${index}].key_numbers.${key}`),
@@ -82,9 +75,9 @@ export function buildAtlasResearch(pack: AtlasPack, manifest: AtlasManifest): Re
     scope: `${rows.length} published ${pack.noun} rows and ${keys.length} scalar measurement fields.`,
     caveat: publishedFloors || "The published manifest does not state a shared floor for this pack.",
     status: "Descriptive",
-    fields: keys.map(fieldFor),
+    fields: keys.map(key => fieldFor(pack.key, key)),
     rows,
-    formula: "Displayed values restate published scalar key_numbers fields. Fields containing pct are divided by 100 for percent display; rate and win-rate fields are already published as proportions.",
+    formula: "Displayed values restate published scalar key_numbers fields. The field definitions preserve each published unit: already-percent values are normalized for percent display, and published fractions are shown as percentages.",
     interpretation: "Sort a column to inspect the published measurements. Unavailable values remain unavailable, and a higher value is not a quality judgement.",
     references: REFERENCES,
     novelty: "Derived analysis",

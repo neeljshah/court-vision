@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { expect, it } from "vitest";
 import { EntityMeasurements } from "./EntityMeasurements";
+import { entityMeasurements } from "@/lib/analytics/entityMeasurements";
 
 const props = { sourceArtifact: "webapp/public/data/showcase/atlas_mlb_pitch_manifest.json", measurements: {
   scalars: [{ key: "n_pitches", label: "n pitches", value: "71,270", percentile: 82, nRanked: 69 }],
@@ -25,4 +26,11 @@ it("states unavailable measurement coverage in one line", () => {
 it("does not render an absent Scout-note apology", () => {
   render(<EntityMeasurements {...props} />);
   expect(screen.queryByText(/No written Scout note/)).not.toBeInTheDocument();
+});
+
+it("renders the published pitch share without percentage inference", () => {
+  const measurements = entityMeasurements("mlb_pitch", { key_numbers: { pct_of_all_pitches: 0.06 } }, "cs");
+  render(<EntityMeasurements sourceArtifact="atlas_mlb_pitch_manifest" measurements={measurements} />);
+  expect(screen.getAllByText("0.06%").length).toBeGreaterThanOrEqual(1);
+  expect(screen.queryByText("6.0%")).not.toBeInTheDocument();
 });

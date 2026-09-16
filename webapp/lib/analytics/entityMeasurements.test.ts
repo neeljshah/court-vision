@@ -22,13 +22,29 @@ describe("entityMeasurements", () => {
     expect(result.scalars.find((item) => item.key === "hard_wr_career")).toMatchObject({ value: "69.1%", unit: "%" });
   });
 
+  it("keeps published percent values as percentages without scaling them again", () => {
+    const result = entityMeasurements("mlb_pitch", { key_numbers: { pct_of_all_pitches: 0.06 } }, "cs");
+    expect(result.scalars.find((item) => item.key === "pct_of_all_pitches")?.value).toBe("0.06%");
+  });
+
+  it("excludes identifiers and keeps unknown numeric keys as plain numbers", () => {
+    const known = entityMeasurements("nba_players", { key_numbers: { player_id: 7, team_id: 8, career_games: 50 } }, "player");
+    const unknown = entityMeasurements("unlisted_pack", { key_numbers: { new_rate: 0.612 } }, "player");
+    expect(known.scalars.map((item) => item.key)).not.toContain("player_id");
+    expect(known.scalars.map((item) => item.key)).not.toContain("team_id");
+    expect(unknown.scalars[0]).toMatchObject({ label: "New Rate", value: "0.612" });
+  });
+
   it("attaches matching floor guidance to unavailable tennis fields", () => {
     const result = entityMeasurements("tennis", { key_numbers: { hard_wr_career: null }, floors: "hard_wr: hard_n>=30 | clay_wr: clay_n>=30" }, "player");
     expect(result.unavailable.find((item) => item.key === "hard_wr_career")?.floor).toBe("hard_wr: hard_n>=30");
   });
 
-  it("ignores fields outside the published pack schema", () => {
+  it("keeps new published numeric fields conservative until they receive a definition", () => {
     const result = entityMeasurements("nba_players", { key_numbers: { career_games: 50, invented_signal: 99 } }, "player");
-    expect(result.scalars.map((item) => item.key)).toEqual(["career_games"]);
+    expect(result.scalars).toEqual(expect.arrayContaining([
+      expect.objectContaining({ key: "career_games", value: "50" }),
+      expect.objectContaining({ key: "invented_signal", label: "Invented Signal", value: "99" }),
+    ]));
   });
 });
