@@ -24,11 +24,42 @@ export type IngameIntegrityReceipt = {
   exposed_artifacts: string[];
   timing_artifacts_under_review: string[];
   timing_artifacts_note: string;
-  status: "withdrawn-pending-regeneration";
+  status: "regenerated";
+  resolved_by: string;
+  resolution_note: string;
 };
+
+export type RegeneratedArtifact = {
+  artifact: string;
+  n_field: string;
+  n_before: number;
+  n_after: number;
+  headline_before: string;
+  headline_after: string;
+};
+
+export type IngameRegenerationReceipt = {
+  version: number;
+  measured_on: string;
+  revision_published: number;
+  method: { summary: string; segmentation_tool: string; checker_tool: string; corpus_after: string };
+  segmentation: { per_sport: Record<string, Record<string, number>> };
+  checker: { verdict: string };
+  artifacts: RegeneratedArtifact[];
+  reading: string[];
+  status: "regenerated";
+};
+
+function loadAudit<T>(basename: string): T {
+  return JSON.parse(readFileSync(join(process.cwd(), "public", "data", "audits", basename), "utf8")) as T;
+}
 
 /** Loads the committed incident receipt only while rendering the static export. */
 export function loadIngameIntegrityReceipt(): IngameIntegrityReceipt {
-  const path = join(process.cwd(), "public", "data", "audits", "mlb-ingame-integrity.json");
-  return JSON.parse(readFileSync(path, "utf8")) as IngameIntegrityReceipt;
+  return loadAudit<IngameIntegrityReceipt>("mlb-ingame-integrity.json");
+}
+
+/** Loads the committed revision-2 regeneration receipt for the before/after table. */
+export function loadIngameRegenerationReceipt(): IngameRegenerationReceipt {
+  return loadAudit<IngameRegenerationReceipt>("mlb-ingame-regeneration.json");
 }

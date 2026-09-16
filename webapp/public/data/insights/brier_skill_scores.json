@@ -1,17 +1,17 @@
 {
  "id": "brier_skill_scores",
  "title": "Against the market baseline, the skill score is negative everywhere",
- "headline_insight": "The model's Brier Skill Score versus the market is negative across every sport -- MLB overall -0.1502, soccer -0.5967 -- so the model does not beat the market, and that null is the exhibit's whole point.",
- "what_it_means": "Brier Skill Score is 1 minus Brier over a reference Brier; positive means you beat the reference. Against climatology (a constant base-rate guess) the model scores positive (MLB +0.042), as any real in-game model should. Against the market it is negative across all sports and checkpoints -- the market's Brier is lower. This is reported plainly, not hidden.",
+ "headline_insight": "The model's Brier Skill Score versus the market is negative across every sport -- MLB overall -0.1043, soccer -0.7039 -- so the model does not beat the market, and that null is the exhibit's whole point.",
+ "what_it_means": "Brier Skill Score is 1 minus Brier over a reference Brier; positive means you beat the reference. Against climatology (a constant base-rate guess) the MLB model scores clearly positive (+0.3327), as any real in-game model should; on the far smaller soccer corpus it is negative (-0.8569), meaning the model there does not even beat the base rate. Against the market it is negative in every sport and every checkpoint -- the market's Brier is lower. This is reported plainly, not hidden.",
  "how_to_read": "Read each cell's BSS: above 0 beats the baseline, below 0 loses to it; compare the vs-market column (the hard test) against the vs-climatology column (the easy one).",
- "why_it_matters": "It is the cleanest single statement of the project thesis -- the market is efficient; the model crushes the base rate but does not out-predict the market.",
- "caveat": "The most negative MLB cell is late(inn7+) at -0.4635; late-game is exactly where market prices sharpen on information the model cannot see.",
+ "why_it_matters": "It is the cleanest single statement of the project thesis -- the market is efficient; the MLB model crushes the base rate but does not out-predict the market.",
+ "caveat": "The most negative MLB cell is mid(inn4-6) at -0.1133, and late(inn7+) is now the least negative at -0.0918; these are revision-2 figures measured on the segment-clean corpus (27,351 MLB rows, 4,265 soccer rows).",
  "cited": [
-  {"path": "webapp/public/data/showcase/brier_skill_scores.json", "field": "sports.mlb.grains.all.bss_model_vs_market", "value": -0.1502},
-  {"path": "webapp/public/data/showcase/brier_skill_scores.json", "field": "sports.mlb.grains.all.bss_model_vs_clim", "value": 0.042},
-  {"path": "webapp/public/data/showcase/brier_skill_scores.json", "field": "sports.mlb.grains.late(inn7+).bss_model_vs_market", "value": -0.4635},
-  {"path": "webapp/public/data/showcase/brier_skill_scores.json", "field": "sports.soccer_intl.grains.all.bss_model_vs_market", "value": -0.5967},
-  {"path": "webapp/public/data/showcase/brier_skill_scores.json", "field": "honest_note", "value": "BSS vs market is near or below 0 across sports and checkpoints -- the model does not beat the market's Brier."}
+  {"path": "webapp/public/data/showcase/brier_skill_scores.json", "field": "sports.mlb.grains.all.bss_model_vs_market", "value": -0.1043},
+  {"path": "webapp/public/data/showcase/brier_skill_scores.json", "field": "sports.mlb.grains.all.bss_model_vs_clim", "value": 0.3327},
+  {"path": "webapp/public/data/showcase/brier_skill_scores.json", "field": "sports.mlb.grains.late(inn7+).bss_model_vs_market", "value": -0.0918},
+  {"path": "webapp/public/data/showcase/brier_skill_scores.json", "field": "sports.soccer_intl.grains.all.bss_model_vs_market", "value": -0.7039},
+  {"path": "webapp/public/data/showcase/brier_skill_scores.json", "field": "honest_note", "value": "BSS vs market is near or below 0 across sports and checkpoints -- the model does not beat the closing reference forecast's Brier. That null result is the POINT of this exhibit, not a defect. BSS vs climatology is strongly positive (model and market both crush the base-rate baseline), which is expected for in-game win-prob and is NOT an advantage. Truth source: docs/JOB_EVIDENCE_PACKET.md."}
  ],
- "as_of": "2026-07-24T01:08:43.969532+00:00"
+ "as_of": "2026-09-16"
 }

@@ -1,5 +1,5 @@
 import { status, type IntegritySport } from "@/lib/analytics/dataIntegrity";
-import type { IngameIntegrityReceipt } from "./ingameJoinIntegrity.server";
+import type { IngameIntegrityReceipt, IngameRegenerationReceipt } from "./ingameJoinIntegrity.server";
 
 const sportLabels: Record<IntegritySport, string> = {
   nba: "NBA", mlb: "MLB", soccer_intl: "International soccer", tennis: "Tennis",
@@ -9,7 +9,7 @@ function number(value: number): string {
   return value.toLocaleString("en-US");
 }
 
-export function buildIngameJoinIntegrityFinding(receipt: IngameIntegrityReceipt) {
+export function buildIngameJoinIntegrityFinding(receipt: IngameIntegrityReceipt, regeneration: IngameRegenerationReceipt) {
   const mlb = receipt.per_sport.mlb;
   const soccer = receipt.per_sport.soccer_intl;
   const reviewedArtifacts = [...receipt.exposed_artifacts, ...receipt.timing_artifacts_under_review];
@@ -32,5 +32,21 @@ export function buildIngameJoinIntegrityFinding(receipt: IngameIntegrityReceipt)
     timingArtifacts: receipt.timing_artifacts_under_review,
     timingNote: receipt.timing_artifacts_note,
     statusRows,
+    regeneration: {
+      measuredOn: regeneration.measured_on,
+      revision: regeneration.revision_published,
+      method: regeneration.method.summary,
+      corpus: regeneration.method.corpus_after,
+      checkerVerdict: regeneration.checker.verdict,
+      reading: regeneration.reading,
+      rows: regeneration.artifacts.map(row => ({
+        artifact: row.artifact,
+        population: row.n_field,
+        nBefore: number(row.n_before),
+        nAfter: number(row.n_after),
+        headlineBefore: row.headline_before,
+        headlineAfter: row.headline_after,
+      })),
+    },
   };
 }

@@ -67,23 +67,23 @@
     {
       "id": "brier_skill_scores",
       "title": "Brier Skill Scores",
-      "one_line": "mlb: BSS(model vs market) in [-0.464, -0.079] -- model does not beat the market; BSS(model vs climatology) in [+0.011, +0.143] (BSS>0 means it beats that baseline). soccer_intl: BSS(model vs market) in [-1.079, -0.470] -- model does not ...",
+      "one_line": "mlb: BSS(model vs market) in [-0.113, -0.092] -- model does not beat the closing reference forecast; BSS(model vs climatology) in [+0.081, +0.621] (BSS>0 means it beats that baseline). soccer_intl: BSS(model vs market) in [-1.171, -0.469...",
       "out_path": "scripts/platformkit/analytics_showcase/out/brier_skill_scores.json",
       "chart_path": "docs/img/brier_skill_scores.png",
       "status": "ok",
       "edge_claimed": false,
-      "as_of": "2026-07-25T04:34:43.456609+00:00",
+      "as_of": "2026-09-16",
       "evidence_page": null
     },
     {
       "id": "calibration_by_market_type",
       "title": "Calibration By Market Type",
-      "one_line": "Brier scored only for market types whose corpora carry resolved outcomes: mlb_moneyline: model Brier 0.2377 vs market 0.2067 (n=78986); soccer_match: model Brier 0.2279 vs market 0.1427 (n=9003). Unscorable market types (no resolved outc...",
+      "one_line": "Brier scored only for market types whose corpora carry resolved outcomes: mlb_moneyline: model Brier 0.1668 vs market 0.1510 (n=27351); soccer_match: model Brier 0.3325 vs market 0.1952 (n=4265). Unscorable market types (no resolved outc...",
       "out_path": "scripts/platformkit/analytics_showcase/out/calibration_by_market_type.json",
       "chart_path": "docs/img/calibration_by_market_type.png",
       "status": "partial",
       "edge_claimed": false,
-      "as_of": null,
+      "as_of": "2026-09-16",
       "evidence_page": null
     },
     {
@@ -94,18 +94,18 @@
       "chart_path": "docs/img/calibration_over_time.png",
       "status": "ok",
       "edge_claimed": false,
-      "as_of": null,
+      "as_of": "2026-09-16",
       "evidence_page": "docs/evidence/market-disagreement.md"
     },
     {
       "id": "calibration_stability",
       "title": "Calibration Stability",
-      "one_line": "mlb/model: 4/10 eligible bins have a calibration-gap 95% CI that excludes 0; 6 within noise. mlb/market: 0/10 eligible bins have a calibration-gap 95% CI that excludes 0; 10 within noise. soccer_intl/model: 8/10 eligible bins have a cali...",
+      "one_line": "mlb/model: 3/10 eligible bins have a calibration-gap 95% CI that excludes 0; 7 within noise. mlb/market: 0/10 eligible bins have a calibration-gap 95% CI that excludes 0; 10 within noise. soccer_intl/model: 8/9 eligible bins have a calib...",
       "out_path": "scripts/platformkit/analytics_showcase/out/calibration_stability.json",
       "chart_path": "docs/img/calibration_stability.png",
       "status": "partial",
       "edge_claimed": false,
-      "as_of": "2026-07-23T03:21:27.493056+00:00",
+      "as_of": "2026-09-16",
       "evidence_page": null
     },
     {
@@ -270,7 +270,7 @@
       "chart_path": "docs/img/info_arrival_curve.png",
       "status": "ok",
       "edge_claimed": false,
-      "as_of": null,
+      "as_of": "2026-09-16",
       "evidence_page": "docs/evidence/novel-analytics.md"
     },
     {
@@ -320,12 +320,12 @@
     {
       "id": "market_disagreement_profile",
       "title": "Market Disagreement Profile",
-      "one_line": "mlb: at largest disagreement (>=.10, n=33402), market usually right (model_closer_rate=0.377, model_brier=0.2827 vs market_brier=0.2103). soccer_intl: at largest disagreement (>=.10, n=4406), market usually right (model_closer_rate=0.215...",
+      "one_line": "mlb: at largest disagreement (>=.10, n=8530), market usually right (model_closer_rate=0.199, model_brier=0.1778 vs market_brier=0.1298). soccer_intl: at largest disagreement (>=.10, n=2291), market usually right (model_closer_rate=0.105,...",
       "out_path": "scripts/platformkit/analytics_showcase/out/market_disagreement_profile.json",
       "chart_path": "docs/img/market_disagreement_profile.png",
       "status": "ok",
       "edge_claimed": false,
-      "as_of": null,
+      "as_of": "2026-09-16",
       "evidence_page": "docs/evidence/market-disagreement.md"
     },
     {
@@ -347,7 +347,7 @@
       "chart_path": "docs/img/market_overreaction.png",
       "status": "ok",
       "edge_claimed": false,
-      "as_of": null,
+      "as_of": "2026-09-16",
       "evidence_page": "docs/evidence/novel-analytics.md"
     },
     {
@@ -441,12 +441,12 @@
     {
       "id": "murphy_decomposition",
       "title": "Murphy Decomposition",
-      "one_line": "mlb: model Brier 0.2377 is worse than market 0.2067 (gap=+0.0310); driven mainly by resolution (information, not fixable by recalibration) (reliability_gap=+0.0066, resolution_gap=-0.0235). soccer_intl: model Brier 0.2279 is worse than m...",
+      "one_line": "mlb: model Brier 0.1668 is worse than market 0.1510 (gap=+0.0158); driven mainly by resolution (information, not fixable by recalibration) (reliability_gap=+0.0022, resolution_gap=-0.0149). soccer_intl: model Brier 0.3325 is worse than m...",
       "out_path": "scripts/platformkit/analytics_showcase/out/murphy_decomposition.json",
       "chart_path": null,
       "status": "ok",
       "edge_claimed": false,
-      "as_of": null,
+      "as_of": "2026-09-16",
       "evidence_page": "docs/evidence/calibration-decomposition.md"
     },
     {
@@ -677,18 +677,18 @@
       "chart_path": "docs/img/residual_anatomy.png",
       "status": "partial",
       "edge_claimed": false,
-      "as_of": null,
+      "as_of": "2026-09-16",
       "evidence_page": null
     },
     {
       "id": "residual_autocorrelation",
       "title": "Residual Autocorrelation",
-      "one_line": "mlb: median within-game lag-1 residual autocorr = model 0.981 (n=222 games), market 0.980 (n=225); share>=0.9 model 0.95 vs market 0.96. soccer_intl: median within-game lag-1 residual autocorr = model 0.962 (n=51 games), market 0.949 (n=...",
+      "one_line": "mlb: median within-game lag-1 residual autocorr = model 0.971 (n=173 games), market 0.965 (n=173); share>=0.9 model 0.90 vs market 0.86. soccer_intl: median within-game lag-1 residual autocorr = model 0.966 (n=26 games), market 0.952 (n=...",
       "out_path": "scripts/platformkit/analytics_showcase/out/residual_autocorrelation.json",
       "chart_path": "docs/img/residual_autocorrelation.png",
       "status": "partial",
       "edge_claimed": false,
-      "as_of": null,
+      "as_of": "2026-09-16",
       "evidence_page": null
     },
     {
@@ -716,12 +716,12 @@
     {
       "id": "soccer_calibration_pack",
       "title": "Soccer Calibration Pack",
-      "one_line": "soccer_intl corpus: n=9003 rows -- far smaller than mlb/nba, wider CIs, single-fold reads not durable. Murphy: model Brier 0.2279 vs market 0.1427 (gap=+0.0852); market leads. Minute-bucket ECE (weighted): 0.3580.",
+      "one_line": "soccer_intl corpus: n=4265 rows -- far smaller than mlb/nba, wider CIs, single-fold reads not durable. Murphy: model Brier 0.3325 vs market 0.1952 (gap=+0.1374); market leads. Minute-bucket ECE (weighted): 0.3748.",
       "out_path": "scripts/platformkit/analytics_showcase/out/soccer_calibration_pack.json",
       "chart_path": "docs/img/soccer_calibration_pack.png",
       "status": "ok",
       "edge_claimed": false,
-      "as_of": null,
+      "as_of": "2026-09-16",
       "evidence_page": "docs/evidence/novel-analytics.md"
     },
     {
@@ -765,7 +765,7 @@
       "chart_path": null,
       "status": "partial",
       "edge_claimed": false,
-      "as_of": null,
+      "as_of": "2026-09-16",
       "evidence_page": "docs/evidence/calibration-decomposition.md"
     },
     {

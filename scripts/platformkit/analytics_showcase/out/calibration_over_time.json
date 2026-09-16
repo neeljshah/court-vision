@@ -1,34 +1,36 @@
 {
   "mlb": {
     "2026-06": {
-      "n": 33290,
-      "model_brier": 0.2404,
-      "market_brier": 0.2243,
-      "model_ece": 0.1165,
-      "market_ece": 0.0944
+      "n": 5030,
+      "model_brier": 0.1968,
+      "market_brier": 0.1873,
+      "model_ece": 0.1265,
+      "market_ece": 0.121
     },
     "2026-07": {
-      "n": 45696,
-      "model_brier": 0.2357,
-      "market_brier": 0.1938,
-      "model_ece": 0.0834,
-      "market_ece": 0.0635
+      "n": 22321,
+      "model_brier": 0.16,
+      "market_brier": 0.1428,
+      "model_ece": 0.075,
+      "market_ece": 0.0439
     }
   },
   "soccer_intl": {
     "2026-06": {
-      "n": 5874,
-      "model_brier": 0.1729,
-      "market_brier": 0.1156,
-      "model_ece": 0.2112,
-      "market_ece": 0.1517
+      "n": 1213,
+      "model_brier": 0.3273,
+      "market_brier": 0.1955,
+      "model_ece": 0.3644,
+      "market_ece": 0.2596
     },
     "2026-07": {
-      "n": 3129,
-      "model_brier": 0.331,
-      "market_brier": 0.1936,
-      "model_ece": 0.421,
-      "market_ece": 0.2961
+      "n": 3052,
+      "model_brier": 0.3346,
+      "market_brier": 0.195,
+      "model_ece": 0.4243,
+      "market_ece": 0.2952
     }
-  }
+  },
+  "as_of": "2026-09-16",
+  "corpus": "data/cache/ingame_grade_joined/{mlb_segmented,soccer_intl_segmented}"
 }

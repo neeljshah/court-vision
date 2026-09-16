@@ -1,19 +1,19 @@
 {
  "id": "calibration_over_time",
  "title": "MLB calibration is improving month over month -- but still trails the market",
- "headline_insight": "The MLB model's calibration error fell from 0.1165 in June to 0.0834 in July, yet the market stayed sharper in both months (0.0944, then 0.0635).",
- "what_it_means": "Splitting the record by calendar month checks whether the model is stable or drifting. MLB is encouraging -- the model got better-calibrated as July games came in (ECE 0.1165 to 0.0834) -- but the market improved in lockstep and kept its lead. Soccer went the other way: the model's monthly Brier climbed from 0.1729 to 0.331.",
+ "headline_insight": "The MLB model's calibration error fell from 0.1265 in June to 0.075 in July, yet the market stayed sharper in both months (0.121, then 0.0439).",
+ "what_it_means": "Splitting the record by calendar month checks whether the model is stable or drifting. MLB is encouraging -- the model got better-calibrated as July games came in (ECE 0.1265 to 0.075) -- but the market improved faster and kept its lead. Soccer stayed poor in both months: the model's monthly Brier was 0.3273 in June and 0.3346 in July, against a market at 0.1955 and 0.195.",
  "how_to_read": "Each cell is one sport-month; lower Brier and ECE are better, and the honest comparison is the model row against the market row within the same month.",
- "why_it_matters": "A model whose numbers hold steady across months is trustworthy; one whose numbers swing (soccer) needs more data before any monthly split can be believed.",
- "caveat": "July soccer rests on only n=3129 rows, so its worse numbers may reflect a small, harder sample rather than genuine month-over-month degradation.",
+ "why_it_matters": "A model whose numbers hold steady across months is trustworthy; one whose numbers sit far from the market in every month (soccer) needs more data before any monthly split can be believed.",
+ "caveat": "The June MLB month rests on only n=5030 rows and July soccer on n=3052 rows after segmentation, so the monthly split is thin at both ends.",
  "cited": [
-  {"path": "webapp/public/data/showcase/calibration_over_time.json", "field": "mlb.2026-06.model_ece", "value": 0.1165},
-  {"path": "webapp/public/data/showcase/calibration_over_time.json", "field": "mlb.2026-07.model_ece", "value": 0.0834},
-  {"path": "webapp/public/data/showcase/calibration_over_time.json", "field": "mlb.2026-06.market_ece", "value": 0.0944},
-  {"path": "webapp/public/data/showcase/calibration_over_time.json", "field": "mlb.2026-07.market_ece", "value": 0.0635},
-  {"path": "webapp/public/data/showcase/calibration_over_time.json", "field": "soccer_intl.2026-06.model_brier", "value": 0.1729},
-  {"path": "webapp/public/data/showcase/calibration_over_time.json", "field": "soccer_intl.2026-07.model_brier", "value": 0.331},
-  {"path": "webapp/public/data/showcase/calibration_over_time.json", "field": "soccer_intl.2026-07.n", "value": 3129}
+  {"path": "webapp/public/data/showcase/calibration_over_time.json", "field": "mlb.2026-06.model_ece", "value": 0.1265},
+  {"path": "webapp/public/data/showcase/calibration_over_time.json", "field": "mlb.2026-07.model_ece", "value": 0.075},
+  {"path": "webapp/public/data/showcase/calibration_over_time.json", "field": "mlb.2026-06.market_ece", "value": 0.121},
+  {"path": "webapp/public/data/showcase/calibration_over_time.json", "field": "mlb.2026-07.market_ece", "value": 0.0439},
+  {"path": "webapp/public/data/showcase/calibration_over_time.json", "field": "soccer_intl.2026-06.model_brier", "value": 0.3273},
+  {"path": "webapp/public/data/showcase/calibration_over_time.json", "field": "soccer_intl.2026-07.model_brier", "value": 0.3346},
+  {"path": "webapp/public/data/showcase/calibration_over_time.json", "field": "soccer_intl.2026-07.n", "value": 3052}
  ],
- "as_of": "unknown"
+ "as_of": "2026-09-16"
 }

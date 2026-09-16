@@ -19,30 +19,30 @@ describe("validation research analytics", () => {
 
   it("computes signed and relative score gaps from the source operands", () => {
     const mlb = get("brier-relative-gap").rows.find(r => r.id === "mlb_moneyline")!;
-    expect(mlb.values.gap).toBe(Number((0.237684 - 0.206653).toFixed(6)));
-    expect(mlb.values.relative_gap).toBe(Number(((0.237684 - 0.206653) / 0.206653).toFixed(6)));
+    expect(mlb.values.gap).toBe(Number((0.166759 - 0.151008).toFixed(6)));
+    expect(mlb.values.relative_gap).toBe(Number(((0.166759 - 0.151008) / 0.151008).toFixed(6)));
     const direction = get("signed-calibration-direction").rows.find(r => r.id === "mlb-model_prob")!;
-    expect(direction.values.mean_p).toBe(0.512464);
-    expect(direction.values.mean_y).toBe(0.456343);
-    expect(direction.values.signed_gap).toBe(-0.056121);
+    expect(direction.values.mean_p).toBe(0.511328);
+    expect(direction.values.mean_y).toBe(0.489738);
+    expect(direction.values.signed_gap).toBe(-0.02159);
   });
 
   it("measures observed month shifts without treating unequal cohorts as zeros", () => {
     const soccer = get("observed-cohort-shift").rows.find(r => r.id === "soccer_intl")!;
-    expect(soccer.values.model_shift).toBe(Number((0.331 - 0.1729).toFixed(6)));
-    expect(soccer.values.market_shift).toBe(Number((0.1936 - 0.1156).toFixed(6)));
-    expect(soccer.values.early_n).toBe(5874);
-    expect(soccer.values.late_n).toBe(3129);
+    expect(soccer.values.model_shift).toBe(Number((0.3346 - 0.3273).toFixed(6)));
+    expect(soccer.values.market_shift).toBe(Number((0.195 - 0.1955).toFixed(6)));
+    expect(soccer.values.early_n).toBe(1213);
+    expect(soccer.values.late_n).toBe(3052);
   });
 
   it("uses published cluster intervals and distinct-game support", () => {
     const width = get("cluster-interval-width").rows.find(r => r.id === "soccer_intl-model_prob")!;
-    expect(width.values.widest_width).toBe(Number((0.5317 - 0.0732).toFixed(6)));
-    expect(width.values.min_games).toBe(9);
+    expect(width.values.widest_width).toBe(Number((0.3922 - -0.2935).toFixed(6)));
+    expect(width.values.min_games).toBe(2);
     const support = get("calibration-support-concentration").rows.find(r => r.id === "soccer_intl-model_prob")!;
-    expect(support.values.sparse_rows).toBe(5413);
-    expect(support.values.n_rows).toBe(9003);
-    expect(support.values.sparse_row_share).toBe(Number((5413 / 9003).toFixed(6)));
+    expect(support.values.sparse_rows).toBe(4265);
+    expect(support.values.n_rows).toBe(4265);
+    expect(support.values.sparse_row_share).toBe(Number((4265 / 4265).toFixed(6)));
   });
 
   it("derives verdict diversity and friction from current family counts", () => {

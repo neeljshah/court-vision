@@ -25,9 +25,9 @@ const fixture = {
 };
 
 describe("buildResidualAnatomy", () => {
-  it("parses all 39 published segments across sports", () => {
+  it("parses all 38 published segments across sports", () => {
     const data = buildResidualAnatomy(source);
-    expect(data.sports.reduce((total, sport) => total + sport.segments.length, 0)).toBe(39);
+    expect(data.sports.reduce((total, sport) => total + sport.segments.length, 0)).toBe(38);
     expect(data.sports.map(sport => sport.sport)).toEqual(["mlb", "soccer_intl"]);
   });
 

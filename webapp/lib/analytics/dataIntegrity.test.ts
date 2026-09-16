@@ -1,12 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { dataIntegrityNotices, integrityRegistrySummary, noticesForInspector, noticesForModules, noticesForPaper, status } from "./dataIntegrity";
-import { loadIngameIntegrityReceipt } from "@/app/(analytics)/analytics/findings/ingame-join-integrity/ingameJoinIntegrity.server";
+import { loadIngameIntegrityReceipt, loadIngameRegenerationReceipt } from "@/app/(analytics)/analytics/findings/ingame-join-integrity/ingameJoinIntegrity.server";
 
 describe("dataIntegrity", () => {
   it("resolves each artifact and sport status", () => {
-    expect(status("state_conditioned_calibration", "mlb")).toBe("withdrawn-pending-regeneration");
-    expect(status("state_conditioned_calibration", "soccer_intl")).toBe("under-review");
+    expect(status("state_conditioned_calibration", "mlb")).toBe("regenerated");
+    expect(status("state_conditioned_calibration", "soccer_intl")).toBe("regenerated");
     expect(status("blowout_dynamics", "mlb")).toBe("under-review");
+    expect(status("state_conditioned_calibration", "nba")).toBe("clear");
     expect(status("novel_rest_asymmetry", "nba")).toBe("clear");
   });
 
@@ -18,11 +19,19 @@ describe("dataIntegrity", () => {
     expect(receipt.per_sport).toEqual(integrityRegistrySummary.perSport);
   });
 
-  it("surfaces withdrawal and review notices for affected artifacts", () => {
-    expect(dataIntegrityNotices.map(notice => notice.status)).toEqual(["withdrawn-pending-regeneration", "under-review"]);
-    expect(noticesForModules(["state_conditioned_calibration"])).toHaveLength(2);
-    expect(noticesForPaper([{ module: "state_conditioned_calibration" }])).toHaveLength(2);
+  it("publishes every exposed artifact at the regeneration receipt's revision", () => {
+    const regeneration = loadIngameRegenerationReceipt();
+    expect(regeneration.revision_published).toBe(integrityRegistrySummary.revisionPublished);
+    expect(regeneration.artifacts.map(row => row.artifact).sort())
+      .toEqual([...integrityRegistrySummary.exposedArtifacts].sort());
+    expect(regeneration.artifacts.every(row => row.n_after <= row.n_before)).toBe(true);
+  });
+
+  it("surfaces the regeneration notice for rebuilt artifacts and the review notice only for timing ones", () => {
+    expect(dataIntegrityNotices.map(notice => notice.status)).toEqual(["regenerated", "under-review"]);
+    expect(noticesForModules(["state_conditioned_calibration"])).toMatchObject([{ status: "regenerated" }]);
+    expect(noticesForPaper([{ module: "state_conditioned_calibration" }])).toMatchObject([{ status: "regenerated" }]);
     expect(noticesForModules(["blowout_dynamics"])).toMatchObject([{ status: "under-review" }]);
-    expect(noticesForInspector("state-reliability")).toHaveLength(2);
+    expect(noticesForInspector("state-reliability")).toMatchObject([{ status: "regenerated" }]);
   });
 });

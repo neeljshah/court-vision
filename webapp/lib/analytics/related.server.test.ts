@@ -36,10 +36,10 @@ describe("server reading entries", () => {
     if (nbaPaper && tennisModule) expect(paperBacklinks("module", tennisModule.id, entries).map((link) => link.id)).not.toContain(nbaPaper.id);
   });
 
-  it("marks affected module backlinks pending regeneration", () => {
+  it("marks affected module backlinks as regenerated sources", () => {
     const links = paperBacklinks("module", "state_conditioned_calibration", entries);
     expect(links.length).toBeGreaterThan(0);
-    expect(links.every((link) => link.title.endsWith("(withdrawn pending regeneration)"))).toBe(true);
+    expect(links.every((link) => link.title.endsWith("(sources regenerated)"))).toBe(true);
   });
 
   it("chooses one inspector analysis by source overlap before its title", () => {

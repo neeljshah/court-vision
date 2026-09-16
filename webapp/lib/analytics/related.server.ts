@@ -15,9 +15,9 @@ const sameSport = (left: string, right: string) => left === "all" || right === "
 const exactSport = (left: string, right: string) => sportKey(left) === sportKey(right);
 const sourceIds = (entry: ReadingEntry) => entry.sources || [];
 
-function withdrawnSuffix(moduleIds: readonly string[]): string {
-  return noticesForModules(moduleIds).some((notice) => notice.status === "withdrawn-pending-regeneration")
-    ? " (withdrawn pending regeneration)" : "";
+function regeneratedSuffix(moduleIds: readonly string[]): string {
+  return noticesForModules(moduleIds).some((notice) => notice.status === "regenerated")
+    ? " (sources regenerated)" : "";
 }
 
 export function readingEntries(): ReadingEntry[] {
@@ -54,7 +54,7 @@ function paperMatches(current: ReadingEntry, paper: PaperEntry): boolean {
 export function paperBacklinks(kind: "module" | "inspector", id: string, entries: ReadingEntry[] = readingEntries()): RelatedLink[] {
   const current = entries.find((entry) => entry.kind === kind && entry.id === id);
   if (!current) return [];
-  const suffix = withdrawnSuffix(sourceIds(current));
+  const suffix = regeneratedSuffix(sourceIds(current));
   return entries.filter((entry): entry is PaperEntry => entry.kind === "paper" && "targets" in entry)
     .filter((paper) => paperMatches(current, paper))
     .map((paper) => ({ id: paper.id, title: `${paper.title}${suffix}`, kind: paper.kind, sport: paper.sport, asOf: paper.asOf, href: paper.href, purpose: "supporting source" as const }))

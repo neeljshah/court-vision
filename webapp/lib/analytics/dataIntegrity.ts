@@ -1,8 +1,9 @@
 import { analysisDestinations } from "./analysisDestinations";
 import receipt from "../../public/data/audits/mlb-ingame-integrity.json";
+import regeneration from "../../public/data/audits/mlb-ingame-regeneration.json";
 
 export type IntegritySport = "nba" | "mlb" | "soccer_intl" | "tennis";
-export type IntegrityStatus = "clear" | "withdrawn-pending-regeneration" | "under-review";
+export type IntegrityStatus = "clear" | "regenerated" | "under-review";
 
 export type DataIntegrityNotice = {
   id: string;
@@ -20,19 +21,21 @@ const timingArtifacts = receipt.timing_artifacts_under_review;
 /** Registry shape checked against the versioned incident receipt. */
 export const integrityRegistrySummary = {
   receiptId: "mlb-ingame-integrity",
+  regenerationReceiptId: "mlb-ingame-regeneration",
   measuredOn: receipt.measured_on,
+  revisionPublished: regeneration.revision_published,
   exposedArtifacts,
   timingArtifacts,
   perSport: receipt.per_sport,
 } as const;
 
-const withdrawnNotice: DataIntegrityNotice = {
-  id: "mlb-ingame-withdrawal",
+const regeneratedNotice: DataIntegrityNotice = {
+  id: "mlb-ingame-regenerated",
   title: "MLB in-game corpus integrity",
-  measuredOn: integrityRegistrySummary.measuredOn,
-  summary: "MLB in-game results are withdrawn pending corpus correction and regeneration. The measurements below are kept as a dated record and must not be read as current calibration quality.",
+  measuredOn: regeneration.measured_on,
+  summary: "These MLB/soccer numbers are revision 2, computed on the segment-clean corpus (2026-09-16). Revision 1 values are withdrawn and kept in the regeneration receipt.",
   affectedModules: exposedArtifacts,
-  status: "withdrawn-pending-regeneration",
+  status: "regenerated",
   detailRoute: "/analytics/findings/ingame-join-integrity/",
 };
 
@@ -40,18 +43,19 @@ const reviewNotice: DataIntegrityNotice = {
   id: "ingame-timing-review",
   title: "In-game corpus integrity review",
   measuredOn: integrityRegistrySummary.measuredOn,
-  summary: "This artifact's MLB/soccer rows are under review: mixed-game tick paths may distort timing measurements.",
-  affectedModules: [...exposedArtifacts, ...timingArtifacts],
+  summary: "This artifact's MLB/soccer rows are under review: it was not regenerated in this pass, and mixed-game tick paths may distort timing measurements.",
+  affectedModules: timingArtifacts,
   status: "under-review",
   detailRoute: "/analytics/findings/ingame-join-integrity/",
 };
 
-export const dataIntegrityNotices: readonly DataIntegrityNotice[] = [withdrawnNotice, reviewNotice];
+export const dataIntegrityNotices: readonly DataIntegrityNotice[] = [regeneratedNotice, reviewNotice];
 
 /** Returns the published integrity state for one artifact and corpus sport. */
 export function status(moduleId: string, sport: IntegritySport): IntegrityStatus {
-  if (sport === "mlb" && exposedArtifacts.includes(moduleId)) return "withdrawn-pending-regeneration";
-  if ((sport === "mlb" || sport === "soccer_intl") && (exposedArtifacts.includes(moduleId) || timingArtifacts.includes(moduleId))) return "under-review";
+  if (sport !== "mlb" && sport !== "soccer_intl") return "clear";
+  if (exposedArtifacts.includes(moduleId)) return "regenerated";
+  if (timingArtifacts.includes(moduleId)) return "under-review";
   return "clear";
 }
 

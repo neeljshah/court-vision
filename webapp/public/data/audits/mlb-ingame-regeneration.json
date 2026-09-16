@@ -1,0 +1,443 @@
+{
+ "version": 1,
+ "measured_on": "2026-09-16",
+ "revision_published": 2,
+ "supersedes": {
+  "receipt": "mlb-ingame-integrity",
+  "revision": 1,
+  "note": "Revision 1 was withdrawn pending regeneration; its values are recorded here and are not republished as current."
+ },
+ "method": {
+  "summary": "Every stored tick file was re-segmented so that one file holds one real game, the segmented corpus was re-checked with the same fail-closed integrity checker, and the 13 exposed artifacts were rebuilt from the segmented corpus.",
+  "segmentation_tool": "scripts/platformkit/segment_ingame_join.py",
+  "checker_tool": "scripts/platformkit/check_ingame_join_integrity.py",
+  "diff_tool": "scripts/platformkit/diff_showcase_artifacts.py",
+  "corpus_before": "data/cache/ingame_grade_joined/{mlb,soccer_intl}",
+  "corpus_after": "data/cache/ingame_grade_joined/{mlb_segmented,soccer_intl_segmented}",
+  "segment_gap_hours": 6.0
+ },
+ "segmentation": {
+  "rule": "A stored tick path is split at a monotonicity break: the score or clock going backwards, or more than 6.0 hours between consecutive ticks. Stateless ticks carry no ordering information, so they never break a segment and attach by time to the segment open when they arrive. Only the segment the settlement label belongs to is kept; a file whose tick path cannot be attributed is quarantined whole rather than guessed at, and the original corpus is never modified in place.",
+  "per_sport": {
+   "mlb": {
+    "files_in": 227,
+    "files_kept": 178,
+    "files_quarantined": 49,
+    "ticks_in": 78986,
+    "ticks_kept": 27351,
+    "stateless_ticks_in": 26340,
+    "stateless_ticks_kept": 668
+   },
+   "soccer_intl": {
+    "files_in": 51,
+    "files_kept": 27,
+    "files_quarantined": 24,
+    "ticks_in": 9003,
+    "ticks_kept": 4265,
+    "stateless_ticks_in": 4649,
+    "stateless_ticks_kept": 233
+   }
+  },
+  "quarantine_reasons": {
+   "mlb": {
+    "no_stated_tick": 49
+   },
+   "soccer_intl": {
+    "no_stated_tick": 22,
+    "label_disagrees": 2
+   }
+  }
+ },
+ "checker": {
+  "root": "data/cache/ingame_grade_joined",
+  "before": {
+   "mlb": {
+    "games": 227,
+    "ticks": 78986,
+    "stateless_ticks": 26340,
+    "label_disagreements": 0,
+    "multi_game_files": 126,
+    "ticks_outside_game_date": 105,
+    "frozen_quote_files": 2,
+    "short_path_files": 2
+   },
+   "soccer_intl": {
+    "games": 51,
+    "ticks": 9003,
+    "stateless_ticks": 4649,
+    "label_disagreements": 2,
+    "multi_game_files": 1,
+    "ticks_outside_game_date": 0,
+    "frozen_quote_files": 0,
+    "short_path_files": 0
+   }
+  },
+  "after": {
+   "mlb": {
+    "games": 178,
+    "ticks": 27351,
+    "stateless_ticks": 668,
+    "label_disagreements": 0,
+    "multi_game_files": 0,
+    "ticks_outside_game_date": 0,
+    "frozen_quote_files": 1,
+    "short_path_files": 4
+   },
+   "soccer_intl": {
+    "games": 27,
+    "ticks": 4265,
+    "stateless_ticks": 233,
+    "label_disagreements": 0,
+    "multi_game_files": 0,
+    "ticks_outside_game_date": 0,
+    "frozen_quote_files": 1,
+    "short_path_files": 1
+   }
+  },
+  "verdict": "After segmentation both sports report 0 label disagreements and 0 multi-game files, and no tick sits outside its game's date. Two residual single-file defects remain and are disclosed rather than removed: one frozen-quote file per sport, plus 4 MLB and 1 soccer file shorter than 10 ticks."
+ },
+ "artifacts": [
+  {
+   "artifact": "state_conditioned_calibration",
+   "file": "state_conditioned_calibration.json",
+   "n_field": "MLB ticks bucketed",
+   "n_before": 78986,
+   "n_after": 27351,
+   "headline_before": "MLB n-weighted calibration error: model 0.079, reference quote 0.0591",
+   "headline_after": "MLB n-weighted calibration error: model 0.0494, reference quote 0.0397"
+  },
+  {
+   "artifact": "calibration_stability",
+   "file": "calibration_stability.json",
+   "n_field": "MLB ticks resampled",
+   "n_before": 78986,
+   "n_after": 27351,
+   "headline_before": "MLB reliability bins whose gap interval excludes zero: model 4 of 10, reference quote 0 of 10",
+   "headline_after": "MLB reliability bins whose gap interval excludes zero: model 3 of 10, reference quote 0 of 10"
+  },
+  {
+   "artifact": "murphy_decomposition",
+   "file": "murphy_decomposition.json",
+   "n_field": "MLB ticks decomposed",
+   "n_before": 78986,
+   "n_after": 27351,
+   "headline_before": "MLB model reliability 0.012701, resolution 0.023628",
+   "headline_after": "MLB model reliability 0.005619, resolution 0.087187"
+  },
+  {
+   "artifact": "brier_skill_scores",
+   "file": "brier_skill_scores.json",
+   "n_field": "MLB ticks scored",
+   "n_before": 78986,
+   "n_after": 27351,
+   "headline_before": "MLB Brier skill score against the reference quote, all grains: -0.1502",
+   "headline_after": "MLB Brier skill score against the reference quote, all grains: -0.1043"
+  },
+  {
+   "artifact": "residual_anatomy",
+   "file": "residual_anatomy.json",
+   "n_field": "MLB ticks ranked",
+   "n_before": 78986,
+   "n_after": 27351,
+   "headline_before": "largest segment absolute-residual mass 6063.25 over 12344 rows (MLB early(inn1-3), .4-.6)",
+   "headline_after": "largest segment absolute-residual mass 2812.37 over 5754 rows (MLB early(inn1-3), .4-.6)"
+  },
+  {
+   "artifact": "calibration_by_market_type",
+   "file": "calibration_by_market_type.json",
+   "n_field": "MLB moneyline ticks scored",
+   "n_before": 78986,
+   "n_after": 27351,
+   "headline_before": "MLB moneyline Brier: model 0.237684, reference quote 0.206653",
+   "headline_after": "MLB moneyline Brier: model 0.166759, reference quote 0.151008"
+  },
+  {
+   "artifact": "residual_autocorrelation",
+   "file": "residual_autocorrelation.json",
+   "n_field": "MLB ticks in series",
+   "n_before": 78986,
+   "n_after": 27351,
+   "headline_before": "MLB median within-game lag-1 residual autocorrelation: model 0.9809 over 222 games",
+   "headline_after": "MLB median within-game lag-1 residual autocorrelation: model 0.9713 over 173 games"
+  },
+  {
+   "artifact": "calibration_over_time",
+   "file": "calibration_over_time.json",
+   "n_field": "MLB ticks split by month",
+   "n_before": 78986,
+   "n_after": 27351,
+   "headline_before": "MLB 2026-07 Brier: model 0.2357, reference quote 0.1938",
+   "headline_after": "MLB 2026-07 Brier: model 0.16, reference quote 0.1428"
+  },
+  {
+   "artifact": "calibration_atlas",
+   "file": "atlas_calibration_manifest.json",
+   "n_field": "ticks in the largest atlas entry",
+   "n_before": 18611,
+   "n_after": 9042,
+   "headline_before": "26 atlas entries; largest entry backed by 18611 ticks",
+   "headline_after": "26 atlas entries; largest entry backed by 9042 ticks"
+  },
+  {
+   "artifact": "market_disagreement_profile",
+   "file": "market_disagreement_profile.json",
+   "n_field": "MLB ticks in the widest disagreement bucket",
+   "n_before": 33402,
+   "n_after": 8530,
+   "headline_before": "at disagreement >=.10 the model is closer 0.3773 of the time (Brier 0.282705 vs 0.210258)",
+   "headline_after": "at disagreement >=.10 the model is closer 0.1994 of the time (Brier 0.177763 vs 0.129824)"
+  },
+  {
+   "artifact": "info_arrival_curve",
+   "file": "info_arrival_curve.json",
+   "n_field": "MLB ticks at the 9th-inning checkpoint",
+   "n_before": 2282,
+   "n_after": 1110,
+   "headline_before": "reference-quote-minus-model Brier widens to -0.0902 by the 9th inning",
+   "headline_after": "reference-quote-minus-model Brier narrows to -0.001 by the 9th inning"
+  },
+  {
+   "artifact": "market_overreaction",
+   "file": "market_overreaction.json",
+   "n_field": "MLB ticks in the 0-1pt move bucket",
+   "n_before": 66697,
+   "n_after": 19044,
+   "headline_before": "MLB 0-1pt moves: moved-to price minus outcome rate 0.0689",
+   "headline_after": "MLB 0-1pt moves: moved-to price minus outcome rate 0.0302"
+  },
+  {
+   "artifact": "soccer_calibration_pack",
+   "file": "soccer_calibration_pack.json",
+   "n_field": "soccer ticks scored",
+   "n_before": 9003,
+   "n_after": 4265,
+   "headline_before": "soccer Brier: model 0.227887, reference quote 0.142726",
+   "headline_after": "soccer Brier: model 0.332522, reference quote 0.195157"
+  }
+ ],
+ "headline_figures": [
+  {
+   "label": "MLB game files scored",
+   "artifact": "calibration_by_market_type",
+   "path": "market_types/mlb_moneyline/n_files",
+   "before": 227.0,
+   "after": 178.0,
+   "delta": -49.0
+  },
+  {
+   "label": "MLB ticks scored",
+   "artifact": "calibration_by_market_type",
+   "path": "market_types/mlb_moneyline/n_rows",
+   "before": 78986.0,
+   "after": 27351.0,
+   "delta": -51635.0
+  },
+  {
+   "label": "soccer game files scored",
+   "artifact": "calibration_by_market_type",
+   "path": "market_types/soccer_match/n_files",
+   "before": 51.0,
+   "after": 27.0,
+   "delta": -24.0
+  },
+  {
+   "label": "soccer ticks scored",
+   "artifact": "calibration_by_market_type",
+   "path": "market_types/soccer_match/n_rows",
+   "before": 9003.0,
+   "after": 4265.0,
+   "delta": -4738.0
+  },
+  {
+   "label": "MLB Brier -- model",
+   "artifact": "brier_skill_scores",
+   "path": "sports/mlb/grains/all/brier_model",
+   "before": 0.237684,
+   "after": 0.166759,
+   "delta": -0.070925
+  },
+  {
+   "label": "MLB Brier -- reference quote",
+   "artifact": "brier_skill_scores",
+   "path": "sports/mlb/grains/all/brier_market",
+   "before": 0.206653,
+   "after": 0.151008,
+   "delta": -0.055645
+  },
+  {
+   "label": "MLB Brier -- climatology",
+   "artifact": "brier_skill_scores",
+   "path": "sports/mlb/grains/all/brier_clim",
+   "before": 0.248092,
+   "after": 0.249895,
+   "delta": 0.001803
+  },
+  {
+   "label": "MLB base rate",
+   "artifact": "brier_skill_scores",
+   "path": "sports/mlb/grains/all/base_rate",
+   "before": 0.4563,
+   "after": 0.4897,
+   "delta": 0.0334
+  },
+  {
+   "label": "MLB Brier gap, model minus reference",
+   "artifact": "calibration_by_market_type",
+   "path": "market_types/mlb_moneyline/brier_gap_model_minus_market",
+   "before": 0.031031,
+   "after": 0.015752,
+   "delta": -0.015279
+  },
+  {
+   "label": "soccer Brier gap, model minus reference",
+   "artifact": "calibration_by_market_type",
+   "path": "market_types/soccer_match/brier_gap_model_minus_market",
+   "before": 0.08516,
+   "after": 0.137365,
+   "delta": 0.052205
+  },
+  {
+   "label": "MLB ECE -- model",
+   "artifact": "calibration_by_market_type",
+   "path": "market_types/mlb_moneyline/model_ece",
+   "before": 0.097325,
+   "after": 0.057367,
+   "delta": -0.039958
+  },
+  {
+   "label": "MLB ECE -- reference quote",
+   "artifact": "calibration_by_market_type",
+   "path": "market_types/mlb_moneyline/market_ece",
+   "before": 0.070965,
+   "after": 0.049057,
+   "delta": -0.021908
+  },
+  {
+   "label": "MLB reliability -- model",
+   "artifact": "murphy_decomposition",
+   "path": "sports/mlb/model_prob/reliability",
+   "before": 0.012701,
+   "after": 0.005619,
+   "delta": -0.007082
+  },
+  {
+   "label": "MLB resolution -- model",
+   "artifact": "murphy_decomposition",
+   "path": "sports/mlb/model_prob/resolution",
+   "before": 0.023628,
+   "after": 0.087187,
+   "delta": 0.063559
+  },
+  {
+   "label": "MLB uncertainty",
+   "artifact": "murphy_decomposition",
+   "path": "sports/mlb/model_prob/uncertainty",
+   "before": 0.248092,
+   "after": 0.249895,
+   "delta": 0.001803
+  },
+  {
+   "label": "MLB reliability -- reference quote",
+   "artifact": "murphy_decomposition",
+   "path": "sports/mlb/market_prob/reliability",
+   "before": 0.006061,
+   "after": 0.003425,
+   "delta": -0.002636
+  },
+  {
+   "label": "MLB resolution -- reference quote",
+   "artifact": "murphy_decomposition",
+   "path": "sports/mlb/market_prob/resolution",
+   "before": 0.047124,
+   "after": 0.102062,
+   "delta": 0.054938
+  },
+  {
+   "label": "MLB reliability bins with gap CI crossing 0 -- model",
+   "artifact": "calibration_stability",
+   "path": "sports/mlb/sides/model_prob/n_within_noise_bins",
+   "before": 6.0,
+   "after": 7.0,
+   "delta": 1.0
+  },
+  {
+   "label": "MLB reliability bins with gap CI crossing 0 -- reference quote",
+   "artifact": "calibration_stability",
+   "path": "sports/mlb/sides/market_prob/n_within_noise_bins",
+   "before": 10.0,
+   "after": 10.0,
+   "delta": 0.0
+  },
+  {
+   "label": "soccer Brier -- model",
+   "artifact": "brier_skill_scores",
+   "path": "sports/soccer_intl/grains/all/brier_model",
+   "before": 0.227887,
+   "after": 0.332522,
+   "delta": 0.104635
+  },
+  {
+   "label": "soccer Brier -- reference quote",
+   "artifact": "brier_skill_scores",
+   "path": "sports/soccer_intl/grains/all/brier_market",
+   "before": 0.142726,
+   "after": 0.195157,
+   "delta": 0.052431
+  }
+ ],
+ "late_inning_high_confidence_cell": {
+  "sport": "mlb",
+  "time_bucket": "late(inn7+)",
+  "prob_bucket": ".8-1",
+  "cells": [
+   {
+    "source": "model",
+    "before": {
+     "n": 5037,
+     "mean_p": 0.9211,
+     "mean_y": 0.6853,
+     "calibration_error": 0.2357
+    },
+    "after": {
+     "n": 2369,
+     "mean_p": 0.9101,
+     "mean_y": 0.9498,
+     "calibration_error": 0.0397
+    }
+   },
+   {
+    "source": "market",
+    "before": {
+     "n": 2771,
+     "mean_p": 0.9199,
+     "mean_y": 0.9405,
+     "calibration_error": 0.0206
+    },
+    "after": {
+     "n": 2666,
+     "mean_p": 0.9206,
+     "mean_y": 0.9381,
+     "calibration_error": 0.0175
+    }
+   }
+  ]
+ },
+ "reading": [
+  "These are population changes, not forecaster improvement. The forecaster did not change; a third of the MLB ticks and half the soccer ticks were removed because their outcome label belonged to another game. Read every move as what the measurement should have said all along.",
+  "The smaller sample widens every interval. A lower Brier or calibration error after segmentation is not evidence of a sharper model, and none of these figures is a claim about money.",
+  "Soccer moves the other way for a mechanical reason: the draw share of scored ticks fell from 0.2615 to 0.1376, and a draw (outcome 0.5) is cheap to score against a two-way probability, so BOTH the model and the reference quote post a higher Brier on the segmented soccer sample. The model-minus-reference gap is the like-for-like line to read; it halves for MLB (0.031031 to 0.015752) and widens for soccer (0.08516 to 0.137365).",
+  "The single largest correction is the late-inning high-confidence MLB cell: the model's own forecast of 0.9211 was scored against a 0.6853 outcome rate drawn partly from other games. On the segment-clean corpus the same cell reads 0.9101 against 0.9498."
+ ],
+ "not_regenerated": {
+  "artifacts": [
+   "blowout_dynamics",
+   "novel_live_clock_fraction",
+   "market_convergence",
+   "why_attribution",
+   "comeback_atlas"
+  ],
+  "status": "under-review",
+  "note": "These timing artifacts were not rebuilt in this pass; mixed-game tick paths distort timing measurements even where no outcome label is used."
+ },
+ "status": "regenerated"
+}

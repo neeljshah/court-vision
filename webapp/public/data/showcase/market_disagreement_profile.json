@@ -1,68 +1,70 @@
 {
- "edge_claimed": false,
- "method": "bucket rows by |model_prob - market_prob|; per-bucket model/market Brier + model_closer_rate",
- "sports": {
-  "mlb": [
-   {
-    "bucket": "<.02",
-    "n": 12415,
-    "model_brier": 0.184598,
-    "market_brier": 0.184498,
-    "model_closer_rate": 0.4494
-   },
-   {
-    "bucket": ".02-.05",
-    "n": 13934,
-    "model_brier": 0.20323,
-    "market_brier": 0.203408,
-    "model_closer_rate": 0.4592
-   },
-   {
-    "bucket": ".05-.10",
-    "n": 19235,
-    "model_brier": 0.218726,
-    "market_brier": 0.217043,
-    "model_closer_rate": 0.4085
-   },
-   {
-    "bucket": ">=.10",
-    "n": 33402,
-    "model_brier": 0.282705,
-    "market_brier": 0.210258,
-    "model_closer_rate": 0.3773
-   }
-  ],
-  "soccer_intl": [
-   {
-    "bucket": "<.02",
-    "n": 1105,
-    "model_brier": 0.109427,
-    "market_brier": 0.106941,
-    "model_closer_rate": 0.3403
-   },
-   {
-    "bucket": ".02-.05",
-    "n": 1524,
-    "model_brier": 0.141101,
-    "market_brier": 0.133776,
-    "model_closer_rate": 0.3983
-   },
-   {
-    "bucket": ".05-.10",
-    "n": 1968,
-    "model_brier": 0.131688,
-    "market_brier": 0.104152,
-    "model_closer_rate": 0.3201
-   },
-   {
-    "bucket": ">=.10",
-    "n": 4406,
-    "model_brier": 0.330582,
-    "market_brier": 0.172027,
-    "model_closer_rate": 0.2152
-   }
-  ]
- },
- "verdict": "mlb: at largest disagreement (>=.10, n=33402), market usually right (model_closer_rate=0.377, model_brier=0.2827 vs market_brier=0.2103). soccer_intl: at largest disagreement (>=.10, n=4406), market usually right (model_closer_rate=0.215, model_brier=0.3306 vs market_brier=0.1720).",
- "plot_written": true
+  "edge_claimed": false,
+  "method": "bucket rows by |model_prob - market_prob|; per-bucket model/market Brier + model_closer_rate",
+  "sports": {
+    "mlb": [
+      {
+        "bucket": "<.02",
+        "n": 4649,
+        "model_brier": 0.129506,
+        "market_brier": 0.129087,
+        "model_closer_rate": 0.4166
+      },
+      {
+        "bucket": ".02-.05",
+        "n": 5690,
+        "model_brier": 0.162348,
+        "market_brier": 0.161486,
+        "model_closer_rate": 0.413
+      },
+      {
+        "bucket": ".05-.10",
+        "n": 8482,
+        "model_brier": 0.179072,
+        "market_brier": 0.177298,
+        "model_closer_rate": 0.3479
+      },
+      {
+        "bucket": ">=.10",
+        "n": 8530,
+        "model_brier": 0.177763,
+        "market_brier": 0.129824,
+        "model_closer_rate": 0.1994
+      }
+    ],
+    "soccer_intl": [
+      {
+        "bucket": "<.02",
+        "n": 554,
+        "model_brier": 0.142768,
+        "market_brier": 0.137637,
+        "model_closer_rate": 0.2292
+      },
+      {
+        "bucket": ".02-.05",
+        "n": 679,
+        "model_brier": 0.113592,
+        "market_brier": 0.104293,
+        "model_closer_rate": 0.3756
+      },
+      {
+        "bucket": ".05-.10",
+        "n": 741,
+        "model_brier": 0.132395,
+        "market_brier": 0.103844,
+        "model_closer_rate": 0.4103
+      },
+      {
+        "bucket": ">=.10",
+        "n": 2291,
+        "model_brier": 0.508022,
+        "market_brier": 0.26553,
+        "model_closer_rate": 0.1048
+      }
+    ]
+  },
+  "verdict": "mlb: at largest disagreement (>=.10, n=8530), market usually right (model_closer_rate=0.199, model_brier=0.1778 vs market_brier=0.1298). soccer_intl: at largest disagreement (>=.10, n=2291), market usually right (model_closer_rate=0.105, model_brier=0.5080 vs market_brier=0.2655).",
+  "plot_written": true,
+  "as_of": "2026-09-16",
+  "corpus": "data/cache/ingame_grade_joined/{mlb_segmented,soccer_intl_segmented}"
 }

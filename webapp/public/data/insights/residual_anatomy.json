@@ -1,16 +1,16 @@
 {
  "id": "residual_anatomy",
  "title": "Absolute forecast error by game state",
- "headline_insight": "Recorded absolute residual volume is largest in MLB early(inn1-3) at a .4-.6 model probability: 6063.25 total_abs_residual_mass, with mean_abs_residual 0.4912 across 12,344 rows. This describes published residual volume, not reducible miscalibration.",
+ "headline_insight": "Recorded absolute residual volume is largest in MLB early(inn1-3) at a .4-.6 model probability: 2812.37 total_abs_residual_mass, with mean_abs_residual 0.4888 across 5,754 rows. This describes published residual volume, not reducible miscalibration.",
  "what_it_means": "Ranking every sport x game-state x probability-band segment by total absolute error shows the improvement backlog is concentrated where little has happened and the outcome is genuinely uncertain -- early, near-50/50 states. That is where fixing the model would remove the most cumulative error.",
  "how_to_read": "Each segment reports n rows, mean absolute residual, and total_abs_residual_mass (n times mean); the ranked list puts the biggest total error slices first.",
  "why_it_matters": "It turns a vague 'the model is off' into a prioritized to-do list -- the top segments are all early-to-mid MLB innings in the uncertain probability bands.",
- "caveat": "No significance test here; total residual mass scales with row count, so high-volume buckets rank high partly by size, not only by per-row error.",
+ "caveat": "No significance test here; total residual mass scales with row count, so high-volume buckets rank high partly by size, not only by per-row error. Segmentation removed about two thirds of the MLB ticks, so every mass figure is smaller than the revision-1 reading without the per-row error having moved much.",
  "cited": [
-  {"path": "webapp/public/data/showcase/residual_anatomy.json", "field": "ranked_worst_segments[0].total_abs_residual_mass", "value": 6063.25},
-  {"path": "webapp/public/data/showcase/residual_anatomy.json", "field": "ranked_worst_segments[0].mean_abs_residual", "value": 0.4912},
-  {"path": "webapp/public/data/showcase/residual_anatomy.json", "field": "ranked_worst_segments[0].n", "value": 12344},
+  {"path": "webapp/public/data/showcase/residual_anatomy.json", "field": "ranked_worst_segments[0].total_abs_residual_mass", "value": 2812.37},
+  {"path": "webapp/public/data/showcase/residual_anatomy.json", "field": "ranked_worst_segments[0].mean_abs_residual", "value": 0.4888},
+  {"path": "webapp/public/data/showcase/residual_anatomy.json", "field": "ranked_worst_segments[0].n", "value": 5754},
   {"path": "webapp/public/data/showcase/residual_anatomy.json", "field": "ranked_worst_segments[0].time_bucket", "value": "early(inn1-3)"}
  ],
- "as_of": "unknown (artifact carries no as_of field)"
+ "as_of": "2026-09-16"
 }

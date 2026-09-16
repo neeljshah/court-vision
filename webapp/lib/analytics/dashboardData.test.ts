@@ -27,8 +27,8 @@ describe("public analytics snapshot normalization", () => {
     expect(totals.model_brier).toBeUndefined();
     expect(totals.reason).toContain("no resolved outcome");
     expect(data.history).toHaveLength(4);
-    expect(data.history.find(p => p.sport === "mlb" && p.month === "2026-06")?.model_brier).toBe(.2404);
-    expect(data.markets.find(m => m.id === "mlb_moneyline")?.n_rows).toBe(78986);
+    expect(data.history.find(p => p.sport === "mlb" && p.month === "2026-06")?.model_brier).toBe(.1968);
+    expect(data.markets.find(m => m.id === "mlb_moneyline")?.n_rows).toBe(27351);
   });
   it("keeps distinct pitch denominators and all catalog modules", () => {
     expect(data.modules).toHaveLength(76);

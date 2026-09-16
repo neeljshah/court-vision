@@ -1,253 +1,255 @@
 {
- "edge_claimed": false,
- "sport": "soccer_intl",
- "n_rows": 9003,
- "murphy": {
-  "model_prob": {
-   "n": 9003,
-   "brier": 0.227887,
-   "reliability": 0.092837,
-   "resolution": 0.038185,
-   "uncertainty": 0.238877,
-   "reconstructed_brier": 0.293529,
-   "bins": [
-    {
-     "bin_lo": 0.0,
-     "bin_hi": 0.1,
-     "n": 2012,
-     "mean_p": 0.0446,
-     "mean_y": 0.4963
+  "edge_claimed": false,
+  "sport": "soccer_intl",
+  "n_rows": 4265,
+  "murphy": {
+    "model_prob": {
+      "n": 4265,
+      "brier": 0.332522,
+      "reliability": 0.191982,
+      "resolution": 0.038714,
+      "uncertainty": 0.213485,
+      "reconstructed_brier": 0.366753,
+      "bins": [
+        {
+          "bin_lo": 0.0,
+          "bin_hi": 0.1,
+          "n": 1284,
+          "mean_p": 0.0454,
+          "mean_y": 0.6671
+        },
+        {
+          "bin_lo": 0.1,
+          "bin_hi": 0.2,
+          "n": 792,
+          "mean_p": 0.1438,
+          "mean_y": 0.5189
+        },
+        {
+          "bin_lo": 0.2,
+          "bin_hi": 0.3,
+          "n": 669,
+          "mean_p": 0.2465,
+          "mean_y": 0.4395
+        },
+        {
+          "bin_lo": 0.3,
+          "bin_hi": 0.4,
+          "n": 449,
+          "mean_p": 0.3508,
+          "mean_y": 0.7171
+        },
+        {
+          "bin_lo": 0.4,
+          "bin_hi": 0.5,
+          "n": 180,
+          "mean_p": 0.4476,
+          "mean_y": 1.0
+        },
+        {
+          "bin_lo": 0.5,
+          "bin_hi": 0.6,
+          "n": 202,
+          "mean_p": 0.5512,
+          "mean_y": 1.0
+        },
+        {
+          "bin_lo": 0.6,
+          "bin_hi": 0.7,
+          "n": 136,
+          "mean_p": 0.6353,
+          "mean_y": 0.9485
+        },
+        {
+          "bin_lo": 0.7,
+          "bin_hi": 0.8,
+          "n": 198,
+          "mean_p": 0.7555,
+          "mean_y": 1.0
+        },
+        {
+          "bin_lo": 0.8,
+          "bin_hi": 0.9,
+          "n": 194,
+          "mean_p": 0.8409,
+          "mean_y": 1.0
+        },
+        {
+          "bin_lo": 0.9,
+          "bin_hi": 1.0,
+          "n": 161,
+          "mean_p": 0.9619,
+          "mean_y": 1.0
+        }
+      ]
     },
-    {
-     "bin_lo": 0.1,
-     "bin_hi": 0.2,
-     "n": 1578,
-     "mean_p": 0.1446,
-     "mean_y": 0.4189
-    },
-    {
-     "bin_lo": 0.2,
-     "bin_hi": 0.3,
-     "n": 1670,
-     "mean_p": 0.2472,
-     "mean_y": 0.4476
-    },
-    {
-     "bin_lo": 0.3,
-     "bin_hi": 0.4,
-     "n": 773,
-     "mean_p": 0.3488,
-     "mean_y": 0.7167
-    },
-    {
-     "bin_lo": 0.4,
-     "bin_hi": 0.5,
-     "n": 684,
-     "mean_p": 0.4532,
-     "mean_y": 0.8238
-    },
-    {
-     "bin_lo": 0.5,
-     "bin_hi": 0.6,
-     "n": 634,
-     "mean_p": 0.547,
-     "mean_y": 0.7003
-    },
-    {
-     "bin_lo": 0.6,
-     "bin_hi": 0.7,
-     "n": 446,
-     "mean_p": 0.6455,
-     "mean_y": 0.6603
-    },
-    {
-     "bin_lo": 0.7,
-     "bin_hi": 0.8,
-     "n": 296,
-     "mean_p": 0.7509,
-     "mean_y": 0.9628
-    },
-    {
-     "bin_lo": 0.8,
-     "bin_hi": 0.9,
-     "n": 577,
-     "mean_p": 0.8456,
-     "mean_y": 0.9879
-    },
-    {
-     "bin_lo": 0.9,
-     "bin_hi": 1.0,
-     "n": 333,
-     "mean_p": 0.9457,
-     "mean_y": 1.0
+    "market_prob": {
+      "n": 4265,
+      "brier": 0.195157,
+      "reliability": 0.088088,
+      "resolution": 0.071263,
+      "uncertainty": 0.213485,
+      "reconstructed_brier": 0.23031,
+      "bins": [
+        {
+          "bin_lo": 0.0,
+          "bin_hi": 0.1,
+          "n": 603,
+          "mean_p": 0.0592,
+          "mean_y": 0.3093
+        },
+        {
+          "bin_lo": 0.1,
+          "bin_hi": 0.2,
+          "n": 486,
+          "mean_p": 0.1639,
+          "mean_y": 0.3477
+        },
+        {
+          "bin_lo": 0.2,
+          "bin_hi": 0.3,
+          "n": 969,
+          "mean_p": 0.2405,
+          "mean_y": 0.5537
+        },
+        {
+          "bin_lo": 0.3,
+          "bin_hi": 0.4,
+          "n": 224,
+          "mean_p": 0.3474,
+          "mean_y": 0.7567
+        },
+        {
+          "bin_lo": 0.4,
+          "bin_hi": 0.5,
+          "n": 405,
+          "mean_p": 0.4512,
+          "mean_y": 0.8889
+        },
+        {
+          "bin_lo": 0.5,
+          "bin_hi": 0.6,
+          "n": 467,
+          "mean_p": 0.5559,
+          "mean_y": 0.8951
+        },
+        {
+          "bin_lo": 0.6,
+          "bin_hi": 0.7,
+          "n": 223,
+          "mean_p": 0.6506,
+          "mean_y": 1.0
+        },
+        {
+          "bin_lo": 0.7,
+          "bin_hi": 0.8,
+          "n": 271,
+          "mean_p": 0.7189,
+          "mean_y": 0.9889
+        },
+        {
+          "bin_lo": 0.8,
+          "bin_hi": 0.9,
+          "n": 485,
+          "mean_p": 0.8588,
+          "mean_y": 1.0
+        },
+        {
+          "bin_lo": 0.9,
+          "bin_hi": 1.0,
+          "n": 132,
+          "mean_p": 0.912,
+          "mean_y": 1.0
+        }
+      ]
     }
-   ]
   },
-  "market_prob": {
-   "n": 9003,
-   "brier": 0.142726,
-   "reliability": 0.053423,
-   "resolution": 0.082761,
-   "uncertainty": 0.238877,
-   "reconstructed_brier": 0.209538,
-   "bins": [
+  "minute_ece": {
+    "buckets": [
+      {
+        "minute_lo": 0,
+        "minute_hi": 15,
+        "n": 566,
+        "mean_p": 0.3468,
+        "mean_y": 0.6837,
+        "ece": 0.3369
+      },
+      {
+        "minute_lo": 15,
+        "minute_hi": 30,
+        "n": 595,
+        "mean_p": 0.3437,
+        "mean_y": 0.6983,
+        "ece": 0.3547
+      },
+      {
+        "minute_lo": 30,
+        "minute_hi": 45,
+        "n": 554,
+        "mean_p": 0.34,
+        "mean_y": 0.685,
+        "ece": 0.345
+      },
+      {
+        "minute_lo": 45,
+        "minute_hi": 60,
+        "n": 783,
+        "mean_p": 0.289,
+        "mean_y": 0.6284,
+        "ece": 0.3393
+      },
+      {
+        "minute_lo": 60,
+        "minute_hi": 75,
+        "n": 495,
+        "mean_p": 0.2176,
+        "mean_y": 0.6646,
+        "ece": 0.4471
+      },
+      {
+        "minute_lo": 75,
+        "minute_hi": 91,
+        "n": 390,
+        "mean_p": 0.1035,
+        "mean_y": 0.5859,
+        "ece": 0.4824
+      }
+    ],
+    "overall_weighted_ece": 0.3748,
+    "n": 3383
+  },
+  "disagreement_buckets": [
     {
-     "bin_lo": 0.0,
-     "bin_hi": 0.1,
-     "n": 1421,
-     "mean_p": 0.0489,
-     "mean_y": 0.1671
+      "bucket": "<.02",
+      "n": 554,
+      "model_brier": 0.142768,
+      "market_brier": 0.137637,
+      "model_wins_rate": 0.2292
     },
     {
-     "bin_lo": 0.1,
-     "bin_hi": 0.2,
-     "n": 1186,
-     "mean_p": 0.1536,
-     "mean_y": 0.2226
+      "bucket": ".02-.05",
+      "n": 679,
+      "model_brier": 0.113592,
+      "market_brier": 0.104293,
+      "model_wins_rate": 0.3756
     },
     {
-     "bin_lo": 0.2,
-     "bin_hi": 0.3,
-     "n": 1482,
-     "mean_p": 0.2406,
-     "mean_y": 0.5958
+      "bucket": ".05-.10",
+      "n": 741,
+      "model_brier": 0.132395,
+      "market_brier": 0.103844,
+      "model_wins_rate": 0.4103
     },
     {
-     "bin_lo": 0.3,
-     "bin_hi": 0.4,
-     "n": 963,
-     "mean_p": 0.351,
-     "mean_y": 0.6402
-    },
-    {
-     "bin_lo": 0.4,
-     "bin_hi": 0.5,
-     "n": 623,
-     "mean_p": 0.4477,
-     "mean_y": 0.7737
-    },
-    {
-     "bin_lo": 0.5,
-     "bin_hi": 0.6,
-     "n": 721,
-     "mean_p": 0.551,
-     "mean_y": 0.8641
-    },
-    {
-     "bin_lo": 0.6,
-     "bin_hi": 0.7,
-     "n": 791,
-     "mean_p": 0.6491,
-     "mean_y": 0.8559
-    },
-    {
-     "bin_lo": 0.7,
-     "bin_hi": 0.8,
-     "n": 552,
-     "mean_p": 0.7356,
-     "mean_y": 0.8687
-    },
-    {
-     "bin_lo": 0.8,
-     "bin_hi": 0.9,
-     "n": 940,
-     "mean_p": 0.8421,
-     "mean_y": 0.9197
-    },
-    {
-     "bin_lo": 0.9,
-     "bin_hi": 1.0,
-     "n": 324,
-     "mean_p": 0.9257,
-     "mean_y": 1.0
+      "bucket": ">=.10",
+      "n": 2291,
+      "model_brier": 0.508022,
+      "market_brier": 0.26553,
+      "model_wins_rate": 0.1048
     }
-   ]
-  }
- },
- "minute_ece": {
-  "buckets": [
-   {
-    "minute_lo": 0,
-    "minute_hi": 15,
-    "n": 627,
-    "mean_p": 0.3673,
-    "mean_y": 0.6738,
-    "ece": 0.3065
-   },
-   {
-    "minute_lo": 15,
-    "minute_hi": 30,
-    "n": 666,
-    "mean_p": 0.3641,
-    "mean_y": 0.6847,
-    "ece": 0.3205
-   },
-   {
-    "minute_lo": 30,
-    "minute_hi": 45,
-    "n": 628,
-    "mean_p": 0.3468,
-    "mean_y": 0.672,
-    "ece": 0.3252
-   },
-   {
-    "minute_lo": 45,
-    "minute_hi": 60,
-    "n": 828,
-    "mean_p": 0.304,
-    "mean_y": 0.6353,
-    "ece": 0.3313
-   },
-   {
-    "minute_lo": 60,
-    "minute_hi": 75,
-    "n": 504,
-    "mean_p": 0.2257,
-    "mean_y": 0.6696,
-    "ece": 0.4439
-   },
-   {
-    "minute_lo": 75,
-    "minute_hi": 91,
-    "n": 405,
-    "mean_p": 0.1034,
-    "mean_y": 0.6012,
-    "ece": 0.4978
-   }
   ],
-  "overall_weighted_ece": 0.358,
-  "n": 3658
- },
- "disagreement_buckets": [
-  {
-   "bucket": "<.02",
-   "n": 1105,
-   "model_brier": 0.109427,
-   "market_brier": 0.106941,
-   "model_wins_rate": 0.3403
-  },
-  {
-   "bucket": ".02-.05",
-   "n": 1524,
-   "model_brier": 0.141101,
-   "market_brier": 0.133776,
-   "model_wins_rate": 0.3983
-  },
-  {
-   "bucket": ".05-.10",
-   "n": 1968,
-   "model_brier": 0.131688,
-   "market_brier": 0.104152,
-   "model_wins_rate": 0.3201
-  },
-  {
-   "bucket": ">=.10",
-   "n": 4406,
-   "model_brier": 0.330582,
-   "market_brier": 0.172027,
-   "model_wins_rate": 0.2152
-  }
- ],
- "honest_note": "soccer_intl corpus: n=9003 rows -- far smaller than mlb/nba, wider CIs, single-fold reads not durable. Murphy: model Brier 0.2279 vs market 0.1427 (gap=+0.0852); market leads. Minute-bucket ECE (weighted): 0.3580.",
- "plot_written": true
+  "honest_note": "soccer_intl corpus: n=4265 rows -- far smaller than mlb/nba, wider CIs, single-fold reads not durable. Murphy: model Brier 0.3325 vs market 0.1952 (gap=+0.1374); market leads. Minute-bucket ECE (weighted): 0.3748.",
+  "plot_written": true,
+  "as_of": "2026-09-16",
+  "corpus": "data/cache/ingame_grade_joined/{mlb_segmented,soccer_intl_segmented}"
 }

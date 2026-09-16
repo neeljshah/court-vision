@@ -1,148 +1,150 @@
 {
- "edge_claimed": false,
- "descriptive_only": true,
- "method": "standard BSS = 1 - Brier/Brier_ref; refs = climatology (const sport base rate) and market",
- "floors": "n>=30 rows/grain for a BSS; climatology=const sport base rate; edge_claimed=False",
- "source_artifact": "data/cache/ingame_grade_joined/{mlb,soccer_intl}/*.jsonl (mlb_clean dup excluded)",
- "generated_at": "2026-07-25T11:12:35.314040+00:00",
- "honest_note": "BSS vs market is near or below 0 across sports and checkpoints -- the model does not beat the closing reference forecast's Brier. That null result is the POINT of this exhibit, not a defect. BSS vs climatology is strongly positive (model and market both crush the base-rate baseline), which is expected for in-game win-prob and is NOT an advantage. Truth source: docs/JOB_EVIDENCE_PACKET.md.",
- "sports": {
-  "mlb": {
-   "n_rows": 78986,
-   "sport_base_rate": 0.4563,
-   "climatology_ref": "constant sport-level base rate (unconditional P(outcome=1))",
-   "grains": {
-    "all": {
-     "n": 78986,
-     "base_rate": 0.4563,
-     "brier_model": 0.237684,
-     "brier_market": 0.206653,
-     "brier_clim": 0.248092,
-     "below_floor": false,
-     "bss_model_vs_clim": 0.042,
-     "bss_market_vs_clim": 0.167,
-     "bss_model_vs_market": -0.1502
+  "edge_claimed": false,
+  "descriptive_only": true,
+  "method": "standard BSS = 1 - Brier/Brier_ref; refs = climatology (const sport base rate) and market",
+  "floors": "n>=30 rows/grain for a BSS; climatology=const sport base rate; edge_claimed=False",
+  "source_artifact": "data/cache/ingame_grade_joined/{mlb,soccer_intl}/*.jsonl (mlb_clean dup excluded)",
+  "generated_at": "2026-09-16T22:17:01.245611+00:00",
+  "honest_note": "BSS vs market is near or below 0 across sports and checkpoints -- the model does not beat the closing reference forecast's Brier. That null result is the POINT of this exhibit, not a defect. BSS vs climatology is strongly positive (model and market both crush the base-rate baseline), which is expected for in-game win-prob and is NOT an advantage. Truth source: docs/JOB_EVIDENCE_PACKET.md.",
+  "sports": {
+    "mlb": {
+      "n_rows": 27351,
+      "sport_base_rate": 0.4897,
+      "climatology_ref": "constant sport-level base rate (unconditional P(outcome=1))",
+      "grains": {
+        "all": {
+          "n": 27351,
+          "base_rate": 0.4897,
+          "brier_model": 0.166759,
+          "brier_market": 0.151008,
+          "brier_clim": 0.249895,
+          "below_floor": false,
+          "bss_model_vs_clim": 0.3327,
+          "bss_market_vs_clim": 0.3957,
+          "bss_model_vs_market": -0.1043
+        },
+        "early(inn1-3)": {
+          "n": 9489,
+          "base_rate": 0.5077,
+          "brier_model": 0.230077,
+          "brier_market": 0.207874,
+          "brier_clim": 0.250264,
+          "below_floor": false,
+          "bss_model_vs_clim": 0.0807,
+          "bss_market_vs_clim": 0.1694,
+          "bss_model_vs_market": -0.1068
+        },
+        "mid(inn4-6)": {
+          "n": 9752,
+          "base_rate": 0.5107,
+          "brier_model": 0.153868,
+          "brier_market": 0.138203,
+          "brier_clim": 0.250324,
+          "below_floor": false,
+          "bss_model_vs_clim": 0.3853,
+          "bss_market_vs_clim": 0.4479,
+          "bss_model_vs_market": -0.1133
+        },
+        "late(inn7+)": {
+          "n": 7442,
+          "base_rate": 0.4665,
+          "brier_model": 0.094548,
+          "brier_market": 0.086598,
+          "brier_clim": 0.249419,
+          "below_floor": false,
+          "bss_model_vs_clim": 0.6209,
+          "bss_market_vs_clim": 0.6528,
+          "bss_model_vs_market": -0.0918
+        }
+      }
     },
-    "early(inn1-3)": {
-     "n": 19900,
-     "base_rate": 0.4652,
-     "brier_model": 0.246159,
-     "brier_market": 0.228043,
-     "brier_clim": 0.248866,
-     "below_floor": false,
-     "bss_model_vs_clim": 0.0109,
-     "bss_market_vs_clim": 0.0837,
-     "bss_model_vs_market": -0.0794
-    },
-    "mid(inn4-6)": {
-     "n": 18765,
-     "base_rate": 0.4818,
-     "brier_model": 0.214497,
-     "brier_market": 0.185758,
-     "brier_clim": 0.250318,
-     "below_floor": false,
-     "bss_model_vs_clim": 0.1431,
-     "bss_market_vs_clim": 0.2579,
-     "bss_model_vs_market": -0.1547
-    },
-    "late(inn7+)": {
-     "n": 13981,
-     "base_rate": 0.4558,
-     "brier_model": 0.233989,
-     "brier_market": 0.159878,
-     "brier_clim": 0.24805,
-     "below_floor": false,
-     "bss_model_vs_clim": 0.0567,
-     "bss_market_vs_clim": 0.3555,
-     "bss_model_vs_market": -0.4635
+    "soccer_intl": {
+      "n_rows": 4265,
+      "sport_base_rate": 0.6911,
+      "climatology_ref": "constant sport-level base rate (unconditional P(outcome=1))",
+      "grains": {
+        "all": {
+          "n": 4265,
+          "base_rate": 0.6911,
+          "brier_model": 0.332522,
+          "brier_market": 0.195157,
+          "brier_clim": 0.179077,
+          "below_floor": false,
+          "bss_model_vs_clim": -0.8569,
+          "bss_market_vs_clim": -0.0898,
+          "bss_model_vs_market": -0.7039
+        },
+        "0-15": {
+          "n": 566,
+          "base_rate": 0.6837,
+          "brier_model": 0.267653,
+          "brier_market": 0.123304,
+          "brier_clim": 0.199507,
+          "below_floor": false,
+          "bss_model_vs_clim": -0.3416,
+          "bss_market_vs_clim": 0.382,
+          "bss_model_vs_market": -1.1707
+        },
+        "15-30": {
+          "n": 595,
+          "base_rate": 0.6983,
+          "brier_model": 0.278872,
+          "brier_market": 0.140209,
+          "brier_clim": 0.188453,
+          "below_floor": false,
+          "bss_model_vs_clim": -0.4798,
+          "bss_market_vs_clim": 0.256,
+          "bss_model_vs_market": -0.989
+        },
+        "30-45": {
+          "n": 554,
+          "base_rate": 0.685,
+          "brier_model": 0.303419,
+          "brier_market": 0.166302,
+          "brier_clim": 0.193693,
+          "below_floor": false,
+          "bss_model_vs_clim": -0.5665,
+          "bss_market_vs_clim": 0.1414,
+          "bss_model_vs_market": -0.8245
+        },
+        "45-60": {
+          "n": 783,
+          "base_rate": 0.6284,
+          "brier_model": 0.309355,
+          "brier_market": 0.186015,
+          "brier_clim": 0.208087,
+          "below_floor": false,
+          "bss_model_vs_clim": -0.4867,
+          "bss_market_vs_clim": 0.1061,
+          "bss_model_vs_market": -0.6631
+        },
+        "60-75": {
+          "n": 495,
+          "base_rate": 0.6646,
+          "brier_model": 0.382516,
+          "brier_market": 0.260446,
+          "brier_clim": 0.183187,
+          "below_floor": false,
+          "bss_model_vs_clim": -1.0881,
+          "bss_market_vs_clim": -0.4217,
+          "bss_model_vs_market": -0.4687
+        },
+        "75-90+": {
+          "n": 390,
+          "base_rate": 0.5859,
+          "brier_model": 0.409424,
+          "brier_market": 0.245001,
+          "brier_clim": 0.200482,
+          "below_floor": false,
+          "bss_model_vs_clim": -1.0422,
+          "bss_market_vs_clim": -0.2221,
+          "bss_model_vs_market": -0.6711
+        }
+      }
     }
-   }
   },
-  "soccer_intl": {
-   "n_rows": 9003,
-   "sport_base_rate": 0.6055,
-   "climatology_ref": "constant sport-level base rate (unconditional P(outcome=1))",
-   "grains": {
-    "all": {
-     "n": 9003,
-     "base_rate": 0.6055,
-     "brier_model": 0.227887,
-     "brier_market": 0.142726,
-     "brier_clim": 0.17351,
-     "below_floor": false,
-     "bss_model_vs_clim": -0.3134,
-     "bss_market_vs_clim": 0.1774,
-     "bss_model_vs_market": -0.5967
-    },
-    "0-15": {
-     "n": 627,
-     "base_rate": 0.6738,
-     "brier_model": 0.245017,
-     "brier_market": 0.117831,
-     "brier_clim": 0.188968,
-     "below_floor": false,
-     "bss_model_vs_clim": -0.2966,
-     "bss_market_vs_clim": 0.3764,
-     "bss_model_vs_market": -1.0794
-    },
-    "15-30": {
-     "n": 666,
-     "base_rate": 0.6847,
-     "brier_model": 0.251749,
-     "brier_market": 0.131412,
-     "brier_clim": 0.179375,
-     "below_floor": false,
-     "bss_model_vs_clim": -0.4035,
-     "bss_market_vs_clim": 0.2674,
-     "bss_model_vs_market": -0.9157
-    },
-    "30-45": {
-     "n": 628,
-     "base_rate": 0.672,
-     "brier_model": 0.277346,
-     "brier_market": 0.157146,
-     "brier_clim": 0.180262,
-     "below_floor": false,
-     "bss_model_vs_clim": -0.5386,
-     "bss_market_vs_clim": 0.1282,
-     "bss_model_vs_market": -0.7649
-    },
-    "45-60": {
-     "n": 828,
-     "base_rate": 0.6353,
-     "brier_model": 0.29534,
-     "brier_market": 0.17991,
-     "brier_clim": 0.198171,
-     "below_floor": false,
-     "bss_model_vs_clim": -0.4903,
-     "bss_market_vs_clim": 0.0921,
-     "bss_model_vs_market": -0.6416
-    },
-    "60-75": {
-     "n": 504,
-     "base_rate": 0.6696,
-     "brier_model": 0.378388,
-     "brier_market": 0.257394,
-     "brier_clim": 0.185162,
-     "below_floor": false,
-     "bss_model_vs_clim": -1.0436,
-     "bss_market_vs_clim": -0.3901,
-     "bss_model_vs_market": -0.4701
-    },
-    "75-90+": {
-     "n": 405,
-     "base_rate": 0.6012,
-     "brier_model": 0.424347,
-     "brier_market": 0.250776,
-     "brier_clim": 0.188535,
-     "below_floor": false,
-     "bss_model_vs_clim": -1.2508,
-     "bss_market_vs_clim": -0.3301,
-     "bss_model_vs_market": -0.6921
-    }
-   }
-  }
- },
- "verdict": "mlb: BSS(model vs market) in [-0.464, -0.079] -- model does not beat the closing reference forecast; BSS(model vs climatology) in [+0.011, +0.143] (BSS>0 means it beats that baseline). soccer_intl: BSS(model vs market) in [-1.079, -0.470] -- model does not beat the closing reference forecast; BSS(model vs climatology) in [-1.251, -0.297] (BSS>0 means it beats that baseline).",
- "plot_written": true
+  "verdict": "mlb: BSS(model vs market) in [-0.113, -0.092] -- model does not beat the closing reference forecast; BSS(model vs climatology) in [+0.081, +0.621] (BSS>0 means it beats that baseline). soccer_intl: BSS(model vs market) in [-1.171, -0.469] -- model does not beat the closing reference forecast; BSS(model vs climatology) in [-1.088, -0.342] (BSS>0 means it beats that baseline).",
+  "plot_written": true,
+  "as_of": "2026-09-16",
+  "corpus": "data/cache/ingame_grade_joined/{mlb_segmented,soccer_intl_segmented}"
 }

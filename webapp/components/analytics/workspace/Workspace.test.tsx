@@ -11,11 +11,11 @@ describe("analytics workspace interactions", () => {
     expect(screen.getByRole("group", { name: "Filter analytics by sport" })).toBeInTheDocument();
     expect(screen.getByRole("group", { name: "Quality metric" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "ECE" }));
-    expect(screen.getByRole("table", { name: "Mlb monthly ece measurements" })).toHaveTextContent("0.1165");
+    expect(screen.getByRole("table", { name: "Mlb monthly ece measurements" })).toHaveTextContent("0.1265");
     expect(screen.getByText("Not scored")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Tennis" }));
     expect(screen.getByText(/No market-type scores published/)).toBeInTheDocument();
-    expect(screen.queryByText("0.2377")).not.toBeInTheDocument();
+    expect(screen.queryByText("0.1668")).not.toBeInTheDocument();
   });
   it("combines sport, search and verdict filters in the ledger", () => {
     render(<Workspace data={data} calibrationExample={null} />);

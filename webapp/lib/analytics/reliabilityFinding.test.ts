@@ -8,9 +8,9 @@ describe("reliability finding data", () => {
   it("keeps published denominators and rounds the derived direct-minus-reconstruction remainder", () => {
     const soccer = loadReliabilityFinding().find(item => item.sport === "soccer_intl")!;
     const model = soccer.measurements.find(item => item.source === "model")!;
-    expect(soccer.nRows).toBe(9003);
-    expect(model.n).toBe(9003);
-    expect(model.remainder).toBe(-0.065642);
+    expect(soccer.nRows).toBe(4265);
+    expect(model.n).toBe(4265);
+    expect(model.remainder).toBe(-0.034231);
     expect(model.reliabilityComparison).toBe("larger");
   });
 

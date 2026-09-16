@@ -32,8 +32,8 @@ describe("state reliability data", () => {
 
   it("keeps the distinct source supports for the MLB late high-probability cell", () => {
     const mlb = loadStateReliability().find(sport => sport.sport === "mlb");
-    expect(stateReliabilityRow(mlb!, "late(inn7+)", ".8-1", "model")?.n).toBe(5037);
-    expect(stateReliabilityRow(mlb!, "late(inn7+)", ".8-1", "market")?.n).toBe(2771);
+    expect(stateReliabilityRow(mlb!, "late(inn7+)", ".8-1", "model")?.n).toBe(2369);
+    expect(stateReliabilityRow(mlb!, "late(inn7+)", ".8-1", "market")?.n).toBe(2666);
   });
 
   it("rounds a derived signed gap before exposing percentage points", () => {

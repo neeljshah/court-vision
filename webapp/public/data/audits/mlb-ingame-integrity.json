@@ -56,5 +56,7 @@
     "comeback_atlas"
   ],
   "timing_artifacts_note": "Mixed-game tick paths also distort timing measurements even where no outcome label is used.",
-  "status": "withdrawn-pending-regeneration"
+  "status": "regenerated",
+  "resolved_by": "mlb-ingame-regeneration",
+  "resolution_note": "The exposed artifacts were rebuilt from the segment-clean corpus on 2026-09-16; the values measured here are revision 1 and are withdrawn."
 }

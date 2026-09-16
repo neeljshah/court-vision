@@ -40,7 +40,8 @@ export function getDashboardData(): DashboardData {
   const marketData = read<{ market_types: Record<string, Omit<Market, "id" | "sport">> }>("calibration_by_market_type");
   const markets: Market[] = Object.entries(marketData.market_types).map(([id, m]) => ({ ...m, id, sport: id.startsWith("mlb") ? "mlb" : "soccer" }));
   const historyData = read<Record<string, Record<string, Omit<HistoryPoint, "sport" | "month">>>>("calibration_over_time");
-  const history: HistoryPoint[] = Object.entries(historyData).flatMap(([sport, months]) => Object.entries(months).map(([month, point]) => ({ ...point, month, sport: sport === "mlb" ? "mlb" : "soccer" })));
+  // ponytail: the artifact carries header strings (as_of, corpus) beside its sport maps -- keep only the maps.
+  const history: HistoryPoint[] = Object.entries(historyData).filter(([, months]) => months !== null && typeof months === "object").flatMap(([sport, months]) => Object.entries(months).map(([month, point]) => ({ ...point, month, sport: sport === "mlb" ? "mlb" : "soccer" })));
   const entities: Entity[] = packs.flatMap(pack => {
     const atlas = read<{ entries: { entity: string; sport?: string; card_path: string; key_numbers: Record<string, unknown>; as_of: string | null }[] }>(`atlas_${pack.file}_manifest`);
     const seen = new Set<string>();

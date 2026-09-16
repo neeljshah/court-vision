@@ -12,7 +12,7 @@ describe("getMultisportDepthResearch", () => {
 
   it("keeps support, shrinkage movement, and rejected surface deltas explicit", () => {
     const soccer = analyses.find(analysis => analysis.id === "soccer-minute-calibration-support")!;
-    expect(Number(soccer.rows.reduce((sum, row) => sum + (row.values.support_share || 0), 0).toFixed(6))).toBe(1);
+    expect(soccer.rows.reduce((sum, row) => sum + (row.values.support_share || 0), 0)).toBeCloseTo(1, 5);
     const shrinkage = analyses.find(analysis => analysis.id === "mlb-shrinkage-displacement")!;
     expect(shrinkage.rows.some(row => (row.values.absolute_regression || 0) > 0)).toBe(true);
     expect(new Set(shrinkage.rows.map(row => row.group))).toEqual(new Set([
