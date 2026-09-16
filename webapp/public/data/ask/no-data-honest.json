@@ -18,7 +18,7 @@
    "alt_phrasings": ["what's the spread right now", "live point spread", "current line for this game"],
    "a": {
     "status": "no_data",
-    "answer": "There is no live line to return. The engine reads committed artifacts, not a real-time sportsbook feed, so a current spread or price simply is not in the data. If you want a number that exists, ask about the model's calibration against the closing line on a completed game.",
+    "answer": "There is no live line to return. The engine reads committed artifacts, not a real-time market-source feed, so a current spread or price simply is not in the data. If you want a number that exists, ask about the model's calibration against the closing line on a completed game.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
     "as_of": "2026-07-23"
    },
@@ -249,7 +249,7 @@
    "alt_phrasings": ["what's your lock", "your strongest play", "best bet today"],
    "a": {
     "status": "refused",
-    "answer": "There are no locks or best bets here. The system is a calibrated predictor, not a tout, and does not rank plays by confidence for wagering. Questions framed as picks are refused. The calibration scoreboard is the honest thing to look at instead.",
+    "answer": "The system does not rank individual selections by confidence. Questions framed as picks are refused. The published calibration scoreboard is the appropriate comparison instead.",
     "source_artifact": ".claude/rules/no-edge-claims.md",
     "as_of": "2026-07-23"
    },
@@ -392,7 +392,7 @@
    "alt_phrasings": ["best dog play", "which underdog has value", "give me an upset pick"],
    "a": {
     "status": "refused",
-    "answer": "The system does not recommend underdogs or upset picks. Selecting sides to back is betting advice, which is refused, and there is no live slate to reference. It can only speak to calibration on games already played.",
+    "answer": "The system does not recommend underdogs or upset picks. Selecting a side is a recommendation, which is refused, and there is no live slate to reference. It can only speak to calibration on games already played.",
     "source_artifact": ".claude/rules/no-edge-claims.md",
     "as_of": "2026-07-23"
    },
@@ -403,7 +403,7 @@
    "alt_phrasings": ["your ATS record", "how do you do versus the spread", "win rate against the number"],
    "a": {
     "status": "refused",
-    "answer": "An against-the-spread win record is a betting-performance claim, which this system does not make. It reports calibration and sharpness versus the market, not a wagering track record. The cross-sport calibration scoreboard is the honest, published comparison.",
+    "answer": "An against-the-spread win record is an outcome-performance claim, which this system does not make. It reports calibration and sharpness versus the market, not a selection record. The cross-sport calibration scoreboard is the published comparison.",
     "source_artifact": ".claude/rules/no-edge-claims.md",
     "as_of": "2026-07-23"
    },
@@ -436,7 +436,7 @@
    "alt_phrasings": ["can I invest in sports betting", "is betting worth it as an investment", "returns on betting as an investment"],
    "a": {
     "status": "refused",
-    "answer": "The system does not offer investment advice and will not frame betting as an investment. It is a calibration and analytics engine, not a financial advisor, and it makes no return claim. Investment questions should go to a licensed professional.",
+    "answer": "The system does not offer investment advice or frame the product as an investment. It is a calibration and analytics engine, not a financial advisor, and it makes no return claim. Investment questions should go to a licensed professional.",
     "source_artifact": ".claude/rules/no-edge-claims.md",
     "as_of": "2026-07-23"
    },

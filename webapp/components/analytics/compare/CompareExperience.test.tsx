@@ -47,13 +47,13 @@ describe("CompareExperience controls", () => {
     expect(screen.getAllByText("Ranked among 2 profiles").length).toBeGreaterThan(0);
     expect(screen.getByRole("table")).toHaveAccessibleName("Published values and within-pack percentile ranks");
     expect(screen.getAllByRole("img", { name: "25th percentile visual bar" })[0]).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Where these profiles separate" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Largest measured differences" })).toBeInTheDocument();
     expect(screen.getAllByText("Closest comparables")).toHaveLength(2);
     expect(screen.getAllByRole("link", { name: "Beta" }).some((link) => link.getAttribute("href") === "/analytics/players/nba_players/beta")).toBe(true);
     expect(screen.getByText("0.750")).toBeInTheDocument();
     expect(screen.getByText("No published comparable profiles for this profile.")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Percentile ladder" })).toBeInTheDocument();
-    expect(screen.getByText("1 shared axes")).toBeInTheDocument();
+    expect(screen.getByText("1 measurements recorded for both profiles")).toBeInTheDocument();
     expect(screen.getByText(/Higher means a higher raw measured value, never better/)).toBeInTheDocument();
     await waitFor(() => expect(window.location.search).toContain("pack=nba_players"));
     expect(window.location.search).toContain("a=alpha");
@@ -164,7 +164,7 @@ describe("CompareExperience controls", () => {
     fireEvent.click(screen.getByRole("button", { name: "Basketball" }));
     expect(screen.getByLabelText("Profile A")).toHaveValue("Alpha");
     expect(screen.getByLabelText("Profile B")).toHaveValue("Beta");
-    expect(screen.getByRole("heading", { name: "Where these profiles separate" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Largest measured differences" })).toBeInTheDocument();
     await waitFor(() => expect(window.location.search).toBe("?pack=nba_players&a=alpha&b=beta"));
     const settledQuery = window.location.search;
     fireEvent.click(screen.getByRole("button", { name: "Basketball" }));

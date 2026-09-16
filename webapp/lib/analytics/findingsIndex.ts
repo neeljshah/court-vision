@@ -37,7 +37,7 @@ export const findingsIndex: Finding[] = [
   define("reliability", "Are our probabilities honest?", "Reliability diagrams and Murphy decomposition, including the observed information gap.", "all", ["murphy_decomposition"]),
   define("forecast-life", "The life of a forecast", "Observed pre-game information arrival and in-game score checkpoints.", "all", ["novel_line_half_life", "info_arrival_curve"]),
   define("soccer-home-advantage", "Home advantage, decomposed", "International matches split on the observed neutral-site flag.", "soccer", ["soccer_home_advantage"]),
-  define("bookmaker-accuracy", "We graded the bookmakers", "Proportional-devig Brier measurements on shared-game subsets.", "all", ["bookmaker_accuracy"]),
+  define("bookmaker-accuracy", "How accurate were the market sources?", "Proportional-devig Brier measurements on shared-game subsets.", "all", ["bookmaker_accuracy"]),
   define("rim-deterrence", "Who bends the shot chart", "A transparent NBA on/off rim-deterrence leaderboard with its roster confound.", "nba", ["rim_deterrence"]),
   define("league-parity", "How competitive is each season?", "A three-season NBA win-share concentration ledger with scope caveats.", "nba", ["league_parity_index"]),
   define("lineup-synergy", "Greater than the sum of their parts", "A five-man residual ledger published with its small-minutes limitation.", "nba", ["lineup_synergy"]),

@@ -3669,7 +3669,7 @@
    ],
    "a": {
     "status": "no_data",
-    "answer": "There is no live line to return. The engine reads committed artifacts, not a real-time sportsbook feed, so a current spread or price simply is not in the data. If you want a number that exists, ask about the model's calibration against the closing line on a completed game.",
+    "answer": "There is no live line to return. The engine reads committed artifacts, not a real-time market-source feed, so a current spread or price simply is not in the data. If you want a number that exists, ask about the model's calibration against the closing line on a completed game.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
     "as_of": "2026-07-23"
    },
@@ -4084,7 +4084,7 @@
    ],
    "a": {
     "status": "refused",
-    "answer": "There are no locks or best bets here. The system is a calibrated predictor, not a tout, and does not rank plays by confidence for wagering. Questions framed as picks are refused. The calibration scoreboard is the honest thing to look at instead.",
+    "answer": "The system does not rank individual selections by confidence. Questions framed as picks are refused. The published calibration scoreboard is the appropriate comparison instead.",
     "source_artifact": ".claude/rules/no-edge-claims.md",
     "as_of": "2026-07-23"
    },
@@ -4338,7 +4338,7 @@
    ],
    "a": {
     "status": "refused",
-    "answer": "The system does not recommend underdogs or upset picks. Selecting sides to back is betting advice, which is refused, and there is no live slate to reference. It can only speak to calibration on games already played.",
+    "answer": "The system does not recommend underdogs or upset picks. Selecting a side is a recommendation, which is refused, and there is no live slate to reference. It can only speak to calibration on games already played.",
     "source_artifact": ".claude/rules/no-edge-claims.md",
     "as_of": "2026-07-23"
    },
@@ -4357,7 +4357,7 @@
    ],
    "a": {
     "status": "refused",
-    "answer": "An against-the-spread win record is a betting-performance claim, which this system does not make. It reports calibration and sharpness versus the market, not a wagering track record. The cross-sport calibration scoreboard is the honest, published comparison.",
+    "answer": "An against-the-spread win record is an outcome-performance claim, which this system does not make. It reports calibration and sharpness versus the market, not a selection record. The cross-sport calibration scoreboard is the published comparison.",
     "source_artifact": ".claude/rules/no-edge-claims.md",
     "as_of": "2026-07-23"
    },
@@ -4415,7 +4415,7 @@
    ],
    "a": {
     "status": "refused",
-    "answer": "The system does not offer investment advice and will not frame betting as an investment. It is a calibration and analytics engine, not a financial advisor, and it makes no return claim. Investment questions should go to a licensed professional.",
+    "answer": "The system does not offer investment advice or frame the product as an investment. It is a calibration and analytics engine, not a financial advisor, and it makes no return claim. Investment questions should go to a licensed professional.",
     "source_artifact": ".claude/rules/no-edge-claims.md",
     "as_of": "2026-07-23"
    },
@@ -4963,7 +4963,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Only the packaging. The card is labeled NOVEL_PACKAGING and cites the existing work directly: opening-versus-closing line timing is discussed everywhere in the betting press, and price-impact half-life is a securities-microstructure staple (Kyle 1985; Amihud 2002). What is fresh is the single per-sport half-life constant, not the underlying concept.",
+    "answer": "Only the packaging. The card is labeled NOVEL_PACKAGING and cites the existing work directly: opening-versus-closing line timing is discussed widely in forecast-market research, and price-impact half-life is a securities-microstructure staple (Kyle 1985; Amihud 2002). What is fresh is the single per-sport half-life constant, not the underlying concept.",
     "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
     "as_of": "2026-07-24"
    },
@@ -5629,7 +5629,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Overreaction and reversion are Moskowitz (2021, Journal of Finance) and Choi & Hui (2014, JEBO), and disagreement skill is standard forecast verification -- the card flags both components as not new. Its verdict, NOVEL_SELF_CRITICAL_CROSS, claims only the crossing: 'the market is wrong and we still cannot cash it' is a confession, and papers publish edges rather than confessions.",
+    "answer": "Overreaction and reversion are Moskowitz (2021, Journal of Finance) and Choi & Hui (2014, JEBO), and disagreement skill is standard forecast verification -- the card flags both components as not new. Its verdict, NOVEL_SELF_CRITICAL_CROSS, describes a market disagreement without a corresponding realized evaluation result. Papers publish comparative findings rather than confessions.",
     "source_artifact": "webapp/public/data/showcase/novel_overreaction_harvest_gap.json",
     "as_of": "2026-07-24"
    },
@@ -6541,7 +6541,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "On a neutral floor against a league-average team, mapping Denver's on/off swing onto the Elo win-prob curve drops the Nuggets from 0.634 with Jokic to 0.0517 without -- a 0.5822 swing, the largest of any team's top on/off player. That figure is a ceiling, not a clean player value: it attributes a full-lineup on-vs-off gap to one man, with no control for teammates, opponent, or garbage time. It is descriptive, not a betting number.",
+    "answer": "On a neutral floor against a league-average team, mapping Denver's on/off swing onto the Elo win-prob curve drops the Nuggets from 0.634 with Jokic to 0.0517 without -- a 0.5822 swing, the largest of any team's top on/off player. That figure is a ceiling, not a clean player value: it attributes a full-lineup on-vs-off gap to one man, with no control for teammates, opponent, or garbage time. It is descriptive, not an action recommendation.",
     "source_artifact": "webapp/public/data/insights/cf_star_removal.json",
     "as_of": "2024-25 (Elo end-of-season) x 2024_25 on/off slice"
    },
@@ -6998,7 +6998,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "In the star-removal exhibit, New Orleans moves from 0.3292 with Zion Williamson to 0.0469 without on a neutral floor versus a league-average team -- a 0.2823 swing, off a low starting team strength. It is a ceiling built from an on/off net-rating delta with a roster confound, descriptive only, not a betting number.",
+    "answer": "In the star-removal exhibit, New Orleans moves from 0.3292 with Zion Williamson to 0.0469 without on a neutral floor versus a league-average team -- a 0.2823 swing, off a low starting team strength. It is a ceiling built from an on/off net-rating delta with a roster confound, descriptive only, not an action recommendation.",
     "source_artifact": "webapp/public/data/insights/cf_star_removal.json",
     "as_of": "2024-25 (Elo end-of-season) x 2024_25 on/off slice"
    },
@@ -7239,7 +7239,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Milwaukee moves from 0.6059 with Giannis Antetokounmpo to 0.1617 without on a neutral floor versus a league-average team -- a 0.4441 win-prob swing, among the largest for a team's clear lead star. Like every row it is a ceiling from a roster-confounded on/off delta, descriptive and not a causal or betting number.",
+    "answer": "Milwaukee moves from 0.6059 with Giannis Antetokounmpo to 0.1617 without on a neutral floor versus a league-average team -- a 0.4441 win-prob swing, among the largest for a team's clear lead star. Like every row it is a ceiling from a roster-confounded on/off delta, descriptive and not a causal or action recommendation.",
     "source_artifact": "webapp/public/data/insights/cf_star_removal.json",
     "as_of": "2024-25 (Elo end-of-season) x 2024_25 on/off slice"
    },
@@ -8886,7 +8886,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Not 100%. There are roughly 7,400 tests collected, passing at about 97 to 98% locally, with a documented tail from DB, GPU, optional-dependency, and version drift plus a native pyarrow segfault on Windows. The critical betting-math core and in-play subsets pass clean, and a full-green claim is explicitly not made.",
+    "answer": "Not 100%. There are roughly 7,400 tests collected, passing at about 97 to 98% locally, with a documented tail from DB, GPU, optional-dependency, and version drift plus a native pyarrow segfault on Windows. The critical probability-math core and in-play subsets pass clean, and a full-green claim is explicitly not made.",
     "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
     "as_of": "2026-07-23"
    },
@@ -9046,7 +9046,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "By sport the generated claims break down as NBA 62,227, MLB 21,519, tennis 13,709, and soccer 4,275, with smaller unlabeled cross-sport and WNBA sets. All are ranking-kind claims validated against their own sidecars, with the descriptive-only flag throughout. The counts are volume of descriptive statements, not proven edges.",
+    "answer": "By sport the generated claims break down as NBA 62,227, MLB 21,519, tennis 13,709, and soccer 4,275, with smaller unlabeled cross-sport and WNBA sets. All are ranking-kind claims validated against their own sidecars, with the descriptive-only flag throughout. The counts are volume of descriptive statements, not proven differences.",
     "source_artifact": "webapp/public/data/showcase/claims_corpus_meta.json",
     "as_of": "2026-07-22"
    },
@@ -9346,7 +9346,7 @@
    ],
    "a": {
     "status": "no_data",
-    "answer": "Not fully -- the Kelly correlation matrix is currently unpopulated, so until it is computed the sizing assumes independent bets, which overstates max-loss risk on correlated slates. The fractional-Kelly machinery (quarter-Kelly, drawdown breaker, isotonic-calibrated input) exists, but this specific calibration input is a known gap. It is disclosed rather than assumed complete.",
+    "answer": "Not fully -- the Kelly correlation matrix is currently unpopulated, so until it is computed the sizing assumes independent selections, which overstates max-loss risk on correlated slates. The fractional-Kelly machinery (quarter-Kelly, drawdown breaker, isotonic-calibrated input) exists, but this specific calibration input is a known gap. It is disclosed rather than assumed complete.",
     "source_artifact": "docs/KNOWN_LIMITATIONS.md",
     "as_of": "2026-06-11"
    },

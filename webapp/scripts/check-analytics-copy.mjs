@@ -2,11 +2,10 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const FORBIDDEN = /(?<![A-Za-z0-9_])(edge|profit|roi|dollar|bet|wager|bankroll)(?![A-Za-z0-9])/gi;
+const FORBIDDEN = /(?<![A-Za-z0-9_])(edge|edges|bet|bets|betting|bettor|bettors|bookmaker|bookmakers|sportsbook|profit|profits|profitable|roi|wager|wagers|wagering|bankroll|bankrolls|payout|payouts|odds boost|financial returns?|betting returns?|dollar)(?![A-Za-z0-9])/gi;
 const SOURCE_ROOTS = ["app/(analytics)", "components/analytics", "lib/analytics"];
-const RETRACTION_TABLE = "app/(analytics)/analytics/findings/retraction/page.tsx";
 const DATA_TARGETS = ["public/data/showcase/site_manifest.json", "public/data/insights", "public/data/ask", "public/data/explainers"];
-const DATA_PROSE_KEYS = new Set(["answer", "body_md", "caveat", "dek", "headline_insight", "how_to_read", "note", "one_line", "question", "title", "what_it_means", "why_it_matters"]);
+const DATA_PROSE_KEYS = new Set(["answer", "body_md", "caveat", "dek", "headline_insight", "how_to_read", "note", "one_line", "q_free_prose", "question", "title", "what_it_means", "why_it_matters"]);
 
 function sourceFiles(root, directory) {
   const current = join(root, directory);
@@ -27,10 +26,15 @@ function hasForbiddenToken(value) {
   return FORBIDDEN.test(value);
 }
 
+function isNonProseLiteral(literal) {
+  const value = literal.slice(1, -1);
+  return /^[a-z0-9]+(?:[-_][a-z0-9]+)+$/.test(value)
+    || /^(?:[A-Za-z0-9._-]+\/)+[A-Za-z0-9._-]+$/.test(value);
+}
+
 function permittedRetractionFigure(path, source, index) {
-  if (path !== RETRACTION_TABLE) return false;
-  const line = source.slice(source.lastIndexOf("\n", index) + 1, source.indexOf("\n", index));
-  return /^\s*retracted:\s*/.test(line);
+  const lineStart = source.lastIndexOf("\n", index) + 1;
+  return path.endsWith("/findings/retraction/page.tsx") && /\bretracted:\s*$/.test(source.slice(lineStart, index));
 }
 
 function withoutComments(source) {
@@ -75,7 +79,7 @@ function withoutComments(source) {
   return result;
 }
 
-function stringLiteralFindings(path, source) {
+export function scanSourceText(path, source) {
   const findings = [];
   const code = withoutComments(source);
   for (let index = 0; index < code.length; index += 1) {
@@ -93,7 +97,7 @@ function stringLiteralFindings(path, source) {
       }
     }
     const literal = code.slice(index, end);
-    if (!permittedRetractionFigure(path, source, index) && hasForbiddenToken(literal)) {
+    if (!permittedRetractionFigure(path, source, index) && !isNonProseLiteral(literal) && hasForbiddenToken(literal)) {
       findings.push({ file: path, line: lineAt(source, index), text: literal });
     }
     index = end - 1;
@@ -109,7 +113,7 @@ export function scanAnalyticsCopy(root = process.cwd()) {
   return SOURCE_ROOTS.flatMap((directory) => sourceFiles(root, directory)).flatMap((absolute) => {
     const path = relative(root, absolute).replaceAll("\\", "/");
     const source = readFileSync(absolute, "utf8");
-    return stringLiteralFindings(path, source);
+    return scanSourceText(path, source);
   });
 }
 

@@ -177,8 +177,8 @@ export default function EntityPage({ params }: { params: { pack: string; slug: s
   // floors) instead of the bare "no verified read" negative. Status stays no_data
   // -- the neutral glyph is the honest signal that no note was written here.
   const uncovered =
-    `Measured card with ${measurements.scalars.length} available measurements. ` +
-    (entry.floors ? ", with the sample floors for this pack in the sidebar." : ".");
+    `${measurements.scalars.length} measurements are available. ` +
+    (entry.floors ? "Sample requirements appear below." : "");
   const envelope: ScoutEnvelope = insight
     ? { status: "descriptive_only", prose: insight.one_liner, chips }
     : { status: "no_data", prose: uncovered };
@@ -205,7 +205,7 @@ export default function EntityPage({ params }: { params: { pack: string; slug: s
       <header style={{ borderBottom: "1px solid var(--rule-strong)", paddingBottom: 22, marginBottom: 30 }}>
         <div className="overline">{pack.label} &middot; {pack.sport}{asOf ? ` \u00B7 as of ${asOf}` : ""}</div>
         <h1 className="serif" style={{ fontWeight: 500, fontSize: "clamp(2.4rem,5vw,3.4rem)", lineHeight: 1.05, letterSpacing: "-.02em", marginTop: 4 }}>{name}</h1>
-        <div style={{ color: "var(--ink-2)", marginTop: 6, fontSize: 15 }}>Descriptive card &middot; conservative measured rates.</div>
+        <div style={{ color: "var(--ink-2)", marginTop: 6, fontSize: 15 }}>Historical measurements from this snapshot.</div>
         {observationContext ? <p className="mono" style={{ color: "var(--ink-3)", marginTop: 8, fontSize: 12 }}>{observationContext}</p> : null}
       </header>
 

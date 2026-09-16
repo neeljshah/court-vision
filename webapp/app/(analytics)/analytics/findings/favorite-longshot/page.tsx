@@ -15,7 +15,7 @@ import { findingMeta } from "@/lib/analytics/og";
 export const metadata: Metadata = {
   title: "Is the Market Calibrated?",
   description:
-    "Descriptive-only exhibit: a favorite-longshot bias audit of the betting market's own calibration, pregame, cross-sport -- tennis match winner and MLB moneyline, bucketed with Wilson intervals.",
+    "Descriptive-only exhibit: a favorite-longshot calibration audit, pregame and cross-sport, for tennis match winner and MLB moneyline with Wilson intervals.",
   ...findingMeta("favorite-longshot"),
 };
 
@@ -131,7 +131,7 @@ export default function FavoriteLongshotPage() {
     return (
       <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }}>
         <p className="overline">Findings / Market calibration</p>
-        <h1 style={h1}>Is the betting market calibrated? A favorite-longshot audit</h1>
+        <h1 style={h1}>Is the published market calibration consistent? A favorite-longshot audit</h1>
         <p style={lede}>Exhibit data not available in this build.</p>
       </div>
     );
@@ -142,7 +142,7 @@ export default function FavoriteLongshotPage() {
   return (
     <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }}>
       <p className="overline">Findings / Market calibration</p>
-      <h1 style={h1}>Is the betting market calibrated? A favorite-longshot audit</h1>
+      <h1 style={h1}>Is the published market calibration consistent? A favorite-longshot audit</h1>
       <p style={lede}>
         {data.method} This exhibit grades {data.grades || "the market, not our model"} -- we do not claim to beat the
         market anywhere here. The result reinforces that the market is efficient and well-calibrated.

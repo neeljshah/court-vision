@@ -40,7 +40,7 @@ describe("analytics workspace interactions", () => {
     expect(screen.getByText("Page 2 / 7")).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText("Search analytics modules"), { target: { value: "calibration" } });
     expect(screen.getByText("Page 1 / 1")).toBeInTheDocument();
-    expect(screen.getByRole("status")).toHaveTextContent("6 matching modules");
+    expect(screen.getByRole("status")).toHaveTextContent("7 matching modules");
     fireEvent.change(screen.getByLabelText("Search analytics modules"), { target: { value: "zzzznomatch" } });
     expect(screen.getByText(/No matching modules/)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Next" })).toBeDisabled();

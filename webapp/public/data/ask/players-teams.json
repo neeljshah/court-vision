@@ -259,7 +259,7 @@
       "alt_phrasings": ["Denver with and without Jokic", "What happens to the Nuggets without Jokic?", "Jokic star value"],
       "a": {
         "status": "ok",
-        "answer": "On a neutral floor against a league-average team, mapping Denver's on/off swing onto the Elo win-prob curve drops the Nuggets from 0.634 with Jokic to 0.0517 without -- a 0.5822 swing, the largest of any team's top on/off player. That figure is a ceiling, not a clean player value: it attributes a full-lineup on-vs-off gap to one man, with no control for teammates, opponent, or garbage time. It is descriptive, not a betting number.",
+        "answer": "On a neutral floor against a league-average team, mapping Denver's on/off swing onto the Elo win-prob curve drops the Nuggets from 0.634 with Jokic to 0.0517 without -- a 0.5822 swing, the largest of any team's top on/off player. That figure is a ceiling, not a clean player value: it attributes a full-lineup on-vs-off gap to one man, with no control for teammates, opponent, or garbage time. It is descriptive, not an action recommendation.",
         "source_artifact": "webapp/public/data/insights/cf_star_removal.json",
         "as_of": "2024-25 (Elo end-of-season) x 2024_25 on/off slice"
       },
@@ -490,7 +490,7 @@
       "alt_phrasings": ["New Orleans with and without Zion", "Zion star removal", "Pelicans star dependence"],
       "a": {
         "status": "ok",
-        "answer": "In the star-removal exhibit, New Orleans moves from 0.3292 with Zion Williamson to 0.0469 without on a neutral floor versus a league-average team -- a 0.2823 swing, off a low starting team strength. It is a ceiling built from an on/off net-rating delta with a roster confound, descriptive only, not a betting number.",
+        "answer": "In the star-removal exhibit, New Orleans moves from 0.3292 with Zion Williamson to 0.0469 without on a neutral floor versus a league-average team -- a 0.2823 swing, off a low starting team strength. It is a ceiling built from an on/off net-rating delta with a roster confound, descriptive only, not an action recommendation.",
         "source_artifact": "webapp/public/data/insights/cf_star_removal.json",
         "as_of": "2024-25 (Elo end-of-season) x 2024_25 on/off slice"
       },
@@ -611,7 +611,7 @@
       "alt_phrasings": ["Bucks with and without Giannis", "Giannis star removal", "Milwaukee star dependence"],
       "a": {
         "status": "ok",
-        "answer": "Milwaukee moves from 0.6059 with Giannis Antetokounmpo to 0.1617 without on a neutral floor versus a league-average team -- a 0.4441 win-prob swing, among the largest for a team's clear lead star. Like every row it is a ceiling from a roster-confounded on/off delta, descriptive and not a causal or betting number.",
+        "answer": "Milwaukee moves from 0.6059 with Giannis Antetokounmpo to 0.1617 without on a neutral floor versus a league-average team -- a 0.4441 win-prob swing, among the largest for a team's clear lead star. Like every row it is a ceiling from a roster-confounded on/off delta, descriptive and not a causal or action recommendation.",
         "source_artifact": "webapp/public/data/insights/cf_star_removal.json",
         "as_of": "2024-25 (Elo end-of-season) x 2024_25 on/off slice"
       },

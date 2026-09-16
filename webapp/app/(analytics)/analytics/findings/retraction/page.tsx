@@ -38,10 +38,10 @@ const RETRACTIONS: Retraction[] = [
   {
     retracted: "+18.38% pregame ROI on 1,535 walk-forward bets vs real closing lines",
     whatWasWrong:
-      "Market-follow artifact, confirmed at the source-code level. The grader chose a direction from the market's own devigged lean and never read the model (the eval CSV had no prediction column), used a flat -110 price unavailable in real books, and tuned filters in-sample on the same file.",
-    proofArtifact: "JOB_EVIDENCE_PACKET s4 (model's own unfiltered number: -2.00%)",
+      "Invalid grading method, confirmed at the source-code level. The grader chose a direction from the devigged close and never read the model because the evaluation CSV had no prediction column; it also used an unavailable fixed conversion and tuned filters in-sample on the same file.",
+    proofArtifact: "JOB_EVIDENCE_PACKET s4 (model's own unfiltered measurement: -2.00%)",
     honestReplacement:
-      "Roughly break-even-minus-vig versus real closing lines. Every candidate measurement, including assists, was ultimately rejected or retracted by the same gates.",
+      "No durable probability-score improvement was measured against real closing lines. Every candidate measurement, including assists, was ultimately rejected or retracted by the same gates.",
   },
   {
     retracted: "0.119 end-of-Q3 in-play Brier, \"inside Pinnacle's range\"",
@@ -55,10 +55,10 @@ const RETRACTIONS: Retraction[] = [
   {
     retracted: "+54.57% ROI / 78.11% hit on 55,073 in-play bets",
     whatWasWrong:
-      "Graded against an L5 line proxy, not real closing lines. A model-quality ceiling on a soft proxy, never a tradeable result.",
+      "Graded against an L5 line proxy rather than real closing lines. It was a model-quality ceiling on a soft proxy, not an externally validated evaluation.",
     proofArtifact: "JOB_EVIDENCE_PACKET s4",
     honestReplacement:
-      "On a soft L5 proxy the in-play backtest reaches that ceiling. Treated strictly as a model-quality ceiling, never as a realized outcome.",
+      "On a soft L5 proxy the in-play backtest reaches that ceiling. It remains a model-quality ceiling, not a realized probability evaluation.",
   },
   {
     retracted: "Aggregate CLV +8.94pp",
@@ -183,7 +183,7 @@ export default function RetractionPage() {
       <p className="overline">Findings / Retraction</p>
       <h1 style={h1}>The Retraction Story</h1>
       <p style={lede}>
-        The most useful thing on this site is not a favorable number &mdash; it is the
+        The most useful thing on this site is not a low error number &mdash; it is the
         pile of failed ones, kept on purpose. These six headline figures were each
         published once, then taken apart by the same instruments that built the
         system. Every replacement below is a dated calibration measurement linked
@@ -215,8 +215,8 @@ export default function RetractionPage() {
       </div>
 
       <p style={{ ...lede, marginTop: 32 }}>
-        The through-line: against real closing lines the market is efficient, the
-        model is break-even-minus-vig, and every candidate measurement, including
+        The through-line: real closing-line comparisons did not show a durable
+        probability-score improvement, and every candidate measurement, including
         the strongest one, was rejected or retracted by its own gates. The same
         review harnesses that produced the system took these six numbers apart.
       </p>

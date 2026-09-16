@@ -331,7 +331,7 @@
   {
    "id": "market_favorite_longshot",
    "title": "Market Favorite Longshot",
-   "one_line": "The betting market is well-calibrated: MLB moneyline is essentially efficient, tennis shows only a mild favorite-longshot bias.",
+   "one_line": "Published market-source calibration shows MLB moneyline is essentially efficient, while tennis has only a mild favorite-longshot bias.",
    "out_path": "scripts/platformkit/analytics_showcase/out/market_favorite_longshot.json",
    "chart_path": null,
    "status": "ok",

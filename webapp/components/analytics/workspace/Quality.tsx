@@ -17,7 +17,7 @@ export function Quality({ data, sport }: { data: DashboardData; sport: Sport }) 
       {(["model", "market"] as const).map(kind => { const value = m[`${kind}_${metric}`]; return <div className="cv-bar-row" key={kind}><span>{kind === "model" ? "Model" : "Market"}</span><div className="cv-track"><div className={`cv-bar cv-${kind}`} style={{ width: `${Math.min(100, (value ?? 0) / .5 * 100)}%` }} /></div><b>{value === undefined ? "Unavailable" : value.toFixed(4)}</b></div>; })}
       <p className="cv-chart-context">{m.description}. Shared axis 0-0.50.</p>
     </> : <div className="cv-unscored"><b>Not scored</b><span>{m.reason}</span></div>}</div>)}
-    <p className="cv-footnote">{metric === "brier" ? "Brier measures squared probability error, including calibration and resolution." : "ECE measures the weighted gap between forecast probability and observed frequency across 10 bins."} Rows can include multiple observations of a game; they are not independent games. These comparisons do not establish betting returns.</p>
+    <p className="cv-footnote">{metric === "brier" ? "Brier measures squared probability error, including calibration and resolution." : "ECE measures the weighted gap between forecast probability and observed frequency across 10 bins."} Rows can include multiple observations of a game; they are not independent games. These comparisons describe published probability error only.</p>
     <Link href="/analytics/calibration" className="cv-text-button">Inspect every reliability bin</Link>
   </Panel><Panel title="How quality changes over time" eyebrow="Monthly snapshots" source="calibration_over_time">
     <p className="cv-muted">Same metric, separate sport cohorts. Only the two published months are shown.</p>

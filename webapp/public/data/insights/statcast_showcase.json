@@ -1,7 +1,7 @@
 {
  "id": "statcast_showcase",
  "title": "Statcast Showcase",
- "headline_insight": "The 2025 Statcast pull holds 693,037 pitches, and the framing ingredients (plate location, zone edges) are present on 99.63% of them.",
+ "headline_insight": "The 2025 Statcast pull holds 693,037 pitches, and the framing ingredients (plate location, zone boundaries) are present on 99.63% of them.",
  "what_it_means": "That coverage is enough to compute catcher-framing-style metrics from location. Four-seam fastballs are the most common pitch at 31.78% of the pull, sinkers next at 15.46%. A separate preregistered framing check (surfaced here as context only) reports a borderline called-strike-rate metric tracking its target more tightly than a declared naive baseline, with the sign holding in 7 of 8 folds and a verdict of PREDICTIVE_VERIFIED.",
  "how_to_read": "The distribution table is the pitch-type mix, the percentile table is velocity by pitch type, and the coverage table is column completeness. The framing block is cited context, not recomputed in this showcase.",
  "why_it_matters": "It shows the raw-material depth behind the MLB metrics, a coverage statement rather than a performance claim.",

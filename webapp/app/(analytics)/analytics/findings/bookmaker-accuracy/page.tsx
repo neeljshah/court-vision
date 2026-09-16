@@ -11,9 +11,9 @@ import { Receipt } from "@/components/analytics/Receipt";
 import { findingMeta } from "@/lib/analytics/og";
 
 export const metadata: Metadata = {
-  title: "We Graded the Bookmakers",
+  title: "How accurate were the market sources?",
   description:
-    "Descriptive-only exhibit: a bookmaker-accuracy leaderboard, proportional-devig Brier score on shared-game subsets, for tennis match-winner and soccer over/under 2.5 goals.",
+    "Descriptive-only exhibit: a source-accuracy leaderboard with proportional-devig Brier scores on shared-game subsets for tennis match-winner and soccer over/under 2.5 goals.",
   ...findingMeta("bookmaker-accuracy"),
 };
 
@@ -128,7 +128,7 @@ export default function BookmakerAccuracyPage() {
     return (
       <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }}>
         <p className="overline">Findings / Grading the books</p>
-        <h1 style={h1}>We graded the bookmakers</h1>
+        <h1 style={h1}>How accurate were the market sources?</h1>
         <p style={lede}>Exhibit data not available in this build.</p>
       </div>
     );
@@ -140,7 +140,7 @@ export default function BookmakerAccuracyPage() {
   return (
     <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }}>
       <p className="overline">Findings / Grading the books</p>
-      <h1 style={h1}>We graded the bookmakers</h1>
+      <h1 style={h1}>How accurate were the market sources?</h1>
       <p style={lede}>{data.method}</p>
 
       <p style={headline}>{data.headline}</p>

@@ -391,7 +391,7 @@
       "alt_phrasings": ["is the test suite green", "test pass rate", "do all tests pass"],
       "a": {
         "status": "ok",
-        "answer": "Not 100%. There are roughly 7,400 tests collected, passing at about 97 to 98% locally, with a documented tail from DB, GPU, optional-dependency, and version drift plus a native pyarrow segfault on Windows. The critical betting-math core and in-play subsets pass clean, and a full-green claim is explicitly not made.",
+        "answer": "Not 100%. There are roughly 7,400 tests collected, passing at about 97 to 98% locally, with a documented tail from DB, GPU, optional-dependency, and version drift plus a native pyarrow segfault on Windows. The critical probability-math core and in-play subsets pass clean, and a full-green claim is explicitly not made.",
         "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
         "as_of": "2026-07-23"
       },
@@ -479,7 +479,7 @@
       "alt_phrasings": ["claims by sport", "per-sport claim counts", "which sport has most claims"],
       "a": {
         "status": "ok",
-        "answer": "By sport the generated claims break down as NBA 62,227, MLB 21,519, tennis 13,709, and soccer 4,275, with smaller unlabeled cross-sport and WNBA sets. All are ranking-kind claims validated against their own sidecars; every one is a descriptive measurement. The counts are volume of descriptive statements, not proven edges.",
+        "answer": "By sport the generated claims break down as NBA 62,227, MLB 21,519, tennis 13,709, and soccer 4,275, with smaller unlabeled cross-sport and WNBA sets. All are ranking-kind claims validated against their own sidecars; every one is a descriptive measurement. The counts are volume of descriptive statements, not proven differences.",
         "source_artifact": "webapp/public/data/showcase/claims_corpus_meta.json",
         "as_of": "2026-07-22"
       },
@@ -644,7 +644,7 @@
       "alt_phrasings": ["is Kelly ready", "correlation matrix populated", "bankroll sizing status"],
       "a": {
         "status": "no_data",
-        "answer": "Not fully -- the Kelly correlation matrix is currently unpopulated, so until it is computed the sizing assumes independent bets, which overstates max-loss risk on correlated slates. The fractional-Kelly machinery (quarter-Kelly, drawdown breaker, isotonic-calibrated input) exists, but this specific calibration input is a known gap. It is disclosed rather than assumed complete.",
+        "answer": "Not fully -- the Kelly correlation matrix is currently unpopulated, so until it is computed the sizing assumes independent selections, which overstates max-loss risk on correlated slates. The fractional-Kelly machinery (quarter-Kelly, drawdown breaker, isotonic-calibrated input) exists, but this specific calibration input is a known gap. It is disclosed rather than assumed complete.",
         "source_artifact": "docs/KNOWN_LIMITATIONS.md",
         "as_of": "2026-06-11"
       },

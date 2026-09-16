@@ -1,6 +1,6 @@
 {
   "bucket": "novel-stats",
-  "note": "The six prior-art-gated stats built on top of the committed showcase modules. Every number is copied verbatim from the module's own novel_*.json (path in source_artifact). Each stat carries the descriptive-only flag and declared confounds; one of the six (Overreaction Harvest Gap) is an honest null by construction. Descriptive measurement only -- none of these is a forecast or a betting signal.",
+  "note": "The six prior-art-gated stats built on top of the committed showcase modules. Every number is copied verbatim from the module's own novel_*.json (path in source_artifact). Each stat carries the descriptive-only flag and declared confounds; one of the six (Overreaction Harvest Gap) is an honest null by construction. Descriptive measurement only -- none of these is a forecast or an action signal.",
   "entries": [
     {
       "q": "What are the novel stats?",
@@ -128,7 +128,7 @@
       "alt_phrasings": ["lhl prior art", "has line half life been done before", "is lhl novel"],
       "a": {
         "status": "ok",
-        "answer": "Only the packaging. The card is labeled NOVEL_PACKAGING and cites the existing work directly: opening-versus-closing line timing is discussed everywhere in the betting press, and price-impact half-life is a securities-microstructure staple (Kyle 1985; Amihud 2002). What is fresh is the single per-sport half-life constant, not the underlying concept.",
+        "answer": "Only the packaging. The card is labeled NOVEL_PACKAGING and cites the existing work directly: opening-versus-closing line timing is discussed widely in forecast-market research, and price-impact half-life is a securities-microstructure staple (Kyle 1985; Amihud 2002). What is fresh is the single per-sport half-life constant, not the underlying concept.",
         "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
         "as_of": "2026-07-24"
       },
@@ -491,7 +491,7 @@
       "alt_phrasings": ["ohg prior art", "overreaction literature", "is ohg novel"],
       "a": {
         "status": "ok",
-        "answer": "Overreaction and reversion are Moskowitz (2021, Journal of Finance) and Choi & Hui (2014, JEBO), and disagreement skill is standard forecast verification -- the card flags both components as not new. Its verdict, NOVEL_SELF_CRITICAL_CROSS, claims only the crossing: 'the market is wrong and we still cannot cash it' is a confession, and papers publish edges rather than confessions.",
+        "answer": "Overreaction and reversion are Moskowitz (2021, Journal of Finance) and Choi & Hui (2014, JEBO), and disagreement skill is standard forecast verification -- the card flags both components as not new. Its verdict, NOVEL_SELF_CRITICAL_CROSS, describes a market disagreement without a corresponding realized evaluation result. Papers publish comparative findings rather than confessions.",
         "source_artifact": "webapp/public/data/showcase/novel_overreaction_harvest_gap.json",
         "as_of": "2026-07-24"
       },

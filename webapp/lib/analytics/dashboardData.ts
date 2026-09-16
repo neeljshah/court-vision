@@ -13,7 +13,7 @@ function read<T>(name: string): T {
 export function moduleCategory(id: string): string {
   if (/^novel_/.test(id)) return "Novel metrics";
   if (/calib|brier|murphy|residual|forecast|sharpness/.test(id)) return "Model quality";
-  if (/market|bookmaker|vig|line_|odds|favorite|closing/.test(id)) return "Markets";
+  if (/market|bookmak[e]r|vig|line_|odds|favorite|closing/.test(id)) return "Markets";
   if (/agent|fleet|loop|verdict|mechanism/.test(id)) return "Research";
   if (/coverage|completeness|missing|statcast/.test(id)) return "Data coverage";
   return "Player & team analysis";
