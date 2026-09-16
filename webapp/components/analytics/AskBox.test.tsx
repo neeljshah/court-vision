@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { AskBox } from "./AskBox";
 
@@ -100,6 +100,27 @@ describe("AskBox", () => {
 
     expect(screen.queryByText("Continue exploring")).not.toBeInTheDocument();
     expect(screen.getAllByRole("button", { name: "Try another question" })).toHaveLength(1);
+  });
+
+  it("focuses the updated answer after a follow-up replaces the result", async () => {
+    const followUpEntries = [...entries, { ...entries[0], q: "Try another question" }];
+    render(<AskBox entries={followUpEntries} tours={[]} />);
+    fireEvent.change(screen.getByLabelText("Ask Scout a question"), { target: { value: "Known question" } });
+    fireEvent.click(screen.getByRole("button", { name: "Search Scout's cited answers" }));
+    fireEvent.click(screen.getByRole("button", { name: "Try another question" }));
+
+    const answer = screen.getByRole("region", { name: "Scout answer" });
+    await waitFor(() => expect(answer).toHaveFocus());
+    expect(answer).toHaveTextContent("Try another question");
+  });
+
+  it("keeps tour suggestions focused on the search input", async () => {
+    render(<AskBox entries={entries} tours={[{ label: "Start here", questions: ["Known question"] }]} />);
+    const input = screen.getByLabelText("Ask Scout a question");
+    fireEvent.click(screen.getByRole("button", { name: "Known question" }));
+
+    await waitFor(() => expect(input).toHaveFocus());
+    expect(screen.getByRole("region", { name: "Scout answer" })).toHaveTextContent("Committed answer.");
   });
 
   it("uses plain-language source help and labels related results clearly", () => {

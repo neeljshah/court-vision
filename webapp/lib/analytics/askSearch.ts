@@ -1,7 +1,6 @@
 // Grounded client-side retrieval for Ask Scout's committed answer corpus.
 // It ranks corpus fields only; it never generates or alters an answer.
 import { entityForms, normalizeEntityName, resolveEntityIntent, type AtlasEntity } from "./askEntityIntent";
-
 export type AskStatus = "ok" | "no_data" | "refused";
 
 export interface AskAnswer {
@@ -11,7 +10,6 @@ export interface AskAnswer {
   as_of?: string;
   explore_path?: string;
 }
-
 export interface AskEntry {
   q: string;
   alt_phrasings: string[];
@@ -20,7 +18,6 @@ export interface AskEntry {
   a: AskAnswer;
   entity?: AtlasEntity;
 }
-
 type MatchKind = "direct" | "related" | "none" | "unavailable";
 
 export interface ResolvedQuestion {
@@ -30,13 +27,11 @@ export interface ResolvedQuestion {
   compareOffer?: { label: string; href: string };
   entityChoices?: AtlasEntity[];
 }
-
 const STOP = new Set(
   ("the a an is are was were be it of to do does did what how why when who which for " +
     "on in at by vs and or my you your me i can will would should tell about any this " +
     "that with as from has have not no there show give look get really actually").split(" ")
 );
-
 const ALIASES: Record<string, string> = {
   assists: "assist",
   accurate: "accuracy",
@@ -62,7 +57,6 @@ const ALIASES: Record<string, string> = {
   stats: "stat",
 };
 const TEMPORAL_QUERY = /\b(live|latest|current|tonight|today|now|realtime|real time|next game)\b/i;
-
 function norm(value: string): string {
   return value
     .toLowerCase()
@@ -217,15 +211,10 @@ function followUps(entries: AskEntry[], selected: AskEntry, queryTerms: string[]
   );
   const selectedSpecific = Array.from(selectedTerms).filter((term) => !FOLLOWUP_GENERIC.has(term) && !SPORT_TERMS.has(term));
   const selectedSports = new Set(tokens(selected.tags.join(" ")).filter((term) => SPORT_TERMS.has(term)));
-  return entries
-    .filter((entry) => {
-      const entryEntities = resolveEntityIntent(entry.q, publishedEntities).entities;
-      // Entity-free questions (methods, coverage) stay eligible; a question about a DIFFERENT entity does not.
-      const entityFree = !entry.entity && !entryEntities.length;
-      return entry.q !== selected.q && entry.a.status === "ok" && (entityFree || supportsEntities(entry, entities)) &&
-        (!selectedEntities.length || !entryEntities.length || sameEntities(entryEntities, selectedEntities)) &&
-      (!selected.a.explore_path || entry.a.source_artifact === selected.a.source_artifact)
-    })
+  const ranked = entries
+    .filter((entry) => entry.q !== selected.q && entry.a.status === "ok" &&
+      (!selected.a.explore_path || entry.a.source_artifact === selected.a.source_artifact) &&
+      (!entry.entity || supportsEntities(entry, entities)))
     .map((entry) => {
       const entryTerms = new Set(tokens(`${entry.q} ${entry.alt_phrasings.join(" ")} ${entry.tags.join(" ")}`));
       const entrySports = new Set(Array.from(entryTerms).filter((term) => SPORT_TERMS.has(term)));
@@ -242,9 +231,20 @@ function followUps(entries: AskEntry[], selected: AskEntry, queryTerms: string[]
       return { entry, score };
     })
     .filter((item) => item.score > 0)
-    .sort((a, b) => b.score - a.score || a.entry.q.localeCompare(b.entry.q))
-    .slice(0, 3)
-    .map((item) => item.entry.q);
+    .sort((a, b) => b.score - a.score || a.entry.q.localeCompare(b.entry.q));
+  const skipEntityResolution = !entities.length && !selectedEntities.length;
+  const result: string[] = [];
+  for (const { entry } of ranked) {
+    if (!skipEntityResolution) {
+      const entryEntities = resolveEntityIntent(entry.q, publishedEntities).entities;
+      const entityFree = !entry.entity && !entryEntities.length;
+      if (!(entityFree || supportsEntities(entry, entities)) ||
+        (selectedEntities.length > 0 && entryEntities.length > 0 && !sameEntities(entryEntities, selectedEntities))) continue;
+    }
+    result.push(entry.q);
+    if (result.length === 3) break;
+  }
+  return result;
 }
 
 export function resolveQuestion(query: string, entries: AskEntry[]): ResolvedQuestion | null {

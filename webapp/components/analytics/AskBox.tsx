@@ -172,6 +172,7 @@ function envelope(neutral: boolean): CSSProperties {
 
 export function AskBox({ entries, tours }: { entries: AskEntry[]; tours: AskTour[] }) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const resultRef = useRef<HTMLDivElement>(null);
   const [query, setQuery] = useState("");
   const [submittedQuery, setSubmittedQuery] = useState("");
   const [result, setResult] = useState<ResolvedQuestion | null>(null);
@@ -195,7 +196,11 @@ export function AskBox({ entries, tours }: { entries: AskEntry[]; tours: AskTour
     setResult(null);
     updateUrl("");
   };
-  const askAndFocus = (question: string) => {
+  const askFollowUp = (question: string) => {
+    run(question);
+    requestAnimationFrame(() => resultRef.current?.focus());
+  };
+  const askTourAndFocus = (question: string) => {
     run(question);
     requestAnimationFrame(() => inputRef.current?.focus());
   };
@@ -231,8 +236,8 @@ export function AskBox({ entries, tours }: { entries: AskEntry[]; tours: AskTour
         Press Enter to search. Escape clears the question. Scout searches published answers with source links.
       </p>
 
-      <div aria-live="polite" aria-atomic="true" style={result ? { marginTop: 16 } : undefined}>
-        {result ? <AnswerEnvelope result={result} query={submittedQuery} onAsk={askAndFocus} excludedQuestions={suggestedQuestions} /> : null}
+      <div ref={resultRef} tabIndex={-1} role="region" aria-label="Scout answer" aria-live="polite" aria-atomic="true" style={result ? { marginTop: 16 } : undefined}>
+        {result ? <AnswerEnvelope result={result} query={submittedQuery} onAsk={askFollowUp} excludedQuestions={suggestedQuestions} /> : null}
       </div>
 
       <section aria-label="Suggested Scout questions" style={{ margin: "22px 0 10px" }}>
@@ -241,7 +246,7 @@ export function AskBox({ entries, tours }: { entries: AskEntry[]; tours: AskTour
             <span className="overline" style={{ display: "block", marginBottom: 6, color: "var(--ink-3)" }}>{tour.label}</span>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
               {tour.questions.map((question) => (
-                <button key={question} type="button" style={pill} onClick={() => askAndFocus(question)}>{question}</button>
+                <button key={question} type="button" style={pill} onClick={() => askTourAndFocus(question)}>{question}</button>
               ))}
             </div>
           </div>

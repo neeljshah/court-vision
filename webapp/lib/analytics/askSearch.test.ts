@@ -89,6 +89,21 @@ describe("resolveQuestion", () => {
     expect(result?.followUps).toContain(playerEntries[2].q);
   });
 
+  it("keeps scanning ranked follow-ups after rejecting a different identity", () => {
+    const stephen = { name: "Stephen Curry", pack: "nba_players", slug: "stephen_curry" };
+    const seth = { name: "Seth Curry", pack: "nba_players", slug: "seth_curry" };
+    const selected: AskEntry = { q: "Stephen Curry shooting profile", alt_phrasings: [], tags: ["nba"], bucket: "players", entity: stephen, a: { status: "ok", answer: "Stephen profile.", source_artifact: "curry.json" } };
+    const validQuestions = ["Alpha measurement method", "Beta measurement method", "Gamma measurement method"];
+    const playerEntries: AskEntry[] = [
+      selected,
+      { q: "How does Seth Curry's shooting profile compare?", alt_phrasings: [], tags: ["nba"], bucket: "players", a: { status: "ok", answer: "Seth profile.", source_artifact: "curry.json" } },
+      { q: "Seth Curry shooting profile", alt_phrasings: [], tags: ["nba"], bucket: "players", entity: seth, a: { status: "ok", answer: "Seth profile.", source_artifact: "curry.json" } },
+      ...validQuestions.slice().reverse().map((q) => ({ q, alt_phrasings: [], tags: ["nba"], bucket: "methods", a: { status: "ok" as const, answer: "Published method.", source_artifact: "curry.json" } })),
+    ];
+
+    expect(resolveQuestion(selected.q, playerEntries)?.followUps).toEqual(validQuestions);
+  });
+
   it("keeps the requested identities for an explicit comparison", () => {
     const jokic = { name: "Nikola Jokic", pack: "nba_players", slug: "nikola_jokic" };
     const giannis = { name: "Giannis Antetokounmpo", pack: "nba_players", slug: "giannis_antetokounmpo" };
