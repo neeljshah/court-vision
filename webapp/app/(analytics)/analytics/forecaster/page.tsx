@@ -243,7 +243,7 @@ export default function ForecasterPage() {
 
       <section style={sec}>
         <div style={eye}>What the model sees</div>
-        <h2 style={h2}>Its own eyes: calibration by game state.</h2>
+        <h2 style={h2}>Calibration by inning and forecast probability</h2>
         <p style={lede}>
           Every graded in-game MLB prediction, bucketed by the model&rsquo;s probability band and the inning. Each cell is the calibration error &mdash; how far the stated probability sits from what actually happened. Darker is a bigger gap: the improvement backlog, in the model&rsquo;s own view.
         </p>
