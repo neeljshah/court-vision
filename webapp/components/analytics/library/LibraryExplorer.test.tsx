@@ -9,6 +9,7 @@ const entries: LibraryEntry[] = [
   entry("mlb-source", "MLB Pitch Source", "mlb", "source", "velocity pitch"),
   entry("soccer-form", "Soccer Form", "soccer", "derived", "form goals"),
   entry("shared-check", "Calibration Check", "all", "source", "calibration formula"),
+  entry("calibration-by-game-checkpoint", "Calibration checkpoints", "all", "derived", "checkpoint calibration"),
 ];
 
 describe("LibraryExplorer", () => {
@@ -21,12 +22,12 @@ describe("LibraryExplorer", () => {
     expect(screen.getByRole("heading", { name: "NBA Pace Formula" })).toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "MLB Pitch Source" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Basketball" })).toHaveAttribute("aria-pressed", "true");
-    fireEvent.change(screen.getByRole("combobox", { name: "Collection" }), { target: { value: "source" } });
+    fireEvent.change(screen.getByRole("combobox", { name: "Entry type" }), { target: { value: "source" } });
     expect(screen.getByRole("status")).toHaveTextContent("0 entries");
     fireEvent.click(screen.getByRole("button", { name: "All sports" }));
-    fireEvent.change(screen.getByRole("combobox", { name: "Collection" }), { target: { value: "all" } });
+    fireEvent.change(screen.getByRole("combobox", { name: "Entry type" }), { target: { value: "all" } });
     fireEvent.change(screen.getByRole("textbox", { name: "Search analytics library" }), { target: { value: "" } });
-    await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("4 entries"));
+    await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("5 entries"));
   });
 
   it("resets an empty result to the full collection", () => {
@@ -34,7 +35,7 @@ describe("LibraryExplorer", () => {
     fireEvent.change(screen.getByRole("textbox", { name: "Search analytics library" }), { target: { value: "no such metric" } });
     expect(screen.getByText(/No analytics match these filters/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Reset filters" }));
-    expect(screen.getByRole("status")).toHaveTextContent("4 entries");
+    expect(screen.getByRole("status")).toHaveTextContent("5 entries");
     expect(window.location.search).toBe("");
   });
 
@@ -44,5 +45,16 @@ describe("LibraryExplorer", () => {
     expect(screen.getAllByText("42 observed games")).not.toHaveLength(0);
     expect(screen.getAllByText("partial")).not.toHaveLength(0);
     expect(screen.getAllByText("Team")).not.toHaveLength(0);
+  });
+
+  it("restores a question-led collection from the URL and keeps it after a search", async () => {
+    window.history.replaceState(null, "", "/analytics/browse/?collection=forecast-calibration");
+    render(<LibraryExplorer entries={entries} />);
+    await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("1 entry in this question"));
+    fireEvent.change(screen.getByRole("textbox", { name: "Search analytics library" }), { target: { value: "checkpoint" } });
+    expect(window.location.search).toContain("collection=forecast-calibration");
+    window.history.replaceState(null, "", "/analytics/browse/?sport=nba&kind=derived&q=pace");
+    window.dispatchEvent(new PopStateEvent("popstate"));
+    await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent('1 entry including shared diagnostics matching "pace"'));
   });
 });

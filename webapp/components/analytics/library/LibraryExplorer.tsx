@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowDown, ArrowUpRight, Search, SlidersHorizontal, Layers3 } from "lucide-react";
 import { SPORTS, type Sport } from "@/lib/analytics/dashboardTypes";
 import { filterLibrary, type LibraryEntry } from "@/lib/analytics/libraryTypes";
+import { collectionMemberIds, readingCollections } from "@/lib/analytics/readingCollections";
 
 function MeasurementPreview({ values, label }: { values: number[]; label: string }) {
   if (!values.length) return <div className="library-source-preview"><Layers3 size={25} /><span>Published source module</span></div>;
@@ -26,17 +27,18 @@ function SourceEvidence({ entry }: { entry: LibraryEntry }) {
 }
 
 export default function LibraryExplorer({ entries }: { entries: LibraryEntry[] }) {
-  const [sport, setSport] = useState<Sport>("all"), [kind, setKind] = useState("all"), [query, setQuery] = useState(""), [page, setPage] = useState(0);
+  const [sport, setSport] = useState<Sport>("all"), [kind, setKind] = useState("all"), [query, setQuery] = useState(""), [collection, setCollection] = useState("all"), [page, setPage] = useState(0);
   useEffect(() => {
-    const restore = () => { const p = new URLSearchParams(window.location.search), s = p.get("sport"); setSport(SPORTS.some(x => x.id === s) ? s as Sport : "all"); setKind(["derived", "source"].includes(p.get("kind") || "") ? p.get("kind")! : "all"); setQuery(p.get("q") || ""); setPage(0); };
+    const restore = () => { const p = new URLSearchParams(window.location.search), s = p.get("sport"), c = p.get("collection"); setSport(SPORTS.some(x => x.id === s) ? s as Sport : "all"); setKind(["derived", "source"].includes(p.get("kind") || "") ? p.get("kind")! : "all"); setQuery(p.get("q") || ""); setCollection(readingCollections.some(item => item.id === c) ? c! : "all"); setPage(0); };
     restore(); window.addEventListener("popstate", restore); return () => window.removeEventListener("popstate", restore);
   }, []);
-  function update(s: Sport, k: string, q: string) {
-    setSport(s); setKind(k); setQuery(q); setPage(0);
-    const p = new URLSearchParams(); if (s !== "all") p.set("sport", s); if (k !== "all") p.set("kind", k); if (q) p.set("q", q);
+  function update(s: Sport, k: string, q: string, c: string = collection) {
+    setSport(s); setKind(k); setQuery(q); setCollection(c); setPage(0);
+    const p = new URLSearchParams(); if (s !== "all") p.set("sport", s); if (k !== "all") p.set("kind", k); if (q) p.set("q", q); if (c !== "all") p.set("collection", c);
     window.history.replaceState(null, "", `${window.location.pathname}${p.size ? `?${p}` : ""}`);
   }
-  const matched = filterLibrary(entries, sport, kind, query), pages = Math.max(1, Math.ceil(matched.length / 12)), safePage = Math.min(page, pages - 1), visible = matched.slice(safePage * 12, safePage * 12 + 12);
+  const collectionIds = collectionMemberIds(collection);
+  const matched = filterLibrary(entries, sport, kind, query, collectionIds), pages = Math.max(1, Math.ceil(matched.length / 12)), safePage = Math.min(page, pages - 1), visible = matched.slice(safePage * 12, safePage * 12 + 12);
   const derived = entries.filter(e => e.kind === "derived");
   return <div className="cv-workspace library-page"><div className="cv-workspace-inner">
     <header className="library-hero"><div><p className="cv-eyebrow">CourtVision / Intelligence library</p><h1>Sports analyses<br /><em>and their source data.</em></h1><p>Follow a question from the first comparison to the formula and the rows behind it.</p><a href="#library-results" className="library-hero-action">Explore the library <ArrowDown size={17} /></a></div>
@@ -45,9 +47,10 @@ export default function LibraryExplorer({ entries }: { entries: LibraryEntry[] }
     <div className="library-journeys"><Link href="/analytics/compare/"><span>01 / MATCHUPS</span><strong>Compare two profiles <ArrowUpRight size={18} /></strong></Link><Link href="/analytics/research/nba-matchup-profile-contrast/"><span>02 / HISTORICAL NBA</span><strong>Explore 435 team pairings <ArrowUpRight size={18} /></strong></Link><Link href="/analytics/ask/"><span>03 / ASK SCOUT</span><strong>Start with your own question <ArrowUpRight size={18} /></strong></Link></div>
     <section id="library-results" className="library-catalog" aria-label="Browse analytics">
       <div className="library-toolbar"><div><p className="cv-eyebrow"><SlidersHorizontal size={13} /> Browse by question</p><h2>The analytics collection</h2></div><label className="library-search"><Search size={17} /><span className="sr-only">Search analytics library</span><input value={query} onChange={e => update(sport, kind, e.target.value)} placeholder="Search a metric, formula, or question" /></label></div>
-      <div className="library-filters"><div className="cv-sports" aria-label="Library sport">{SPORTS.map(s => <button key={s.id} aria-pressed={sport === s.id} onClick={() => update(s.id, kind, query)}>{s.label}</button>)}</div><label>Collection<select value={kind} onChange={e => update(sport, e.target.value, query)}><option value="all">All entries</option><option value="derived">Derived analyses</option><option value="source">Source modules</option></select></label></div>
-      <div className="library-count"><p role="status">{matched.length} {matched.length === 1 ? "entry" : "entries"}{sport !== "all" ? " including shared diagnostics" : ""}{query ? ` matching "${query}"` : ""}</p><span>Derived analyses use published snapshots; methods remain inspectable.</span></div>
-      {visible.length ? <div className="library-grid">{visible.map(e => <Link href={e.href} key={`${e.kind}-${e.id}`} className={`library-card library-card-${e.kind}`}><div className="library-card-meta"><span>{e.sport === "all" ? "Shared / cross-sport" : e.sport.toUpperCase()}</span><span>{e.kind === "derived" ? "Derived analysis" : "Source module"}</span></div><h3>{e.title}</h3><p>{e.description}</p>{e.kind === "source" ? <SourceEvidence entry={e} /> : <MeasurementPreview values={e.preview} label={e.previewLabel} />}<div className="library-card-footer"><span>{e.rows === null ? e.status.replace(/_/g, " ") : `${e.rows.toLocaleString("en-US")} rows / ${e.fields} fields`}</span><ArrowUpRight size={19} /></div></Link>)}</div> : <div className="cv-empty">No analytics match these filters. Try fewer search terms or another collection.<button onClick={() => update("all", "all", "")}>Reset filters</button></div>}
+      <div className="library-question-collections" aria-label="Question-led collections">{readingCollections.map(item => <button key={item.id} aria-pressed={collection === item.id} onClick={() => update(sport, kind, query, collection === item.id ? "all" : item.id)}><span>{item.title}</span><small>{item.members.length} readings</small><p>{item.description}</p></button>)}</div>
+      <div className="library-filters"><div className="cv-sports" aria-label="Library sport">{SPORTS.map(s => <button key={s.id} aria-pressed={sport === s.id} onClick={() => update(s.id, kind, query)}>{s.label}</button>)}</div><label>Entry type<select value={kind} onChange={e => update(sport, e.target.value, query)}><option value="all">All entries</option><option value="derived">Derived analyses</option><option value="source">Source modules</option></select></label></div>
+      <div className="library-count"><p role="status">{matched.length} {matched.length === 1 ? "entry" : "entries"}{collection !== "all" ? " in this question" : ""}{sport !== "all" ? " including shared diagnostics" : ""}{query ? ` matching "${query}"` : ""}</p><span>Derived analyses use published snapshots; methods remain inspectable.</span></div>
+      {visible.length ? <div className="library-grid">{visible.map(e => <Link href={e.href} key={`${e.kind}-${e.id}`} className={`library-card library-card-${e.kind}`}><div className="library-card-meta"><span>{e.sport === "all" ? "Shared / cross-sport" : e.sport.toUpperCase()}</span><span>{e.kind === "derived" ? "Derived analysis" : "Source module"}</span></div><h3>{e.title}</h3><p>{e.description}</p>{e.kind === "source" ? <SourceEvidence entry={e} /> : <MeasurementPreview values={e.preview} label={e.previewLabel} />}<div className="library-card-footer"><span>{e.rows === null ? e.status.replace(/_/g, " ") : `${e.rows.toLocaleString("en-US")} rows / ${e.fields} fields`}</span><ArrowUpRight size={19} /></div></Link>)}</div> : <div className="cv-empty">No analytics match these filters. Try fewer search terms or another collection.<button onClick={() => update("all", "all", "", "all")}>Reset filters</button></div>}
       <nav className="library-pagination" aria-label="Library pages"><button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={!safePage}>Previous</button><span>Page {safePage + 1} of {pages}</span><button onClick={() => setPage(p => Math.min(pages - 1, p + 1))} disabled={safePage + 1 >= pages}>Next</button></nav>
     </section>
   </div></div>;

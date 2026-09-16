@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { getLibraryEntries } from "./libraryData";
+import { collectionMemberIds } from "./readingCollections";
+import { filterLibrary } from "./libraryTypes";
 
 describe("getLibraryEntries", () => {
   const entries = getLibraryEntries();
@@ -38,5 +40,11 @@ describe("getLibraryEntries", () => {
     expect(sources.find(entry => entry.id === "statcast_showcase")?.sport).toBe("mlb");
     expect(sources.find(entry => entry.id === "cross_sport_scoreboard")?.sport).toBe("all");
     expect(sources.find(entry => entry.id === "calibration_stability")?.sport).toBe("all");
+  });
+
+  it("limits a collection view to its registered library entries", () => {
+    const selected = filterLibrary(entries, "all", "all", "", collectionMemberIds("forecast-calibration"));
+    expect(selected.map((entry) => entry.id).every((id) => collectionMemberIds("forecast-calibration").includes(id))).toBe(true);
+    expect(selected.length).toBeGreaterThan(0);
   });
 });

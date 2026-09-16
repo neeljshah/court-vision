@@ -8,8 +8,9 @@ export type LibraryEntry = {
   preview: number[]; previewLabel: string;
   sourceSummary?: LibrarySourceSummary;
 };
-export function filterLibrary(entries: LibraryEntry[], sport: Sport, kind: string, query: string) {
+export function filterLibrary(entries: LibraryEntry[], sport: Sport, kind: string, query: string, collectionIds: string[] = []) {
   const terms = query.toLowerCase().trim().split(/\s+/).filter(Boolean);
   return entries.filter(e => (sport === "all" || e.sport === sport || e.sport === "all") &&
-    (kind === "all" || e.kind === kind) && terms.every(t => `${e.title} ${e.description} ${e.category} ${e.keywords}`.toLowerCase().includes(t)));
+    (kind === "all" || e.kind === kind) && (!collectionIds.length || collectionIds.includes(e.id)) &&
+    terms.every(t => `${e.title} ${e.description} ${e.category} ${e.keywords}`.toLowerCase().includes(t)));
 }

@@ -4,6 +4,8 @@
 // same as the rest of the entity page. Supporting evidence, so it renders BELOW
 // the Scout note / "what stands out" / reading note, never above them.
 import { Receipt } from "./Receipt";
+import Link from "next/link";
+import { joinedFindingTarget } from "@/lib/analytics/related";
 import type { JoinItem } from "@/lib/analytics/showcaseData";
 
 export interface JoinedFindingsProps {
@@ -43,7 +45,9 @@ export function JoinedFindings({ pack, items, coverage }: JoinedFindingsProps) {
         <p style={{ margin: "0 0 14px", fontSize: 13, color: "var(--ink-3)" }}>{line}</p>
       ) : null}
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-        {items.map((item) => (
+        {items.map((item) => {
+          const target = joinedFindingTarget(item.source_artifact);
+          return (
           <div
             key={item.key}
             style={{ background: "var(--paper-tint)", border: "1px solid var(--rule)", borderRadius: 10, padding: "14px 16px" }}
@@ -63,8 +67,10 @@ export function JoinedFindings({ pack, items, coverage }: JoinedFindingsProps) {
               {item.confound}
             </div>
             <Receipt sourceArtifact={item.source_artifact} verdict="descriptive_only" label="descriptive_only" value={item.value} />
+            {target ? <Link href={target.href} prefetch={false} style={{ display: "inline-block", marginLeft: 12, fontSize: 12, fontWeight: 600 }}>Read {target.kind === "analysis" ? "analysis" : "source module"}</Link> : null}
           </div>
-        ))}
+          );
+        })}
       </div>
     </section>
   );
