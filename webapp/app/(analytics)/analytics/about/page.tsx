@@ -60,7 +60,7 @@ export default function AboutPage() {
       <p className="overline">About</p>
       <h1 style={{ ...h2, fontSize: 40, marginTop: 8 }}>What CourtVision Analytics is</h1>
       <p style={lede}>
-        CourtVision is an AI-native sports intelligence platform: computer-vision tracking,
+        CourtVision publishes historical forecast measurements and the evidence behind them: computer-vision tracking,
         official box-score APIs, and a library of trained signals feed a possession-level Monte
         Carlo simulator, producing calibrated forecasts across NBA, MLB, soccer, and tennis. This
         site is the honest read-out of that pipeline &mdash; every number on it carries the artifact
