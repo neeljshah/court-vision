@@ -3,6 +3,8 @@
 .ra-page h1 { margin: 8px 0 16px; color: var(--ink); font-family: var(--font-display); font-size: clamp(2.2rem, 5vw, 3.5rem); font-weight: 500; letter-spacing: -.035em; line-height: 1.03; }
 .ra-intro { max-width: 790px; color: var(--ink-2); font-size: 17px; line-height: 1.7; }
 .ra-intro code, .ra-source-fields { font-family: var(--font-mono); }
+/* Inline links in prose carry an underline, not colour alone. */
+.ra-page p a { text-decoration: underline; text-underline-offset: 3px; }
 .ra-explanation { max-width: 840px; margin-top: 28px; padding: 20px 22px; border: 1px solid var(--rule); border-left: 3px solid var(--signal); border-radius: var(--radius-card); background: var(--paper-raised); }
 .ra-explanation h2 { color: var(--ink); font-family: var(--font-display); font-size: 22px; font-weight: 500; }
 .ra-explanation p { margin-top: 10px; color: var(--ink-2); font-size: 14px; line-height: 1.65; }
@@ -28,8 +30,14 @@
 .ra-grid thead th { position: sticky; top: 0; z-index: 2; }.ra-grid thead th:first-child { left: 0; z-index: 3; }.ra-grid tbody th { position: sticky; left: 0; z-index: 1; }
 .ra-grid td { width: 18%; min-width: 115px; height: 54px; border-top: 1px solid var(--rule); border-left: 1px solid var(--rule); padding: 5px; }
 .ra-grid button { width: 100%; min-height: 42px; border-radius: var(--radius-chip); font-family: var(--font-sans); font-size: 12px; font-variant-numeric: tabular-nums; }
-.ra-cell-seq-0 { background: var(--chart-seq-low) !important; }.ra-cell-seq-1 { background: color-mix(in srgb, var(--chart-seq-low) 75%, var(--chart-seq-high)) !important; }.ra-cell-seq-2 { background: color-mix(in srgb, var(--chart-seq-low) 50%, var(--chart-seq-high)) !important; }.ra-cell-seq-3 { background: color-mix(in srgb, var(--chart-seq-low) 25%, var(--chart-seq-high)) !important; color: #FFFFFF !important; }.ra-cell-seq-4 { background: var(--chart-seq-high) !important; color: #FFFFFF !important; }.ra-cell-missing { background: var(--chart-missing); }
-.ra-grid button:hover, .ra-grid button:focus-visible { border-color: var(--accent); color: var(--accent); outline: 0; }
+.ra-cell-seq-0 { background: var(--chart-seq-low) !important; }.ra-cell-seq-1 { background: color-mix(in srgb, var(--chart-seq-low) 75%, var(--chart-seq-high)) !important; }.ra-cell-seq-2 { background: color-mix(in srgb, var(--chart-seq-low) 50%, var(--chart-seq-high)) !important; }.ra-cell-seq-3 { background: color-mix(in srgb, var(--chart-seq-low) 25%, var(--chart-seq-high)) !important; }.ra-cell-seq-4 { background: var(--chart-seq-high) !important; }.ra-cell-missing { background: var(--chart-missing); }
+/* Cell ink follows the cell fill's own luminance -- see lib/analytics/chartInk.ts. */
+.ra-grid button[data-ink="dark"] { color: var(--chart-ink-on-light); }
+.ra-grid button[data-ink="light"] { color: var(--chart-ink-on-dark); }
+/* The dark theme ramp is dark end to end, so every step takes the on-dark ink. */
+:root[data-theme="dark"] .ra-grid button[data-ink] { color: var(--chart-ink-on-dark); }
+.ra-grid button:hover { border-color: var(--accent); }
+.ra-grid button:focus-visible { border-color: var(--accent); outline: 2px solid var(--focus-ring); outline-offset: 1px; }
 .ra-grid button.ra-cell-selected { border: 2px solid var(--accent); font-weight: 700; }
 .ra-selected-mark { display: block; font-family: var(--font-sans); font-size: 9px; font-weight: 700; letter-spacing: .06em; line-height: 1; text-transform: uppercase; }
 .ra-rankings { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 16px; }

@@ -16,6 +16,7 @@
   --shadow-raise: 0 2px 4px rgba(24,38,48,.06), 0 12px 32px rgba(24,38,48,.10);
   --ease-ui: cubic-bezier(.2,.8,.2,1); --dur-fast: 120ms; --dur-base: 220ms;
   --ease-soft: cubic-bezier(.16,1,.3,1); --dur-slow: 360ms; --dur-hero: 2400ms;
+  --chart-ink-on-dark: #FFFFFF; --chart-ink-on-light: #182630;
 }
 
 /* ---- light (default) ---- */

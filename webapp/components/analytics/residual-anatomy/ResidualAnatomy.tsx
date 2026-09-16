@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Receipt } from "@/components/analytics/Receipt";
 import { readResidualAnatomyViewState, residualAnatomyViewSearch, type ResidualAnatomyViewState } from "@/lib/analytics/inspectorViewState";
 import type { ResidualAnatomyData, ResidualMetric, ResidualSegment, ResidualSport } from "@/lib/analytics/residualAnatomy";
+import { sequentialInk } from "@/lib/analytics/chartInk";
 
 const METRICS: Array<{ key: ResidualMetric; label: string }> = [
   { key: "n", label: "Rows" },
@@ -112,7 +113,7 @@ export function ResidualAnatomy({ data }: { data: ResidualAnatomyData }) {
         <table className="ra-grid"><caption>{sportLabel(sport.sport)} time bucket by probability bucket. Blank cells have no published segment.</caption><thead><tr><th scope="col">Time bucket</th>{sport.probBuckets.map(bucket => <th scope="col" key={bucket}>{bucket}</th>)}</tr></thead><tbody>{sport.grid.map(row => <tr key={row.timeBucket}><th scope="row">{row.timeBucket}</th>{row.cells.map((segment, index) => {
           const selected = segment?.sport === view.sport && segment.timeBucket === view.time && segment.probBucket === view.prob;
           const step = segment ? scaleStep(metricValue(segment, view.metric), metricMaximum) : 0;
-          return <td className={segment ? undefined : "ra-cell-missing"} key={`${row.timeBucket}-${sport.probBuckets[index]}`}>{segment ? <button type="button" className={`${selected ? "ra-cell-selected " : ""}ra-cell-seq-${step}`} aria-pressed={selected} aria-controls="ra-selected-segment" aria-label={`${sportLabel(sport.sport)} ${segmentLabel(segment)} ${selectedMetric}`} onClick={() => setView(current => ({ ...current, sport: segment.sport, time: segment.timeBucket, prob: segment.probBucket }))}>{metricText(segment, view.metric)}{selected && <span className="ra-selected-mark">Selected</span>}</button> : null}</td>;
+          return <td className={segment ? undefined : "ra-cell-missing"} key={`${row.timeBucket}-${sport.probBuckets[index]}`}>{segment ? <button type="button" data-ink={sequentialInk(step)} className={`${selected ? "ra-cell-selected " : ""}ra-cell-seq-${step}`} aria-pressed={selected} aria-controls="ra-selected-segment" aria-label={`${sportLabel(sport.sport)} ${segmentLabel(segment)} ${selectedMetric}`} onClick={() => setView(current => ({ ...current, sport: segment.sport, time: segment.timeBucket, prob: segment.probBucket }))}>{metricText(segment, view.metric)}{selected && <span className="ra-selected-mark">Selected</span>}</button> : null}</td>;
         })}</tr>)}</tbody></table>
       </div>
       {selected && <Inspector segment={selected} />}

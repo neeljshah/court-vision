@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
 import { ResidualAnatomy } from "./ResidualAnatomy";
@@ -70,5 +72,12 @@ describe("ResidualAnatomy", () => {
     expect(sportPanel).not.toBeNull();
     expect(within(sportPanel!).getByLabelText("Selected residual segment")).toHaveTextContent("published segment contains 4 rows");
     expect(new URLSearchParams(window.location.search).get("sport")).toBe("soccer_intl");
+  });
+  it("inks each grid cell from its own fill and underlines inline prose links", () => {
+    render(<ResidualAnatomy data={data} />);
+    expect(screen.getByRole("button", { name: "MLB early, 0-.2 Sum of absolute forecast errors" })).toHaveAttribute("data-ink", "light");
+    expect(screen.getByRole("button", { name: "MLB late, .2-.4 Sum of absolute forecast errors" })).toHaveAttribute("data-ink", "dark");
+    const css = readFileSync(join(process.cwd(), "app", "(analytics)", "analytics", "residual-anatomy", "residual-anatomy.css"), "utf8");
+    expect(css).toMatch(/.ra-page p a {[^}]*text-decoration: underline;[^}]*text-underline-offset/);
   });
 });

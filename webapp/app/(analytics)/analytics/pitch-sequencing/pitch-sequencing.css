@@ -16,7 +16,12 @@
 .ps-scale-legend { margin: 14px 0 4px; color: var(--ink-2); font-size: 12px; line-height: 1.5; }
 .ps-cell { cursor: pointer; stroke: var(--paper-raised); stroke-width: 1; transition: stroke var(--dur-fast) var(--ease-ui), stroke-width var(--dur-fast) var(--ease-ui); }
 .ps-cell-seq-0, .ps-table-seq-0 { background: var(--chart-seq-low); fill: var(--chart-seq-low); }.ps-cell-seq-1, .ps-table-seq-1 { background: color-mix(in srgb, var(--chart-seq-low) 75%, var(--chart-seq-high)); fill: color-mix(in srgb, var(--chart-seq-low) 75%, var(--chart-seq-high)); }.ps-cell-seq-2, .ps-table-seq-2 { background: color-mix(in srgb, var(--chart-seq-low) 50%, var(--chart-seq-high)); fill: color-mix(in srgb, var(--chart-seq-low) 50%, var(--chart-seq-high)); }.ps-cell-seq-3, .ps-table-seq-3 { background: color-mix(in srgb, var(--chart-seq-low) 25%, var(--chart-seq-high)); fill: color-mix(in srgb, var(--chart-seq-low) 25%, var(--chart-seq-high)); }.ps-cell-seq-4, .ps-table-seq-4 { background: var(--chart-seq-high); fill: var(--chart-seq-high); }.ps-cell-missing, .ps-table-missing { background: var(--chart-missing); }
-.ps-value { fill: var(--ink); font-family: var(--font-sans); font-variant-numeric: tabular-nums; }.ps-value-seq-3, .ps-value-seq-4 { fill: #FFFFFF; }
+.ps-value { fill: var(--ink); font-family: var(--font-sans); font-variant-numeric: tabular-nums; }
+/* Cell ink follows the cell fill's own luminance -- see lib/analytics/chartInk.ts. */
+.ps-value[data-ink="dark"], .ps-table td button[data-ink="dark"] { fill: var(--chart-ink-on-light); color: var(--chart-ink-on-light); }
+.ps-value[data-ink="light"], .ps-table td button[data-ink="light"] { fill: var(--chart-ink-on-dark); color: var(--chart-ink-on-dark); }
+/* The dark theme ramp is dark end to end, so every step takes the on-dark ink. */
+:root[data-theme="dark"] .ps-value[data-ink], :root[data-theme="dark"] .ps-table td button[data-ink] { fill: var(--chart-ink-on-dark); color: var(--chart-ink-on-dark); }
 .ps-cell:hover, .ps-cell:focus { stroke: var(--accent); stroke-width: 2; }
 .ps-matrix g[role="button"]:focus .ps-cell { stroke: var(--accent); stroke-width: 2.5; }
 .ps-selected { stroke: var(--ink); stroke-width: 2.5; }
@@ -32,9 +37,9 @@
 .ps-table th, .ps-table td { border-top: 1px solid var(--rule); padding: 10px 14px; text-align: right; white-space: nowrap; }
 .ps-table th { background: var(--paper-raised); color: var(--ink-3); font-size: 11px; font-weight: 700; }
 .ps-table thead th { position: sticky; top: 0; z-index: 2; }.ps-table th:first-child { text-align: left; font-family: var(--font-mono); }.ps-table thead th:first-child { left: 0; z-index: 3; }.ps-table tbody th { position: sticky; left: 0; z-index: 1; }
-.ps-table td[aria-label*="masked row"] { color: var(--ink-3); font-family: var(--font-sans); font-style: italic; }
+.ps-table td[aria-label*="masked row"] { color: var(--ink-2); font-family: var(--font-sans); font-style: italic; }
 .ps-table td button { border: 0; background: transparent; color: inherit; cursor: pointer; font: inherit; text-align: inherit; }
-.ps-table td button[aria-pressed="true"] { color: var(--accent); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.ps-table td button[aria-pressed="true"] { font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
 .ps-source-fields { margin-top: 18px; color: var(--ink-3); font-family: var(--font-mono); font-size: 11px; line-height: 1.6; }
 .ps-empty { margin-top: 20px; border: 1px dashed var(--rule-strong); border-radius: var(--radius-card); color: var(--ink-3); padding: 24px; }
 @media (max-width: 680px) { .ps-page { padding: 34px 16px 48px; } .ps-page h1 { font-size: 2.35rem; } .ps-detail { padding: 16px; } }

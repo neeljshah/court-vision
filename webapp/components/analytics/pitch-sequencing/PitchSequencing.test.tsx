@@ -65,4 +65,15 @@ describe("PitchSequencing", () => {
     expect(screen.getByRole("button", { name: "Select SL to FF" })).toHaveAttribute("aria-pressed", "true");
     expect(screen.getByText("1")).toBeInTheDocument();
   });
+  it("inks each cell from its own fill and keeps the heatmap out of the img role", () => {
+    render(<PitchSequencing data={data} />);
+    const heatmap = screen.getByTestId("pitch-sequencing-heatmap");
+    expect(heatmap).not.toHaveAttribute("role", "img");
+    expect(heatmap.querySelectorAll("[role='button']")).toHaveLength(data.pitchTypes.length ** 2);
+    fireEvent.click(screen.getByRole("button", { name: "two_strike" }));
+    expect(screen.getByRole("button", { name: "FF to FF: 50.0%" }).querySelector("text")).toHaveAttribute("data-ink", "light");
+    expect(screen.getByRole("button", { name: "FF to SL: 12.5%" }).querySelector("text")).toHaveAttribute("data-ink", "dark");
+    expect(screen.getByRole("button", { name: "Select FF to FF" })).toHaveAttribute("data-ink", "light");
+    expect(screen.getByRole("button", { name: "Select FF to SL" })).toHaveAttribute("data-ink", "dark");
+  });
 });
