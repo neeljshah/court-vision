@@ -10,6 +10,7 @@ credibility exhibit -- see docs/JOB_EVIDENCE_PACKET.md.
 """
 import glob
 import json
+import os
 from collections import defaultdict
 
 import matplotlib
@@ -18,9 +19,11 @@ import matplotlib.pyplot as plt
 
 OUT_JSON = "scripts/platformkit/analytics_showcase/out/calibration_over_time.json"
 OUT_PNG = "docs/img/calibration_over_time.png"
+CORPUS_SUFFIX = os.environ.get("CV_INGAME_CORPUS_SUFFIX", "")  # "_segmented" -> <sport>_segmented/
 CORPORA = {
-    "mlb": "data/cache/ingame_grade_joined/mlb/*.jsonl",
-    "soccer_intl": "data/cache/ingame_grade_joined/soccer_intl/*.jsonl",
+    "mlb": "data/cache/ingame_grade_joined/mlb%s/*.jsonl" % CORPUS_SUFFIX,
+    "soccer_intl":
+        "data/cache/ingame_grade_joined/soccer_intl%s/*.jsonl" % CORPUS_SUFFIX,
 }
 N_BINS = 10
 

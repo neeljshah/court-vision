@@ -40,9 +40,9 @@ import numpy as np
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 IN_DIR = os.path.join(REPO_ROOT, "data", "cache", "ingame_grade_joined")
+CORPUS_SUFFIX = os.environ.get("CV_INGAME_CORPUS_SUFFIX", "")  # "_segmented" -> <sport>_segmented/
 OUT_JSON = os.path.join(REPO_ROOT, "scripts", "platformkit", "analytics_showcase", "out", "calibration_stability.json")
 OUT_PNG = os.path.join(REPO_ROOT, "docs", "img", "calibration_stability.png")
-
 SPORTS = ["mlb", "soccer_intl"]
 SIDES = [("model_prob", "model"), ("market_prob", "market")]
 N_BINS = 10
@@ -57,7 +57,7 @@ def load_sport(sport):
     """Column-selective jsonl read: keep only (game_id, model_prob, market_prob,
     outcome) per row; drop rows missing any of them. mlb_clean is not read."""
     gid, mp, kp, y = [], [], [], []
-    for path in sorted(glob.glob(os.path.join(IN_DIR, sport, "*.jsonl"))):
+    for path in sorted(glob.glob(os.path.join(IN_DIR, sport + CORPUS_SUFFIX, "*.jsonl"))):
         with open(path, encoding="utf-8") as f:
             for line in f:
                 line = line.strip()

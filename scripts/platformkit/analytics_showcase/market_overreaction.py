@@ -23,6 +23,7 @@ soccer_intl corpora we hold. VERDICT: INCREMENTAL.
 """
 import glob
 import json
+import os
 from collections import defaultdict
 
 import matplotlib
@@ -31,9 +32,11 @@ import matplotlib.pyplot as plt
 
 OUT_JSON = "scripts/platformkit/analytics_showcase/out/market_overreaction.json"
 OUT_PNG = "docs/img/market_overreaction.png"
+CORPUS_SUFFIX = os.environ.get("CV_INGAME_CORPUS_SUFFIX", "")  # "_segmented" -> <sport>_segmented/
 CORPORA = {
-    "mlb": "data/cache/ingame_grade_joined/mlb/*.jsonl",
-    "soccer_intl": "data/cache/ingame_grade_joined/soccer_intl/*.jsonl",
+    "mlb": "data/cache/ingame_grade_joined/mlb%s/*.jsonl" % CORPUS_SUFFIX,
+    "soccer_intl":
+        "data/cache/ingame_grade_joined/soccer_intl%s/*.jsonl" % CORPUS_SUFFIX,
 }
 BUCKET_EDGES = [0.0, 0.01, 0.03, 0.06, 0.10, 1.01]
 BUCKET_LABELS = ["0-1pt", "1-3pt", "3-6pt", "6-10pt", "10pt+"]

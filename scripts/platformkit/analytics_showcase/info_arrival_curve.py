@@ -21,6 +21,7 @@ regression coefficient. VERDICT: INCREMENTAL.
 """
 import glob
 import json
+import os
 import math
 import re
 from collections import defaultdict
@@ -31,9 +32,11 @@ import matplotlib.pyplot as plt
 
 OUT_JSON = "scripts/platformkit/analytics_showcase/out/info_arrival_curve.json"
 OUT_PNG = "docs/img/info_arrival_curve.png"
+CORPUS_SUFFIX = os.environ.get("CV_INGAME_CORPUS_SUFFIX", "")  # "_segmented" -> <sport>_segmented/
 CORPORA = {
-    "mlb": "data/cache/ingame_grade_joined/mlb/*.jsonl",
-    "soccer_intl": "data/cache/ingame_grade_joined/soccer_intl/*.jsonl",
+    "mlb": "data/cache/ingame_grade_joined/mlb%s/*.jsonl" % CORPUS_SUFFIX,
+    "soccer_intl":
+        "data/cache/ingame_grade_joined/soccer_intl%s/*.jsonl" % CORPUS_SUFFIX,
 }
 SCORE_RE = re.compile(r"home_score=([\d.]+) away_score=([\d.]+)")
 INNING_RE = re.compile(r"inning=(\d+)")

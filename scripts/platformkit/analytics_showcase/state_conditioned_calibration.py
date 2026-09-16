@@ -24,6 +24,7 @@ except ImportError:
     from _clone_safe import verify_recorded_artifact
 
 CORPUS_DIR = os.path.join(ROOT, "data", "cache", "ingame_grade_joined")
+CORPUS_SUFFIX = os.environ.get("CV_INGAME_CORPUS_SUFFIX", "")  # "_segmented" -> <sport>_segmented/
 OUT_JSON = os.path.join(ROOT, "scripts", "platformkit", "analytics_showcase", "out", "state_conditioned_calibration.json")
 OUT_PNG = os.path.join(ROOT, "docs", "img", "state_calibration_heatmap.png")
 
@@ -73,7 +74,7 @@ def prob_bucket(p):
 
 
 def load_records(sport):
-    files = sorted(glob.glob(os.path.join(CORPUS_DIR, sport, "*.jsonl")))
+    files = sorted(glob.glob(os.path.join(CORPUS_DIR, sport + CORPUS_SUFFIX, "*.jsonl")))
     recs = []
     for fp in files:
         with open(fp, encoding="utf-8") as f:

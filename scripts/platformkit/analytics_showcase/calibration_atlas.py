@@ -22,23 +22,24 @@ Usage:
 """
 import glob
 import json
+import os
 import re
 from collections import defaultdict
 from datetime import datetime, timezone
-from pathlib import Path
 
 try:
     from scripts.platformkit.analytics_showcase.atlas_factory import (
-        card_figure, write_manifest, slugify, card_path, resolve_card_path, REPO_ROOT, OUT_DIR)
+        card_figure, write_manifest, card_path, resolve_card_path, REPO_ROOT, OUT_DIR)
     from scripts.platformkit.analytics_showcase.state_conditioned_calibration import (
         PROB_BINS, PROB_LABELS, prob_bucket)
 except ImportError:
-    from atlas_factory import card_figure, write_manifest, slugify, card_path, resolve_card_path, REPO_ROOT, OUT_DIR
+    from atlas_factory import card_figure, write_manifest, card_path, resolve_card_path, REPO_ROOT, OUT_DIR
     from state_conditioned_calibration import PROB_BINS, PROB_LABELS, prob_bucket
 
 ATLAS_BUCKET = "calibration"  # atlas_factory "sport" slot -> flat docs/img/atlas/calibration/
 CARD_DIR = REPO_ROOT / "docs" / "img" / "atlas" / ATLAS_BUCKET
 CORPUS_DIR = REPO_ROOT / "data" / "cache" / "ingame_grade_joined"
+CORPUS_SUFFIX = os.environ.get("CV_INGAME_CORPUS_SUFFIX", "")  # "_segmented" -> <sport>_segmented/
 SPORTS = ["mlb", "soccer_intl"]  # mlb_clean skipped: byte-identical dup of mlb
 
 INNING_RE = re.compile(r"inning=(\d+)")
@@ -81,7 +82,7 @@ BUCKET_SCHEME = {
 def load_rows(sport):
     # ponytail: mirrors the inline loader every sibling module in this dir carries (calibration_over_time.py, murphy_decomposition.py, ...) -- same 3-field filter.
     rows = []
-    for path in sorted(glob.glob(str(CORPUS_DIR / sport / "*.jsonl"))):
+    for path in sorted(glob.glob(str(CORPUS_DIR / (sport + CORPUS_SUFFIX) / "*.jsonl"))):
         with open(path, encoding="utf-8") as f:
             for line in f:
                 line = line.strip()

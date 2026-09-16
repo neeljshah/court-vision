@@ -1,0 +1,564 @@
+{
+  "slug": "sample-size-and-rate-leaderboards-mlb",
+  "title": "How sample size changes a rate leaderboard",
+  "subtitle": "Empirical-Bayes shrinkage of three MLB rate leaderboards in a fixed 2022-2023 window",
+  "authors": [
+    "CourtVision research"
+  ],
+  "date": "2026-09-16",
+  "sport": "mlb",
+  "keywords": [
+    "empirical Bayes",
+    "shrinkage",
+    "sample size",
+    "MLB rates",
+    "regression to the mean",
+    "descriptive"
+  ],
+  "abstract": "This note examines three MLB rate leaderboards from a fixed 2022-2023 Statcast corpus slice (observation_window.corpus_id statcast_fuller_v1, observation_window.as_of 2026-07-05, module mlb_shrinkage, as_of 2026-07-24) after each entity's raw rate is passed through a Beta-binomial empirical-Bayes shrinkage: catcher out-of-zone strike rate (113 entities, pooled_mean 0.2813, kappa 834.93), umpire out-of-zone strike rate (102 entities, pooled_mean 0.2813, kappa 2830.5), and on-base rate against left-handed pitching, floored at pa_vs_l>=20 (394 entities, pooled_mean 0.3238, kappa 226.3). Because each entity's rate is a proportion over a fixed number of events n, a low-n entity is pulled further toward its group's pooled mean than a high-n entity is. Sandy Leon's raw catcher out-of-zone rate of 0.3015 (n=2537) is the group's fifth-highest raw rate but falls to eighth once shrunk to 0.2965, passed by catchers with far larger n: Travis d'Arnaud (n=11281), Cal Raleigh (n=14504), and Jacob Stallings (n=12090). Mitch Garver's raw on-base rate vs left-handed pitching, 0.4527 at n=148, is the group's highest raw rate but drops to fifth once shrunk to 0.3748, a movement of 0.0779, the single largest regression recorded across all three groups' published biggest-regressor lists. This is a description of how one published prior moves 36 listed entities inside a closed window; it is not a forecast of any future rate, the window is not extended, and the prior is estimated from the same 2022-2023 population it shrinks.",
+  "sections": [
+    {
+      "id": "question",
+      "heading": "Question",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "A rate leaderboard built straight from raw counts rewards small samples that happened to run hot. The mlb_shrinkage.json artifact (site module mlb_shrinkage, as_of 2026-07-24) takes three such leaderboards from a fixed 2022-2023 Statcast slice and asks what each entity's rate looks like once a Beta-binomial prior, fit from the group's own population, pulls it toward the group mean. The artifact's own headline states the result plainly: 'Small-sample rate leaders regress toward the group mean under empirical-Bayes shrinkage; the raw leaderboard overstates them' (headline). This note works through what that shrinkage does mechanically, which published entities move the most once it is applied, and what the exercise does and does not establish about any of the named players or umpires."
+        },
+        {
+          "type": "p",
+          "text": "Three groups are covered: catcher out-of-zone strike rate (113 entities), umpire out-of-zone strike rate (102 entities), and on-base rate against left-handed pitching, restricted to hitters with at least 20 plate appearances against lefties (394 entities, groups[].floor = 'pa_vs_l>=20'). All three groups are marked descriptive_only=true in the artifact. The out-of-zone groups carry an added caution in their own labels: 'NOT a framing/called-strike rate; descriptive' (groups[].label, catcher_ooz and umpire_ooz). Nothing here is a skill claim, a park- or umpire-quality ranking, or an input to any forecast."
+        }
+      ]
+    },
+    {
+      "id": "data",
+      "heading": "Data and definitions",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "Both leaderboards and the shrinkage applied to them come from one source: observation_window.corpus_id = 'statcast_fuller_v1', a per-pitch 2022-2023 Statcast pull, with observation_window.as_of = 2026-07-05T02:39:36.769430+00:00 marking when that corpus slice was captured, and the module's own as_of (site_manifest.json, mlb_shrinkage entry) = 2026-07-24T23:02:15.164907+00:00 marking when the shrinkage was fitted from it. This is not the in-game win-probability tick corpus that carries a separate, documented multi-game-label data-integrity notice elsewhere on this site; statcast_fuller_v1 is a pitch-level Statcast pull with its own fixed window (observation_window.seasons = '2022_2023'), and that in-game-corpus notice does not apply to any number in this note."
+        },
+        {
+          "type": "p",
+          "text": "The three groups differ in size and in what they measure. Catcher out-of-zone strike rate covers 113 catchers (groups[].n_entities); umpire out-of-zone strike rate covers 102 umpires; on-base rate vs left-handed pitching covers 394 hitters who cleared the 20-plate-appearance floor. 'Out-of-zone strike' here means any pitch outside the strike zone coded a strike by any means -- called, swung at and missed, or fouled -- attributed to the catcher receiving it or the umpire calling it; the group's own label repeats that this is not a framing or called-strike-skill measure. On-base rate vs LHP is a hits-plus-walks-plus-hit-by-pitch-over-plate-appearances rate restricted to plate appearances against left-handed pitchers."
+        }
+      ]
+    },
+    {
+      "id": "method",
+      "heading": "Method",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "The artifact's own method field describes a Beta-binomial prior fit per group by method of moments (method). A pooled mean m is the sum of successes over the sum of trials across every entity in the group (m = sum(k)/sum(n)). kappa, defined as alpha+beta, is solved from the Beta-Binomial variance identity: the extra spread in the raw rates beyond what binomial sampling noise alone would produce is attributed to the prior, kappa = m*(1-m) / max(Var(p_i) - mean(m*(1-m)/n_i), tiny) - 1, floored at 1.0 if the raw rates show no more spread than sampling noise alone (method). alpha = m*kappa and beta = (1-m)*kappa follow directly."
+        },
+        {
+          "type": "math",
+          "text": "shrunk_i = (k_i + alpha) / (n_i + alpha + beta), where k_i = raw_rate_i * n_i and kappa = alpha + beta (posterior mean of a Beta(alpha, beta) prior updated by k_i successes in n_i trials)"
+        },
+        {
+          "type": "p",
+          "text": "That posterior mean has an equivalent, more legible form: shrunk_i = (1 - w_i) * raw_rate_i + w_i * pooled_mean, where w_i = kappa / (n_i + kappa). This is the artifact's own kappa (alpha+beta) divided by an entity's own n, both published fields; it is not a new measurement, only a restatement of the blend as a ratio of two cited numbers. Checking it against a published row confirms the identity: Drew Millas, n=585, raw_rate=0.212, w = 834.93/(585+834.93) = 0.588; (1-0.588)*0.212 + 0.588*0.2813 = 0.2527, matching the published shrunk_rate of 0.2528 to rounding (groups[key=catcher_ooz].biggest_regressors, name=Drew Millas)."
+        },
+        {
+          "type": "callout",
+          "label": "Definition",
+          "text": "Prior weight w_i = kappa/(n_i+kappa) is the share of an entity's shrunk rate that comes from the group's pooled mean rather than from its own raw rate. w_i is close to 1 when an entity's own n_i is small relative to the group's kappa, and close to 0 when n_i is large relative to kappa; kappa itself is the group's published alpha+beta."
+        },
+        {
+          "type": "p",
+          "text": "The published kappa values are 834.93 for catchers, 2830.5 for umpires, and 226.3 for the platoon group, all well above the 1.0 floor the method applies when a group's raw rates show no more spread than binomial noise alone (method). The artifact does not state whether that floor was reached for any group here; it reports only the fitted values."
+        },
+        {
+          "type": "callout",
+          "label": "Caution",
+          "text": "The prior (pooled_mean, alpha, beta, kappa) is estimated from the same 2022-2023 population it then shrinks. That is standard empirical-Bayes practice, not an error, but the prior is not an externally validated benchmark; a different season's population would fit a different pooled_mean and kappa."
+        }
+      ]
+    },
+    {
+      "id": "results",
+      "heading": "Results",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "The three fitted priors differ enough to change how hard shrinkage pulls at a given sample size: a larger kappa relative to a typical n pulls harder toward the pooled mean, a smaller one pulls less."
+        },
+        {
+          "type": "table",
+          "caption": "Group priors: pooled mean, alpha, beta, kappa",
+          "columns": [
+            "Group",
+            "Entities (n)",
+            "Pooled mean",
+            "Alpha",
+            "Beta",
+            "Kappa"
+          ],
+          "rows": [
+            [
+              "Catcher out-of-zone strike rate",
+              "113",
+              "28.13%",
+              "234.91",
+              "600.02",
+              "834.93"
+            ],
+            [
+              "Umpire out-of-zone strike rate",
+              "102",
+              "28.13%",
+              "796.18",
+              "2034.32",
+              "2830.50"
+            ],
+            [
+              "On-base rate vs LHP (floor pa_vs_l>=20)",
+              "394",
+              "32.38%",
+              "73.29",
+              "153.01",
+              "226.30"
+            ]
+          ],
+          "note": "Source: mlb_shrinkage.json, groups[].label / n_entities / pooled_mean / alpha / beta / kappa, observation_window.seasons=2022_2023, as_of 2026-07-24."
+        },
+        {
+          "type": "p",
+          "text": "Umpires carry the largest kappa (2830.5) against out-of-zone strike rates that cluster near the same 0.2813 pooled_mean as catchers (kappa 834.93) -- so at an identical n, an umpire's raw rate is shrunk harder toward 0.2813 than a catcher's is. The platoon group's kappa (226.3) is far smaller than either out-of-zone group's, but its typical n (plate appearances against lefties) is also far smaller than the pitch counts behind the out-of-zone rates, so prior weight in that group still runs high for its smallest-n entities: 68.3 percent for Jesus Sanchez at n=105 (groups[key=platoon_vs_lhp].biggest_regressors, name=Jesus Sanchez)."
+        },
+        {
+          "type": "p",
+          "text": "Table 2 lists the source's 12 published biggest_regressors for catcher out-of-zone strike rate, already ordered by the artifact from largest to smallest absolute regression, where regression = raw_rate - shrunk_rate. One name, Carlos Perez, appears twice in the source's own list at two different sample sizes (n=1277 and n=2234); both rows are reproduced here exactly as published, without further disambiguation, since the source does not distinguish them."
+        },
+        {
+          "type": "table",
+          "caption": "Catcher out-of-zone strike rate: biggest published regressors",
+          "columns": [
+            "Entity",
+            "n",
+            "Raw rate",
+            "Shrunk rate",
+            "Prior weight kappa/(n+kappa)"
+          ],
+          "rows": [
+            [
+              "Drew Millas",
+              "585",
+              "21.20%",
+              "25.28%",
+              "58.8%"
+            ],
+            [
+              "Cooper Hummel",
+              "914",
+              "21.77%",
+              "24.81%",
+              "47.7%"
+            ],
+            [
+              "Carlos Perez",
+              "1277",
+              "23.88%",
+              "25.56%",
+              "39.5%"
+            ],
+            [
+              "David Fry",
+              "882",
+              "25.28%",
+              "26.67%",
+              "48.6%"
+            ],
+            [
+              "Logan Porter",
+              "668",
+              "26.20%",
+              "27.27%",
+              "55.6%"
+            ],
+            [
+              "Brett Sullivan",
+              "1708",
+              "25.12%",
+              "26.11%",
+              "32.8%"
+            ],
+            [
+              "Manny Pina",
+              "541",
+              "29.76%",
+              "28.77%",
+              "60.7%"
+            ],
+            [
+              "P.J. Higgins",
+              "1946",
+              "24.97%",
+              "25.92%",
+              "30.0%"
+            ],
+            [
+              "Payton Henry",
+              "731",
+              "26.40%",
+              "27.33%",
+              "53.3%"
+            ],
+            [
+              "Korey Lee",
+              "2159",
+              "25.01%",
+              "25.88%",
+              "27.9%"
+            ],
+            [
+              "Ivan Herrera",
+              "1208",
+              "26.24%",
+              "27.02%",
+              "40.9%"
+            ],
+            [
+              "Carlos Perez",
+              "2234",
+              "25.34%",
+              "26.10%",
+              "27.2%"
+            ]
+          ],
+          "note": "Source: mlb_shrinkage.json, groups[key=catcher_ooz].biggest_regressors[].{name,n,raw_rate,shrunk_rate}; kappa=834.93; prior weight = kappa/(n+kappa), a derived ratio of the two cited fields. as_of 2026-07-24."
+        },
+        {
+          "type": "p",
+          "text": "The source's separate top_by_shrunk list -- its own published leaderboard after shrinkage -- shows where this reordering actually lands. Ranked by raw_rate alone, Austin Barnes (raw_rate 0.3049, n=6707) sits ahead of Alejandro Kirk (raw_rate 0.3048, n=10963) for the group's second spot; ranked by shrunk_rate, Kirk (0.3031) passes Barnes (0.3023), because Kirk's much larger n shrinks less. Sandy Leon's raw_rate of 0.3015 (n=2537) is the group's fifth-highest raw rate, but his shrunk_rate of 0.2965 falls to eighth, passed by three catchers with far larger samples: Travis d'Arnaud (n=11281, shrunk_rate 0.2982), Cal Raleigh (n=14504, shrunk_rate 0.2981), and Jacob Stallings (n=12090, shrunk_rate 0.2969) (groups[key=catcher_ooz].top_by_shrunk). A raw-rate leaderboard and a shrunk-rate leaderboard are not the same ordering, and the gap between them is largest exactly where sample size varies most."
+        },
+        {
+          "type": "p",
+          "text": "Table 3 lists the umpire group's 12 published biggest_regressors. Randy Rosenberg shows the group's largest absolute regression: a raw_rate of 0.3142 at the smallest listed n (506) shrinks to 0.2863, a movement of 0.0279, larger than any other umpire's listed movement, consistent with having both the smallest n and a raw rate well above the 0.2813 pooled_mean."
+        },
+        {
+          "type": "table",
+          "caption": "Umpire out-of-zone strike rate: biggest published regressors",
+          "columns": [
+            "Entity",
+            "n",
+            "Raw rate",
+            "Shrunk rate",
+            "Prior weight kappa/(n+kappa)"
+          ],
+          "rows": [
+            [
+              "Randy Rosenberg",
+              "506",
+              "31.42%",
+              "28.63%",
+              "84.8%"
+            ],
+            [
+              "David Arrieta",
+              "754",
+              "25.86%",
+              "27.65%",
+              "79.0%"
+            ],
+            [
+              "Derek Thomas",
+              "2608",
+              "25.23%",
+              "26.74%",
+              "52.0%"
+            ],
+            [
+              "Marty Foster",
+              "1492",
+              "29.83%",
+              "28.71%",
+              "65.5%"
+            ],
+            [
+              "Jacob Metz",
+              "1735",
+              "29.86%",
+              "28.78%",
+              "62.0%"
+            ],
+            [
+              "Brian Walsh",
+              "1960",
+              "29.80%",
+              "28.81%",
+              "59.1%"
+            ],
+            [
+              "Greg Gibson",
+              "1308",
+              "29.51%",
+              "28.57%",
+              "68.4%"
+            ],
+            [
+              "John Bacon",
+              "2933",
+              "26.70%",
+              "27.40%",
+              "49.1%"
+            ],
+            [
+              "Jerry Meals",
+              "3759",
+              "29.74%",
+              "29.05%",
+              "43.0%"
+            ],
+            [
+              "Bill Miller",
+              "8815",
+              "30.77%",
+              "30.12%",
+              "24.3%"
+            ],
+            [
+              "Laz Diaz",
+              "7197",
+              "30.23%",
+              "29.64%",
+              "28.2%"
+            ],
+            [
+              "Chris Conroy",
+              "4251",
+              "29.55%",
+              "28.98%",
+              "40.0%"
+            ]
+          ],
+          "note": "Source: mlb_shrinkage.json, groups[key=umpire_ooz].biggest_regressors[].{name,n,raw_rate,shrunk_rate}; kappa=2830.50; prior weight = kappa/(n+kappa). as_of 2026-07-24."
+        },
+        {
+          "type": "p",
+          "text": "Table 4 lists the platoon group's 12 published biggest_regressors. Mitch Garver's raw on-base rate against lefties is 0.4527 at n=148, the highest raw_rate in the group's own top_by_shrunk list, but his shrunk_rate of 0.3748 ranks fifth once every entity is shrunk, behind Paul Goldschmidt (n=308, shrunk_rate 0.3898), William Contreras (n=293, shrunk_rate 0.3876), Robbie Grossman (n=286, shrunk_rate 0.3812), and Yandy Diaz (n=284, shrunk_rate 0.3749) -- four hitters whose raw rates were all lower than Garver's but whose sample sizes were roughly double his, so shrinkage cost them less (groups[key=platoon_vs_lhp].top_by_shrunk). Garver's own regression of 0.0779 is the largest movement, in either direction, across all three groups' published biggest_regressors lists."
+        },
+        {
+          "type": "table",
+          "caption": "On-base rate vs LHP (floor pa_vs_l>=20): biggest published regressors",
+          "columns": [
+            "Entity",
+            "n",
+            "Raw rate",
+            "Shrunk rate",
+            "Prior weight kappa/(n+kappa)"
+          ],
+          "rows": [
+            [
+              "Jesus Sanchez",
+              "105",
+              "19.05%",
+              "28.16%",
+              "68.3%"
+            ],
+            [
+              "Nick Ahmed",
+              "138",
+              "18.12%",
+              "26.98%",
+              "62.1%"
+            ],
+            [
+              "Gabriel Arias",
+              "144",
+              "18.06%",
+              "26.81%",
+              "61.1%"
+            ],
+            [
+              "Brett Baty",
+              "106",
+              "19.81%",
+              "28.37%",
+              "68.1%"
+            ],
+            [
+              "Mitch Garver",
+              "148",
+              "45.27%",
+              "37.48%",
+              "60.5%"
+            ],
+            [
+              "Sheldon Neuse",
+              "110",
+              "20.91%",
+              "28.63%",
+              "67.3%"
+            ],
+            [
+              "JJ Bleday",
+              "115",
+              "20.87%",
+              "28.50%",
+              "66.3%"
+            ],
+            [
+              "James McCann",
+              "185",
+              "19.46%",
+              "26.57%",
+              "55.0%"
+            ],
+            [
+              "Alek Thomas",
+              "177",
+              "20.34%",
+              "27.10%",
+              "56.1%"
+            ],
+            [
+              "Jackie Bradley Jr.",
+              "117",
+              "22.22%",
+              "28.92%",
+              "65.9%"
+            ],
+            [
+              "Jazz Chisholm Jr.",
+              "133",
+              "21.80%",
+              "28.47%",
+              "63.0%"
+            ],
+            [
+              "Connor Wong",
+              "126",
+              "22.22%",
+              "28.75%",
+              "64.2%"
+            ]
+          ],
+          "note": "Source: mlb_shrinkage.json, groups[key=platoon_vs_lhp].biggest_regressors[].{name,n,raw_rate,shrunk_rate}; kappa=226.30; prior weight = kappa/(n+kappa). as_of 2026-07-24."
+        },
+        {
+          "type": "figure",
+          "module": "mlb_shrinkage",
+          "caption": "Published catcher, umpire, and platoon empirical-Bayes shrinkage groups (mlb_shrinkage.json): pooled priors, biggest regressors, and shrunk-rate leaderboards for the fixed 2022-2023 Statcast slice."
+        }
+      ]
+    },
+    {
+      "id": "checks",
+      "heading": "Robustness and what would falsify this",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "The direction of every listed regression is consistent with the mechanism: whenever raw_rate sits above its group's pooled_mean, regression is positive (raw pulled down); whenever it sits below, regression is negative (raw pulled up). All 12 catcher rows, all 12 umpire rows, and all 12 platoon rows in the published biggest_regressors lists satisfy this without exception. A single row breaking that pattern -- a raw rate above the pooled mean shrinking further upward, or the reverse -- would indicate either a fitting error or a group whose pooled_mean or kappa was misspecified; none does."
+        },
+        {
+          "type": "p",
+          "text": "A second check: the published biggest_regressors are already ordered by the size of |regression|, and that ordering tracks n inversely once distance from the pooled mean is similar -- Drew Millas (n=585, the smallest n in the catcher list) has the largest catcher regression, and Chris Conroy (n=4251, near the largest n in the umpire list) has one of the smaller umpire regressions. This is what the prior-weight formula predicts, not an independent confirmation beyond the arithmetic."
+        },
+        {
+          "type": "list",
+          "items": [
+            "Shrinkage assumes the entities are exchangeable draws from one prior, a modeling choice, not a fact (confounds).",
+            "The out-of-zone rate is descriptive, not a called-strike or framing skill measure, and not predictive (confounds).",
+            "The raw-vs-shrunk gap is the point of the exercise: it shows how much a small-sample rate should be discounted, not a new 'true skill' claim (confounds).",
+            "The window is fixed to 2022-2023; nothing here extends to any other season (confounds)."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "limitations",
+      "heading": "Limitations",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "This is a within-window description of a published prior and its effect on 36 listed entities, not a validated finding across seasons and not a model of any individual player's or umpire's true rate."
+        },
+        {
+          "type": "list",
+          "items": [
+            "This is a fixed 2022-2023 window; it is not extended to any other season and does not forecast any entity's future rate.",
+            "The prior (pooled_mean, alpha, beta, kappa) is estimated by method of moments from the same population it shrinks, not from an externally validated or held-out prior.",
+            "Out-of-zone strike rate is explicitly descriptive in the source's own group labels, not a framing or called-strike-skill measure.",
+            "Only the source's published biggest_regressors and top_by_shrunk subsets (12 rows each) are shown per group; the full 113, 102, and 394-entity populations are not reproduced here.",
+            "The reordering examples compare two published columns for named entities; they are not a significance test and do not establish that any single difference is distinguishable from sampling noise."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "use",
+      "heading": "How to read this on the site",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "On the site, the mlb_shrinkage module page carries the full published tables this note draws from, including every biggest_regressors and top_by_shrunk row for all three groups, not only the entities singled out above. Read a shrunk_rate beside its own n and the group's kappa: the same shrunk_rate can sit behind a raw_rate that barely moved (high n) or one that moved by eight or nine percentage points (low n), and the prior-weight column above is the number that tells you which."
+        },
+        {
+          "type": "p",
+          "text": "The count-and-sequencing companion paper on this site (count-state-and-next-pitch-mlb) works a different 2025 Statcast corpus from a different angle -- conditional pitch mix and sequencing by ball-strike count -- and shares this note's discipline of keeping a mix question and a conditional-probability question apart rather than collapsing them into one number. The related research-lab pages 'Published Shrinkage Displacement' (mlb-shrinkage-displacement) and 'MLB catcher out-of-zone strike rate selections' (mlb-catcher-out-of-zone-strike-rate) present these same source rows in the site's sortable table format for readers who want to re-derive the movement themselves."
+        }
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "artifact": "mlb_shrinkage.json",
+      "module": "mlb_shrinkage",
+      "asOf": "2026-07-24",
+      "fields": [
+        "headline",
+        "descriptive_only",
+        "method",
+        "observation_window.seasons",
+        "observation_window.corpus_id",
+        "observation_window.as_of",
+        "groups[].key",
+        "groups[].label",
+        "groups[].n_entities",
+        "groups[].pooled_mean",
+        "groups[].alpha",
+        "groups[].beta",
+        "groups[].kappa",
+        "groups[].floor",
+        "groups[].biggest_regressors[].name",
+        "groups[].biggest_regressors[].n",
+        "groups[].biggest_regressors[].raw_rate",
+        "groups[].biggest_regressors[].shrunk_rate",
+        "groups[].biggest_regressors[].regression",
+        "groups[].top_by_shrunk[].name",
+        "groups[].top_by_shrunk[].n",
+        "groups[].top_by_shrunk[].raw_rate",
+        "groups[].top_by_shrunk[].shrunk_rate",
+        "confounds"
+      ]
+    }
+  ],
+  "limitations": [
+    "This is a fixed 2022-2023 window; it is not extended to any other season and does not forecast any entity's future rate.",
+    "The prior (pooled_mean, alpha, beta, kappa) is estimated by method of moments from the same population it shrinks, not from an externally validated or held-out prior.",
+    "Out-of-zone strike rate is explicitly descriptive in the source's own group labels, not a framing or called-strike-skill measure.",
+    "Only the source's published biggest_regressors and top_by_shrunk subsets (12 rows each) are shown per group; the full 113, 102, and 394-entity populations are not reproduced here.",
+    "The reordering examples compare two published columns for named entities; they are not a significance test and do not establish that any single difference is distinguishable from sampling noise."
+  ],
+  "related": [
+    {
+      "kind": "module",
+      "id": "mlb_shrinkage"
+    },
+    {
+      "kind": "analysis",
+      "id": "mlb-shrinkage-displacement"
+    },
+    {
+      "kind": "analysis",
+      "id": "mlb-catcher-out-of-zone-strike-rate"
+    },
+    {
+      "kind": "paper",
+      "id": "count-state-and-next-pitch-mlb"
+    }
+  ]
+}

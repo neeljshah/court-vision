@@ -47,6 +47,7 @@ except ImportError:  # pragma: no cover - bare-script invocation
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 IN_DIR = os.path.join(REPO_ROOT, "data", "cache", "ingame_grade_joined")
+CORPUS_SUFFIX = os.environ.get("CV_INGAME_CORPUS_SUFFIX", "")  # "_segmented" -> <sport>_segmented/
 OUT_JSON = os.path.join(REPO_ROOT, "scripts", "platformkit", "analytics_showcase", "out", "brier_skill_scores.json")
 OUT_PNG = os.path.join(REPO_ROOT, "docs", "img", "brier_skill_scores.png")
 
@@ -78,7 +79,7 @@ def load_triples(sport):
     """
     bucketer = CHECKPOINTERS[sport]
     triples, checkpoint_of = [], []
-    for path in sorted(glob.glob(os.path.join(IN_DIR, sport, "*.jsonl"))):
+    for path in sorted(glob.glob(os.path.join(IN_DIR, sport + CORPUS_SUFFIX, "*.jsonl"))):
         with open(path, encoding="utf-8") as f:
             for line in f:
                 line = line.strip()
@@ -262,7 +263,7 @@ def check():
     gz = bss_grain([(0.2, 0.2, 0.0)] * 40, ybar_sport=0.0)
     assert gz["brier_clim"] == 0.0 and gz["bss_model_vs_clim"] is None, gz
 
-    if not glob.glob(os.path.join(IN_DIR, "mlb", "*.jsonl")):
+    if not glob.glob(os.path.join(IN_DIR, "mlb" + CORPUS_SUFFIX, "*.jsonl")):
         print("brier_skill_scores self-check OK (synthetic only; corpora absent -- clean clone)")
         return
     res = run()

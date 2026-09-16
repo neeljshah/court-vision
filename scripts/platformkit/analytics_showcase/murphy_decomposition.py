@@ -18,6 +18,7 @@ import os
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 IN_DIR = os.path.join(REPO_ROOT, "data", "cache", "ingame_grade_joined")
+CORPUS_SUFFIX = os.environ.get("CV_INGAME_CORPUS_SUFFIX", "")  # "_segmented" -> <sport>_segmented/
 OUT_JSON = os.path.join(REPO_ROOT, "scripts", "platformkit", "analytics_showcase", "out", "murphy_decomposition.json")
 OUT_PNG = os.path.join(REPO_ROOT, "docs", "img", "reliability_model_vs_market.png")
 N_BINS = 10
@@ -27,7 +28,7 @@ SIDES = ["model_prob", "market_prob"]
 
 def load_rows(sport):
     rows = []
-    for path in glob.glob(os.path.join(IN_DIR, sport, "*.jsonl")):
+    for path in glob.glob(os.path.join(IN_DIR, sport + CORPUS_SUFFIX, "*.jsonl")):
         with open(path, encoding="utf-8") as f:
             for line in f:
                 line = line.strip()
