@@ -103,7 +103,7 @@ def build():
         "edge_claimed": False,
         "descriptive_only": True,
         "is_honest_null": True,
-        "metric_definition": "Structural market overshoot at large in-game moves, scaled by how far short our model falls of beating the market at max disagreement -- a measured failure to harvest, not an edge.",
+        "metric_definition": "Structural market overshoot at large in-game moves, scaled by how far short the model falls of the reference forecast at max disagreement -- a measured failure to harvest, not an edge.",
         "formula": "OHG = (n-weighted mean |moved_to - outcome| over {3-6pt,6-10pt,10pt+}) * (0.5 - model_closer_rate at >=.10 disagreement).",
         "source_artifacts": [
             os.path.relpath(IN_OVER, ROOT).replace("\\", "/"),
@@ -129,9 +129,9 @@ def _headline(rows):
         return "No sport had both instruments."
     parts = []
     for r in rows:
-        parts.append(f"{r['sport']}: overshoot {r['overreaction_abs_mean']:.3f} but model beats market only "
+        parts.append(f"{r['sport']}: overshoot {r['overreaction_abs_mean']:.3f} but model matches or improves on the reference only "
                      f"{r['model_can_beat_model_closer_rate']:.0%} of the time at max disagreement -> "
-                     f"OHG {r['ohg']:.3f} (a failure to harvest, not an edge)")
+                     f"OHG {r['ohg']:.3f} (a failure to harvest, not an advantage)")
     return "; ".join(parts)
 
 

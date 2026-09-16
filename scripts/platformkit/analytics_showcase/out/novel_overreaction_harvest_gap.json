@@ -4,7 +4,7 @@
   "edge_claimed": false,
   "descriptive_only": true,
   "is_honest_null": true,
-  "metric_definition": "Structural market overshoot at large in-game moves, scaled by how far short our model falls of beating the market at max disagreement -- a measured failure to harvest, not an edge.",
+  "metric_definition": "Structural market overshoot at large in-game moves, scaled by how far short the model falls of the reference forecast at max disagreement -- a measured failure to harvest, not an edge.",
   "formula": "OHG = (n-weighted mean |moved_to - outcome| over {3-6pt,6-10pt,10pt+}) * (0.5 - model_closer_rate at >=.10 disagreement).",
   "source_artifacts": [
     "scripts/platformkit/analytics_showcase/out/market_overreaction.json",
@@ -75,14 +75,14 @@
       "market_usually_right_at_max_disagree": true
     }
   ],
-  "headline": "soccer_intl: overshoot 0.286 but model beats market only 22% of the time at max disagreement -> OHG 0.081 (a failure to harvest, not an edge); mlb: overshoot 0.072 but model beats market only 38% of the time at max disagreement -> OHG 0.009 (a failure to harvest, not an edge)",
+  "headline": "soccer_intl: overshoot 0.286 but model matches or improves on the reference only 22% of the time at max disagreement -> OHG 0.081 (a failure to harvest, not an advantage); mlb: overshoot 0.072 but model matches or improves on the reference only 38% of the time at max disagreement -> OHG 0.009 (a failure to harvest, not an advantage)",
   "index_card": {
     "stat_name": "Overreaction Harvest Gap",
     "abbrev": "OHG",
     "module": "novel_overreaction_harvest_gap",
     "formula": "OHG = (n-weighted mean |moved_to - outcome| over {3-6pt,6-10pt,10pt+}) * (0.5 - model_closer_rate at >=.10 disagreement).",
     "prior_art_verdict": "NOVEL_SELF_CRITICAL_CROSS",
-    "headline": "soccer_intl: overshoot 0.286 but model beats market only 22% of the time at max disagreement -> OHG 0.081 (a failure to harvest, not an edge); mlb: overshoot 0.072 but model beats market only 38% of the time at max disagreement -> OHG 0.009 (a failure to harvest, not an edge)",
+    "headline": "soccer_intl: overshoot 0.286 but model matches or improves on the reference only 22% of the time at max disagreement -> OHG 0.081 (a failure to harvest, not an advantage); mlb: overshoot 0.072 but model matches or improves on the reference only 38% of the time at max disagreement -> OHG 0.009 (a failure to harvest, not an advantage)",
     "edge_claimed": false,
     "is_honest_null": true,
     "source_artifacts": [
