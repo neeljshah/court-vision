@@ -29,7 +29,7 @@
       "alt_phrasings": ["show me the forecaster", "prediction quality page", "how accurate is the model"],
       "a": {
         "status": "ok",
-        "answer": "/analytics/forecaster assembles six committed aggregates: walk-forward win-probability results, state-conditioned calibration, the Murphy decomposition, calibration stability, Brier skill scores and the cross-sport scoreboard. The headline it supports is calibration, not profit -- the model matches the devigged close pregame and trails the market in-game.",
+        "answer": "/analytics/forecaster assembles six committed aggregates: walk-forward win-probability results, state-conditioned calibration, the Murphy decomposition, calibration stability, Brier skill scores and the cross-sport scoreboard. Its headline is calibration: the model matches the devigged close pregame and trails the market in-game.",
         "source_artifact": "webapp/public/data/showcase/forecaster/manifest.json",
         "as_of": "2026-07-23"
       },
@@ -337,7 +337,7 @@
       "alt_phrasings": ["execution audit", "paper trading page", "do you track fills"],
       "a": {
         "status": "ok",
-        "answer": "/analytics/m/paper_execution_audit is an execution-quality measurement -- how orders would have filled and how state lag affects that -- not a returns ledger. No profit, ROI or bankroll figure is published anywhere on this site, and questions phrased that way are refused rather than answered.",
+        "answer": "/analytics/m/paper_execution_audit is an execution-quality measurement -- how orders would have filled and how state lag affects that. It publishes no realized return figure, and financial-guidance questions are refused rather than answered.",
         "source_artifact": "webapp/public/data/showcase/site_manifest.json",
         "as_of": "2026-07-24"
       },
@@ -403,7 +403,7 @@
       "alt_phrasings": ["betting picks", "what should I bet", "give me a play"],
       "a": {
         "status": "refused",
-        "answer": "No. This is a calibration product and every module carries edge_claimed=false; no pick, stake, ROI or bankroll figure is published anywhere. If you want the honest reason, /analytics/m/cross_sport_scoreboard and /analytics/m/brier_skill_scores show the model trailing the market at every in-game grain measured.",
+        "answer": "No. This is a calibration product, and the published modules are descriptive. /analytics/m/cross_sport_scoreboard and /analytics/m/brier_skill_scores show the model trailing the market at every in-game grain measured.",
         "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
         "as_of": "2026-07-24"
       },

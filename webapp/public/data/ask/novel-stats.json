@@ -29,7 +29,7 @@
       "alt_phrasings": ["can I bet these novel stats", "are the new metrics profitable", "do these give an edge"],
       "a": {
         "status": "refused",
-        "answer": "No, and none of them is built to. All six cards are stamped edge_claimed=false and descriptive_only=true, and the one that comes closest to a market angle -- the Overreaction Harvest Gap -- exists precisely to record that the model cannot cash the overshoot it measures. There is no dollar, ROI or profit figure attached to any of these stats.",
+        "answer": "No, and none of them is built to. All six cards are stamped descriptive_only=true, and the one that comes closest to a market angle -- the Overreaction Harvest Gap -- records that the model cannot identify the overshoot it measures in advance. These stats publish no financial outcome figure.",
         "source_artifact": "webapp/public/data/showcase/novel_stats_index.json",
         "as_of": "2026-07-24"
       },
@@ -469,7 +469,7 @@
       "alt_phrasings": ["can you exploit market overreaction", "is overshoot an edge", "trade the overreaction"],
       "a": {
         "status": "refused",
-        "answer": "Not on this evidence, and that is exactly why the stat exists. The card's first declared confound is mandatory language: OHG is an honest null, and at maximum disagreement the market is usually right (model_closer_rate 0.38 in MLB, 0.22 in soccer). Overshoot that we cannot identify in advance is not a tradable quantity, and no dollar figure is attached anywhere.",
+        "answer": "Not on this evidence, and that is exactly why the stat exists. The card's first declared confound is mandatory language: OHG is an honest null, and at maximum disagreement the market is usually right (model_closer_rate 0.38 in MLB, 0.22 in soccer). Overshoot that we cannot identify in advance is not actionable from this artifact.",
         "source_artifact": "webapp/public/data/showcase/novel_overreaction_harvest_gap.json",
         "as_of": "2026-07-24"
       },

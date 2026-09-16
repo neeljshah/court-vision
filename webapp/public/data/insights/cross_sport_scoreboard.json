@@ -4,7 +4,7 @@
  "headline_insight": "Across 17 head-to-head checkpoints the model out-sharpens the market in only three, all MLB late-inning run-totals (end innings 6, 7 and 8), and every one is still flagged PROVISIONAL.",
  "what_it_means": "One rating object is scored out-of-sample against the market across sports and game states. Most rows are UNDERPOWERED (their confidence interval spans zero) or favor the market. The only rows where the model is sharper are MLB total-runs forecasts from the 6th inning on -- plausibly because a late-game run-total is a countable, low-news quantity the sim handles well.",
  "how_to_read": "Each row's paired_delta_mean is model-minus-market skill; positive favors the model, but trust it only when the verdict reads MODEL_SHARPER and the 95% interval clears zero.",
- "why_it_matters": "It is an honest scoreboard that names the handful of spots worth pursuing instead of claiming a broad edge.",
+ "why_it_matters": "It is an honest scoreboard that identifies the few provisional model-sharper rows and the broader set favoring the market.",
  "caveat": "Even the three winning rows rest on small samples (n=54, 55, 49) and are labeled PROVISIONAL; the NBA end_q1 winprob row shows the market sharper (paired_delta_mean -0.0084).",
  "cited": [
   {"path": "webapp/public/data/showcase/cross_sport_scoreboard.json", "field": "n_rows", "value": 17},

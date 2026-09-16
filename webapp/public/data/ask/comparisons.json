@@ -1,6 +1,6 @@
 {
   "bucket": "comparisons",
-  "note": "Head-to-head comparisons -- sport versus sport, team versus team, market versus market, count versus count -- built only from values that exist in committed artifacts. Where two things are measured on different corpora or different units, the entry says so instead of implying a clean ranking. Descriptive comparison only; no dollar, ROI or profit claim.",
+  "note": "Head-to-head comparisons -- sport versus sport, team versus team, market versus market, count versus count -- built only from values that exist in committed artifacts. Where two things are measured on different corpora or different units, the entry says so instead of implying a clean ranking. Descriptive comparison only.",
   "entries": [
     {
       "q": "Which sport is the most predictable?",
@@ -513,7 +513,7 @@
       "alt_phrasings": ["model vs baseline", "is the model better than nothing", "model vs climatology"],
       "a": {
         "status": "ok",
-        "answer": "In MLB yes, modestly: BSS of +0.042 against a constant base rate over 78,986 rows, peaking at +0.1431 in the middle innings. In soccer no: -0.3134 overall, meaning the state-only model is worse than simply quoting the league base rate. Beating climatology is a low bar and is explicitly not an edge.",
+        "answer": "In MLB yes, modestly: BSS of +0.042 against a constant base rate over 78,986 rows, peaking at +0.1431 in the middle innings. In soccer no: -0.3134 overall, meaning the state-only model is worse than simply quoting the league base rate. This is a comparison with climatology.",
         "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
         "as_of": "2026-07-24"
       },

@@ -1,6 +1,6 @@
 {
   "bucket": "methodology",
-  "note": "How the system is built, tested and graded: the leak-free gate, walk-forward validation, devigging, the claim ledger, the reject graveyard, the answer contract, and who wrote the code. Numbers are copied verbatim from committed artifacts. Measurement hygiene only -- no dollar, ROI or profit claim appears here, and honest nulls are counted as results.",
+  "note": "How the system is built, tested and graded: the leak-free gate, walk-forward validation, devigging, the claim ledger, the reject graveyard, the answer contract, and who wrote the code. Numbers are copied verbatim from committed artifacts. Measurement hygiene counts honest nulls as results.",
   "entries": [
     {
       "q": "How do you decide whether a signal is real?",
@@ -62,7 +62,7 @@
       "alt_phrasings": ["what does devig mean", "removing the vig", "why devig the closing line"],
       "a": {
         "status": "ok",
-        "answer": "Posted odds include the book's margin, so the implied probabilities sum to more than one. Devigging strips that margin out to recover the market's actual probability estimate. Without it you would be comparing a calibrated forecast against a number that is deliberately biased, and any apparent skill would just be the vig.",
+        "answer": "Posted odds include the market source's margin, so the implied probabilities sum to more than one. Devigging strips that margin out to recover the market's actual probability estimate. Without it you would be comparing a calibrated forecast against a number that is deliberately biased, and any apparent skill would just be the vig.",
         "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
         "as_of": "2026-07-07"
       },
@@ -271,7 +271,7 @@
       "alt_phrasings": ["answer envelope statuses", "what does no_data mean", "response status codes"],
       "a": {
         "status": "ok",
-        "answer": "Five, and each has a mandated behavior: ok returns the value with its receipt; no_data means the artifact is absent or zero-row and the miss must be named; not_supported means the question is outside the registry and must not be improvised; ambiguous means several different mechanisms matched; refused means the question asked for edge, ROI or a retracted number.",
+        "answer": "Five, and each has a mandated behavior: ok returns the value with its receipt; no_data means the artifact is absent or zero-row and the miss must be named; not_supported means the question is outside the registry and must not be improvised; ambiguous means several different mechanisms matched; refused means the question asked for prohibited language or a retracted number.",
         "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
         "as_of": "2026-07-23"
       },
@@ -590,7 +590,7 @@
       "alt_phrasings": ["what does edge_claimed mean", "why the edge_claimed flag", "no edge flag"],
       "a": {
         "status": "ok",
-        "answer": "It is a machine-checkable stamp that the module is a calibration or description artifact, not a profit claim. It appears on the showcase manifest, on every novel-stat card and on the Brier skill pack, and it is the reason a question phrased in ROI or bankroll terms comes back refused rather than answered.",
+        "answer": "It is a machine-checkable stamp that the module is a calibration or description artifact. It appears on the showcase manifest, on every novel-stat card and on the Brier skill pack, and it is the reason a question phrased as financial guidance comes back refused rather than answered.",
         "source_artifact": "webapp/public/data/showcase/site_manifest.json",
         "as_of": "2026-07-24"
       },

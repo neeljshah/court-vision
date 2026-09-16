@@ -2,7 +2,7 @@
  "id": "market_disagreement_profile",
  "title": "When the model disagrees most with the market, the market is right",
  "headline_insight": "At the widest model-market disagreement (gap >=.10, n=33402 MLB ticks) the model is the closer forecaster only 0.3773 of the time, and its Brier balloons to 0.282705 versus the market's 0.210258.",
- "what_it_means": "Bucketing predictions by how far the model sits from the market is a direct test of who is right when they disagree. At small disagreements the two are effectively tied. But every step up in disagreement, the model gets worse relative to the market -- at the widest gap it lands closer to the truth only about 38% of the time. Large model-market disagreements are the model being wrong, not finding an edge.",
+ "what_it_means": "Bucketing predictions by how far the model sits from the market is a direct test of who is right when they disagree. At small disagreements the two are effectively tied. But every step up in disagreement, the model gets worse relative to the market -- at the widest gap it lands closer to the truth only about 38% of the time. Large model-market disagreements show the model is wrong.",
  "how_to_read": "Each bucket is a disagreement size; a model_closer_rate below 0.5 means the market beats the model in that bucket more often than not.",
  "why_it_matters": "It is a hard guardrail against trusting the model's boldest disagreements -- the picks that look most tempting are exactly its weakest.",
  "caveat": "The same pattern holds in soccer (model_closer_rate 0.2152 at the widest gap), so it is not an MLB quirk -- though both rest on in-game corpora only.",

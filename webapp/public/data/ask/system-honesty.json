@@ -39,7 +39,7 @@
       "alt_phrasings": ["what did you get wrong", "your worst overclaim", "a headline number that fell apart"],
       "a": {
         "status": "ok",
-        "answer": "The most-cited retraction was an early pregame return-on-investment headline that turned out to be a market-follow grading artifact: the grader picked bet direction from the market's own devigged favorite and never actually read the model, priced at a flat -110 fiction, with filters tuned in-sample on the same file. Read against real closing lines the model is roughly break-even-minus-vig, about -2.00% unfiltered. The instrument that caught it was built by the same person who made the claim.",
+        "answer": "The most-cited retraction was an early pregame performance headline that turned out to be a market-follow grading artifact: the grader chose direction from the market's own devigged favorite and never actually read the model, priced at a flat -110 fiction, with filters tuned in-sample on the same file. Read against real closing lines the model is roughly break-even-minus-vig, about -2.00% unfiltered. The instrument that caught it was built by the same person who made the claim.",
         "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
         "as_of": "2026-07-23"
       },
@@ -50,7 +50,7 @@
       "alt_phrasings": ["the 55k in-play bets result", "retracted in-play accuracy", "L5 proxy ceiling"],
       "a": {
         "status": "ok",
-        "answer": "An in-play backtest once posted eye-catching accuracy and return figures on 55,073 bets, but those were settled against a soft L5 rolling-average line proxy, not real sharp closing lines. That makes it a model-quality ceiling, not a tradeable or realized result, so both figures were retracted and no dollar number is quoted in their place. The first real closing-line-value reading is not expected until October 2026.",
+        "answer": "An in-play backtest once posted eye-catching accuracy and return figures on 55,073 recorded positions, but those were settled against a soft L5 rolling-average line proxy, not real sharp closing lines. That makes it a model-quality ceiling, not a tradeable or realized result, so both figures were retracted. The first real closing-line-value reading is not expected until October 2026.",
         "source_artifact": "docs/KNOWN_LIMITATIONS.md",
         "as_of": "2026-06-11"
       },
@@ -72,7 +72,7 @@
       "alt_phrasings": ["how many signals did you kill", "rejected candidate count", "signal graveyard size"],
       "a": {
         "status": "ok",
-        "answer": "The reject ledger holds 804 recorded verdict rows, of which 628 are on a REJECT-family verdict (627 explicit REJECT) against 95 SHIP and 45 SHIP_REVIEW. As of their latest test, 68 distinct sport-signal pairs currently sit on a reject verdict. A REJECT is honest market-efficiency evidence, not a failure -- no dollar or edge claim rides on any of it.",
+        "answer": "The reject ledger holds 804 recorded verdict rows, of which 628 are on a REJECT-family verdict (627 explicit REJECT) against 95 SHIP and 45 SHIP_REVIEW. As of their latest test, 68 distinct sport-signal pairs currently sit on a reject verdict. A REJECT is honest market-efficiency evidence, not a failure.",
         "source_artifact": "webapp/public/data/showcase/reject_graveyard.json",
         "as_of": "2026-07-18"
       },
@@ -94,7 +94,7 @@
       "alt_phrasings": ["do you beat the sportsbook", "is this a profit product", "is there a real edge"],
       "a": {
         "status": "ok",
-        "answer": "No. Every committed analytics artifact carries edge_claimed=false, and against real closing lines the finding is that the market is efficient. This is a calibrated predictor whose honest win is matching the devigged close within noise, plus a measured in-game conditioning improvement -- not a dollar edge. Accuracy is not edge, and an honest reject is treated as a success.",
+        "answer": "No. Against real closing lines the finding is that the market is efficient. This is a calibrated predictor whose honest result is matching the devigged close within noise, plus a measured in-game conditioning improvement. Accuracy is not a market comparison, and an honest reject is treated as a success.",
         "source_artifact": "docs/PUBLIC_EVIDENCE.md",
         "as_of": "2026-06-11"
       },
@@ -105,7 +105,7 @@
       "alt_phrasings": ["Brier skill score vs market", "do you beat the market's Brier", "is the model sharper than the price"],
       "a": {
         "status": "ok",
-        "answer": "It does not beat the market's Brier. The in-game Brier skill score of model versus market is at or below zero everywhere: for MLB all-innings the model Brier is 0.237684 against the market's 0.206653 (skill score -0.1502), and for international soccer all-minutes it is 0.227887 against 0.142726 (skill score -0.5967). Both model and market crush the base-rate baseline, which is expected and is not an edge.",
+        "answer": "It does not beat the market's Brier. The in-game Brier skill score of model versus market is at or below zero everywhere: for MLB all-innings the model Brier is 0.237684 against the market's 0.206653 (skill score -0.1502), and for international soccer all-minutes it is 0.227887 against 0.142726 (skill score -0.5967). Both model and market improve on the base-rate baseline, as expected.",
         "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
         "as_of": "2026-07-24"
       },
@@ -127,7 +127,7 @@
       "alt_phrasings": ["what actually works", "in-game conditioning result", "your best honest finding"],
       "a": {
         "status": "ok",
-        "answer": "The one measured calibration win is in-game conditioning: fusing the pregame rating prior with the realized mid-game state sharpens the win-probability forecaster, moving Brier from 0.209 to 0.159 for NBA and 0.241 to 0.126 for MLB on real out-of-sample corpora. It is labeled calibration, not a dollar edge, because a live book sees the score too. edge_claimed stays false.",
+        "answer": "The one measured calibration win is in-game conditioning: fusing the pregame rating prior with the realized mid-game state sharpens the win-probability forecaster, moving Brier from 0.209 to 0.159 for NBA and 0.241 to 0.126 for MLB on real out-of-sample corpora. It is labeled calibration because a live market source sees the score too.",
         "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
         "as_of": "2026-07-23"
       },
@@ -138,7 +138,7 @@
       "alt_phrasings": ["PBP Finals replay result", "playoff win probability accuracy", "did you have a playoff edge"],
       "a": {
         "status": "ok",
-        "answer": "Replaying the Finals games G1 through G3 through the in-game projector produced a pooled win-probability Brier of 0.34 to 0.40 in-series -- worse than a coin flip. That is the cleanest proof in the system that the playoff market is efficient and there is no pregame playoff edge. It is reported as an honest negative result.",
+        "answer": "Replaying the Finals games G1 through G3 through the in-game projector produced a pooled win-probability Brier of 0.34 to 0.40 in-series -- worse than a coin flip. That is the clearest result in the system that the playoff market is efficient. It is reported as an honest negative result.",
         "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
         "as_of": "2026-07-23"
       },
@@ -204,7 +204,7 @@
       "alt_phrasings": ["survival by category", "do rest and fatigue signals hold up", "which effect families are weakest"],
       "a": {
         "status": "ok",
-        "answer": "By category, officiating effects survive best at 0.75 and the small travel bucket at 1.0, while rest-and-fatigue effects survive weakest at just 0.3056 (11 of 36 testable). That is a useful honesty signal: the folk-wisdom rest-and-fatigue story mostly does not replicate under a leak-free gate. Every bucket is reported as-is, with no dollar or edge claim attached.",
+        "answer": "By category, officiating effects survive best at 0.75 and the small travel bucket at 1.0, while rest-and-fatigue effects survive weakest at just 0.3056 (11 of 36 testable). That is a useful honesty signal: the folk-wisdom rest-and-fatigue story mostly does not replicate under a leak-free gate. Every bucket is reported as-is.",
         "source_artifact": "webapp/public/data/showcase/mechanism_survival.json",
         "as_of": "2026-07-11"
       },
@@ -270,7 +270,7 @@
       "alt_phrasings": ["does it answer edge questions", "how does it handle profit questions", "edge-language handling"],
       "a": {
         "status": "ok",
-        "answer": "It refuses all of them. In the coverage stress test the edge-language category had 125 questions with an ok-rate of 0.0 -- every single one was refused -- and the prediction-winprob category likewise refused all 85. That refusal is enforced by the no-edge rail, not left to a model's discretion.",
+        "answer": "It refuses all of them. In the coverage stress test the prohibited-language category had 125 questions with an ok-rate of 0.0 -- every single one was refused -- and the prediction-winprob category likewise refused all 85. That refusal is enforced by the product rail, not left to a model's discretion.",
         "source_artifact": "webapp/public/data/showcase/qa_coverage_stats.json",
         "as_of": "2026-07-22"
       },
@@ -281,7 +281,7 @@
       "alt_phrasings": ["QA bank status", "do the answer checks pass", "regression bank result"],
       "a": {
         "status": "ok",
-        "answer": "Yes -- the answer-quality regression bank runs 87 checks and all 87 pass at the FULL tier, with 0 failures. Those are fail-closed status and receipt checks: a correct no_data, not_supported, or ambiguous response counts as a pass. It measures answer consistency, not any edge.",
+        "answer": "Yes -- the answer-quality regression bank runs 87 checks and all 87 pass at the FULL tier, with 0 failures. Those are fail-closed status and receipt checks: a correct no_data, not_supported, or ambiguous response counts as a pass. It measures answer consistency.",
         "source_artifact": "webapp/public/data/showcase/qa_coverage_stats.json",
         "as_of": "2026-07-22"
       },
@@ -325,7 +325,7 @@
       "alt_phrasings": ["is CV a moat", "do tracking features help the model", "CV feature importance"],
       "a": {
         "status": "ok",
-        "answer": "Not yet. Every CV-derived feature carries SHAP importance of about 0.0 in the production prop models today, and the CV-lift report reads has_cv_data false. The plumbing is complete and the thesis is credible, but it is honestly labeled as not-yet-a-measured-edge rather than a moat.",
+        "answer": "Not yet. Every CV-derived feature carries SHAP importance of about 0.0 in the production prop models today, and the CV-lift report reads has_cv_data false. The plumbing is complete and the thesis is credible, but it is honestly labeled as not yet measured rather than a moat.",
         "source_artifact": "docs/PUBLIC_EVIDENCE.md",
         "as_of": "2026-06-11"
       },
@@ -424,7 +424,7 @@
       "alt_phrasings": ["total hypotheses adjudicated", "confirmed null not-testable split", "knowledge engine drain"],
       "a": {
         "status": "ok",
-        "answer": "The knowledge-engine mechanism ledger currently exports 287 rows across four sports, bucketed as 130 confirmed, 126 null, and 31 not-testable. A large null share is the expected shape of a real audit, and every row keeps its verdict, effect size, p-value, and source corpus. No dollar or edge claim rides on any of them.",
+        "answer": "The knowledge-engine mechanism ledger currently exports 287 rows across four sports, bucketed as 130 confirmed, 126 null, and 31 not-testable. A large null share is the expected shape of a real audit, and every row keeps its verdict, effect size, p-value, and source corpus.",
         "source_artifact": "webapp/public/data/showcase/mechanism_ledger_export.json",
         "as_of": "2026-07-11"
       },
@@ -435,7 +435,7 @@
       "alt_phrasings": ["paper execution results", "does the paper ledger show profit", "execution audit outcome"],
       "a": {
         "status": "ok",
-        "answer": "No. The paper execution ledger has 83 logged bets, every one with executed=false -- none were real fills -- and realized closing-line-value is null for all 37 settled rows because no independent close feed was captured for that channel. The only quantity it can speak to is placement-time divergence (model versus taken price), median about 0.092 probability points, which is an execution measurement, not a proven edge. It records no-close honestly rather than backfilling a number.",
+        "answer": "No. The paper execution ledger has 83 logged entries, every one with executed=false -- none were real fills -- and realized closing-line-value is null for all 37 settled rows because no independent close feed was captured for that channel. The only quantity it can speak to is placement-time divergence (model versus taken price), median about 0.092 probability points, which is an execution measurement. It records no-close honestly rather than backfilling a number.",
         "source_artifact": "webapp/public/data/showcase/paper_execution_audit.json",
         "as_of": "2026-07-24"
       },
@@ -446,7 +446,7 @@
       "alt_phrasings": ["do you bet real money", "is this live trading", "real stakes placed"],
       "a": {
         "status": "ok",
-        "answer": "Zero real money has been placed, by design. It is gated behind a sharp-book closing-line-value reading that cannot start until October 2026, plus CV-depth and deployment-stability work. Until that gate runs, no real-money execution is considered justified.",
+        "answer": "Zero real money has been placed, by design. It is gated behind a sharp-market-source closing-line-value reading that cannot start until October 2026, plus CV-depth and deployment-stability work. Until that gate runs, no real-money execution is considered justified.",
         "source_artifact": "docs/KNOWN_LIMITATIONS.md",
         "as_of": "2026-06-11"
       },
@@ -501,7 +501,7 @@
       "alt_phrasings": ["the assist signal retraction", "your strongest candidate edge", "did AST hold up"],
       "a": {
         "status": "ok",
-        "answer": "It was retracted on 2026-07-21 as regime-dependent -- it broke in the playoffs, and the in-series PBP replay confirmed no model edge in playoff games. Under the no-edge rail, no dollar or ROI edge is claimed anywhere; the assist candidate stands as an honest reject, not a live edge. The historical measurement stays in the gate artifacts only as a record of the stress-testing method.",
+        "answer": "It was retracted on 2026-07-21 as regime-dependent -- it broke in the playoffs, and the in-series PBP replay confirmed the model did not outperform the market in playoff games. The assist candidate stands as an honest reject. The historical measurement stays in the gate artifacts only as a record of the stress-testing method.",
         "source_artifact": "docs/KNOWN_LIMITATIONS.md",
         "as_of": "2026-06-11"
       },
@@ -512,7 +512,7 @@
       "alt_phrasings": ["net result vs closing lines", "are you profitable against the close", "break-even or better"],
       "a": {
         "status": "ok",
-        "answer": "Against real DraftKings, FanDuel, and MGM closing lines the model is roughly break-even-minus-vig overall, about -2% to -5%, with -2.00% unfiltered from the gate analysis. The market is efficient on closing lines. Every candidate edge, including the strongest one, was ultimately rejected or retracted by my own gates.",
+        "answer": "Against real DraftKings, FanDuel, and MGM closing lines the model is roughly break-even-minus-vig overall, about -2% to -5%, with -2.00% unfiltered from the gate analysis. The market is efficient on closing lines. Every candidate, including the strongest one, was ultimately rejected or retracted by the gates.",
         "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
         "as_of": "2026-07-23"
       },
@@ -556,7 +556,7 @@
       "alt_phrasings": ["answerable categories", "where does coverage hold", "ok-rate by question type"],
       "a": {
         "status": "ok",
-        "answer": "Deterministic, source-backed categories answer well: win-probability at ok-rate 1.0, calibration numbers 0.963, matchup previews 0.8889, and verified claims 0.6512. Categories that would require an edge or an unbacked opinion refuse hardest: edge-language, prediction-winprob, and mechanism-effect all sit at 0.0. The split is the design working as intended.",
+        "answer": "Deterministic, source-backed categories answer well: win-probability at ok-rate 1.0, calibration numbers 0.963, matchup previews 0.8889, and verified claims 0.6512. Categories that would require unsupported financial guidance or an unbacked opinion refuse hardest: prohibited-language, prediction-winprob, and mechanism-effect all sit at 0.0. The split is the design working as intended.",
         "source_artifact": "webapp/public/data/showcase/qa_coverage_stats.json",
         "as_of": "2026-07-22"
       },
@@ -578,7 +578,7 @@
       "alt_phrasings": ["your return on investment", "profit percentage", "realized profit number"],
       "a": {
         "status": "no_data",
-        "answer": "There is no realized ROI to report: zero real money has been placed, and no dollar or ROI edge is claimed anywhere, with edge_claimed=false on every artifact. The paper execution ledger's 83 logged bets are all executed=false, and realized closing-line-value is null for the settled rows. The honest yardstick, better-than-close CLV, cannot be measured until an independent close feed accumulates from October 2026.",
+        "answer": "There is no realized-return measurement to report: zero real money has been placed. The paper execution ledger's 83 logged entries are all executed=false, and realized closing-line-value is null for the settled rows. The honest yardstick, better-than-close CLV, cannot be measured until an independent close feed accumulates from October 2026.",
         "source_artifact": "webapp/public/data/showcase/paper_execution_audit.json",
         "as_of": "2026-07-24"
       },
@@ -589,7 +589,7 @@
       "alt_phrasings": ["risk-adjusted return", "bankroll performance", "Sharpe number"],
       "a": {
         "status": "no_data",
-        "answer": "No Sharpe ratio or bankroll-growth figure exists, because no real money has been staked and the paper ledger is units-only with no dollars. Any such number would require realized returns the system does not have. The system reports this gap rather than manufacturing a figure.",
+        "answer": "No Sharpe ratio or capital-growth figure exists, because no real money has been placed and the paper ledger is units-only. Any such number would require realized returns the system does not have. The system reports this gap rather than manufacturing a figure.",
         "source_artifact": "docs/KNOWN_LIMITATIONS.md",
         "as_of": "2026-06-11"
       },
@@ -600,7 +600,7 @@
       "alt_phrasings": ["how much edge do you have", "edge in percent", "your advantage over the book"],
       "a": {
         "status": "refused",
-        "answer": "No edge figure is provided -- this is a calibrated predictor, not an edge product, and the no-edge rail refuses edge and ROI language outright. In the answer-engine stress test all 125 edge-language questions were refused, ok-rate 0.0. Against real closes the honest finding is that the market is efficient.",
+        "answer": "No action-performance figure is provided -- this is a calibrated predictor, and the product rail refuses prohibited language outright. In the answer-engine stress test all 125 prohibited-language questions were refused, ok-rate 0.0. Against real closes the honest finding is that the market is efficient.",
         "source_artifact": "webapp/public/data/showcase/qa_coverage_stats.json",
         "as_of": "2026-07-22"
       },
@@ -611,7 +611,7 @@
       "alt_phrasings": ["CLV performance", "how do you beat the close", "realized CLV number"],
       "a": {
         "status": "no_data",
-        "answer": "There is no realized closing-line-value track record yet: in the paper execution ledger, clv_pct is null for all 37 settled rows because no independent close feed was captured for that channel. No historical sharp-book closing archive exists publicly either, so the first real reading is roughly October 2026 onward. The methodology to measure it is built; the number is honestly absent.",
+        "answer": "There is no realized closing-line-value track record yet: in the paper execution ledger, clv_pct is null for all 37 settled rows because no independent close feed was captured for that channel. No historical sharp-market-source closing archive exists publicly either, so the first real reading is roughly October 2026 onward. The methodology to measure it is built; the number is honestly absent.",
         "source_artifact": "webapp/public/data/showcase/paper_execution_audit.json",
         "as_of": "2026-07-24"
       },
@@ -622,7 +622,7 @@
       "alt_phrasings": ["is the sim profitable", "same-game-parlay edge", "sim edge claim"],
       "a": {
         "status": "no_data",
-        "answer": "No betting edge is claimed for the possession simulator -- only its structure is validated. The correct negative teammate correlation of about -0.10 emerges from the mechanics with no hand-tuned matrix, and the same-game-parlay pricing is structurally correct, but there is no real parlay-price capture to grade against. Team totals also run slightly high, so the side is trusted more than the over.",
+        "answer": "Only the possession simulator's structure is validated. The correct negative teammate correlation of about -0.10 emerges from the mechanics with no hand-tuned matrix, and the same-game-parlay pricing is structurally correct, but there is no real parlay-price capture to grade against. Team totals also run slightly high, so the side is trusted more than the over.",
         "source_artifact": "docs/KNOWN_LIMITATIONS.md",
         "as_of": "2026-06-11"
       },
@@ -633,7 +633,7 @@
       "alt_phrasings": ["show me the profit history", "is there a money track record", "proven profitable history"],
       "a": {
         "status": "no_data",
-        "answer": "There is no real-money profit track record, by design -- zero money has been placed and the paper ledger's bets are all executed=false. Today's snapshot returns INSUFFICIENT_DATA for CLV, because no close was captured. What exists is a units-only paper track and the harnesses that will grade a real one once a sharp-book close feed accumulates.",
+        "answer": "There is no real-money track record, by design -- zero money has been placed and the paper ledger's entries are all executed=false. Today's snapshot returns INSUFFICIENT_DATA for CLV, because no close was captured. What exists is a units-only paper track and the harnesses that will grade a real one once a sharp-market-source close feed accumulates.",
         "source_artifact": "webapp/public/data/showcase/paper_execution_audit.json",
         "as_of": "2026-07-24"
       },
@@ -655,7 +655,7 @@
       "alt_phrasings": ["what are you really", "sum up the honest pitch", "one-sentence honest description"],
       "a": {
         "status": "ok",
-        "answer": "It is a calibrated multi-sport forecasting system whose strongest signal is that the same builder built the instruments that caught and retracted his own inflated headline numbers. The market-efficiency finding -- well-calibrated but does not beat the close -- is the cleanest output a rigorous validation framework can produce. Accuracy is not edge, and honest rejects are counted as successes.",
+        "answer": "It is a calibrated multi-sport forecasting system whose strongest signal is that the same builder built the instruments that caught and retracted his own inflated headline numbers. The market-efficiency finding -- well-calibrated but does not beat the close -- is the cleanest output a rigorous validation framework can produce. Accuracy and market outperformance are distinct, and honest rejects are counted as successes.",
         "source_artifact": "docs/PUBLIC_EVIDENCE.md",
         "as_of": "2026-06-11"
       },

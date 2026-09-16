@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
 // @ts-expect-error -- the executable scanner is deliberately dependency-free ESM.
-import { scanAnalyticsCopy } from "../../scripts/check-analytics-copy.mjs";
+import { scanAnalyticsCopy, scanAnalyticsData } from "../../scripts/check-analytics-copy.mjs";
 
 const TEMPORARY_OWNED_PATHS = new Set([
   // TODO: remove after the lanes owning these two detail pages land their copy sweep.
@@ -11,4 +11,8 @@ const TEMPORARY_OWNED_PATHS = new Set([
 it("finds no prohibited calibration-product language in public copy", () => {
   const findings = scanAnalyticsCopy().filter((finding: { file: string }) => !TEMPORARY_OWNED_PATHS.has(finding.file));
   expect(findings).toEqual([]);
+});
+
+it("finds no prohibited calibration-product language in published data prose", () => {
+  expect(scanAnalyticsData()).toEqual([]);
 });

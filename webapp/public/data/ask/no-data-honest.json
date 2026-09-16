@@ -95,7 +95,7 @@
    "alt_phrasings": ["DraftKings odds right now", "book prices right now", "what's book X showing tonight"],
    "a": {
     "status": "no_data",
-    "answer": "No sportsbook is polled live here, so a book's current price cannot be quoted. The repo holds historical price snapshots for calibration only. There is no path from this data to a live book number.",
+        "answer": "No market source is polled live here, so a current price cannot be quoted. The repo holds historical price snapshots for calibration only. There is no path from this data to a live source number.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
     "as_of": "2026-07-23"
    },
@@ -238,7 +238,7 @@
    "alt_phrasings": ["what's the play tonight", "give me a pick", "what do I bet"],
    "a": {
     "status": "refused",
-    "answer": "This is not a betting-advice product and it does not hand out picks. It produces calibrated forecasts and verified analytics, not wagering recommendations, and edge/pick questions are refused by design. If you want the honest output, ask how well-calibrated the model is against the market on completed games.",
+        "answer": "It produces calibrated forecasts and verified analytics. Financial-guidance questions are refused by design. Ask how well-calibrated the model is against the market on completed games.",
     "source_artifact": ".claude/rules/no-edge-claims.md",
     "as_of": "2026-07-23"
    },
@@ -260,7 +260,7 @@
    "alt_phrasings": ["build me a parlay", "parlay ideas for tonight", "which legs should I parlay"],
    "a": {
     "status": "refused",
-    "answer": "The system does not build parlays or suggest wagers. It scores calibration and publishes analytics; assembling bet slips is outside what it does and is refused. Ask about model calibration or a completed-game matchup summary if you want a real answer.",
+        "answer": "The system scores calibration and publishes analytics; requests for financial guidance are outside what it does and are refused. Ask about model calibration or a completed-game matchup summary for a source-backed answer.",
     "source_artifact": ".claude/rules/no-edge-claims.md",
     "as_of": "2026-07-23"
    },
@@ -282,7 +282,7 @@
    "alt_phrasings": ["what would my returns have been", "dollar returns from the model", "how much profit following the picks"],
    "a": {
     "status": "refused",
-    "answer": "The system does not report dollar returns, and no such figure is a live claim here. The product is calibration quality, not a profit-and-loss track record, and any past inflated return figures are explicitly retracted, not current. The honest metric is calibration against the closing line.",
+        "answer": "The product measures calibration quality, not a realized-return track record. Any past inflated return figures are explicitly retracted, not current. The published metric is calibration against the closing line.",
     "source_artifact": ".claude/rules/no-edge-claims.md",
     "as_of": "2026-07-23"
    },
@@ -293,7 +293,7 @@
    "alt_phrasings": ["return on investment", "what's the model's ROI", "how profitable is it"],
    "a": {
     "status": "refused",
-    "answer": "ROI is not a metric this system claims. It measures calibration and sharpness, not investment return, and no ROI number is on the books as current. Ask for the Brier or calibration comparison versus the market instead -- that is the number that actually exists.",
+        "answer": "It measures calibration and sharpness, not investment return. Ask for the Brier or calibration comparison versus the market instead -- that is the number that actually exists.",
     "source_artifact": ".claude/rules/no-edge-claims.md",
     "as_of": "2026-07-23"
    },
@@ -304,7 +304,7 @@
    "alt_phrasings": ["can you beat the books", "is there an edge here", "do you outperform the market"],
    "a": {
     "status": "refused",
-    "answer": "No dollar edge is claimed. The honest, published position is that the market is efficient and the model's aim is to match the closing price within noise, with a small measured in-game calibration improvement in narrow spots -- all labelled as calibration, not profit. The cross-sport scoreboard shows most head-to-head checkpoints favor the market or are underpowered.",
+        "answer": "The published position is that the market is efficient and the model aims to match the closing price within noise, with a small measured in-game calibration improvement in narrow spots. The cross-sport scoreboard shows most head-to-head checkpoints favor the market or are underpowered.",
     "source_artifact": ".claude/rules/no-edge-claims.md",
     "as_of": "2026-07-23"
    },
@@ -315,7 +315,7 @@
    "alt_phrasings": ["EV on the Lakers", "is there value on this bet", "what's the edge on this play"],
    "a": {
     "status": "refused",
-    "answer": "The system does not compute betting expected value or value on a play. That framing asks for an edge claim, which is refused, and there is no live line to compute against anyway. Calibration versus the closing line on settled games is the closest honest quantity.",
+        "answer": "The system does not compute action-specific expected value. That framing is refused, and there is no live line to compute against anyway. Calibration versus the closing line on settled games is the closest published quantity.",
     "source_artifact": ".claude/rules/no-edge-claims.md",
     "as_of": "2026-07-23"
    },
@@ -326,7 +326,7 @@
    "alt_phrasings": ["over or under", "take the over tonight", "is the over a good bet"],
    "a": {
     "status": "refused",
-    "answer": "The system does not tell you which side to bet. It is a calibrated predictor, not a betting advisor, and over/under recommendations are refused. It can describe how its totals forecasts calibrated on completed games, but it will not steer a wager.",
+        "answer": "It is a calibrated predictor, and action recommendations are refused. It can describe how its totals forecasts calibrated on completed games.",
     "source_artifact": ".claude/rules/no-edge-claims.md",
     "as_of": "2026-07-23"
    },
@@ -337,7 +337,7 @@
    "alt_phrasings": ["how do I profit off this", "how to turn this into money", "can I get rich with this"],
    "a": {
     "status": "refused",
-    "answer": "This is not a money-making tool and does not promise profit. It is a calibrated forecasting and analytics engine; profit framing is refused. What it delivers is honest calibration against the market and a large, verified descriptive analytics layer.",
+        "answer": "It is a calibrated forecasting and analytics engine; financial-performance framing is refused. It delivers calibration against the market and a large, verified descriptive analytics layer.",
     "source_artifact": ".claude/rules/no-edge-claims.md",
     "as_of": "2026-07-23"
    },
@@ -348,7 +348,7 @@
    "alt_phrasings": ["show me the +EV bets", "which plays are plus EV", "where's the value tonight"],
    "a": {
     "status": "refused",
-    "answer": "No +EV plays are surfaced here. Identifying value bets is an edge claim, which the system refuses, and there is no live market to scan in any case. The published stance is that disagreement with the market has historically favored the market, not the model.",
+        "answer": "No action recommendations are surfaced here. The system refuses that request, and there is no live market to scan in any case. The published finding is that disagreement with the market has historically favored the market, not the model.",
     "source_artifact": ".claude/rules/no-edge-claims.md",
     "as_of": "2026-07-23"
    },
@@ -359,7 +359,7 @@
    "alt_phrasings": ["how much should I bet", "recommended stake", "how many units on this"],
    "a": {
     "status": "refused",
-    "answer": "The system does not recommend stakes or unit sizing. Bankroll and staking advice is wagering guidance, which is refused. It only produces calibrated forecasts and analytics; how anyone acts on those is not something it advises.",
+        "answer": "The system does not recommend position sizing. That guidance is refused. It produces calibrated forecasts and analytics; how anyone acts on those is not something it advises.",
     "source_artifact": ".claude/rules/no-edge-claims.md",
     "as_of": "2026-07-23"
    },
@@ -370,7 +370,7 @@
    "alt_phrasings": ["Kelly stake", "optimal bet fraction", "how much per Kelly"],
    "a": {
     "status": "refused",
-    "answer": "The system does not output a Kelly stake or any bet-sizing number for wagering. That requires an edge estimate, which is refused, and no live edge exists to size against. Calibration metrics are what it reports.",
+        "answer": "The system does not output a Kelly or sizing number. That request is refused, and no live measurement exists to size against. Calibration metrics are what it reports.",
     "source_artifact": ".claude/rules/no-edge-claims.md",
     "as_of": "2026-07-23"
    },
@@ -414,7 +414,7 @@
    "alt_phrasings": ["does it make money", "is this a winning system", "net profit of the model"],
    "a": {
     "status": "refused",
-    "answer": "Profitability is not a claim this system makes or measures. It is a calibrated predictor, and any prior profit figures are explicitly retracted rather than current. Calibration quality against the market is the only performance claim it stands behind.",
+        "answer": "It is a calibrated predictor, and any prior return figures are explicitly retracted rather than current. Calibration quality against the market is the performance measurement it publishes.",
     "source_artifact": ".claude/rules/no-edge-claims.md",
     "as_of": "2026-07-23"
    },
@@ -425,7 +425,7 @@
    "alt_phrasings": ["is betting a smart place for my money", "should I fund a betting account", "put my money on sports"],
    "a": {
     "status": "refused",
-    "answer": "That is a personal financial decision and this system will not advise on it -- it is not a licensed financial advisor and does not give investment guidance. It also makes no profit or edge claim that would support such a decision. Please consult a qualified professional for anything involving your money.",
+        "answer": "That is a personal financial decision and this system will not advise on it. Please consult a qualified professional for anything involving your money.",
     "source_artifact": ".claude/rules/no-edge-claims.md",
     "as_of": "2026-07-23"
    },
@@ -458,7 +458,7 @@
    "alt_phrasings": ["do they play from ahead or behind", "front-runner vs comeback profile", "how do they do when trailing at half"],
    "a": {
     "status": "no_data",
-    "answer": "A per-team front-runner-versus-comeback profile is not buildable in this corpus -- no team clears the minimum of a couple of games both leading and trailing at halftime, so per-team splits would be one or two games and are masked rather than printed as stable. Only a league-level readout is robust here. It is a thin-sample limit, stated as a descriptive fact, not an edge claim.",
+        "answer": "A per-team front-runner-versus-comeback profile is not buildable in this corpus -- no team clears the minimum of a couple of games both leading and trailing at halftime, so per-team splits would be one or two games and are masked rather than printed as stable. Only a league-level readout is robust here. It is a thin-sample limit stated as a descriptive fact.",
     "source_artifact": "webapp/public/data/insights/ctx_team_states.json",
     "as_of": "2026-05-21 16:05:11"
    },
@@ -557,7 +557,7 @@
    "alt_phrasings": ["career scoring leader", "most points ever", "all-time points record"],
    "a": {
     "status": "no_data",
-    "answer": "All-time league records are not in the committed data and are not answered from model memory. The engine reports stats and results that exist in its corpora, not historical record-book trivia. A league reference source is the right place for that.",
+        "answer": "All-time league records are not in the committed data and are not answered from model memory. The engine reports stats and results that exist in its corpora, not historical-record trivia. A league reference source is the right place for that.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
     "as_of": "2026-07-23"
    },

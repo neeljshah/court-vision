@@ -44,8 +44,8 @@
   },
   {
    "id": "bookmaker_accuracy",
-   "title": "Bookmaker Accuracy",
-   "one_line": "We graded the bookmakers on their own devigged accuracy: Pinnacle is barely sharpest on tennis match-winner (0.1975 vs Bet365's 0.1980), but on soccer over/under the books are a statistical dead heat -- no public book is meaningfully bea...",
+   "title": "Market Source Accuracy",
+   "one_line": "We compared published market sources by devigged accuracy: Pinnacle is narrowly sharpest on tennis match-winner (0.1975 vs Bet365's 0.1980), while soccer over/under sources are statistically indistinguishable.",
    "out_path": "scripts/platformkit/analytics_showcase/out/bookmaker_accuracy.json",
    "chart_path": null,
    "status": "ok",
@@ -353,7 +353,7 @@
   {
    "id": "mechanism_ledger_export",
    "title": "Mechanism Ledger Export",
-   "one_line": "Every named mechanism we have tested, with its recorded verdict and evidence pointer. A NULL/REJECT/NOT_TESTABLE is honest market-efficiency evidence, not a failure. Measurement-hygiene artifact -- no $/edge/ROI claim. as_of is the recor...",
+   "one_line": "Every named mechanism tested, with its recorded verdict and evidence pointer. NULL, REJECT, and NOT_TESTABLE are market-efficiency evidence. This is a descriptive measurement artifact.",
    "out_path": "scripts/platformkit/analytics_showcase/out/mechanism_ledger_export.json",
    "chart_path": "docs/img/mechanism_ledger_export.png",
    "status": "ok",
@@ -364,7 +364,7 @@
   {
    "id": "mechanism_survival",
    "title": "Mechanism Survival",
-   "one_line": "Survival rate = share of TESTABLE hypotheses whose latest recorded verdict is CONFIRMED_LOCAL / CONFIRMED_LOCAL_incl_2026_OOS / REPLICATED. A NULL/REJECT is honest market-efficiency evidence, not a failure. No $/edge/ROI claim.",
+   "one_line": "Survival rate = share of TESTABLE hypotheses whose latest recorded verdict is CONFIRMED_LOCAL / CONFIRMED_LOCAL_incl_2026_OOS / REPLICATED. A NULL or REJECT is honest market-efficiency evidence.",
    "out_path": "scripts/platformkit/analytics_showcase/out/mechanism_survival.json",
    "chart_path": "docs/img/mechanism_survival.png",
    "status": "ok",
@@ -551,7 +551,7 @@
   {
    "id": "novel_overreaction_harvest_gap",
    "title": "Novel Overreaction Harvest Gap",
-   "one_line": "soccer_intl: overshoot 0.286 but model beats market only 22% of the time at max disagreement -> OHG 0.081 (a failure to harvest, not an edge); mlb: overshoot 0.072 but model beats market only 38% of the time at max disagreement -> OHG 0....",
+   "one_line": "soccer_intl: overshoot 0.286 and model is closer only 22% of the time at maximum disagreement, yielding OHG 0.081 as a measured failure to harvest; mlb: overshoot 0.072 and model is closer 38% of the time at maximum disagreement.",
    "out_path": "scripts/platformkit/analytics_showcase/out/novel_overreaction_harvest_gap.json",
    "chart_path": "docs/img/novel_overreaction_harvest_gap.png",
    "status": "ok",
@@ -639,7 +639,7 @@
   {
    "id": "reject_graveyard",
    "title": "Reject Graveyard",
-   "one_line": "A REJECT/DEFER is honest market-efficiency evidence, not a failure. No $/edge/ROI claim.",
+   "one_line": "A REJECT or DEFER is honest market-efficiency evidence.",
    "out_path": "scripts/platformkit/analytics_showcase/out/reject_graveyard.json",
    "chart_path": "docs/img/reject_graveyard.png",
    "status": "ok",

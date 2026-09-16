@@ -435,7 +435,7 @@
       "alt_phrasings": ["Does home court actually help?", "Home vs away shooting", "How much do home teams shoot better?"],
       "a": {
         "status": "ok",
-        "answer": "Pooled over 74,450 player-games, the home edge is small and lives mostly in shooting: home teams shoot 47.479 percent from the field versus 46.833 on the road (+0.647 points) and 36.632 versus 35.867 from three (+0.765), while the typical player's home-minus-away scoring gap is just +0.04 points per game. It is a faint, league-wide tilt, not the outsized boost fans assume. Descriptive only.",
+        "answer": "Pooled over 74,450 player-games, home advantage is small and lives mostly in shooting: home teams shoot 47.479 percent from the field versus 46.833 on the road (+0.647 points) and 36.632 versus 35.867 from three (+0.765), while the typical player's home-minus-away scoring gap is just +0.04 points per game. It is a faint, league-wide tilt, not the outsized boost fans assume. Descriptive only.",
         "source_artifact": "webapp/public/data/insights/home_away_anatomy.json",
         "as_of": "2023-24 to 2025-26"
       },
@@ -501,7 +501,7 @@
       "alt_phrasings": ["Spurs with and without Wembanyama", "Wemby star removal", "San Antonio star dependence"],
       "a": {
         "status": "ok",
-        "answer": "San Antonio moves from 0.3901 with Victor Wembanyama to 0.112 without on a neutral floor against a league-average opponent -- a 0.2781 win-prob swing. As with every row, it is a ceiling from a roster-confounded on/off delta, not a controlled individual value, and it is descriptive rather than an edge claim.",
+        "answer": "San Antonio moves from 0.3901 with Victor Wembanyama to 0.112 without on a neutral floor against a league-average opponent -- a 0.2781 win-prob swing. As with every row, it is a ceiling from a roster-confounded on/off delta, not a controlled individual value, and it is descriptive.",
         "source_artifact": "webapp/public/data/insights/cf_star_removal.json",
         "as_of": "2024-25 (Elo end-of-season) x 2024_25 on/off slice"
       },
@@ -512,7 +512,7 @@
       "alt_phrasings": ["Is the win-prob model calibrated late in games?", "How well does it read game state?", "Late lead win probability accuracy"],
       "a": {
         "status": "ok",
-        "answer": "In the bulk of regulation states it tracks reality closely: for a 1-to-5 point lead with 24-36 minutes left, the model's mean win probability is 0.6204 across 898 games and teams in that state actually won 62.03 percent of the time. The honest exception is overtime -- with a 1-5 lead in OT the model says 0.7113 while teams actually won 98.3 percent and the market priced 97.6 percent, so it under-rates how decisive a late lead is and the market is better there. This is a calibration exhibit, never a profit claim.",
+        "answer": "In the bulk of regulation states it tracks reality closely: for a 1-to-5 point lead with 24-36 minutes left, the model's mean win probability is 0.6204 across 898 games and teams in that state actually won 62.03 percent of the time. The honest exception is overtime -- with a 1-5 lead in OT the model says 0.7113 while teams actually won 98.3 percent and the market priced 97.6 percent, so it under-rates how decisive a late lead is and the market is better there. This is a calibration exhibit.",
         "source_artifact": "webapp/public/data/insights/comeback_atlas.json",
         "as_of": "reliability map (source records no as_of)"
       },
@@ -578,7 +578,7 @@
       "alt_phrasings": ["Is the star-removal number causal?", "Can I trust the with/without win prob as player value?", "Does star removal isolate one player?"],
       "a": {
         "status": "ok",
-        "answer": "No -- it is explicitly a ceiling, not a clean causal player value. The 0.5822 swing comes from attributing a full-lineup on-vs-off net-rating gap to one man, with no control for teammates, opponent, coach trust, or garbage time, and the net-rating-to-Elo conversion is a single frozen constant, not a fit. It is a comparable, honest price tag on star dependence, useful as matchup context but labeled descriptive-only, not an edge or a true individual-value estimate.",
+        "answer": "No -- it is explicitly a ceiling, not a clean causal player value. The 0.5822 swing comes from attributing a full-lineup on-vs-off net-rating gap to one man, with no control for teammates, opponent, coach trust, or garbage time, and the net-rating-to-Elo conversion is a single frozen constant, not a fit. It is a comparable, honest measure of star dependence, useful as matchup context but labeled descriptive-only, not a true individual-value estimate.",
         "source_artifact": "webapp/public/data/insights/cf_star_removal.json",
         "as_of": "2024-25 (Elo end-of-season) x 2024_25 on/off slice"
       },

@@ -1,6 +1,6 @@
 {
   "bucket": "calibration-market",
-  "note": "Every number is copied verbatim from a committed artifact (path in source_artifact). This is a calibrated predictor, not a betting product: no dollar edge, ROI, or profit is claimed anywhere. Honest nulls are the point, not a defect.",
+  "note": "Every number is copied verbatim from a committed artifact (path in source_artifact). This is a calibrated predictor that publishes measured calibration and honest nulls.",
   "entries": [
     {
       "q": "Does the model actually beat the betting market?",
@@ -18,7 +18,7 @@
       "alt_phrasings": ["are sports betting markets efficient", "is the closing line sharp", "can markets be beaten pregame"],
       "a": {
         "status": "ok",
-        "answer": "On every pregame slice measured, yes. A real-data edge hunt across four sports and six independent corpora rejected every candidate schedule/fatigue/form/h2h/totals signal, requiring BSS>0 AND Diebold-Mariano p<0.05 AND N>=200 on at least two corpora; nothing cleared the bar. Positive full-sample lifts reversed sign across calendar halves, which is the overfit signature, not an edge.",
+        "answer": "On every pregame slice measured, yes. A real-data candidate search across four sports and six independent corpora rejected every schedule/fatigue/form/h2h/totals signal, requiring BSS>0 AND Diebold-Mariano p<0.05 AND N>=200 on at least two corpora; nothing cleared the bar. Positive full-sample lifts reversed sign across calendar halves, which is the overfit signature.",
         "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
         "as_of": "2026-07-07"
       },
@@ -40,7 +40,7 @@
       "alt_phrasings": ["is the live win prob sharper than the market", "in-play model vs market", "does the model beat live odds"],
       "a": {
         "status": "ok",
-        "answer": "No. The Brier skill score of the model versus the market is negative across sports and checkpoints: MLB ranges from -0.079 to -0.464, soccer from -0.470 to -1.079. The model does not beat the market's Brier at any in-game grain. Both crush a base-rate baseline, but that is expected for in-game win-prob and is not an edge.",
+        "answer": "No. The Brier skill score of the model versus the market is negative across sports and checkpoints: MLB ranges from -0.079 to -0.464, soccer from -0.470 to -1.079. The model does not beat the market's Brier at any in-game grain. Both improve on a base-rate baseline, as expected for in-game win probability.",
         "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
         "as_of": "2026-07-24"
       },
@@ -216,7 +216,7 @@
       "alt_phrasings": ["is it better than climatology", "does it beat the base rate", "bss vs climatology"],
       "a": {
         "status": "ok",
-        "answer": "In MLB, yes: the Brier skill score of the model versus a constant base-rate (climatology) baseline is positive, +0.042 overall and up to +0.143 mid-game. In soccer it is negative overall (-0.3134), so the soccer model does not even clear the base rate there. Beating climatology is expected for in-game win-prob and is not an edge over the market.",
+        "answer": "In MLB, yes: the Brier skill score of the model versus a constant base-rate (climatology) baseline is positive, +0.042 overall and up to +0.143 mid-game. In soccer it is negative overall (-0.3134), so the soccer model does not even clear the base rate there. This compares in-game win probability with climatology, not with the market.",
         "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
         "as_of": "2026-07-24"
       },
@@ -227,7 +227,7 @@
       "alt_phrasings": ["does in-game conditioning help", "is the live model sharper than pregame", "does mid-game state improve calibration"],
       "a": {
         "status": "ok",
-        "answer": "Yes, this is the one measured calibration win. Fusing the pregame rating prior with the realized mid-game state improves win-probability Brier from 0.209 to 0.159 in NBA and 0.241 to 0.126 in MLB on real out-of-sample corpora. It is calibration only, not an edge: a live book sees the same score, so no beat-the-market test applies.",
+        "answer": "Yes, this is the one measured calibration win. Fusing the pregame rating prior with the realized mid-game state improves win-probability Brier from 0.209 to 0.159 in NBA and 0.241 to 0.126 in MLB on real out-of-sample corpora. It measures calibration: a live market source sees the same score, so no market-comparison test applies.",
         "source_artifact": "docs/INGAME_PROOF.md",
         "as_of": "unknown"
       },
@@ -304,7 +304,7 @@
       "alt_phrasings": ["atp to wta transfer", "does the tennis model generalize across tours", "cross corpus tennis calibration"],
       "a": {
         "status": "ok",
-        "answer": "Yes, calibration transfers cross-corpus. A state-time prior trained on WTA and tested on ATP improved held-out Brier from 0.1698 (base) to 0.1597, and the reverse direction from 0.155 to 0.1432, both with Diebold-Mariano p=0.0, verdict REPLICATED. It is calibration only versus a state-time baseline, never a market edge, and no in-play odds join exists.",
+        "answer": "Yes, calibration transfers cross-corpus. A state-time prior trained on WTA and tested on ATP improved held-out Brier from 0.1698 (base) to 0.1597, and the reverse direction from 0.155 to 0.1432, both with Diebold-Mariano p=0.0, verdict REPLICATED. It compares calibration with a state-time baseline; no in-play odds join exists.",
         "source_artifact": "webapp/public/data/showcase/tennis_showcase.json",
         "as_of": "unknown"
       },
@@ -359,7 +359,7 @@
       "alt_phrasings": ["do live markets overreact", "price overshoot after a move", "market overreaction test"],
       "a": {
         "status": "ok",
-        "answer": "It depends on the sport. After an in-game price move, MLB prices land a few points above the eventual outcome (moved-to-minus-outcome +0.0801 to +0.0518 across move sizes, a small overshoot), while soccer prices sit well below it (-0.1945 to -0.3648, an undershoot). This is a documented structural description labeled INCREMENTAL, explicitly not a claimed edge, and some soccer buckets are tiny (n=21).",
+        "answer": "It depends on the sport. After an in-game price move, MLB prices land a few points above the eventual outcome (moved-to-minus-outcome +0.0801 to +0.0518 across move sizes, a small overshoot), while soccer prices sit well below it (-0.1945 to -0.3648, an undershoot). This is a documented structural description labeled INCREMENTAL, and some soccer buckets are tiny (n=21).",
         "source_artifact": "webapp/public/data/showcase/market_overreaction.json",
         "as_of": "unknown"
       },
@@ -458,7 +458,7 @@
       "alt_phrasings": ["how many signals failed the gate", "reject rate of candidates", "did signals get thrown out"],
       "a": {
         "status": "ok",
-        "answer": "Every pregame candidate in the edge hunt was rejected across at least two corpora, and the two-way interaction factory alone logged 239 nulls, 709 not-testable and only 38 confirmed out of 1,003 candidates. A large null/not-testable majority is the gate doing its job, not a shortfall.",
+        "answer": "Every pregame candidate in the search was rejected across at least two corpora, and the two-way interaction factory alone logged 239 nulls, 709 not-testable and only 38 confirmed out of 1,003 candidates. A large null/not-testable majority is the gate doing its job, not a shortfall.",
         "source_artifact": "webapp/public/data/showcase/honesty_exhibit.json",
         "as_of": "2026-07-22"
       },
@@ -480,7 +480,7 @@
       "alt_phrasings": ["what actually works", "the one real result", "biggest genuine finding"],
       "a": {
         "status": "ok",
-        "answer": "In-game conditioning. Fusing the pregame rating prior with the realized mid-game state sharpens win-probability calibration (NBA Brier 0.209 to 0.159, MLB 0.241 to 0.126) on real out-of-sample corpora. It is a calibration win, not a market edge: a live book sees the same score, so no beat-the-market claim is made.",
+        "answer": "In-game conditioning. Fusing the pregame rating prior with the realized mid-game state sharpens win-probability calibration (NBA Brier 0.209 to 0.159, MLB 0.241 to 0.126) on real out-of-sample corpora. A live market source sees the same score, so this is reported as a calibration result.",
         "source_artifact": "docs/INGAME_PROOF.md",
         "as_of": "unknown"
       },
@@ -513,7 +513,7 @@
       "alt_phrasings": ["can you trust one split", "is a single window enough", "why require multiple corpora"],
       "a": {
         "status": "ok",
-        "answer": "No. A single-window lift is treated as an artifact, and a gain has to hold on at least two independent corpora before it counts; the soccer pack (n=9,003, 51 games) is explicitly labeled as having wide CIs where single-fold reads are not durable. The edge hunt's rejected candidates were precisely the ones that looked positive full-sample then sign-flipped.",
+        "answer": "No. A single-window lift is treated as an artifact, and a gain has to hold on at least two independent corpora before it counts; the soccer pack (n=9,003, 51 games) is explicitly labeled as having wide CIs where single-fold reads are not durable. The rejected candidates were precisely the ones that looked positive full-sample then sign-flipped.",
         "source_artifact": "webapp/public/data/showcase/soccer_calibration_pack.json",
         "as_of": "unknown"
       },
@@ -557,7 +557,7 @@
       "alt_phrasings": ["can you beat live in-play odds", "is the in-game win an edge", "does the live model beat the live market"],
       "a": {
         "status": "ok",
-        "answer": "No, and no such claim is made. The in-game Brier improvement (NBA 0.209 to 0.159, MLB 0.241 to 0.126) is forecaster sharpness on a real out-of-sample corpus, but a live book sees the same score at the same time, so it is not a demonstrated ability to beat a live price. It is calibration, not edge.",
+        "answer": "No. The in-game Brier improvement (NBA 0.209 to 0.159, MLB 0.241 to 0.126) is forecaster sharpness on a real out-of-sample corpus, but a live market source sees the same score at the same time. It is a calibration measurement.",
         "source_artifact": "docs/INGAME_PROOF.md",
         "as_of": "unknown"
       },
@@ -590,7 +590,7 @@
       "alt_phrasings": ["is it a bet when model differs from market", "fade the market on disagreement", "act on model vs market gap"],
       "a": {
         "status": "refused",
-        "answer": "This is a calibrated predictor, not betting advice, so I will not tell you what to bet. For context only: the data shows the opposite of an opportunity, since on the largest model-vs-market disagreements the market is the more accurate side (the model is closer only 37.7% of the time in MLB and 21.5% in soccer). No dollar edge is claimed anywhere.",
+        "answer": "This is a calibrated predictor. On the largest model-vs-market disagreements, the market is the more accurate side: the model is closer only 37.7% of the time in MLB and 21.5% in soccer.",
         "source_artifact": "webapp/public/data/showcase/market_disagreement_profile.json",
         "as_of": "unknown"
       },
@@ -601,7 +601,7 @@
       "alt_phrasings": ["how much money does it make", "what is the return on investment", "is it profitable"],
       "a": {
         "status": "refused",
-        "answer": "No ROI, profit, or dollar-edge figure is produced or claimed; this is a calibration-and-sharpness project, not a betting-return product. Zero real money has been placed. The honest finding is that the model matches efficient closing lines within noise and beats none of them, which is measured in Brier and BSS, not dollars.",
+        "answer": "This project publishes calibration and sharpness measurements. Zero real money has been placed. The finding is that the model matches efficient closing lines within noise and beats none of them, measured in Brier and BSS.",
         "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
         "as_of": "2026-07-23"
       },
@@ -612,7 +612,7 @@
       "alt_phrasings": ["turn the calibration into a betting system", "how to profit from this", "monetize the edge"],
       "a": {
         "status": "refused",
-        "answer": "There is no profitable strategy to hand over, and I do not give betting advice. Every candidate pregame signal was rejected across at least two corpora and the model does not beat the market's Brier at any in-game grain, so the system's own evidence points to market efficiency rather than an exploitable edge.",
+        "answer": "Every candidate pregame signal was rejected across at least two corpora and the model does not beat the market's Brier at any in-game grain, so the system's own evidence points to market efficiency.",
         "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
         "as_of": "2026-07-07"
       },
@@ -623,7 +623,7 @@
       "alt_phrasings": ["clv versus pinnacle", "beat the sharpest book", "pinnacle close comparison"],
       "a": {
         "status": "no_data",
-        "answer": "There is no Pinnacle-specific closing-line-value corpus on disk to answer this. Closing-line value is measured forward, never claimed retrospectively, and no real sharp-book CLV reading has been produced yet. What is measured is the model matching devigged consensus closes within noise, not any single book.",
+        "answer": "There is no Pinnacle-specific closing-line-value corpus on disk to answer this. Closing-line value is measured forward, and no real sharp-market-source CLV reading has been produced yet. What is measured is the model matching devigged consensus closes within noise, not any single source.",
         "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
         "as_of": "2026-07-23"
       },
@@ -645,7 +645,7 @@
       "alt_phrasings": ["slowest book to update", "which bookmaker lags", "book-by-book line speed"],
       "a": {
         "status": "no_data",
-        "answer": "This is not measured. The market-comparison work uses devigged consensus/market probabilities, not per-book reaction speed, so there is no artifact ranking individual sportsbooks by how fast they move.",
+        "answer": "This is not measured. The market-comparison work uses devigged consensus/market probabilities, not per-source reaction speed, so there is no artifact ranking individual sources by how fast they move.",
         "source_artifact": "webapp/public/data/showcase/info_arrival_curve.json",
         "as_of": "unknown"
       },

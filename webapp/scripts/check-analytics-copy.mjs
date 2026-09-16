@@ -5,6 +5,8 @@ import { fileURLToPath } from "node:url";
 const FORBIDDEN = /(?<![A-Za-z0-9_])(edge|profit|roi|dollar|bet|wager|bankroll)(?![A-Za-z0-9])/gi;
 const SOURCE_ROOTS = ["app/(analytics)", "components/analytics", "lib/analytics"];
 const RETRACTION_TABLE = "app/(analytics)/analytics/findings/retraction/page.tsx";
+const DATA_TARGETS = ["public/data/showcase/site_manifest.json", "public/data/insights", "public/data/ask", "public/data/explainers"];
+const DATA_PROSE_KEYS = new Set(["answer", "body_md", "caveat", "dek", "headline_insight", "how_to_read", "note", "one_line", "question", "title", "what_it_means", "why_it_matters"]);
 
 function sourceFiles(root, directory) {
   const current = join(root, directory);
@@ -111,9 +113,50 @@ export function scanAnalyticsCopy(root = process.cwd()) {
   });
 }
 
+function dataFiles(root, target) {
+  const absolute = join(root, target);
+  if (!existsSync(absolute)) return [];
+  if (!absolute.endsWith(".json")) {
+    return readdirSync(absolute, { withFileTypes: true }).flatMap((entry) => {
+      const path = join(absolute, entry.name);
+      if (entry.isDirectory()) return dataFiles(root, relative(root, path));
+      return entry.name.endsWith(".json") ? [path] : [];
+    });
+  }
+  return [absolute];
+}
+
+function jsonPathPart(key) {
+  return /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(key) ? `.${key}` : `[${JSON.stringify(key)}]`;
+}
+
+function dataFindings(value, path, jsonPath, findings, key = "") {
+  if (typeof value === "string") {
+    if (DATA_PROSE_KEYS.has(key) && hasForbiddenToken(value)) findings.push({ file: path, jsonPath, text: value });
+    return;
+  }
+  if (Array.isArray(value)) value.forEach((entry, index) => dataFindings(entry, path, `${jsonPath}[${index}]`, findings, key));
+  else if (value && typeof value === "object") {
+    for (const [entryKey, entry] of Object.entries(value)) dataFindings(entry, path, `${jsonPath}${jsonPathPart(entryKey)}`, findings, entryKey);
+  }
+}
+
+export function scanAnalyticsData(root = process.cwd()) {
+  return DATA_TARGETS.flatMap((target) => dataFiles(root, target)).flatMap((absolute) => {
+    const path = relative(root, absolute).replaceAll("\\", "/");
+    const findings = [];
+    dataFindings(JSON.parse(readFileSync(absolute, "utf8")), path, "$", findings);
+    return findings;
+  });
+}
+
 const isEntrypoint = process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 if (isEntrypoint) {
-  const findings = scanAnalyticsCopy();
-  for (const finding of findings) console.error(`${finding.file}:${finding.line}`);
+  const dataMode = process.argv.includes("--data");
+  const findings = dataMode ? scanAnalyticsData() : scanAnalyticsCopy();
+  for (const finding of findings) {
+    if (dataMode) console.error(`${finding.file}:${finding.jsonPath}:${finding.text.slice(0, 120)}`);
+    else console.error(`${finding.file}:${finding.line}`);
+  }
   if (findings.length) process.exitCode = 1;
 }
