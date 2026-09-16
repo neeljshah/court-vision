@@ -13,7 +13,7 @@ describe("libraryViewState", () => {
     expect(libraryViewSearch("?keep=reading", { sport: "all", kind: "all", query: "", collection: "all", page: 1 })).toBe("keep=reading");
   });
 
-  it.each(["finding", "inspector", "explainer"] as const)("restores and preserves the %s reading filter", (kind) => {
+  it.each(["finding", "inspector", "explainer", "paper"] as const)("restores and preserves the %s reading filter", (kind) => {
     const state = readLibraryViewState(`?kind=${kind}&sport=nba&q=context&page=2`);
     expect(state).toMatchObject({ kind, sport: "nba", query: "context", page: 2 });
     expect(readLibraryViewState(libraryViewSearch("?keep=reading", state))).toEqual(state);

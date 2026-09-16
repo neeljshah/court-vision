@@ -11,7 +11,7 @@ export type LibraryViewState = {
 };
 
 const sports = new Set<Sport>(["all", "nba", "mlb", "soccer", "tennis"]);
-const kinds = new Set<LibraryViewState["kind"]>(["all", "derived", "source", "finding", "inspector", "explainer"]);
+const kinds = new Set<LibraryViewState["kind"]>(["all", "derived", "source", "finding", "inspector", "explainer", "paper"]);
 
 export function readLibraryViewState(search: string): LibraryViewState {
   const params = new URLSearchParams(search);

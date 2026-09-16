@@ -58,8 +58,8 @@ describe("LibraryExplorer", () => {
     expect(screen.getByText("Finding")).toBeInTheDocument();
   });
 
-  it.each(["finding", "inspector", "explainer"] as const)("filters %s readings from links and the type selector", async (kind) => {
-    const readings = [...entries, ...(["finding", "inspector", "explainer"] as const).map(item =>
+  it.each(["finding", "inspector", "explainer", "paper"] as const)("filters %s readings from links and the type selector", async (kind) => {
+    const readings = [...entries, ...(["finding", "inspector", "explainer", "paper"] as const).map(item =>
       entry(`reading-${item}`, `Published ${item}`, "nba", item, "reading"))];
     window.history.replaceState(null, "", `/analytics/browse/?kind=${kind}`);
     render(<LibraryExplorer entries={readings} />);
@@ -69,7 +69,7 @@ describe("LibraryExplorer", () => {
     expect(screen.getByRole("heading", { name: `Published ${kind}` })).toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "NBA Pace Formula" })).not.toBeInTheDocument();
     fireEvent.change(select, { target: { value: "all" } });
-    expect(screen.getByRole("status")).toHaveTextContent("8 entries");
+    expect(screen.getByRole("status")).toHaveTextContent("9 entries");
     fireEvent.change(select, { target: { value: kind } });
     expect(screen.getByRole("status")).toHaveTextContent("1 entry");
     expect(window.location.search).toBe(`?kind=${kind}`);
