@@ -21,7 +21,7 @@ export default function ResearchDetail({ analysis: a, related }: { analysis: Res
   const [copyStatus, setCopyStatus] = useState("");
   const inspector = useRef<HTMLElement>(null), trigger = useRef<Element | null>(null);
   const field = a.fields.find(f => f.key === metric) || a.fields[0], y = a.fields.find(f => f.key === second) || a.fields[1] || field;
-  const comparison = researchComparisonPolicy(a.rows);
+  const comparison = researchComparisonPolicy(a.rows, a);
   const activePopulation = comparison.populations.find(item => item.key === state.population) || comparison.populations.find(item => item.compatibility === "compatible");
   const showAllRows = !comparison.compatible && state.population === "all";
   const selectedCompatibility = showAllRows ? "unknown" : activePopulation?.compatibility || (comparison.compatible ? "compatible" : "unknown");
@@ -34,7 +34,8 @@ export default function ResearchDetail({ analysis: a, related }: { analysis: Res
   const population = publishedPopulation.filter(row => !aggregateIds.has(row.id));
   const filtered = population.filter(r => terms.every(t => `${r.label} ${r.group} ${r.note || ""}`.toLowerCase().includes(t)));
   const ranked = rankedRows(filtered, metric, ascending);
-  const rows = [...ranked, ...filtered.filter(r => r.values[metric] === null || !Number.isFinite(r.values[metric]))];
+  // A population that may not be pooled keeps published source order; only a compatible one is ranked.
+  const rows = suppressPooledSummaries ? filtered : [...ranked, ...filtered.filter(r => r.values[metric] === null || !Number.isFinite(r.values[metric]))];
   const selected = publishedPopulation.find(r => r.id === state.row && terms.every(t => `${r.label} ${r.group} ${r.note || ""}`.toLowerCase().includes(t)));
   const inspect = (r: LabRow) => { trigger.current = document.activeElement; change({ row: r.id }); };
   const close = () => { change({ row: "" }); if (trigger.current instanceof HTMLElement || trigger.current instanceof SVGElement) trigger.current.focus(); };

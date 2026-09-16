@@ -5,13 +5,13 @@ import type { ResearchAnalysis } from "@/lib/analytics/researchTypes";
 
 type View = { metric: string; second: string; group: string; population: string; query: string; ascending: boolean; view: string; row: string };
 const defaults = (a: ResearchAnalysis): View => {
-  const comparison = researchComparisonPolicy(a.rows);
+  const comparison = researchComparisonPolicy(a.rows, a);
   return { metric: a.fields[0].key, second: a.fields[1]?.key || a.fields[0].key, group: "all", population: comparison.compatible ? "all" : comparison.populations.find(item => item.compatibility === "compatible")?.key || "all", query: "", ascending: false, view: "rank", row: "" };
 };
 const parameters = { metric: "metric", second: "y", group: "group", population: "population", query: "q", ascending: "order", view: "view", row: "row" } as const;
 
 function visibleRows(a: ResearchAnalysis, view: View) {
-  const comparison = researchComparisonPolicy(a.rows);
+  const comparison = researchComparisonPolicy(a.rows, a);
   if (comparison.compatible) return a.rows.filter(row => view.group === "all" || row.group === view.group);
   if (view.population === "all") return a.rows;
   const population = comparison.populations.find(item => item.key === view.population);
@@ -19,7 +19,7 @@ function visibleRows(a: ResearchAnalysis, view: View) {
 }
 
 function validateRow(a: ResearchAnalysis, next: View): View {
-  const comparison = researchComparisonPolicy(a.rows), initial = defaults(a);
+  const comparison = researchComparisonPolicy(a.rows, a), initial = defaults(a);
   if (!comparison.compatible && next.population !== "all" && !comparison.populations.some(item => item.key === next.population)) next.population = initial.population;
   const terms = next.query.toLowerCase().trim().split(/\s+/).filter(Boolean);
   const selected = visibleRows(a, next).find(r => r.id === next.row && terms.every(t => `${r.label} ${r.group} ${r.note || ""}`.toLowerCase().includes(t)));

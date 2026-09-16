@@ -26,6 +26,14 @@ const multisport: ResearchAnalysis = {
   ],
 };
 
+const unidentified: ResearchAnalysis = {
+  ...analysis, id: "unidentified", sport: "all",
+  rows: [
+    { id: "stress", label: "Answerable stress prompts", group: "Coverage stress", values: { score: 1, rate: 0.5 } },
+    { id: "regression", label: "Regression-bank checks", group: "Fail-closed QA", values: { score: 2, rate: 0.25 } },
+  ],
+};
+
 function State({ a, intent }: { a: ResearchAnalysis; intent?: "query" | "reset" | "multiple" }) {
   const { state, change, reset } = useResearchView(a);
   const accepted = useRef(false);
@@ -129,6 +137,20 @@ describe("useResearchView hydration intent", () => {
     render(<StrictMode><State a={analysis} intent="query" /></StrictMode>);
 
     expect(view()).toMatchObject({ metric: "rate", query: "Alpha", view: "table" });
+  });
+
+  it("round-trips the unidentified population and drops a population the rows never publish", () => {
+    window.history.replaceState(null, "", "?population=missing-definition");
+    render(<State a={unidentified} />);
+    expect(view().population).toBe("missing-definition");
+    expect(new URLSearchParams(window.location.search).get("population")).toBe("missing-definition");
+
+    act(() => {
+      window.history.pushState(null, "", "?population=sport%3Dmlb");
+      window.dispatchEvent(new PopStateEvent("popstate"));
+    });
+    expect(view().population).toBe("all");
+    expect(new URLSearchParams(window.location.search).get("population")).toBeNull();
   });
 
   it("round-trips a valid population and drops an invalid one", () => {

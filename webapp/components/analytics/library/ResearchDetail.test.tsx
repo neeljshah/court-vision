@@ -20,6 +20,16 @@ const brierAnalysis: ResearchAnalysis = {
   ],
 };
 
+const qaAnalysis: ResearchAnalysis = {
+  ...analysis, id: "answer-evidence-coverage", title: "Answer evidence coverage", sport: "all",
+  caveat: "These rates answer different questions and must not be pooled.",
+  rows: [
+    { id: "stress", label: "Answerable stress prompts", group: "Coverage stress", values: { score: 2, rate: 0.2 } },
+    { id: "regression", label: "Regression-bank checks", group: "Fail-closed QA", values: { score: 9, rate: 0.9 } },
+    { id: "review", label: "Reviewed prompts", group: "Manual review", values: { score: 5, rate: 0.5 } },
+  ],
+};
+
 beforeEach(() => window.history.replaceState(null, "", "/analytics/research/nba-matchup-test/"));
 afterEach(() => vi.restoreAllMocks());
 
@@ -36,6 +46,21 @@ describe("ResearchDetail", () => {
     expect(screen.queryByRole("region", { name: "Measurement summary" })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Data table" }));
     expect(screen.getAllByRole("table")).toHaveLength(2);
+  });
+
+  it("pools nothing for a mixed analysis whose rows publish no population", () => {
+    render(<ResearchDetail analysis={qaAnalysis} related={[]} />);
+    expect(screen.getByRole("combobox", { name: "Population" })).toHaveValue("all");
+    expect(screen.queryByRole("region", { name: "Measurement summary" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "Measurement availability" })).not.toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "Population comparison notice" })).toHaveTextContent("without a pooled ranking, median, or percentile");
+  });
+
+  it("keeps published source order in the all-rows table", () => {
+    render(<ResearchDetail analysis={qaAnalysis} related={[]} />);
+    fireEvent.click(screen.getByRole("button", { name: "Data table" }));
+    expect(screen.getAllByRole("button", { name: /^Inspect / }).map(button => button.getAttribute("aria-label")))
+      .toEqual(["Inspect Answerable stress prompts", "Inspect Regression-bank checks", "Inspect Reviewed prompts"]);
   });
 
   it("does not render source context for analyses without recorded sources", () => {
