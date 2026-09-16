@@ -1,147 +1,213 @@
 {
- "slug": "age-and-production-lightly",
- "title": "Age and production, lightly",
- "subtitle": "What the aging-curve-lite check found when it looked for age in the NBA box score, and why a cross-sectional curve would not have been a forecast even if it had",
- "authors": ["CourtVision research"],
- "date": "2026-09-16",
- "sport": "nba",
- "keywords": ["aging curve", "cross-sectional", "survivorship", "player age", "null result", "buildability"],
- "abstract": "An aging curve plots average production against player age and is one of the oldest tools in sports analytics. The aging_curve_lite module was asked to build one from the CourtVision NBA corpus, and instead of a curve it returned a status of not_buildable. The corpus behind that verdict is data/domains/basketball_nba/player_boxscores.parquet: 77,744 player-game rows, 807 unique players and 3,611 unique games pooled across three seasons, 2023-24 through 2025-26 (player_metric_landscape.json, coverage). The module scanned every parquet table under data/domains/basketball_nba/ for a birthdate or age column and found none; age_source_found is recorded as null. Its own gate needs two things to hold at once, an age source and at least three season snapshots. Only the season count clears the bar here, so the verdict is a refusal rather than a curve, and a second, independently coded audit (player_metric_landscape.json) reaches the identical not_supported verdict for the same metric family from a different code path. This paper explains what that refusal means, and separately, why even a hypothetical age-labeled curve would not answer the question people usually want from one: a cross-sectional profile compares different players sampled at different ages, not one player tracked across a career, and the players still active at 34 are a survivor-selected group, not a random draw of today's 24-year-olds carried forward. A peak-age estimate from such a profile locates where the pooled sample happens to average highest, which is a fact about the sample's composition at each age, not a forecast for any individual.",
- "sections": [
-  {
-   "id": "question",
-   "heading": "Question",
-   "blocks": [
-    {"type": "p", "text": "An aging curve is a simple idea: group player-seasons by age, average some production measure inside each age group, and plot the result. It shows up constantly in public sports analytics because it looks like it answers a question every team and every fan asks, which is when a player is likely to be at his best. CourtVision's analytics showcase asked whether that curve could be built honestly from its own NBA data, and the module built for the job, aging_curve_lite, is a buildability check rather than a curve-fitting routine. It looks for the two ingredients a curve needs and reports whether both are present before it computes anything."},
-    {"type": "p", "text": "The two ingredients are separable from each other and it matters that they are. One is a label: some column, somewhere in the data, that ties a player-season to an age or a birthdate. The other is span: enough separate season snapshots that an age axis has more than a couple of points on it. This paper is about what the check found when it looked for both, and, because the topic invites a common misreading, about what a profile like this would and would not mean even in a world where the label existed."},
-    {"type": "callout", "label": "Definition", "text": "A cross-sectional age profile groups different players at each age point (whoever happened to be that age in the corpus) and averages within each group. A within-player trajectory instead follows one player's own production as that one player ages, holding the person fixed and letting age vary. The two are not interchangeable, and a cross-sectional profile is the only one of the two that a single-season or few-season box-score corpus could ever support."}
-   ]
-  },
-  {
-   "id": "concepts",
-   "heading": "Cross-sectional profile versus career trajectory",
-   "blocks": [
-    {"type": "p", "text": "The distinction matters because the two constructions can disagree even when computed on the same underlying players. A cross-sectional profile's point at age 34 is the average production of whichever players in the corpus happen to be 34 in some season. Its point at age 24 is the average of a largely different set of people who happen to be 24. Nothing in the construction requires that any single player contributes to both points, and in a three-season corpus most will not, because three seasons is not long enough to watch one career move from 24 to 34."},
-    {"type": "p", "text": "That is where survivorship enters. Who is still drawing an NBA paycheck at 34 is not a random sample of the players who were 24 ten years earlier. Staying in the league to that age is itself evidence of durability, role value or health, and the players who did not clear that bar are simply absent from the 34-year-old group, not averaged in at a low value. A cross-sectional curve's late-age tail is therefore a profile of survivors, and reading it as what a randomly chosen currently-24 player should expect at 34 silently substitutes the survivor population for the general one."},
-    {"type": "p", "text": "A peak-age estimate is the age at which a cross-sectional profile's pooled average is highest. That is a true statement about where the sampled average happens to be largest, and it is a fact about which players occupied which age groups in the corpus used to build it, not a statement about any individual player's own trajectory. Two corpora with identical rosters but different survivorship patterns, for instance one drawn from an era with longer average careers and one from an era with shorter ones, can produce different peak-age estimates from the same underlying skill curve, purely because the composition of who is left in each age bin changes. None of this is a defect unique to CourtVision's data; it is a property of the cross-sectional construction itself, and it is why the aging literature this module's own source citations point to treats a raw cross-sectional profile as a starting sketch rather than a finished answer."},
-    {"type": "callout", "label": "Caution", "text": "Everything above describes what any cross-sectional aging profile can and cannot say, independent of whether CourtVision has one. It is included here because the natural next question after reading a not_buildable verdict is to ask what was being missed out on, and the honest answer is that even a built version of this curve would carry these same limits. Adding age labels to the corpus would let the module compute a profile; it would not, on its own, turn that profile into a within-player forecast or remove its survivorship bias."}
-   ]
-  },
-  {
-   "id": "data",
-   "heading": "Data and definitions",
-   "blocks": [
-    {"type": "p", "text": "The underlying box-score table is data/domains/basketball_nba/player_boxscores.parquet. A companion showcase module built from the same table, player_metric_landscape.json, records its coverage directly: 77,744 player-game rows, 807 unique players and 3,611 unique games, spanning the 2023-24, 2024-25 and 2025-26 seasons, with every one of its 17 core box columns (minutes, points, rebounds, assists, steals, blocks, turnovers, shooting splits, personal fouls, plus-minus) at 0 percent missing. That module's own framing note states the discipline this paper follows too: support means raw input-column coverage, never a claim that a branded metric has been reproduced."},
-    {"type": "p", "text": "aging_curve_lite runs its own scan directly against this domain directory rather than trusting a cached coverage number. It reads every parquet table under data/domains/basketball_nba/ and tests each column name against a birthdate/age/dob pattern. The result is recorded as age_source_found, and here it is null: no table in the domain directory carries a column that matches. seasons_available lists the three season snapshots the box-score table itself spans, 2023-24, 2024-25 and 2025-26, and n_seasons records that count as 3."},
-    {"type": "list", "items": [
-     "Population: every parquet table under data/domains/basketball_nba/, scanned for an age- or birthdate-shaped column, plus the box-score table's own season coverage.",
-     "Unit of observation for the scan: one column name per table, tested against a birthdate/age/dob pattern.",
-     "Unit of observation for the season count: one season snapshot, of which there are 3 (2023-24, 2024-25, 2025-26).",
-     "Outcome recorded: a two-valued status, buildable or not_buildable, plus the age_source_found value and the seasons list that fed the decision."
-    ]}
-   ]
-  },
-  {
-   "id": "method",
-   "heading": "Method",
-   "blocks": [
-    {"type": "p", "text": "The check is a gate with two conditions, both of which must hold for the module to report buildable: an age or birthdate source column must be found somewhere in the domain's tables, and at least three season snapshots of box scores must exist. The season condition is satisfied here (3 available). The age-source condition is not (age_source_found is null). Because the gate is a logical AND, one satisfied condition and one unsatisfied condition together still produce not_buildable; there is no partial-credit path to a coarse or provisional curve."},
-    {"type": "math", "text": "buildable = (age_source_found is not null) AND (n_seasons >= 3)"},
-    {"type": "p", "text": "The why field on the artifact states the reasoning behind the second threshold in its own words: aging curves need age-labeled player-seasons across many seasons, because delta and GAM-style estimation methods want thousands of paired seasons to separate an age effect from everything else that changes year to year for a player. Three pooled season snapshots, even with an age label, would sit far below that bar; without the label at all, the question of how many seasons would be enough does not yet arise."},
-    {"type": "p", "text": "No proxy for age was substituted and none is scored here. A different design could use seasons-of-experience, draft year or a listed height/weight roster join as an age stand-in; aging_curve_lite does not attempt any of those substitutions, and this paper does not construct one either, because a proxy carries its own bias (a player's seasons of experience can differ from age by several years depending on when he entered the league) that would need its own accounting rather than being folded quietly into a headline number."}
-   ]
-  },
-  {
-   "id": "results",
-   "heading": "Results",
-   "blocks": [
-    {"type": "p", "text": "The table below restates the two-part gate as an observed-versus-required comparison, using only the fields the artifact itself records."},
-    {"type": "table", "caption": "The aging_curve_lite buildability gate: requirement versus what the scan found",
-     "columns": ["Requirement", "Threshold", "Observed"],
-     "rows": [
-      ["Age or birthdate column present in any table under data/domains/basketball_nba/", "at least one matching column", "none found; age_source_found = null"],
-      ["Season snapshots of box scores available", "3 or more", "3 (2023-24, 2024-25, 2025-26)"],
-      ["Overall status", "both rows above true", "not_buildable"]
-     ],
-     "note": "Source: aging_curve_lite.json, fields status, age_source_found, seasons_available, n_seasons."},
-    {"type": "p", "text": "The season count clears its own bar on its own; the corpus is not thin in the sense of having too few games or players. What is missing is a single column, and no amount of additional box-score seasons pooled the same way would supply it, since none of the tables scanned carry it under any name the pattern matches."},
-    {"type": "p", "text": "A second module, built from the same underlying box-score table but through an entirely different code path, reaches the same verdict for the same metric family. player_metric_landscape.json grades nine metric families against raw input-column coverage rather than by scanning for one specific label, and its aging_curve row is graded not_supported."},
-    {"type": "table", "caption": "Two independent verdicts on the same metric family, same underlying box-score table",
-     "columns": ["Metric family", "Verdict", "Why (verbatim)"],
-     "rows": [
-      ["Aging curve (player_metric_landscape.json)", "not_supported", "No birthdate/age column; only 3 season snapshots (2023-24..2025-26) -- too thin even if age were derivable."],
-      ["Aging curve (aging_curve_lite.json)", "not_buildable", "No birthdate/age column exists in any table under data/domains/basketball_nba/ (scanned all parquets)."]
-     ],
-     "note": "Sources: player_metric_landscape.json (metric_families.aging_curve.verdict, metric_families.aging_curve.why) and aging_curve_lite.json (status, why)."},
-    {"type": "p", "text": "The same 77,744-row, 807-player, 3,611-game corpus that fails this gate is graded supported for other metric families in player_metric_landscape.json, including a box-only value index and a per-36 rate cast, both of which rely on the same box columns the aging check has full access to. The refusal here is specific to one missing column, not a general statement that this corpus is too small to support description."},
-    {"type": "callout", "label": "Verdict", "text": "The honest result is a refusal, recorded the same way twice from two different code paths: no age or birthdate column exists anywhere in the scanned domain tables, so no age-bin table, no per-age production measure and no age-conditioned spread can be reported here without inventing the age labels that would have to underlie them. Reporting a fabricated curve instead of this verdict is exactly the failure mode the module was built to avoid."}
-   ]
-  },
-  {
-   "id": "checks",
-   "heading": "Robustness and what would falsify this",
-   "blocks": [
-    {"type": "p", "text": "The claim that no age source exists is falsified the moment it stops being true, and cheaply: the same scan re-run after any roster or biographical table carrying a birthdate or age column is added under data/domains/basketball_nba/ would flip age_source_found from null to that table's name, and the status field would flip to buildable as soon as the season-count condition (already satisfied) is checked alongside it. Nothing about the verdict is a permanent architectural limit; it is a statement about what one directory of parquet files currently contains."},
-    {"type": "p", "text": "The scan's specificity is also checkable directly: it matches column names against a birthdate/age/dob pattern with word boundaries, so a column named usagepercentage or averageminutes would not false-positively satisfy the age condition, and neither would it silently swallow a column that is genuinely named something like age_years. That the two independently coded modules, one a general capability matrix and one a purpose-built scanner, arrive at the identical verdict for this one metric family is itself a check against either script individually mis-scanning or mis-grading; a coding error specific to one script's column-matching logic would need to reproduce itself in the other's separately written grading table to still agree."},
-    {"type": "p", "text": "What was not tested, and would need its own separate accounting rather than being read off this check, is whether an age proxy such as seasons of professional experience or draft-to-season gap could stand in for a true age label. Such a proxy is a real option other public analysts use, and it was deliberately left untried here rather than folded into a curve that would then carry an unstated substitution."}
-   ]
-  },
-  {
-   "id": "limitations",
-   "heading": "Limitations",
-   "blocks": [
-    {"type": "list", "items": [
-     "This is a buildability check, not an aging analysis: it reports whether a curve can honestly be computed from the current corpus, and says nothing about the shape, direction or size of any real NBA aging effect.",
-     "The scan covers only the parquet tables under data/domains/basketball_nba/; no external roster or biographical source was queried, so a null age_source_found describes this corpus's current columns, not a claim that age data could never be obtained anywhere.",
-     "Even a future corpus with an age column added would still pool only 3 season snapshots (2023-24 through 2025-26) unless more seasons are ingested, which the artifact's own reasoning treats as thin next to the many-season, thousands-of-paired-seasons scale that delta or GAM-style age-effect estimation wants.",
-     "The cross-sectional-versus-trajectory and survivorship discussion in this paper describes general properties of this class of measurement; none of it is itself estimated from CourtVision data, because no age-labeled curve exists here to estimate it from.",
-     "The two corroborating verdicts (aging_curve_lite.json and player_metric_landscape.json) both trace back to the same underlying fact, the absence of an age or birthdate column in this data directory, checked by two scripts rather than confirmed against two independent data sources, so they are not fully independent evidence in the cross-corpus sense the platform otherwise asks for."
-    ]}
-   ]
-  },
-  {
-   "id": "use",
-   "heading": "How to read this on the site",
-   "blocks": [
-    {"type": "p", "text": "The module page for aging_curve_lite carries the refusal directly: check status first, then age_source_found and seasons_available for why. There is no chart to open underneath it, because the refusal is the published artifact rather than a summary of one."},
-    {"type": "figure", "module": "aging_curve_lite", "caption": "aging_curve_lite: a not_buildable status recorded in place of an age-bin chart, with the age-source scan and season count that produced it."},
-    {"type": "p", "text": "player_metric_landscape's own module page is the wider map this single refusal sits inside: its capability matrix grades nine metric families at once, aging curve among them, against the same raw input-column coverage discipline, so a reader who wants to see which other metrics this box-score corpus does and does not support can check the same table for the ones adjacent to this one."}
-   ]
-  }
- ],
- "evidence": [
-  {
-   "artifact": "aging_curve_lite.json",
-   "module": "aging_curve_lite",
-   "asOf": null,
-   "fields": ["status", "seasons_available", "n_seasons", "age_source_found", "why", "source"]
-  },
-  {
-   "artifact": "player_metric_landscape.json",
-   "module": "player_metric_landscape",
-   "asOf": null,
-   "fields": [
-    "note",
-    "coverage.rows",
-    "coverage.unique_players",
-    "coverage.unique_games",
-    "coverage.seasons",
-    "coverage.box_col_missing_pct",
-    "metric_families.aging_curve.verdict",
-    "metric_families.aging_curve.why"
-   ]
-  }
- ],
- "limitations": [
-  "This is a buildability check, not an aging analysis: it reports whether a curve can honestly be computed from the current corpus, and says nothing about the shape, direction or size of any real NBA aging effect.",
-  "The scan covers only the parquet tables under data/domains/basketball_nba/; no external roster or biographical source was queried, so a null age_source_found describes this corpus's current columns, not a claim that age data could never be obtained anywhere.",
-  "Even a future corpus with an age column added would still pool only 3 season snapshots (2023-24 through 2025-26) unless more seasons are ingested, which the artifact's own reasoning treats as thin next to the many-season scale that delta or GAM-style age-effect estimation wants.",
-  "The cross-sectional-versus-trajectory and survivorship discussion describes general properties of this class of measurement; none of it is estimated from CourtVision data, because no age-labeled curve exists here to estimate it from.",
-  "The two corroborating verdicts both trace back to the same underlying fact, checked by two scripts rather than confirmed against two independent data sources, so they are not fully independent evidence in the cross-corpus sense the platform otherwise asks for."
- ],
- "related": [
-  {"kind": "module", "id": "aging_curve_lite"},
-  {"kind": "module", "id": "player_metric_landscape"},
-  {"kind": "analysis", "id": "nba-form-endpoint-elasticity"}
- ]
+  "slug": "age-and-production-lightly",
+  "title": "Age and production, lightly",
+  "subtitle": "Why the NBA aging-curve check returned not_buildable, and what a cross-sectional profile would not have shown",
+  "authors": [
+    "CourtVision research"
+  ],
+  "date": "2026-09-16",
+  "sport": "nba",
+  "keywords": [
+    "aging curve",
+    "cross-sectional",
+    "survivorship",
+    "player age",
+    "null result",
+    "buildability"
+  ],
+  "abstract": "An aging curve plots average production against player age. The aging_curve_lite module was asked to build one from the CourtVision NBA corpus and returned a status of not_buildable. Its gate needs two things at once: an age or birthdate source, and at least three season snapshots. n_seasons is 3, so the season condition holds; age_source_found is null, so the other does not, and because the gate is a logical AND the module computed no curve. The corpus is not thin: player_metric_landscape.json records 77,744 player-game rows, 807 unique players and 3,611 unique games across the 2023-24, 2024-25 and 2025-26 seasons, with all 17 core box columns at 0 percent missing, and grades other metric families on that table supported while grading its aging_curve row not_supported for the same reason. What the scan establishes is narrow: the top-level parquet files it could read in one directory carry no column name matching its birthdate/age/dob pattern, which is not proof that no age information exists under another name. No age source was found, so no age curve was computed, and no age bin, per-age production measure or peak-age estimate is reported here.",
+  "sections": [
+    {
+      "id": "question",
+      "heading": "Question",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "An aging curve groups player-seasons by age, averages a production measure inside each group, and plots the result. It shows up constantly in public sports analytics because it looks like it answers the question every team and every fan asks, which is when a player is likely to be at his best. aging_curve_lite is not a curve-fitting routine but a buildability check: it looks for the two ingredients a curve needs -- a label tying a player-season to an age, and enough season snapshots for an age axis to have more than a couple of points -- and reports whether both are present before computing anything."
+        }
+      ]
+    },
+    {
+      "id": "data",
+      "heading": "Data and definitions",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "The underlying table is data/domains/basketball_nba/player_boxscores.parquet. A companion module built from the same table, player_metric_landscape.json, records its coverage directly: 77,744 player-game rows (coverage.rows), 807 unique players (coverage.unique_players) and 3,611 unique games (coverage.unique_games), across the three seasons in coverage.seasons -- 2023-24, 2024-25 and 2025-26 -- with all 17 core box columns at 0 percent missing (coverage.box_col_missing_pct). Its own note states the discipline this paper follows: support means raw input-column coverage, never a claim that a branded metric has been reproduced."
+        },
+        {
+          "type": "p",
+          "text": "aging_curve_lite.json carries the verdict in four fields. status is not_buildable, age_source_found is null, n_seasons is 3, and seasons_available lists the three snapshots the box-score table spans."
+        }
+      ]
+    },
+    {
+      "id": "method",
+      "heading": "Method",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "The gate has two conditions and both must hold for the module to report buildable: an age or birthdate source column must be found, and at least three season snapshots must exist. The season condition is satisfied (n_seasons is 3); the age-source condition is not (age_source_found is null). Because the gate is a logical AND, one satisfied and one unsatisfied condition still produce not_buildable, with no partial-credit path to a coarse or provisional curve."
+        },
+        {
+          "type": "math",
+          "text": "buildable = (age_source_found is not null) AND (n_seasons >= 3)"
+        },
+        {
+          "type": "p",
+          "text": "What the age scan does is narrow and worth stating precisely. It lists the top-level parquet files in data/domains/basketball_nba/, opens each one it can read, and tests that file's column names against a birthdate/age/dob token pattern; the first match would have been recorded as age_source_found. It does not descend into subdirectories, it moves past a file it cannot open, and a column name is the only thing it inspects. A null result says that no readable top-level table in that directory carries a column named in a way the pattern recognises -- not that the corpus was semantically audited, and not that age is unavailable under another name or from an external roster source."
+        },
+        {
+          "type": "p",
+          "text": "No proxy for age was substituted and none is scored here. Seasons of professional experience, or a draft-year-to-season gap, are stand-ins other analysts use; aging_curve_lite attempts neither, and this paper does not construct one, because a proxy carries its own bias that would need separate accounting rather than being folded quietly into a headline number."
+        }
+      ]
+    },
+    {
+      "id": "results",
+      "heading": "Results",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "The table restates the gate as an observed-versus-required comparison, using only fields the artifact records."
+        },
+        {
+          "type": "table",
+          "caption": "The aging_curve_lite buildability gate: requirement versus what the scan found",
+          "columns": [
+            "Requirement",
+            "Threshold",
+            "Observed"
+          ],
+          "rows": [
+            [
+              "Age or birthdate column in a readable top-level table under data/domains/basketball_nba/",
+              "at least one matching column name",
+              "none matched; age_source_found = null"
+            ],
+            [
+              "Season snapshots of box scores available",
+              "3 or more",
+              "3 (2023-24, 2024-25, 2025-26); n_seasons = 3"
+            ],
+            [
+              "Overall status",
+              "both rows above true",
+              "not_buildable"
+            ]
+          ],
+          "note": "Source: aging_curve_lite.json, fields status, age_source_found, seasons_available, n_seasons."
+        },
+        {
+          "type": "p",
+          "text": "The season count clears its own bar, and the corpus is not thin in games or players: player_metric_landscape.json grades several other metric families on the same table as supported, including a box-only value index and a per-36 rate cast. Its aging_curve row is graded not_supported, with the reason given verbatim as no birthdate/age column and only 3 season snapshots. Both modules read the same directory and report the same absence, so their agreement adds no corroboration."
+        },
+        {
+          "type": "callout",
+          "label": "Verdict",
+          "text": "No age source was found, so no age curve was computed. There is no age-bin table, no per-age production measure and no age-conditioned spread to report here, because the labels that would have to underlie them are not in the data the module read. Publishing a curve built on invented ages instead of this status is the failure mode the module exists to avoid."
+        }
+      ]
+    },
+    {
+      "id": "concepts",
+      "heading": "What a built curve would not have shown",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "A note on what a built curve would have meant, because the topic invites one specific misreading. A cross-sectional age profile groups whichever players happen to be a given age in the corpus and averages within each group; a within-player trajectory instead follows one player's own production as that player ages. Nothing in the cross-sectional construction requires a single player to contribute to two age points, and survivorship follows: who is still in the league at 34 is not a random sample of those who were 24 ten years earlier, and the players who did not last are absent from the 34-year-old group rather than averaged in low. A peak-age estimate from such a profile locates where the pooled sample averages highest, a fact about who occupied each age group, not a forecast for any individual."
+        }
+      ]
+    },
+    {
+      "id": "checks",
+      "heading": "Robustness and what would falsify this",
+      "blocks": [
+        {
+          "type": "list",
+          "items": [
+            "The verdict is cheap to falsify: add a roster or biographical table carrying a birthdate or age column to data/domains/basketball_nba/, re-run the scan, and age_source_found flips from null to that file's name while status flips to buildable, because the season condition already holds.",
+            "The pattern is token-bounded, so a column named usagepercentage does not false-positively satisfy the age condition; the same boundary means a column carrying age under an unrecognised name would be missed, which is why the null is reported as the result of a column-name scan rather than an audit of what the corpus means."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "limitations",
+      "heading": "Limitations",
+      "blocks": [
+        {
+          "type": "list",
+          "items": [
+            "This is a buildability check, not an aging analysis; it says nothing about the shape, direction or size of any real NBA aging effect.",
+            "The scan covers only the readable top-level parquet files in one directory; no subdirectory or external roster source was queried.",
+            "Even with an age column added, the corpus would still pool only the 3 season snapshots in seasons_available, which the artifact treats as thin for delta or GAM-style estimation.",
+            "The cross-sectional and survivorship discussion describes general properties of this class of measurement and is not estimated from CourtVision data.",
+            "aging_curve_lite.json and player_metric_landscape.json record the same absent column in the same directory, so their agreement is one fact checked twice, not independent corroboration."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "use",
+      "heading": "How to read this on the site",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "The module page for aging_curve_lite carries the status directly: read status first, then age_source_found and seasons_available. There is no chart underneath it, because the status is the published artifact rather than a summary of one. player_metric_landscape's page grades nine metric families against the same input-column coverage discipline."
+        }
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "artifact": "aging_curve_lite.json",
+      "module": "aging_curve_lite",
+      "asOf": null,
+      "fields": [
+        "status",
+        "seasons_available",
+        "n_seasons",
+        "age_source_found",
+        "why",
+        "source"
+      ]
+    },
+    {
+      "artifact": "player_metric_landscape.json",
+      "module": "player_metric_landscape",
+      "asOf": null,
+      "fields": [
+        "note",
+        "coverage.rows",
+        "coverage.unique_players",
+        "coverage.unique_games",
+        "coverage.seasons",
+        "coverage.box_col_missing_pct",
+        "metric_families.aging_curve.verdict",
+        "metric_families.aging_curve.why"
+      ]
+    }
+  ],
+  "limitations": [
+    "This is a buildability check, not an aging analysis: it says nothing about the shape, direction or size of any real NBA aging effect.",
+    "The scan covers only the readable top-level parquet files in data/domains/basketball_nba/; no subdirectory or external roster source was queried, so a null age_source_found describes that scan rather than the whole corpus.",
+    "Even with an age column added, the corpus would still pool only the 3 season snapshots recorded in seasons_available, which the artifact treats as thin for delta or GAM-style age-effect estimation.",
+    "The cross-sectional and survivorship discussion describes general properties of this class of measurement and is not estimated from CourtVision data.",
+    "aging_curve_lite.json and player_metric_landscape.json record the same absent column in the same directory, so their agreement is one fact checked twice, not independent corroboration."
+  ],
+  "related": [
+    {
+      "kind": "module",
+      "id": "aging_curve_lite"
+    },
+    {
+      "kind": "module",
+      "id": "player_metric_landscape"
+    },
+    {
+      "kind": "analysis",
+      "id": "nba-form-endpoint-elasticity"
+    }
+  ]
 }

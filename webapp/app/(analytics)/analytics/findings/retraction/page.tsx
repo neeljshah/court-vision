@@ -8,7 +8,7 @@ import { RETRACTIONS } from "./retractions";
 
 export const metadata: Metadata = {
   title: "The Retraction Story",
-  description: "Six withdrawn headline figures, with the measurement failure and published replacement where one exists.",
+  description: "Six withdrawn headline figures, with the measurement failure, the withdrawal and editorial dates, and the published replacement where one exists.",
   ...findingMeta("retraction"),
 };
 
@@ -67,12 +67,15 @@ export default function RetractionPage() {
       <h1 style={h1}>The Retraction Story</h1>
       <p style={lede}>
         These six headline figures were published, then withdrawn when their measurements failed.
-        Each entry names the measurement, the defect, the withdrawal date, and the replacement only
-        when a dated calibration measure exists.
+        Each entry names the measurement, the defect, the date the withdrawal happened where the
+        record states one, the editorial date of the record itself, and the replacement only when a
+        dated calibration measure exists.
       </p>
       <p style={truthBanner}>
         The source for this record is JOB_EVIDENCE_PACKET.md, published with this finding on
-        2026-07-23. A withdrawn figure is historical documentation, never a current result.
+        2026-07-23. That is an editorial date, not the date a withdrawal happened; where the packet
+        does not state when a figure was withdrawn, this page says so rather than reusing the
+        publication date. A withdrawn figure is historical documentation, never a current result.
       </p>
 
       <div style={{ marginTop: 8 }}>
@@ -85,15 +88,17 @@ export default function RetractionPage() {
             </div>
             <p style={rowLabel}>Measurement failure</p>
             <p style={rowBody}>{retraction.defect}</p>
-            <p style={rowLabel}>Withdrawal recorded</p>
-            <p style={rowBody}>{retraction.withdrawnOn}</p>
+            <p style={rowLabel}>Withdrawal date</p>
+            <p style={rowBody}>{retraction.eventDate || "date not recorded"}</p>
+            <p style={rowLabel}>Editorial date of the record</p>
+            <p style={rowBody}>{retraction.editorialDate}</p>
             <p style={rowLabel}>Replacement</p>
             <p style={replacementBody}>{retraction.replacement}</p>
             <p style={rowLabel}>Evidence citation</p>
             <div style={citationBox}>
               <p><strong style={{ color: "var(--ink)" }}>No published evidence document.</strong> {retraction.citation.document} is the cited withdrawal record, but it is not published on this site.</p>
               <p style={citationMeta}>Section: {retraction.citation.section}</p>
-              <p style={citationMeta}>Date: {retraction.citation.date} | Sport: {retraction.citation.sportsCovered.join(", ")}</p>
+              <p style={citationMeta}>Editorial date: {retraction.citation.date} | Sport: {retraction.citation.sportsCovered.join(", ")}</p>
               <p style={citationMeta}>Measures: {retraction.citation.measurementIdentity}</p>
             </div>
             <p style={rowLabel}>Related reading</p>

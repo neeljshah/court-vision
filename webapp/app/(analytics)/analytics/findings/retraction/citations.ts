@@ -1,6 +1,7 @@
 export type RetractionCitation = {
   document: string;
   section: string;
+  /** Editorial date: when this evidence document was published, not when the withdrawal happened. */
   date: string;
   measurementIdentity: string;
   sportsCovered: readonly string[];
@@ -15,6 +16,8 @@ export type RelatedReading = {
 
 // The evidence packet is the dated, repository-level withdrawal record. It is
 // intentionally not linked from the static site because it is not published there.
+// Its date is the packet's own editorial date; only the assists row carries a
+// withdrawal event date, which the packet states inline as "RETRACTED (2026-07-21)".
 const NBA_WITHDRAWAL_RECORD = {
   document: "docs/JOB_EVIDENCE_PACKET.md",
   date: "2026-07-23",
@@ -51,7 +54,8 @@ export const RETRACTION_CITATIONS = {
   "assists-playoffs": {
     ...NBA_WITHDRAWAL_RECORD,
     section: "Section 3, lines 193-197: assists withdrawal record",
-    measurementIdentity: "Withdrawal record for the assists conclusion after its playoff stress test.",
+    recordsWithdrawal: true,
+    measurementIdentity: "Withdrawal record for the assists conclusion after its playoff stress test, dated 2026-07-21 in the packet text.",
   },
 } as const satisfies Record<string, RetractionCitation>;
 

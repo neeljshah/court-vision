@@ -2,11 +2,19 @@
   "slug": "how-proposed-signals-survive-testing",
   "title": "How proposed signals survive testing",
   "subtitle": "The claim ledger, verdict changes and mechanism survival, as a record rather than a story",
-  "authors": ["CourtVision research"],
+  "authors": [
+    "CourtVision research"
+  ],
   "date": "2026-09-16",
   "sport": "all",
-  "keywords": ["claim ledger", "verdict flips", "mechanism survival", "retraction", "replication"],
-  "abstract": "CourtVision keeps a ledger of every candidate signal it has tested, across basketball, baseball, soccer and tennis, and republishes that ledger rather than only the signals that held up. This note reads the ledger as a record of a process, not as a set of findings about any one signal. The ledger holds 287 individual test-run rows grouped into 259 distinct claim families, one row per sport-and-hypothesis pair; the family-level current status is verified for 121, null for 99, not_testable for 28, retracted for 7, and provisional for 4. Null, not_testable and retracted together (134) outnumber verified (121), a ratio the source file itself states as 1.107 nulls-or-worse per confirmation. Five families changed verdict as they were re-tested, and this note walks through each one, including a family whose verdict flipped twice under a single shared timestamp and a family whose two recorded steps carry the identical sample size and the identical effect yet different verdicts. Seven families were retracted outright, each with a named corpus, sample size and effect that ended it. A separate row-level count -- one row per recorded mechanism test rather than one row per family -- puts overall survival at 129 of 256 testable rows (50.39 percent); a companion export of the same 287 rows counts 130 confirmed, because it places one verdict label on the other side of its own bucket boundary. That one-row difference is this note's central point: a confirmed count depends on where the boundary is drawn, so counting confirmations is not what the ledger is for. Of the 287 history rows, 142 carry no run_ts and are kept in source order.",
+  "keywords": [
+    "claim ledger",
+    "verdict flips",
+    "mechanism survival",
+    "retraction",
+    "replication"
+  ],
+  "abstract": "CourtVision keeps a validation ledger of candidate signals across basketball, baseball, soccer and tennis, and republishes that ledger rather than only the signals that held up. This note reads one dated snapshot of it -- fwd_claim_scoreboard.json as of 2026-07-11, holding 287 recorded test-run rows grouped into 259 claim families, one family per sport-and-hypothesis pair -- as a record of a process, not as a set of findings about any one signal. That snapshot is the scope, not a claim that the ledger holds each idea the project ever weighed. The family-level current status is verified for 121, null for 99, not_testable for 28, retracted for 7 and provisional for 4: 134 families are null, not testable or retracted, and four more are provisional, so 138 of the 259 are something other than verified. The 134 outnumber the 121 verified, a ratio the file states as 1.107 nulls-or-worse per confirmation. Five families changed verdict as they were re-tested, including one whose verdict flipped twice under a single shared timestamp and one whose two recorded steps carry the identical sample size and effect yet different verdicts. Seven families were retracted outright. A separate row-level count puts survival at 129 of 256 testable rows (50.39 percent); a companion export of the same 287 rows counts 130 confirmed, because it places one verdict label on the other side of its own bucket boundary. That one-row difference is this note's central point: a confirmed count depends on where the boundary is drawn.",
   "sections": [
     {
       "id": "question",
@@ -14,11 +22,11 @@
       "blocks": [
         {
           "type": "p",
-          "text": "CourtVision runs many more candidate signals through its validation ledger than it ever publishes as findings. This note does not add a new signal or a new number computed outside that ledger; it reads the ledger itself -- the record of what was proposed, what was tested, what the verdict was at each check, and what changed later -- as the object of study. The question is not whether any one signal holds up. It is whether the record of testing is complete, whether it corrects itself when a verdict was wrong, and whether it is honest about the outcomes that did not confirm."
+          "text": "CourtVision runs many more candidate signals through its validation ledger than it ever publishes as findings. This note adds no new signal and no number computed outside that ledger; it reads the ledger itself -- what was proposed, what was tested, what the verdict was at each check, and what changed later -- as the object of study. The question is not whether any one signal holds up. It is what this dated snapshot records: whether a verdict is corrected when a re-test disagrees with it, and whether the outcomes that did not confirm are kept and counted rather than dropped."
         },
         {
           "type": "p",
-          "text": "Four artifacts are described here. fwd_claim_scoreboard.json gives the current status of every claim family. verdict_flip_anatomy.json gives the five claim families whose verdict changed as they were re-tested, and the seven that were retracted outright. mechanism_survival.json gives the row-level survival rate of every recorded mechanism test. mechanism_ledger_export.json is a companion export of the same mechanism rows that counts confirmations slightly differently. That last comparison is the point of this note: two files built from the same underlying test runs disagree on the confirmed count by exactly one row, because they draw the bucket boundary around one verdict label differently. A ledger that reports a single confirmation percentage without saying where that boundary sits is reporting a choice, not a fact."
+          "text": "Four artifacts are described here, all reading the same ledger. fwd_claim_scoreboard.json gives the current status of every claim family in the 2026-07-11 snapshot. verdict_flip_anatomy.json gives the five families whose verdict changed as they were re-tested, and the seven retracted outright. mechanism_survival.json gives the row-level survival rate of every recorded mechanism test, and mechanism_ledger_export.json is a companion export of the same rows that counts confirmations slightly differently. That last comparison is the point: two files built from the same test runs disagree on the confirmed count by exactly one row, because they draw the bucket boundary around one verdict label differently. A ledger that reports a single confirmation percentage without saying where that boundary sits is reporting a choice, not a fact."
         }
       ]
     },
@@ -60,24 +68,72 @@
       "blocks": [
         {
           "type": "p",
-          "text": "Table 1 reads the ledger's own count of where every one of the 259 claim families currently stands, by sport."
+          "text": "Table 1 reads the snapshot's own count of where each of the 259 claim families stands, by sport."
         },
         {
           "type": "table",
           "caption": "Claim family verdicts, 259 families across 4 sports (fwd_claim_scoreboard.json, summary.by_status and summary.by_status_per_sport)",
-          "columns": ["Sport", "Verified (n)", "Null (n)", "Not testable (n)", "Retracted (n)", "Provisional (n)", "Total families (n)"],
+          "columns": [
+            "Sport",
+            "Verified (n)",
+            "Null (n)",
+            "Not testable (n)",
+            "Retracted (n)",
+            "Provisional (n)",
+            "Total families (n)"
+          ],
           "rows": [
-            ["basketball_nba", "39", "26", "7", "0", "2", "74"],
-            ["mlb", "31", "32", "8", "6", "1", "78"],
-            ["soccer", "27", "21", "8", "1", "1", "58"],
-            ["tennis", "24", "20", "5", "0", "0", "49"],
-            ["All 4 sports (pooled)", "121", "99", "28", "7", "4", "259"]
+            [
+              "basketball_nba",
+              "39",
+              "26",
+              "7",
+              "0",
+              "2",
+              "74"
+            ],
+            [
+              "mlb",
+              "31",
+              "32",
+              "8",
+              "6",
+              "1",
+              "78"
+            ],
+            [
+              "soccer",
+              "27",
+              "21",
+              "8",
+              "1",
+              "1",
+              "58"
+            ],
+            [
+              "tennis",
+              "24",
+              "20",
+              "5",
+              "0",
+              "0",
+              "49"
+            ],
+            [
+              "All 4 sports (pooled)",
+              "121",
+              "99",
+              "28",
+              "7",
+              "4",
+              "259"
+            ]
           ],
           "note": "fwd_claim_scoreboard.json as_of 2026-07-11T16:48:14Z. Per-sport rows sum to the pooled row in every column."
         },
         {
           "type": "p",
-          "text": "121 families are currently verified and 99 are null; adding the 28 not_testable and 7 retracted families to the null count gives 134 families whose current status is anything other than verified, against 121 that are (summary.confirms=121, summary.nulls_or_worse=134). The file's own honest_ratio_nulls_per_confirm is 1.107 -- for every family currently confirmed, roughly 1.1 are null, not_testable, or retracted. Four families remain provisional, meaning their current status is not a final verdict either way yet."
+          "text": "121 families are currently verified. 134 families are null, not testable or retracted (summary.by_status: null 99, not_testable 28, retracted 7), and four more are provisional, so 138 of the 259 families carry a status other than verified. The file counts the 134 as summary.nulls_or_worse against summary.confirms of 121, and its honest_ratio_nulls_per_confirm is 1.107 -- for every family currently confirmed, roughly 1.1 are null, not_testable or retracted. The four provisional families are not a final verdict either way yet, which is why they sit outside the 134 and inside the 138."
         },
         {
           "type": "p",
@@ -86,13 +142,55 @@
         {
           "type": "table",
           "caption": "The five verdict-flipped claim families (fwd_claim_scoreboard.json, flipped_families[])",
-          "columns": ["Sport", "Hypothesis", "Ledger entries (n)", "Verdict sequence", "Current status", "Run timestamps"],
+          "columns": [
+            "Sport",
+            "Hypothesis",
+            "Ledger entries (n)",
+            "Verdict sequence",
+            "Current status",
+            "Run timestamps"
+          ],
           "rows": [
-            ["basketball_nba", "three_in_four_fatigue", "2", "NULL_LOCAL -> CONFIRMED_LOCAL", "verified", "none recorded"],
-            ["mlb", "reliever_3in3d_fatigue", "3", "NULL_LOCAL -> NULL_LOCAL -> CONFIRMED_LOCAL", "verified", "none recorded"],
-            ["mlb", "reliever_3in3d_fatigue__combined", "2", "PROVISIONAL -> NULL_LOCAL", "null", "none recorded"],
-            ["mlb", "staff_dayafter_fatigue_chain", "3", "NULL_LOCAL -> CONFIRMED_LOCAL -> NULL_LOCAL", "null", "all 3 steps share one timestamp, 2026-07-10T08:23:40Z"],
-            ["tennis", "break_point_conversion_by_set_number", "2", "NOT_TESTABLE -> CONFIRMED_LOCAL", "verified", "none recorded"]
+            [
+              "basketball_nba",
+              "three_in_four_fatigue",
+              "2",
+              "NULL_LOCAL -> CONFIRMED_LOCAL",
+              "verified",
+              "none recorded"
+            ],
+            [
+              "mlb",
+              "reliever_3in3d_fatigue",
+              "3",
+              "NULL_LOCAL -> NULL_LOCAL -> CONFIRMED_LOCAL",
+              "verified",
+              "none recorded"
+            ],
+            [
+              "mlb",
+              "reliever_3in3d_fatigue__combined",
+              "2",
+              "PROVISIONAL -> NULL_LOCAL",
+              "null",
+              "none recorded"
+            ],
+            [
+              "mlb",
+              "staff_dayafter_fatigue_chain",
+              "3",
+              "NULL_LOCAL -> CONFIRMED_LOCAL -> NULL_LOCAL",
+              "null",
+              "all 3 steps share one timestamp, 2026-07-10T08:23:40Z"
+            ],
+            [
+              "tennis",
+              "break_point_conversion_by_set_number",
+              "2",
+              "NOT_TESTABLE -> CONFIRMED_LOCAL",
+              "verified",
+              "none recorded"
+            ]
           ],
           "note": "verdict_flip_anatomy.json, flips[]. 'None recorded' means every step's run_ts field is null; those families' step order is source-file order, not a dated timeline."
         },
@@ -123,15 +221,55 @@
         {
           "type": "table",
           "caption": "The 7 retracted claim families and what ended them (verdict_flip_anatomy.json, retracted[])",
-          "columns": ["Sport", "Hypothesis", "History rows (n)", "What ended it"],
+          "columns": [
+            "Sport",
+            "Hypothesis",
+            "History rows (n)",
+            "What ended it"
+          ],
           "rows": [
-            ["mlb", "meta_label_divergence_bucket_Q1", "1", "FAILED_REPLICATION on corpus ingame_grade_joined_mlb_synthetic_checkpoints_disjoint (n=20, effect=0.45)"],
-            ["mlb", "meta_label_divergence_bucket_Q2", "1", "FAILED_REPLICATION on corpus ingame_grade_joined_mlb_synthetic_checkpoints_disjoint (n=19, effect=0.3158)"],
-            ["mlb", "meta_label_divergence_bucket_Q3", "1", "FAILED_REPLICATION on corpus ingame_grade_joined_mlb_synthetic_checkpoints_disjoint (n=19, effect=0.3158)"],
-            ["mlb", "meta_label_divergence_bucket_Q4", "1", "FAILED_REPLICATION on corpus ingame_grade_joined_mlb_synthetic_checkpoints_disjoint (n=18, effect=0.3333)"],
-            ["mlb", "milb_debut_freshness_flag", "1", "REJECT on corpus games_current_season_2026__savant_debut_proxy (n=39, effect=0.000394)"],
-            ["mlb", "oaa_trailing_fielding_quality_babip_conversion", "2", "REJECT on corpus savant_playlevel__2025_2026 (n=55063, effect not recorded)"],
-            ["soccer", "substitution_timing_moderates_shift__replication_big4_2015_16", "1", "FAILED_REPLICATION on corpus disjoint_competition_group (n=1691, effect=0.01861)"]
+            [
+              "mlb",
+              "meta_label_divergence_bucket_Q1",
+              "1",
+              "FAILED_REPLICATION on corpus ingame_grade_joined_mlb_synthetic_checkpoints_disjoint (n=20, effect=0.45)"
+            ],
+            [
+              "mlb",
+              "meta_label_divergence_bucket_Q2",
+              "1",
+              "FAILED_REPLICATION on corpus ingame_grade_joined_mlb_synthetic_checkpoints_disjoint (n=19, effect=0.3158)"
+            ],
+            [
+              "mlb",
+              "meta_label_divergence_bucket_Q3",
+              "1",
+              "FAILED_REPLICATION on corpus ingame_grade_joined_mlb_synthetic_checkpoints_disjoint (n=19, effect=0.3158)"
+            ],
+            [
+              "mlb",
+              "meta_label_divergence_bucket_Q4",
+              "1",
+              "FAILED_REPLICATION on corpus ingame_grade_joined_mlb_synthetic_checkpoints_disjoint (n=18, effect=0.3333)"
+            ],
+            [
+              "mlb",
+              "milb_debut_freshness_flag",
+              "1",
+              "REJECT on corpus games_current_season_2026__savant_debut_proxy (n=39, effect=0.000394)"
+            ],
+            [
+              "mlb",
+              "oaa_trailing_fielding_quality_babip_conversion",
+              "2",
+              "REJECT on corpus savant_playlevel__2025_2026 (n=55063, effect not recorded)"
+            ],
+            [
+              "soccer",
+              "substitution_timing_moderates_shift__replication_big4_2015_16",
+              "1",
+              "FAILED_REPLICATION on corpus disjoint_competition_group (n=1691, effect=0.01861)"
+            ]
           ],
           "note": "verdict_flip_anatomy.json, retracted[].what_killed_it, quoted from the artifact. days_lived is null for six of the seven rows because first_run_ts and last_run_ts are undated."
         },
@@ -142,20 +280,69 @@
         {
           "type": "table",
           "caption": "Mechanism survival by sport, 287 recorded mechanism rows (mechanism_survival.json, overall and by_sport)",
-          "columns": ["Sport label (as recorded)", "Rows (n)", "Testable (n)", "Confirmed (n)", "Not testable (n)", "Survival rate"],
+          "columns": [
+            "Sport label (as recorded)",
+            "Rows (n)",
+            "Testable (n)",
+            "Confirmed (n)",
+            "Not testable (n)",
+            "Survival rate"
+          ],
           "rows": [
-            ["basketball_nba", "82", "75", "42", "7", "0.56"],
-            ["mlb", "86", "78", "31", "8", "0.3974"],
-            ["nba", "3", "3", "3", "0", "1.0"],
-            ["soccer", "64", "56", "29", "8", "0.5179"],
-            ["tennis", "52", "44", "24", "8", "0.5455"],
-            ["Overall (all rows)", "287", "256", "129", "31", "0.5039"]
+            [
+              "basketball_nba",
+              "82",
+              "75",
+              "42",
+              "7",
+              "0.56"
+            ],
+            [
+              "mlb",
+              "86",
+              "78",
+              "31",
+              "8",
+              "0.3974"
+            ],
+            [
+              "nba",
+              "3",
+              "3",
+              "3",
+              "0",
+              "1.0"
+            ],
+            [
+              "soccer",
+              "64",
+              "56",
+              "29",
+              "8",
+              "0.5179"
+            ],
+            [
+              "tennis",
+              "52",
+              "44",
+              "24",
+              "8",
+              "0.5455"
+            ],
+            [
+              "Overall (all rows)",
+              "287",
+              "256",
+              "129",
+              "31",
+              "0.5039"
+            ]
           ],
           "note": "mechanism_survival.json, by_sport and overall. The file records both a 'basketball_nba' and a separate 'nba' key (n=3, all 3 confirmed); this note reports that split exactly as the file records it rather than merging the two."
         },
         {
           "type": "p",
-          "text": "By category (mechanism_survival.json, by_category), official_referee mechanisms survive at the highest rate among groups with a double-digit testable count (9 of 12 testable, 0.75), and travel mechanisms are confirmed on all 4 of 4 testable rows. rest_fatigue mechanisms survive least often among the larger categories (11 of 36 testable, 0.3056). weather_park has only 1 testable row of 3 total and it did not confirm (0 of 1, 0.0) -- too small a denominator to read as a rate."
+          "text": "By category (mechanism_survival.json, by_category), official_referee mechanisms survive at the highest rate among groups with a double-digit testable count (9 of 12 testable, 0.75), and travel mechanisms are confirmed on all 4 of 4 testable rows. rest_fatigue survives least often among the larger categories (11 of 36 testable, 0.3056). weather_park has 1 testable row of 3 and it did not confirm -- too small a denominator to read as a rate."
         },
         {
           "type": "figure",
@@ -179,7 +366,7 @@
         },
         {
           "type": "p",
-          "text": "142 of the ledger's 287 history rows carry no run_ts. For those rows, this note -- and the source files themselves -- can only report sequence, not elapsed time. staff_dayafter_fatigue_chain's three steps illustrate the risk directly: all three share one run_ts, so they establish no ordering by time at all beyond the sequence position already recorded in the file."
+          "text": "142 of the ledger's 287 history rows carry no run_ts. For those rows, this note -- and the source files themselves -- can report sequence, not elapsed time. staff_dayafter_fatigue_chain shows the risk directly: all three steps share one run_ts, so they establish no ordering by time beyond the sequence position already recorded."
         },
         {
           "type": "p",
@@ -187,7 +374,7 @@
         },
         {
           "type": "p",
-          "text": "A ledger that only ever moved toward confirmation would be a warning sign. This one does not: of the five flipped families, two (reliever_3in3d_fatigue__combined and staff_dayafter_fatigue_chain) ended on null despite an intermediate confirmed step, and seven separate families were retracted outright on FAILED_REPLICATION or REJECT verdicts. Movement runs in both directions in the same record, which is what a self-grading ledger should look like."
+          "text": "A ledger that only ever moved toward confirmation would be a warning sign. This one does not. staff_dayafter_fatigue_chain reached CONFIRMED_LOCAL on its middle step and ended on NULL_LOCAL, a confirmation that was reversed. reliever_3in3d_fatigue__combined never recorded a confirmed step at all: verdict_flip_anatomy.json's flips[].steps[] holds exactly two entries for it, PROVISIONAL then NULL_LOCAL, so it moved from an unsettled verdict to a null rather than reversing a confirmation. Seven further families were retracted outright on FAILED_REPLICATION or REJECT verdicts. Movement runs in both directions in the same record, which is what a self-grading ledger should look like."
         }
       ]
     },
@@ -213,7 +400,7 @@
       "blocks": [
         {
           "type": "p",
-          "text": "The verdict-flips finding on the site walks through these same five families with the same sourcing, and the retraction finding covers the seven retracted families alongside the project's broader retraction record. The published figure for fwd_claim_scoreboard sits next to its full family list in the analytics library, and mechanism_survival's own by-sport and by-category tables are worth reading in full rather than only the summary rows reproduced here."
+          "text": "The verdict-flips finding walks through these same five families with the same sourcing, and the retraction finding covers the seven retracted families alongside the project's broader retraction record. The published figure for fwd_claim_scoreboard sits next to its full family list in the analytics library, and mechanism_survival's by-sport and by-category tables are worth reading in full."
         }
       ]
     }
@@ -302,10 +489,25 @@
     "The sport and category labels used here (including a 'basketball_nba' key and a separate 'nba' key in mechanism_survival.json, and the seven keyword-matched categories) are inherited from the source ledger's own grouping and are reported as recorded rather than reconciled or re-derived."
   ],
   "related": [
-    { "kind": "finding", "id": "verdict-flips" },
-    { "kind": "finding", "id": "retraction" },
-    { "kind": "module", "id": "fwd_claim_scoreboard" },
-    { "kind": "module", "id": "verdict_flip_anatomy" },
-    { "kind": "module", "id": "mechanism_survival" }
+    {
+      "kind": "finding",
+      "id": "verdict-flips"
+    },
+    {
+      "kind": "finding",
+      "id": "retraction"
+    },
+    {
+      "kind": "module",
+      "id": "fwd_claim_scoreboard"
+    },
+    {
+      "kind": "module",
+      "id": "verdict_flip_anatomy"
+    },
+    {
+      "kind": "module",
+      "id": "mechanism_survival"
+    }
   ]
 }
