@@ -27,6 +27,8 @@
 .cr-legend .cr-hollow { border: 2px solid var(--ink-3); background: var(--paper-raised); }
 .cr-chart-wrap { overflow-x: auto; }
 .cr-chart-wrap svg { display: block; min-width: 570px; width: 100%; color: var(--ink-3); font-family: var(--font-mono); font-size: 11px; }
+.cr-worked-examples { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 22px; }
+.cr-worked-example { padding: 16px; border: 1px solid var(--rule); border-radius: var(--radius-card); background: var(--paper-tint); }.cr-worked-label { color: var(--ink-3); font: 700 10px var(--font-mono); letter-spacing: .07em; text-transform: uppercase; }.cr-worked-example h3 { margin-top: 5px; color: var(--ink); font-family: var(--font-display); font-size: 1.1rem; font-weight: 500; }.cr-worked-example p:not(.cr-worked-label) { margin-top: 8px; color: var(--ink-2); font-size: 13px; line-height: 1.55; }.cr-worked-example dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px 16px; margin-top: 13px; }.cr-worked-example dt { color: var(--ink-3); font-size: 10px; text-transform: uppercase; }.cr-worked-example dd { margin-top: 2px; color: var(--ink); font: 700 12px var(--font-mono); }
 .cr-grid { stroke: var(--rule); stroke-width: 1; }
 .cr-reference { stroke: var(--rule-strong); stroke-dasharray: 5 5; stroke-width: 1.25; }
 .cr-axis { fill: var(--ink-2); font-family: var(--font-sans); font-size: 12px; }
@@ -48,4 +50,4 @@
 .calibration-table td:last-child { font-family: var(--font-sans); color: var(--ink-2); }
 .calibration-note { max-width: 790px; margin-top: 16px !important; padding-left: 14px; border-left: 2px solid var(--signal); }
 .calibration-receipt { margin-top: 22px; }
-@media (max-width: 680px) { .calibration-page { padding: 34px 16px 48px; } .cr-shell { margin-left: -2px; margin-right: -2px; padding: 17px; } .cr-controls { align-items: stretch; flex-direction: column; } .cr-toggle { width: fit-content; } .calibration-title { font-size: 2.35rem; } }
+@media (max-width: 680px) { .calibration-page { padding: 34px 16px 48px; } .cr-shell { margin-left: -2px; margin-right: -2px; padding: 17px; } .cr-controls { align-items: stretch; flex-direction: column; } .cr-toggle { width: fit-content; } .cr-worked-examples { grid-template-columns: 1fr; }.calibration-title { font-size: 2.35rem; } }

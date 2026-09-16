@@ -19,6 +19,7 @@ const REQUIRED_ROUTES = [
   "/analytics/compare/",
   "/analytics/evidence/",
   "/analytics/browse/",
+  "/analytics/state-reliability/",
   "/analytics/pitch-sequencing/",
   "/analytics/score-decomposition/",
   "/analytics/observation-dependence/",

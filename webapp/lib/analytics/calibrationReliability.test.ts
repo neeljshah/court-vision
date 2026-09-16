@@ -33,6 +33,11 @@ describe("buildCalibrationReliability", () => {
     expect(buildCalibrationReliability(fixture)[0].bins[0].lowN).toBe(true);
   });
 
+  it("retains the stability diagnostic counts for each selected side", () => {
+    const withDiagnostics = { ...fixture, sports: { mlb: { ...fixture.sports.mlb, sides: { ...fixture.sports.mlb.sides, model_prob: { ...fixture.sports.mlb.sides.model_prob, brier: 0.21, n_eligible_bins: 10, n_significant_bins: 3, n_within_noise_bins: 7 } } } } };
+    expect(buildCalibrationReliability(withDiagnostics)[0].diagnostics).toEqual({ brier: 0.21, nEligibleBins: 10, nSignificantBins: 3, nWithinNoiseBins: 7 });
+  });
+
   it("handles a sport with a missing side", () => {
     const missing = { ...fixture, sports: { mlb: { ...fixture.sports.mlb, sides: { model_prob: fixture.sports.mlb.sides.model_prob } } } };
     expect(buildCalibrationReliability(missing)).toEqual([expect.objectContaining({ sport: "mlb", side: "model" })]);

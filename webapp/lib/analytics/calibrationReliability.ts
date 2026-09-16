@@ -32,6 +32,14 @@ export interface ReliabilitySeries {
   side: ReliabilitySide;
   bins: ReliabilityBin[];
   meta: ReliabilityMeta;
+  diagnostics: ReliabilityDiagnostics;
+}
+
+export interface ReliabilityDiagnostics {
+  brier: number | null;
+  nEligibleBins: number | null;
+  nSignificantBins: number | null;
+  nWithinNoiseBins: number | null;
 }
 
 type RawRecord = Record<string, unknown>;
@@ -101,7 +109,13 @@ export function buildCalibrationReliability(value: unknown): ReliabilitySeries[]
       const side = sideEntry ? sideFor(key, sideEntry) : null;
       if (!sideEntry || !side) return [];
       const bins = Array.isArray(sideEntry.bins) ? sideEntry.bins.map(binFrom).filter((bin): bin is ReliabilityBin => bin !== null) : [];
-      return [{ sport, side, bins, meta }];
+      const diagnostics: ReliabilityDiagnostics = {
+        brier: numberOrNull(sideEntry.brier),
+        nEligibleBins: numberOrNull(sideEntry.n_eligible_bins),
+        nSignificantBins: numberOrNull(sideEntry.n_significant_bins),
+        nWithinNoiseBins: numberOrNull(sideEntry.n_within_noise_bins),
+      };
+      return [{ sport, side, bins, meta, diagnostics }];
     });
   });
 }

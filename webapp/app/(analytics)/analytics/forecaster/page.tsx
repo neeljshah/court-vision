@@ -7,6 +7,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { CSSProperties } from "react";
+import Link from "next/link";
 import { Grid } from "@/components/analytics/charts/Grid";
 import { scrollFrame } from "@/components/analytics/charts/Figure";
 import { Bars, type BarDatum } from "@/components/analytics/charts/Bars";
@@ -247,6 +248,7 @@ export default function ForecasterPage() {
         <p style={lede}>
           Every graded in-game MLB prediction, bucketed by the model&rsquo;s probability band and the inning. Each cell is the calibration error &mdash; how far the stated probability sits from what actually happened. Darker is a bigger gap: the improvement backlog, in the model&rsquo;s own view.
         </p>
+        <p style={lede}>See the <Link href="/analytics/state-reliability">state-reliability inspector</Link> for the full published grid across sports, both sources, and source-specific support.</p>
         {scc ? (
           <>
             <div style={{ marginTop: 24 }}>

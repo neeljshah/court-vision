@@ -90,6 +90,7 @@ const PILLARS: Array<{ href: string; label: string }> = [
 // every page (they are not top-nav pillars but must not be orphaned URLs).
 const FOOT_LINKS: Array<{ href: string; label: string }> = [
   { href: "/analytics/calibration", label: "Calibration" },
+  { href: "/analytics/state-reliability", label: "State reliability" },
   { href: "/analytics/forecaster", label: "Forecaster" },
   { href: "/analytics/the-loop", label: "Research loop" },
   { href: "/analytics/novel", label: "Experimental metrics" },

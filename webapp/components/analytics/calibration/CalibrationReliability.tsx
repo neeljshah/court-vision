@@ -35,6 +35,10 @@ function gapInterval(value: readonly [number | null, number | null]): string {
   return value[0] === null || value[1] === null ? "Not published" : `${percentagePoints(value[0])} to ${percentagePoints(value[1])}`;
 }
 
+function decimal(value: number | null): string {
+  return value === null ? "Not published" : value.toFixed(6);
+}
+
 function validPoint(bin: ReliabilityBin): bin is ReliabilityBin & { meanP: number; meanY: number } {
   return bin.meanP !== null && bin.meanY !== null;
 }
@@ -120,6 +124,18 @@ export function CalibrationReliability({ series }: { series: ReliabilitySeries[]
           </g>;
         })}
       </svg>
+    </div>
+    <div className="cr-worked-examples" aria-live="polite">
+      {selected.map(item => {
+        const bin = item.bins[0];
+        if (!bin) return null;
+        return <article key={item.side} className="cr-worked-example">
+          <p className="cr-worked-label">{sportLabel(sport)} / {labels[item.side]} worked example</p>
+          <h3>{percent(bin.binLo, 0)} to {percent(bin.binHi, 0)} probability bin</h3>
+          <p>Mean forecast {percent(bin.meanP)} and observed frequency {percent(bin.meanY)} produce a published {percentagePoints(bin.gap)} gap. The observed-frequency interval is {interval(bin.meanYCi)}.</p>
+          <dl><div><dt>Eligible bins</dt><dd>{count(item.diagnostics.nEligibleBins)}</dd></div><div><dt>Significant bins</dt><dd>{count(item.diagnostics.nSignificantBins)}</dd></div><div><dt>Within noise</dt><dd>{count(item.diagnostics.nWithinNoiseBins)}</dd></div><div><dt>Published Brier</dt><dd>{decimal(item.diagnostics.brier)}</dd></div></dl>
+        </article>;
+      })}
     </div>
     <div className="cr-table-wrap" role="region" aria-label="Reliability bins" data-scroll-region>
       <table className="cr-table"><caption>Published reliability bins for {sportLabel(sport)}</caption><thead><tr><th>Series</th><th>Bin range</th><th>Mean forecast</th><th>Observed</th><th>Gap (pp)</th><th>Gap CI (pp)</th><th>n ticks</th><th>n games</th><th>Low n</th></tr></thead><tbody>{selected.flatMap(item => item.bins.map((bin, index) => <tr key={`${item.side}-${index}`}><td><span className={`cr-series-key cr-${item.side}`} />{labels[item.side]}</td><td>{percent(bin.binLo, 0)} to {percent(bin.binHi, 0)}</td><td>{percent(bin.meanP)}</td><td>{percent(bin.meanY)}</td><td>{percentagePoints(bin.gap)}</td><td>{gapInterval(bin.gapCi)}</td><td>{count(bin.n)}</td><td>{count(bin.nGames)}</td><td>{bin.lowN ? "Yes" : "No"}</td></tr>))}</tbody></table>

@@ -13,6 +13,12 @@ export const analysisDestinations: readonly AnalysisDestination[] = [
     sourceModuleIds: ["calibration_stability"],
   },
   {
+    route: "/analytics/state-reliability",
+    title: "State reliability",
+    purpose: "Inspect published state-conditioned calibration rows and source-specific support.",
+    sourceModuleIds: ["state_conditioned_calibration"],
+  },
+  {
     route: "/analytics/pitch-sequencing",
     title: "Pitch sequencing",
     purpose: "Inspect published next-pitch transition matrices by count class.",

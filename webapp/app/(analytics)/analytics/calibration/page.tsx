@@ -48,7 +48,7 @@ export default function CalibrationPage() {
     <p className="calibration-kicker">Measurement / Calibration</p>
     <h1 className="calibration-title">Inspect every reliability bin.</h1>
     <p className="calibration-intro">A reliability bin groups forecasts within a published probability range, then compares their mean forecast with the observed frequency. The diagonal is the calibrated reference; a point away from it shows the direction and size of that bin&apos;s published gap.</p>
-    <p className="calibration-intro">For example, the published MLB model bin has a 5.12% mean forecast and a 23.31% observed frequency: 23.31% minus 5.12% is an 18.19 pp gap.</p>
+    <p className="calibration-intro">Aggregate reliability bins are a different object from state-conditioned reliability: these bins group forecasts by probability range, while the state inspector also groups by game phase. See <Link href="/analytics/state-reliability">state-conditioned reliability</Link> for that separate published grid.</p>
     <p className="calibration-intro">Observed-frequency intervals use {meta?.nBoot?.toLocaleString("en-US") || "unpublished"} bootstrap resamples clustered by {meta?.clusterUnit || "the published cluster unit"}, with a {ci[0] ?? "unpublished"}% to {ci[1] ?? "unpublished"}% interval. Bins use a minimum floor of {meta?.minGamesPerBinFloor ?? "unpublished"} games; n counts ticks, not games.</p>
     <section className="calibration-definitions" aria-labelledby="calibration-definitions-title">
       <h2 id="calibration-definitions-title">Three different properties</h2>
