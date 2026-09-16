@@ -32,6 +32,19 @@ describe("analysis destinations", () => {
     });
   });
 
+  it("matches each inspector's sport identities to its first published artifact", () => {
+    for (const destination of analysisDestinations) {
+      const artifact = snapshot<{ sports?: Record<string, unknown>; sport?: string; rows?: Array<{ sport?: string }> }>(destination.sourceModuleIds[0]);
+      const artifactSports = artifact.sports
+        ? Object.keys(artifact.sports)
+        : artifact.rows
+          ? Array.from(new Set(artifact.rows.map(row => row.sport).filter((sport): sport is string => Boolean(sport))))
+          : artifact.sport ? [artifact.sport] : [];
+      expect([...destination.sports].sort()).toEqual(artifactSports.sort());
+      expect(destination.sport).toBe(destination.sports.length === 1 ? destination.sports[0] : "all");
+    }
+  });
+
   it("builds a page search record for every inspector", () => {
     const records = inspectorSearchRecords();
     expect(records).toHaveLength(analysisDestinations.length);

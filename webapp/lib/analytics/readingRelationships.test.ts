@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { analysisDestinations } from "./analysisDestinations";
 import { AUTHORED_PREREQUISITES, entityTypeIdentifier, isAuthoredPrerequisite, populationIdentifier } from "./readingRelationships";
 
 describe("reading relationships", () => {
@@ -25,5 +26,12 @@ describe("reading relationships", () => {
     expect(isAuthoredPrerequisite("observation-dependence", "effective-sample-size")).toBe(true);
     expect(isAuthoredPrerequisite("mlb-velocity-shape", "mlb-batter-p90-minus-mean-exit-velocity")).toBe(false);
     expect(AUTHORED_PREREQUISITES["pitch-sequencing"]).toContain("mlb-pitch-mix-concentration");
+  });
+
+  it("keeps multi-sport residual prerequisites free of NBA margin and clock language", () => {
+    for (const id of ["residual-anatomy", "state-contrasts"]) {
+      const prerequisite = analysisDestinations.find(destination => destination.id === id)?.prerequisite || "";
+      expect(prerequisite).not.toMatch(/nba|margin|clock/i);
+    }
   });
 });

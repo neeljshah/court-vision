@@ -20,11 +20,11 @@ const SOURCE_POPULATION_IDS: Readonly<Record<string, string>> = {
   mlb_count_leverage: "mlb_count_states",
   murphy_decomposition: "cross_sport_score_decomposition_rows",
   pitch_sequencing: "mlb_pitch_sequences",
-  residual_anatomy: "nba_game_state_residual_rows",
+  residual_anatomy: "cross_sport_game_state_residual_rows",
   residual_autocorrelation: "cross_sport_residual_series",
   statcast_showcase: "mlb_pitch_types",
-  blowout_dynamics: "nba_games",
-  why_attribution: "nba_state_contrasts",
+  blowout_dynamics: "cross_sport_games",
+  why_attribution: "cross_sport_state_contrasts",
 };
 
 // These analyses intentionally share a named population with another reading.
