@@ -1,7 +1,7 @@
 import type { LabDataset } from "./labTypes";
 
 export type ResearchReference = { title: string; url: string };
-export type ResearchRow = LabDataset["rows"][number] & { sourcePaths?: string[] };
+export type ResearchRow = LabDataset["rows"][number] & { sourcePaths?: string[]; href?: string };
 export type ResearchAnalysis = Omit<LabDataset, "rows"> & {
   rows: ResearchRow[];
   question?: string;
