@@ -1,6 +1,5 @@
 import type { LibraryEntry } from "./libraryTypes";
 import { analysisDestinations } from "./analysisDestinations";
-import { findingsIndex } from "./findingsIndex";
 
 export type CollectionMemberKind = "analysis" | "finding" | "inspector" | "module";
 export type CollectionMember = { id: string; kind: CollectionMemberKind };
@@ -98,10 +97,11 @@ export function collectionMemberIds(id: string): string[] {
   return readingCollections.find((collection) => collection.id === id)?.members.map((member) => member.id) || [];
 }
 
-export function validateReadingCollections(entries: Pick<LibraryEntry, "id">[]): string[] {
+// ponytail: finding slugs are passed in so this module stays free of node:fs (findingsIndex reads the snapshot)
+export function validateReadingCollections(entries: Pick<LibraryEntry, "id">[], findingSlugs: readonly string[] = []): string[] {
   const entryIds = new Set([
     ...entries.map((entry) => entry.id),
-    ...findingsIndex.map((finding) => finding.slug),
+    ...findingSlugs,
     ...analysisDestinations.map((destination) => destination.id),
   ]);
   return readingCollections.flatMap((collection) => collection.members.flatMap((member) =>

@@ -1,11 +1,12 @@
 import { describe, expect, it } from "vitest";
+import { findingsIndex } from "./findingsIndex";
 import { getLibraryEntries } from "./libraryData";
 import { readingCollections, validateReadingCollections } from "./readingCollections";
 import { analysisDestinations } from "./analysisDestinations";
 
 describe("readingCollections", () => {
   it("keeps every hand-curated route in a published registry", () => {
-    expect(validateReadingCollections(getLibraryEntries())).toEqual([]);
+    expect(validateReadingCollections(getLibraryEntries(), findingsIndex.map((finding) => finding.slug))).toEqual([]);
   });
 
   it("keeps collection ids unique and every collection populated", () => {
