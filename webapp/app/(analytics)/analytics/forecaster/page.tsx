@@ -195,7 +195,7 @@ export default function ForecasterPage() {
                 ))}
               </tbody>
             </table></div>
-            <p className="mono" style={cap}>results/winprob_walk_forward_results.json &middot; 2026-07-20 &middot; edge_claimed: false</p>
+            <p className="mono" style={cap}>results/winprob_walk_forward_results.json &middot; 2026-07-20</p>
           </>
         ) : (
           <Pending what="the walk-forward table" src="src/prediction/walk_forward_backtester.py" />
@@ -237,7 +237,7 @@ export default function ForecasterPage() {
             ))}
           </tbody>
         </table></div>
-        <p className="mono" style={cap}>docs/INGAME_PROOF.md Sec. 2 + 2a &middot; real-corpus OOS &middot; each arm rounded independently to 3 dp; the share column is derived from full precision, so it will not reconcile to the 3-dp cells &middot; source doc committed in this repo; live re-run prints VALIDATION_PENDING without the private corpus and falls back to this recorded table &middot; edge_claimed: false</p>
+        <p className="mono" style={cap}>docs/INGAME_PROOF.md Sec. 2 + 2a &middot; real-corpus OOS &middot; each arm rounded independently to 3 dp; the share column is derived from full precision, so it will not reconcile to the 3-dp cells &middot; source doc committed in this repo; live re-run prints VALIDATION_PENDING without the private corpus and falls back to this recorded table</p>
         <ScoutNote envelope={{ status: "ok", prose: SCOUT_PROSE, chips: SCOUT_CHIPS }} />
       </section>
 
@@ -302,7 +302,7 @@ export default function ForecasterPage() {
               </tbody>
             </table></div>
             <p style={{ ...lede, fontSize: 14.5, marginTop: 16 }}>{cs.honest_note}</p>
-            <p className="mono" style={cap}>forecaster/cross_sport_scoreboard.json &middot; positive &Delta; = model sharper (paired) &middot; a sharper verdict needs the CI clear of 0 AND enough n &middot; edge_claimed: false</p>
+            <p className="mono" style={cap}>forecaster/cross_sport_scoreboard.json &middot; positive &Delta; = model sharper (paired) &middot; a sharper verdict needs the CI clear of 0 AND enough n</p>
           </>
         ) : (
           <Pending what="the cross-sport scoreboard" src="scripts/platformkit/benchmarks/crps_market/*" />

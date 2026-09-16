@@ -13,7 +13,7 @@ import { findingMeta } from "@/lib/analytics/og";
 export const metadata: Metadata = {
   title: "Who Bends The Shot Chart",
   description:
-    "Descriptive-only exhibit (edge_claimed: false): a rim-deterrence leaderboard from real NBA on/off zone splits, floored at 500 on-court minutes -- and the roster confound made explicit.",
+    "Descriptive-only exhibit: a rim-deterrence leaderboard from real NBA on/off zone splits, floored at 500 on-court minutes -- and the roster confound made explicit.",
   ...findingMeta("rim-deterrence"),
 };
 

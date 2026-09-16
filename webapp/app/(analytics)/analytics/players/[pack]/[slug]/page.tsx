@@ -135,7 +135,7 @@ export function generateMetadata({ params }: { params: { pack: string; slug: str
   const name = readInsight(params.pack, params.slug)?.display_name || (hit && nameFor(hit.entry)) || "Entity";
   return {
     title: pack ? `${name} -- ${pack.label}` : "Entity",
-    description: `Descriptive reference card for ${name}: measured historical rates, not a prediction. edge_claimed: false.`,
+    description: `Descriptive reference card for ${name}: measured historical rates, not a prediction.`,
   };
 }
 
@@ -197,7 +197,7 @@ export default function EntityPage({ params }: { params: { pack: string; slug: s
 
       <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "var(--paper-tint)", border: "1px solid var(--rule-strong)", borderRadius: 8, padding: "8px 14px", fontSize: 13, color: "var(--ink-2)", margin: "8px 0 26px" }}>
         <span className="dot d-desc" style={{ width: 8, height: 8 }} />
-        Descriptive only &mdash; no edge claimed. These are {pack.noun}, not projections.
+        Descriptive only &mdash; these are {pack.noun}, not projections.
       </div>
 
       <header style={{ borderBottom: "1px solid var(--rule-strong)", paddingBottom: 22, marginBottom: 30 }}>

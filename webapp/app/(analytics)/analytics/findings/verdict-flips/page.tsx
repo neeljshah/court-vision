@@ -13,7 +13,7 @@ import { findingMeta } from "@/lib/analytics/og";
 export const metadata: Metadata = {
   title: "Verdict Flips",
   description:
-    "Descriptive-only exhibit (edge_claimed: false): the claim families that changed their verdict as more data arrived, and how long each retracted claim survived before it was caught.",
+    "Descriptive-only exhibit: the claim families that changed their verdict as more data arrived, and how long each retracted claim survived before it was caught.",
   ...findingMeta("verdict-flips"),
 };
 

@@ -14,7 +14,7 @@ import { findingMeta } from "@/lib/analytics/og";
 export const metadata: Metadata = {
   title: "NBA Momentum, Tested",
   description:
-    "Descriptive-only exhibit (edge_claimed: false): confirmed NBA fatigue/rest/clutch effects vs null individual hot-cold carryover shapes.",
+    "Descriptive-only exhibit: confirmed NBA fatigue/rest/clutch effects vs null individual hot-cold carryover shapes.",
   ...findingMeta("nba-momentum"),
 };
 

@@ -13,7 +13,7 @@ import { findingMeta } from "@/lib/analytics/og";
 export const metadata: Metadata = {
   title: "We Graded the Bookmakers",
   description:
-    "Descriptive-only exhibit (edge_claimed: false): a bookmaker-accuracy leaderboard, proportional-devig Brier score on shared-game subsets, for tennis match-winner and soccer over/under 2.5 goals.",
+    "Descriptive-only exhibit: a bookmaker-accuracy leaderboard, proportional-devig Brier score on shared-game subsets, for tennis match-winner and soccer over/under 2.5 goals.",
   ...findingMeta("bookmaker-accuracy"),
 };
 

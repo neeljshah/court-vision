@@ -13,7 +13,7 @@ import { findingMeta } from "@/lib/analytics/og";
 export const metadata: Metadata = {
   title: "Tennis: Momentum, Myths, and Altitude",
   description:
-    "Descriptive-only exhibit (edge_claimed: false): momentum's grain limit, two null tiebreak myths, and confirmed altitude/travel effects in tennis.",
+    "Descriptive-only exhibit: momentum's grain limit, two null tiebreak myths, and confirmed altitude/travel effects in tennis.",
   ...findingMeta("tennis"),
 };
 

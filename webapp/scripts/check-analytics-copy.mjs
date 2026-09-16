@@ -2,7 +2,7 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const FORBIDDEN = /\b(edge|profit|roi|dollar|bet|wager|bankroll)\b/gi;
+const FORBIDDEN = /(?<![A-Za-z0-9_])(edge|profit|roi|dollar|bet|wager|bankroll)(?![A-Za-z0-9])/gi;
 const SOURCE_ROOTS = ["app/(analytics)", "components/analytics", "lib/analytics"];
 const RETRACTION_TABLE = "app/(analytics)/analytics/findings/retraction/page.tsx";
 

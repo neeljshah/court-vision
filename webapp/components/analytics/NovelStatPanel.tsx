@@ -286,7 +286,7 @@ export function NovelStatPanel({ stat }: { stat: NovelStat }) {
             as_of {label(k)}: {fmt(v)}
           </div>
         ))}
-        <div>edge_claimed: false &middot; descriptive_only</div>
+        <div>descriptive_only</div>
       </div>
 
       <style dangerouslySetInnerHTML={{ __html: `

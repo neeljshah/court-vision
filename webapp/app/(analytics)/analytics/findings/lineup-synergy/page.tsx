@@ -13,7 +13,7 @@ import { findingMeta } from "@/lib/analytics/og";
 export const metadata: Metadata = {
   title: "Greater Than The Sum Of Their Parts",
   description:
-    "Descriptive-only exhibit (edge_claimed: false): a five-man lineup-synergy ledger from real NBA on/off stint data -- which units beat what their individual parts predict, with the single-season and small-minutes confounds made explicit.",
+    "Descriptive-only exhibit: a five-man lineup-synergy ledger from real NBA on/off stint data -- which units beat what their individual parts predict, with the single-season and small-minutes confounds made explicit.",
   ...findingMeta("lineup-synergy"),
 };
 

@@ -16,7 +16,7 @@ import { findingMeta } from "@/lib/analytics/og";
 export const metadata: Metadata = {
   title: "Effective Sample Size",
   description:
-    "Descriptive-only exhibit (edge_claimed: false): within-game rows are near-duplicates, so this table deflates our own sample sizes down to the honest, independent-game count.",
+    "Descriptive-only exhibit: within-game rows are near-duplicates, so this table deflates our own sample sizes down to the honest, independent-game count.",
   ...findingMeta("effective-sample-size"),
 };
 

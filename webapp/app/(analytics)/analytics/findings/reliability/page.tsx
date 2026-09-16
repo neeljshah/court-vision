@@ -17,7 +17,7 @@ import { findingMeta } from "@/lib/analytics/og";
 export const metadata: Metadata = {
   title: "Reliability Diagrams",
   description:
-    "Descriptive-only exhibit (edge_claimed: false): calibration reliability diagrams and the Murphy Brier decomposition, per sport, model vs market. The model trails the market on Brier; the gap is resolution (information), not reliability (calibration).",
+    "Descriptive-only exhibit: calibration reliability diagrams and the Murphy Brier decomposition, per sport, model vs market. The model trails the market on Brier; the gap is resolution (information), not reliability (calibration).",
   ...findingMeta("reliability"),
 };
 

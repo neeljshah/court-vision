@@ -17,7 +17,7 @@ import { findingMeta } from "@/lib/analytics/og";
 export const metadata: Metadata = {
   title: "The Q4 Shift",
   description:
-    "Descriptive-only exhibit (edge_claimed: false): Q4-vs-Q1-3 per-36 rate shifts in points, rebounds, and assists for a fixed corpus, published beside the clutch module it un-refuses. Not a clutch metric, not predictive.",
+    "Descriptive-only exhibit: Q4-vs-Q1-3 per-36 rate shifts in points, rebounds, and assists for a fixed corpus, published beside the clutch module it un-refuses. Not a clutch metric, not predictive.",
   ...findingMeta("q4-shift"),
 };
 

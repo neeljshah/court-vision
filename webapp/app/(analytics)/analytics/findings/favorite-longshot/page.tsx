@@ -15,7 +15,7 @@ import { findingMeta } from "@/lib/analytics/og";
 export const metadata: Metadata = {
   title: "Is the Market Calibrated?",
   description:
-    "Descriptive-only exhibit (edge_claimed: false): a favorite-longshot bias audit of the betting market's own calibration, pregame, cross-sport -- tennis match winner and MLB moneyline, bucketed with Wilson intervals.",
+    "Descriptive-only exhibit: a favorite-longshot bias audit of the betting market's own calibration, pregame, cross-sport -- tennis match winner and MLB moneyline, bucketed with Wilson intervals.",
   ...findingMeta("favorite-longshot"),
 };
 
