@@ -1,0 +1,383 @@
+{
+ "slug": "surface-transfer-and-form-stability",
+ "title": "How Much History Carries Over",
+ "subtitle": "Tennis surface transfer and international-soccer form stability, measured with their support",
+ "authors": [
+  "CourtVision research"
+ ],
+ "date": "2026-09-16",
+ "sport": "all",
+ "keywords": [
+  "tennis surface transfer",
+  "clay-hard gap",
+  "grass adaptability",
+  "soccer form stability",
+  "rank concordance",
+  "descriptive"
+ ],
+ "abstract": "How much of a tennis player's surface-specific record, or a national soccer team's recent run, carries into a different slice of its own history? We answer this with two descriptive-only snapshots. tennis_surface_transfer.json holds a clay-minus-hard win-rate gap and a grass-minus-overall adaptability gap for four tour-by-window cohorts (ATP career, ATP recent form, WTA career, WTA recent form), each gated by its own minimum-match floor (clay_n>=25 and hard_n>=25 for the clay-hard gap; grass_n>=15 for grass adaptability). Of the ATP career snapshot's 1261 players, 184 (14.59 percent) clear the clay-hard floor and 153 (12.13 percent) clear the grass floor; in the smaller ATP recent-form snapshot (663 players) the shares fall to 69 (10.41 percent) and 44 (6.64 percent). Neither WTA cohort (219 players each) produces a single qualifying player under either floor. soccer_form_stability.json compares each of 153 shared national teams' trailing-10 form win rate against its net-xG strength rating, both independently clearing an inherited n_matches>=200 floor upstream: the two lenses correlate at Spearman rho 0.6419 and Pearson r 0.6369, a moderate but far from perfect rank agreement, over a shared population of 153 teams (179 teams rank on form, 153 on strength, 26 rank on form only). Both stores are marked descriptive_only. No temporal split-half exists in the soccer store, so the concordance is a same-period, cross-lens comparison, not a persistence test; the tennis gaps are within-player, same-history comparisons with no opponent-strength control. Neither number is a forecast of any specific future match. This paper lays out who clears each support floor, what the gaps and the concordance look like at their extremes, and why the underlying data cannot yet answer a predictive version of either question.",
+ "sections": [
+  {
+   "id": "question",
+   "heading": "Question",
+   "blocks": [
+    {
+     "type": "p",
+     "text": "If a tennis player has a strong clay win rate, does that same strength show up on hard courts, and does a good recent run for a national soccer side line up with an independent, longer-history rating of that side's strength? Both questions are about how much a player's or a team's record from one slice of history carries over into a different slice: a different surface for the same player, or a different measurement lens for the same team over roughly the same period. This paper reports what CourtVision's published snapshots say about both questions, and just as importantly, how much of each population actually has enough matches to be measured at all."
+    },
+    {
+     "type": "p",
+     "text": "This is a descriptive exercise only. tennis_surface_transfer.json and soccer_form_stability.json are both explicitly labelled DESCRIPTIVE_ONLY by their own producers, and neither result is treated here as a forecast of a specific future match, a causal claim, or anything beyond a same-period comparison of already-played matches."
+    }
+   ]
+  },
+  {
+   "id": "data",
+   "heading": "Data and definitions",
+   "blocks": [
+    {
+     "type": "p",
+     "text": "tennis_surface_transfer.json is built from the tennis_surface_context snapshot store (producer scripts/platformkit/intel_validation/tennis_surface_context_claims.py) and carries no as_of or generated_at field of its own; the site manifest lists its as_of as null, so every number below is dated only as date not published. It reports two per-player measures across four tour-by-window combos: atp_career (1261 players in the snapshot), atp_recent_form (663 players), wta_career (219 players) and wta_recent_form (219 players). The first measure, clay_minus_hard, is a player's clay win rate minus that same player's hard-court win rate (clay_wr - hard_wr), gated by clay_n>=25 and hard_n>=25. The second, grass_adapt, is a player's grass win rate minus that same player's overall (all-surface) win rate (grass_wr - ov_wr), gated by grass_n>=15. Both floors are copied, unmodified, from the producer's own prereg thresholds."
+    },
+    {
+     "type": "p",
+     "text": "soccer_form_stability.json is dated 2026-07-23T03:22:16Z (2026-07-23) and compares two independently ranked national-team lists. The form side (claim soccer_intl_trailing10_form_win_rate_fullpop) is each team's win rate over its trailing 10 matches as of its own corpus end, considered for 336 teams, with 157 excluded below an inherited n_matches>=200 floor, leaving 179 ranked. The strength side (claim soccer_intl_strength_full_asof_2026-06-28) is a net-xG, exponentially weighted rating over each team's full history as of a single fixed date, 2026-06-28, considered for 326 teams, with 173 excluded below the same n_matches>=200 floor, leaving 153 ranked. The cross-lens concordance exhibit in this file is built on the 153 teams that clear both floors (n_overlap=153); 26 teams clear the form floor but not the strength floor (n_form_only=26), and 0 teams clear the strength floor without also clearing the form floor (n_strength_only=0)."
+    },
+    {
+     "type": "callout",
+     "label": "Definition",
+     "text": "clay_minus_hard = clay_wr - hard_wr for one player; positive means that player wins more of its own matches on clay than on hard, holding nothing else constant. grass_adapt = grass_wr - ov_wr for one player; positive means grass results run better than that player's own all-surface average, not that the player is strong on grass in an absolute sense. Spearman rho and Pearson r describe how closely two teams' rankings on two different measures agree across the shared population: 1.0 is perfect agreement, 0 is no relationship, negative values mean the two measures disagree in direction. The reported soccer rho is tie-corrected (average-rank), which matters because the form win rate is quantized to one decimal and ties in 93.46 percent of team pairs (tie_fraction_form=0.9346), against 0 percent for the continuous strength rating (tie_fraction_strength=0.0)."
+    }
+   ]
+  },
+  {
+   "id": "method",
+   "heading": "Method",
+   "blocks": [
+    {
+     "type": "p",
+     "text": "For tennis, each gap is a within-player subtraction of two win rates that are each independently computed from that player's own match history and each independently required to clear its own minimum-match floor before the gap is published. The distribution statistics reported below (mean, standard deviation, the 10th/50th/90th percentiles, min, max and share_positive) are read directly from the store's own distribution object for each combo; none of them are recomputed here."
+    },
+    {
+     "type": "math",
+     "text": "clay_minus_hard = clay_wr - hard_wr (both floored independently); grass_adapt = grass_wr - ov_wr (grass_n floored)"
+    },
+    {
+     "type": "p",
+     "text": "For soccer, the concordance measure treats the 153 shared teams' form values and strength values as two parallel rankings of the same population and reports their Spearman rank correlation (tie-corrected) and their Pearson linear correlation, both read directly from the store's concordance object. Because form is a trailing-10, as-of-each-team's-own-corpus-end statistic and strength is a full-history, as-of-a-single-fixed-date statistic, the two lenses cover different horizons even though they are compared over roughly the same period; the source explicitly frames this as convergent validity between two lenses, not a test of persistence over time."
+    },
+    {
+     "type": "math",
+     "text": "rho, r = rank and linear correlation of (form, strength) over n_overlap=153 shared teams; rho is tie-corrected via average-rank"
+    },
+    {
+     "type": "callout",
+     "label": "Caution",
+     "text": "Neither measure here is paired against a held-out future outcome. The tennis gap compares two already-played historical rates within one player; the soccer concordance compares two already-computed historical ratings within one team. A high or low value describes a pattern already in the record, not a prediction of what that player or team does next."
+    }
+   ]
+  },
+  {
+   "id": "results",
+   "heading": "Results",
+   "blocks": [
+    {
+     "type": "p",
+     "text": "ATP career clay-hard gap (n=184 qualifying of 1261 in the snapshot): mean 0.0159, standard deviation 0.1215, p10 -0.1249, p50 0.0149, p90 0.1655, min -0.3099, max 0.4603, share_positive 0.5815 (58.15 percent of qualifying players lean clay). ATP recent-form clay-hard gap (n=69 of 663): mean 0.0433, standard deviation 0.1157, p10 -0.0617, p50 0.0368, p90 0.1649, share_positive 0.6087. The recent-form cohort's higher mean and higher share_positive describe a smaller, more current pool of players, not the same players re-measured."
+    },
+    {
+     "type": "p",
+     "text": "ATP career grass adaptability (n=153 of 1261): mean 0.0085, standard deviation 0.0937, p10 -0.1197, p50 0.0174, p90 0.1177, min -0.2514, max 0.2941, share_positive 0.5686. ATP recent-form grass adaptability (n=44 of 663): mean 0.0413, standard deviation 0.0735, p10 -0.0345, p50 0.0362, p90 0.1329, share_positive 0.75. Both grass distributions sit closer to zero and have a narrower spread than the clay-hard distributions, consistent with grass_adapt being measured against a player's own overall rate rather than a second fixed surface."
+    },
+    {
+     "type": "table",
+     "caption": "ATP recent-form clay-minus-hard gap, selected players from tennis_surface_transfer.json's most_clay_favoring and most_hard_favoring lists (combo atp_recent_form; floor clay_n>=25 and hard_n>=25; n_qualifying=69 of 663 players in the snapshot; date not published)",
+     "columns": [
+      "Player",
+      "Clay win rate (n)",
+      "Hard win rate (n)",
+      "Clay minus hard gap",
+      "Reading"
+     ],
+     "rows": [
+      [
+       "Luciano Darderi",
+       "0.6825 (n=63)",
+       "0.2222 (n=36)",
+       "0.4603",
+       "most clay-favoring in this cohort"
+      ],
+      [
+       "Sebastian Baez",
+       "0.6383 (n=94)",
+       "0.3214 (n=56)",
+       "0.3169",
+       "clay-favoring"
+      ],
+      [
+       "Mariano Navone",
+       "0.5510 (n=49)",
+       "0.2759 (n=29)",
+       "0.2752",
+       "clay-favoring"
+      ],
+      [
+       "Jannik Sinner",
+       "0.7692 (n=39)",
+       "0.8938 (n=160)",
+       "-0.1245",
+       "hard-favoring despite a high win rate on both surfaces"
+      ],
+      [
+       "Ugo Humbert",
+       "0.3200 (n=25)",
+       "0.6581 (n=117)",
+       "-0.3381",
+       "most hard-favoring in this cohort"
+      ]
+     ],
+     "note": "Win rates and gaps are per-player, from tennis_surface_transfer.json's atp_recent_form combo. A large positive or negative gap describes a within-player split between two surfaces, not a rank across players' overall skill; Sinner's row shows a player who wins often on both surfaces but is still relatively hard-favoring by this within-player measure."
+    },
+    {
+     "type": "figure",
+     "module": "tennis_surface_transfer",
+     "caption": "Published clay-hard and grass-adaptability distributions across the four tour-by-window combos in tennis_surface_transfer.json."
+    },
+    {
+     "type": "p",
+     "text": "Grass adaptability's own extremes in the same recent-form combo: the most adaptive player is Billy Harris (grass_adapt 0.2077, grass win rate 0.5625 against an overall rate of 0.3548, grass_n=16), and the least adaptive is Stefanos Tsitsipas (grass_adapt -0.1797, grass win rate 0.4667 against an overall rate of 0.6464, grass_n=15). Both sit right at or just above the grass_n>=15 floor, which is the entire reason only 44 of 663 players qualify for this metric in the recent-form combo."
+    },
+    {
+     "type": "p",
+     "text": "Both WTA combos, career and recent form, return n_qualifying=0 for clay_hard_gap and for grass_adaptability out of 219 players in each snapshot; the store's own note calls this a floor that eliminated every player in that combo, with no empty ranking published. That is an honest null result from a small qualifying pool, not evidence that no WTA player has a surface lean; it means the current WTA snapshot does not contain enough clay-and-hard, or enough grass, matches per player to clear the same floors the ATP snapshots use."
+    },
+    {
+     "type": "p",
+     "text": "On the soccer side, the 153-team concordance between trailing-10 form win rate and net-xG strength runs at Spearman rho 0.6419 and Pearson r 0.6369. Squaring rho and r (0.6419^2 = 0.412, 0.6369^2 = 0.4056) puts roughly 41 percent of one lens's rank variance in line with the other -- a moderate, not a tight, agreement."
+    },
+    {
+     "type": "table",
+     "caption": "International soccer form-strength concordance, 10 of 153 shared national teams from soccer_form_stability.json's concordance.points (form: trailing-10 win rate as of each team's own corpus end; strength: net-xG EW rating as of 2026-06-28; both cleared the inherited n_matches>=200 floor upstream)",
+     "columns": [
+      "Team",
+      "Trailing-10 form win rate",
+      "Net-xG EW strength",
+      "Match-count floor cleared"
+     ],
+     "rows": [
+      [
+       "Argentina",
+       "0.8",
+       "1.9769",
+       ">=200 (both lenses)"
+      ],
+      [
+       "Germany",
+       "0.8",
+       "1.6719",
+       ">=200 (both lenses)"
+      ],
+      [
+       "Vietnam",
+       "0.9",
+       "0.7956",
+       ">=200 (both lenses)"
+      ],
+      [
+       "Faroe Islands",
+       "0.7",
+       "-0.171",
+       ">=200 (both lenses)"
+      ],
+      [
+       "Canada",
+       "0.2",
+       "0.6352",
+       ">=200 (both lenses)"
+      ],
+      [
+       "Australia",
+       "0.3",
+       "0.9031",
+       ">=200 (both lenses)"
+      ],
+      [
+       "Chile",
+       "0.5",
+       "-0.1011",
+       ">=200 (both lenses)"
+      ],
+      [
+       "Liechtenstein",
+       "0.1",
+       "-2.4266",
+       ">=200 (both lenses)"
+      ],
+      [
+       "Eswatini",
+       "0.0",
+       "-0.9999",
+       ">=200 (both lenses)"
+      ],
+      [
+       "San Marino",
+       "0.0",
+       "-2.4524",
+       ">=200 (both lenses)"
+      ]
+     ],
+     "note": "The store publishes each team's floor pass/fail, not its exact match count, so match-count floor cleared is the same for every row; no per-team n is available beyond this shared inherited floor."
+    },
+    {
+     "type": "p",
+     "text": "The 153-team sample includes both concordant and divergent pairs. Argentina and Germany sit high on both lenses (form 0.8 and strength 1.9769 or 1.6719); Eswatini and San Marino sit low on both (form 0.0 and strength -0.9999 or -2.4524). But Vietnam has the single highest form win rate in the shared population (0.9) while its strength rating (0.7956) is well below Argentina's or Germany's, and Faroe Islands combines a high form win rate (0.7) with a negative strength rating (-0.171). Canada and Australia run the other way: modest-to-low form (0.2 and 0.3) alongside clearly positive strength (0.6352 and 0.9031). These four teams illustrate why the correlation sits at a moderate 0.64 rather than close to 1.0 -- most of the population moves together, but a meaningful minority does not."
+    },
+    {
+     "type": "p",
+     "text": "Every one of the 153 teams that clears the strength floor also clears the form floor (n_strength_only=0), while 26 teams clear the form floor and rank on the trailing-10 measure without a strength rating to compare against (n_form_only=26, out of 179 form-ranked teams, or 14.53 percent of that list). Those 26 teams have no partner value in this exhibit and are excluded from the concordance measure entirely, not scored as a mismatch."
+    }
+   ]
+  },
+  {
+   "id": "checks",
+   "heading": "Robustness and what would falsify this",
+   "blocks": [
+    {
+     "type": "list",
+     "items": [
+      "If a later ATP recent-form pull raised the WTA snapshot's player pool enough that even a handful of players cleared clay_n>=25 and hard_n>=25, or grass_n>=15, the current zero-qualifying WTA read would change; today it reflects a floor with no qualifiers, not a claim that WTA surface leans do not exist.",
+      "If tennis_surface_transfer.json began publishing an as_of or generated_at date, every tennis number in this paper could be checked against a specific, dated pull instead of an undated snapshot.",
+      "The soccer store's own temporal_split_half field is explicitly marked NOT_AVAILABLE_IN_STORE (each claim holds one as-of ranking vector per metric, with no within-season time series to cut into two halves); if a future version of the store added that series, the 0.6419 rho could be tested as an actual across-time persistence measure rather than only as a same-period, cross-lens agreement.",
+      "If form and strength were rebuilt on the identical as-of date instead of one team-specific end date (form) and one fixed date (strength, 2026-06-28), the horizon mismatch the source itself flags as a caveat would be removed, and any change in rho after that fix would show how much of the current 0.6419 depends on the date mismatch rather than on genuine agreement between the two lenses."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "limitations",
+   "heading": "Limitations",
+   "blocks": [
+    {
+     "type": "list",
+     "items": [
+      "Tennis clay-hard and grass gaps do not control for opponent strength; surface draws are not random, so part of a published gap can reflect scheduling or seeding rather than a pure surface-specific difference.",
+      "Retirement rows are counted as decided matches under the store's own winner column, an upstream choice this paper does not re-examine.",
+      "Both WTA cohorts (219 players each) return zero qualifying players under the stated floors for both metrics; this is an absence of evidence, not evidence that WTA players lack surface leans.",
+      "soccer_form_stability.json has no temporal split-half in its store, so the reported concordance is a same-period, cross-lens comparison, not a test of persistence or a predictor of a future match.",
+      "The soccer store exposes each team's pass or fail against the n_matches>=200 floor, not each team's exact match count, so no per-team match total is shown beyond that shared floor.",
+      "Form is quantized to one decimal, producing ties in 93.46 percent of team pairs; the source notes this attenuates the reported correlation toward zero even after tie correction.",
+      "tennis_surface_transfer.json carries no as_of or generated_at date, so its numbers are dated only as date not published."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "use",
+   "heading": "How to read this on the site",
+   "blocks": [
+    {
+     "type": "p",
+     "text": "The tennis_surface_transfer module renders at /analytics/m/tennis_surface_transfer/, with all four combo distributions and the full most_clay_favoring, most_hard_favoring, most_adaptive and least_adaptive player lists browsable beyond the selection in Table 1. The soccer_form_stability module renders at /analytics/m/soccer_form_stability/, with the complete 153-team concordance point list beyond the 10 teams selected for Table 2 above."
+    },
+    {
+     "type": "p",
+     "text": "Individual ATP player spotlight cards (for example, Jannik Sinner's) republish some of the same recent-window clay, hard and grass numbers used in this paper's tennis table, drawn from a separate downstream atlas file, so they are described here for context rather than cited as separate evidence. Published soccer spotlight cards cover club sides (Arsenal, Real Madrid and others) from a different atlas and a different competition tier; no spotlight card is published for the soccer_intl national teams compared here."
+    }
+   ]
+  }
+ ],
+ "evidence": [
+  {
+   "artifact": "tennis_surface_transfer.json",
+   "module": "tennis_surface_transfer",
+   "asOf": null,
+   "fields": [
+    "combos.atp_career.n_players_in_snapshot",
+    "combos.atp_career.clay_hard_gap.n_qualifying",
+    "combos.atp_career.clay_hard_gap.distribution",
+    "combos.atp_career.clay_hard_gap.most_clay_favoring[]",
+    "combos.atp_career.clay_hard_gap.most_hard_favoring[]",
+    "combos.atp_career.grass_adaptability.n_qualifying",
+    "combos.atp_career.grass_adaptability.distribution",
+    "combos.atp_recent_form.n_players_in_snapshot",
+    "combos.atp_recent_form.clay_hard_gap.n_qualifying",
+    "combos.atp_recent_form.clay_hard_gap.distribution",
+    "combos.atp_recent_form.clay_hard_gap.most_clay_favoring[]",
+    "combos.atp_recent_form.clay_hard_gap.most_hard_favoring[]",
+    "combos.atp_recent_form.grass_adaptability.n_qualifying",
+    "combos.atp_recent_form.grass_adaptability.distribution",
+    "combos.atp_recent_form.grass_adaptability.most_adaptive[]",
+    "combos.atp_recent_form.grass_adaptability.least_adaptive[]",
+    "combos.wta_career.n_players_in_snapshot",
+    "combos.wta_career.clay_hard_gap.n_qualifying",
+    "combos.wta_career.grass_adaptability.n_qualifying",
+    "combos.wta_recent_form.n_players_in_snapshot",
+    "combos.wta_recent_form.clay_hard_gap.n_qualifying",
+    "combos.wta_recent_form.grass_adaptability.n_qualifying",
+    "floors",
+    "confounds"
+   ]
+  },
+  {
+   "artifact": "soccer_form_stability.json",
+   "module": "soccer_form_stability",
+   "asOf": "2026-07-23T03:22:16.322763+00:00",
+   "fields": [
+    "generated_at",
+    "sources.form.n_considered",
+    "sources.form.n_excluded_below_floor",
+    "sources.form.n_ranked",
+    "sources.strength.n_considered",
+    "sources.strength.n_excluded_below_floor",
+    "sources.strength.n_ranked",
+    "floors.inherited_min_sample",
+    "concordance.n_overlap",
+    "concordance.n_form_only",
+    "concordance.n_strength_only",
+    "concordance.spearman_rho",
+    "concordance.pearson_r",
+    "concordance.tie_fraction_form",
+    "concordance.tie_fraction_strength",
+    "concordance.points[]",
+    "temporal_split_half.status",
+    "temporal_split_half.reason",
+    "caveats"
+   ]
+  }
+ ],
+ "limitations": [
+  "Tennis clay-hard and grass gaps do not control for opponent strength; surface draws are not random, so part of a published gap can reflect scheduling or seeding rather than a pure surface-specific difference.",
+  "Retirement rows are counted as decided matches under the store's own winner column, an upstream choice this paper does not re-examine.",
+  "Both WTA cohorts (219 players each) return zero qualifying players under the stated floors for both metrics; this is an absence of evidence, not evidence that WTA players lack surface leans.",
+  "soccer_form_stability.json has no temporal split-half in its store, so the reported concordance is a same-period, cross-lens comparison, not a test of persistence or a predictor of a future match.",
+  "The soccer store exposes each team's pass or fail against the n_matches>=200 floor, not each team's exact match count, so no per-team match total is shown beyond that shared floor.",
+  "Form is quantized to one decimal, producing ties in 93.46 percent of team pairs; the source notes this attenuates the reported correlation toward zero even after tie correction.",
+  "tennis_surface_transfer.json carries no as_of or generated_at date, so its numbers are dated only as date not published."
+ ],
+ "related": [
+  {
+   "kind": "module",
+   "id": "tennis_surface_transfer"
+  },
+  {
+   "kind": "module",
+   "id": "soccer_form_stability"
+  },
+  {
+   "kind": "analysis",
+   "id": "tennis-surface-support"
+  },
+  {
+   "kind": "analysis",
+   "id": "tennis-surface-spread"
+  },
+  {
+   "kind": "analysis",
+   "id": "tennis-surface-balance"
+  },
+  {
+   "kind": "analysis",
+   "id": "soccer-form-strength-alignment"
+  }
+ ]
+}
