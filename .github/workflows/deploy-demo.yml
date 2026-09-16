@@ -51,6 +51,7 @@ jobs:
           npx vitest run lib/analytics/labTypes.test.ts
           npx vitest run lib/analytics/distribution.test.ts
           npx vitest run lib/analytics/measurementPosition.test.ts
+          npx vitest run lib/analytics/measurementCoverage.test.ts
           npx vitest run lib/analytics/labComparisonPolicy.test.ts
           npx vitest run lib/analytics/pitchSequencing.test.ts
           npx vitest run lib/analytics/comparisonData.test.ts
@@ -85,6 +86,7 @@ jobs:
           npx vitest run components/analytics/compare/PitchResultComparison.test.tsx
           npx vitest run components/analytics/library/LibraryExplorer.test.tsx
           npx vitest run components/analytics/library/ResearchDetail.test.tsx
+          npx vitest run components/analytics/library/MeasurementCoverage.test.tsx
           npx vitest run components/analytics/library/useResearchView.test.tsx
           npx vitest run components/analytics/library/MlbBatterContact.test.tsx
           npx vitest run components/analytics/library/SoccerFormGap.test.tsx

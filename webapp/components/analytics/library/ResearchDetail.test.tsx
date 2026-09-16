@@ -49,6 +49,29 @@ describe("ResearchDetail", () => {
 });
 
 describe("ResearchDetail investigation continuity", () => {
+  it("shows field availability for the selected population and selects a measured field without dropping missing cells", () => {
+    render(<ResearchDetail analysis={analysis} related={[]} />);
+    fireEvent.click(screen.getByText("Measurement availability"));
+    const coverage = screen.getByRole("region", { name: "Measurement availability" });
+    expect(within(coverage).getByRole("button", { name: "Use Score" })).toHaveTextContent("2 / 3");
+    expect(within(coverage).getByRole("button", { name: "Use Rate" })).toHaveTextContent("3 / 3");
+    fireEvent.change(screen.getByRole("textbox", { name: "Search analysis rows" }), { target: { value: "Alpha" } });
+    expect(within(coverage).getByRole("button", { name: "Use Score" })).toHaveTextContent("2 / 3");
+    expect(coverage).toHaveTextContent("Text search does not change this reference population.");
+
+    fireEvent.change(screen.getByRole("combobox", { name: "Population" }), { target: { value: "West" } });
+    expect(within(coverage).getByRole("button", { name: "Use Score" })).toHaveTextContent("0 / 1");
+    fireEvent.click(within(coverage).getByRole("button", { name: "Use Rate" }));
+    expect(screen.getByRole("combobox", { name: "Measurement" })).toHaveValue("rate");
+    expect(within(coverage).getByRole("button", { name: "Use Rate" })).toHaveAttribute("aria-pressed", "true");
+    expect(new URLSearchParams(window.location.search).get("metric")).toBe("rate");
+    expect(new URLSearchParams(window.location.search).get("group")).toBe("West");
+    fireEvent.change(screen.getByRole("textbox", { name: "Search analysis rows" }), { target: { value: "" } });
+    fireEvent.click(screen.getByRole("button", { name: "Data table" }));
+    expect(screen.getByRole("button", { name: "Inspect Beta" })).toBeInTheDocument();
+    expect(screen.getByRole("cell", { name: "Unavailable" })).toBeInTheDocument();
+  });
+
   it("compares a searched row with its whole selected population and updates the active metric", () => {
     render(<ResearchDetail analysis={analysis} related={[]} />);
     fireEvent.change(screen.getByRole("textbox", { name: "Search analysis rows" }), { target: { value: "Alpha" } });
