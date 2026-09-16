@@ -1,4 +1,5 @@
 import type { Sport } from "@/lib/analytics/dashboardTypes";
+import { labComparisonPolicy, matchesLabCohort } from "@/lib/analytics/labComparisonPolicy";
 import type { LabData } from "@/lib/analytics/labTypes";
 
 export type LabViewState = {
@@ -11,6 +12,8 @@ export type LabViewState = {
   group: string;
   ascending: boolean;
   selectedId: string | null;
+  cohort: string | null;
+  allCohorts: boolean;
 };
 
 const sports = new Set<Sport>(["all", "nba", "mlb", "soccer", "tennis"]);
@@ -30,16 +33,22 @@ export function readLabViewState(search: string, data: LabData): LabViewState {
   const mode = modes.has(params.get("view") as LabViewState["mode"]) ? params.get("view") as LabViewState["mode"] : "rank";
   const query = params.get("q") || "";
   const rows = rowsForSport(dataset, sport);
+  const comparison = labComparisonPolicy(rows);
+  const requestedCohort = comparison.cohorts.find(cohort => cohort.key === params.get("cohort"));
+  const cohort = comparison.compatibility === "compatible" ? null : (requestedCohort || comparison.cohorts[0])?.key || null;
+  const allCohorts = comparison.compatibility !== "compatible" && ["true", "1"].includes(params.get("allCohorts") || "");
   const group = params.get("group");
   const safeGroup = group === "all" || rows.some(row => row.group === group) ? group || "all" : "all";
-  const visible = rows.filter(row => (safeGroup === "all" || row.group === safeGroup) && `${row.label} ${row.group} ${row.note || ""}`.toLowerCase().includes(query.toLowerCase()));
+  const cohortRows = cohort ? rows.filter(row => matchesLabCohort(row, comparison.cohorts.find(item => item.key === cohort)!)) : rows;
+  const baseRows = comparison.compatibility === "compatible" ? rows.filter(row => safeGroup === "all" || row.group === safeGroup) : allCohorts ? rows : cohortRows;
+  const visible = baseRows.filter(row => `${row.label} ${row.group} ${row.note || ""}`.toLowerCase().includes(query.toLowerCase()));
   const requestedRow = params.get("row");
-  return { id: dataset.id, sport, fieldKey, otherKey, mode, query, group: safeGroup, ascending: params.get("order") === "asc", selectedId: visible.some(row => row.id === requestedRow) ? requestedRow : null };
+  return { id: dataset.id, sport, fieldKey, otherKey, mode, query, group: safeGroup, ascending: params.get("order") === "asc", selectedId: visible.some(row => row.id === requestedRow) ? requestedRow : null, cohort, allCohorts };
 }
 
 export function labViewSearch(search: string, state: LabViewState): string {
   const params = new URLSearchParams(search);
-  ["sport", "dataset", "field", "other", "group", "order", "view", "q", "row"].forEach(key => params.delete(key));
+  ["sport", "dataset", "field", "other", "group", "order", "view", "q", "row", "cohort", "allCohorts"].forEach(key => params.delete(key));
   params.set("sport", state.sport);
   params.set("dataset", state.id);
   params.set("field", state.fieldKey);
@@ -49,5 +58,7 @@ export function labViewSearch(search: string, state: LabViewState): string {
   params.set("view", state.mode);
   if (state.query) params.set("q", state.query);
   if (state.selectedId) params.set("row", state.selectedId);
+  if (state.cohort) params.set("cohort", state.cohort);
+  if (state.allCohorts) params.set("allCohorts", "true");
   return params.toString();
 }

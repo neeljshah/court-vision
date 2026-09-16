@@ -5,6 +5,7 @@ import { useState } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import MeasurementLab from "./MeasurementLab";
 import { ScatterPlot } from "./LabPlot";
+import { getLabData } from "@/lib/analytics/labData";
 import type { LabData, LabField, LabRow } from "@/lib/analytics/labTypes";
 
 const fixture: LabData = {
@@ -14,16 +15,16 @@ const fixture: LabData = {
       source: "novel_line_half_life", description: "A cross-sport fixture.", scope: "Fixture scope.", caveat: "Fixture caveat.", status: "Descriptive",
       fields: [{ key: "value", label: "Value", unit: "number" }, { key: "alt", label: "Alternate", unit: "number" }],
       rows: [
-        { id: "mlb", label: "MLB", group: "MLB", values: { value: 2, alt: 1 } },
-        { id: "tennis", label: "TENNIS", group: "TENNIS", values: { value: 1, alt: 2 } },
-        { id: "missing", label: "Missing value", group: "MLB", values: { value: null, alt: null } },
+        { id: "mlb", label: "MLB", group: "MLB", values: { value: 2, alt: 1 }, definition: { population: "Fixture rows" } },
+        { id: "tennis", label: "TENNIS", group: "TENNIS", values: { value: 1, alt: 2 }, definition: { population: "Fixture rows" } },
+        { id: "missing", label: "Missing value", group: "MLB", values: { value: null, alt: null }, definition: { population: "Fixture rows" } },
       ],
     },
     {
       id: "nba-profile", title: "NBA profile", sport: "nba", category: "Player & team",
       source: "nba_consistency_profiles", description: "An NBA fixture.", scope: "Fixture scope.", caveat: "Fixture caveat.", status: "Descriptive",
       fields: [{ key: "value", label: "Value", unit: "number" }],
-      rows: [{ id: "jokic", label: "Nikola Jokic", group: "Published rows", values: { value: 7 }, note: "Fixture detail." }],
+      rows: [{ id: "jokic", label: "Nikola Jokic", group: "Published rows", values: { value: 7 }, note: "Fixture detail.", definition: { population: "Fixture rows" } }],
     },
   ],
   novel: [],
@@ -33,6 +34,33 @@ beforeEach(() => window.history.replaceState(null, "", "/analytics/lab"));
 afterEach(() => vi.unstubAllGlobals());
 
 describe("MeasurementLab sport filtering and inspection", () => {
+  it("isolates rim-deterrence to one season and suppresses pooled summaries", () => {
+    window.history.replaceState(null, "", "/analytics/lab?dataset=rim-deterrence");
+    render(<MeasurementLab data={getLabData()} />);
+
+    expect(screen.getByRole("status")).toHaveTextContent("15 rows");
+    expect(screen.getByLabelText("Published group")).toHaveValue("season=2025-26");
+    expect(within(screen.getByRole("region", { name: "Published definition" })).getByText("2025-26")).toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText("Published group"), { target: { value: "all" } });
+    expect(screen.queryByRole("region", { name: "Measurement summary" })).not.toBeInTheDocument();
+    expect(window.location.search).toContain("allCohorts=true");
+
+    window.history.replaceState(null, "", "/analytics/lab?dataset=rim-deterrence&allCohorts=true");
+    act(() => window.dispatchEvent(new PopStateEvent("popstate")));
+    expect(screen.getByLabelText("Published group")).toHaveValue("all");
+    expect(screen.queryByRole("region", { name: "Measurement summary" })).not.toBeInTheDocument();
+  });
+
+  it("restores a selected cohort from the lab URL", () => {
+    window.history.replaceState(null, "", "/analytics/lab?dataset=rim-deterrence&cohort=season%3D2024-25");
+    render(<MeasurementLab data={getLabData()} />);
+
+    expect(screen.getByLabelText("Published group")).toHaveValue("season=2024-25");
+    expect(screen.getByRole("status")).toHaveTextContent("15 rows");
+    expect(window.location.search).toContain("cohort=season%3D2024-25");
+  });
+
   it("defaults incompatible definitions to one cohort and never renders a pooled median", () => {
     const incompatible = { ...fixture, datasets: [{ ...fixture.datasets[0], rows: [
       { id: "mlb", label: "MLB", group: "MLB", values: { value: 2, alt: 1 }, definition: { sport: "MLB", unit: "runs", threshold: 3, clockField: "inning", population: "178 games" } },

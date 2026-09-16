@@ -24,6 +24,8 @@ describe("measurement lab source contracts", () => {
     expect(lcf.rows.map(row => row.definition?.clockField)).toEqual(["inning", "minute"]);
     const fatigue = data.datasets.find(d => d.id === "schedule-fatigue")!;
     expect(new Set(fatigue.rows.map(row => row.definition?.season))).toEqual(new Set(["2023-24", "2024-25", "2025-26"]));
+    const rim = data.datasets.find(d => d.id === "rim-deterrence")!;
+    expect(new Set(rim.rows.map(row => row.definition?.season))).toEqual(new Set(["2024-25", "2025-26"]));
   });
   it("keeps both pitch denominators and selected-subset disclosure", () => {
     const ff = data.datasets.find(d => d.id === "pitch-profiles")!.rows.find(r => r.label === "FF")!;

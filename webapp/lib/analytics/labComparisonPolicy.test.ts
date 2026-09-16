@@ -8,6 +8,7 @@ describe("labComparisonPolicy", () => {
   it("keeps matching definitions comparable", () => {
     const policy = labComparisonPolicy([row("a", { unit: "runs", clockField: "inning", threshold: 3 }), row("b", { unit: "runs", clockField: "inning", threshold: 3 })]);
     expect(policy.compatible).toBe(true);
+    expect(policy.compatibility).toBe("compatible");
     expect(policy.cohorts).toHaveLength(1);
   });
   it("splits rows with different units", () => {
@@ -24,6 +25,13 @@ describe("labComparisonPolicy", () => {
   it("splits rows with different seasons", () => {
     const policy = labComparisonPolicy([row("a", { season: "2024-25" }), row("b", { season: "2025-26" })]);
     expect(policy.compatible).toBe(false);
+    expect(policy.compatibility).toBe("incompatible");
     expect(policy.cohorts.map(cohort => cohort.definition.season)).toEqual(["2024-25", "2025-26"]);
+  });
+  it("marks absent cohort definitions as unknown rather than comparable", () => {
+    const policy = labComparisonPolicy([row("defined", { season: "2025-26" }), row("missing", undefined)]);
+    expect(policy.compatibility).toBe("unknown");
+    expect(policy.compatible).toBe(false);
+    expect(policy.reason).toContain("compatibility is unknown");
   });
 });
