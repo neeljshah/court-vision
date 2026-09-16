@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { relatedReading } from "./related";
+import { relatedReading, readingEntries } from "./related";
 
 const entries = [
   { id: "rim", title: "Rim shot chart", kind: "module" as const, sport: "nba", asOf: "2026-07-01", href: "/m/rim/", sources: ["rim"], artifacts: ["rim"], population: "nba players" },
@@ -34,6 +34,21 @@ describe("relatedReading", () => {
     const first = { id: "first", title: "First result", kind: "analysis" as const, sport: "mlb", asOf: null, href: "/r/first/", sources: ["shared"], population: "analysis:first" };
     const second = { id: "second", title: "Second result", kind: "analysis" as const, sport: "mlb", asOf: null, href: "/r/second/", sources: ["shared"], population: "analysis:second" };
     expect(relatedReading("analysis", "first", [first, second])).toMatchObject([{ id: "second", purpose: "same source file" }]);
+  });
+
+  it("uses same entity type only when the sport matches but population ids differ", () => {
+    const team = { id: "team", title: "Team profile", kind: "analysis" as const, sport: "mlb", asOf: null, href: "/r/team/", population: "mlb_team_profile", entityType: "team" };
+    const roster = { id: "roster", title: "Team roster", kind: "analysis" as const, sport: "mlb", asOf: null, href: "/r/roster/", population: "mlb_team_roster", entityType: "team" };
+    const pitch = { id: "pitch", title: "Pitch type", kind: "analysis" as const, sport: "mlb", asOf: null, href: "/r/pitch/", population: "mlb_pitch_types", entityType: "pitch type" };
+    expect(relatedReading("analysis", "team", [team, roster, pitch])).toMatchObject([
+      { id: "roster", purpose: "same entity type" }, { id: "pitch", purpose: "same sport" },
+    ]);
+  });
+
+  it("adds explainer readings with public, resolvable routes", () => {
+    const explainers = readingEntries().filter((entry) => entry.kind === "explainer");
+    expect(explainers.length).toBeGreaterThan(0);
+    expect(explainers.every((entry) => entry.href === `/analytics/explainers/${entry.id}/`)).toBe(true);
   });
 
   it("accepts identical population identifiers and never makes title overlap a prerequisite", () => {

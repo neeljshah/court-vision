@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { PitchSequencing } from "@/components/analytics/pitch-sequencing/PitchSequencing";
+import { InspectorReadingTrail } from "@/components/analytics/InspectorReadingTrail";
 import { loadPitchSequencing } from "@/lib/analytics/pitchSequencing.server";
 import "./pitch-sequencing.css";
 
@@ -10,5 +11,5 @@ export const metadata: Metadata = {
 
 export default function PitchSequencingPage() {
   const data = loadPitchSequencing();
-  return <div className="ps-page"><p className="ps-kicker">MLB / Descriptive sequencing</p><h1>Published pitch transitions by count class.</h1><p className="ps-intro">This matrix records the published conditional frequency of a next pitch type given the previous pitch type, within a plate appearance. It is a descriptive view of the local Statcast pull.</p><PitchSequencing data={data} /></div>;
+  return <div className="ps-page"><p className="ps-kicker">MLB / Descriptive sequencing</p><h1>Published pitch transitions by count class.</h1><p className="ps-intro">This matrix records the published conditional frequency of a next pitch type given the previous pitch type, within a plate appearance. It is a descriptive view of the local Statcast pull.</p><InspectorReadingTrail id="pitch-sequencing" /><PitchSequencing data={data} /></div>;
 }

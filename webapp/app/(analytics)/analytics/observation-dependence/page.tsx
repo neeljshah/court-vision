@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ObservationDependence } from "@/components/analytics/observation-dependence/ObservationDependence";
+import { InspectorReadingTrail } from "@/components/analytics/InspectorReadingTrail";
 import { Receipt } from "@/components/analytics/Receipt";
 import { buildObservationDependence } from "@/lib/analytics/observationDependence";
 import { loadArtifact, type Artifact } from "@/lib/showcase.server";
@@ -33,6 +34,7 @@ export default function ObservationDependencePage() {
       <p>The site reports ticks and games because they answer different questions. Ticks describe how often the system was observed; games describe the independent units behind a calibration measurement. This page does not infer an exact effective sample size. See the <Link href="/analytics/findings/effective-sample-size">effective-sample-size finding</Link> and the <Link href="/analytics/calibration">calibration page</Link> for their published context.</p>
       <p className="od-floors">Eligibility floors: at least {floors?.min_rows_per_game ?? "the published minimum"} rows per game and residual variance of at least {floors?.min_residual_variance ?? "the published minimum"}. Exclusions are shown by side below.</p>
     </section>
+    <InspectorReadingTrail id="observation-dependence" />
     <ObservationDependence sports={sports} asOf={data.generated_at || data.as_of || undefined} />
     <div className="od-receipt"><Receipt sourceArtifact="public/data/showcase/residual_autocorrelation.json" asOf={data.generated_at || data.as_of || undefined} label="descriptive_only" verdict="descriptive_only" /></div>
   </div>;

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CalibrationReliability } from "@/components/analytics/calibration/CalibrationReliability";
+import { InspectorReadingTrail } from "@/components/analytics/InspectorReadingTrail";
 import { Receipt } from "@/components/analytics/Receipt";
 import { loadCalibrationReliability } from "@/lib/analytics/calibrationReliability";
 import { snapshot } from "@/lib/analytics/labHelpers";
@@ -50,6 +51,7 @@ export default function CalibrationPage() {
     <p className="calibration-intro">A reliability bin groups forecasts within a published probability range, then compares their mean forecast with the observed frequency. The diagonal is the calibrated reference; a point away from it shows the direction and size of that bin&apos;s published gap.</p>
     <p className="calibration-intro">Aggregate reliability bins are a different object from state-conditioned reliability: these bins group forecasts by probability range, while the state inspector also groups by game phase. See <Link href="/analytics/state-reliability">state-conditioned reliability</Link> for that separate published grid.</p>
     <p className="calibration-intro">Observed-frequency intervals use {meta?.nBoot?.toLocaleString("en-US") || "unpublished"} bootstrap resamples clustered by {meta?.clusterUnit || "the published cluster unit"}, with a {ci[0] ?? "unpublished"}% to {ci[1] ?? "unpublished"}% interval. Bins use a minimum floor of {meta?.minGamesPerBinFloor ?? "unpublished"} games; n counts ticks, not games.</p>
+    <InspectorReadingTrail id="calibration" />
     <section className="calibration-definitions" aria-labelledby="calibration-definitions-title">
       <h2 id="calibration-definitions-title">Three different properties</h2>
       <dl>

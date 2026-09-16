@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { BlowoutTiming } from "@/components/analytics/blowout-timing/BlowoutTiming";
+import { InspectorReadingTrail } from "@/components/analytics/InspectorReadingTrail";
 import { Receipt } from "@/components/analytics/Receipt";
 import { loadBlowoutTiming } from "@/lib/analytics/blowoutTiming.server";
 import "./blowout-timing.css";
@@ -20,6 +21,7 @@ export default function BlowoutTimingPage() {
       <h2 id="bt-reading">How to read the panels</h2>
       <p>Incidence reports the count and fraction of published games in which each threshold became permanent. Conditional timing reports the published P25, median, and P75 clock values only for those games. A usable game has at least the published parseable-tick floor, not a verified complete score. The source's decided_clockfrac_* fields divide the decided clock by the final observed clock, not verified regulation time. Masked rows retain their counts and the published mask state, but do not supply clock quartiles.</p>
     </section>
+    <InspectorReadingTrail id="blowout-timing" />
     <BlowoutTiming sports={sports} />
     <p className="bt-source-fields">Source fields: <span className="mono">public/data/showcase/blowout_dynamics.json -&gt; sports.&lt;sport&gt;.unit, sports.&lt;sport&gt;.clock_field, sports.&lt;sport&gt;.n_games_raw, sports.&lt;sport&gt;.n_games_usable, sports.&lt;sport&gt;.min_ticks_floor, floors.min_games_per_threshold, sports.&lt;sport&gt;.thresholds[].threshold, sports.&lt;sport&gt;.thresholds[].n_games_total, sports.&lt;sport&gt;.thresholds[].n_games_decided, sports.&lt;sport&gt;.thresholds[].decided_frac_of_games, sports.&lt;sport&gt;.thresholds[].masked_below_floor, sports.&lt;sport&gt;.thresholds[].decided_clock_p25, sports.&lt;sport&gt;.thresholds[].decided_clock_median, sports.&lt;sport&gt;.thresholds[].decided_clock_p75</span>.</p>
     <div className="bt-receipt"><Receipt sourceArtifact="public/data/showcase/blowout_dynamics.json" label="descriptive_only" verdict="descriptive_only" /></div>

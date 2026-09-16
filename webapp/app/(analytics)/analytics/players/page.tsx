@@ -237,7 +237,7 @@ export default function EntitiesIndexPage() {
       <nav aria-label="Jump to a pack" className="pl-jump">
         {packs.filter((x) => x.manifest && x.manifest.entries.length).map(({ pack, manifest }) => (
           <a key={pack.slug} href={`#${pack.slug}`}>
-            {pack.label}<span className="n">{manifest!.entries.length.toLocaleString()}</span>
+            {pack.slug === "mlb_pitch" ? "MLB pitch atlas cards" : pack.label}<span className="n">{manifest!.entries.length.toLocaleString()}</span>
           </a>
         ))}
       </nav>

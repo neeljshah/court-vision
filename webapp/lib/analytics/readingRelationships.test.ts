@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { AUTHORED_PREREQUISITES, isAuthoredPrerequisite, populationIdentifier } from "./readingRelationships";
+import { AUTHORED_PREREQUISITES, entityTypeIdentifier, isAuthoredPrerequisite, populationIdentifier } from "./readingRelationships";
 
 describe("reading relationships", () => {
   it("gives pitch readings one population and keeps team and count readings separate", () => {
@@ -13,6 +13,11 @@ describe("reading relationships", () => {
   it("uses an analysis-specific fallback instead of treating a shared source as a population", () => {
     expect(populationIdentifier({ id: "unclassified-analysis", source: "shared_source", sport: "all" })).toBe("analysis:unclassified-analysis");
     expect(populationIdentifier({ id: "calibration_stability", sport: "all" })).toBe("cross_sport_calibration_bins");
+  });
+
+  it("keeps entity type broader than an exact population identifier", () => {
+    expect(entityTypeIdentifier({ id: "sequence", sport: "mlb", populationId: "mlb_pitch_sequences" })).toBe("pitch type");
+    expect(entityTypeIdentifier({ id: "type", sport: "mlb", populationId: "mlb_pitch_types" })).toBe("pitch type");
   });
 
   it("only exposes authored prerequisite pairs", () => {

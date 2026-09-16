@@ -18,6 +18,12 @@ function calibrationEntries() {
 }
 
 describe("EntitiesIndexPage", () => {
+  it("labels the data-derived pitch atlas total without calling every card a pitch type", () => {
+    render(<EntitiesIndexPage />);
+    const count = mlbPitchEntries().length.toLocaleString();
+    expect(screen.getByRole("link", { name: new RegExp(`MLB pitch atlas cards\\s*${count}`) })).toBeInTheDocument();
+  });
+
   it("renders separate data-derived MLB pitch, team, and count-state sections", () => {
     render(<EntitiesIndexPage />);
     for (const cohort of getMlbPitchAtlasCohorts(mlbPitchEntries())) {

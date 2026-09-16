@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { derivedAsOf, getLibraryEntries } from "./libraryData";
 import { collectionMemberIds } from "./readingCollections";
+import { getResearchAnalyses } from "./researchData";
 import { filterLibrary } from "./libraryTypes";
 
 describe("getLibraryEntries", () => {
@@ -9,11 +10,11 @@ describe("getLibraryEntries", () => {
   const sources = entries.filter(entry => entry.kind === "source");
 
   it("merges the complete source manifest with every derived analysis", () => {
-    expect(entries).toHaveLength(136);
+    expect(entries.length).toBeGreaterThan(getResearchAnalyses().length);
     expect(sources).toHaveLength(74);
     expect(new Set(entries.map(entry => entry.id)).size).toBe(entries.length);
-    expect(derived).toHaveLength(62);
-    expect(derived.reduce((sum, entry) => sum + (entry.rows ?? 0), 0)).toBe(4477);
+    expect(derived).toHaveLength(getResearchAnalyses().length);
+    expect(derived.reduce((sum, entry) => sum + (entry.rows ?? 0), 0)).toBe(getResearchAnalyses().reduce((sum, analysis) => sum + analysis.rows.length, 0));
   });
 
   it("keeps routes public and numeric previews finite", () => {
@@ -51,5 +52,13 @@ describe("getLibraryEntries", () => {
     const selected = filterLibrary(entries, "all", "all", "", collectionMemberIds("forecast-calibration"));
     expect(selected.map((entry) => entry.id).every((id) => collectionMemberIds("forecast-calibration").includes(id))).toBe(true);
     expect(selected.length).toBeGreaterThan(0);
+  });
+
+  it("assigns a distinct card label to every reading kind", () => {
+    expect(entries.find((entry) => entry.kind === "source")?.kindLabel).toBe("Source module");
+    expect(entries.find((entry) => entry.kind === "derived")?.kindLabel).toBe("Derived analysis");
+    expect(entries.find((entry) => entry.kind === "finding")?.kindLabel).toBe("Finding");
+    expect(entries.find((entry) => entry.kind === "inspector")?.kindLabel).toBe("Inspector");
+    expect(entries.find((entry) => entry.kind === "explainer")?.kindLabel).toBe("Explainer");
   });
 });

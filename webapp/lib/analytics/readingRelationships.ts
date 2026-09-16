@@ -51,6 +51,15 @@ export function populationIdentifier(input: PopulationInput): string {
   return input.source ? `analysis:${input.id}` : `entry:${input.id}`;
 }
 
+const ENTITY_TYPES: Readonly<Record<string, string>> = {
+  mlb_pitch_types: "pitch type", mlb_pitch_sequences: "pitch type", mlb_count_states: "count state", mlb_count_leverage_classes: "count state",
+  mlb_teams: "team", nba_teams: "team", soccer_teams: "team", nba_players: "player", mlb_batters: "batter", tennis_players: "player",
+};
+
+export function entityTypeIdentifier(input: PopulationInput): string | undefined {
+  return ENTITY_TYPES[populationIdentifier(input)];
+}
+
 // This small authored graph is the only source of prerequisite labels. Do not
 // infer prerequisite order from shared words, shared sport, or source files.
 export const AUTHORED_PREREQUISITES: Readonly<Record<string, readonly string[]>> = {

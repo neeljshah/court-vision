@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Receipt } from "@/components/analytics/Receipt";
 import { StateReliability } from "@/components/analytics/state-reliability/StateReliability";
+import { InspectorReadingTrail } from "@/components/analytics/InspectorReadingTrail";
 import { loadStateReliability } from "@/lib/analytics/stateReliability.server";
 import "./state-reliability.css";
 
@@ -19,6 +20,7 @@ export default function StateReliabilityPage() {
     <p className="sr-lede">Calibration can differ between early and late game states. This view groups published forecasts by both game phase and probability band. Use the grids to compare the recorded model and reference rows without assuming their matching labels identify the same predictions.</p>
     <p className="sr-lede">For aggregate reliability bins and bootstrap intervals, see <Link href="/analytics/calibration">Calibration reliability</Link>. Those bins summarize a different published grouping.</p>
     <p className="sr-artifact-date">Artifact date: {artifactDate || "date not published"}</p>
+    <InspectorReadingTrail id="state-reliability" />
     <StateReliability sports={sports} />
     <div className="sr-receipt"><Receipt sourceArtifact="public/data/showcase/state_conditioned_calibration.json" label="descriptive_only" verdict="descriptive_only" /></div>
   </div>;

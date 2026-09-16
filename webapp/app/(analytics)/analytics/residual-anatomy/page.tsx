@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ResidualAnatomy } from "@/components/analytics/residual-anatomy/ResidualAnatomy";
+import { InspectorReadingTrail } from "@/components/analytics/InspectorReadingTrail";
 import { loadResidualAnatomy } from "@/lib/analytics/residualAnatomy.server";
 import "./residual-anatomy.css";
 
@@ -20,6 +21,7 @@ export default function ResidualAnatomyPage() {
       <p>A forecast near 50% can have a large absolute residual on an individual resolved outcome while still being calibrated across comparable forecasts. Total absolute residual mass also grows with the number of rows. These fields describe recorded residual volume and per-row residual; they do not establish a correctable calibration gap or its cause.</p>
       <p>Use the <Link href="/analytics/calibration">calibration reliability view</Link> to compare forecasts with observed frequency across bins, and <Link href="/analytics/score-decomposition">score decomposition</Link> to inspect the published Brier components.</p>
     </section>
+    <InspectorReadingTrail id="residual-anatomy" />
     <ResidualAnatomy data={data} />
   </div>;
 }
