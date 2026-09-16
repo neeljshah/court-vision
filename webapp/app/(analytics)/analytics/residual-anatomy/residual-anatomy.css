@@ -24,8 +24,8 @@
 .ra-grid caption { caption-side: top; padding: 0 0 10px; color: var(--ink-3); font-size: 12px; text-align: left; }
 .ra-grid th { background: var(--paper-tint); color: var(--ink-3); font-size: 11px; font-weight: 700; letter-spacing: .06em; padding: 10px 12px; text-align: left; }
 .ra-grid td { width: 18%; min-width: 115px; height: 54px; border-top: 1px solid var(--rule); border-left: 1px solid var(--rule); padding: 5px; }
-.ra-grid button { width: 100%; min-height: 42px; border-radius: var(--radius-chip); font-family: var(--font-mono); font-size: 12px; font-variant-numeric: tabular-nums; }
-.ra-grid button:hover, .ra-grid button:focus-visible { border-color: var(--accent); color: var(--accent); outline: 0; }
+.ra-grid button { display: grid; align-content: center; gap: 2px; width: 100%; min-height: 42px; border-radius: var(--radius-chip); font-family: var(--font-mono); font-size: 12px; font-variant-numeric: tabular-nums; }
+.ra-grid button:hover, .ra-grid button:focus-visible { border-color: var(--accent); color: var(--accent); outline: 0; }.ra-grid button[aria-pressed="true"] { border-width: 2px; border-color: var(--accent); font-weight: 700; }.ra-selected-mark { display: block; font-family: var(--font-sans); font-size: 9px; font-weight: 700; letter-spacing: .06em; line-height: 1; text-transform: uppercase; }
 .ra-rankings { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 16px; }
 .ra-rankings section { border-top: 1px solid var(--rule); padding-top: 10px; }
 .ra-rankings h3 { color: var(--ink); font-size: 13px; font-weight: 700; }

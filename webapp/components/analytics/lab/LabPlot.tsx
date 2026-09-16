@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { displayMeasurement as display, type LabField, type LabRow } from "@/lib/analytics/labTypes";
+import { summarizeScatter } from "@/lib/analytics/scatterSummary";
+import { ScatterSummary } from "./ScatterSummary";
 
 export function RankedPlot({ rows, field, onSelect }: { rows: LabRow[]; field: LabField; onSelect: (r: LabRow) => void }) {
   const numericRows = rows.filter(r => r.values[field.key] !== null && Number.isFinite(r.values[field.key]));
@@ -42,8 +44,8 @@ export function ScatterPlot({ rows, x, y, onSelect }: { rows: LabRow[]; x: LabFi
     observer.observe(node);
     return () => observer.disconnect();
   }, []);
-  const paired = rows.filter(r => r.values[x.key] !== null && r.values[y.key] !== null && Number.isFinite(r.values[x.key]) && Number.isFinite(r.values[y.key]));
-  if (!paired.length) return <div ref={container} className="lab-scatter"><div className="cv-empty">No rows contain both selected measurements.</div></div>;
+  const data = summarizeScatter(rows, x.key, y.key), paired = data.pairedRows;
+  if (!paired.length) return <div ref={container} className="lab-scatter"><ScatterSummary data={data} x={x} y={y} /><div className="cv-empty">No rows contain both selected measurements. The data table preserves missing values.</div></div>;
   const activeId = paired.some(r => r.id === activePoint) ? activePoint : paired[0].id;
   const xs = paired.map(r => r.values[x.key]!); const ys = paired.map(r => r.values[y.key]!);
   const [loX, hiX] = plotDomain(xs, x), [loY, hiY] = plotDomain(ys, y);
@@ -58,7 +60,7 @@ export function ScatterPlot({ rows, x, y, onSelect }: { rows: LabRow[]; x: LabFi
     const next = paired[Math.max(0, Math.min(index, paired.length - 1))];
     setActivePoint(next.id); points.current.get(next.id)?.focus();
   };
-  return <div ref={container} className="lab-scatter"><span className="lab-y-label">{y.label}</span><svg viewBox={`0 0 ${plotWidth} ${height}`} role="group" aria-label={`${y.label} against ${x.label}; inspect individual points or use the data table`}><title>{`${y.label} against ${x.label}`}</title>
+  return <div ref={container} className="lab-scatter"><ScatterSummary data={data} x={x} y={y} /><span className="lab-y-label">{y.label}</span><svg viewBox={`0 0 ${plotWidth} ${height}`} role="group" aria-label={`${y.label} against ${x.label}; inspect individual points or use the data table`}><title>{`${y.label} against ${x.label}`}</title>
     {ticks.map(t => <g key={t}><line x1={left} x2={plotWidth - right} y1={top + t * innerHeight} y2={top + t * innerHeight} stroke="var(--cv-line)" strokeDasharray="3 4" /><text x={left - 9} y={top + t * innerHeight + 4} textAnchor="end">{display(hiY - t * (hiY - loY), y)}</text><text x={left + t * innerWidth} y={height - 28} textAnchor={compact && t === 0 ? "start" : compact && t === 1 ? "end" : "middle"}>{display(loX + t * (hiX - loX), x)}</text></g>)}
     {paired.map((r, index) => <circle key={r.id} ref={node => { if (node) points.current.set(r.id, node); else points.current.delete(r.id); }} cx={px(r.values[x.key]!)} cy={py(r.values[y.key]!)} r="5" role="button" tabIndex={r.id === activeId ? 0 : -1} focusable="true" aria-label={`Inspect ${r.label}: ${x.label} ${display(r.values[x.key], x)}; ${y.label} ${display(r.values[y.key], y)}`} onFocus={() => setActivePoint(r.id)} onClick={() => { setActivePoint(r.id); onSelect(r); }} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onSelect(r); } else if (e.key === "ArrowRight" || e.key === "ArrowDown") { e.preventDefault(); move(index + 1); } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") { e.preventDefault(); move(index - 1); } else if (e.key === "Home") { e.preventDefault(); move(0); } else if (e.key === "End") { e.preventDefault(); move(paired.length - 1); } }}><title>{`${r.label}: ${x.label} ${display(r.values[x.key], x)}; ${y.label} ${display(r.values[y.key], y)}`}</title></circle>)}
     <text x={plotWidth / 2} y={height - 6} textAnchor="middle">{x.label}</text>

@@ -31,4 +31,13 @@ describe("BlowoutTiming", () => {
     expect(screen.getAllByText((_, element) => element?.textContent === "Margin unit: runs | Clock field: inning")[0]).toBeInTheDocument();
     expect(screen.getAllByText((_, element) => element?.textContent === "Margin unit: goals | Clock field: minute")[0]).toBeInTheDocument();
   });
+
+  it("keeps decorative bars hidden while retaining the published text values", () => {
+    const { container } = render(<BlowoutTiming sports={sports} />);
+    const bars = Array.from(container.querySelectorAll(".bt-bar-track"));
+    expect(bars.length).toBeGreaterThan(0);
+    expect(bars.every(bar => bar.getAttribute("aria-hidden") === "true")).toBe(true);
+    expect(screen.getByText("10 / 20 (50.0%)")).toBeInTheDocument();
+    expect(screen.getByText("4 inning / 6 inning / 8 inning")).toBeInTheDocument();
+  });
 });

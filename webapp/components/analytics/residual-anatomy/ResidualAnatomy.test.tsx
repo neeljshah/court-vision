@@ -43,7 +43,14 @@ describe("ResidualAnatomy", () => {
 
   it("shows all three published values for an inspected cell", () => {
     render(<ResidualAnatomy data={data} />);
-    fireEvent.click(screen.getByRole("button", { name: "MLB late, .2-.4 Total absolute residual mass" }));
+    const initial = screen.getByRole("button", { name: "MLB early, 0-.2 Total absolute residual mass" });
+    const selected = screen.getByRole("button", { name: "MLB late, .2-.4 Total absolute residual mass" });
+    expect(initial).toHaveAttribute("aria-pressed", "true");
+    fireEvent.click(selected);
+    expect(initial).toHaveAttribute("aria-pressed", "false");
+    expect(selected).toHaveAttribute("aria-pressed", "true");
+    expect(selected).toHaveAttribute("aria-controls", "ra-selected-segment");
+    expect(selected).toHaveTextContent("Selected");
     const inspector = screen.getByLabelText("Selected residual segment");
     expect(within(inspector).getByText("1")).toBeInTheDocument();
     expect(within(inspector).getByText("0.8000")).toBeInTheDocument();

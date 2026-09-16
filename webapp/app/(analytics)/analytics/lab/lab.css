@@ -1,4 +1,5 @@
 @import "./distribution.css";
+@import "./scatter-summary.css";
 .lab-page{padding-bottom:36px}
 .lab-shell{display:grid;grid-template-columns:226px minmax(0,1fr);gap:25px}
 .lab-sidebar{align-self:start;position:sticky;top:85px;max-height:calc(100vh - 105px);overflow-y:auto;padding-right:13px;scrollbar-width:thin}
@@ -48,10 +49,10 @@
 .lab-bar-negative{background:var(--cv-teal)}
 .lab-rank-track .lab-zero{background:var(--cv-line);width:1px;min-width:1px;height:24px;top:-5px}
 .lab-second-axis{max-width:330px;margin:16px 0}
-.lab-scatter svg{display:block;width:100%;height:280px}
-.lab-scatter svg text{font-size:10px;fill:var(--cv-muted);font-family:var(--font-mono)}
-.lab-scatter svg circle{fill:var(--cv-blue);fill-opacity:.6;stroke:var(--cv-surface);stroke-width:1.5;cursor:pointer}
-.lab-scatter svg circle:hover,.lab-scatter svg circle:focus{fill:var(--cv-teal);fill-opacity:1;stroke:var(--cv-text);stroke-width:2}
+.lab-scatter>svg{display:block;width:100%;height:280px}
+.lab-scatter>svg text{font-size:10px;fill:var(--cv-muted);font-family:var(--font-mono)}
+.lab-scatter>svg circle{fill:var(--cv-blue);fill-opacity:.6;stroke:var(--cv-surface);stroke-width:1.5;cursor:pointer}
+.lab-scatter>svg circle:hover,.lab-scatter>svg circle:focus{fill:var(--cv-teal);fill-opacity:1;stroke:var(--cv-text);stroke-width:2}
 .lab-y-label{display:block;font-size:10px;color:var(--cv-muted);margin:15px 0}
 .lab-inspector{position:relative;background:var(--cv-soft);border:1px solid var(--cv-line);border-left:3px solid var(--cv-blue);border-radius:6px;padding:20px;margin:23px 0 0}
 .lab-inspector h3{font-size:18px;margin:8px 25px 15px 0}

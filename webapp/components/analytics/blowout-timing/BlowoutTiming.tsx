@@ -33,7 +33,7 @@ function IncidencePanel({ sport }: { sport: BlowoutTimingSport }) {
     <div className="bt-rows" role="list" aria-label={`${sportLabel(sport.sport)} incidence by threshold`}>
       {sport.thresholds.map(row => <div className={`bt-row${row.masked ? " bt-is-masked" : ""}`} key={row.threshold} role="listitem" data-masked={row.masked || undefined}>
         <ThresholdLabel row={row} unit={sport.unit} />
-        <div className="bt-bar-track" aria-label={`${row.threshold} ${sport.unit}: ${percent(row.incidence)}`}><span className="bt-incidence-bar" style={{ width: `${(row.incidence ?? 0) * 100}%` }} /></div>
+        <div className="bt-bar-track" aria-hidden="true"><span className="bt-incidence-bar" style={{ width: `${(row.incidence ?? 0) * 100}%` }} /></div>
         <span className="bt-value mono">{row.nGamesDecided.toLocaleString()} / {row.nGamesTotal.toLocaleString()} ({percent(row.incidence)})</span>
         {row.masked && <span className="bt-mask-reason">{row.maskReason}</span>}
       </div>)}
@@ -54,7 +54,7 @@ function TimingPanel({ sport }: { sport: BlowoutTimingSport }) {
         const median = row.median === null ? 0 : row.median / domain * 100;
         return <div className={`bt-row${row.masked ? " bt-is-masked" : ""}`} key={row.threshold} role="listitem" data-masked={row.masked || undefined}>
           <ThresholdLabel row={row} unit={sport.unit} />
-          {row.masked ? <span className="bt-mask-reason">{row.maskReason}</span> : <><div className="bt-bar-track bt-range-track" aria-label={`${row.threshold} ${sport.unit}: p25 ${clock(row.p25, sport.clockField)}, median ${clock(row.median, sport.clockField)}, p75 ${clock(row.p75, sport.clockField)}`}><span className="bt-range-bar" style={{ left: `${left}%`, width: `${width}%` }} /><span className="bt-median-dot" style={{ left: `${median}%` }} /></div><span className="bt-value mono">{clock(row.p25, sport.clockField)} / {clock(row.median, sport.clockField)} / {clock(row.p75, sport.clockField)}</span></>}
+          {row.masked ? <span className="bt-mask-reason">{row.maskReason}</span> : <><div className="bt-bar-track bt-range-track" aria-hidden="true"><span className="bt-range-bar" style={{ left: `${left}%`, width: `${width}%` }} /><span className="bt-median-dot" style={{ left: `${median}%` }} /></div><span className="bt-value mono">{clock(row.p25, sport.clockField)} / {clock(row.median, sport.clockField)} / {clock(row.p75, sport.clockField)}</span></>}
         </div>;
       })}
     </div>

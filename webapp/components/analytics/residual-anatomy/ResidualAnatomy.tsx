@@ -36,6 +36,10 @@ function segmentLabel(segment: ResidualSegment): string {
   return `${segment.timeBucket}, ${segment.probBucket}`;
 }
 
+function segmentKey(segment: ResidualSegment): string {
+  return `${segment.sport}\u0000${segment.timeBucket}\u0000${segment.probBucket}`;
+}
+
 function Rankings({ sport }: { sport: ResidualSport }) {
   const volume = sport.rankings.byVolume.slice(0, 3);
   const perRow = sport.rankings.byPerRowError.slice(0, 3);
@@ -55,6 +59,7 @@ export function ResidualAnatomy({ data }: { data: ResidualAnatomyData }) {
   const [metric, setMetric] = useState<ResidualMetric>("totalAbsResidualMass");
   const [selected, setSelected] = useState<ResidualSegment | null>(data.sports[0]?.segments[0] || null);
   const selectedMetric = METRICS.find(item => item.key === metric)?.label || "Metric";
+  const selectedKey = selected ? segmentKey(selected) : null;
 
   if (!data.sports.length) return <p className="ra-empty">No published residual segments are available in this snapshot.</p>;
 
@@ -69,11 +74,11 @@ export function ResidualAnatomy({ data }: { data: ResidualAnatomyData }) {
         <dl><div><dt>n_records</dt><dd>{count(sport.nRecords)}</dd></div><div><dt>n_skipped</dt><dd>{count(sport.nSkipped)}</dd></div></dl>
       </header>
       <div className="ra-grid-wrap" role="region" aria-label={`${sportLabel(sport.sport)} residual grid`} data-scroll-region>
-        <table className="ra-grid"><caption>{sportLabel(sport.sport)} time bucket by probability bucket. Blank cells have no published segment.</caption><thead><tr><th scope="col">Time bucket</th>{sport.probBuckets.map(bucket => <th scope="col" key={bucket}>{bucket}</th>)}</tr></thead><tbody>{sport.grid.map(row => <tr key={row.timeBucket}><th scope="row">{row.timeBucket}</th>{row.cells.map((segment, index) => <td key={`${row.timeBucket}-${sport.probBuckets[index]}`}>{segment ? <button type="button" aria-label={`${sportLabel(sport.sport)} ${segmentLabel(segment)} ${selectedMetric}`} onClick={() => setSelected(segment)}>{metricText(segment, metric)}</button> : null}</td>)}</tr>)}</tbody></table>
+        <table className="ra-grid"><caption>{sportLabel(sport.sport)} time bucket by probability bucket. Blank cells have no published segment.</caption><thead><tr><th scope="col">Time bucket</th>{sport.probBuckets.map(bucket => <th scope="col" key={bucket}>{bucket}</th>)}</tr></thead><tbody>{sport.grid.map(row => <tr key={row.timeBucket}><th scope="row">{row.timeBucket}</th>{row.cells.map((segment, index) => { const isSelected = segment ? selectedKey === segmentKey(segment) : false; return <td key={`${row.timeBucket}-${sport.probBuckets[index]}`}>{segment ? <button type="button" aria-label={`${sportLabel(sport.sport)} ${segmentLabel(segment)} ${selectedMetric}`} aria-pressed={isSelected} aria-controls="ra-selected-segment" onClick={() => setSelected(segment)}><span>{metricText(segment, metric)}</span>{isSelected && <span className="ra-selected-mark" aria-hidden="true">Selected</span>}</button> : null}</td>; })}</tr>)}</tbody></table>
       </div>
       <Rankings sport={sport} />
     </section>)}
-    {selected && <aside className="ra-inspector" aria-live="polite" aria-label="Selected residual segment">
+    {selected && <aside id="ra-selected-segment" className="ra-inspector" aria-live="polite" aria-label="Selected residual segment">
       <p>Selected segment</p><h2>{sportLabel(selected.sport)}: {segmentLabel(selected)}</h2>
       <dl><div><dt>n</dt><dd>{count(selected.n)}</dd></div><div><dt>mean_abs_residual</dt><dd>{residual(selected.meanAbsResidual)}</dd></div><div><dt>total_abs_residual_mass</dt><dd>{mass(selected.totalAbsResidualMass)}</dd></div></dl>
     </aside>}

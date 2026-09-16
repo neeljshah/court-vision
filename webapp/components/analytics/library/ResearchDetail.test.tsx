@@ -49,6 +49,21 @@ describe("ResearchDetail", () => {
 });
 
 describe("ResearchDetail investigation continuity", () => {
+  it("uses paired scatter summaries and updates them with the visible search and population", () => {
+    render(<ResearchDetail analysis={analysis} related={[]} />);
+    fireEvent.click(screen.getByRole("button", { name: "Scatter plot" }));
+    expect(screen.queryByRole("region", { name: "Measurement summary" })).not.toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "Paired measurement summary" })).toHaveTextContent("2 / 3 rows plotted");
+    fireEvent.change(screen.getByRole("textbox", { name: "Search analysis rows" }), { target: { value: "Beta" } });
+    expect(screen.getByRole("region", { name: "Paired measurement summary" })).toHaveTextContent("0 / 1 rows plotted");
+    fireEvent.change(screen.getByRole("combobox", { name: "Measurement" }), { target: { value: "rate" } });
+    expect(screen.getByRole("region", { name: "Paired measurement summary" })).toHaveTextContent("1 / 1 rows plotted");
+    expect(screen.getByText(/Both axes use the same measurement/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Ranked bars" }));
+    expect(screen.queryByRole("region", { name: "Paired measurement summary" })).not.toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "Measurement summary" })).toBeInTheDocument();
+  });
+
   it("shows field availability for the selected population and selects a measured field without dropping missing cells", () => {
     render(<ResearchDetail analysis={analysis} related={[]} />);
     fireEvent.click(screen.getByText("Measurement availability"));
