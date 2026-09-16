@@ -73,12 +73,17 @@ function TimingPanel({ sport }: { sport: BlowoutTimingSport }) {
 }
 
 function CompactRows({ sport }: { sport: BlowoutTimingSport }) {
-  return <div className="bt-compact-rows" role="list" aria-label={`${sportLabel(sport.sport)} compact threshold details`}>
-    {sport.thresholds.map(row => <div className={`bt-compact-row${row.masked ? " bt-is-masked" : ""}`} key={row.threshold} role="listitem" data-masked={row.masked || undefined}>
+  return <div className="bt-compact-rows bt-mobile-visible" role="list" aria-label={`${sportLabel(sport.sport)} compact threshold details`}>
+    {sport.thresholds.map(row => <article className={`bt-compact-row${row.masked ? " bt-is-masked" : ""}`} key={row.threshold} role="listitem" data-masked={row.masked || undefined}>
       <ThresholdLabel row={row} unit={sport.unit} />
-      <span className="bt-compact-incidence">{row.nGamesDecided.toLocaleString()} / {row.nGamesTotal.toLocaleString()} ({percent(row.incidence)})</span>
-      <span className="bt-compact-timing">{row.masked ? row.maskReason : `${clock(row.p25, sport.clockField)} / ${clock(row.median, sport.clockField)} / ${clock(row.p75, sport.clockField)}`}</span>
-    </div>)}
+      <p className="bt-compact-support">Conditional support <span className="mono">{row.nGamesDecided.toLocaleString()} / {row.nGamesTotal.toLocaleString()}</span></p>
+      <dl className="bt-compact-quartiles">
+        <div><dt>p25</dt><dd>{clock(row.p25, sport.clockField)}</dd></div>
+        <div><dt>median</dt><dd>{clock(row.median, sport.clockField)}</dd></div>
+        <div><dt>p75</dt><dd>{clock(row.p75, sport.clockField)}</dd></div>
+      </dl>
+      {row.masked && <p className="bt-compact-mask-reason">{row.maskReason}</p>}
+    </article>)}
   </div>;
 }
 
@@ -88,7 +93,7 @@ export function BlowoutTiming({ sports }: { sports: BlowoutTimingSport[] }) {
       <h2 id={`bt-${sport.sport}`}>{sportLabel(sport.sport)}</h2>
       <Figure source={SOURCE} asOf="published snapshot" title={`${sportLabel(sport.sport)} lasting-lead frequency and timing`} subtitle={`Thresholds are expressed in ${sport.unit}; the reported clock is ${sport.clockField}.`} verdict="descriptive_only">
         <Eligibility sport={sport} />
-        <div className="bt-panels"><IncidencePanel sport={sport} /><TimingPanel sport={sport} /></div>
+        <div className="bt-panels bt-mobile-hidden"><IncidencePanel sport={sport} /><TimingPanel sport={sport} /></div>
         <CompactRows sport={sport} />
       </Figure>
     </section>)}

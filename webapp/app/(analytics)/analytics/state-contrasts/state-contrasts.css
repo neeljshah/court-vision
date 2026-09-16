@@ -17,6 +17,7 @@
 .sc-delta-positive i { background: var(--accent); }.sc-delta-negative i { background: var(--signal); }
 .sc-source-fields { max-width: 940px; margin-top: 24px; color: var(--ink-3); font-size: 12px; line-height: 1.45; }.sc-source-fields span { font-family: var(--font-mono); }
 .sc-empty { margin-top: 18px; padding: 24px; border: 1px dashed var(--rule-strong); border-radius: var(--radius-card); color: var(--ink-3); }
+.sc-filter-empty { margin-top: 18px; padding: 12px 14px; border: 1px solid var(--rule); border-radius: var(--radius-card); background: var(--paper-tint); color: var(--ink-2); font-size: 13px; line-height: 1.5; }
 .sc-receipt { margin-top: 20px; }
 .sc-compact-list, .sc-full-table-control { display: none; }
 @media (max-width: 720px) {

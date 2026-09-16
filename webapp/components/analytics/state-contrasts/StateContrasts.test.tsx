@@ -8,8 +8,9 @@ const sports: StateContrastSport[] = [
     { sport: "mlb", from: { time: "early", probabilityBand: ".2-.4", meanOutcomeFrequency: 0.35, n: 100 }, to: { time: "mid", probabilityBand: ".2-.4", meanOutcomeFrequency: 0.48, n: 120 }, winprobDelta: 0.13, minSupportN: 100 },
     { sport: "mlb", from: { time: "mid", probabilityBand: ".6-.8", meanOutcomeFrequency: 0.70, n: 80 }, to: { time: "late", probabilityBand: ".6-.8", meanOutcomeFrequency: 0.28, n: 90 }, winprobDelta: -0.42, minSupportN: 80 },
   ] },
-  { sport: "soccer_intl", adjacentTimePairs: [{ id: "0-15__15-30", fromTime: "0-15", toTime: "15-30" }], contrasts: [
-    { sport: "soccer_intl", from: { time: "0-15", probabilityBand: "0-.2", meanOutcomeFrequency: 0.39, n: 109 }, to: { time: "15-30", probabilityBand: "0-.2", meanOutcomeFrequency: 1, n: 41 }, winprobDelta: 0.61, minSupportN: 41 },
+  { sport: "soccer_intl", adjacentTimePairs: [{ id: "45-60__60-75", fromTime: "45-60", toTime: "60-75" }, { id: "60-75__75-90", fromTime: "60-75", toTime: "75-90" }], contrasts: [
+    { sport: "soccer_intl", from: { time: "45-60", probabilityBand: ".4-.6", meanOutcomeFrequency: 0.39, n: 109 }, to: { time: "60-75", probabilityBand: ".4-.6", meanOutcomeFrequency: 1, n: 41 }, winprobDelta: 0.61, minSupportN: 41 },
+    { sport: "soccer_intl", from: { time: "60-75", probabilityBand: ".6-.8", meanOutcomeFrequency: 0.61, n: 75 }, to: { time: "75-90", probabilityBand: ".6-.8", meanOutcomeFrequency: 0.73, n: 52 }, winprobDelta: 0.12, minSupportN: 52 },
   ] },
 ];
 
@@ -34,10 +35,20 @@ describe("StateContrasts", () => {
     render(<StateContrasts sports={sports} />);
     fireEvent.change(screen.getByLabelText("State contrast sport"), { target: { value: "soccer_intl" } });
     const table = screen.getByRole("table");
-    expect(within(table).getByText("0-15 / 0-.2")).toBeInTheDocument();
-    expect(within(table).getByText("15-30 / 0-.2")).toBeInTheDocument();
+    expect(within(table).getByText("45-60 / .4-.6")).toBeInTheDocument();
+    expect(within(table).getByText("60-75 / .4-.6")).toBeInTheDocument();
     expect(within(table).getByText("109")).toBeInTheDocument();
     expect(within(table).getAllByText("41")[0]).toBeInTheDocument();
+  });
+
+  it("resets an unavailable origin band to same band when the time pair changes", () => {
+    render(<StateContrasts sports={sports} />);
+    fireEvent.change(screen.getByLabelText("State contrast sport"), { target: { value: "soccer_intl" } });
+    const bandControl = screen.getByLabelText("Same forecast band");
+    fireEvent.change(bandControl, { target: { value: ".4-.6" } });
+    fireEvent.change(screen.getByLabelText("Adjacent time buckets"), { target: { value: "60-75__75-90" } });
+    expect(bandControl).toHaveValue("same");
+    expect(within(screen.getByRole("table")).getByText("60-75 / .6-.8")).toBeInTheDocument();
   });
 
   it("states the definition that rules out transition and paired-game readings without an independence claim", () => {

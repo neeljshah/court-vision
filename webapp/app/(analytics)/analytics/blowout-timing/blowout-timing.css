@@ -32,13 +32,18 @@
 .bt-compact-rows { display: none; }
 @media (max-width: 680px) {
   .bt-page { padding: 34px 16px 48px; }
-  .bt-panels { grid-template-columns: 1fr; gap: 24px; }
+  .bt-panels { display: none; }
   .bt-explanation { padding: 17px; }
   .bt-panel { padding: 16px; }
   .bt-row { grid-template-columns: 64px minmax(0, 1fr); gap: 8px; }
   .bt-bar-track { grid-column: 1 / -1; }
   .bt-value { text-align: left; white-space: normal; overflow-wrap: anywhere; }
-  .bt-compact-rows { display: grid; gap: 0; margin-top: 24px; border-top: 1px solid var(--rule); }
-  .bt-compact-row { display: grid; gap: 5px; padding: 14px 0; border-bottom: 1px solid var(--rule); color: var(--ink-2); font-size: 12px; line-height: 1.45; font-variant-numeric: tabular-nums; }
-  .bt-compact-incidence, .bt-compact-timing { overflow-wrap: anywhere; }
+  .bt-compact-rows { display: grid; gap: 12px; margin-top: 24px; }
+  .bt-compact-row { padding: 16px; border: 1px solid var(--rule); border-radius: var(--radius-card); background: var(--paper-raised); color: var(--ink-2); font-size: 12px; line-height: 1.45; font-variant-numeric: tabular-nums; }
+  .bt-compact-support { margin-top: 8px; color: var(--ink-3); }
+  .bt-compact-quartiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
+  .bt-compact-quartiles div { min-width: 0; }
+  .bt-compact-quartiles dt { color: var(--ink-3); font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+  .bt-compact-quartiles dd { margin: 3px 0 0; color: var(--ink); overflow-wrap: anywhere; }
+  .bt-compact-mask-reason { margin-top: 12px; color: var(--ink-3); }
 }

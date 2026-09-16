@@ -50,12 +50,28 @@ describe("BlowoutTiming", () => {
     expect(eligibility.every(item => item.textContent?.includes("10 decided games for clock quartiles"))).toBe(true);
   });
 
-  it("keeps each compact row's threshold, incidence, and quartiles together", () => {
+  it("keeps each compact card's threshold, conditional support, and labelled quartiles together", () => {
     const { container } = render(<BlowoutTiming sports={sports} />);
     const compactRows = container.querySelectorAll(".bt-compact-row");
     expect(compactRows).toHaveLength(3);
     expect(compactRows[0]).toHaveTextContent("2 runs");
-    expect(compactRows[0]).toHaveTextContent("10 / 20 (50.0%)");
-    expect(compactRows[0]).toHaveTextContent("4 inning / 6 inning / 8 inning");
+    expect(compactRows[0]).toHaveTextContent("Conditional support 10 / 20");
+    expect(compactRows[0]).toHaveTextContent("p25");
+    expect(compactRows[0]).toHaveTextContent("4 inning");
+    expect(compactRows[0]).toHaveTextContent("median");
+    expect(compactRows[0]).toHaveTextContent("6 inning");
+    expect(compactRows[0]).toHaveTextContent("p75");
+    expect(compactRows[0]).toHaveTextContent("8 inning");
+  });
+
+  it("marks only compact rows as mobile-visible", () => {
+    const { container } = render(<BlowoutTiming sports={sports} />);
+    const panels = container.querySelectorAll(".bt-panels");
+    const compactRows = container.querySelectorAll(".bt-compact-rows");
+    expect(panels).toHaveLength(2);
+    expect(compactRows).toHaveLength(2);
+    expect(Array.from(panels).every(item => item.classList.contains("bt-mobile-hidden"))).toBe(true);
+    expect(Array.from(compactRows).every(item => item.classList.contains("bt-mobile-visible"))).toBe(true);
+    expect(container.querySelectorAll(".bt-panels.bt-mobile-visible")).toHaveLength(0);
   });
 });
