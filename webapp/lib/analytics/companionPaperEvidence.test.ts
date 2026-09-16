@@ -10,7 +10,6 @@ import { scanRenderedText } from "../../scripts/check-analytics-copy.mjs";
 import { publishedArtifacts } from "./papers.server";
 import { paperStrings, validatePaper, type Paper, type PaperBlock } from "./papers";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 function readJson(folder: string, name: string): any {
   return JSON.parse(readFileSync(join(process.cwd(), "public", "data", folder, `${name}.json`), "utf8"));
 }

@@ -10,7 +10,6 @@ import { scanRenderedText } from "../../scripts/check-analytics-copy.mjs";
 import { publishedArtifacts } from "./papers.server";
 import { paperStrings, validatePaper, type Paper } from "./papers";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 function readJson(folder: string, name: string): any {
   const raw = readFileSync(join(process.cwd(), "public", "data", folder, `${name}.json`), "utf8");
   // Python exports carry bare NaN; the site's own loaders null it out the same way.
