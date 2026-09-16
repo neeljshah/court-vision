@@ -68,7 +68,9 @@ export function ResearchSourceContext({ sources, fields }: { sources?: ResearchS
     <p className="cv-muted" style={{ margin: "4px 0 10px" }}>Snapshot dates and observation periods are reported separately because the contributing modules do not share one window.</p>
     <ul style={{ listStyle: "none", display: "grid", gap: 10 }}>
       {sources.map(source => <li key={source.id} style={{ display: "grid", gap: 2 }}>
-        <Link href={`/analytics/m/${source.id}`} style={{ fontFamily: "var(--font-mono)", fontSize: 12 }}>{source.id}</Link>
+        {source.id.endsWith("_manifest")
+          ? <a href={sourceUrl(source.id)} target="_blank" rel="noreferrer" style={{ fontFamily: "var(--font-mono)", fontSize: 12 }}>{source.id}</a>
+          : <Link href={`/analytics/m/${source.id}`} style={{ fontFamily: "var(--font-mono)", fontSize: 12 }}>{source.id}</Link>}
         <span className="cv-muted" style={{ fontSize: 13 }}>Snapshot date: {source.asOf || "not recorded"}</span>
         <span className="cv-muted" style={{ fontSize: 13 }}>Observation period: {periods[source.id] || "not recorded"}</span>
         <span className="cv-muted" style={{ fontSize: 13 }}>Feeds: {sourceFields(source, fields).join(", ") || "no measurements recorded"}</span>

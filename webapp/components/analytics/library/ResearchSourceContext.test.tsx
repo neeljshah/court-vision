@@ -26,4 +26,16 @@ describe("ResearchSourceContext", () => {
   it("reports an unrecorded period when the published module has no window", () => {
     expect(observationPeriod({ label: "No window" })).toBeNull();
   });
+
+  it("links atlas manifests to published JSON while keeping real module routes", () => {
+    vi.stubGlobal("fetch", vi.fn(() => Promise.resolve({ ok: false })));
+    render(<ResearchSourceContext fields={[]} sources={[
+      { id: "atlas_nba_manifest", asOf: "2026-07-25" },
+      { id: "atlas_nba_teams_manifest", asOf: "2026-07-25" },
+      { id: "nba_q4_shift", asOf: "2026-07-24" },
+    ]} />);
+    expect(screen.getByRole("link", { name: "atlas_nba_manifest" })).toHaveAttribute("href", "/data/showcase/atlas_nba_manifest.json");
+    expect(screen.getByRole("link", { name: "atlas_nba_teams_manifest" })).toHaveAttribute("href", "/data/showcase/atlas_nba_teams_manifest.json");
+    expect(screen.getByRole("link", { name: "nba_q4_shift" })).toHaveAttribute("href", "/analytics/m/nba_q4_shift");
+  });
 });
