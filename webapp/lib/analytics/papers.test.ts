@@ -27,6 +27,14 @@ describe("validatePaper", () => {
     sections[0].blocks = [{ type: "p", text: "This paragraph claims an edge over the close." }];
     expect(validatePaper(paper, artifacts)).toMatch(/prohibited vocabulary/);
   });
+  it("forbids bookmaker as prose but lets a paper cite the bookmaker_accuracy module id", () => {
+    const prose = sample();
+    (prose.sections as Array<{ blocks: unknown[] }>)[0].blocks = [{ type: "p", text: "The bookmaker moved first." }];
+    expect(validatePaper(prose, artifacts)).toMatch(/prohibited vocabulary/);
+    const cited = sample();
+    (cited.sections as Array<{ blocks: unknown[] }>)[0].blocks = [{ type: "p", text: "Source rows come from bookmaker_accuracy.json and its sports.tennis.books[] entries." }];
+    expect(validatePaper(cited, artifacts)).toBeNull();
+  });
 
   it("rejects an unknown block type", () => {
     const paper = sample();

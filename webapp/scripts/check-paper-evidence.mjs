@@ -7,7 +7,7 @@ import { join } from "node:path";
 const root = process.cwd();
 const data = join(root, "public", "data");
 const papers = join(data, "papers");
-const forbidden = /(?<![A-Za-z0-9_])(edge|edges|bet|bets|betting|bettor|bettors|bookmaker|bookmakers|sportsbook|profit|profits|profitable|roi|wager|wagers|wagering|bankroll|bankrolls|payout|payouts|odds boost|financial returns?|betting returns?|dollar)(?![A-Za-z0-9])/i;
+const forbidden = /(?<![A-Za-z0-9_])(edge|edges|bet|bets|betting|bettor|bettors|bookmaker|bookmakers|sportsbook|profit|profits|profitable|roi|wager|wagers|wagering|bankroll|bankrolls|payout|payouts|odds boost|financial returns?|betting returns?|dollar)(?![A-Za-z0-9_])/i;
 const isBag = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
 
 function names(directory) {

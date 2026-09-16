@@ -2,7 +2,7 @@
 // "use client" index component can import it; the loader lives in papers.server.ts.
 // The vocabulary guard is the same expression scripts/check-analytics-copy.mjs applies to
 // source and data, kept literal so the two cannot drift apart.
-const FORBIDDEN = /(?<![A-Za-z0-9_])(edge|edges|bet|bets|betting|bettor|bettors|bookmaker|bookmakers|sportsbook|profit|profits|profitable|roi|wager|wagers|wagering|bankroll|bankrolls|payout|payouts|odds boost|financial returns?|betting returns?|dollar)(?![A-Za-z0-9])/gi;
+const FORBIDDEN = /(?<![A-Za-z0-9_])(edge|edges|bet|bets|betting|bettor|bettors|bookmaker|bookmakers|sportsbook|profit|profits|profitable|roi|wager|wagers|wagering|bankroll|bankrolls|payout|payouts|odds boost|financial returns?|betting returns?|dollar)(?![A-Za-z0-9_])/gi;
 
 import { analysisDestinations } from "./analysisDestinations";
 
