@@ -33,6 +33,29 @@ beforeEach(() => window.history.replaceState(null, "", "/analytics/lab"));
 afterEach(() => vi.unstubAllGlobals());
 
 describe("MeasurementLab sport filtering and inspection", () => {
+  it("defaults incompatible definitions to one cohort and never renders a pooled median", () => {
+    const incompatible = { ...fixture, datasets: [{ ...fixture.datasets[0], rows: [
+      { id: "mlb", label: "MLB", group: "MLB", values: { value: 2, alt: 1 }, definition: { sport: "MLB", unit: "runs", threshold: 3, clockField: "inning", population: "178 games" } },
+      { id: "soccer", label: "SOCCER", group: "SOCCER", values: { value: 1, alt: 2 }, definition: { sport: "SOCCER", unit: "goals", threshold: 1, clockField: "minute", population: "29 games" } },
+    ] }] };
+    render(<MeasurementLab data={incompatible} />);
+    expect(screen.getByRole("status")).toHaveTextContent("1 row");
+    expect(screen.getByRole("region", { name: "Cohort comparison notice" })).toHaveTextContent("Showing MLB / 3 runs / inning by default");
+    fireEvent.change(screen.getByLabelText("Published group"), { target: { value: "all" } });
+    expect(screen.getByRole("option", { name: "Show all cohorts (not comparable)" })).toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "Measurement summary" })).not.toBeInTheDocument();
+    expect(screen.getByText(/without a pooled ranking or median/i)).toBeInTheDocument();
+  });
+  it("keeps a censored half-life label visible and out of numeric ranking", () => {
+    const censored = { ...fixture, datasets: [{ ...fixture.datasets[0], id: "line-half-life", rows: [
+      { id: "tennis", label: "TENNIS", group: "TENNIS", values: { value: null, alt: null }, note: "Half-life label: >6.0 (censored).", definition: { sport: "TENNIS" } },
+    ] }] };
+    render(<MeasurementLab data={censored} />);
+    expect(screen.getByText(/TENNIS: >6\.0 \(censored\)/)).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Inspect TENNIS/ })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Data table" }));
+    expect(screen.getAllByText("TENNIS").length).toBeGreaterThanOrEqual(1);
+  });
   it("groups measurement view choices semantically", () => {
     render(<MeasurementLab data={fixture} />);
     expect(screen.getByRole("group", { name: "Measurement visualization" })).toBeInTheDocument();

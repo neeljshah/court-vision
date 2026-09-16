@@ -16,6 +16,16 @@
 .lab-analysis-head .cv-muted{max-width:620px}
 .lab-controls{display:grid;grid-template-columns:1.4fr 1.2fr 1fr;gap:12px;padding:22px 0 18px;margin-top:6px;border-bottom:1px solid var(--cv-line)}
 .lab-primary-field select{border-color:var(--cv-blue)}
+.lab-definition{margin:16px 0 0;padding:13px 15px;border:1px solid var(--rule);border-left:3px solid var(--signal);background:var(--paper-tint)}
+.lab-definition>.cv-eyebrow{margin-bottom:9px;color:var(--ink-3)}
+.lab-definition dl{display:flex;flex-wrap:wrap;gap:10px 22px}
+.lab-definition dt{font-size:9px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em}
+.lab-definition dd{margin-top:2px;font:10px/1.45 var(--font-mono);color:var(--ink-2)}
+.lab-cohort-notice{margin-top:16px;padding:12px 15px;border-left:3px solid var(--signal);background:var(--paper-tint);color:var(--ink-2);font-size:11px;line-height:1.6}
+.lab-cohort-notice ul{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:7px;list-style:none}
+.lab-cohort-notice li{display:flex;gap:6px;font:10px var(--font-mono)}
+.lab-cohort-notice li span{color:var(--ink-3)}
+.lab-censored-labels{margin:14px 0 0;font-size:10px;line-height:1.6;color:var(--ink-2)}
 .lab-chart-controls{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;margin:17px 0}
 .lab-readout{display:flex;align-items:baseline;gap:8px;margin-top:9px;font-size:10px;color:var(--cv-muted)}
 .lab-readout b{font-weight:600;color:var(--cv-text)}

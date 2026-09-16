@@ -15,7 +15,15 @@ describe("measurement lab source contracts", () => {
     const lhl = data.datasets.find(d => d.id === "line-half-life")!;
     expect(lhl.rows.find(r => r.label === "TENNIS")?.values.half_life_hours).toBeNull();
     expect(lhl.rows.find(r => r.label === "TENNIS")?.note).toContain(">6");
+    expect(lhl.rows.find(r => r.label === "TENNIS")?.definition?.observationWindow).toBe("2026-07-03 to 2026-07-17 (15 days)");
     expect(data.datasets.filter(d => d.id.startsWith("tennis-wta")).every(d => d.rows.length === 0)).toBe(true);
+  });
+  it("carries published comparison definitions into incompatible cohorts", () => {
+    const lcf = data.datasets.find(d => d.id === "live-clock")!;
+    expect(lcf.rows.map(row => row.definition?.unit)).toEqual(["runs", "goals"]);
+    expect(lcf.rows.map(row => row.definition?.clockField)).toEqual(["inning", "minute"]);
+    const fatigue = data.datasets.find(d => d.id === "schedule-fatigue")!;
+    expect(new Set(fatigue.rows.map(row => row.definition?.season))).toEqual(new Set(["2023-24", "2024-25", "2025-26"]));
   });
   it("keeps both pitch denominators and selected-subset disclosure", () => {
     const ff = data.datasets.find(d => d.id === "pitch-profiles")!.rows.find(r => r.label === "FF")!;
