@@ -30,14 +30,14 @@ describe("PapersIndexPage", () => {
     expect(card.textContent).toContain(paper!.abstract.slice(0, 60));
   });
 
-  it("narrows the list with a keyword chip and restores it", () => {
+  it("narrows the list with a keyword select and restores it", () => {
     const papers = loadPapers();
     render(<PapersIndex papers={papers} />);
     const keyword = papers[0].keywords[0];
     const expected = papers.filter(paper => paper.keywords.includes(keyword)).length;
-    fireEvent.click(screen.getByRole("button", { name: keyword }));
+    fireEvent.change(screen.getByLabelText("Keyword"), { target: { value: keyword } });
     expect(screen.getByRole("status")).toHaveTextContent(`${expected} of ${papers.length}`);
-    fireEvent.click(screen.getByRole("button", { name: "All keywords" }));
+    fireEvent.change(screen.getByLabelText("Keyword"), { target: { value: "any" } });
     expect(screen.getByRole("status")).toHaveTextContent(`${papers.length} of ${papers.length}`);
   });
 

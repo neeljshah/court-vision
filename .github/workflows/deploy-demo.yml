@@ -76,6 +76,7 @@ jobs:
           npx vitest run lib/analytics/researchIntegration.test.ts
           npx vitest run lib/analytics/libraryData.test.ts
           npx vitest run lib/analytics/libraryViewState.test.ts
+          npx vitest run lib/analytics/paperViewState.test.ts
           npx vitest run lib/analytics/claimHistory.test.ts
           npx vitest run lib/analytics/countContext.test.ts
           npx vitest run lib/analytics/matchupInsights.test.ts
@@ -91,6 +92,8 @@ jobs:
           npx vitest run components/analytics/compare/PitchCountComparison.test.tsx
           npx vitest run components/analytics/compare/PitchResultComparison.test.tsx
           npx vitest run components/analytics/library/LibraryExplorer.test.tsx
+          npx vitest run components/analytics/papers/PapersIndex.test.tsx
+          npx vitest run 'app/(analytics)/analytics/papers/page.test.tsx'
           npx vitest run components/analytics/claim-history/ClaimHistory.test.tsx
           npx vitest run components/analytics/count-context/CountContext.test.tsx
           npx vitest run components/analytics/library/ResearchDetail.test.tsx
