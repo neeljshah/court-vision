@@ -72,6 +72,16 @@ function TimingPanel({ sport }: { sport: BlowoutTimingSport }) {
   </section>;
 }
 
+function CompactRows({ sport }: { sport: BlowoutTimingSport }) {
+  return <div className="bt-compact-rows" role="list" aria-label={`${sportLabel(sport.sport)} compact threshold details`}>
+    {sport.thresholds.map(row => <div className={`bt-compact-row${row.masked ? " bt-is-masked" : ""}`} key={row.threshold} role="listitem" data-masked={row.masked || undefined}>
+      <ThresholdLabel row={row} unit={sport.unit} />
+      <span className="bt-compact-incidence">{row.nGamesDecided.toLocaleString()} / {row.nGamesTotal.toLocaleString()} ({percent(row.incidence)})</span>
+      <span className="bt-compact-timing">{row.masked ? row.maskReason : `${clock(row.p25, sport.clockField)} / ${clock(row.median, sport.clockField)} / ${clock(row.p75, sport.clockField)}`}</span>
+    </div>)}
+  </div>;
+}
+
 export function BlowoutTiming({ sports }: { sports: BlowoutTimingSport[] }) {
   return <div className="bt-sports">
     {sports.map(sport => <section className="bt-sport" key={sport.sport} aria-labelledby={`bt-${sport.sport}`}>
@@ -79,6 +89,7 @@ export function BlowoutTiming({ sports }: { sports: BlowoutTimingSport[] }) {
       <Figure source={SOURCE} asOf="published snapshot" title={`${sportLabel(sport.sport)} lasting-lead frequency and timing`} subtitle={`Thresholds are expressed in ${sport.unit}; the reported clock is ${sport.clockField}.`} verdict="descriptive_only">
         <Eligibility sport={sport} />
         <div className="bt-panels"><IncidencePanel sport={sport} /><TimingPanel sport={sport} /></div>
+        <CompactRows sport={sport} />
       </Figure>
     </section>)}
   </div>;

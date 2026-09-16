@@ -40,6 +40,7 @@ export function StateContrasts({ sports }: { sports: StateContrastSport[] }) {
   const selectedPair = pairs.find(pair => pair.id === pairId) || pairs[0];
   const [bandScope, setBandScope] = useState("same");
   const [sort, setSort] = useState<"difference" | "support">("difference");
+  const [showFullTable, setShowFullTable] = useState(false);
   const pairRows = selectedSport && selectedPair ? contrastsForPair(sports, selectedSport.sport, selectedPair.id) : [];
   const originBands = Array.from(new Set(pairRows.map(row => row.from.probabilityBand)));
   const scopedRows = bandScope === "same"
@@ -59,6 +60,7 @@ export function StateContrasts({ sports }: { sports: StateContrastSport[] }) {
     setSport(nextSport);
     setPairId(next?.adjacentTimePairs[0]?.id || "");
     setBandScope("same");
+    setShowFullTable(false);
   }
 
   return <section className="sc-shell" aria-label="State contrast explorer">
@@ -70,7 +72,17 @@ export function StateContrasts({ sports }: { sports: StateContrastSport[] }) {
       <label>Sort rows<select aria-label="Sort state contrasts" value={sort} onChange={event => setSort(event.target.value as "difference" | "support")}><option value="difference">Largest difference</option><option value="support">Minimum support</option></select></label>
     </div>
     {selectedSport && selectedPair ? <Figure source={SOURCE} asOf="published snapshot" title={`${sportLabel(selectedSport.sport)} bucket contrasts`} subtitle={`Each row compares published bucket populations from ${pairLabel(selectedPair.fromTime, selectedPair.toTime)}. The bar is scaled only within this selected time-pair.`} verdict="descriptive_only">
-      <div className="sc-table-wrap" role="region" aria-label={`${sportLabel(selectedSport.sport)} state contrasts`} data-scroll-region>
+      <div className="sc-compact-list" role="list" aria-label={`${sportLabel(selectedSport.sport)} compact state contrasts`}>
+        {rows.map((row, index) => <article className="sc-compact-card" key={`${stateLabel(row, "from")}-${stateLabel(row, "to")}-${index}`} role="listitem">
+          <p className="sc-compact-state">From state: {stateLabel(row, "from")}</p>
+          <p className="sc-compact-values">Outcome frequency <span>{percent(row.from.meanOutcomeFrequency)}</span> | Forecast observations <span>{row.from.n.toLocaleString("en-US")}</span></p>
+          <p className="sc-compact-state">To state: {stateLabel(row, "to")}</p>
+          <p className="sc-compact-values">Outcome frequency <span>{percent(row.to.meanOutcomeFrequency)}</span> | Forecast observations <span>{row.to.n.toLocaleString("en-US")}</span></p>
+          <p className={`sc-compact-delta ${deltaPercentagePoints(row.winprobDelta) < 0 ? "sc-delta-negative" : "sc-delta-positive"}`}>Difference <span>{percentagePoints(row.winprobDelta)}</span> | Minimum support <span>{row.minSupportN.toLocaleString("en-US")}</span></p>
+        </article>)}
+      </div>
+      <button className="sc-full-table-control" type="button" aria-expanded={showFullTable} onClick={() => setShowFullTable(open => !open)}>Full table</button>
+      <div className={`sc-table-wrap${showFullTable ? " sc-full-table-open" : ""}`} role="region" aria-label={`${sportLabel(selectedSport.sport)} state contrasts`} data-scroll-region>
         <table className="sc-table">
           <caption>Published contrasts from {selectedPair.fromTime} to {selectedPair.toTime}. Both state populations remain visible.</caption>
           <thead><tr><th scope="col">From state</th><th scope="col">Outcome frequency</th><th scope="col">Forecast observations</th><th scope="col">To state</th><th scope="col">Outcome frequency</th><th scope="col">Forecast observations</th><th scope="col">Difference</th><th scope="col">Minimum support</th></tr></thead>

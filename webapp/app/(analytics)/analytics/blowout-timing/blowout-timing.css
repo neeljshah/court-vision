@@ -5,28 +5,40 @@
 .bt-explanation h2, .bt-sport h2 { color: var(--ink); font-family: var(--font-display); font-size: 1.65rem; font-weight: 500; letter-spacing: -.02em; }
 .bt-explanation p { margin-top: 10px; color: var(--ink-2); font-size: 14px; line-height: 1.65; }
 .bt-sports { margin-top: 42px; }
-.bt-sport + .bt-sport { margin-top: 46px; padding-top: 40px; border-top: 1px solid var(--rule); }
+.bt-sport + .bt-sport { margin-top: 32px; padding-top: 32px; border-top: 1px solid var(--rule); }
 .bt-sport h2 { margin-bottom: 12px; }
-.bt-panels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; min-width: 840px; }
+.bt-panels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 .bt-panel { padding: 18px; border: 1px solid var(--rule); border-radius: var(--radius-card); background: var(--paper-raised); }
 .bt-panel h3 { color: var(--ink); font-size: 16px; font-weight: 650; }
 .bt-panel-copy { margin-top: 5px; color: var(--ink-2); font-size: 13px; line-height: 1.55; }
-.bt-unit-line, .bt-scale-note { margin-top: 10px; color: var(--ink-3); font-size: 12px; line-height: 1.5; }
+.bt-unit-line, .bt-scale-note { margin-top: 10px; color: var(--ink-3); font-size: 12px; line-height: 1.45; }
 .bt-eligibility { margin: 0 0 16px; color: var(--ink-3); font-size: 12px; line-height: 1.6; }
 .bt-rows { margin-top: 16px; }
-.bt-row { display: grid; grid-template-columns: 64px minmax(150px, 1fr) 158px; gap: 10px; align-items: center; min-height: 42px; padding: 8px 0; border-top: 1px solid var(--rule); }
+.bt-row { display: grid; grid-template-columns: 64px minmax(48px, 1fr) minmax(112px, 158px); gap: 10px; align-items: center; min-height: 42px; padding: 8px 0; border-top: 1px solid var(--rule); }
 .bt-row:first-child { border-top: 0; }
-.bt-threshold, .bt-value { color: var(--ink); font-size: 11.5px; font-variant-numeric: tabular-nums; }
+.bt-threshold, .bt-value { color: var(--ink); font-size: 12px; font-variant-numeric: tabular-nums; }
 .bt-value { text-align: right; color: var(--ink-2); white-space: nowrap; }
-.bt-bar-track { position: relative; height: 9px; overflow: hidden; border-radius: var(--radius-pill); background: var(--paper-tint); box-shadow: inset 0 0 0 1px var(--rule); }
+.bt-bar-track { position: relative; height: 9px; overflow: hidden; border: 1px solid var(--rule); border-radius: var(--radius-pill); background: var(--paper-tint); }
 .bt-incidence-bar { display: block; height: 100%; border-radius: inherit; background: var(--accent); }
 .bt-range-track { overflow: visible; }
 .bt-range-bar { position: absolute; top: 2px; height: 5px; border-radius: var(--radius-pill); background: var(--signal); }
-.bt-median-dot { position: absolute; top: -3px; width: 15px; height: 15px; margin-left: -7px; border: 2px solid var(--paper-raised); border-radius: 50%; background: var(--ink); box-shadow: 0 0 0 1px var(--rule-strong); }
+.bt-median-dot { position: absolute; top: -3px; width: 15px; height: 15px; margin-left: -7px; border: 2px solid var(--paper-raised); border-radius: 50%; background: var(--ink); outline: 1px solid var(--rule-strong); }
 .bt-is-masked { color: var(--ink-3); opacity: .62; }
 .bt-is-masked .bt-threshold, .bt-is-masked .bt-value { color: var(--ink-3); }
 .bt-is-masked .bt-incidence-bar { background: var(--null); }
-.bt-mask-reason { grid-column: 2 / -1; color: var(--ink-3); font-size: 11.5px; line-height: 1.4; }
+.bt-mask-reason { grid-column: 2 / -1; color: var(--ink-3); font-size: 12px; line-height: 1.45; }
 .bt-source-fields { max-width: 900px; margin-top: 30px; color: var(--ink-3); font-size: 12px; line-height: 1.65; }
 .bt-receipt { margin-top: 18px; }
-@media (max-width: 680px) { .bt-page { padding: 34px 16px 48px; }.bt-panels { gap: 10px; }.bt-explanation { padding: 17px; } }
+.bt-compact-rows { display: none; }
+@media (max-width: 680px) {
+  .bt-page { padding: 34px 16px 48px; }
+  .bt-panels { grid-template-columns: 1fr; gap: 24px; }
+  .bt-explanation { padding: 17px; }
+  .bt-panel { padding: 16px; }
+  .bt-row { grid-template-columns: 64px minmax(0, 1fr); gap: 8px; }
+  .bt-bar-track { grid-column: 1 / -1; }
+  .bt-value { text-align: left; white-space: normal; overflow-wrap: anywhere; }
+  .bt-compact-rows { display: grid; gap: 0; margin-top: 24px; border-top: 1px solid var(--rule); }
+  .bt-compact-row { display: grid; gap: 5px; padding: 14px 0; border-bottom: 1px solid var(--rule); color: var(--ink-2); font-size: 12px; line-height: 1.45; font-variant-numeric: tabular-nums; }
+  .bt-compact-incidence, .bt-compact-timing { overflow-wrap: anywhere; }
+}

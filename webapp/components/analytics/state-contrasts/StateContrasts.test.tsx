@@ -47,4 +47,19 @@ describe("StateContrasts", () => {
     expect(definition).toHaveTextContent("does not follow identical games");
     expect(screen.queryByText(/independent published populations/i)).not.toBeInTheDocument();
   });
+
+  it("keeps both populations and the difference together in compact cards, with a full-table control", () => {
+    const { container } = render(<StateContrasts sports={sports} />);
+    const compact = screen.getByRole("list", { name: "MLB compact state contrasts" });
+    expect(within(compact).getByText("From state: early / .2-.4")).toBeInTheDocument();
+    expect(within(compact).getByText("To state: mid / .2-.4")).toBeInTheDocument();
+    expect(within(compact).getByText((_, element) => Boolean(element?.classList.contains("sc-compact-values") && element.textContent === "Outcome frequency 35.00% | Forecast observations 100"))).toBeInTheDocument();
+    expect(within(compact).getByText((_, element) => Boolean(element?.classList.contains("sc-compact-values") && element.textContent === "Outcome frequency 48.00% | Forecast observations 120"))).toBeInTheDocument();
+    expect(within(compact).getByText((_, element) => Boolean(element?.classList.contains("sc-compact-delta") && element.textContent === "Difference +13.00 pp | Minimum support 100"))).toBeInTheDocument();
+    const control = screen.getByRole("button", { name: "Full table" });
+    expect(container.querySelector(".sc-full-table-open")).toBeNull();
+    fireEvent.click(control);
+    expect(container.querySelector(".sc-full-table-open")).toBeInTheDocument();
+    expect(control).toHaveAttribute("aria-expanded", "true");
+  });
 });

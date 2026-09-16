@@ -19,7 +19,7 @@ describe("BlowoutTiming", () => {
 
   it("keeps a masked row visibly identified with its reason", () => {
     const { container } = render(<BlowoutTiming sports={sports} />);
-    const masked = container.querySelectorAll('[data-masked="true"]');
+    const masked = container.querySelectorAll('.bt-panels [data-masked="true"]');
     expect(masked).toHaveLength(2);
     expect(masked[0]).toHaveClass("bt-is-masked");
     expect(masked[0]).toHaveTextContent("Below the published minimum of 10 decided games.");
@@ -37,8 +37,8 @@ describe("BlowoutTiming", () => {
     const bars = Array.from(container.querySelectorAll(".bt-bar-track"));
     expect(bars.length).toBeGreaterThan(0);
     expect(bars.every(bar => bar.getAttribute("aria-hidden") === "true")).toBe(true);
-    expect(screen.getByText("10 / 20 (50.0%)")).toBeInTheDocument();
-    expect(screen.getByText("4 inning / 6 inning / 8 inning")).toBeInTheDocument();
+    expect(screen.getAllByText("10 / 20 (50.0%)").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("4 inning / 6 inning / 8 inning").length).toBeGreaterThan(0);
   });
 
   it("shows raw and usable game counts beside the panels with both floors", () => {
@@ -48,5 +48,14 @@ describe("BlowoutTiming", () => {
     expect(eligibility[0]).toHaveTextContent("178 raw games, 178 usable games with at least 10 parseable score ticks");
     expect(eligibility[1]).toHaveTextContent("29 raw games, 29 usable games with at least 10 parseable score ticks");
     expect(eligibility.every(item => item.textContent?.includes("10 decided games for clock quartiles"))).toBe(true);
+  });
+
+  it("keeps each compact row's threshold, incidence, and quartiles together", () => {
+    const { container } = render(<BlowoutTiming sports={sports} />);
+    const compactRows = container.querySelectorAll(".bt-compact-row");
+    expect(compactRows).toHaveLength(3);
+    expect(compactRows[0]).toHaveTextContent("2 runs");
+    expect(compactRows[0]).toHaveTextContent("10 / 20 (50.0%)");
+    expect(compactRows[0]).toHaveTextContent("4 inning / 6 inning / 8 inning");
   });
 });
