@@ -209,7 +209,7 @@ export default function Q4ShiftPage() {
 
       <p style={{ ...lede, marginTop: 32 }}>
         Descriptive Q4-vs-Q1-3 per-36 splits only, from a fixed observation window &mdash; not
-        a clutch metric, not predictive, and no edge or ROI is claimed anywhere on this page.
+        a clutch metric, and not a forecast-quality measurement.
       </p>
     </div>
   );

@@ -199,8 +199,8 @@ export default function EffectiveSampleSizePage() {
       </div>
 
       <p style={{ ...lede, marginTop: 32 }}>
-        This exhibit deflates our own numbers on purpose &mdash; no edge or ROI is
-        claimed anywhere here, only the honest count of what was actually
+        This exhibit deflates our own numbers on purpose &mdash; it reports only the
+        independent-game count implied by the stated within-game dependence and what was actually
         measured.
       </p>
     </div>

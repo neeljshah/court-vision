@@ -15,7 +15,7 @@ import { windowText } from "@/components/analytics/NovelStatPanel";
 export const metadata: Metadata = {
   title: "Novel statistics",
   description:
-    "Six statistics that did not exist before this system -- each gated against prior art, adversarially re-derived, and published with its confounds. Descriptive only, no edge claimed.",
+    "Six statistics that did not exist before this system -- each gated against prior art, adversarially re-derived, and published with its confounds. Each is a descriptive measurement.",
 };
 
 const DATA = join(process.cwd(), "public", "data", "showcase");
@@ -146,7 +146,7 @@ const GATE: Array<[string, string]> = [
   ["Buildability check", "The stat must be computable from artifacts already committed in this repo. No new scrape, no private feed, no number that cannot be recomputed from the cited source files."],
   ["Adversarial re-derivation", "The result is rebuilt a second time, by a different route where one exists, specifically to break it. Load-Bearing Index ships with two independent estimators that disagree on 29 of 30 teams -- that disagreement is printed, not hidden."],
   ["Declared confounds", "Every stat publishes what would make it wrong: sparse tail buckets, excluded sports, absolute-move churn, conflated model misspecification. Confounds are part of the stat, not an appendix."],
-  ["edge_claimed: false", "These are market-science and descriptive measurements. None of them is a profit claim, and each artifact carries the flag saying so."],
+  ["Descriptive scope", "These are measurements of observed price movement and model behavior. Each artifact states its limits alongside its result."],
 ];
 
 export default function NovelStatsPage() {
@@ -167,8 +167,7 @@ export default function NovelStatsPage() {
         Each one was searched against prior art before it was built, re-derived a
         second time to try to break it, and published with the confounds that could
         make it wrong. They are descriptive market science and structure measurements
-        &mdash; every artifact carries <span className="mono">edge_claimed: false</span>,
-        and none of them is a profit claim.
+        &mdash; every artifact states its descriptive scope and its declared limits.
       </p>
       <p className="nv-meta mono">
         {cards.length} stats &middot; index generated {stamp} &middot; each number below is lifted
@@ -243,8 +242,8 @@ export default function NovelStatsPage() {
           ))}
         </ol>
         <p className="nv-close">
-          Nothing on this page is a betting edge. The claim is narrower and harder:
-          these are measurements that are honest about their own limits, and you can
+          The claim is narrower and harder: these are measurements that are honest
+          about their own limits, and you can
           recompute every one of them from the artifacts named on the cards.
         </p>
       </section>

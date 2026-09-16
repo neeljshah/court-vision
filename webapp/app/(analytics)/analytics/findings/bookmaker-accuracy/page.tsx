@@ -160,8 +160,8 @@ export default function BookmakerAccuracyPage() {
       <div style={{ marginTop: 32, maxWidth: 700 }}>
         <p style={sectionH}>How close they all are</p>
         <p style={lede}>
-          Across both sports the spread between the sharpest and least-sharp book never exceeds 0.0005 Brier. No
-          public book is meaningfully &quot;beatable&quot; by another on these markets -- the honest headline is the
+          Across both sports the spread between the sharpest and least-sharp source never exceeds 0.0005 Brier. The
+          published sources are closely grouped on these markets -- the honest headline is the
           closeness itself, not a ranking. Being sharp is also not the same as being first: this exhibit measures
           accuracy at the timestamps captured, not who posts a line first.
         </p>
@@ -192,7 +192,7 @@ export default function BookmakerAccuracyPage() {
             {data.confounds.map((c) => (
               <li key={c}>{c}</li>
             ))}
-            <li>Descriptive only -- no edge or ROI claim is made anywhere on this page.</li>
+            <li>Results report published source-level Brier values in the stated observation windows.</li>
           </ul>
         </div>
       ) : null}

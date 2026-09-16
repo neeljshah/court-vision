@@ -160,7 +160,7 @@ export default function LineupSynergyPage() {
             {data.confounds.map((c) => (
               <li key={c}>{c}</li>
             ))}
-            <li>Descriptive only -- no edge or ROI claim is made anywhere on this page.</li>
+            <li>Results describe qualified five-player lineup outcomes in the stated season.</li>
           </ul>
         </div>
       ) : null}

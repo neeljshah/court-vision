@@ -15,7 +15,7 @@ import { findingMeta } from "@/lib/analytics/og";
 export const metadata: Metadata = {
   title: "Soccer Home-Advantage Decomposition",
   description:
-    "Descriptive-only exhibit (edge_claimed: false): international soccer home advantage decomposed by venue (true-home vs neutral-site), era, and tournament type via the neutral-site natural control.",
+    "Descriptive exhibit: international soccer home advantage decomposed by venue (true-home vs neutral-site), era, and tournament type via the neutral-site natural control.",
   ...findingMeta("soccer-home-advantage"),
 };
 
@@ -202,7 +202,7 @@ export default function SoccerHomeAdvantagePage() {
             </table>
           </div>
           <p style={{ ...noteBox, marginTop: 16 }}>
-            The effect grew because the neutral-venue edge collapsed, not because true-home advantage rose -- true-
+            The effect grew because the neutral-venue difference collapsed, not because true-home advantage rose -- true-
             home goal diff is flat across both eras (0.6743 to 0.6745), while the neutral-venue goal diff fell from
             0.4556 to 0.1760.
           </p>
@@ -261,7 +261,7 @@ export default function SoccerHomeAdvantagePage() {
             {data.confounds.map((c) => (
               <li key={c}>{c}</li>
             ))}
-            <li>Descriptive only -- no edge or ROI claim is made anywhere on this page.</li>
+            <li>Results describe venue, era, and tournament splits in the published observation window.</li>
           </ul>
         </div>
       ) : null}

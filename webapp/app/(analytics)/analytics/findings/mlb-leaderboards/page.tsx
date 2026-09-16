@@ -15,7 +15,7 @@ import { findingMeta } from "@/lib/analytics/og";
 export const metadata: Metadata = {
   title: "MLB Leaderboards",
   description:
-    "Descriptive-only exhibit (edge_claimed: false): MLB Statcast-derived catcher, umpire, and platoon leaderboards for a fixed 2022-2023 slice, shown beside two honest nulls -- an unstable park-factor read and a REJECTed umpire-totals gate.",
+    "Descriptive exhibit: MLB Statcast-derived catcher, umpire, and platoon leaderboards for a fixed 2022-2023 slice, shown beside two honest nulls -- an unstable park-factor read and a REJECTed umpire-totals gate.",
   ...findingMeta("mlb-leaderboards"),
 };
 
@@ -158,7 +158,7 @@ export default function MlbLeaderboardsPage() {
 
       {park_factor_null ? (
         <>
-          <p style={sectionLabel}>Park factor &mdash; the null we didn't dress up</p>
+          <p style={sectionLabel}>Park factor &mdash; the published null</p>
           <p style={nullBox}>
             {park_factor_null.headline} {park_factor_null.n_finite_park_factor} of {park_factor_null.n_rows} rows had a finite park factor ({park_factor_null.n_nan} NaN).
             This is not published as a ranking &mdash; verdict: <strong style={{ color: "var(--ink)" }}>{park_factor_null.verdict}</strong>.
@@ -193,7 +193,7 @@ export default function MlbLeaderboardsPage() {
       </div>
 
       <p style={{ ...lede, marginTop: 32 }}>
-        Descriptive only, from a fixed 2022-2023 window &mdash; no predictive power, no edge, and no ROI is claimed anywhere on this page.
+        Descriptive only, from a fixed 2022-2023 window. The tables report observed Statcast splits rather than a forecast.
       </p>
     </div>
   );

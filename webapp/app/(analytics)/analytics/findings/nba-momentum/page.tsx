@@ -159,7 +159,7 @@ export default function NbaMomentumFindingsPage() {
 
       <p style={{ ...lede, marginTop: 32 }}>
         CONFIRMED here means a leak-free accuracy/effect finding against our own
-        baseline &mdash; never a betting edge or ROI claim. Nulls are published
+        baseline. Nulls are published
         with equal weight: a carryover shape that fails to show a signal is as
         valid a result as one that confirms.
       </p>

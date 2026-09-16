@@ -37,6 +37,13 @@ function withoutComments(source) {
   for (let index = 0; index < source.length; index += 1) {
     const current = source[index];
     if (quote) {
+      if (quote === "`" && current === "/" && source[index + 1] === "*") {
+        const end = source.indexOf("*/", index + 2);
+        const comment = source.slice(index, end === -1 ? source.length : end + 2);
+        result += comment.replace(/[^\n]/g, " ");
+        index += comment.length - 1;
+        continue;
+      }
       result += current;
       if (current === "\\") result += source[++index] || "";
       else if (current === quote) quote = "";

@@ -217,7 +217,7 @@ export default function ReliabilityPage() {
           <li>Reliability &lt; resolution here means the miscalibration term is small relative to the information term -- the shortfall is not a curve-fitting problem.</li>
           <li>Uncertainty is the shared base-rate term (identical for model and market on the same games) -- it is not part of either side&apos;s gap.</li>
           <li>Within-game row dependence (see the caveat above) means bin means are less independent than their n suggests.</li>
-          <li>Descriptive only -- no edge or ROI claim is made anywhere on this page.</li>
+          <li>Results report probability bins, observed outcomes, and Brier decomposition on the stated corpora.</li>
         </ul>
       </div>
 

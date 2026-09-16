@@ -16,7 +16,7 @@ import { findingMeta } from "@/lib/analytics/og";
 export const metadata: Metadata = {
   title: "The Life of a Forecast",
   description:
-    "Descriptive-only exhibit (edge_claimed: false): how a betting market absorbs information pregame (line half-life) and in-game (Brier checkpoints) -- the market stays ahead of the model throughout, no dollar edge claimed.",
+    "Descriptive exhibit: how the published price reference absorbs information pregame (line half-life) and in-game (Brier checkpoints). The same-corpus Brier comparison remains visible throughout.",
   ...findingMeta("forecast-life"),
 };
 
@@ -89,9 +89,9 @@ export default function ForecastLifePage() {
       <p className="overline">Findings / Life of a forecast</p>
       <h1 style={h1}>The life of a forecast</h1>
       <p style={lede}>
-        A betting market absorbs information continuously, not all at once. This traces that process twice: how the
+        A published price reference absorbs information continuously, not all at once. This traces that process twice: how the
         pre-game line finishes moving before tip, and how in-game accuracy sharpens as the game resolves toward its
-        outcome. No dollar edge is claimed anywhere on this page.
+        outcome. The page reports the published line-movement and Brier measurements.
       </p>
 
       <p style={sectionH}>Before tip: when the line stops moving</p>
@@ -183,7 +183,7 @@ export default function ForecastLifePage() {
         <ul style={confoundList}>
           {(halfLife.declared_confounds || []).map((c, i) => <li key={i}>{c}</li>)}
           <li>In-game checkpoints are per-inning (MLB) or per-5-minute-bucket (soccer) Brier on modest n in the late buckets -- e.g. MLB checkpoint 11 has n=18 -- so late-game values above are noisy, not a smooth trend.</li>
-          <li>Everything on this page is descriptive: no edge or ROI claim is made anywhere.</li>
+          <li>All results are descriptive Brier and line-movement measurements from the stated windows.</li>
         </ul>
       </div>
 
@@ -203,8 +203,8 @@ export default function ForecastLifePage() {
       </div>
 
       <p style={{ ...lede, marginTop: 32 }}>
-        The whole product sits on this: the market is efficient, we aim to match the close, and the honest edge we
-        claim is calibration -- not dollars.
+        The product measures calibration against the close. The Brier checkpoints show the model and reference
+        values on the same published corpus.
       </p>
     </div>
   );

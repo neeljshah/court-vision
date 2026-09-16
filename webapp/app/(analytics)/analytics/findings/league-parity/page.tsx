@@ -16,7 +16,7 @@ import { findingMeta } from "@/lib/analytics/og";
 export const metadata: Metadata = {
   title: "A Parity Ledger",
   description:
-    "Descriptive-only exhibit (edge_claimed: false): win-share Gini and HHI concentration per NBA season, 2023-24 through 2025-26, with partial-season and playoff-pooling caveats in plain sight.",
+    "Descriptive exhibit: win-share Gini and HHI concentration per NBA season, 2023-24 through 2025-26, with partial-season and playoff-pooling caveats in plain sight.",
   ...findingMeta("league-parity"),
 };
 
@@ -194,7 +194,7 @@ export default function LeagueParityPage() {
           {(meth.not_this || []).map((n) => (
             <li key={n}>{n}</li>
           ))}
-          <li>Descriptive only -- no edge or ROI claim is made anywhere on this page.</li>
+          <li>Results report season-level concentration measures with the stated games floor.</li>
         </ul>
       </div>
 

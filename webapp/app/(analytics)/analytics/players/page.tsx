@@ -119,7 +119,7 @@ function heroStat(ins: Insight): { value: string; label: string } | null {
 
 export const metadata = {
   title: "Entities",
-  description: "1,549 descriptive cards across basketball, baseball, soccer, and tennis. Measured historical rates held to conservative sample floors. No edge is claimed.",
+  description: "1,549 descriptive cards across basketball, baseball, soccer, and tennis. Measured historical rates held to conservative sample floors.",
 };
 
 // Client-side name filter (progressive enhancement, same vanilla-JS pattern as
@@ -190,7 +190,7 @@ export default function EntitiesIndexPage() {
           not a projection. {marquee.length} carry a precomputed Scout read; the rest are in the pack tables below.
         </p>
         <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "var(--paper-tint)", border: "1px solid var(--rule-strong)", borderRadius: 8, padding: "8px 14px", fontSize: 13, color: "var(--ink-2)", marginTop: 16 }}>
-          <span className="dot d-desc" style={{ width: 8, height: 8 }} /> Descriptive only &mdash; no edge claimed. edge_claimed: false.
+          <span className="dot d-desc" style={{ width: 8, height: 8 }} /> Descriptive only &mdash; published rates and stated sample floors.
         </div>
       </header>
 

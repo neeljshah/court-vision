@@ -21,7 +21,7 @@ import { pickQuestions } from "@/lib/analytics/askPicks";
 export const metadata = {
   title: "The Forecaster",
   description:
-    "The calibrated prediction engine: walk-forward, leak-free scoring across three sports, with the in-game static-to-conditional Brier improvement as the centerpiece. Matched against the devigged close; no dollar edge is claimed.",
+    "The calibrated prediction engine: walk-forward, leak-free scoring across three sports, with the in-game static-to-conditional Brier comparison as the centerpiece. Matched against the devigged close.",
 };
 
 // staged-artifact reader (forecaster subdir; null on a fresh clone -> pending)
@@ -166,7 +166,7 @@ export default function ForecasterPage() {
           A calibrated engine, measured against itself.
         </h1>
         <p style={{ ...lede, fontSize: 18 }}>
-          The market is efficient on price &mdash; we proved it by rejecting our own pregame signals across three sports. So the honest question is not &ldquo;can we beat the close&rdquo; but &ldquo;does the machinery sharpen the forecast.&rdquo; It does, in one measured place: mid-game. Every number below wears its receipt, and no dollar edge is claimed.
+          The price reference is efficient on the published pregame comparisons across three sports. The measured question is whether the machinery changes the forecast. Mid-game results are shown with their receipts and same-corpus Brier values.
         </p>
         <VerdictLegend style={{ marginTop: 22 }} />
       </header>

@@ -176,8 +176,8 @@ export default function VerdictFlipsPage() {
       </div>
 
       <p style={{ ...lede, marginTop: 32 }}>
-        A verdict flip is the preregistered process working, not a failure &mdash; no
-        edge or ROI is claimed anywhere on this page.
+        A verdict flip is the preregistered process working, not a failure. Each
+        row retains its dated verdict history and stated reason for the change.
       </p>
     </div>
   );
