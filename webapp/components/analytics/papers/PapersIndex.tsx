@@ -8,10 +8,12 @@ import { paperViewSearch, readPaperViewState, type PaperViewState } from "@/lib/
 
 export default function PapersIndex({ papers }: { papers: Paper[] }) {
   const [viewState, setViewState] = useState<PaperViewState>({ sport: "any", keyword: "any" });
+  const [ready, setReady] = useState(false);
   const sports = paperSports(papers);
   const keywords = paperKeywords(papers);
   const visible = filterPapers(papers, viewState.sport, viewState.keyword);
   const update = (change: Partial<PaperViewState>) => {
+    if (!ready) return;
     const next = { ...viewState, ...change };
     setViewState(next);
     const url = new URL(window.location.href);
@@ -20,7 +22,10 @@ export default function PapersIndex({ papers }: { papers: Paper[] }) {
   };
 
   useEffect(() => {
-    const restore = () => setViewState(readPaperViewState(window.location.search, papers));
+    const restore = () => {
+      setViewState(readPaperViewState(window.location.search, papers));
+      setReady(true);
+    };
     restore();
     window.addEventListener("popstate", restore);
     return () => window.removeEventListener("popstate", restore);
@@ -43,9 +48,9 @@ export default function PapersIndex({ papers }: { papers: Paper[] }) {
         <>
           <div className="paper-filters">
             <div className="paper-chips" role="group" aria-label="Filter by sport">
-              <button type="button" aria-pressed={viewState.sport === "any"} onClick={() => update({ sport: "any" })}>All sports</button>
+              <button type="button" disabled={!ready} aria-pressed={viewState.sport === "any"} onClick={() => update({ sport: "any" })}>All sports</button>
               {sports.map(item => (
-                <button key={item} type="button" aria-pressed={viewState.sport === item} onClick={() => update({ sport: item })}>
+                <button key={item} type="button" disabled={!ready} aria-pressed={viewState.sport === item} onClick={() => update({ sport: item })}>
                   {SPORT_LABELS[item]}
                 </button>
               ))}
@@ -53,12 +58,12 @@ export default function PapersIndex({ papers }: { papers: Paper[] }) {
             <div className="paper-filter-controls">
               <label className="paper-keyword">
                 <span>Keyword</span>
-                <select value={viewState.keyword} onChange={event => update({ keyword: event.target.value })}>
+                <select disabled={!ready} value={viewState.keyword} onChange={event => update({ keyword: event.target.value })}>
                   <option value="any">All keywords</option>
                   {keywords.map(item => <option key={item} value={item}>{item}</option>)}
                 </select>
               </label>
-              <button className="paper-reset" type="button" onClick={() => update({ sport: "any", keyword: "any" })}>Reset filters</button>
+              <button className="paper-reset" type="button" disabled={!ready} onClick={() => update({ sport: "any", keyword: "any" })}>Reset filters</button>
             </div>
           </div>
 

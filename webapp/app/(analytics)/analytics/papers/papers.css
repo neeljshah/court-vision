@@ -25,6 +25,9 @@
 }
 .paper-keyword select { min-width: min(100%, 240px); padding: 0 11px; }
 .paper-reset { padding: 5px 11px; cursor: pointer; }
+.paper-chips button:disabled,
+.paper-keyword select:disabled,
+.paper-reset:disabled { cursor: not-allowed; opacity: .65; }
 .paper-chips button:focus-visible,
 .paper-keyword select:focus-visible,
 .paper-reset:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }

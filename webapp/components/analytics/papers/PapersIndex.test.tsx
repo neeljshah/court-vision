@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { renderToString } from "react-dom/server";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import PapersIndex from "./PapersIndex";
 import type { Paper } from "@/lib/analytics/papers";
@@ -26,6 +27,7 @@ describe("PapersIndex", () => {
     window.history.replaceState(null, "", "/analytics/papers/?sport=nba&keyword=shot%20profile");
     const { unmount } = render(<PapersIndex papers={papers} />);
     await waitFor(() => expect(screen.getByRole("button", { name: "NBA" })).toHaveAttribute("aria-pressed", "true"));
+    expect(screen.getByRole("button", { name: "NBA" })).toBeEnabled();
     expect(screen.getByLabelText("Keyword")).toHaveValue("shot profile");
     unmount();
 
@@ -33,6 +35,19 @@ describe("PapersIndex", () => {
     render(<PapersIndex papers={papers} />);
     await waitFor(() => expect(screen.getByRole("button", { name: "All sports" })).toHaveAttribute("aria-pressed", "true"));
     expect(screen.getByLabelText("Keyword")).toHaveValue("any");
+  });
+
+  it("disables filters during server rendering, then enables them after URL restoration", async () => {
+    const markup = renderToString(<PapersIndex papers={papers} />);
+    expect(markup).toMatch(/<button[^>]*disabled[^>]*>All sports/);
+    expect(markup).toMatch(/<select[^>]*disabled/);
+    expect(markup).toMatch(/<button[^>]*disabled[^>]*>Reset filters/);
+
+    window.history.replaceState(null, "", "/analytics/papers/?sport=mlb&keyword=pitch%20mix");
+    render(<PapersIndex papers={papers} />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "MLB" })).toBeEnabled());
+    expect(screen.getByRole("button", { name: "MLB" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByLabelText("Keyword")).toHaveValue("pitch mix");
   });
 
   it("writes encoded keyword filters without disturbing unrelated URL state", async () => {
