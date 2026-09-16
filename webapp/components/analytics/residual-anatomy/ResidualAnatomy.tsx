@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Receipt } from "@/components/analytics/Receipt";
+import { readResidualAnatomyViewState, residualAnatomyViewSearch, type ResidualAnatomyViewState } from "@/lib/analytics/inspectorViewState";
 import type { ResidualAnatomyData, ResidualMetric, ResidualSegment, ResidualSport } from "@/lib/analytics/residualAnatomy";
 
 const METRICS: Array<{ key: ResidualMetric; label: string }> = [
@@ -36,9 +37,6 @@ function segmentLabel(segment: ResidualSegment): string {
   return `${segment.timeBucket}, ${segment.probBucket}`;
 }
 
-function segmentKey(segment: ResidualSegment): string {
-  return `${segment.sport}\u0000${segment.timeBucket}\u0000${segment.probBucket}`;
-}
 
 function Rankings({ sport }: { sport: ResidualSport }) {
   const volume = sport.rankings.byVolume.slice(0, 3);
@@ -55,33 +53,60 @@ function Rankings({ sport }: { sport: ResidualSport }) {
   </div>;
 }
 
+function Inspector({ segment }: { segment: ResidualSegment }) {
+  return <aside id="ra-selected-segment" className="ra-inspector" aria-live="polite" aria-label="Selected residual segment">
+    <p>Selected segment</p><h2>{sportLabel(segment.sport)}: {segmentLabel(segment)}</h2>
+    <dl><div><dt>n</dt><dd>{count(segment.n)}</dd></div><div><dt>mean_abs_residual</dt><dd>{residual(segment.meanAbsResidual)}</dd></div><div><dt>total_abs_residual_mass</dt><dd>{mass(segment.totalAbsResidualMass)}</dd></div></dl>
+    <p className="ra-worked">This published segment contains {count(segment.n)} rows. Its per-row absolute error is {residual(segment.meanAbsResidual)}; the published sum of absolute forecast errors across those rows is {mass(segment.totalAbsResidualMass)}.</p>
+  </aside>;
+}
+
 export function ResidualAnatomy({ data }: { data: ResidualAnatomyData }) {
-  const [metric, setMetric] = useState<ResidualMetric>("totalAbsResidualMass");
-  const [selected, setSelected] = useState<ResidualSegment | null>(data.sports[0]?.segments[0] || null);
-  const selectedMetric = METRICS.find(item => item.key === metric)?.label || "Metric";
-  const selectedKey = selected ? segmentKey(selected) : null;
+  const defaults = { sport: data.sports[0]?.segments[0]?.sport || data.sports[0]?.sport || "", time: data.sports[0]?.segments[0]?.timeBucket || "", prob: data.sports[0]?.segments[0]?.probBucket || "", metric: "totalAbsResidualMass" as ResidualMetric };
+  const [view, setView] = useState<ResidualAnatomyViewState>(defaults);
+  const [restored, setRestored] = useState(false);
+  const selectedMetric = METRICS.find(item => item.key === view.metric)?.label || "Metric";
+
+  useEffect(() => {
+    const restore = () => { setView(readResidualAnatomyViewState(window.location.search, data)); setRestored(true); };
+    restore();
+    window.addEventListener("popstate", restore);
+    return () => window.removeEventListener("popstate", restore);
+  }, [data]);
+
+  useEffect(() => {
+    if (!restored) return;
+    const url = new URL(window.location.href);
+    const search = residualAnatomyViewSearch(url.search, view, data);
+    window.history.replaceState(window.history.state, "", `${url.pathname}${search ? `?${search}` : ""}${url.hash}`);
+  }, [data, restored, view]);
 
   if (!data.sports.length) return <p className="ra-empty">No published residual segments are available in this snapshot.</p>;
 
   return <section className="ra-shell" aria-label="Residual anatomy explorer">
     <div className="ra-controls" aria-label="Residual metric">
       <span>Cell measure</span>
-      <div>{METRICS.map(item => <button key={item.key} type="button" aria-pressed={metric === item.key} onClick={() => setMetric(item.key)}>{item.label}</button>)}</div>
+      <div>{METRICS.map(item => <button key={item.key} type="button" aria-pressed={view.metric === item.key} onClick={() => setView(current => ({ ...current, metric: item.key }))}>{item.label}</button>)}</div>
     </div>
-    {data.sports.map(sport => <section className="ra-sport" key={sport.sport} aria-labelledby={`${sport.sport}-residual-title`}>
+    {data.sports.map(sport => {
+      const selected = view.sport === sport.sport ? sport.segments.find(item => item.timeBucket === view.time && item.probBucket === view.prob) : undefined;
+      return <section className="ra-sport" key={sport.sport} aria-labelledby={`${sport.sport}-residual-title`}>
       <header className="ra-sport-head">
         <div><p>Forecasts grouped by game state</p><h2 id={`${sport.sport}-residual-title`}>{sportLabel(sport.sport)}</h2></div>
         <dl><div><dt>n_records</dt><dd>{count(sport.nRecords)}</dd></div><div><dt>n_skipped</dt><dd>{count(sport.nSkipped)}</dd></div></dl>
       </header>
+      <div className="ra-selected-view">
       <div className="ra-grid-wrap" role="region" aria-label={`${sportLabel(sport.sport)} residual grid`} data-scroll-region>
-        <table className="ra-grid"><caption>{sportLabel(sport.sport)} time bucket by probability bucket. Blank cells have no published segment.</caption><thead><tr><th scope="col">Time bucket</th>{sport.probBuckets.map(bucket => <th scope="col" key={bucket}>{bucket}</th>)}</tr></thead><tbody>{sport.grid.map(row => <tr key={row.timeBucket}><th scope="row">{row.timeBucket}</th>{row.cells.map((segment, index) => { const isSelected = segment ? selectedKey === segmentKey(segment) : false; return <td key={`${row.timeBucket}-${sport.probBuckets[index]}`}>{segment ? <button type="button" aria-label={`${sportLabel(sport.sport)} ${segmentLabel(segment)} ${selectedMetric}`} aria-pressed={isSelected} aria-controls="ra-selected-segment" onClick={() => setSelected(segment)}><span>{metricText(segment, metric)}</span>{isSelected && <span className="ra-selected-mark" aria-hidden="true">Selected</span>}</button> : null}</td>; })}</tr>)}</tbody></table>
+        <table className="ra-grid"><caption>{sportLabel(sport.sport)} time bucket by probability bucket. Blank cells have no published segment.</caption><thead><tr><th scope="col">Time bucket</th>{sport.probBuckets.map(bucket => <th scope="col" key={bucket}>{bucket}</th>)}</tr></thead><tbody>{sport.grid.map(row => <tr key={row.timeBucket}><th scope="row">{row.timeBucket}</th>{row.cells.map((segment, index) => {
+          const selected = segment?.sport === view.sport && segment.timeBucket === view.time && segment.probBucket === view.prob;
+          return <td key={`${row.timeBucket}-${sport.probBuckets[index]}`}>{segment ? <button type="button" className={selected ? "ra-cell-selected" : undefined} aria-pressed={selected} aria-controls="ra-selected-segment" aria-label={`${sportLabel(sport.sport)} ${segmentLabel(segment)} ${selectedMetric}`} onClick={() => setView(current => ({ ...current, sport: segment.sport, time: segment.timeBucket, prob: segment.probBucket }))}>{metricText(segment, view.metric)}{selected && <span className="ra-selected-mark">Selected</span>}</button> : null}</td>;
+        })}</tr>)}</tbody></table>
+      </div>
+      {selected && <Inspector segment={selected} />}
       </div>
       <Rankings sport={sport} />
-    </section>)}
-    {selected && <aside id="ra-selected-segment" className="ra-inspector" aria-live="polite" aria-label="Selected residual segment">
-      <p>Selected segment</p><h2>{sportLabel(selected.sport)}: {segmentLabel(selected)}</h2>
-      <dl><div><dt>n</dt><dd>{count(selected.n)}</dd></div><div><dt>mean_abs_residual</dt><dd>{residual(selected.meanAbsResidual)}</dd></div><div><dt>total_abs_residual_mass</dt><dd>{mass(selected.totalAbsResidualMass)}</dd></div></dl>
-    </aside>}
+    </section>;
+    })}
     <p className="ra-source-fields">Source fields: residual_anatomy.json -&gt; sports[sport].segments[] -&gt; time_bucket, prob_bucket, n, mean_abs_residual, total_abs_residual_mass; sports[sport] -&gt; n_records, n_skipped.</p>
     {data.exclusions.length > 0 && <p className="ra-exclusions">Excluded corpora: {data.exclusions.map(item => `${item.sport}: ${item.reason}`).join("; ")}</p>}
     <div className="ra-receipt"><Receipt sourceArtifact="public/data/showcase/residual_anatomy.json" label="descriptive_only" verdict="descriptive_only" /></div>

@@ -30,6 +30,8 @@
 .ps-table th { color: var(--ink-3); font-size: 11px; font-weight: 700; }
 .ps-table th:first-child { text-align: left; }
 .ps-table td[aria-label*="masked row"] { color: var(--ink-3); font-family: var(--font-sans); font-style: italic; }
+.ps-table td button { border: 0; background: transparent; color: inherit; cursor: pointer; font: inherit; text-align: inherit; }
+.ps-table td button[aria-pressed="true"] { color: var(--accent); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
 .ps-source-fields { margin-top: 18px; color: var(--ink-3); font-family: var(--font-mono); font-size: 11px; line-height: 1.6; }
 .ps-empty { margin-top: 20px; border: 1px dashed var(--rule-strong); border-radius: var(--radius-card); color: var(--ink-3); padding: 24px; }
 @media (max-width: 680px) { .ps-page { padding: 34px 16px 48px; } .ps-page h1 { font-size: 2.35rem; } .ps-detail { padding: 16px; } }

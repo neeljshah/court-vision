@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Figure } from "@/components/analytics/charts/Figure";
 import { luminance, seqColor } from "@/components/analytics/charts/scale";
+import { pitchSequencingViewSearch, readPitchSequencingViewState, type PitchSequencingViewState } from "@/lib/analytics/inspectorViewState";
 import { pitchCell, type PitchSequencingData } from "@/lib/analytics/pitchSequencing";
 
 function percent(value: number | null): string {
@@ -14,16 +15,33 @@ function count(value: number | null): string {
 }
 
 export function PitchSequencing({ data }: { data: PitchSequencingData }) {
-  const [classId, setClassId] = useState(data.classes[0]?.id || "");
-  const [selected, setSelected] = useState({ row: 0, column: 0 });
-  const selectedClass = data.classes.find(item => item.id === classId) || data.classes[0];
-  const activeCell = selectedClass ? pitchCell(data, selectedClass, selected.row, selected.column) : null;
+  const defaults = { classId: data.classes[0]?.id || "", from: data.pitchTypes[0] || "", to: data.pitchTypes[0] || "" };
+  const [view, setView] = useState<PitchSequencingViewState>(defaults);
+  const [restored, setRestored] = useState(false);
+  const selectedClass = data.classes.find(item => item.id === view.classId) || data.classes[0];
+  const row = data.pitchTypes.indexOf(view.from);
+  const column = data.pitchTypes.indexOf(view.to);
+  const activeCell = selectedClass && row >= 0 && column >= 0 ? pitchCell(data, selectedClass, row, column) : null;
+
+  useEffect(() => {
+    const restore = () => { setView(readPitchSequencingViewState(window.location.search, data)); setRestored(true); };
+    restore();
+    window.addEventListener("popstate", restore);
+    return () => window.removeEventListener("popstate", restore);
+  }, [data]);
+
+  useEffect(() => {
+    if (!restored) return;
+    const url = new URL(window.location.href);
+    const search = pitchSequencingViewSearch(url.search, view, data);
+    window.history.replaceState(window.history.state, "", `${url.pathname}${search ? `?${search}` : ""}${url.hash}`);
+  }, [data, restored, view]);
 
   if (!selectedClass || !data.pitchTypes.length) return <p className="ps-empty">No published pitch-sequencing rows are available in this snapshot.</p>;
 
   return <section className="ps-shell" aria-label="Pitch sequencing matrix">
     <div className="ps-controls" aria-label="Count class selector">
-      {data.classes.map(item => <button key={item.id} type="button" aria-pressed={item.id === selectedClass.id} onClick={() => { setClassId(item.id); setSelected({ row: 0, column: 0 }); }}>{item.id}</button>)}
+      {data.classes.map(item => <button key={item.id} type="button" aria-pressed={item.id === selectedClass.id} onClick={() => setView({ classId: item.id, from: defaults.from, to: defaults.to })}>{item.id}</button>)}
     </div>
     <p className="ps-definition"><span className="mono">{selectedClass.id}</span>: {selectedClass.definition}</p>
     <p className="ps-coverage">Published axis coverage: {percent(selectedClass.coverage)}</p>
@@ -41,8 +59,8 @@ export function PitchSequencing({ data }: { data: PitchSequencingData }) {
               const cell = pitchCell(data, selectedClass, row, column);
               if (!cell) return null;
               const color = cell.probability === null ? "var(--paper-tint)" : seqColor(cell.probability / 0.6);
-              const selectedCell = selected.row === row && selected.column === column;
-              const activate = () => setSelected({ row, column });
+              const selectedCell = view.from === from && view.to === to;
+              const activate = () => setView({ classId: selectedClass.id, from, to });
               return <g key={to} role="button" tabIndex={0} aria-label={`${from} to ${to}: ${cell.masked ? "masked row" : percent(cell.probability)}`} onClick={activate} onKeyDown={event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); activate(); } }}>
                 <rect className={selectedCell ? "ps-cell ps-selected" : "ps-cell"} x={108 + column * 76} y={58 + row * 58} width="70" height="52" rx="4" fill={cell.masked ? "url(#ps-hatch)" : color} />
                 {!cell.masked && <text x={143 + column * 76} y={88 + row * 58} textAnchor="middle" fill={luminance(color) < 0.56 ? "#FFFFFF" : "#182630"}>{percent(cell.probability)}</text>}
@@ -55,12 +73,13 @@ export function PitchSequencing({ data }: { data: PitchSequencingData }) {
     <div className="ps-table-wrap" role="region" aria-label={`${selectedClass.id} pitch sequencing table`} data-scroll-region>
       <table className="ps-table">
         <caption>{selectedClass.id} conditional pitch sequencing probabilities</caption>
-        <thead><tr><th scope="col">Previous pitch</th>{data.pitchTypes.map(type => <th scope="col" key={type}>{type}</th>)}</tr></thead>
-        <tbody>{data.pitchTypes.map((from, row) => <tr key={from}><th scope="row">{from}</th>{data.pitchTypes.map((to, column) => {
-          const cell = pitchCell(data, selectedClass, row, column);
+        <thead><tr><th scope="col">Previous pitch</th><th scope="col">Published row denominator</th>{data.pitchTypes.map(type => <th scope="col" key={type}>{type}</th>)}</tr></thead>
+        <tbody>{data.pitchTypes.map((from, rowIndex) => <tr key={from}><th scope="row">{from}</th><td>{count(selectedClass.rowNFrom[rowIndex] ?? null)}</td>{data.pitchTypes.map((to, columnIndex) => {
+          const cell = pitchCell(data, selectedClass, rowIndex, columnIndex);
           if (!cell) return <td key={to}>Not published</td>;
-          const detail = cell.masked ? "masked row" : `${percent(cell.probability)}; count ${count(cell.count)}`;
-          return <td key={to} title={`${from} to ${to}: ${detail}`} aria-label={`${from} to ${to}: ${detail}`}>{cell.masked ? "Masked" : percent(cell.probability)}</td>;
+          const detail = cell.masked ? "masked row; denominator below published floor" : `${percent(cell.probability)}; count ${count(cell.count)}`;
+          const selectedCell = view.from === from && view.to === to;
+          return <td key={to} title={`${from} to ${to}: ${detail}`} aria-label={`${from} to ${to}: ${detail}`}><button type="button" aria-pressed={selectedCell} aria-label={`Select ${from} to ${to}`} onClick={() => setView({ classId: selectedClass.id, from, to })}>{cell.masked ? "Masked below floor" : percent(cell.probability)}</button></td>;
         })}</tr>)}</tbody>
       </table>
     </div>

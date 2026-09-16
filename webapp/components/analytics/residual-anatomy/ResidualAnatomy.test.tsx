@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { ResidualAnatomy } from "./ResidualAnatomy";
 import type { ResidualAnatomyData } from "@/lib/analytics/residualAnatomy";
 
@@ -25,6 +25,7 @@ for (const sport of data.sports) {
 }
 
 describe("ResidualAnatomy", () => {
+  beforeEach(() => window.history.replaceState(null, "", "/analytics/residual-anatomy"));
   it("renders a grid and published counts for each sport", () => {
     render(<ResidualAnatomy data={data} />);
     expect(screen.getByRole("region", { name: "MLB residual grid" })).toBeInTheDocument();
@@ -55,5 +56,16 @@ describe("ResidualAnatomy", () => {
     expect(within(inspector).getByText("1")).toBeInTheDocument();
     expect(within(inspector).getByText("0.8000")).toBeInTheDocument();
     expect(within(inspector).getByText("0.80")).toBeInTheDocument();
+  });
+
+  it("restores a selected cell, marks it, and keeps its explanation in that sport panel", () => {
+    window.history.replaceState(null, "", "/analytics/residual-anatomy?sport=soccer_intl&time=0-15&prob=0-.2&metric=n");
+    render(<ResidualAnatomy data={data} />);
+    const soccerGrid = screen.getByRole("region", { name: "International soccer residual grid" });
+    expect(within(soccerGrid).getByRole("button", { name: "International soccer 0-15, 0-.2 Rows" })).toHaveAttribute("aria-pressed", "true");
+    const sportPanel = soccerGrid.closest("section");
+    expect(sportPanel).not.toBeNull();
+    expect(within(sportPanel!).getByLabelText("Selected residual segment")).toHaveTextContent("published segment contains 4 rows");
+    expect(new URLSearchParams(window.location.search).get("sport")).toBe("soccer_intl");
   });
 });
