@@ -12,12 +12,13 @@ import { join } from "node:path";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Comparables } from "@/components/analytics/Comparables";
+import { EntityMeasurements } from "@/components/analytics/entities/EntityMeasurements";
 import { JoinedFindings } from "@/components/analytics/JoinedFindings";
-import { PercentileBar } from "@/components/analytics/PercentileBar";
 import { Receipt, type ReceiptData } from "@/components/analytics/Receipt";
 import { ScoutNote, type ScoutEnvelope } from "@/components/analytics/ScoutNote";
 import { ScoutQuestions } from "@/components/analytics/ScoutQuestions";
 import { asOfDate } from "@/lib/analytics/format";
+import { entityMeasurements, type EntityPercentilePack } from "@/lib/analytics/entityMeasurements";
 import { packComparables, packJoins, packPercentiles } from "@/lib/analytics/showcaseData";
 
 type KN = Record<string, unknown>;
@@ -111,23 +112,6 @@ function fmt(v: unknown): string {
 // number stripped to "31" looks like a typo beside "42.5". Pad integer-valued
 // pct/per36 cells to one decimal -- lossless (never rounds; fractional values
 // keep their own precision, e.g. mlb 10.28 stays "10.28").
-function fmtCell(k: string, v: unknown): string {
-  if (typeof v === "number" && Number.isInteger(v) && /pct|per36/i.test(k)) return v.toFixed(1);
-  return fmt(v);
-}
-function label(k: string): string {
-  return k.replace(/^career_/, "").replace(/_/g, " ")
-    .replace(/\bpct\b/g, "%").replace(/per36/g, "/36")
-    .replace(/\bfg3\b/g, "3P").replace(/\bfg\b/g, "FG").replace(/\bft\b/g, "FT")
-    .replace(/\bpts\b/g, "PTS").replace(/\breb\b/g, "REB").replace(/\bast\b/g, "AST").trim();
-}
-// scalar key_numbers only (skip ids + nested dicts) -> stat cells. team_full_name
-// is excluded to match the atlas index's colKeys: it is the entity's own name
-// (already the <h1>), not a measured figure to typeset in the numeric style.
-function statCells(kn: KN): Array<[string, unknown]> {
-  return Object.entries(kn).filter(([k, v]) =>
-    !/_id$/.test(k) && k !== "team_full_name" && (typeof v === "number" || typeof v === "string" || typeof v === "boolean"));
-}
 function nameFor(entry: Entry): string {
   const full = entry.key_numbers.team_full_name;
   if (typeof full === "string" && full) return full;
@@ -170,9 +154,8 @@ export default function EntityPage({ params }: { params: { pack: string; slug: s
   // Machine timestamps (tennis cards carry ISO "2026-07-19T03:41:37...+00:00")
   // collapse to a clean date; descriptive labels pass through.
   const asOf = asOfDate(insight?.as_of || entry.as_of) || null;
-  const cells = statCells(entry.key_numbers);
-  const pctPack = packPercentiles(params.pack);
-  const entityPcts = pctPack?.entities[params.slug];
+  const pctPack = packPercentiles(params.pack) as unknown as EntityPercentilePack | null;
+  const measurements = entityMeasurements(params.pack, entry, params.slug, pctPack);
   // entity_joins.json: only nba_teams/nba_players carry any; 137 of 482 player cards legitimately have none.
   const joinPack = packJoins(params.pack);
   const joinItems = joinPack?.entities[params.slug]?.items || [];
@@ -192,8 +175,7 @@ export default function EntityPage({ params }: { params: { pack: string; slug: s
   // floors) instead of the bare "no verified read" negative. Status stays no_data
   // -- the neutral glyph is the honest signal that no note was written here.
   const uncovered =
-    `No written Scout note on this card yet -- those cover 182 marquee entities of 1,549. ` +
-    `What is here is measured: ${cells.length} ${pack.noun}, each wearing its own receipt` +
+    `Measured card with ${measurements.scalars.length} available measurements. ` +
     (entry.floors ? ", with the sample floors for this pack in the sidebar." : ".");
   const envelope: ScoutEnvelope = insight
     ? { status: "descriptive_only", prose: insight.one_liner, chips }
@@ -226,30 +208,10 @@ export default function EntityPage({ params }: { params: { pack: string; slug: s
 
       <div style={{ display: "flex", flexWrap: "wrap", gap: 40, alignItems: "flex-start" }}>
         <div style={{ flex: "3 1 440px", minWidth: 0 }}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(150px,1fr))", gap: 1, background: "var(--rule)", border: "1px solid var(--rule)", borderRadius: 12 }}>
-            {cells.map(([k, v]) => {
-              // The big serif tabular-figure tile is a NUMERAL slot; a categorical
-              // string (e.g. an NBA team's top_contributor player name) typeset that
-              // way reads as a category error and rags/overflows. Render non-numeric
-              // values as normal text instead, reserving the numeral style for numbers.
-              const isNum = typeof v === "number";
-              return (
-              <div key={k} style={{ background: "var(--paper-raised)", padding: "18px 16px" }}>
-                <div style={{ fontSize: 12, color: "var(--ink-3)", textTransform: "uppercase", letterSpacing: ".06em", fontWeight: 600 }}>{label(k)}</div>
-                <div className={isNum ? "serif tnum" : undefined} style={isNum ? { fontWeight: 500, fontSize: "2.1rem", lineHeight: 1, margin: "8px 0 10px" } : { fontWeight: 600, fontSize: "1.05rem", lineHeight: 1.3, margin: "8px 0 10px", color: "var(--ink)" }}>{fmtCell(k, v)}</div>
-                {isNum && pctPack && typeof entityPcts?.[k] === "number" ? <PercentileBar pct={entityPcts[k]} nInPack={pctPack.n_in_pack} /> : null}
-                <Receipt sourceArtifact={`${REPO}/${pack.manifest}`} asOf={asOf || undefined} verdict="descriptive_only" label="descriptive_only" value={fmtCell(k, v)} />
-              </div>
-              );
-            })}
-          </div>
-          {pctPack && cells.some(([k, v]) => typeof v === "number" && typeof entityPcts?.[k] === "number") ? (
-            // Shown only when >=1 bar rendered above; direction-free by design (no good/bad).
-            <div style={{ marginTop: 10, fontSize: 13, color: "var(--ink-3)" }}>
-              Bars show where this card sits within its own pack ({pctPack.n_in_pack} {pack.label.toLowerCase()}), by simple rank of the measured value. Higher is only higher -- no quality judgement is implied.{" "}
-              <Receipt sourceArtifact={`${REPO}/entity_percentiles.json`} asOf={asOf || undefined} verdict="descriptive_only" label="descriptive_only" />
-            </div>
-          ) : null}
+          <EntityMeasurements measurements={measurements} sourceArtifact={`${REPO}/${pack.manifest}`} asOf={asOf || undefined} />
+          {measurements.scalars.some((item) => typeof item.percentile === "number") ? <div style={{ marginTop: 10, fontSize: 13, color: "var(--ink-3)" }}>
+            Percentiles are within-pack ranks of the measured value; higher is only higher, not a quality judgement. <Receipt sourceArtifact={`${REPO}/entity_percentiles.json`} asOf={asOf || undefined} verdict="descriptive_only" label="descriptive_only" />
+          </div> : null}
           <ScoutNote envelope={envelope} />
           {insight?.three_things?.length ? (
             <section style={{ marginTop: 28 }}>
