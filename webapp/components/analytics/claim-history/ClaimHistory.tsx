@@ -36,12 +36,12 @@ function FamilyHistory({ family }: { family: ClaimHistoryFamily }) {
       <table aria-label={`Rerun history for ${label}`}>
         <thead><tr><th>Verdict</th><th>Status</th><th>Run date</th><th>Corpus</th><th>n</th><th>Published effect</th></tr></thead>
         <tbody>{family.history.map((run, index) => <tr key={`${run.verdict}-${run.status}-${index}`}>
-          <td><span className="ch-verdict"><VerdictDot verdict={verdictOf(run.status)} />{statusLabel(run.verdict)}</span></td>
-          <td>{statusLabel(run.status)}</td>
-          <td>{run.runTs ? run.runTs : "run date not recorded"}</td>
-          <td className="ch-corpus">{run.corpus || "corpus not recorded"}</td>
-          <td className="mono">{run.n === null ? "not recorded" : run.n.toLocaleString("en-US")}</td>
-          <td className="mono">{formatEffect(run.effect)} <span className="ch-unit">unit not recorded</span></td>
+          <td data-label="Verdict"><span className="ch-verdict"><VerdictDot verdict={verdictOf(run.status)} />{statusLabel(run.verdict)}</span></td>
+          <td data-label="Status">{statusLabel(run.status)}</td>
+          <td data-label="Run date">{run.runTs ? run.runTs : "run date not recorded"}</td>
+          <td className="ch-corpus" data-label="Corpus">{run.corpus || "corpus not recorded"}</td>
+          <td className="mono" data-label="n">{run.n === null ? "not recorded" : run.n.toLocaleString("en-US")}</td>
+          <td className="mono" data-label="Published effect">{formatEffect(run.effect)} <span className="ch-unit">unit not recorded</span></td>
         </tr>)}</tbody>
       </table>
     </div>

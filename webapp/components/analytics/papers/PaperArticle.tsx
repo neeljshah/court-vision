@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { PaperBlockView } from "./PaperBlocks";
 import { resolveRelated } from "@/lib/analytics/papers.server";
-import { readingMinutes, SPORT_LABELS, type Paper } from "@/lib/analytics/papers";
+import { readingMinutes, SPORT_LABELS, type Paper, type PaperBlock } from "@/lib/analytics/papers";
 import { noticesForPaper } from "@/lib/analytics/dataIntegrity";
 import { DataIntegrityNotice } from "@/components/analytics/DataIntegrityNotice";
 
@@ -21,10 +21,13 @@ function EvidenceBox({ paper }: { paper: Paper }) {
           <li key={`${entry.artifact}-${entry.module}`}>
             <span className="mono paper-artifact">{entry.artifact}</span>
             <span className="paper-note">{entry.asOf ? `as_of ${entry.asOf}` : "date not published"}</span>
-            <ul className="paper-fields">
-              {entry.fields.map(field => <li key={field} className="mono">{field}</li>)}
-            </ul>
-            <Link href={`/analytics/m/${entry.module}/`} prefetch={false}>Open {entry.module.replace(/_/g, " ")}</Link>
+            <Link href={`/analytics/m/${entry.module}/`} prefetch={false}>Source path: /analytics/m/{entry.module}/</Link>
+            <details className="paper-fields">
+              <summary>Evidence field inventory ({entry.fields.length} {entry.fields.length === 1 ? "path" : "paths"})</summary>
+              <ul>
+                {entry.fields.map(field => <li key={field} className="mono">{field}</li>)}
+              </ul>
+            </details>
           </li>
         ))}
       </ol>
@@ -32,10 +35,31 @@ function EvidenceBox({ paper }: { paper: Paper }) {
   );
 }
 
+type ResultBlock = Extract<PaperBlock, { type: "p" | "callout" }>;
+
+function mainResult(paper: Paper): ResultBlock | null {
+  const callout = paper.sections.flatMap(section => section.blocks).find(block => block.type === "callout");
+  if (callout) return callout;
+  return paper.sections.find(section => section.id === "results")?.blocks.find(block => block.type === "p") || null;
+}
+
+function MobileResult({ paper }: { paper: Paper }) {
+  const result = mainResult(paper);
+  if (!result) return null;
+  const label = result.type === "callout" ? result.label : "First published result";
+  const text = result.text;
+  return <aside className="paper-mobile-result" aria-label="Result and limit">
+    <p className="overline">{label}</p>
+    <p>{text}</p>
+    <p className="paper-mobile-limit"><span>Limit</span> {paper.limitations[0]}</p>
+  </aside>;
+}
+
 export function PaperArticle({ paper }: { paper: Paper }) {
   const related = resolveRelated(paper.related);
   const integrityNotices = noticesForPaper(paper.evidence);
   const evidenceModuleIds = paper.evidence.map(entry => entry.module);
+  const hasLimitationsSection = paper.sections.some(section => section.id === "limitations");
   return (
     <article className="paper">
       <header className="paper-head">
@@ -46,6 +70,8 @@ export function PaperArticle({ paper }: { paper: Paper }) {
           {paper.authors.join(", ")} &middot; {paper.date} &middot; {SPORT_LABELS[paper.sport]} &middot; {readingMinutes(paper)} min read
         </p>
       </header>
+
+      <MobileResult paper={paper} />
 
       <section className="paper-abstract" aria-labelledby="paper-abstract-heading">
         <h2 id="paper-abstract-heading" className="overline">Abstract</h2>
@@ -66,20 +92,20 @@ export function PaperArticle({ paper }: { paper: Paper }) {
       </nav>
 
       {paper.sections.map((section, index) => (
-        <section key={section.id} id={section.id} className="paper-section">
-          <h2><span className="mono paper-number">{index + 1}</span> {section.heading}</h2>
+        <section key={section.id} id={section.id} className="paper-section" aria-labelledby={`paper-section-${section.id}`}>
+          <h2 id={`paper-section-${section.id}`}><span className="mono paper-number">{index + 1}</span> {section.heading}</h2>
           {section.blocks.map((block, position) => <PaperBlockView key={position} block={block} />)}
         </section>
       ))}
 
       <EvidenceBox paper={paper} />
 
-      <section className="paper-box" aria-labelledby="paper-limitations">
+      {!hasLimitationsSection ? <section className="paper-box" aria-labelledby="paper-limitations">
         <h2 id="paper-limitations">Limitations</h2>
         <ul className="paper-list">
           {paper.limitations.map((item, index) => <li key={index}>{item}</li>)}
         </ul>
-      </section>
+      </section> : null}
 
       {related.length ? (
         <section className="paper-box" aria-labelledby="paper-related">

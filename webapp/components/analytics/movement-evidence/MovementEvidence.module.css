@@ -12,4 +12,4 @@
 .table tbody tr:nth-child(even) td:first-child { background: var(--paper-tint); }
 .table .left { text-align: left; }
 .unavailable { color: var(--signal-ink); }
-@media (max-width: 620px) { .evidence { padding: 16px; } .table { min-width: 760px; } }
+@media (max-width: 620px) { .evidence { padding: 16px; } .table { min-width: 760px; } .table td { font-size: 14px; } }

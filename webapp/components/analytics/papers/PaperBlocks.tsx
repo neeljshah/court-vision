@@ -7,10 +7,15 @@ import { paperFigure } from "@/lib/analytics/papers.server";
 import { getPublishedChartPresentation } from "@/lib/analytics/publishedChartPresentation";
 import type { PaperBlock } from "@/lib/analytics/papers";
 
+function isNumericCell(cell: string): boolean {
+  return /^[+-]?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?(?:%|x)?$/.test(cell.trim());
+}
+
 function TableBlock({ block }: { block: Extract<PaperBlock, { type: "table" }> }) {
   return (
     <figure className="paper-table">
       <figcaption className="paper-caption">{block.caption}</figcaption>
+      <p className="paper-scroll-hint" aria-hidden="true">Scroll horizontally to see all columns.</p>
       <div className="paper-scroll" role="region" tabIndex={0} aria-label={block.caption}>
         <table>
           <thead>
@@ -19,9 +24,12 @@ function TableBlock({ block }: { block: Extract<PaperBlock, { type: "table" }> }
           <tbody>
             {block.rows.map((row, index) => (
               <tr key={index}>
-                {row.map((cell, position) => position === 0
-                  ? <th key={position} scope="row">{cell}</th>
-                  : <td key={position}>{cell}</td>)}
+                {row.map((cell, position) => {
+                  const cellClass = isNumericCell(cell) ? "paper-cell-numeric" : "paper-cell-prose";
+                  return position === 0
+                    ? <th key={position} scope="row" className={cellClass}>{cell}</th>
+                    : <td key={position} className={cellClass}>{cell}</td>;
+                })}
               </tr>
             ))}
           </tbody>

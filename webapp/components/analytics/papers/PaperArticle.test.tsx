@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { PaperArticle } from "./PaperArticle";
 import { publishedArtifacts } from "@/lib/analytics/papers.server";
@@ -70,8 +70,8 @@ describe("PaperArticle", () => {
     render(<PaperArticle paper={fixture} />);
     expect(screen.getByText("A paragraph block.")).toBeInTheDocument();
     expect(screen.getByText("First list item")).toBeInTheDocument();
-    expect(screen.getByText("Verdict")).toBeInTheDocument();
-    expect(screen.getByText("A callout with a label.")).toBeInTheDocument();
+    expect(screen.getAllByText("Verdict").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("A callout with a label.").length).toBeGreaterThan(0);
     expect(screen.getByText("Brier = mean((p - y)^2)")).toBeInTheDocument();
     expect(screen.getByText("A table caption")).toBeInTheDocument();
     expect(screen.getByText("A table source note.")).toBeInTheDocument();
@@ -118,15 +118,36 @@ describe("PaperArticle", () => {
     expect(within(box).getAllByRole("link")).toHaveLength(fixture.evidence.length);
   });
 
+  it("keeps evidence fields behind a disclosure", () => {
+    render(<PaperArticle paper={fixture} />);
+    const box = screen.getByRole("region", { name: "Evidence" });
+    const inventory = within(box).getAllByText("Evidence field inventory (1 path)")[0];
+    expect(inventory.closest("details")).not.toHaveAttribute("open");
+    fireEvent.click(inventory);
+    expect(inventory.closest("details")).toHaveAttribute("open");
+  });
+
   it("shows the limitations and the resolved related links", () => {
     render(<PaperArticle paper={fixture} />);
-    const limits = screen.getByRole("region", { name: "Limitations" });
+    const limits = screen.getByRole("region", { name: /Limitations/ });
     expect(within(limits).getAllByRole("listitem")).toHaveLength(fixture.limitations.length);
     const related = screen.getByRole("region", { name: "Related" });
     const links = within(related).getAllByRole("link");
     expect(links).toHaveLength(fixture.related.length);
     expect(links[0]).toHaveAttribute("href", expect.stringMatching(/\/analytics\/calibration\/?$/));
     expect(within(related).getByText("Source module")).toBeInTheDocument();
+  });
+
+  it("does not repeat the standalone limitations list when a limitations section exists", () => {
+    const paper = { ...fixture, sections: [...fixture.sections, { id: "limitations", heading: "Limitations", blocks: [{ type: "p" as const, text: "The section owns its limitation." }] }] };
+    render(<PaperArticle paper={paper} />);
+    expect(screen.getAllByRole("region", { name: /Limitations/ })).toHaveLength(1);
+  });
+
+  it("distinguishes prose and numeric table cells", () => {
+    render(<PaperArticle paper={fixture} />);
+    expect(screen.getByRole("rowheader", { name: "0.5 to 0.6" })).toHaveClass("paper-cell-prose");
+    expect(screen.getByText("17,652")).toHaveClass("paper-cell-numeric");
   });
 
   it("mounts the integrity notice only when paper evidence is affected", () => {

@@ -10,7 +10,7 @@ function ledger(): ClaimHistoryLedger {
     currentStatus: index % 2 ? "verified" : "null",
     verdictSequence: [index % 2 ? "CONFIRMED_LOCAL" : "NULL_LOCAL"],
     flipped: index === 3,
-    history: [{ verdict: index % 2 ? "CONFIRMED_LOCAL" : "NULL_LOCAL", status: index % 2 ? "verified" : "null", runTs: index === 0 ? null : "2026-07-01T00:00:00Z", corpus: "published_corpus", n: 30, effect: 1.25 }],
+    history: [{ verdict: index % 2 ? "CONFIRMED_LOCAL" : "NULL_LOCAL", status: index % 2 ? "verified" : "null", runTs: index === 0 ? null : "2026-07-01T00:00:00Z", corpus: index === 0 ? "published_corpus_run_2026_07_distinguishing_suffix" : "published_corpus", n: 30, effect: 1.25 }],
   }));
   return { families, flippedFamilies: families.filter(family => family.flipped), runCount: 26, undatedRunCount: 1, asOf: null, byStatus: { null: 13, verified: 13 } };
 }
@@ -44,6 +44,16 @@ describe("ClaimHistory", () => {
     const table = screen.getByRole("table", { name: /rerun history for undated family/i });
     expect(within(table).getByText("run date not recorded")).toBeInTheDocument();
     expect(within(table).getByText("unit not recorded")).toBeInTheDocument();
+  });
+
+  it("labels every stacked history cell for phone readers", () => {
+    render(<ClaimHistory ledger={ledger()} />);
+    fireEvent.click(screen.getByRole("button", { name: /undated family/i }));
+    const table = screen.getByRole("table", { name: /rerun history for undated family/i });
+    const labels = Array.from(table.querySelectorAll("td[data-label]")).map((cell) => cell.getAttribute("data-label"));
+    for (const label of ["Verdict", "Status", "Run date", "Corpus", "n", "Published effect"]) expect(labels).toContain(label);
+    const unlabeled = Array.from(table.querySelectorAll("tbody td")).filter((cell) => !cell.getAttribute("data-label"));
+    expect(unlabeled).toHaveLength(0);
   });
 
   it("shows the next family window", () => {

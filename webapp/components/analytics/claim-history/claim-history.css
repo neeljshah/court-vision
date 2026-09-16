@@ -35,6 +35,6 @@
   .ch-history thead { display: none; }
   .ch-history tr { border-top: 1px solid var(--rule); padding: 8px 0; }
   .ch-history th, .ch-history td { border: 0; padding: 3px 0; }
-  .ch-history td { display: grid; gap: 8px; grid-template-columns: minmax(112px, .8fr) minmax(0, 1.2fr); }
+  .ch-history td { display: grid; gap: 8px; grid-template-columns: minmax(104px, .65fr) minmax(0, 1.35fr); }
   .ch-history td::before { content: attr(data-label); color: var(--ink-3); font-family: var(--font-mono); font-size: 10px; letter-spacing: .06em; text-transform: uppercase; }
 }
