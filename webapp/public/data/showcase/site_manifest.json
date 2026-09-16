@@ -1,6 +1,6 @@
 {
  "generated_from": "scripts/platformkit/analytics_showcase/out",
- "module_count": 75,
+ "module_count": 76,
  "atlas_card_count": 1549,
  "checks_green": {
   "green": true,
@@ -579,6 +579,17 @@
    "status": "ok",
    "edge_claimed": false,
    "as_of": null,
+   "evidence_page": null
+  },
+  {
+   "id": "novel_starter_rest_absorption",
+   "title": "Novel Starter Rest Absorption",
+   "one_line": "Across 52078 MLB team-starts from 2010 to 2021 the starting pitcher's rotation day barely moves the win frequency: 0.5027 on four days rest (n=24333) against 0.5023 on five (n=18222) and 0.4999 on six or more (n=9014), a...",
+   "out_path": "scripts/platformkit/analytics_showcase/out/novel_starter_rest_absorption.json",
+   "chart_path": null,
+   "status": "ok",
+   "edge_claimed": false,
+   "as_of": "2026-09-16",
    "evidence_page": null
   },
   {

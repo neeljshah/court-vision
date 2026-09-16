@@ -1,0 +1,200 @@
+{
+  "slug": "starter-rest-and-the-reference-forecast-mlb",
+  "title": "The rotation day that was already known",
+  "subtitle": "MLB starting-pitcher rest moves the win frequency by less than the noise, and the recorded closing reference forecast already carries whatever is left",
+  "authors": ["CourtVision research"],
+  "date": "2026-09-16",
+  "sport": "mlb",
+  "keywords": ["schedule", "starting pitching", "conditional frequency", "calibration", "null result"],
+  "abstract": "Baseball has argued about the fourth and fifth day of a starting pitcher's rotation for as long as there have been five-man rotations. This note measures it twice on the same corpus: once on its own, and once against the recorded closing reference forecast for the same game. Over 52,078 team-starts from 27,983 MLB games between 2010 and 2021, a team whose starter works on four days of rest wins 0.5027 of the time (n=24,333), on five days 0.5023 (n=18,222), and on six or more 0.4999 (n=9,014). None of the three paired contrasts against a standard four days has an interval that excludes zero, and the widest is 0.0272 on the thin three-or-fewer cell (n=509). Against the devigged closing reference forecast the residuals are -0.0019, -0.0003 and 0.0082, and no bucket separates from zero. Holding the forecast roughly fixed inside five narrow bands does not change the answer: none of the ten band-by-load cells separates from zero, and across twelve seasons the short-rest residual sits above the long-rest residual in five. The doubleheader nightcap behaves the same way on 358 games. The result is recorded as a null: the corpus rules out a large effect, not a small one.",
+  "sections": [
+    {
+      "id": "question",
+      "heading": "Question",
+      "blocks": [
+        {"type": "p", "text": "Two claims travel under the same sentence when someone says short rest hurts a starting pitcher. The first is physical: a pitcher on the fourth day rather than the fifth is more tired, and a more tired pitcher gives up more runs. The second is informational: a team whose starter is on short rest wins less often than you would otherwise expect. The second is the one a forecaster would act on, and it is not implied by the first. If the rotation day is visible to everyone beforehand, a reference forecast built from the closing moneyline has already had the chance to absorb it, and the observable consequence would be no gap at all."},
+        {"type": "p", "text": "So the question is narrow. Across a decade of MLB games, does the rotation day change the frequency a team wins, and does it change that frequency by more than the recorded closing reference forecast for the same game already says it should? The first half is a conditional frequency; the second is a residual, and the residual decides whether the rotation day is worth carrying as a feature."},
+        {"type": "p", "text": "Every number below is a field of novel_starter_rest_absorption.json, as of 2026-09-16, except the NBA comparison, which is drawn from novel_rest_asymmetry.json and named where it appears."},
+        {"type": "callout", "label": "Definition", "text": "Days of rest is the calendar gap between a pitcher's consecutive starts minus one, the usual baseball convention: a Monday start followed by a Saturday start is four days of rest. Buckets are three or fewer, four, five, and six or more."}
+      ]
+    },
+    {
+      "id": "data",
+      "heading": "Data and definitions",
+      "blocks": [
+        {"type": "p", "text": "The spine is data/domains/mlb/games.parquet, one row per game with the final runs and a resolved home-win label, joined on event_id to data/domains/mlb/pitchers.parquet for the recorded starters and to data/domains/mlb/odds.parquet for the recorded closing American moneyline pair. All three cover 2010 through 2021, and 27,983 games survive the join. The checks block records that every one of those labels agrees with the recorded runs (label_agreement 1.0) and that no game ended tied, which rules out a class of label mis-join that would otherwise be invisible."},
+        {"type": "p", "text": "The unit is one team-start: one team in one game with the pitcher who started it. Every game contributes two rows, and the away row carries the flipped outcome and flipped forecast. The quantity of interest belongs to a team and its starter, not to a matchup, which also means the two rows of a game are not independent, something the interval construction has to respect."},
+        {"type": "p", "text": "Days of rest is computed only from the dates of that pitcher's earlier starts in the same season. A first start of a season has no predecessor and is dropped, which is 3,770 rows; a further 118 are dropped for a missing starter name. That leaves 52,078 team-starts. The reference forecast is the two-way devigged win probability from the closing moneyline pair. Across the whole set it averages 0.5014 against an observed win frequency of 0.5018, with a Brier score of 0.2404."},
+        {"type": "list", "items": [
+          "Population: MLB games 2010-2021 in data/domains/mlb/games.parquet that carry both recorded starters and a recorded closing moneyline pair.",
+          "Unit: one team-start; 52,078 of them, clustered inside 27,983 games.",
+          "Conditioning variable: the starter's days of rest, and for the band panel the devigged closing reference forecast for that same team.",
+          "Outcome: whether that team won the game.",
+          "Timing: days of rest depends only on earlier start dates, the reference forecast is the recorded closing quote, and the doubleheader slot is a schedule fact -- all three are fixed before the first pitch."
+        ]}
+      ]
+    },
+    {
+      "id": "method",
+      "heading": "Method",
+      "blocks": [
+        {"type": "p", "text": "Each panel reports, per cell, the count, the observed win frequency, the mean reference forecast, and the difference between them. That difference answers the second half of the question."},
+        {"type": "math", "text": "gap(cell) = mean(y | cell) - mean(p | cell), y in {0,1}, p = devigged closing reference forecast"},
+        {"type": "p", "text": "Intervals are percentile 95 percent intervals from 2,000 bootstrap resamples drawn at the game level with a fixed seed of 20260916. Resampling whole games keeps the two team-starts of one game together; treating them as independent rows would narrow every interval here by roughly the square root of two, and would be wrong, because the away outcome is the complement of the home outcome in the same game."},
+        {"type": "p", "text": "The contrast panel subtracts the four-days cell from each other cell on the same resample, so its interval is paired. A cell with fewer than 30 rows keeps its count and reports no frequency and no interval; no cell here was masked, which is worth stating, since a mask that never fires is easy to mistake for one that does not exist."},
+        {"type": "callout", "label": "Caution", "text": "Descriptive conditional frequencies only: nothing here is a forecast and nothing identifies a cause. Rotation day is confounded with rotation role, injury returns and the all-star break; the longest gap in the corpus is 164 days, which is a returning pitcher, not a rested one."}
+      ]
+    },
+    {
+      "id": "results",
+      "heading": "Results",
+      "blocks": [
+        {"type": "p", "text": "Start with the unconditional picture. Four days, five days and six or more sit within three thousandths of each other, and all three intervals straddle 0.50. The three-or-fewer cell is 2.7 points lower, but on 509 starts its interval is 8.6 points wide, consistent with anything from a real penalty to nothing."},
+        {"type": "table", "caption": "Win frequency and residual against the closing reference forecast, by the starter's days of rest", "columns": ["Days of rest", "Team-starts (n)", "Win frequency", "95% interval", "Mean reference forecast", "Gap (observed - reference)", "95% interval of the gap"], "rows": [
+          ["3 or fewer", "509", "0.4754", "0.4312 to 0.5170", "0.4848", "-0.0093", "-0.0528 to 0.0325"],
+          ["4", "24,333", "0.5027", "0.4984 to 0.5069", "0.5046", "-0.0019", "-0.0061 to 0.0023"],
+          ["5", "18,222", "0.5023", "0.4970 to 0.5077", "0.5025", "-0.0003", "-0.0054 to 0.0051"],
+          ["6 or more", "9,014", "0.4999", "0.4914 to 0.5079", "0.4917", "0.0082", "0.0000 to 0.0163"]
+        ], "note": "novel_starter_rest_absorption.json, panels.rest_buckets.cells, as of 2026-09-16. No cell fell below the floor."},
+        {"type": "p", "text": "The right-hand columns answer the informational question. The residual is -0.0019 on four days, -0.0003 on five and 0.0082 on six or more, and every interval contains zero. The six-or-more cell is the closest call here: its interval runs from 0.0000 to 0.0163 at four decimal places, a boundary case rather than a separation, and the artifact records gap_excludes_zero as false. It is also the cell most contaminated by long injury absences."},
+        {"type": "p", "text": "The paired contrasts tell the same story with the sampling variation shared across cells rather than added between them. None of the three excludes zero."},
+        {"type": "table", "caption": "Paired contrast against a standard four days of rest", "columns": ["Days of rest", "Team-starts (n)", "Win frequency minus the four-day cell", "95% interval", "Excludes zero"], "rows": [
+          ["3 or fewer", "509", "-0.0272", "-0.0717 to 0.0159", "no"],
+          ["5", "18,222", "-0.0004", "-0.0090 to 0.0082", "no"],
+          ["6 or more", "9,014", "-0.0028", "-0.0141 to 0.0076", "no"]
+        ], "note": "novel_starter_rest_absorption.json, panels.contrast_vs_standard."},
+        {"type": "p", "text": "The obvious objection is that rotation day is confounded with team quality, so pooling a strong team on five days with a weak team on four hides the effect. The band panel cuts the corpus into five narrow bands of the reference forecast and compares short rest (four or fewer) against long rest (five or more) inside each. Within a band the two groups carry almost the same forecast -- in the 0.48 to 0.52 band both average exactly 0.5000 -- so what is left is close to a like-for-like comparison."},
+        {"type": "table", "caption": "Residual against the closing reference forecast, inside narrow forecast bands", "columns": ["Forecast band", "Rest", "Team-starts (n)", "Mean reference forecast", "Win frequency", "Gap", "95% interval of the gap"], "rows": [
+          ["under 0.42", "short (4 or fewer)", "4,806", "0.3697", "0.3656", "-0.0041", "-0.0171 to 0.0095"],
+          ["under 0.42", "long (5 or more)", "5,879", "0.3677", "0.3676", "-0.0001", "-0.0126 to 0.0121"],
+          ["0.42 to 0.48", "short (4 or fewer)", "4,902", "0.4507", "0.4425", "-0.0082", "-0.0220 to 0.0055"],
+          ["0.42 to 0.48", "long (5 or more)", "5,581", "0.4506", "0.4505", "-0.0002", "-0.0135 to 0.0137"],
+          ["0.48 to 0.52", "short (4 or fewer)", "4,498", "0.5000", "0.4951", "-0.0049", "-0.0143 to 0.0047"],
+          ["0.48 to 0.52", "long (5 or more)", "4,608", "0.5000", "0.5054", "0.0054", "-0.0040 to 0.0142"],
+          ["0.52 to 0.58", "short (4 or fewer)", "5,230", "0.5498", "0.5539", "0.0042", "-0.0099 to 0.0169"],
+          ["0.52 to 0.58", "long (5 or more)", "5,426", "0.5491", "0.5553", "0.0062", "-0.0074 to 0.0192"],
+          ["over 0.58", "short (4 or fewer)", "5,406", "0.6316", "0.6332", "0.0016", "-0.0106 to 0.0147"],
+          ["over 0.58", "long (5 or more)", "5,742", "0.6320", "0.6341", "0.0021", "-0.0101 to 0.0145"]
+        ], "note": "novel_starter_rest_absorption.json, panels.by_forecast_band.cells. Ten cells, none below the floor, none separating from zero."},
+        {"type": "p", "text": "Not one of the ten cells separates from zero, and the largest residual in the table is -0.0082 on short rest in the 0.42 to 0.48 band, on 4,902 starts. The short-rest residuals are negative in three bands and positive in two: a quantity with no sign, rather than a small consistent penalty."},
+        {"type": "p", "text": "Season by season the picture is the same noise. The artifact reports, per season, the short-rest residual minus the long-rest residual. That difference is positive in five seasons and negative in seven, ranging from -0.0219 in 2021 to 0.0138 in 2016. A real penalty would hold one sign. The 2020 season is smallest at 1,459 team-starts, reflecting the shortened schedule, and does not stand out."},
+        {"type": "p", "text": "Finally the doubleheader nightcap, a different schedule state also known before the first pitch, and the one place here where a large point estimate appears. Second games show a home win frequency of 0.5642 against a mean reference forecast of 0.5297, a gap of 0.0345 -- on 358 games, with an interval from -0.0140 to 0.0849. On the 27,625 first games the gap is 0.0009 with an interval of -0.0047 to 0.0062."},
+        {"type": "table", "caption": "Doubleheader slot, at the level of one game and a home win", "columns": ["Slot", "Games (n)", "Mean reference forecast", "Home win frequency", "Gap", "95% interval of the gap"], "rows": [
+          ["First game", "27,625", "0.5352", "0.5361", "0.0009", "-0.0047 to 0.0062"],
+          ["Second game of a doubleheader", "358", "0.5297", "0.5642", "0.0345", "-0.0140 to 0.0849"]
+        ], "note": "novel_starter_rest_absorption.json, panels.doubleheader_nightcap.cells. The unit in this panel is a game, not a team-start."},
+        {"type": "callout", "label": "Verdict", "text": "Recorded as a null. The starting pitcher's rotation day does not measurably change the win frequency in this corpus, and it adds nothing measurable on top of the recorded closing reference forecast, either pooled or inside narrow forecast bands. The nightcap point estimate is large but rests on 358 games and its interval contains zero."}
+      ]
+    },
+    {
+      "id": "checks",
+      "heading": "Robustness and what would falsify this",
+      "blocks": [
+        {"type": "p", "text": "The label was cross-checked rather than trusted. All 27,983 outcomes agree with the recorded runs in the same table and there are zero tied final scores, so a winner is defined for every row. That matters because a separate MLB in-game table in this repository is under investigation for a label mis-join; it is not used here, and the cross-check is why that can be said with a number."},
+        {"type": "p", "text": "On timing, the conditioning variable is built entirely from dates of starts that had already happened. One honest crack: the pitchers table records who actually started, and in the rare case of a late scratch that was not the announced pitcher. The corpus cannot separate those cases, so the timing guarantee covers the arithmetic, not the announcement."},
+        {"type": "p", "text": "What would falsify the null is worth stating. Several thousand starts on three or fewer days of rest, rather than 509, would shrink the widest interval here by roughly a factor of three, and a penalty of a few points would then either appear or be excluded. Extending the doubleheader panel past 358 games would do the same for the nightcap. Splitting the six-or-more bucket into genuine extra rest and returns from an absence of weeks would test whether its 0.0082 residual is rest or roster churn. None of the three can be done inside this corpus."},
+        {"type": "p", "text": "Contrast this with the NBA result published alongside it. In novel_rest_asymmetry.json the home win frequency climbs from 0.4944 when the visitor is better rested by two or more days (n=180) to 0.6409 when the home side is (n=259), a spread of 0.1465 across 4,793 games. That is a larger effect on a smaller corpus, and it is a differential between two teams rather than a property of one pitcher. The two are not in tension: basketball schedules produce large rest differentials, while a baseball rotation gives both teams a narrow band of rotation days."}
+      ]
+    },
+    {
+      "id": "limitations",
+      "heading": "Limitations",
+      "blocks": [
+        {"type": "list", "items": [
+          "This is a conditional frequency, not a causal estimate; rotation day is confounded with rotation role, injury returns and the all-star break, and none of those is controlled.",
+          "The three-or-fewer bucket holds 509 starts and its interval is 8.6 points wide, so a short-rest penalty of a few points would not be detected here.",
+          "The six-or-more bucket mixes genuine extra rest with returns from long absences; the longest gap in the corpus is 164 days.",
+          "The pitcher recorded is the one who actually started, so a late scratch enters the data as though it had been known, and the corpus cannot flag those games.",
+          "The reference forecast comes from a single archived source of closing moneylines, so any quirk of that source is inherited whole and cannot be cross-checked here.",
+          "The corpus stops at 2021, so nothing here speaks to rotation usage after that point, and the forecast-band comparison holds the forecast roughly, not exactly, fixed within each band."
+        ]}
+      ]
+    },
+    {
+      "id": "use",
+      "heading": "How to read this on the site",
+      "blocks": [
+        {"type": "p", "text": "The module page for novel_starter_rest_absorption carries the five panels in the order used above, each cell reporting its count first. Read any gap column by looking at the interval before the point estimate. A gap of 0.0345 with an interval from -0.0140 to 0.0849 is a thin cell, not a discovery. A gap of 0.0009 with an interval from -0.0047 to 0.0062 is a real statement: on 27,625 games the closing reference forecast and the observed frequency agree to within a tenth of a point."},
+        {"type": "p", "text": "The companion NBA note, listed under related, runs the same construction on a schedule differential and reaches a different conclusion about the raw gradient. Together they make the point: a schedule state that moves outcomes and one that adds information beyond a reference forecast are different findings, and only the second changes what a forecaster carries."}
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "artifact": "novel_starter_rest_absorption.json",
+      "module": "novel_starter_rest_absorption",
+      "asOf": "2026-09-16",
+      "fields": [
+        "population",
+        "timing_guarantee",
+        "verdict",
+        "is_honest_null",
+        "definitions.days_of_rest",
+        "definitions.reference_forecast",
+        "method.n_boot",
+        "method.seed",
+        "method.floor_rows_per_cell",
+        "method.cluster",
+        "panels.rest_buckets.n_starts",
+        "panels.rest_buckets.cells[].cell",
+        "panels.rest_buckets.cells[].n_starts",
+        "panels.rest_buckets.cells[].win_frequency",
+        "panels.rest_buckets.cells[].ci95",
+        "panels.rest_buckets.cells[].mean_reference_forecast",
+        "panels.rest_buckets.cells[].gap_observed_minus_reference",
+        "panels.rest_buckets.cells[].gap_ci95",
+        "panels.rest_buckets.cells[].gap_excludes_zero",
+        "panels.contrast_vs_standard[].delta_vs_standard",
+        "panels.contrast_vs_standard[].ci95",
+        "panels.contrast_vs_standard[].excludes_zero",
+        "panels.by_forecast_band.cells[].cell",
+        "panels.by_forecast_band.cells[].n_starts",
+        "panels.by_forecast_band.cells[].mean_reference_forecast",
+        "panels.by_forecast_band.cells[].win_frequency",
+        "panels.by_forecast_band.cells[].gap_observed_minus_reference",
+        "panels.by_forecast_band.cells[].gap_ci95",
+        "panels.season_stability[].season",
+        "panels.season_stability[].n_starts",
+        "panels.season_stability[].short_minus_long",
+        "panels.doubleheader_nightcap.cells[].n_starts",
+        "panels.doubleheader_nightcap.cells[].mean_reference_forecast",
+        "panels.doubleheader_nightcap.cells[].win_frequency",
+        "panels.doubleheader_nightcap.cells[].gap_observed_minus_reference",
+        "panels.doubleheader_nightcap.cells[].gap_ci95",
+        "checks.label_agreement",
+        "checks.label_crosscheck_n",
+        "checks.tied_final_scores",
+        "checks.starts_dropped_missing_starter",
+        "checks.starts_dropped_no_prior_start_in_season",
+        "checks.max_rest_days_observed",
+        "checks.reference_forecast_brier",
+        "checks.reference_forecast_mean",
+        "checks.observed_win_frequency"
+      ]
+    },
+    {
+      "artifact": "novel_rest_asymmetry.json",
+      "module": "novel_rest_asymmetry",
+      "asOf": "2026-09-16",
+      "fields": [
+        "panels.rest_differential.n_games",
+        "panels.rest_differential.cells[].n_games",
+        "panels.rest_differential.cells[].home_win_frequency"
+      ]
+    }
+  ],
+  "limitations": [
+    "A conditional frequency, not a causal estimate: rotation day is confounded with rotation role, injury returns and the all-star break.",
+    "The three-or-fewer bucket holds only 509 starts, so a short-rest penalty of a few points would not be detected.",
+    "The six-or-more bucket mixes extra rest with returns from long absences, the longest gap being 164 days.",
+    "The recorded starter is the one who actually pitched, so a rare late scratch enters the data as though it had been known in advance.",
+    "The reference forecast comes from one archived source of closing moneylines and is not cross-checked against a second source.",
+    "The corpus covers 2010 through 2021 only, and the forecast bands hold the forecast roughly rather than exactly fixed."
+  ],
+  "related": [
+    {"kind": "module", "id": "novel_starter_rest_absorption"},
+    {"kind": "module", "id": "novel_rest_asymmetry"},
+    {"kind": "paper", "id": "nba-rest-asymmetry"},
+    {"kind": "inspector", "id": "calibration"}
+  ]
+}

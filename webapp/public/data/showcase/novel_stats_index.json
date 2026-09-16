@@ -2,7 +2,7 @@
  "edge_claimed": false,
  "generated_at": "2026-09-16T21:29:55.878078+00:00",
  "method": "composition only -- each card copied from its module's own novel_*.json output",
- "n_stats": 7,
+ "n_stats": 8,
  "stats": [
   {
    "stat_name": "Line Half-Life",
@@ -179,6 +179,24 @@
    "n_results": 90,
    "artifact": "scripts/platformkit/analytics_showcase/out/novel_schedule_fatigue_tax.json",
    "is_honest_null": false
+  },
+  {
+   "stat_name": "Starter Rest Absorption",
+   "abbrev": "SRA",
+   "module": "novel_starter_rest_absorption",
+   "formula": "P(team win | starter days of rest in bucket) over team-starts, and the same frequency minus the mean devigged closing reference forecast for that team, reported overall and within reference-forecast bands.",
+   "prior_art_verdict": "INCREMENTAL",
+   "prior_art_citation": "Short-rest starting pitching is one of the oldest schedule questions in baseball, and the four-versus-five-day rotation day has been argued over for decades. What is added here is the measurement of that state against the recorded closing reference forecast on the same corpus: the residual is reported per rest bucket, then again inside narrow reference-forecast bands so that skill is held roughly fixed, each with a game-cluster interval, a declared mask floor and a season-by-season stability check -- and the outcome is recorded as a null rather than dropped.",
+   "source_artifacts": [
+    "data/domains/mlb/games.parquet",
+    "data/domains/mlb/pitchers.parquet",
+    "data/domains/mlb/odds.parquet"
+   ],
+   "headline": "Across 52078 MLB team-starts from 2010 to 2021 the starting pitcher's rotation day barely moves the win frequency: 0.5027 on four days rest (n=24333) against 0.5023 on five (n=18222) and 0.4999 on six or more (n=9014), and measured against the recorded closing reference forecast those gaps are -0.0019, -0.0003 and 0.0082, each inside its own 95 percent interval of zero.",
+   "n_results": 4,
+   "edge_claimed": false,
+   "artifact": "scripts/platformkit/analytics_showcase/out/novel_starter_rest_absorption.json",
+   "is_honest_null": true
   }
  ],
  "skipped": []

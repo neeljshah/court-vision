@@ -1,0 +1,969 @@
+{
+ "id": "novel_starter_rest_absorption",
+ "title": "Starter rest absorption: the rotation day is flat, and the reference forecast already carries it",
+ "as_of": "2026-09-16",
+ "sport": "mlb",
+ "descriptive_only": true,
+ "headline": "Across 52078 MLB team-starts from 2010 to 2021 the starting pitcher's rotation day barely moves the win frequency: 0.5027 on four days rest (n=24333) against 0.5023 on five (n=18222) and 0.4999 on six or more (n=9014), and measured against the recorded closing reference forecast those gaps are -0.0019, -0.0003 and 0.0082, each inside its own 95 percent interval of zero.",
+ "headline_insight": "Across 52078 MLB team-starts from 2010 to 2021 the starting pitcher's rotation day barely moves the win frequency: 0.5027 on four days rest (n=24333) against 0.5023 on five (n=18222) and 0.4999 on six or more (n=9014), and measured against the recorded closing reference forecast those gaps are -0.0019, -0.0003 and 0.0082, each inside its own 95 percent interval of zero.",
+ "verdict": "Recorded as a null. Over 52078 team-starts the win frequency is flat across the rotation day; 0 of 3 paired contrasts against a standard four days have an interval that excludes zero, and none of the 4 rest buckets separate from zero against the recorded closing reference forecast. Holding that forecast roughly fixed does not change it: 0 of the 10 reference-forecast band by load cells separate from zero, and across 12 seasons the short-rest residual sits above the long-rest residual in 5 of them rather than holding one sign. The doubleheader nightcap, a second schedule state known before the first pitch, tells the same story: its gap of 0.0345 sits inside a [-0.014, 0.0849] interval on 358 games. The corpus rules out a large effect, not a small one -- the short-rest bucket carries only 509 starts and its frequency interval is 0.0858 wide.",
+ "is_honest_null": true,
+ "population": "MLB games recorded in data/domains/mlb/games.parquet, seasons 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, restricted to the 27983 games carrying both recorded starting pitchers and a recorded closing moneyline pair, giving 52078 team-starts whose starter has an earlier start in the same season.",
+ "unit_of_observation": "one team-start, that is one team in one game together with the pitcher who started it; a game contributes two rows",
+ "conditioning_variable": "days of rest for the pitcher who started that game, computed as the calendar gap to his previous start in the same season minus one, binned into four buckets; and for the band panel the devigged closing reference forecast for that same team, binned into five bands.",
+ "timing_guarantee": "Every conditioning quantity is fixed before the first pitch. Days of rest comes only from the dates of that pitcher's earlier starts, the reference forecast is the recorded closing moneyline pair for the game, and the doubleheader slot is a schedule fact. Nothing observed after the first pitch enters a cell assignment.",
+ "definitions": {
+  "days_of_rest": "days of rest = calendar days between consecutive starts minus one; 0 to 3 -> 3 or fewer; 4 -> 4; 5 -> 5; 6 and above -> 6 or more",
+  "reference_forecast": "two-way devigged win probability from the recorded closing American moneyline pair, normalized so the two sides sum to 1",
+  "forecast_bands": "five bands of the devigged closing reference forecast for that team: under 0.42, 0.42 to 0.48, 0.48 to 0.52, 0.52 to 0.58, over 0.58",
+  "gap_observed_minus_reference": "observed win frequency in the cell minus the mean devigged closing reference forecast in the same cell",
+  "doubleheader_slot": "game_seq as recorded in the source schedule: 1 for a single game or the opener, 2 for the nightcap. The unit in this panel is one game and the outcome is a home win, so n_starts counts games."
+ },
+ "method": {
+  "interval": "percentile 95 percent interval from a bootstrap that resamples whole game clusters with replacement",
+  "n_boot": 2000,
+  "seed": 20260916,
+  "floor_rows_per_cell": 30,
+  "mask_rule": "a cell with fewer than 30 rows keeps its count and reports no frequency or interval",
+  "cluster": "the game, so the two team-starts of one game are resampled together"
+ },
+ "sources": [
+  "data/domains/mlb/games.parquet",
+  "data/domains/mlb/pitchers.parquet",
+  "data/domains/mlb/odds.parquet"
+ ],
+ "index_card": {
+  "stat_name": "Starter Rest Absorption",
+  "abbrev": "SRA",
+  "module": "novel_starter_rest_absorption",
+  "formula": "P(team win | starter days of rest in bucket) over team-starts, and the same frequency minus the mean devigged closing reference forecast for that team, reported overall and within reference-forecast bands.",
+  "prior_art_verdict": "INCREMENTAL",
+  "prior_art_citation": "Short-rest starting pitching is one of the oldest schedule questions in baseball, and the four-versus-five-day rotation day has been argued over for decades. What is added here is the measurement of that state against the recorded closing reference forecast on the same corpus: the residual is reported per rest bucket, then again inside narrow reference-forecast bands so that skill is held roughly fixed, each with a game-cluster interval, a declared mask floor and a season-by-season stability check -- and the outcome is recorded as a null rather than dropped.",
+  "source_artifacts": [
+   "data/domains/mlb/games.parquet",
+   "data/domains/mlb/pitchers.parquet",
+   "data/domains/mlb/odds.parquet"
+  ],
+  "headline": "Across 52078 MLB team-starts from 2010 to 2021 the starting pitcher's rotation day barely moves the win frequency: 0.5027 on four days rest (n=24333) against 0.5023 on five (n=18222) and 0.4999 on six or more (n=9014), and measured against the recorded closing reference forecast those gaps are -0.0019, -0.0003 and 0.0082, each inside its own 95 percent interval of zero.",
+  "n_results": 4
+ },
+ "panels": {
+  "rest_buckets": {
+   "n_starts": 52078,
+   "cells": [
+    {
+     "cell": "3 or fewer",
+     "n_starts": 509,
+     "win_frequency": 0.4754,
+     "ci95": [
+      0.4312,
+      0.517
+     ],
+     "mean_reference_forecast": 0.4848,
+     "gap_observed_minus_reference": -0.0093,
+     "gap_ci95": [
+      -0.0528,
+      0.0325
+     ],
+     "masked": false,
+     "mask_reason": null,
+     "gap_excludes_zero": false
+    },
+    {
+     "cell": "4",
+     "n_starts": 24333,
+     "win_frequency": 0.5027,
+     "ci95": [
+      0.4984,
+      0.5069
+     ],
+     "mean_reference_forecast": 0.5046,
+     "gap_observed_minus_reference": -0.0019,
+     "gap_ci95": [
+      -0.0061,
+      0.0023
+     ],
+     "masked": false,
+     "mask_reason": null,
+     "gap_excludes_zero": false
+    },
+    {
+     "cell": "5",
+     "n_starts": 18222,
+     "win_frequency": 0.5023,
+     "ci95": [
+      0.497,
+      0.5077
+     ],
+     "mean_reference_forecast": 0.5025,
+     "gap_observed_minus_reference": -0.0003,
+     "gap_ci95": [
+      -0.0054,
+      0.0051
+     ],
+     "masked": false,
+     "mask_reason": null,
+     "gap_excludes_zero": false
+    },
+    {
+     "cell": "6 or more",
+     "n_starts": 9014,
+     "win_frequency": 0.4999,
+     "ci95": [
+      0.4914,
+      0.5079
+     ],
+     "mean_reference_forecast": 0.4917,
+     "gap_observed_minus_reference": 0.0082,
+     "gap_ci95": [
+      0.0,
+      0.0163
+     ],
+     "masked": false,
+     "mask_reason": null,
+     "gap_excludes_zero": false
+    }
+   ]
+  },
+  "contrast_vs_standard": [
+   {
+    "cell": "3 or fewer",
+    "n_starts": 509,
+    "delta_vs_standard": -0.0272,
+    "ci95": [
+     -0.0717,
+     0.0159
+    ],
+    "masked": false,
+    "excludes_zero": false
+   },
+   {
+    "cell": "5",
+    "n_starts": 18222,
+    "delta_vs_standard": -0.0004,
+    "ci95": [
+     -0.009,
+     0.0082
+    ],
+    "masked": false,
+    "excludes_zero": false
+   },
+   {
+    "cell": "6 or more",
+    "n_starts": 9014,
+    "delta_vs_standard": -0.0028,
+    "ci95": [
+     -0.0141,
+     0.0076
+    ],
+    "masked": false,
+    "excludes_zero": false
+   }
+  ],
+  "by_forecast_band": {
+   "n_starts": 52078,
+   "note": "five bands of the devigged closing reference forecast for that team: under 0.42, 0.42 to 0.48, 0.48 to 0.52, 0.52 to 0.58, over 0.58",
+   "cells": [
+    {
+     "cell": "under 0.42 / short rest (4 or fewer)",
+     "n_starts": 4806,
+     "win_frequency": 0.3656,
+     "ci95": [
+      0.3526,
+      0.3792
+     ],
+     "mean_reference_forecast": 0.3697,
+     "gap_observed_minus_reference": -0.0041,
+     "gap_ci95": [
+      -0.0171,
+      0.0095
+     ],
+     "masked": false,
+     "mask_reason": null,
+     "gap_excludes_zero": false
+    },
+    {
+     "cell": "under 0.42 / long rest (5 or more)",
+     "n_starts": 5879,
+     "win_frequency": 0.3676,
+     "ci95": [
+      0.355,
+      0.3801
+     ],
+     "mean_reference_forecast": 0.3677,
+     "gap_observed_minus_reference": -0.0001,
+     "gap_ci95": [
+      -0.0126,
+      0.0121
+     ],
+     "masked": false,
+     "mask_reason": null,
+     "gap_excludes_zero": false
+    },
+    {
+     "cell": "0.42 to 0.48 / short rest (4 or fewer)",
+     "n_starts": 4902,
+     "win_frequency": 0.4425,
+     "ci95": [
+      0.4285,
+      0.456
+     ],
+     "mean_reference_forecast": 0.4507,
+     "gap_observed_minus_reference": -0.0082,
+     "gap_ci95": [
+      -0.022,
+      0.0055
+     ],
+     "masked": false,
+     "mask_reason": null,
+     "gap_excludes_zero": false
+    },
+    {
+     "cell": "0.42 to 0.48 / long rest (5 or more)",
+     "n_starts": 5581,
+     "win_frequency": 0.4505,
+     "ci95": [
+      0.4372,
+      0.4643
+     ],
+     "mean_reference_forecast": 0.4506,
+     "gap_observed_minus_reference": -0.0002,
+     "gap_ci95": [
+      -0.0135,
+      0.0137
+     ],
+     "masked": false,
+     "mask_reason": null,
+     "gap_excludes_zero": false
+    },
+    {
+     "cell": "0.48 to 0.52 / short rest (4 or fewer)",
+     "n_starts": 4498,
+     "win_frequency": 0.4951,
+     "ci95": [
+      0.4858,
+      0.5047
+     ],
+     "mean_reference_forecast": 0.5,
+     "gap_observed_minus_reference": -0.0049,
+     "gap_ci95": [
+      -0.0143,
+      0.0047
+     ],
+     "masked": false,
+     "mask_reason": null,
+     "gap_excludes_zero": false
+    },
+    {
+     "cell": "0.48 to 0.52 / long rest (5 or more)",
+     "n_starts": 4608,
+     "win_frequency": 0.5054,
+     "ci95": [
+      0.496,
+      0.5142
+     ],
+     "mean_reference_forecast": 0.5,
+     "gap_observed_minus_reference": 0.0054,
+     "gap_ci95": [
+      -0.004,
+      0.0142
+     ],
+     "masked": false,
+     "mask_reason": null,
+     "gap_excludes_zero": false
+    },
+    {
+     "cell": "0.52 to 0.58 / short rest (4 or fewer)",
+     "n_starts": 5230,
+     "win_frequency": 0.5539,
+     "ci95": [
+      0.5399,
+      0.5668
+     ],
+     "mean_reference_forecast": 0.5498,
+     "gap_observed_minus_reference": 0.0042,
+     "gap_ci95": [
+      -0.0099,
+      0.0169
+     ],
+     "masked": false,
+     "mask_reason": null,
+     "gap_excludes_zero": false
+    },
+    {
+     "cell": "0.52 to 0.58 / long rest (5 or more)",
+     "n_starts": 5426,
+     "win_frequency": 0.5553,
+     "ci95": [
+      0.5416,
+      0.5681
+     ],
+     "mean_reference_forecast": 0.5491,
+     "gap_observed_minus_reference": 0.0062,
+     "gap_ci95": [
+      -0.0074,
+      0.0192
+     ],
+     "masked": false,
+     "mask_reason": null,
+     "gap_excludes_zero": false
+    },
+    {
+     "cell": "over 0.58 / short rest (4 or fewer)",
+     "n_starts": 5406,
+     "win_frequency": 0.6332,
+     "ci95": [
+      0.6211,
+      0.6463
+     ],
+     "mean_reference_forecast": 0.6316,
+     "gap_observed_minus_reference": 0.0016,
+     "gap_ci95": [
+      -0.0106,
+      0.0147
+     ],
+     "masked": false,
+     "mask_reason": null,
+     "gap_excludes_zero": false
+    },
+    {
+     "cell": "over 0.58 / long rest (5 or more)",
+     "n_starts": 5742,
+     "win_frequency": 0.6341,
+     "ci95": [
+      0.6219,
+      0.6464
+     ],
+     "mean_reference_forecast": 0.632,
+     "gap_observed_minus_reference": 0.0021,
+     "gap_ci95": [
+      -0.0101,
+      0.0145
+     ],
+     "masked": false,
+     "mask_reason": null,
+     "gap_excludes_zero": false
+    }
+   ]
+  },
+  "season_stability": [
+   {
+    "season": "2010",
+    "n_starts": 4640,
+    "cells": [
+     {
+      "cell": "short rest (4 or fewer)",
+      "n_starts": 2452,
+      "win_frequency": 0.4967,
+      "ci95": [
+       0.4848,
+       0.5082
+      ],
+      "mean_reference_forecast": 0.506,
+      "gap_observed_minus_reference": -0.0092,
+      "gap_ci95": [
+       -0.0208,
+       0.002
+      ],
+      "masked": false,
+      "mask_reason": null,
+      "gap_excludes_zero": false
+     },
+     {
+      "cell": "long rest (5 or more)",
+      "n_starts": 2188,
+      "win_frequency": 0.5078,
+      "ci95": [
+       0.4953,
+       0.5213
+      ],
+      "mean_reference_forecast": 0.4967,
+      "gap_observed_minus_reference": 0.0111,
+      "gap_ci95": [
+       -0.001,
+       0.0245
+      ],
+      "masked": false,
+      "mask_reason": null,
+      "gap_excludes_zero": false
+     }
+    ],
+    "short_minus_long": -0.0203
+   },
+   {
+    "season": "2011",
+    "n_starts": 4659,
+    "cells": [
+     {
+      "cell": "short rest (4 or fewer)",
+      "n_starts": 2372,
+      "win_frequency": 0.4933,
+      "ci95": [
+       0.4807,
+       0.5059
+      ],
+      "mean_reference_forecast": 0.5041,
+      "gap_observed_minus_reference": -0.0109,
+      "gap_ci95": [
+       -0.0233,
+       0.0017
+      ],
+      "masked": false,
+      "mask_reason": null,
+      "gap_excludes_zero": false
+     },
+     {
+      "cell": "long rest (5 or more)",
+      "n_starts": 2287,
+      "win_frequency": 0.5063,
+      "ci95": [
+       0.4931,
+       0.5194
+      ],
+      "mean_reference_forecast": 0.4977,
+      "gap_observed_minus_reference": 0.0086,
+      "gap_ci95": [
+       -0.0043,
+       0.0215
+      ],
+      "masked": false,
+      "mask_reason": null,
+      "gap_excludes_zero": false
+     }
+    ],
+    "short_minus_long": -0.0195
+   },
+   {
+    "season": "2012",
+    "n_starts": 4648,
+    "cells": [
+     {
+      "cell": "short rest (4 or fewer)",
+      "n_starts": 2319,
+      "win_frequency": 0.5084,
+      "ci95": [
+       0.4959,
+       0.5202
+      ],
+      "mean_reference_forecast": 0.5026,
+      "gap_observed_minus_reference": 0.0058,
+      "gap_ci95": [
+       -0.0066,
+       0.0173
+      ],
+      "masked": false,
+      "mask_reason": null,
+      "gap_excludes_zero": false
+     },
+     {
+      "cell": "long rest (5 or more)",
+      "n_starts": 2329,
+      "win_frequency": 0.4968,
+      "ci95": [
+       0.4852,
+       0.5093
+      ],
+      "mean_reference_forecast": 0.4995,
+      "gap_observed_minus_reference": -0.0027,
+      "gap_ci95": [
+       -0.0144,
+       0.01
+      ],
+      "masked": false,
+      "mask_reason": null,
+      "gap_excludes_zero": false
+     }
+    ],
+    "short_minus_long": 0.0085
+   },
+   {
+    "season": "2013",
+    "n_starts": 4636,
+    "cells": [
+     {
+      "cell": "short rest (4 or fewer)",
+      "n_starts": 2401,
+      "win_frequency": 0.5065,
+      "ci95": [
+       0.494,
+       0.5186
+      ],
+      "mean_reference_forecast": 0.5052,
+      "gap_observed_minus_reference": 0.0013,
+      "gap_ci95": [
+       -0.0105,
+       0.0133
+      ],
+      "masked": false,
+      "mask_reason": null,
+      "gap_excludes_zero": false
+     },
+     {
+      "cell": "long rest (5 or more)",
+      "n_starts": 2235,
+      "win_frequency": 0.4953,
+      "ci95": [
+       0.4821,
+       0.508
+      ],
+      "mean_reference_forecast": 0.4971,
+      "gap_observed_minus_reference": -0.0018,
+      "gap_ci95": [
+       -0.0148,
+       0.0108
+      ],
+      "masked": false,
+      "mask_reason": null,
+      "gap_excludes_zero": false
+     }
+    ],
+    "short_minus_long": 0.0031
+   },
+   {
+    "season": "2014",
+    "n_starts": 4612,
+    "cells": [
+     {
+      "cell": "short rest (4 or fewer)",
+      "n_starts": 2291,
+      "win_frequency": 0.4998,
+      "ci95": [
+       0.4867,
+       0.5126
+      ],
+      "mean_reference_forecast": 0.5049,
+      "gap_observed_minus_reference": -0.0051,
+      "gap_ci95": [
+       -0.0178,
+       0.0073
+      ],
+      "masked": false,
+      "mask_reason": null,
+      "gap_excludes_zero": false
+     },
+     {
+      "cell": "long rest (5 or more)",
+      "n_starts": 2321,
+      "win_frequency": 0.5037,
+      "ci95": [
+       0.4911,
+       0.5165
+      ],
+      "mean_reference_forecast": 0.4977,
+      "gap_observed_minus_reference": 0.006,
+      "gap_ci95": [
+       -0.0063,
+       0.0188
+      ],
+      "masked": false,
+      "mask_reason": null,
+      "gap_excludes_zero": false
+     }
+    ],
+    "short_minus_long": -0.0111
+   },
+   {
+    "season": "2015",
+    "n_starts": 4612,
+    "cells": [
+     {
+      "cell": "short rest (4 or fewer)",
+      "n_starts": 2306,
+      "win_frequency": 0.5017,
+      "ci95": [
+       0.4889,
+       0.5143
+      ],
+      "mean_reference_forecast": 0.5053,
+      "gap_observed_minus_reference": -0.0036,
+      "gap_ci95": [
+       -0.0162,
+       0.0087
+      ],
+      "masked": false,
+      "mask_reason": null,
+      "gap_excludes_zero": false
+     },
+     {
+      "cell": "long rest (5 or more)",
+      "n_starts": 2306,
+      "win_frequency": 0.5013,
+      "ci95": [
+       0.4886,
+       0.514
+      ],
+      "mean_reference_forecast": 0.4968,
+      "gap_observed_minus_reference": 0.0045,
+      "gap_ci95": [
+       -0.0081,
+       0.0173
+      ],
+      "masked": false,
+      "mask_reason": null,
+      "gap_excludes_zero": false
+     }
+    ],
+    "short_minus_long": -0.0081
+   },
+   {
+    "season": "2016",
+    "n_starts": 4591,
+    "cells": [
+     {
+      "cell": "short rest (4 or fewer)",
+      "n_starts": 2336,
+      "win_frequency": 0.5077,
+      "ci95": [
+       0.4957,
+       0.5207
+      ],
+      "mean_reference_forecast": 0.5026,
+      "gap_observed_minus_reference": 0.0051,
+      "gap_ci95": [
+       -0.0072,
+       0.0179
+      ],
+      "masked": false,
+      "mask_reason": null,
+      "gap_excludes_zero": false
+     },
+     {
+      "cell": "long rest (5 or more)",
+      "n_starts": 2255,
+      "win_frequency": 0.4918,
+      "ci95": [
+       0.4782,
+       0.5041
+      ],
+      "mean_reference_forecast": 0.5005,
+      "gap_observed_minus_reference": -0.0087,
+      "gap_ci95": [
+       -0.0221,
+       0.0035
+      ],
+      "masked": false,
+      "mask_reason": null,
+      "gap_excludes_zero": false
+     }
+    ],
+    "short_minus_long": 0.0138
+   },
+   {
+    "season": "2017",
+    "n_starts": 4590,
+    "cells": [
+     {
+      "cell": "short rest (4 or fewer)",
+      "n_starts": 2220,
+      "win_frequency": 0.5063,
+      "ci95": [
+       0.492,
+       0.5202
+      ],
+      "mean_reference_forecast": 0.5009,
+      "gap_observed_minus_reference": 0.0054,
+      "gap_ci95": [
+       -0.0082,
+       0.0192
+      ],
+      "masked": false,
+      "mask_reason": null,
+      "gap_excludes_zero": false
+     },
+     {
+      "cell": "long rest (5 or more)",
+      "n_starts": 2370,
+      "win_frequency": 0.4962,
+      "ci95": [
+       0.4831,
+       0.5095
+      ],
+      "mean_reference_forecast": 0.502,
+      "gap_observed_minus_reference": -0.0058,
+      "gap_ci95": [
+       -0.0188,
+       0.0072
+      ],
+      "masked": false,
+      "mask_reason": null,
+      "gap_excludes_zero": false
+     }
+    ],
+    "short_minus_long": 0.0112
+   },
+   {
+    "season": "2018",
+    "n_starts": 4572,
+    "cells": [
+     {
+      "cell": "short rest (4 or fewer)",
+      "n_starts": 1896,
+      "win_frequency": 0.5021,
+      "ci95": [
+       0.486,
+       0.5177
+      ],
+      "mean_reference_forecast": 0.5086,
+      "gap_observed_minus_reference": -0.0065,
+      "gap_ci95": [
+       -0.0224,
+       0.0088
+      ],
+      "masked": false,
+      "mask_reason": null,
+      "gap_excludes_zero": false
+     },
+     {
+      "cell": "long rest (5 or more)",
+      "n_starts": 2676,
+      "win_frequency": 0.5026,
+      "ci95": [
+       0.4918,
+       0.5141
+      ],
+      "mean_reference_forecast": 0.4956,
+      "gap_observed_minus_reference": 0.007,
+      "gap_ci95": [
+       -0.0041,
+       0.0181
+      ],
+      "masked": false,
+      "mask_reason": null,
+      "gap_excludes_zero": false
+     }
+    ],
+    "short_minus_long": -0.0135
+   },
+   {
+    "season": "2019",
+    "n_starts": 4537,
+    "cells": [
+     {
+      "cell": "short rest (4 or fewer)",
+      "n_starts": 1973,
+      "win_frequency": 0.5084,
+      "ci95": [
+       0.493,
+       0.5241
+      ],
+      "mean_reference_forecast": 0.502,
+      "gap_observed_minus_reference": 0.0063,
+      "gap_ci95": [
+       -0.0084,
+       0.0211
+      ],
+      "masked": false,
+      "mask_reason": null,
+      "gap_excludes_zero": false
+     },
+     {
+      "cell": "long rest (5 or more)",
+      "n_starts": 2564,
+      "win_frequency": 0.4984,
+      "ci95": [
+       0.4866,
+       0.5102
+      ],
+      "mean_reference_forecast": 0.5022,
+      "gap_observed_minus_reference": -0.0038,
+      "gap_ci95": [
+       -0.0155,
+       0.0075
+      ],
+      "masked": false,
+      "mask_reason": null,
+      "gap_excludes_zero": false
+     }
+    ],
+    "short_minus_long": 0.0101
+   },
+   {
+    "season": "2020",
+    "n_starts": 1459,
+    "cells": [
+     {
+      "cell": "short rest (4 or fewer)",
+      "n_starts": 675,
+      "win_frequency": 0.4963,
+      "ci95": [
+       0.47,
+       0.5246
+      ],
+      "mean_reference_forecast": 0.5042,
+      "gap_observed_minus_reference": -0.0079,
+      "gap_ci95": [
+       -0.0346,
+       0.0193
+      ],
+      "masked": false,
+      "mask_reason": null,
+      "gap_excludes_zero": false
+     },
+     {
+      "cell": "long rest (5 or more)",
+      "n_starts": 784,
+      "win_frequency": 0.5064,
+      "ci95": [
+       0.4825,
+       0.5298
+      ],
+      "mean_reference_forecast": 0.5003,
+      "gap_observed_minus_reference": 0.0061,
+      "gap_ci95": [
+       -0.0174,
+       0.0289
+      ],
+      "masked": false,
+      "mask_reason": null,
+      "gap_excludes_zero": false
+     }
+    ],
+    "short_minus_long": -0.014
+   },
+   {
+    "season": "2021",
+    "n_starts": 4522,
+    "cells": [
+     {
+      "cell": "short rest (4 or fewer)",
+      "n_starts": 1601,
+      "win_frequency": 0.4922,
+      "ci95": [
+       0.4734,
+       0.5115
+      ],
+      "mean_reference_forecast": 0.5036,
+      "gap_observed_minus_reference": -0.0114,
+      "gap_ci95": [
+       -0.0302,
+       0.0073
+      ],
+      "masked": false,
+      "mask_reason": null,
+      "gap_excludes_zero": false
+     },
+     {
+      "cell": "long rest (5 or more)",
+      "n_starts": 2921,
+      "win_frequency": 0.5118,
+      "ci95": [
+       0.5015,
+       0.5221
+      ],
+      "mean_reference_forecast": 0.5013,
+      "gap_observed_minus_reference": 0.0105,
+      "gap_ci95": [
+       0.0004,
+       0.0206
+      ],
+      "masked": false,
+      "mask_reason": null,
+      "gap_excludes_zero": true
+     }
+    ],
+    "short_minus_long": -0.0219
+   }
+  ],
+  "doubleheader_nightcap": {
+   "n_games": 27983,
+   "note": "game_seq as recorded in the source schedule: 1 for a single game or the opener, 2 for the nightcap. The unit in this panel is one game and the outcome is a home win, so n_starts counts games.",
+   "cells": [
+    {
+     "cell": "first game",
+     "n_starts": 27625,
+     "win_frequency": 0.5361,
+     "ci95": [
+      0.5304,
+      0.5417
+     ],
+     "mean_reference_forecast": 0.5352,
+     "gap_observed_minus_reference": 0.0009,
+     "gap_ci95": [
+      -0.0047,
+      0.0062
+     ],
+     "masked": false,
+     "mask_reason": null,
+     "gap_excludes_zero": false
+    },
+    {
+     "cell": "second game of a doubleheader",
+     "n_starts": 358,
+     "win_frequency": 0.5642,
+     "ci95": [
+      0.5142,
+      0.6158
+     ],
+     "mean_reference_forecast": 0.5297,
+     "gap_observed_minus_reference": 0.0345,
+     "gap_ci95": [
+      -0.014,
+      0.0849
+     ],
+     "masked": false,
+     "mask_reason": null,
+     "gap_excludes_zero": false
+    }
+   ]
+  }
+ },
+ "checks": {
+  "label_crosscheck_source": "home_runs and away_runs in data/domains/mlb/games.parquet",
+  "label_crosscheck_n": 27983,
+  "tied_final_scores": 0,
+  "label_agreement": 1.0,
+  "seasons": [
+   "2010",
+   "2011",
+   "2012",
+   "2013",
+   "2014",
+   "2015",
+   "2016",
+   "2017",
+   "2018",
+   "2019",
+   "2020",
+   "2021"
+  ],
+  "games_in_source_schedule": 27983,
+  "games_with_starters_and_reference": 27983,
+  "starts_dropped_missing_starter": 118,
+  "starts_dropped_no_prior_start_in_season": 3770,
+  "max_rest_days_observed": 164.0,
+  "reference_forecast_brier": 0.2404,
+  "reference_forecast_mean": 0.5014,
+  "observed_win_frequency": 0.5018
+ },
+ "what_it_means": "A starting pitcher's rotation day, on its own, does not separate winners from losers in this corpus. Four days rest, five days and six or more all win close to half their starts, and the residual against the recorded closing reference forecast stays inside its interval in every bucket. The same holds inside narrow reference-forecast bands, where two teams carry almost the same forecast and differ mainly in rotation day.",
+ "how_to_read": "Each cell reports n_starts first, then the observed win frequency and its game-cluster bootstrap interval, then the mean reference forecast and the gap between them with its own interval. The contrast panel subtracts the four-days bucket on the same resample, so its interval is paired. A gap whose interval contains zero means the recorded closing forecast and the observed frequency agree within noise for that cell.",
+ "why_it_matters": "It records a schedule state a forecaster might reach for and shows it adds nothing measurable here, which is the kind of negative result that keeps a feature list honest. It also shows the shape of the corpus: the short-rest bucket is rare enough that a real effect of a few points could hide inside its interval.",
+ "caveat": "Descriptive conditional frequencies, not a forecast and not a causal estimate. The pitcher recorded is the one who actually started, so a rare late scratch would not have been known before the game; rest is confounded with rotation role, injury returns and the all-star break; and the reference forecast comes from a single archived source.",
+ "cited": [
+  {
+   "path": "webapp/public/data/insights/novel_starter_rest_absorption.json",
+   "field": "panels.rest_buckets.cells[1] win_frequency / n_starts",
+   "value": "0.5027 / 24333"
+  },
+  {
+   "path": "webapp/public/data/insights/novel_starter_rest_absorption.json",
+   "field": "panels.rest_buckets.cells[3] win_frequency / n_starts",
+   "value": "0.4999 / 9014"
+  },
+  {
+   "path": "webapp/public/data/insights/novel_starter_rest_absorption.json",
+   "field": "panels.rest_buckets.cells[] gap_excludes_zero",
+   "value": "0 of 4 buckets separate from zero"
+  },
+  {
+   "path": "webapp/public/data/insights/novel_starter_rest_absorption.json",
+   "field": "panels.by_forecast_band.cells[] gap_excludes_zero",
+   "value": "0 of 10 band cells separate from zero"
+  },
+  {
+   "path": "webapp/public/data/insights/novel_starter_rest_absorption.json",
+   "field": "checks.reference_forecast_brier",
+   "value": 0.2404
+  }
+ ]
+}
