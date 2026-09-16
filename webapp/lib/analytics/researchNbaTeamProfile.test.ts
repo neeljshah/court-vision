@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildNbaTeamProfileResearch } from "./researchNbaTeamProfile";
+import { buildNbaTeamProfileResearch, getNbaTeamProfileResearch } from "./researchNbaTeamProfile";
 
 function source() {
   return {
@@ -10,7 +10,7 @@ function source() {
     loadBearing: { as_of: { estimator_a: "2024-25", estimator_b: "2025-26" }, results: [{ team: "BRK", estimator_a_elo_onoff: { player_name: "Alpha A", delta_winprob: 0.2 }, estimator_b_raw_withwithout: { player_name: "Bravo B", delta_win_rate: 0.1, n_active: 36, n_missed: 44 }, agreement_same_player: false }] },
     fatigue: { results: [{ team: "BKN", season: "2024-25", sft_credible_pts_per100_ortg: -0.3 }] },
     density: { per_team_season_frequencies: [{ team: "BKN", season: "2023-24", b2b_freq: 0.2 }] },
-    states: { as_of: "2026-05-21", teams: [{ team: "BKN", n_games: 2, front_runner_2h_margin: 1, comeback_2h_margin: -2, masked_below_floor: true }] },
+    states: { as_of: "2026-05-21", min_games_per_split: 2, teams: [{ team: "BKN", n_games: 2, n_led_at_half: 1, n_trailed_at_half: 1, front_runner_2h_margin: 1, comeback_2h_margin: -2, masked_below_floor: true }] },
   };
 }
 
@@ -54,5 +54,45 @@ describe("NBA team profile research", () => {
     const row = buildNbaTeamProfileResearch(input)[0].rows.find(item => item.label === "Denver Nuggets")!;
     expect(row.values).toMatchObject({ fragility_delta_estimator_a: 0.5822, fragility_delta_estimator_b: 0.1818, fragility_estimator_b_active_games: 36, fragility_estimator_b_missed_games: 44 });
     expect(row.bindingValues).toMatchObject({ fragility_estimator_a_player: "Nikola Jokic", fragility_estimator_b_player: "Aaron Gordon", fragility_estimators_same_player: "false" });
+  });
+
+  it("excludes the real artifact's masked halftime margins from comparison and discloses their support", () => {
+    const analysis = getNbaTeamProfileResearch()[0];
+    expect(analysis.rows).toHaveLength(30);
+    expect(analysis.rows.every(row => row.values.front_runner_second_half_margin === null && row.values.comeback_second_half_margin === null)).toBe(true);
+    const atlanta = analysis.rows.find(row => row.label === "Atlanta Hawks")!;
+    expect(atlanta.values).toMatchObject({ halftime_led_at_half_games: 1, halftime_trailed_at_half_games: 1, halftime_required_games_per_split: 2 });
+    expect(atlanta.bindingValues?.halftime_source_disclosure).toContain("source masked this row below its split floor");
+    expect(atlanta.bindingValues?.halftime_source_disclosure).toContain("led at half 1/2");
+    expect(atlanta.bindingValues?.halftime_source_disclosure).toContain("trailed at half 1/2");
+  });
+
+  it("does not qualify margins when split support counts are missing", () => {
+    const input = source();
+    const state = input.states.teams[0] as Record<string, unknown>;
+    delete state.n_led_at_half;
+    delete state.n_trailed_at_half;
+    state.masked_below_floor = false;
+    const row = buildNbaTeamProfileResearch(input)[0].rows.find(item => item.label === "Brooklyn Nets")!;
+    expect(row.values.front_runner_second_half_margin).toBeNull();
+    expect(row.values.comeback_second_half_margin).toBeNull();
+  });
+
+  it("keeps unmasked margins with both split counts above the published floor", () => {
+    const input = source();
+    const state = input.states.teams[0] as Record<string, unknown>;
+    Object.assign(state, { n_led_at_half: 4, n_trailed_at_half: 3, front_runner_2h_margin: 1.5, comeback_2h_margin: -0.5, masked_below_floor: false });
+    const analysis = buildNbaTeamProfileResearch(input)[0];
+    const row = analysis.rows.find(item => item.label === "Brooklyn Nets")!;
+    expect(row.values).toMatchObject({ halftime_led_at_half_games: 4, halftime_trailed_at_half_games: 3, halftime_required_games_per_split: 2, front_runner_second_half_margin: 1.5, comeback_second_half_margin: -0.5 });
+    expect(row.bindingValues?.halftime_source_disclosure).toBeNull();
+  });
+
+  it("carries the published halftime floor and artifact date into the analysis definition", () => {
+    const analysis = buildNbaTeamProfileResearch(source())[0];
+    expect(analysis.method).toContain("floor of 2 games");
+    expect(analysis.method).toContain("as of 2026-05-21");
+    expect(analysis.formula).toContain("floor of 2 games per split");
+    expect(analysis.formula).toContain("artifact as of 2026-05-21");
   });
 });
