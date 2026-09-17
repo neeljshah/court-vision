@@ -4,9 +4,11 @@ import { Search } from "lucide-react";
 import { dateLabel, humanize, type Mechanism, type Sport } from "@/lib/analytics/dashboardTypes";
 import { Empty, Pagination, Panel } from "./Primitives";
 
+const searchText = (value: string) => value.toLowerCase().replace(/[_\s]+/g, " ").trim();
+
 export function Research({ rows, sport }: { rows: Mechanism[]; sport: Sport }) {
   const [query, setQuery] = useState(""); const [bucket, setBucket] = useState("all"); const [page, setPage] = useState(0);
-  const filtered = useMemo(() => rows.filter(r => (sport === "all" || r.sport === sport) && (bucket === "all" || r.bucket === bucket) && `${r.mechanism} ${r.verdict} ${r.corpus} ${r.evidence}`.toLowerCase().includes(query.toLowerCase())), [rows, sport, bucket, query]);
+  const filtered = useMemo(() => rows.filter(r => (sport === "all" || r.sport === sport) && (bucket === "all" || r.bucket === bucket) && searchText(`${r.mechanism} ${r.verdict} ${r.corpus} ${r.evidence}`).includes(searchText(query))), [rows, sport, bucket, query]);
   const safePage = Math.min(page, Math.max(0, Math.ceil(filtered.length / 12) - 1));
   return <Panel title="The research ledger" eyebrow="Inspect the evidence" source="mechanism_ledger_export">
     <p className="cv-muted">Every published research record, including null results and work that could not be tested. Expand a record for its corpus and exact evidence.</p>

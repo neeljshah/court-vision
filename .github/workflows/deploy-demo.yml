@@ -125,6 +125,7 @@ jobs:
           npx vitest run components/analytics/CommandPalette.test.tsx
           npx vitest run components/analytics/AnalyticsNavigation.test.tsx
           npx vitest run components/analytics/workspace/Workspace.test.tsx
+          npx vitest run components/analytics/workspace/Research.test.tsx
 
       - name: Verify published JSON
         run: |
