@@ -188,7 +188,8 @@ def build_verdict(result):
     return " ".join(lines) if lines else "No sport had a reportable BSS grain."
 
 
-def run():
+def compose():
+    """Pure aggregation from the local corpora (read-only) -- no writes."""
     result = {
         "edge_claimed": False,
         "descriptive_only": True,
@@ -202,7 +203,11 @@ def run():
     for sport in CHECKPOINTERS:
         result["sports"][sport] = analyze_sport(sport)
     result["verdict"] = build_verdict(result)
+    return result
 
+
+def run():
+    result = compose()
     os.makedirs(os.path.dirname(OUT_JSON), exist_ok=True)
     result["plot_written"] = make_plot(result)
     with open(OUT_JSON, "w", encoding="utf-8") as f:
@@ -234,12 +239,11 @@ def check():
     if not glob.glob(os.path.join(IN_DIR, "mlb" + CORPUS_SUFFIX, "*.jsonl")):
         print("brier_skill_scores self-check OK (synthetic only; corpora absent -- clean clone)")
         return
-    res = run()
-    assert os.path.getsize(OUT_JSON) > 0, "OUT_JSON missing/empty"
-    if res.get("plot_written"):
-        assert os.path.getsize(OUT_PNG) > 0, "OUT_PNG missing/empty"
+    # Local data present: validate a pure in-memory recomposition. --check must
+    # never write out/brier_skill_scores.json or docs/img/brier_skill_scores.png.
+    res = compose()
     assert any(r.get("grains") for r in res["sports"].values()), "no sport produced grains"
-    print("brier_skill_scores self-check OK (synthetic + real outputs exist nonzero)")
+    print("brier_skill_scores self-check OK (synthetic + real recompose, no write)")
 
 
 if __name__ == "__main__":
