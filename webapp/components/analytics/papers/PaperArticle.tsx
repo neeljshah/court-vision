@@ -120,6 +120,10 @@ export function PaperArticle({ paper }: { paper: Paper }) {
           </ul>
         </section>
       ) : null}
+
+      <Link href="/analytics/papers/" className="paper-back paper-back-tail" prefetch={false}>
+        Back to research papers
+      </Link>
     </article>
   );
 }

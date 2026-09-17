@@ -138,6 +138,15 @@ describe("PaperArticle", () => {
     expect(within(related).getByText("Source module")).toBeInTheDocument();
   });
 
+  it("keeps the mobile result block and end-of-article return link in their intended positions", () => {
+    render(<PaperArticle paper={fixture} />);
+    const mobileResult = screen.getByLabelText("Result and limit");
+    expect(mobileResult).toHaveClass("paper-mobile-result");
+    const related = screen.getByRole("region", { name: "Related" });
+    const backLinks = screen.getAllByRole("link", { name: "Back to research papers" });
+    expect(related.compareDocumentPosition(backLinks[0]) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
   it("does not repeat the standalone limitations list when a limitations section exists", () => {
     const paper = { ...fixture, sections: [...fixture.sections, { id: "limitations", heading: "Limitations", blocks: [{ type: "p" as const, text: "The section owns its limitation." }] }] };
     render(<PaperArticle paper={paper} />);

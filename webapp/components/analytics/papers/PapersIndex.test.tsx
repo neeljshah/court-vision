@@ -88,4 +88,9 @@ describe("PapersIndex", () => {
     expect(screen.getByText(/No papers are published yet/)).toBeInTheDocument();
     expect(screen.queryByLabelText("Keyword")).not.toBeInTheDocument();
   });
+
+  it("marks the start-here route with its responsive layout class", () => {
+    render(<PapersIndex papers={papers} />);
+    expect(screen.getByRole("region", { name: /A short route through the research record/ })).toHaveClass("paper-start");
+  });
 });

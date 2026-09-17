@@ -16,7 +16,7 @@ function TableBlock({ block }: { block: Extract<PaperBlock, { type: "table" }> }
     <figure className="paper-table">
       <figcaption className="paper-caption">{block.caption}</figcaption>
       <p className="paper-scroll-hint" aria-hidden="true">Scroll horizontally to see all columns.</p>
-      <div className="paper-scroll" role="region" tabIndex={0} aria-label={block.caption}>
+      <div className="paper-scroll" role="region" tabIndex={0} aria-label={`${block.caption}, scroll horizontally for all columns`}>
         <table>
           <thead>
             <tr>{block.columns.map(column => <th key={column} scope="col">{column}</th>)}</tr>
