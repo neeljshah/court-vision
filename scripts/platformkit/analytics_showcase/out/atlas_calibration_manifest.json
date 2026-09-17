@@ -6,7 +6,7 @@
   "entries": [
     {
       "entity": "mlb inning 1",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\mlb_inning_1.png",
+      "card_path": "docs/img/atlas/calibration/mlb_inning_1.png",
       "key_numbers": {
         "n": 3589,
         "model_ece": 0.0768,
@@ -19,7 +19,7 @@
     },
     {
       "entity": "mlb inning 2",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\mlb_inning_2.png",
+      "card_path": "docs/img/atlas/calibration/mlb_inning_2.png",
       "key_numbers": {
         "n": 2803,
         "model_ece": 0.046,
@@ -32,7 +32,7 @@
     },
     {
       "entity": "mlb inning 3",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\mlb_inning_3.png",
+      "card_path": "docs/img/atlas/calibration/mlb_inning_3.png",
       "key_numbers": {
         "n": 3097,
         "model_ece": 0.1018,
@@ -45,7 +45,7 @@
     },
     {
       "entity": "mlb inning 4",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\mlb_inning_4.png",
+      "card_path": "docs/img/atlas/calibration/mlb_inning_4.png",
       "key_numbers": {
         "n": 3034,
         "model_ece": 0.0732,
@@ -58,7 +58,7 @@
     },
     {
       "entity": "mlb inning 5",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\mlb_inning_5.png",
+      "card_path": "docs/img/atlas/calibration/mlb_inning_5.png",
       "key_numbers": {
         "n": 3139,
         "model_ece": 0.0891,
@@ -71,7 +71,7 @@
     },
     {
       "entity": "mlb inning 6",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\mlb_inning_6.png",
+      "card_path": "docs/img/atlas/calibration/mlb_inning_6.png",
       "key_numbers": {
         "n": 3579,
         "model_ece": 0.0956,
@@ -84,7 +84,7 @@
     },
     {
       "entity": "mlb inning 7",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\mlb_inning_7.png",
+      "card_path": "docs/img/atlas/calibration/mlb_inning_7.png",
       "key_numbers": {
         "n": 3447,
         "model_ece": 0.0684,
@@ -97,7 +97,7 @@
     },
     {
       "entity": "mlb inning 8",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\mlb_inning_8.png",
+      "card_path": "docs/img/atlas/calibration/mlb_inning_8.png",
       "key_numbers": {
         "n": 2833,
         "model_ece": 0.029,
@@ -110,7 +110,7 @@
     },
     {
       "entity": "mlb inning 9",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\mlb_inning_9.png",
+      "card_path": "docs/img/atlas/calibration/mlb_inning_9.png",
       "key_numbers": {
         "n": 1110,
         "model_ece": 0.0346,
@@ -123,7 +123,7 @@
     },
     {
       "entity": "mlb inning 10+",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\mlb_inning_10.png",
+      "card_path": "docs/img/atlas/calibration/mlb_inning_10.png",
       "key_numbers": {
         "n": 52,
         "model_ece": 0.195,
@@ -136,7 +136,7 @@
     },
     {
       "entity": "mlb band 0-.2",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\mlb_band_0_2.png",
+      "card_path": "docs/img/atlas/calibration/mlb_band_0_2.png",
       "key_numbers": {
         "n": 3972,
         "mean_y_overall": 0.0549,
@@ -187,7 +187,7 @@
     },
     {
       "entity": "mlb band .2-.4",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\mlb_band_2_4.png",
+      "card_path": "docs/img/atlas/calibration/mlb_band_2_4.png",
       "key_numbers": {
         "n": 3935,
         "mean_y_overall": 0.1804,
@@ -243,7 +243,7 @@
     },
     {
       "entity": "mlb band .4-.6",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\mlb_band_4_6.png",
+      "card_path": "docs/img/atlas/calibration/mlb_band_4_6.png",
       "key_numbers": {
         "n": 9042,
         "mean_y_overall": 0.493,
@@ -309,7 +309,7 @@
     },
     {
       "entity": "mlb band .6-.8",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\mlb_band_6_8.png",
+      "card_path": "docs/img/atlas/calibration/mlb_band_6_8.png",
       "key_numbers": {
         "n": 5903,
         "mean_y_overall": 0.7154,
@@ -370,7 +370,7 @@
     },
     {
       "entity": "mlb band .8-1",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\mlb_band_8_1.png",
+      "card_path": "docs/img/atlas/calibration/mlb_band_8_1.png",
       "key_numbers": {
         "n": 3831,
         "mean_y_overall": 0.9556,
@@ -416,7 +416,7 @@
     },
     {
       "entity": "soccer_intl minute 0-15",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\soccer_intl_minute_0_15.png",
+      "card_path": "docs/img/atlas/calibration/soccer_intl_minute_0_15.png",
       "key_numbers": {
         "n": 566,
         "model_ece": 0.3369,
@@ -429,7 +429,7 @@
     },
     {
       "entity": "soccer_intl minute 15-30",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\soccer_intl_minute_15_30.png",
+      "card_path": "docs/img/atlas/calibration/soccer_intl_minute_15_30.png",
       "key_numbers": {
         "n": 595,
         "model_ece": 0.3547,
@@ -442,7 +442,7 @@
     },
     {
       "entity": "soccer_intl minute 30-45",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\soccer_intl_minute_30_45.png",
+      "card_path": "docs/img/atlas/calibration/soccer_intl_minute_30_45.png",
       "key_numbers": {
         "n": 554,
         "model_ece": 0.3669,
@@ -455,7 +455,7 @@
     },
     {
       "entity": "soccer_intl minute 45-60",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\soccer_intl_minute_45_60.png",
+      "card_path": "docs/img/atlas/calibration/soccer_intl_minute_45_60.png",
       "key_numbers": {
         "n": 783,
         "model_ece": 0.3393,
@@ -468,7 +468,7 @@
     },
     {
       "entity": "soccer_intl minute 60-75",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\soccer_intl_minute_60_75.png",
+      "card_path": "docs/img/atlas/calibration/soccer_intl_minute_60_75.png",
       "key_numbers": {
         "n": 495,
         "model_ece": 0.4471,
@@ -481,7 +481,7 @@
     },
     {
       "entity": "soccer_intl minute 75-91",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\soccer_intl_minute_75_91.png",
+      "card_path": "docs/img/atlas/calibration/soccer_intl_minute_75_91.png",
       "key_numbers": {
         "n": 390,
         "model_ece": 0.4824,
@@ -494,7 +494,7 @@
     },
     {
       "entity": "soccer_intl band 0-.2",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\soccer_intl_band_0_2.png",
+      "card_path": "docs/img/atlas/calibration/soccer_intl_band_0_2.png",
       "key_numbers": {
         "n": 1634,
         "mean_y_overall": 0.5688,
@@ -540,7 +540,7 @@
     },
     {
       "entity": "soccer_intl band .2-.4",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\soccer_intl_band_2_4.png",
+      "card_path": "docs/img/atlas/calibration/soccer_intl_band_2_4.png",
       "key_numbers": {
         "n": 922,
         "mean_y_overall": 0.5228,
@@ -586,7 +586,7 @@
     },
     {
       "entity": "soccer_intl band .4-.6",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\soccer_intl_band_4_6.png",
+      "card_path": "docs/img/atlas/calibration/soccer_intl_band_4_6.png",
       "key_numbers": {
         "n": 382,
         "mean_y_overall": 1.0,
@@ -617,7 +617,7 @@
     },
     {
       "entity": "soccer_intl band .6-.8",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\soccer_intl_band_6_8.png",
+      "card_path": "docs/img/atlas/calibration/soccer_intl_band_6_8.png",
       "key_numbers": {
         "n": 189,
         "mean_y_overall": 0.963,
@@ -658,7 +658,7 @@
     },
     {
       "entity": "soccer_intl band .8-1",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\soccer_intl_band_8_1.png",
+      "card_path": "docs/img/atlas/calibration/soccer_intl_band_8_1.png",
       "key_numbers": {
         "n": 256,
         "mean_y_overall": 1.0,

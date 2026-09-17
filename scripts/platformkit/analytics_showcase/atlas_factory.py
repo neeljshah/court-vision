@@ -11,6 +11,11 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.axes import Axes
 
+try:  # dual-import (see module docstring) -- one definition of "repo-relative card path"
+    from scripts.platformkit.analytics_showcase.atlas_manifest_relpath import to_relpath
+except ImportError:
+    from atlas_manifest_relpath import to_relpath
+
 HERE = Path(__file__).parent
 REPO_ROOT = Path(__file__).resolve().parents[3]
 OUT_DIR = HERE / "out"
@@ -117,7 +122,10 @@ def write_manifest(sport: str, entries: Sequence[dict]) -> Path:
 
     Each entry must carry: entity, card_path, key_numbers (dict), floors, as_of.
     Validates shape and writes verbatim -- does not compute, round, or inflate
-    any number (counts/values are whatever the caller measured).
+    any number (counts/values are whatever the caller measured). The one
+    rewrite: card_path is stored repo-relative, because card_figure returns the
+    absolute path it rendered to and a baked-in "C:/Users/..." is dead on a
+    fresh clone (that is what atlas_manifest_relpath --check fails on).
     """
     required = {"entity", "card_path", "key_numbers", "floors", "as_of"}
     for e in entries:
@@ -130,7 +138,7 @@ def write_manifest(sport: str, entries: Sequence[dict]) -> Path:
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "descriptive_only": True,
         "n_entries": len(entries),
-        "entries": list(entries),
+        "entries": [{**e, "card_path": to_relpath(e["card_path"])} for e in entries],
     }
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     out_path = OUT_DIR / f"atlas_{sport}_manifest.json"
