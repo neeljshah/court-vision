@@ -2,7 +2,7 @@
 {% block title %}Closing Line Value · CourtVision{% endblock %}
 {% block subtitle %}CLV · last {{ days }}d{% endblock %}
 {% block og_title %}CourtVision CLV — last {{ days }} days{% endblock %}
-{% block og_desc %}Rolling closing-line-value, ROI, and Sharpe across books and prop stats.{% endblock %}
+{% block og_desc %}Rolling closing-line-value and Sharpe across books and prop stats.{% endblock %}
 
 {% block content %}
 <style>
@@ -53,7 +53,7 @@
 <section class="mb-3">
   <h1 class="text-xl md:text-2xl font-semibold" style="color:var(--cv-text)">Closing Line Value — last {{ days }} days</h1>
   <p class="text-xs md:text-sm mt-1" style="color:var(--cv-muted)">
-    Rolling CLV, ROI, and Sharpe over the last {{ days }} days
+    Rolling closing-line value and Sharpe over the last {{ days }} days
     {% if summary.n_bets %}· {{ summary.n_bets }} graded bet{{ 's' if summary.n_bets != 1 else '' }} across {{ summary.n_days }} day{{ 's' if summary.n_days != 1 else '' }}{% endif %}
   </p>
 </section>
@@ -71,32 +71,23 @@
 <!-- KPI tiles -->
 <div class="clv-grid">
   <div class="clv-kpi">
-    <div class="clv-kpi-lbl">Total P&amp;L</div>
-    <div class="clv-kpi-val {% if summary.total_pnl > 0 %}pos{% elif summary.total_pnl < 0 %}neg{% else %}zero{% endif %}">
-      {%- if summary.total_pnl > 0 -%}+{%- elif summary.total_pnl < 0 -%}-{%- endif -%}
-      ${{ '%.2f'|format(summary.total_pnl|abs) }}
-    </div>
-  </div>
-  <div class="clv-kpi">
-    <div class="clv-kpi-lbl">ROI</div>
-    <div class="clv-kpi-val {% if summary.roi_pct > 0 %}pos{% elif summary.roi_pct < 0 %}neg{% else %}zero{% endif %}">
-      {{ '%+.2f'|format(summary.roi_pct) }}%
-    </div>
+    <div class="clv-kpi-lbl">Graded bets</div>
+    <div class="clv-kpi-val zero">{{ summary.n_bets or 0 }}</div>
   </div>
   <div class="clv-kpi">
     <div class="clv-kpi-lbl">Avg CLV (bps)</div>
-    <div class="clv-kpi-val {% if summary.avg_clv_bps > 0 %}pos{% elif summary.avg_clv_bps < 0 %}neg{% else %}zero{% endif %}">
-      {{ '%+.1f'|format(summary.avg_clv_bps) }}
+    <div class="clv-kpi-val {% if summary.avg_clv_bps and summary.avg_clv_bps > 0 %}pos{% elif summary.avg_clv_bps and summary.avg_clv_bps < 0 %}neg{% else %}zero{% endif %}">
+      {% if summary.avg_clv_bps is none %}--{% else %}{{ '%+.1f'|format(summary.avg_clv_bps) }}{% endif %}
     </div>
   </div>
   <div class="clv-kpi">
     <div class="clv-kpi-lbl">Win %</div>
-    <div class="clv-kpi-val zero">{{ '%.1f'|format(summary.win_pct) }}%</div>
+    <div class="clv-kpi-val zero">{% if summary.win_pct is none %}--{% else %}{{ '%.1f'|format(summary.win_pct) }}%{% endif %}</div>
   </div>
   <div class="clv-kpi">
     <div class="clv-kpi-lbl">Sharpe ({{ days }}d)</div>
-    <div class="clv-kpi-val {% if summary.sharpe_30d > 0 %}pos{% elif summary.sharpe_30d < 0 %}neg{% else %}zero{% endif %}">
-      {{ '%+.2f'|format(summary.sharpe_30d) }}
+    <div class="clv-kpi-val {% if summary.sharpe_30d and summary.sharpe_30d > 0 %}pos{% elif summary.sharpe_30d and summary.sharpe_30d < 0 %}neg{% else %}zero{% endif %}">
+      {% if summary.sharpe_30d is none %}--{% else %}{{ '%+.2f'|format(summary.sharpe_30d) }}{% endif %}
     </div>
   </div>
 </div>
@@ -110,7 +101,7 @@
   <!-- Daily ROI sparkline -->
   {% if spark.n > 1 %}
   <div class="clv-section">
-    <div class="clv-section-hdr"><h2>Daily ROI ({{ spark.n }} days)</h2></div>
+    <div class="clv-section-hdr"><h2>Daily CLV in bps ({{ spark.n }} days)</h2></div>
     <div class="clv-section-body">
       <div class="spark-wrap">
         <svg viewBox="0 0 {{ spark.width }} {{ spark.height }}" width="100%"
@@ -122,8 +113,8 @@
                     stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
         </svg>
         <div class="spark-meta">
-          <span>min {{ '%+.1f'|format(spark.min) }}%</span>
-          <span>max {{ '%+.1f'|format(spark.max) }}%</span>
+          <span>min {{ '%+.1f'|format(spark.min) }} bps</span>
+          <span>max {{ '%+.1f'|format(spark.max) }} bps</span>
         </div>
       </div>
     </div>
@@ -138,7 +129,7 @@
         <table class="clv-table">
           <thead>
             <tr>
-              <th>Book</th><th>Bets</th><th>ROI</th><th>CLV (bps)</th>
+              <th>Book</th><th>Bets</th><th>CLV (bps)</th>
             </tr>
           </thead>
           <tbody>
@@ -146,7 +137,6 @@
               <tr>
                 <td>{{ book }}</td>
                 <td>{{ m.n_bets }}</td>
-                <td class="{% if m.roi_pct > 0 %}pos{% elif m.roi_pct < 0 %}neg{% else %}zero{% endif %}">{{ '%+.2f'|format(m.roi_pct or 0) }}%</td>
                 <td class="{% if m.avg_clv_bps > 0 %}pos{% elif m.avg_clv_bps < 0 %}neg{% else %}zero{% endif %}">{{ '%+.1f'|format(m.avg_clv_bps or 0) }}</td>
               </tr>
             {% endfor %}
@@ -166,7 +156,7 @@
         <table class="clv-table">
           <thead>
             <tr>
-              <th>Stat</th><th>Bets</th><th>ROI</th><th>Win %</th><th>CLV (bps)</th>
+              <th>Stat</th><th>Bets</th><th>Win %</th><th>CLV (bps)</th>
             </tr>
           </thead>
           <tbody>
@@ -174,7 +164,6 @@
               <tr>
                 <td>{{ stat|upper }}</td>
                 <td>{{ m.n_bets }}</td>
-                <td class="{% if m.roi_pct > 0 %}pos{% elif m.roi_pct < 0 %}neg{% else %}zero{% endif %}">{{ '%+.2f'|format(m.roi_pct or 0) }}%</td>
                 <td class="zero">{{ '%.1f'|format(m.win_pct or 0) }}%</td>
                 <td class="{% if m.avg_clv_bps > 0 %}pos{% elif m.avg_clv_bps < 0 %}neg{% else %}zero{% endif %}">{{ '%+.1f'|format(m.avg_clv_bps or 0) }}</td>
               </tr>
@@ -191,5 +180,5 @@
 {% endblock %}
 
 {% block footer %}
-  CLV dashboard · graded P&amp;L · CourtVision
+  CLV dashboard · price units only · CourtVision
 {% endblock %}

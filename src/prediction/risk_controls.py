@@ -82,7 +82,14 @@ def read_kill_switch() -> Tuple[bool, Optional[str]]:
     """Read kill-switch state from data/cache/kill_switch.json.
 
     Returns (engaged: bool, reason: str|None).
-    File absence → (False, None).  Parse errors → (False, None) + log warning.
+
+    FAIL-CLOSED (execution readiness audit 2026-09-17, defect #3). File absence
+    is the legitimate initial state and stays (False, None) -- the switch has
+    simply never been written. Anything else (corrupt JSON, truncation,
+    permission denied) means the interlock's state CANNOT BE READ, and a safety
+    interlock whose state cannot be read is not known to be clear: it is
+    reported as ENGAGED. The previous (False, None) let an unreadable file
+    silently disengage the switch.
     """
     path = _KILL_SWITCH_PATH
     if not path.exists():
@@ -94,8 +101,8 @@ def read_kill_switch() -> Tuple[bool, Optional[str]]:
         reason  = data.get("reason") or None
         return engaged, reason
     except Exception as exc:
-        log.warning("[risk] kill_switch.json read error: %s", exc)
-        return False, None
+        log.error("[risk] kill_switch.json unreadable (%s) -- treating as ENGAGED", exc)
+        return True, f"kill-switch state unreadable: {exc}"
 
 
 def write_kill_switch(engaged: bool, reason: Optional[str] = None) -> None:

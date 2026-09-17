@@ -8,8 +8,16 @@ POST /api/bankroll/set      — update the bankroll value (auth-gated)
 
 Auth
 ----
-All endpoints require LIVE_V2_AUTH_TOKEN via ?token=... query param when the env
-var is set.  When unset the API is open (local-dev mode), matching live_v2_app.py.
+READ-ONLY endpoints accept LIVE_V2_AUTH_TOKEN via the cv_session cookie or a
+?token=... query param when the env var is set; when unset they are open
+(local-dev mode), matching live_v2_app.py.
+
+MUTATING endpoints (kill-switch, bankroll/set) ALWAYS require the token. When
+LIVE_V2_AUTH_TOKEN is unset they return 503 and change nothing -- there is no
+open default, because the open default meant anyone who could reach the port
+could DISENGAGE the kill switch (execution readiness audit 2026-09-17, #3).
+Tokens are compared in constant time. A ?token= query param lands in access and
+proxy logs; prefer the cookie for anything but curl.
 
 Drawdown alerts
 ---------------
@@ -19,6 +27,7 @@ drawdown crosses 10% (medium) or 15% (auto-engage kill switch).
 from __future__ import annotations
 
 import asyncio
+import hmac
 import logging
 import os
 from datetime import datetime, timezone
@@ -38,17 +47,41 @@ def _required_token() -> Optional[str]:
     return os.environ.get("LIVE_V2_AUTH_TOKEN") or None
 
 
+def _token_matches(required: str, request: Request, token: Optional[str]) -> bool:
+    """Constant-time check of the cv_session cookie, then the ?token= fallback."""
+    cookie_val = request.cookies.get("cv_session")
+    if cookie_val and hmac.compare_digest(cookie_val, required):
+        return True
+    return bool(token and hmac.compare_digest(token, required))
+
+
 def auth_dep(request: Request, token: Optional[str] = Query(None)) -> None:
-    """Cookie-first auth (HttpOnly cv_session) with ?token= fallback for curl."""
+    """READ-ONLY auth: cookie-first, ?token= fallback, open when env is unset."""
     required = _required_token()
     if required is None:
         return
-    # Cookie path (browser sends automatically — token never in JS/HTML)
-    cookie_val = request.cookies.get("cv_session")
-    if cookie_val and cookie_val == required:
+    if _token_matches(required, request, token):
         return
-    # Fallback: explicit ?token= for curl / server-to-server
-    if token and token == required:
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="invalid or missing token",
+    )
+
+
+def mutating_auth_dep(request: Request, token: Optional[str] = Query(None)) -> None:
+    """MUTATING auth: a token is ALWAYS required -- there is no open default.
+
+    An unset LIVE_V2_AUTH_TOKEN disables these routes (503) rather than opening
+    them. Disengaging a kill switch is not a local-dev convenience.
+    """
+    required = _required_token()
+    if required is None:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="LIVE_V2_AUTH_TOKEN is not configured -- mutating risk "
+                   "routes are disabled",
+        )
+    if _token_matches(required, request, token):
         return
     raise HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -186,9 +219,13 @@ def api_risk_status(_auth: None = Depends(auth_dep)):
             "ok":                  result["ok"],
         })
     except Exception as exc:
+        # FAIL-CLOSED: the true kill-switch state is UNKNOWN here. Reporting
+        # false rendered "not engaged" during an outage; report engaged and say
+        # the state is unknown (audit 2026-09-17, #3).
         log.error("[risk] status endpoint error: %s", exc)
         return JSONResponse(
-            {"error": str(exc), "ok": False, "kill_switch_engaged": False,
+            {"error": str(exc), "ok": False, "kill_switch_engaged": True,
+             "kill_switch_state": "unknown",
              "blocked_reasons": [f"internal error: {exc}"], "warnings": []},
             status_code=500,
         )
@@ -200,7 +237,8 @@ class KillSwitchRequest(BaseModel):
 
 
 @router.post("/api/risk/kill-switch", tags=["risk"])
-def api_kill_switch(body: KillSwitchRequest, _auth: None = Depends(auth_dep)):
+def api_kill_switch(body: KillSwitchRequest,
+                    _auth: None = Depends(mutating_auth_dep)):
     """Engage or disengage the kill switch.
 
     Body: ``{"engage": true, "reason": "manual emergency"}``
@@ -244,7 +282,8 @@ class BankrollSetRequest(BaseModel):
 
 
 @router.post("/api/bankroll/set", tags=["risk"])
-def api_bankroll_set(body: BankrollSetRequest, _auth: None = Depends(auth_dep)):
+def api_bankroll_set(body: BankrollSetRequest,
+                     _auth: None = Depends(mutating_auth_dep)):
     """Update the bankroll to a new value and record a snapshot.
 
     Accepts either ``{"bankroll": 1000.0}`` (preferred) or the legacy

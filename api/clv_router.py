@@ -1,10 +1,14 @@
 """/clv standalone HTML page.
 
 Renders the data exposed at /api/clv/summary as a dark-theme dashboard with:
-  * Headline tiles (PnL, ROI, avg CLV bps, win%, Sharpe).
+  * Headline tiles (avg CLV bps, win%, Sharpe, bet count).
   * by_book table.
   * by_stat table.
-  * Daily ROI sparkline (data/clv/daily_clv.csv).
+  * Daily CLV sparkline (data/clv/daily_clv.csv).
+
+PRICE UNITS ONLY. This page is served unauthenticated, so it renders no dollar
+PnL and no ROI percentage -- see .claude/rules/no-edge-claims.md. CLV in basis
+points is a price-vs-close measurement, not a profit claim.
 """
 from __future__ import annotations
 
@@ -40,14 +44,22 @@ def _read_daily_clv_csv(days: int) -> list[dict]:
     return rows
 
 
-def _sparkline_points(daily: list[dict], width: int = 600, height: int = 80) -> dict:
-    """Pre-compute SVG polyline points + min/max for the daily roi_pct sparkline."""
+def _sparkline_points(daily: list[dict], width: int = 600, height: int = 80,
+                      column: str = "avg_clv_bps") -> dict:
+    """Pre-compute SVG polyline points + min/max for a daily *column* series.
+
+    Defaults to the CLV series, not ROI. A row missing the column is SKIPPED
+    rather than coerced to 0.0, so an absent column yields an empty series and
+    the sparkline is simply not drawn instead of plotting a fake flat line.
+    """
     vals: list[float] = []
     for r in daily:
+        if r.get(column) in (None, ""):
+            continue
         try:
-            vals.append(float(r.get("roi_pct") or 0))
+            vals.append(float(r[column]))
         except (TypeError, ValueError):
-            vals.append(0.0)
+            continue
     if not vals:
         return {"points": "", "min": 0.0, "max": 0.0, "n": 0,
                 "width": width, "height": height, "zero_y": height / 2}
@@ -87,10 +99,12 @@ def clv_page(request: Request,
         else:
             summary_dict = dict(summary)
     except Exception as exc:  # ultra-defensive — page must render
+        # A failure renders as an explicit error banner with NO numbers. The
+        # previous zero-filled dict made an outage indistinguishable from a
+        # genuine flat result (audit 2026-09-17, #10).
         summary_dict = {
             "error": str(exc), "window_days": days, "n_bets": 0,
-            "total_stake": 0.0, "total_pnl": 0.0, "roi_pct": 0.0,
-            "avg_clv_bps": 0.0, "win_pct": 0.0, "sharpe_30d": 0.0,
+            "avg_clv_bps": None, "win_pct": None, "sharpe_30d": None,
             "by_book": {}, "by_stat": {},
         }
 
