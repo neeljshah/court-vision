@@ -126,6 +126,11 @@ jobs:
           npx vitest run components/analytics/AnalyticsNavigation.test.tsx
           npx vitest run components/analytics/workspace/Workspace.test.tsx
 
+      - name: Verify published JSON
+        run: |
+          node scripts/verify-public-json.mjs
+          node --test scripts/verify-public-json.test.mjs
+
       - name: Static export (snapshot data mode)
         env:
           NEXT_PUBLIC_DATA_MODE: snapshot
@@ -138,6 +143,7 @@ jobs:
         run: |
           node scripts/verify-analytics-export.mjs
           node --test scripts/verify-analytics-export.test.mjs
+          node scripts/verify-public-json.mjs out/data
 
       - uses: actions/configure-pages@v6
 

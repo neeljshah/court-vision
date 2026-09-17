@@ -3133,7 +3133,7 @@
      "verdict": "NOT_TESTABLE",
      "bucket": "not_testable",
      "effect": -0.017,
-     "p": NaN,
+     "p": null,
      "corpus": "slam_points_2011_2015",
      "evidence": "corpus=slam_points_2011_2015; n=34145; break-point conversion rate, set>=3 (0.4113, n=16102) vs set==1 (0.4283, n=18043)",
      "as_of": null,
