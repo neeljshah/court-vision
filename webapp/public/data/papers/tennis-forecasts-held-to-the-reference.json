@@ -15,7 +15,7 @@
     "preregistered null",
     "calibration"
   ],
-  "abstract": "CourtVision publishes two tennis calibration receipts and one preregistered myth scoreboard, and this paper reads all three straight -- including one correction the title itself needs. Neither tennis_showcase.json block used here compares a forecast to the devigged market close: both pregame_prior_cross_corpus and ingame_surface_context mark vs_close as UNPROVEN. So what follows is a held-out Brier comparison between two of CourtVision's own model variants, tested with a cluster-robust Diebold-Mariano loss-differential test, never a market claim. In the pregame cross-corpus test, a state-time prior fit on one tour and held out on the other beats a plain state-diff baseline in both directions: base Brier 0.1698 falls to prior Brier 0.1597 on 40516 held-out states (delta 0.01005, dm_p 0.0), and base Brier 0.1550 falls to prior Brier 0.1432 on 14559 held-out states (delta 0.01184, dm_p 0.0). In the in-game test the opposite happens: a surface-specific hold prior does not beat a surface-blind baseline on either tour across three folds each (pooled ATP delta +0.000121, pooled WTA delta +0.002492), and the artifact's own verdict is REJECT. Separately, tennis_grain_and_myths.json confirms point-to-point momentum (n=456383, effect 0.0216) but returns NULL_LOCAL for post-break hold rate at the game grain (n=21208, corroborated on two split halves) and for two tiebreak beliefs (skill persistence, n=206; serve order, n=1281). Altitude and travel effects, by contrast, are confirmed and independently replicated in the same file. Every null below is reported as a result, not a gap.",
+  "abstract": "CourtVision publishes two tennis calibration receipts and one preregistered myth scoreboard, and this paper reads all three straight -- including one correction the title itself needs. Neither tennis_showcase.json block used here compares a forecast to the devigged market close: both pregame_prior_cross_corpus and ingame_surface_context mark vs_close as UNPROVEN. So what follows is a held-out Brier comparison between two of CourtVision's own model variants, tested with a cluster-robust Diebold-Mariano loss-differential test, never a market claim. In the pregame cross-corpus test, a state-time prior fit on one tour and held out on the other beats a plain state-diff baseline in both directions: base Brier 0.1698 falls to prior Brier 0.1597 on 40516 held-out states (brier_delta 0.01005, published as base minus prior, dm_p 0.0), and base Brier 0.1550 falls to prior Brier 0.1432 on 14559 held-out states (brier_delta 0.01184, dm_p 0.0). In the in-game test the opposite happens: a surface-specific hold prior does not beat a surface-blind baseline on either tour across three folds each (pooled ATP delta +0.000121, pooled WTA delta +0.002492), and the artifact's own verdict is REJECT. Separately, tennis_grain_and_myths.json confirms point-to-point momentum (n=456383, effect 0.0216) but returns NULL_LOCAL for post-break hold rate at the game grain (n=21208, corroborated on two split halves) and for two tiebreak beliefs (skill persistence, n=206; serve order, n=1281). In the same file altitude is CONFIRMED_LOCAL with two further rows whose verdict reads REPLICATED; long travel is CONFIRMED_LOCAL with no replication row. Every null below is reported as a result, not a gap.",
   "sections": [
     {
       "id": "question",
@@ -37,20 +37,20 @@
       "blocks": [
         {
           "type": "p",
-          "text": "tennis_showcase.json carries two independent receipts, each pointing at its own upstream gate file. pregame_prior_cross_corpus is sourced from data/frontend/ingame/gate_tennis.json and runs a true A-to-B cross-corpus design: corpus A holds 29572 games and 40516 states, corpus B holds 11016 games and 14559 states (coverage.a_games, coverage.a_states, coverage.b_games, coverage.b_states). Its two named directions, atp_train_wta_test and wta_train_atp_test, each publish their own n_train_states and n_test_states, and this paper quotes those direction-level counts rather than assuming which top-level coverage figure maps to which direction. ingame_surface_context is a second, separate receipt inside the same file, sourced from data/frontend/ingame/surface_hold_verdict.json, and reports pooled and three-fold Brier for a surface-blind (H0) and a surface-specific (H1) hold prior, on each tour separately. The site manifest lists tennis_showcase's own as_of as null, so every number from it below is dated only as date not published."
+          "text": "tennis_showcase.json carries two independent receipts, each pointing at its own upstream gate file. pregame_prior_cross_corpus is sourced from data/frontend/ingame/gate_tennis.json and runs a true A-to-B cross-corpus design: corpus A holds 29572 games and 40516 states, corpus B holds 11016 games and 14559 states (coverage.a_games, coverage.a_states, coverage.b_games, coverage.b_states). Its two named directions, atp_train_wta_test and wta_train_atp_test, each publish their own n_train_states and n_test_states, and this paper quotes those direction-level counts as published. They are not usable as tour labels: the pregame block puts 40516 states on the WTA test side while the in-game block puts the same 40516 on ATP, and 14559 the reverse way in both. The artifact does not reconcile that, so no count below is read as tour-specific. ingame_surface_context is a second, separate receipt inside the same file, sourced from data/frontend/ingame/surface_hold_verdict.json, and reports pooled and three-fold Brier for a surface-blind (H0) and a surface-specific (H1) hold prior, on each tour separately. The site manifest lists tennis_showcase's own as_of as null, so every number from it below is dated only as date not published."
         },
         {
           "type": "p",
-          "text": "tennis_grain_and_myths.json is a separate artifact, sourced from scripts/platformkit/analytics_showcase/out/fwd_claim_scoreboard.json, and carries its own generated_at of 2026-07-25T11:13:41Z. The site manifest separately lists an as_of of 2026-07-25T04:35:42Z for the same module id; this paper cites the artifact's own generated_at field rather than the manifest value, since the two do not agree and the artifact's own field is the more direct source."
+          "text": "tennis_grain_and_myths.json is a separate artifact, sourced from scripts/platformkit/analytics_showcase/out/fwd_claim_scoreboard.json, and carries its own generated_at of 2026-07-25T11:13:41Z. The site manifest separately lists an as_of of 2026-07-25T04:35:42Z for the same module id; this paper cites the artifact's own generated_at rather than the manifest value, since the two do not agree."
         },
         {
           "type": "p",
-          "text": "None of this is the MLB in-game corpus that companion papers restate (126 of 227 files held more than one game, 27076 of 78986 ticks mislabelled); it was re-segmented into revision 2 on 2026-09-16. Tennis's receipts point at gate_tennis.json and surface_hold_verdict.json, and its myth tests draw on slam-level point corpora (slam_points_2011_2015, slam_points) and match-level ATP/WTA corpora (matches_asof_setdetail_schedule_density_atp_wta, travel_scouting_matches_atp_wta_2015_2025). None of these source fields name the MLB tick file set, so the MLB quarantine does not apply to any number in this paper."
+          "text": "None of this is the MLB in-game corpus that companion papers restate (126 of 227 files held more than one game, 27076 of 78986 ticks mislabelled), re-segmented into revision 2 on 2026-09-16. Tennis's receipts point at gate_tennis.json and surface_hold_verdict.json; its myth tests draw on slam_points_2011_2015, slam_points, matches_asof_setdetail_schedule_density_atp_wta and travel_scouting_matches_atp_wta_2015_2025. No source field here names the MLB tick set, so that quarantine does not apply."
         },
         {
           "type": "callout",
           "label": "Definition",
-          "text": "Brier score: the mean squared difference between a forecast probability and the eventual 0/1 outcome, averaged over states; lower is better, 0 is perfect. Held-out: the score is computed only on states excluded from whatever fitting produced the model's parameters. Diebold-Mariano (DM) test: a paired significance test on the mean difference between two forecasters' per-state losses; it says one forecaster's average loss is or is not reliably lower than the other's, and it says nothing about calibration shape, and nothing about a market price unless a market price is one of the two series being compared, which it is not here. Reference, throughout this paper, means the simpler baseline model defined inside each artifact block, not the market close."
+          "text": "Brier score: the mean squared difference between a forecast probability and the eventual 0/1 outcome, averaged over states; lower is better, 0 is perfect. Held-out: the score is computed only on states excluded from whatever fitting produced the model's parameters. Diebold-Mariano (DM) test: a paired significance test on the mean difference between two forecasters' per-state losses; it says one forecaster's average loss is or is not reliably lower than the other's, and nothing about calibration shape or about a market price, which is not one of the two series here. Reference, throughout this paper, means the simpler baseline model defined inside each artifact block, not the market close."
         }
       ]
     },
@@ -60,19 +60,19 @@
       "blocks": [
         {
           "type": "p",
-          "text": "A held-out Brier comparison fits or blends each model's parameters on one slice of data and scores it only on a separate slice it never saw during fitting, so the reported gap reflects out-of-sample accuracy rather than a fit that memorized its own training states. Both tennis_showcase.json blocks share the same functional form for their reference model: sigmoid((a+b*frac_elapsed)*state_diff), with a and b fit per corpus (pregame_prior_cross_corpus.base_model; ingame_surface_context.base_model uses the identical form for its surface-blind baseline). The pregame challenger blends a cross-corpus prior on top of that same base; the in-game challenger conditions the same style of hold-prior model on which surface a match is played on."
+          "text": "A held-out Brier comparison fits each model on one slice and scores it only on a separate slice it never saw, so the gap reflects out-of-sample accuracy rather than a memorized fit. Both tennis_showcase.json blocks share the same functional form for their reference model: sigmoid((a+b*frac_elapsed)*state_diff), with a and b fit per corpus (pregame_prior_cross_corpus.base_model; ingame_surface_context.base_model uses the identical form for its surface-blind baseline). The pregame challenger blends a cross-corpus prior on top of that same base; the in-game challenger conditions the same style of hold-prior model on which surface a match is played on."
         },
         {
           "type": "math",
-          "text": "Brier(model) = mean over held-out states of (p_model - outcome)^2; brier_delta (pregame test) = brier_prior - brier_base, published directly by the artifact and not recomputed here."
+          "text": "Brier(model) = mean over held-out states of (p_model - outcome)^2; brier_delta (pregame test) = brier_base - brier_prior as the artifact publishes it, so a positive value means the prior's Brier is the lower of the two."
         },
         {
           "type": "p",
-          "text": "A DM test does not test calibration. It takes the per-state loss differential between two forecasters and tests whether its mean differs from zero, using a standard error that accounts for many states from the same match being correlated rather than independent draws. The artifact's own caveat is explicit about why that matters: DM clustered by game_id -- per-state iid SE would over-state significance (pregame_prior_cross_corpus.caveats). A DM test can say one forecaster's average loss is reliably lower than another's; it cannot say either forecaster is well-calibrated in isolation, and it establishes nothing about a market price unless a market price is one of the two loss series, which is not the design used here."
+          "text": "A DM test does not test calibration. It takes the per-state loss differential between two forecasters and tests whether its mean differs from zero, using a standard error that accounts for many states from the same match being correlated rather than independent draws. The artifact's own caveat is explicit about why that matters: DM clustered by game_id -- per-state iid SE would over-state significance (pregame_prior_cross_corpus.caveats). A DM test can say one forecaster's average loss is reliably lower than another's; it cannot say either forecaster is well-calibrated in isolation, and it says nothing about a market price, which is not one of the two loss series here."
         },
         {
           "type": "math",
-          "text": "DM test (as the artifact's caveat defines the design): d_t = loss_reference(t) - loss_challenger(t) per state; reported statistic is dm_p, the two-tailed significance of mean(d) using a standard error clustered by game_id rather than treated as one independent draw per state. The underlying DM statistic itself is not published in either tennis_showcase.json block, only dm_p."
+          "text": "DM test (as the artifact's caveat defines the design): d_t = loss_reference(t) - loss_challenger(t) per state; reported statistic is dm_p, the two-tailed significance of mean(d) using a standard error clustered by game_id rather than treated as one independent draw per state."
         }
       ]
     },
@@ -82,7 +82,7 @@
       "blocks": [
         {
           "type": "p",
-          "text": "Held out on the opposite tour's states, CourtVision's cross-corpus prior beats the plain state-diff baseline in both directions tested (Table 1): brier_prior comes in below brier_base every time, 0.1597 against 0.1698 on 40516 held-out states in one direction (delta 0.01005), and 0.1432 against 0.1550 on 14559 held-out states in the other (delta 0.01184). Both directions report dm_p 0.0 as published. A literal zero two-tailed p-value is not plausible for a finite continuous test statistic, so this most likely reflects the artifact's own rounding; the underlying DM statistic itself is not published, only dm_p."
+          "text": "Held out on the opposite corpus's states, CourtVision's cross-corpus prior beats the plain state-diff baseline in both directions tested (Table 1): brier_prior comes in below brier_base every time, 0.1597 against 0.1698 on 40516 held-out states in one direction (brier_delta 0.01005, base minus prior), and 0.1432 against 0.1550 on 14559 held-out states in the other (brier_delta 0.01184). Both directions report dm_p 0.0 as published. A literal zero two-tailed p-value is not plausible, so it most likely reflects the artifact's rounding; the underlying DM statistic is not published, only dm_p."
         },
         {
           "type": "table",
@@ -93,7 +93,7 @@
             "n train states",
             "Base Brier (reference)",
             "Prior Brier (model)",
-            "Brier delta (prior minus base)",
+            "Brier delta (base minus prior)",
             "DM p"
           ],
           "rows": [
@@ -204,11 +204,11 @@
               "0.000188"
             ]
           ],
-          "note": "Pooled delta is published only at the pooled row (pooled_delta_h1_minus_h0); dm_p is published only per fold. n is n_states_joined for pooled rows and n_test for fold rows. sign_holds_ge_2of3 is false on both tours."
+          "note": "Pooled delta is published only at the pooled row (pooled_delta_h1_minus_h0); dm_p is published only per fold. Pooled n is n_states_joined; fold n is n_test, and the three folds sum to 26340 of ATP's 40516 joined states and 7937 of WTA's 14559. sign_holds_ge_2of3 is false on both tours."
         },
         {
           "type": "p",
-          "text": "On both tours, the surface-blind reference (H0) posts a lower, better Brier than the surface-specific challenger (H1) at the pooled level and in every one of the six published folds; sign_holds_ge_2of3 is false for both tours. The gap is small at the pooled level, 0.000121 on ATP and 0.002492 on WTA, but the sign is consistent: adding surface context did not help. On WTA the per-fold dm_p values, 0.115565, 0.0117 and 0.000188, show that gap reaching conventional significance in two of the three folds -- significantly worse, not significantly better. Held to its own reference model, this challenger loses."
+          "text": "On both tours, the surface-blind reference (H0) posts a lower, better Brier than the surface-specific challenger (H1) at the pooled level and in every one of the six published folds; sign_holds_ge_2of3 is false for both tours. The gap is small at the pooled level, 0.000121 on ATP and 0.002492 on WTA, but the sign is consistent: adding surface context did not help. The two tours carry very different uncertainty. On ATP the three fold dm_p values, 0.839017, 0.92113 and 0.607072, separate the two models in no fold: a consistent sign on a gap the test cannot distinguish from zero. On WTA the per-fold dm_p values, 0.115565, 0.0117 and 0.000188, reach conventional significance in two of three folds, with H1 the worse side. Over both, the artifact's verdict is REJECT."
         },
         {
           "type": "p",
@@ -272,11 +272,11 @@
         },
         {
           "type": "p",
-          "text": "A null verdict here is not a missing result. Each null row cleared the same preregistered leak-free gate the confirmed rows did; the post-break-hold-rate null was specifically re-checked on two disjoint split halves to rule out a one-off fluctuation, and it held null on both. That is what a preregistered test is for: it can say no as readily as yes. The file's own confounds field states that CONFIRMED and NULL verdicts alike are descriptive accuracy findings, never a money-advantage claim (tennis_grain_and_myths.json confounds)."
+          "text": "A null verdict here is not a missing result. Each null row cleared the same preregistered leak-free gate the confirmed rows did; the post-break-hold-rate null was specifically re-checked on two disjoint split halves to rule out a one-off fluctuation, and it held null on both. That is what a preregistered test is for: it can say no as readily as yes. The file's own confounds field calls CONFIRMED and NULL verdicts alike descriptive accuracy findings (tennis_grain_and_myths.json confounds)."
         },
         {
           "type": "p",
-          "text": "Not everything in this file is null. Altitude suppresses serve ace rate (CONFIRMED_LOCAL, n=27463, effect -0.0083), and the effect independently replicates on two disjoint year slices (2015-2020: n=14329, effect -0.0078; 2021-2025: n=13134, effect -0.0089); long travel lowers win probability (CONFIRMED_LOCAL, n=26950, effect -0.0699). These are reported here only for contrast, to show that the same scoreboard returning four nulls above also returns confirmed, independently replicated effects elsewhere; the null verdicts are not an artifact of a test that never confirms anything."
+          "text": "Not everything in this file is null, and the two confirmations are not equally supported. Altitude suppresses serve ace rate (CONFIRMED_LOCAL, n=27463, effect -0.0083) and carries two further rows whose verdict field reads REPLICATED, on disjoint year slices (2015-2020: n=14329, effect -0.0078; 2021-2025: n=13134, effect -0.0089). Long travel lowers win probability (CONFIRMED_LOCAL, n=26950, effect -0.0699) and carries no replication row, so it is confirmed locally and nowhere else. The scoreboard that returned four nulls above does confirm elsewhere, and replicates in one of those two places."
         }
       ]
     },
@@ -290,7 +290,7 @@
             "If additional folds of ingame_surface_context continued to show the same significantly-worse WTA pattern (dm_p 0.115565, 0.0117, 0.000188), that would harden the REJECT verdict now resting on three folds; a reversal on new folds would weaken it.",
             "The pregame cross-corpus test's dm_p is published as 0.0 in both directions; a future artifact publishing the underlying DM statistic and an unrounded p-value would let that reading be checked against a specific magnitude instead of treated as a rounding artifact.",
             "Neither tennis_showcase.json block has a vs_close value other than UNPROVEN; a future receipt joining either test to the devigged closing price would extend this comparison to a genuine market comparison, not available today.",
-            "The WTA side of every test here runs on a smaller n than the ATP side (14559 versus 40516 states or joined states), so any WTA-specific reading carries wider uncertainty than the matching ATP reading.",
+            "One corpus is about 2.8 times the other (40516 versus 14559 states), so the smaller side carries wider uncertainty, and which tour that is is exactly what the two blocks disagree on.",
             "tiebreak_skill_persistence_partial's n of 206 is a player-level count, far smaller than the other tested hypotheses'; a null on 206 players is real but a much less powered result than the 456383-point momentum test."
           ]
         }
@@ -324,7 +324,7 @@
         },
         {
           "type": "p",
-          "text": "A separate paper, surface-transfer-and-form-stability, covers tennis's descriptive per-player clay/hard and grass splits from tennis_surface_transfer.json, which is a different question from the held-out Brier and DM tests reported here and uses neither a Brier score nor a DM test itself."
+          "text": "A separate paper, surface-transfer-and-form-stability, covers tennis's descriptive per-player clay/hard and grass splits from tennis_surface_transfer.json, which uses neither a Brier score nor a DM test itself."
         }
       ]
     }
