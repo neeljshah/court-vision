@@ -6,6 +6,7 @@
 
 [![Deploy analytics site](https://github.com/neeljshah/court-vision/actions/workflows/deploy-demo.yml/badge.svg)](https://github.com/neeljshah/court-vision/actions/workflows/deploy-demo.yml)
 [![Honesty gate + webapp QA](https://github.com/neeljshah/court-vision/actions/workflows/webapp-qa.yml/badge.svg)](https://github.com/neeljshah/court-vision/actions/workflows/webapp-qa.yml)
+[![Proof harness](https://github.com/neeljshah/court-vision/actions/workflows/proof.yml/badge.svg)](https://github.com/neeljshah/court-vision/actions/workflows/proof.yml)
 
 [![CourtVision analytics: how forecasts compare with outcomes](docs/img/analytics_home.png)](https://neeljshah.github.io/court-vision/analytics/)
 
