@@ -82,6 +82,24 @@ Verdict vocabulary: `MATCHES_CLOSE` / `TRAILS_CLOSE` / `MARKET_SHARPER` / `MODEL
 | Walk-forward harness, leak guard, calibration and deflated-metric code | readable source | engineering sample | [scripts/platformkit/eval_gate/](scripts/platformkit/eval_gate/), [kernel/](kernel/) | `python -m pytest scripts/platformkit/eval_gate/test_leak_contract.py -q` |
 | Order-lifecycle code has no reachable live path; tested against a mock exchange | double-gated | engineering control | [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md) section G | recorded |
 
+
+## G. Execution discipline (paper only -- no live order path exists)
+
+Read this section with its caveat: these rows show *discipline*, not a working trading system.
+The forward paper series is currently dormant, and the in-game models trail the live market
+reference (section C). Both facts are part of the record.
+
+| Claim | Number | Verdict | Artifact | Reproduce |
+|---|---|---|---|---|
+| A complete order lifecycle (submit, ack, partial, fill, cancel/replace, settle) with the live path deliberately unreachable: an explicit `live=True`, an undocumented env flag, and a terminal hard refusal | three independent gates | engineering control | [executor/lifecycle.py](scripts/platformkit/execution/executor/lifecycle.py) | read the module header |
+| Pre-registered thresholds, each with its registration date, source measurement and sample size; a threshold moved after seeing its own result is treated as curve-fitting | every constant dated | engineering control | [execution/thresholds.py](scripts/platformkit/execution/thresholds.py) | read the module |
+| A venue fee model that fails closed (raises on a unit error rather than returning a zero fee) and names what it could not verify | tested against golden numbers | engineering control | [execution/venue_fees.py](scripts/platformkit/execution/venue_fees.py) | recorded |
+| Guards against fabricated closing-line value: off-market prices are filtered at read time without mutating the ledger | two-condition rule | engineering control | [clv_ledger.py](scripts/platformkit/clv_ledger.py) | recorded |
+| The circuit breaker gates on the median, not the flattering fat-tailed mean | pre-registered 2026-07-15 | engineering control | [execution/circuit_breaker.py](scripts/platformkit/execution/circuit_breaker.py) | recorded |
+| The paper-execution audit publishes its own nulls: every logged paper bet is `executed=False`, and realized closing-line value is null where no independent close feed exists | see artifact | `DESCRIPTIVE` | [docs/evidence/execution-honesty.md](docs/evidence/execution-honesty.md), [paper_execution_audit.json](scripts/platformkit/analytics_showcase/out/paper_execution_audit.json) | recorded |
+| A check-then-append race in the ledger writer, closed and proven by a test that races two real OS processes | test passes | engineering control | [test_clv_ledger_io.py](scripts/platformkit/test_clv_ledger_io.py) | `python -m pytest scripts/platformkit/test_clv_ledger_io.py -q` |
+| An integrity checker that fails the project's own headline in-game corpus, shipped with the finding it produced | exit 1 on the original corpus | engineering control | [check_ingame_join_integrity.py](scripts/platformkit/check_ingame_join_integrity.py) | [live: join-integrity finding](https://neeljshah.github.io/court-vision/analytics/findings/ingame-join-integrity/) |
+
 ---
 
 **Navigate:** [README](README.md) - [Receipts](RECEIPTS.md) - [Reproduce](REPRODUCE.md) - [Job Evidence Packet](docs/JOB_EVIDENCE_PACKET.md) - [Doc map](docs/INDEX.md)
