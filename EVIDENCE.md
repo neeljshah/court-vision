@@ -86,6 +86,8 @@ Verdict vocabulary: `MATCHES_CLOSE` / `TRAILS_CLOSE` / `MARKET_SHARPER` / `MODEL
 ## G. Execution discipline (paper only -- no live order path exists)
 
 Read this section with its caveat: these rows show *discipline*, not a working trading system.
+The execution modules below are published as readable source; their wider import closure lives in the
+private tree, so they are not runnable from this repository.
 The forward paper series is currently dormant, and the in-game models trail the live market
 reference (section C). Both facts are part of the record.
 
@@ -97,7 +99,7 @@ reference (section C). Both facts are part of the record.
 | Guards against fabricated closing-line value: off-market prices are filtered at read time without mutating the ledger | two-condition rule | engineering control | [clv_ledger.py](scripts/platformkit/clv_ledger.py) | recorded |
 | The circuit breaker gates on the median, not the flattering fat-tailed mean | pre-registered 2026-07-15 | engineering control | [execution/circuit_breaker.py](scripts/platformkit/execution/circuit_breaker.py) | recorded |
 | The paper-execution audit publishes its own nulls: every logged paper bet is `executed=False`, and realized closing-line value is null where no independent close feed exists | see artifact | `DESCRIPTIVE` | [docs/evidence/execution-honesty.md](docs/evidence/execution-honesty.md), [paper_execution_audit.json](scripts/platformkit/analytics_showcase/out/paper_execution_audit.json) | recorded |
-| A check-then-append race in the ledger writer, closed and proven by a test that races two real OS processes | test passes | engineering control | [test_clv_ledger_io.py](scripts/platformkit/test_clv_ledger_io.py) | `python -m pytest scripts/platformkit/test_clv_ledger_io.py -q` |
+| A check-then-append race in the ledger writer, closed and proven by a test that races two real OS processes | test passes | engineering control | [clv_ledger_io.py](scripts/platformkit/clv_ledger_io.py), [test_clv_ledger_io.py](scripts/platformkit/test_clv_ledger_io.py) | readable here; runs in the full private tree |
 | The bar for any real order is fixed in advance: six gates, including 8 weeks of fee-netted shadow markout with an interval excluding 0 on two market families; no gate may be weakened after its own result | pre-registered 2026-09-17; G6 not started | pre-registration | [docs/GO_LIVE_GATES.md](docs/GO_LIVE_GATES.md) | read the page |
 | An integrity checker that fails the project's own headline in-game corpus, shipped with the finding it produced | exit 1 on the original corpus | engineering control | [check_ingame_join_integrity.py](scripts/platformkit/check_ingame_join_integrity.py) | [live: join-integrity finding](https://neeljshah.github.io/court-vision/analytics/findings/ingame-join-integrity/) |
 

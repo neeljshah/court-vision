@@ -58,6 +58,8 @@
 + scripts/platformkit/execution/markout.py
 + scripts/platformkit/execution/executor/
 + scripts/platformkit/clv_ledger.py
++ scripts/platformkit/clv_ledger_io.py
++ scripts/platformkit/clv_ledger_dedup.py
 + scripts/platformkit/test_clv_ledger_io.py
 + scripts/platformkit/check_ingame_join_integrity.py
 + scripts/platformkit/reject_ledger.py
