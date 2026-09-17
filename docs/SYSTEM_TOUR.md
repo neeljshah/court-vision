@@ -1,0 +1,522 @@
+> This is the long-form system tour (the repository README until 2026-09-17). The short front door is [README.md](../README.md); the claim-by-claim index is [EVIDENCE.md](../EVIDENCE.md).
+
+# CourtVision -- quant-reader evidence for calibrated multi-sport forecasting
+
+CourtVision is an NBA-origin computer-vision, forecasting, and decision-research system. The
+central result is deliberately unglamorous: against real closing lines, the market is efficient.
+The pregame model matches the Shin-devigged close within noise on team-strength markets across six
+independent corpora; it is a calibration result, not an edge claim. Measured in-game conditioning
+is the lane: conditioning on realized game state improves the forecaster, while the market has that
+same state too.
+
+## What holds up
+
+All figures in this opening are from the audited
+[Job Evidence Packet](JOB_EVIDENCE_PACKET.md).
+
+| Measurement | Leak-free result | Scope and interpretation |
+|---|---:|---|
+| NBA player props | PTS MAE 4.83; REB 1.92; AST 1.39; FG3M 0.89 | Production-model chronological holdout: 20,354 player-game rows, scored through the production inference path. |
+| Win probability | 0.709 accuracy; 0.193 Brier | Three-fold walk-forward measurement. |
+| In-game conditioning | NBA Brier 0.209 to 0.159; MLB 0.241 to 0.126 | Real-corpus out-of-sample conditioning result. It measures forecast quality, not a tradable advantage. |
+| Pregame market comparison | Matches the devigged close within noise | Team-strength markets across six independent corpora; the documented outcome is market efficiency. |
+
+## Credible rigor: the result includes the rejects
+
+| Check | What the record says | Why it matters |
+|---|---|---|
+| Same-night red-team hardening | 0/200 null ships; echo attackers blocked | A green-looking result is not accepted until adversarial controls fail to reproduce it. |
+| Multiplicity correction | 0 of 60 candidate signal classes survive (`scripts/platformkit/eval_gate/spa_catalog_report.txt`: `catalog_signals_on_disk=60`, `documented_retro_survivors=0`); the complete set is published as the honest graveyard | Discovery volume does not become evidence by repetition. |
+| Self-falsification | Two impossibility claims were falsified by our own adversarial checks | The evidence trail records both counterexamples and retractions rather than preserving a convenient theory. |
+
+## Demos
+
+[Demo evidence](evidence/demo/) is the stable entry point for rendered clips. Rendering is in
+progress; the index is intentionally ready for additional clips as they land and records what is
+currently available.
+
+## Evidence navigation
+
+| Read | Contents |
+|---|---|
+| [Public evidence](PUBLIC_EVIDENCE.md) | Public, reproducible evidence and reviewer guidance. |
+| [Intelligence manifest](INTELLIGENCE.md) | The derived artifacts between tracking and models. |
+| [Job Evidence Packet](JOB_EVIDENCE_PACKET.md) | Audited source of truth, including limitations and retractions. |
+| [Tracking evidence](evidence/tracking/) | Includes the [soccer S4 counterexample](evidence/tracking/soccer_s4_packet_2026-09-01.md) and [baseball retraction](evidence/tracking/baseball_s4_packet_2026-09-01.md): we falsify our own claims. |
+| [Calibration evidence](evidence/calibration/) | Public calibration receipts and their interpretation. |
+
+---
+
+## How the whole brain works together
+
+Everything is one funnel, and every stage feeds the next. A model change in one place
+propagates coherently to every market through a single seam.
+
+```
+  DATA            keyless, leak-free ingest across 5 sports (ESPN, MLB StatsAPI, Sackmann,
+   |              football-data, prediction markets, DFS prop feeds) -> as-of-stamped parquet
+   v
+  SIGNALS         leak-safe per-entity features + priors: team ratings (MOV-Elo / EW-Poisson /
+   |              surface-Elo / serve-hold), per-player per-exposure rates, 44 atlases, archetypes
+   v
+  MODELS          one CALIBRATED win-probability per sport (the anchor) + per-player count
+   |              distributions (Poisson / Negative-Binomial, dispersion-calibrated)
+   v
+  ENGINES         JointDistribution (coherent score matrix) + the possession Monte-Carlo sim
+   |              (emergent teammate correlation) + the live repricer (conditions on realized state)
+   v
+  PREDICTIONS     ONE seam -> the full market surface: ML / totals / spreads / 1X2 / BTTS /
+   |              correct-score / player-prop ladders / SGP -- pregame and in-game, coherent
+   v
+  INTELLIGENCE    the edge-intelligence corpus + the proving spine: every candidate edge tiered
+                  hypothesis -> calibration-proven -> CLV-proven; cut where markets are efficient
+```
+
+The cohesion is the point: **one win-probability anchors the moneyline, the spread, the total,
+and the in-game reprice** -- they are coherent reads off the same engine, not four independent
+models that can disagree. Pregame and in-game agree at tip-off by construction. Adding a sport
+is an adapter, not a kernel rewrite; adding a market is a read off the same anchor.
+
+---
+
+## Product 2: the quant terminal
+
+The original dark operator surface -- scoreboard, evidence spine, receipts drill, graveyard,
+counterfactual and microstructure labs -- is still live at its original URLs
+(**[neeljshah.github.io/court-vision](https://neeljshah.github.io/court-vision)**) and now serves
+the operator, not the visitor. Same artifacts, same honesty rails, denser presentation.
+
+---
+
+## Verify it, and use it with YOUR Claude
+
+The proof harness is the first thing to run: every analytics module carries its own `--check`
+self-verification and `check_all.py` runs all of them on a bare clone -- **77/77 PASS** in the
+committed report, committed artifacts only, no private data.
+
+This repo also ships a working **MCP server** — clone it, connect it to Claude Code
+or Claude Desktop, and ask in plain English: scouting reports, comparables,
+matchup previews, atlas cards, verified-claim receipts. Every answer is a typed
+envelope (`ok` / `no_data` / `not_supported` / `refused`) with a `source_artifact`
+and `as_of` — it reads a committed artifact or **fails closed**; it never answers
+from model memory and never claims a dollar edge. A fresh clone ships the **9
+fail-closed tools + JSON manifests** (atlas cards, mechanism ledgers, refusal
+rules all work bare); the private `data/` lake is gitignored, so the data-backed
+tools honestly return `NO_DATA` until you build it — an honest `NO_DATA` is the
+correct answer, not a failure.
+
+**Connect in 5 min: [docs/MCP_QUICKSTART.md](MCP_QUICKSTART.md)** · per-tool reference: [docs/MCP_TOOLS.md](MCP_TOOLS.md) · deeper start: [docs/USE_WITH_CLAUDE.md](USE_WITH_CLAUDE.md) · reproduce the harness: [REPRODUCE.md](../REPRODUCE.md)
+
+---
+
+## Explore the whole system, link by link
+
+**[docs/INDEX.md](INDEX.md) is the full map** -- every tracked document, by role and by funnel
+stage, from the raw feeds through the models, the simulator, the calibration gates, execution, the
+live repricer, and the self-improvement loop. It is deep on purpose.
+
+- **New here?** -> [docs/INDEX.md](INDEX.md) (the map) and the [GLOSSARY](GLOSSARY.md)
+  (CLV, leak-free, walk-forward, Shin devig, Brier, Kelly, ...)
+- **Want the honest numbers first?** -> [docs/JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md)
+- **What's actually strong (in-game accuracy, calibration-only)?** -> [docs/IN_GAME_SHOWCASE.md](IN_GAME_SHOWCASE.md)
+- **Want the guided demo path?** -> [docs/PRODUCT_DEMO.md](PRODUCT_DEMO.md)
+- **How AI built it?** -> [docs/BUILT_WITH_CLAUDE.md](BUILT_WITH_CLAUDE.md)
+- **Subsystem deep-dives** -> [DAEMONS](DAEMONS.md) - [PLATFORM_HARNESS](PLATFORM_HARNESS.md) -
+  [PAPER_TRADING_STACK](PAPER_TRADING_STACK.md) - [INGEST_PIPELINES](INGEST_PIPELINES.md) -
+  [DATA_DEPTH](DATA_DEPTH.md) - [ASK_SURFACES](ASK_SURFACES.md) -
+  [SPORTS_COVERAGE](SPORTS_COVERAGE.md)
+
+---
+
+## What it predicts
+
+| Sport      | Pregame market surface                               | Per-player props                          | In-game reprice            |
+|------------|------------------------------------------------------|-------------------------------------------|----------------------------|
+| NBA        | moneyline, total, spread/margin                      | pts/reb/ast/3pm/stl/blk + PRA + DD + SGP  | end of Q1 / Q2 / Q3        |
+| MLB        | moneyline, run-line, total                           | K / hits / TB / walks / outs / ER ...     | after inning 3 / 5 / 7     |
+| Club soccer| 1X2, O/U-2.5, BTTS, correct-score, Asian handicap    | shots / SOT / fouls / cards / saves ...   | half-time                  |
+| World Cup  | 1X2 (neutral-site), O/U-2.5, BTTS, correct-score     | shots / SOT / fouls / fouls-drawn / saves | live minute-by-minute      |
+| Tennis     | match-win, games O/U, sets, holds                    | (aces buildable; feed-gated)              | after set 1                |
+
+Every output is a calibrated probability or a point forecast with dispersion -- never a
+recommended wager. The buyer-facing CLI stamps `"edge_claimed": false` on every response.
+
+**NBA 2025-26 season coverage.** `games.parquet` carries all 1,156 scheduled games of the
+2025-26 season; per-player boxscores now cover the FULL season -- 74 games from the original
+quarter-level cache plus 1,082 games backfilled from ESPN full-game summaries into the same
+`quarter_box` cache the pipeline already reads (q0 = full-game totals, q1-q4 = real quarters,
+zero downstream transform changes). The season's canonical shooter leaderboard claim is
+produced and independently VERIFIED on this corpus.
+
+**Ask it what kind of shooter someone is.** Not a ranking -- a ten-axis trait vector
+(volume/efficiency/difficulty/gravity/context), each axis citing its own VERIFIED claim, never
+combined into one score:
+
+```bash
+python -m scripts.platformkit.intel_query.ask "what kind of shooter is Stephen Curry"
+# or directly:
+python -m scripts.platformkit.intel_query.compose_profile "Luka Doncic"
+```
+
+**Ask how the paper book is doing.** Streamed off the live paper ledger (never whole-file
+loaded), every answer paired with its channel's fail-closed greenlight verdict so a units figure
+never appears without its gate status:
+
+```bash
+python -m scripts.platformkit.intel_query.paper_analytics "this week by channel"
+python -m scripts.platformkit.intel_query.paper_analytics "settlement backlog"
+```
+
+---
+
+## Wide in knowledge -- and it knows every little detail
+
+**Breadth (wide).** Five domains share one interface and one validation gate. A keyless, free,
+idempotent, leak-free backbone refreshes all five (~93 MB of as-of parquet) -- MLB StatsAPI
+boxscores, ESPN rosters + athlete season splits, Sackmann tennis, football-data, prediction
+markets (Kalshi / Polymarket), DFS prop feeds (Underdog / PrizePicks). The opportunity surface is
+bounded by data breadth, not model breadth: one best-line / Shin-devig / EV / arbitrage core
+covers *every* event the feeds return.
+
+**The claims scale.** Every derived stat the brain answers from must pass an independent validator
+that marks it `VERIFIED`, `MISMATCH`, or `UNVERIFIABLE`. Honest accounting (tracked tally
+`scripts/platformkit/analytics_showcase/out/claims_corpus_meta.json`, regenerate with
+`python -m scripts.platformkit.analytics_showcase.claims_corpus_meta`): **103,048 generated claim
+rows** across 103 families under `data/cache/intel_claims/`; 99 families carry a `*_validation.json`
+sidecar covering 101,865 rows, of which **101,864 are `VERIFIED`** (0 mismatch, 1 unverifiable).
+`VERIFIED` means the stated number recomputes from its declared source file + formula -- a
+provenance/arithmetic check, not a claim of predictive accuracy or edge (an earlier "101,089
+VERIFIED" figure had no surviving artifact; see the evidence packet). A machine-readable **data census** inventories 67 derivable
+families across NBA, MLB, soccer, soccer_intl, tennis, WNBA, NPB, KBO and cross-sport markets, and
+ranks every still-`UNBUILT` one by `leverage_rank` into the queue the autoloop builds from.
+Per-sport breakdown: [docs/SPORTS_COVERAGE.md](SPORTS_COVERAGE.md).
+
+**Depth (every little detail).** Under each team number sits the individual-player layer:
+
+- **Per-player projected distributions.** Not a point estimate -- a full count distribution per
+  player per stat (per-exposure rate x expected exposure -> Poisson/Negative-Binomial), so it
+  prices the *entire* alt-line ladder ("over 0.5 / 1.5 / 2.5 ... shots", "10 vs 30 points") and
+  the joint structure behind a same-game parlay, not just one line.
+- **A ~190-feature NBA prop stack** (rolling form, opponent defense, pace, rest/B2B, shot-zone
+  tendencies, on/off, synergy play-type PPP, referee tendencies, schedule hardship, ...): 10 wired
+  feature blocks plus 7 candidate blocks, each candidate carrying its recorded leak-free
+  walk-forward SHIP/REJECT verdict (`docs/models/feature-inventory.md`).
+- **44 "atlases"** (28 player + 16 team: usage role, pace fit, matchup splits, vs-scheme splits,
+  rest/B2B splits, spacing gravity, clutch shape, foul-drawing, ...) -- a deep descriptive +
+  correlation asset.
+- **Playstyle archetypes, never people** -- striker / winger / holding-mid / keeper; power-hitter
+  / contact-hitter / strikeout-pitcher; high-usage creator / 3-and-D wing / rim-runner;
+  big-server / grinder / returner -- so the shrinkage prior knows what a *role* typically does.
+- **A coherent possession Monte-Carlo simulator** whose teammate correlation EMERGES correct from
+  a shared scoring pie (measured rho ~ -0.10 vs realized) instead of a hand-tuned matrix -- one
+  ~3-4s GPU run prices the whole prop / combo / SGP surface coherently. This is the one thing a
+  marginal prop model structurally cannot do.
+
+---
+
+## Player props + the edge hunt (honest)
+
+The deepest, most actionable part of the brain is the **player-prop engine**, and it is where the
+search for *genuine* edge concentrates -- precisely because that is where edge can plausibly
+exist.
+
+**The thesis (load-bearing).** Sharp mainline markets (moneyline / spread / total on liquid
+sports) are efficient pregame: leak-free and out-of-sample, nothing beats the Shin-devigged close,
+which is a few thousandths sharper on every row (the measured table is in
+[the thesis section below](#the-thesis-in-numbers-calibration--sharpness----never-a-dollar-edge)
+and in [docs/MARKET_EFFICIENCY_PROOF.md](MARKET_EFFICIENCY_PROOF.md)). That is the expected
+honest outcome, not a failure.
+
+**In-game is different -- and honestly labelled.** Against the in-game *market*, the
+distributional (CRPS) checkpoint tests read slightly model-favorable at some late-game
+checkpoints but carry UNDERPOWERED / PROVISIONAL verdicts at today's sample sizes. Two things are
+explicitly **untested**: performance against instantly-updating live lines at real tick latency
+(all comparisons use captured price series, not live execution), and forward paper
+excess-vs-close, which at n=36 settled is NOT SIGNIFICANT (CI includes zero). The *beatable*
+pockets the brain hunts are different in kind: **lazily-priced soft / DFS player props**, **live /
+in-game lag**, **stale lines on slow books**, **prediction-market vs sportsbook divergence**, and
+**correlated SGPs a coherent sim can price but a book misprices** -- and it *cuts* effort where it
+has proven there is no edge.
+
+**How a prop edge is found, end to end:** scrape the soft DFS / book line -> build the player's
+full distribution from leak-free history (empirical-Bayes shrunk to the role archetype, blended
+with a club-season prior) -> price every rung of the ladder -> compare to the offered line ->
+rank by EV -- and then **label it by evidence tier and prove it before trusting it**:
+
+- **HYPOTHESIS** -- a plausible mispricing, not yet measured (most candidates start here).
+- **CALIBRATION-PROVEN** -- the model's P(over) is sharper than the line out-of-sample, leak-free
+  (Brier-skill-score > 0). *Genuine, claimable.*
+- **CLV-PROVEN** -- forward closing-line value accrues on paper at meaningful sample size. *The bar
+  for real money -- and the only thing that ever justifies a dollar claim.*
+
+A too-tight distribution would fabricate fake edges, so the brain calibrates dispersion (NB where
+counts are over-dispersed), demotes any stat it has *measured* to be weak, and ranks proven-stat
+edges above raw-EV blowups in unproven stats. The honest current state: in-game conditioning is
+calibration-proven 4/4 sports; goalkeeper Saves is calibration-proven; most prop candidates are
+HYPOTHESES awaiting CLV. **Paper-only; no dollar edge is claimed anywhere.** That discipline is
+the product -- an instrument that hunts edge *and* tells you, truthfully, which of its findings
+are real.
+
+---
+
+## The deep-intelligence layer
+
+Beyond the models sits a living **edge-intelligence corpus** (151 markdown + structured files)
+that makes the breadth and depth navigable and actionable -- the brain's own map of where to
+push and where to stop:
+
+- **Per sport:** an edge-map (every market tagged beatable vs efficient, with evidence), a
+  data-source ledger (have / missing / how-to-acquire), the full market + prop surface, an
+  inefficiency catalog (detection recipe + proof method per pocket), and a model-lever ledger
+  (every lever with a SHIP / REJECT / PENDING verdict).
+- **Cross-cutting:** edge theory + the cut-list of markets to stop spending on, proof standards
+  (the leak-free / OOS / CLV bar and the overfit traps that fake edges), per-source scrape specs,
+  a reusable method library (Poisson-vs-NegBinom, empirical-Bayes shrinkage, Shin devig, Kelly +
+  correlation sizing, CLV computation, walk-forward leak guards), and one living edge-ledger of
+  every candidate's evidence tier.
+
+The scale under it is real and countable: a **291,625-pair player-vs-player matchup matrix** built
+from 2,214 raw per-game tracking files across three seasons
+(`data/cache/coverage_faced_allseasons.parquet`), feeding the 44 player/team atlases. Honest scope:
+the descriptive/atlas intelligence is a scouting + correlation asset and a predict-time input the
+funnel is still wiring in -- measured point-accuracy lift on the served model is ~0 today and is
+reported as such. See [docs/INTELLIGENCE.md](INTELLIGENCE.md).
+
+---
+
+## The loop runs itself -- autonomy layer + the answer-engine oracle
+
+Beyond the discovery loop (mine residuals -> validate behind the ship gate -> ship or
+reject) sit the two autonomy stages that used to need a human: **self-shadowing**
+forward-settles the loop's own not-yet-confirmed verdicts against real outcomes as they
+land, and **self-proposal** generates and gates new hypotheses on a schedule with zero
+LLM calls and zero human trigger. A **sentinel layer** watches the watchers -- disk
+pressure, exception bursts, stalled heartbeats, tamper-evidence hashes on the
+invariant-enforcing code itself -- and a **one-command system-liveness harness**
+composes every gate/sentinel/ledger into a single readout that refuses to paper over a
+down section: a live run this week correctly reported `OVERALL: RED` with the specific
+failing subsystem named (a stale scraper heartbeat, 8 census-drift entries), not a
+decorative green.
+
+On top of the funnel sits an **answer-engine oracle**: a "what affects what" **effect
+graph** (555 nodes / 296 edges across NBA, MLB, soccer, and tennis) built entirely from
+rows the knowledge engine already adjudicated -- zero new statistics computed, only
+labeled and linked -- plus a **resolver registry** that maps every supported question
+type to exactly one deterministic source and REFUSES anything unregistered rather than
+improvising a plausible-sounding answer. The knowledge engine is drained across all 4 sports:
+**287 mechanism rows closed out -- 130 confirmed, 126 null, 31 not locally testable**
+(`mechanism_ledger_export.json`) -- every "does X actually happen" question the oracle fields
+carries a verdict, sample size, p-value, and source file, not folklore.
+Full account: [docs/PRODUCT_DEMO.md](PRODUCT_DEMO.md).
+
+---
+
+## The thesis in numbers (calibration / sharpness -- NEVER a dollar edge)
+
+### Pregame -- vs the devigged closing line, leak-free OOS
+
+Lower Brier / RMSE is sharper. MATCH = within sampling noise of the sharp close. BEHIND = the
+market's injury / lineup / weather / park / starting-pitcher freshness a public + box-score model
+cannot see. Source: reproduced below verbatim from a live
+`scripts.platformkit.beat_the_close_scoreboard` run against the real corpora; full framing +
+the candidate-REJECT table in [docs/MARKET_EFFICIENCY_PROOF.md](MARKET_EFFICIENCY_PROOF.md).
+
+| Sport / market    | Our model     | Close   | Verdict                          |
+|-------------------|---------------|---------|----------------------------------|
+| NBA moneyline     | Brier 0.1735  | 0.1672  | MATCH (within noise)             |
+| NBA total O/U     | RMSE  19.17   | 18.11   | BEHIND (injury/lineup freshness) |
+| MLB moneyline     | Brier 0.2429  | 0.2390  | MATCH (tiny pitcher-blindness)   |
+| MLB total O/U     | RMSE  4.72    | 4.44    | BEHIND (park/weather/SP)         |
+| Soccer O/U-2.5    | Brier 0.2465  | 0.2390  | MATCH (pooled Platt)             |
+| Tennis ATP ml     | Brier 0.2177  | 0.2028  | BEHIND (ATP closes very tight)   |
+
+### In-game -- conditioning on the realized state beats the static pregame line. All 4 WIN.
+
+A live book also sees the state, so this is forecaster QUALITY, not a dollar edge.
+Source: a live `scripts.platformkit.ingame_scoreboard` run against the real tick corpora.
+
+| Sport  | Static -> Conditional Brier             | When                                |
+|--------|-----------------------------------------|-------------------------------------|
+| NBA    | 0.209 -> 0.159                          | end Q1/Q2/Q3 (rating prior + score) |
+| MLB    | 0.241 -> 0.126                          | after inning 3/5/7                  |
+| Soccer | 1X2 0.626 -> 0.502; O/U 0.264 -> 0.176  | half-time                           |
+| Tennis | 0.219 -> 0.151                          | after set 1 (leak-free leader)      |
+
+**Reading it.** Pregame MATCHES the devigged close on team-strength win markets and is BEHIND on
+totals / ATP only by freshness data the market sees and we cannot -- a data-bound gap, not a model
+defect. The sharpest forecaster FUSES the pregame intelligence prior with the realized state. We
+never claim a dollar edge, an ROI, or beating the close.
+
+---
+
+## Run it in minutes
+
+Slim install -- the predictor needs only a small scientific-Python surface (numpy, pandas,
+pyarrow, scipy, scikit-learn). The heavy CV / web / daemon dependencies are NOT required.
+
+```bash
+pip install -r requirements-predictor.txt      # or:  pip install -e .  -> cv-matchup / cv-predict / cv-live
+```
+
+### One matchup -- pregame + in-game in a single JSON read
+
+```bash
+python -m scripts.platformkit.predict_matchup --sport nba --home BOS --away LAL \
+    --elapsed 0 --home-score 0 --away-score 0
+```
+
+```json
+{
+  "sport": "nba", "home": "BOS", "away": "LAL",
+  "edge_claimed": false,
+  "framing": "Pregame MATCHES the devigged close (calibration/sharpness, not an edge); in-game ADDS the realized state. No $ edge.",
+  "pregame": { "p_home_win": 0.605, "total_mean": 211.3, "margin_home": 3.0 },
+  "ingame":  { "p_home_win": 0.5732, "pregame_p_home": 0.605, "proj_total": 211.3, "proj_margin_home": 4.4 }
+}
+```
+
+Swap `--sport` for `mlb`, `soccer`, `soccer_intl`, or `tennis`. Reproduce the leak-free scoreboards
+on committed fixtures in under 60s on a fresh clone:
+
+```bash
+python -m scripts.platformkit.beat_the_close_scoreboard --corpus tests/fixtures/proof
+python -m scripts.platformkit.ingame_scoreboard        --corpus tests/fixtures/proof
+```
+
+---
+
+## Why trust it -- the rigor IS the product
+
+- **Leak-free by construction.** Expanding-window walk-forward with assertion-level per-fold leak
+  guards, purge + embargo, and truncation-invariance tests (a feature at time T is byte-identical
+  with or without future events). Cluster-robust Diebold-Mariano significance. The close is a
+  comparison forecaster, never a model input.
+- **Honest nulls are successes.** "BEHIND by freshness", "MATCH within noise", "this lever is a
+  measured NULL", "this recalibration OVERFITS out-of-sample -> deferred" -- all stated plainly.
+  An efficient market proven efficient is a headline result, not buried.
+- **It disproves its own hype.** The same harnesses that grade the market were pointed inward and
+  retired a market-follow ROI artifact, a Q4 look-ahead leak, and an L5-proxy ceiling mislabeled
+  as edge. Building the instrument that refutes your own claims is the strongest signal here.
+- **A units number is never shown without its gate.** The paper-execution stack's **greenlight
+  gate** evaluates every channel against seven pre-registered criteria (sample size in both
+  independent halves, both-halves profitability, CLV significance, after-cost units, trust +
+  eval-gate honesty, excess win rate) and writes a fail-closed RED/AMBER/GREEN verdict nightly --
+  RED, never a bare pass, on any missing or stale input. Fills are priced against real captured
+  order-book depth (a VWAP walk of the opposite side's bid ladder, honest partial fills,
+  `fill_quality: no_book` rather than a fabricated fill when the book is stale). As of this
+  writing every channel is RED or AMBER -- the gate reporting honestly that no edge has been
+  proven yet is the feature, not a gap to paper over. Full account:
+  [docs/PAPER_TRADING_STACK.md](PAPER_TRADING_STACK.md).
+
+**Honesty truth-source:** every number's provenance + every retracted over-claim live in
+**[docs/JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md)**. Open gaps:
+**[docs/KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md)**. We never claim a dollar edge / ROI /
+beating the close / a CV predictive moat (CV SHAP ~ 0 in production today).
+
+**See the receipts, not just the claims.** Every calibration number is published two ways:
+
+- **[RECEIPTS.md](../RECEIPTS.md)** -- the append-only, honesty-gated ledger. Each row is read
+  verbatim from a machine-readable artifact on disk (path cited per row, nothing hand-typed),
+  verdicts include the losses (`MARKET_SHARPER`, `UNDERPOWERED`) exactly as measured. The same
+  ledger renders as a browsable page, live at
+  **[neeljshah.github.io/court-vision/receipts.html](https://neeljshah.github.io/court-vision/receipts.html)**
+  (static snapshot, as-of date shown on the page).
+- **Evidence pages** -- one per claim family, each running claim -> receipt -> reproduce:
+  [retraction-story](evidence/retraction-story.md) (the flagship: the instruments that
+  refuted my own headline numbers) -
+  [ingame-conditioning](evidence/ingame-conditioning.md) (the one measured calibration win,
+  market losses stated plainly) -
+  [calibration-decomposition](evidence/calibration-decomposition.md) (my own Brier gap vs
+  the market split into reliability vs resolution, plus the ranked list of the game states my
+  model handles worst -- charts: [reliability](img/reliability_model_vs_market.png),
+  [state-calibration heatmap](img/state_calibration_heatmap.png)) -
+  [devig-stack](evidence/devig-stack.md) (four devig methods; the Shin-devigged close as the
+  honest yardstick) -
+  [leak-instruments](evidence/leak-instruments.md) (walk-forward guard, truncation
+  invariance, multi-corpus gate, ship gate) -
+  [agent-fleet-direction](evidence/agent-fleet-direction.md) (directing the agent fleet under
+  fail-closed gates) -
+  [cv-pipeline](evidence/cv-pipeline.md) (broadcast video to court coordinates, with the
+  not-demonstrated list stated).
+
+---
+
+## Origin / NBA computer-vision lineage (engineering history, not the headline)
+
+The platform grew out of **CourtVision**, an NBA broadcast-video CV pipeline (YOLOv8n detection ->
+SIFT homography -> Kalman + Hungarian tracking -> OSNet re-ID -> EasyOCR -> EventDetector) that
+turns a raw broadcast into court-coordinate data at ~$0.10-0.13 / full game on one consumer GPU.
+It is where the validation machinery came from -- but it is lineage, not the product: the
+CV-derived features carry ~0 measured predictive value today (SHAP ~ 0), and are not sold as an
+edge. Full audited account: [docs/JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md) section 2;
+CV internals: [docs/CV_TRACKING.md](CV_TRACKING.md).
+
+---
+
+## Buyer / reviewer docs
+
+| Document | What it covers |
+|----------|----------------|
+| [docs/INDEX.md](INDEX.md) | **The full map** -- every document, by role and by funnel stage (start here to go deep) |
+| [docs/BUILT_WITH_CLAUDE.md](BUILT_WITH_CLAUDE.md) | The agentic build pipeline -- Opus orchestrator + Sonnet executors under hard ship-gates |
+| [docs/GLOSSARY.md](GLOSSARY.md) | Every term defined once (CLV, leak-free, walk-forward, Shin devig, Brier, Kelly, ...) |
+| [docs/INTELLIGENCE.md](INTELLIGENCE.md) | The deep-intelligence corpus index -- the brain's map of every edge, source, and lever |
+| [docs/PREDICTOR_PLATFORM.md](PREDICTOR_PLATFORM.md) | Full platform: thesis, scorecards, architecture, why it sells |
+| [docs/PROOFS.md](PROOFS.md) | The provability index -- every claim -> the runnable leak-free proof |
+| [docs/JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md) | The single honesty truth-source -- every number + the do-not-claim list |
+| [docs/PRODUCT_DEMO.md](PRODUCT_DEMO.md) | The 15-minute demo path -- system health, a live prediction, an oracle query with a receipt, the composed board, the honesty ledgers |
+| [docs/KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md) | Open gaps and what is not yet demonstrated |
+| [docs/PLATFORM.md](PLATFORM.md) | Kernel + adapter multi-sport architecture direction |
+
+---
+
+## Tech stack
+
+**ML / data:** Python, NumPy, pandas, pyarrow, scipy, scikit-learn (Isotonic + Platt + NNLS),
+XGBoost, LightGBM. **Quant / validation:** walk-forward CV (season / era purged), Shin (1992)
+devig, per-stat isotonic / temperature recalibration, NegBinom dispersion calibration,
+multi-corpus calibration acceptance gate, cluster-robust Diebold-Mariano, truncation-invariance
+leak tests, CLV ledger. **CV lineage:** YOLOv8n, OpenCV, SIFT homography, OSNet re-ID, EasyOCR.
+**Live capture:** MLB GUMBO `feed/live` diffPatch poller at 10s cadence while any game is live
+(5s politeness floor); an order-book **fill simulator** VWAP-walks captured Kalshi depth ladders
+so a paper fill is priced against real liquidity, not a snapshot mid. **Serving:** FastAPI,
+uvicorn, SSE, parquet feature store, compute-once snapshot service. **AI agents:** Claude Code --
+Opus orchestrator + parallel Sonnet/Opus executors under hard ship gates (this codebase, including
+the 151-file intelligence corpus, was built by that pipeline under human direction). The runtime
+is **Claude-free** -- classical models + a deterministic self-improve loop, no LLM on the
+prediction path. **The build harness itself is live**: an autonomous probe-plan-spawn-gate-merge
+loop (`scripts/platform_harness/`) has planned, executed, gated, and merged **53 backlog tasks
+autonomously** (of 83 queued) with zero human required to click "continue." Full account:
+[docs/BUILT_WITH_CLAUDE.md](BUILT_WITH_CLAUDE.md) -
+[docs/PLATFORM_HARNESS.md](PLATFORM_HARNESS.md).
+
+---
+
+## Licensing, stated plainly
+
+This repository's own code is proprietary (see [LICENSE](../LICENSE)) and is published as a
+portfolio and evaluation piece. It is **not** copyleft-clean: the detection stack depends on
+Ultralytics YOLO (AGPL-3.0), so a closed-source commercial derivative would need that
+dependency replaced or an Ultralytics commercial license. Saying so is cheaper than being
+asked.
+
+---
+
+## Contact
+
+Solo-built (human-directed agentic pipeline). Available for senior ML / data / quant /
+founding-engineer roles.
+
+- **Start here:** [docs/JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md) -- the honest, audited account
+- **Resume (PDF):** [docs/assets/NeelShahResume.pdf](assets/NeelShahResume.pdf)
+- **Portfolio:** [neelshahportfolio.netlify.app](https://neelshahportfolio.netlify.app)
+- **Email:** [neeljshah22@gmail.com](mailto:neeljshah22@gmail.com)
+
+---
+
+*All prediction numbers in this README are calibration / sharpness (Brier / RMSE / ECE), never a
+dollar edge. Candidate prop edges are tiered by evidence (hypothesis -> calibration-proven ->
+CLV-proven) and proven only by forward CLV, never asserted. The single honesty truth-source is
+[docs/JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md); retracted / inflated numbers appear
+only there and in [docs/KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md), in explicit retraction
+context, and never here.*
