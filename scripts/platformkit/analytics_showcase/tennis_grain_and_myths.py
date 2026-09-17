@@ -82,7 +82,8 @@ def _build_claim(fam, reading):
     }
 
 
-def build():
+def compose():
+    """Pure filter/group over the committed fwd_claim_scoreboard.json -- no writes."""
     with open(IN_JSON, encoding="utf-8") as f:
         source = json.load(f)
     families = source["families"]
@@ -128,7 +129,11 @@ def build():
             'descriptive accuracy findings, never a money-advantage claim.',
         ],
     }
+    return payload
 
+
+def build():
+    payload = compose()
     os.makedirs(os.path.dirname(OUT_JSON), exist_ok=True)
     with open(OUT_JSON, "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2, ensure_ascii=True)
@@ -145,7 +150,7 @@ def _print_summary(payload):
 
 
 def check():
-    payload = build()
+    payload = compose()
     with open(IN_JSON, encoding="utf-8") as f:
         source = json.load(f)
     families = source["families"]
