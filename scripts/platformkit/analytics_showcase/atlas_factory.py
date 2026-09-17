@@ -189,6 +189,16 @@ def _check():
         finally:
             manifest_path.unlink(missing_ok=True)  # roundtrip check, not a real manifest -- don't leave it behind
 
+        # The one rewrite write_manifest performs, and the regression that shipped:
+        # an in-repo card must be STORED repo-relative, never as an absolute path.
+        rel_entries = [{**entries[0], "card_path": str(card_path("nba", "Nikola Jokic"))}]
+        rel_path = write_manifest("_selfcheck_rel", rel_entries)
+        try:
+            stored = json.loads(rel_path.read_text(encoding="ascii"))["entries"][0]["card_path"]
+            assert stored == "docs/img/atlas/nba/nikola_jokic.png", stored
+        finally:
+            rel_path.unlink(missing_ok=True)
+
         assert slugify("Nikola Jokic!!  MVP?") == "nikola_jokic_mvp"
         assert slugify("") == "entity"
         assert card_path("nba", "Nikola Jokic").name == "nikola_jokic.png"
