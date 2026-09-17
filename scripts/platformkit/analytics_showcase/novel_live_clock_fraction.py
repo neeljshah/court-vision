@@ -44,7 +44,8 @@ def _pick_threshold(thresholds):
     return min(usable, key=lambda t: abs(t["decided_frac_of_games"] - 0.5))
 
 
-def build():
+def compose():
+    """Pure composition from the committed blowout_dynamics/xsport_structure -- no writes."""
     blow = json.loads(open(IN_BLOWOUT, encoding="utf-8").read())
     xsp = json.loads(open(IN_XSPORT, encoding="utf-8").read())
 
@@ -103,6 +104,11 @@ def build():
         "plot_written": False,
     }
     payload["index_card"] = _card(payload)
+    return payload
+
+
+def build():
+    payload = compose()
     os.makedirs(os.path.dirname(OUT_JSON), exist_ok=True)
     with open(OUT_JSON, "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2)
@@ -173,17 +179,14 @@ def check():
     if not (os.path.exists(IN_BLOWOUT) and os.path.exists(IN_XSPORT)):
         verify_recorded_artifact(OUT_JSON, _validate, "novel_live_clock_fraction")
         return
-    payload = build()
+    payload = compose()
     _validate(payload)
     mlb = next((r for r in payload["results"] if r["sport"] == "mlb"), None)
     # revision 2 (segment-clean corpus): mlb near-median threshold = 3 (decided_frac 0.5575),
     # LCF = decided_clockfrac_median 0.7368. Revision 1 read 0.8333 on the mixed-game corpus.
     assert mlb and mlb["near_median_threshold"] == 3 and abs(mlb["live_clock_fraction"] - 0.7368) < 1e-4, mlb
-    payload["plot_written"] = plot(payload)
-    with open(OUT_JSON, "w", encoding="utf-8") as f:
-        json.dump(payload, f, indent=2)
     print(f"OK: novel_live_clock_fraction ({len(payload['results'])} sports buildable, "
-          f"mlb LCF {mlb['live_clock_fraction']:.3f}, plot={payload['plot_written']})")
+          f"mlb LCF {mlb['live_clock_fraction']:.3f}, recomposed only (no write))")
 
 
 if __name__ == "__main__":
