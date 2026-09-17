@@ -59,7 +59,8 @@
 .paper-toc a:hover { color: var(--accent); }
 .paper-toc .mono { font-size: 12px; color: var(--ink-3); margin-right: 8px; }
 
-.paper-section { margin-top: 38px; scroll-margin-top: 80px; }
+.paper-section { margin-top: 38px; scroll-margin-top: 76px; }
+.paper-section h2[id] { scroll-margin-top: 76px; }
 .paper-section h2 { font-family: var(--font-display); font-size: 25px; font-weight: 500; letter-spacing: -.01em; color: var(--ink); }
 .paper-number { font-size: 14px; color: var(--ink-3); margin-right: 10px; }
 .paper-p { font-size: 17.5px; line-height: 1.65; color: var(--ink-2); margin-top: 18px; }
@@ -82,6 +83,8 @@
 .paper-table thead th:first-child { background: var(--paper-tint); }
 .paper-table tbody tr:last-child th,
 .paper-table tbody tr:last-child td { border-bottom: 0; }
+.paper-table .paper-cell-prose { max-width: 36ch; text-align: left; white-space: normal; }
+.paper-table .paper-cell-numeric { font-variant-numeric: tabular-nums; white-space: nowrap; }
 
 .paper-figure { margin-top: 26px; }
 .paper-figure-card {
@@ -119,6 +122,9 @@
   .paper-reset { flex: 1 1 auto; }
   .paper-p,
   .paper-sub { font-size: 17px; }
+  .paper-toc-link { display: inline-flex; align-items: center; min-height: 44px; padding: 6px 0; }
+  .paper-caption,
+  .paper-note { font-size: 13px; line-height: 1.5; }
   .paper-table th,
   .paper-table td { white-space: nowrap; }
   .paper-scroll-hint { display: block; margin: 0 0 8px; font-family: var(--font-mono); font-size: 12px; color: var(--ink-3); }

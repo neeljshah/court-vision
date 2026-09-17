@@ -104,7 +104,16 @@ describe("PaperArticle", () => {
     const links = within(toc).getAllByRole("link");
     expect(links).toHaveLength(fixture.sections.length);
     expect(links.map(link => link.getAttribute("href"))).toEqual(fixture.sections.map(section => `#${section.id}`));
-    fixture.sections.forEach(section => expect(document.getElementById(section.id)).not.toBeNull());
+    links.forEach(link => expect(link).toHaveClass("paper-toc-link"));
+    fixture.sections.forEach((section, index) => {
+      expect(document.getElementById(section.id)).not.toBeNull();
+      const heading = screen.getByText((_, element) => Boolean(
+        element?.tagName === "H2" &&
+        element.id === `paper-section-${section.id}` &&
+        element.textContent === `${index + 1} ${section.heading}`,
+      ));
+      expect(heading).toHaveAttribute("id", `paper-section-${section.id}`);
+    });
   });
 
   it("lists every evidence artifact with its date, fields and module link", () => {

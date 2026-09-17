@@ -85,7 +85,7 @@ export function PaperArticle({ paper }: { paper: Paper }) {
         <ol>
           {paper.sections.map((section, index) => (
             <li key={section.id}>
-              <a href={`#${section.id}`}><span className="mono">{index + 1}</span> {section.heading}</a>
+              <a href={`#${section.id}`} className="paper-toc-link"><span className="mono">{index + 1}</span> {section.heading}</a>
             </li>
           ))}
         </ol>
