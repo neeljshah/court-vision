@@ -17,10 +17,19 @@
       "stateless_ticks": 26340,
       "truncated_games": 61,
       "label_disagreements": 0,
-      "leader_wins_last_tick": { "games": 166, "frequency": 1.0 },
+      "leader_wins_last_tick": {
+        "games": 166,
+        "frequency": 1
+      },
       "late_inning_leader_agreement": {
-        "all_ticks": { "n": 12588, "frequency": 0.7284 },
-        "final_segment": { "n": 6623, "frequency": 0.92 }
+        "all_ticks": {
+          "n": 12588,
+          "frequency": 0.7284
+        },
+        "final_segment": {
+          "n": 6623,
+          "frequency": 0.92
+        }
       }
     },
     "soccer_intl": {
@@ -53,9 +62,10 @@
     "novel_live_clock_fraction",
     "market_convergence",
     "why_attribution",
-    "comeback_atlas"
+    "comeback_atlas",
+    "novel_market_foresight_premium"
   ],
-  "timing_artifacts_note": "Mixed-game tick paths also distort timing measurements even where no outcome label is used.",
+  "timing_artifacts_note": "Mixed-game tick paths also distort timing measurements even where no outcome label is used. novel_market_foresight_premium is derived per game-time checkpoint from info_arrival_curve (rebuilt, revision 2) and market_convergence (not rebuilt), so its stored values mix the two corpora and stay under review until market_convergence is regenerated.",
   "status": "regenerated",
   "resolved_by": "mlb-ingame-regeneration",
   "resolution_note": "The exposed artifacts were rebuilt from the segment-clean corpus on 2026-09-16; the values measured here are revision 1 and are withdrawn."

@@ -173,13 +173,25 @@ def main():
     result = build()
     os.makedirs(os.path.dirname(OUT_JSON), exist_ok=True)
     with open(OUT_JSON, "w", encoding="utf-8") as f:
-        json.dump(result, f, indent=2)
+        # NaN is not JSON; strict parsers (the paper evidence checker) reject it.
+        json.dump(_nan_to_null(result), f, indent=2, allow_nan=False)
     render_png(result, OUT_PNG)
     print("wrote", OUT_JSON)
     print("wrote", OUT_PNG)
     print("overall_counts:", result["overall_counts"])
     for s, v in result["by_sport"].items():
         print(f"  {s}:", v["counts"])
+
+
+def _nan_to_null(obj):
+    """Replace float NaN/inf with None recursively so the artifact is strict JSON."""
+    if isinstance(obj, float) and (obj != obj or obj in (float("inf"), float("-inf"))):
+        return None
+    if isinstance(obj, dict):
+        return {k: _nan_to_null(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_nan_to_null(v) for v in obj]
+    return obj
 
 
 if __name__ == "__main__":

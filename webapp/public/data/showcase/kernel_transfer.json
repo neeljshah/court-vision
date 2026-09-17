@@ -1,20 +1,20 @@
 {
  "edge_claimed": false,
- "generated_at": "2026-07-22T22:55:23.467132+00:00",
+ "generated_at": "2026-09-17T00:05:53.901291+00:00",
  "method": "composition only -- reliability/resolution numbers copied verbatim from murphy_decomposition.py / soccer_calibration_pack.py output; verdicts copied/summarized verbatim from each source artifact, nothing recomputed",
  "n_rows": 5,
  "rows": [
   {
    "sport": "mlb",
    "market": "moneyline_ingame (murphy reliability decomposition)",
-   "reliability_model": 0.012701,
-   "reliability_market": 0.006061,
-   "reliability_gap": 0.00664,
+   "reliability_model": 0.005619,
+   "reliability_market": 0.003425,
+   "reliability_gap": 0.002194,
    "reliability_unit": "brier_reliability_component (probability scale, 0-1)",
    "reliability_comparable": true,
    "comparability_reason": "both sides are Brier scores of a probability against a binary win/loss outcome -- the reliability component (mean squared calibration error, weighted by bin mass) is on the same 0-1 probability scale in both sports, the one honest cross-sport axis here.",
-   "n": 78986,
-   "verdict": "mlb: model Brier 0.2377 is worse than market 0.2067 (gap=+0.0310); driven mainly by resolution (information, not fixable by recalibration) (reliability_gap=+0.0066, resolution_gap=-0.0235).",
+   "n": 27351,
+   "verdict": "mlb: model Brier 0.1668 is worse than market 0.1510 (gap=+0.0158); driven mainly by resolution (information, not fixable by recalibration) (reliability_gap=+0.0022, resolution_gap=-0.0149).",
    "sources": [
     "scripts/platformkit/analytics_showcase/out/murphy_decomposition.json"
    ]
@@ -38,14 +38,14 @@
   {
    "sport": "soccer_intl",
    "market": "moneyline_ingame (murphy reliability decomposition)",
-   "reliability_model": 0.092837,
-   "reliability_market": 0.053423,
-   "reliability_gap": 0.039414,
+   "reliability_model": 0.191982,
+   "reliability_market": 0.088088,
+   "reliability_gap": 0.103894,
    "reliability_unit": "brier_reliability_component (probability scale, 0-1)",
    "reliability_comparable": true,
    "comparability_reason": "both sides are Brier scores of a probability against a binary win/loss outcome -- the reliability component (mean squared calibration error, weighted by bin mass) is on the same 0-1 probability scale in both sports, the one honest cross-sport axis here.",
-   "n": 9003,
-   "verdict": "soccer_intl: model Brier 0.2279 is worse than market 0.1427 (gap=+0.0852); driven mainly by resolution (information, not fixable by recalibration) (reliability_gap=+0.0394, resolution_gap=-0.0446). soccer_intl corpus: n=9003 rows -- far smaller than mlb/nba, wider CIs, single-fold reads not durable. Murphy: model Brier 0.2279 vs market 0.1427 (gap=+0.0852); market leads. Minute-bucket ECE (weighted): 0.3580.",
+   "n": 4265,
+   "verdict": "soccer_intl: model Brier 0.3325 is worse than market 0.1952 (gap=+0.1374); driven mainly by reliability (calibration, fixable) (reliability_gap=+0.1039, resolution_gap=-0.0325). soccer_intl corpus: n=4265 rows -- far smaller than mlb/nba, wider CIs, single-fold reads not durable. Murphy: model Brier 0.3325 vs market 0.1952 (gap=+0.1374); market leads. Minute-bucket ECE (weighted): 0.3748.",
    "sources": [
     "scripts/platformkit/analytics_showcase/out/soccer_calibration_pack.json",
     "scripts/platformkit/analytics_showcase/out/murphy_decomposition.json"
@@ -93,7 +93,7 @@
    "tennis/pregame_prior + ingame_surface_gate (no market side)": "both tennis gate receipts are model-vs-model checks (prior vs base; surface-specific vs surface-blind) -- no market_prob to decompose against, reliability undefined by construction."
   }
  },
- "reliability_transfer_summary": "Only 2 of 4 sports have a Murphy reliability component measured against market (mlb, soccer_intl). Sign agrees (model less reliable than market in both): True. Magnitude differs by ~5.9x ({'mlb': 0.00664, 'soccer_intl': 0.039414}). n=2 sports is not enough to call this a general cross-sport pattern -- a same-direction coincidence worth re-checking if a 3rd sport gets a market-side Murphy decomposition, not a claim.",
+ "reliability_transfer_summary": "Only 2 of 4 sports have a Murphy reliability component measured against market (mlb, soccer_intl). Sign agrees (model less reliable than market in both): True. Magnitude differs by ~47.4x ({'mlb': 0.002194, 'soccer_intl': 0.103894}). n=2 sports is not enough to call this a general cross-sport pattern -- a same-direction coincidence worth re-checking if a 3rd sport gets a market-side Murphy decomposition, not a claim.",
  "novelty": {
   "analytic": "kernel_transfer: cross-sport calibration-transfer table -- Murphy reliability/resolution composed across nba/mlb/soccer/tennis, comparability-gated so CRPS never shares an axis with Brier",
   "verdict": "ALREADY_DONE_ON_CORE_METHOD (composition/gate not independently researched)",
