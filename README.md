@@ -33,6 +33,23 @@ artifact -> reproduce command).
 The strongest signal in this repository is not a metric. It is that the same person who built
 the system also built the instruments that caught his own overclaims, and published the result.
 
+## How far it goes
+
+One person directing an agentic build pipeline, 6,300+ commits since March 2026. Counts below are read
+from committed artifacts or the audited [evidence packet](docs/JOB_EVIDENCE_PACKET.md); the layer-by-layer
+map is **[docs/CAPABILITIES.md](docs/CAPABILITIES.md)**.
+
+| Layer | Scale |
+|---|---|
+| Sports covered by one kernel + per-sport adapters | NBA, MLB, soccer, tennis |
+| Analytics site (public, static, CI-gated) | 29 research papers, 77 measurement modules, 18 findings, 10 interactive inspectors, 1,549 entity cards, 1,653 searchable records |
+| Intelligence layer between raw data and models | 151 files; a 291,625-pair player-vs-player matchup matrix; 1,249 player dossiers across 28 categories |
+| Signal discovery under a gate built to refute | 60 candidate signal classes, 0 shipped; 513 recorded reject / defer verdicts; 197 hypothesis-ledger rows with every NULL kept ([the ledgers are public](domains/)) |
+| Fact-claims corpus | 103,048 generated claims, 101,864 re-verified from their declared source and formula |
+| Simulation | possession-level Monte Carlo where the negative teammate correlation emerges from a shared scoring pie instead of a hand-tuned matrix |
+| Engine (private repository) | about 99 API endpoints across 12 routers, 9 long-running daemons under a watchdog, a 430-module codebase, about 7,400 tests |
+| Execution | paper only, behind [six pre-registered go-live gates](docs/GO_LIVE_GATES.md); the order lifecycle has no reachable live path |
+
 ## What is on the site
 
 [![Calibration page](docs/img/analytics_calibration.png)](https://neeljshah.github.io/court-vision/analytics/calibration/)
@@ -62,11 +79,26 @@ scope limits: [REPRODUCE.md](REPRODUCE.md). Generated receipts, one row per meas
 
 ## How it is built
 
+```mermaid
+flowchart LR
+  D["DATA<br/>keyless leak-free ingest<br/>4 sports, as-of stamped"] --> S["SIGNALS<br/>ratings, per-player rates<br/>151-file intelligence layer"]
+  S --> M["MODELS<br/>one calibrated win prob per sport<br/>count distributions for props"]
+  M --> E["ENGINES<br/>possession Monte Carlo<br/>in-game repricer"]
+  E --> P["PREDICTIONS<br/>moneyline, spread, total, props<br/>pregame and in-game, coherent"]
+  P --> X["EXECUTION - paper only<br/>no reachable live order path"]
+  P --> V["EVIDENCE SURFACE<br/>analytics site, receipts<br/>EVIDENCE.md"]
+  L["AGENTIC LOOP<br/>propose -> walk-forward gate<br/>-> permutation control -> ship or reject"] -. re-validates every stage .-> S
+  L -.-> M
+  V -. retractions and rejects recorded .-> L
+  classDef pub fill:#0b3d2e,stroke:#2ea043,color:#ffffff;
+  classDef priv fill:#1f2937,stroke:#6b7280,color:#ffffff;
+  class V pub;
+  class D,S,M,E,P,X,L priv;
 ```
-DATA -> SIGNALS -> MODELS -> ENGINES -> PREDICTIONS -> INTELLIGENCE
-          ^                                              |
-          +------- agentic loop re-validates every stage -+
-```
+
+Green is what this repository holds; grey runs in the private engine. The full capability map, layer by
+layer with scale numbers, status and a public place to verify each one, is
+**[docs/CAPABILITIES.md](docs/CAPABILITIES.md)**.
 
 One calibrated win probability per sport anchors the moneyline, spread, total and the in-game
 reprice, so the markets are coherent reads off one engine rather than independent models that can
