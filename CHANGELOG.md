@@ -66,9 +66,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - **Per-game ingest orchestrator** (`scripts/per_game_orchestrator.py`) — end-to-end orchestrator with pose imgsz knob for game ingestion.
 - **Synergy PPP features** — per-player synergy points-per-possession wired into prop features.
 
-### Measured (backtest, paper / L5 proxy — NOT real closes)
-- **Calibrated emit set (n=55,073)**: 78.11% hit rate (Wilson [77.76%, 78.45%]), +54.57% ROI, t-stat 179, calibration RMSE 0.065, worst 100-bet drawdown −$1,682 on $100/bet flat.
-- **Tier S (EV ≥ 8%) at endQ3**: +78.7% ROI on 5,088 bets, 93% hit rate.
+### Measured at the time (RETRACTED 2026-06-09 -- L5-proxy backtest, NOT real closes)
+> **Retracted.** The two figures below are measurement artifacts of grading against an L5 proxy line instead of real closing prices. They are kept only as a record of what was claimed when; they are not results and no dollar/ROI edge is claimed. Honest account: [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md).
+- ~~**Calibrated emit set (n=55,073)**~~ (RETRACTED artifact): 78.11% hit rate (Wilson [77.76%, 78.45%]), +54.57% ROI, t-stat 179, calibration RMSE 0.065, worst 100-bet drawdown −$1,682 on $100/bet flat.
+- ~~**Tier S (EV ≥ 8%) at endQ3**~~ (RETRACTED artifact, same L5-proxy backtest): +78.7% ROI on 5,088 bets, 93% hit rate.
 - **Pre-calibration aggregate ROI was −4.25%** (Tier C bets at EV < 0.04 dragged everything). The calibration story: three suspected over-blockers (`projection_sane`, `min_edge`, `three_book_consensus`) were tested on dropped bets; they were **correctly** blocking losers (−3.85% and −3.55% hypothetical ROI). The real fix was raising the EV floor 0.01 → 0.12.
 - **Calibration honesty check**: predicted-EV deciles map ±5% to realized return (decile 1: −0.890 pred / −0.884 real; decile 9: +0.799 pred / +0.794 real).
 

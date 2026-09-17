@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you reference this work, please cite it as below."
+title: "CourtVision: calibrated multi-sport forecasting with a leak-free validation harness and a published reject ledger"
+type: software
+authors:
+  - family-names: Shah
+    given-names: Neel
+    email: neeljshah22@gmail.com
+repository-code: "https://github.com/neeljshah/court-vision"
+url: "https://neeljshah.github.io/court-vision/analytics/"
+abstract: >-
+  An NBA-origin, multi-sport forecasting and decision-research system. The documented
+  result is market efficiency: the pregame model matches the Shin-devigged closing line
+  within noise on team-strength markets, and every candidate signal is recorded with its
+  verdict, including rejects and retractions. Calibration evidence only; no edge claim.
+keywords:
+  - forecasting
+  - probability calibration
+  - walk-forward validation
+  - sports analytics
+  - prediction markets
+license-url: "https://github.com/neeljshah/court-vision/blob/master/LICENSE"
+version: "0.18.0"
+date-released: "2026-09-17"
