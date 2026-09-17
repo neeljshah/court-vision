@@ -22,10 +22,20 @@ _SUSPENDED_MARKET = frozenset({"suspended", "halted", "paused", "closed",
 _TERMINAL_GAME = frozenset({"final", "post", "postponed", "suspended",
                             "canceled", "cancelled", "abandoned"})
 
-# Contracts per paper quote. Named so the fee below is charged on the size
-# actually quoted -- Kalshi's cent-ceiling applies ONCE per order batch
-# (venue_fees module docstring), so a hardcoded 1.0 in the fee call makes the
-# fee a constant $0.01 at every price and carries no price information.
+# Contracts per paper quote.
+#
+# HONEST LIMIT: at _QTY = 1 the charged fee is UNCHANGED and still carries no
+# price information. Kalshi's cent-ceiling applies once per order
+# (venue_fees module docstring), and 0.0175 * 1 * p * (1-p) peaks at $0.004375
+# at p=0.50, so it ceils to exactly $0.01 for every price in (0,1) -- about
+# 2.3x the schedule's unrounded fee at p=0.50. That over-charge is
+# CONSERVATIVE (a fee can only reduce EV) and it is a property of the venue's
+# own rounding, not a modelling choice to fix here.
+# What _maker_fee() below actually changes: the fee is computed from the
+# order's contract count rather than a hardcoded 1.0, so it scales correctly
+# the moment qty > 1 (where the once-per-order ceiling makes the true fee
+# strictly cheaper than qty x the qty=1 fee), and the dollar total, the
+# contract count and the per-contract units are reported as separate fields.
 _QTY = 1
 
 # Half-spread assumed when a tick carries only a mid. Kalshi in-play spread_bp
@@ -81,6 +91,16 @@ def _seed_book(ticker: str, side: str, price_cents: int) -> Dict[str, Any]:
                 "best_ask": min(0.99, (price_cents + 1) / 100.0)}
     return {"ticker": ticker, "best_bid": max(0.01, (99 - price_cents) / 100.0),
             "best_ask": min(0.99, (101 - price_cents) / 100.0)}
+
+
+def _maker_fee(qty: int, price_cents: int) -> float:
+    """Whole-order Kalshi maker fee in DOLLARS, via the one canonical schedule.
+
+    The cent-ceiling applies once to the whole order, so this is NOT qty x the
+    single-contract fee: at qty=10, p=0.50 the schedule charges $0.05, not
+    10 x $0.01. See the _QTY comment for why qty=1 is price-invariant.
+    """
+    return fee_kalshi_maker(qty, price_cents / 100.0)
 
 
 def _cents(value: Any) -> Optional[int]:
@@ -174,13 +194,13 @@ class PaperMakerAdapter:
         executor = OrderExecutor(exchange)
         executor.submit(order)
         ttl = _ttl_seconds(sport, tick)
-        # venue_fees is the ONE canonical schedule; charge it on the size actually
-        # quoted so the cent-ceiling is applied once per order, as the schedule
-        # specifies. fee_kalshi_maker returns DOLLARS for the whole order, hence
-        # both fields: maker_fee_dollars is that order total, maker_fee_units is
-        # the per-contract cost the units-denominated ledger consumes (a Kalshi
+        # _maker_fee returns DOLLARS for the whole order, hence both fields:
+        # maker_fee_dollars is that order total, maker_fee_units is the
+        # per-contract cost the units-denominated ledger consumes (a Kalshi
         # contract pays $1, so per-contract dollars ARE probability points).
-        fee_dollars = fee_kalshi_maker(_QTY, price / 100.0)
+        # At _QTY = 1 these are numerically identical to what was recorded
+        # before -- see the _QTY comment for what did and did not change.
+        fee_dollars = _maker_fee(_QTY, price)
         return {"status": "resting", "sport": sport, "order": order, "exchange": exchange,
                 "executor": executor, "expires_at": now.timestamp() + ttl,
                 "quote_prob": price / 100.0, "ttl_seconds": ttl,

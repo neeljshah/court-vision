@@ -1,8 +1,10 @@
 """Paper maker: the fee must carry price information and a fill must be a CROSS.
 
 Audit 2026-09-17:
-  defect #5 -- fee_kalshi_maker(1.0, p) ceils to exactly $0.01 at every price,
-    and the dollar result was stored in a field named ``_units``.
+  defect #5 -- the dollar result of fee_kalshi_maker was stored in a field named
+    ``_units``, and the call hardcoded a contract count of 1.0. NOT closed: at
+    qty=1 the once-per-order cent ceiling still makes the charged fee exactly
+    $0.01 at every price. That is asserted below, not glossed over.
   defect #6 -- the fill book was collapsed to a point at the mid
     ({"best_bid": home, "best_ask": home}), so a resting quote filled the moment
     the mid TOUCHED its price. Adverse selection was impossible by construction.
@@ -12,6 +14,8 @@ Run: python -m pytest tests/platformkit/execution/test_paper_maker_fill_realism.
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
+
+import pytest
 
 from scripts.platformkit.execution import paper_maker as pm
 from scripts.platformkit.execution.paper_maker import PaperMakerAdapter
@@ -41,12 +45,33 @@ def test_fee_is_reported_in_dollars_and_per_contract_units():
     assert q["maker_fee_units"] == q["maker_fee_dollars"] / q["maker_fee_contracts"]
 
 
-def test_fee_is_charged_on_the_size_actually_quoted():
-    # The fee call must take the order's own contract count, not a literal 1.0 --
-    # Kalshi ceils ONCE per order, so the two differ as soon as qty moves.
+def test_at_qty_one_the_charged_fee_is_price_invariant():
+    # HONEST LIMIT, asserted rather than glossed: the once-per-order cent
+    # ceiling makes the qty=1 maker fee exactly $0.01 at every price. This
+    # commit did NOT change that number; it changed how the fee is computed
+    # and how it is reported.
+    assert {pm._maker_fee(1, c) for c in range(1, 100)} == {0.01}
+    assert _quote(fair=0.05)["maker_fee_dollars"] == 0.01
+    assert _quote(fair=0.50)["maker_fee_dollars"] == 0.01
+    assert _quote(fair=0.95)["maker_fee_dollars"] == 0.01
+
+
+@pytest.mark.parametrize("qty,cents", [(10, 50), (10, 65), (40, 50), (3, 20)])
+def test_fee_is_charged_on_the_size_actually_quoted(monkeypatch, qty, cents):
+    # The fee must come from the ORDER's contract count, not a literal 1.0.
+    # Kalshi ceils ONCE per order, so beyond qty=1 the true fee is strictly
+    # cheaper than qty x the single-contract fee -- charging per contract would
+    # overstate cost by up to a cent each.
     from scripts.platformkit.execution.venue_fees import fee_kalshi_maker
-    assert fee_kalshi_maker(pm._QTY, 0.65) == _quote()["maker_fee_dollars"]
-    assert fee_kalshi_maker(10.0, 0.50) < 10.0 * fee_kalshi_maker(1.0, 0.50)
+    assert pm._maker_fee(qty, cents) == fee_kalshi_maker(qty, cents / 100.0)
+    assert pm._maker_fee(qty, cents) < qty * pm._maker_fee(1, cents)
+
+    monkeypatch.setattr(pm, "_QTY", qty)
+    q = _quote(fair=cents / 100.0)
+    assert q["maker_fee_contracts"] == qty
+    assert q["maker_fee_dollars"] == fee_kalshi_maker(qty, cents / 100.0)
+    assert q["maker_fee_units"] == q["maker_fee_dollars"] / qty
+    assert q["order"].qty == qty          # the quoted size and the fee agree
 
 
 # -- defect #6: fill realism ------------------------------------------------
