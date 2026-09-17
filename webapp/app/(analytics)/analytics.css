@@ -170,6 +170,9 @@ main table { max-width: none; }
      pillar row remains horizontally swipeable. */
   .navlinks a { min-height: 44px; display: inline-flex; align-items: center; padding: 4px 2px; }
 }
+@media (max-width: 420px) {
+  .navlinks { gap: 0 12px; font-size: 11px; }
+}
 
 /* ---- print: a clean, toner-friendly module handout ----
    Neutralize the ivory ground to white, drop interactive chrome + shadows, linearize

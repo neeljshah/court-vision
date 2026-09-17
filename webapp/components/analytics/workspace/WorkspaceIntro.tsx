@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, BookOpen, FlaskConical } from "lucide-react";
+import { ArrowUpRight, BookOpen, FileText, FlaskConical, Search, Sigma } from "lucide-react";
 import { base } from "@/lib/analytics/dashboardTypes";
 import type { HomeCalibrationExample } from "@/lib/analytics/homeCalibrationExample";
 
@@ -20,7 +20,12 @@ function clusterLabel(value: string): string {
   return value.replace(/_id$/, "").replace(/_/g, " ");
 }
 
-export function WorkspaceIntro({ example }: { example: HomeCalibrationExample | null }) {
+export function WorkspaceIntro({ example, paperCount, novelCount, findingCount }: {
+  example: HomeCalibrationExample | null;
+  paperCount: number;
+  novelCount: number;
+  findingCount: number;
+}) {
   return <>
     <header className="cv-intro">
       <div className="cv-intro-copy">
@@ -57,6 +62,9 @@ export function WorkspaceIntro({ example }: { example: HomeCalibrationExample | 
       <a href={`${base}/analytics/compare/?pack=tennis`}><small>04</small><strong>Tennis</strong><span>Player profiles</span><ArrowUpRight size={15} /></a>
       <a href={`${base}/analytics/lab/`}><FlaskConical size={16} /><strong>Lab</strong><span>Inspect measurements</span><ArrowUpRight size={15} /></a>
       <a href={`${base}/analytics/evidence/`}><BookOpen size={16} /><strong>Research</strong><span>View sources</span><ArrowUpRight size={15} /></a>
+      <a href={`${base}/analytics/papers/`}><FileText size={16} /><strong>Papers</strong><span>{paperCount.toLocaleString("en-US")} research papers</span><ArrowUpRight size={15} /></a>
+      <a href={`${base}/analytics/novel/`}><Sigma size={16} /><strong>Experimental metrics</strong><span>{novelCount.toLocaleString("en-US")} measured stats</span><ArrowUpRight size={15} /></a>
+      <a href={`${base}/analytics/findings/`}><Search size={16} /><strong>Findings</strong><span>{findingCount.toLocaleString("en-US")} published findings</span><ArrowUpRight size={15} /></a>
     </nav>
   </>;
 }

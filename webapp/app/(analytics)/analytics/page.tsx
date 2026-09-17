@@ -10,5 +10,6 @@ export const metadata: Metadata = {
   description: "Read published forecast calibration examples, source-linked research, and descriptive player and team profiles.",
 };
 export default function AnalyticsHome() {
-  return <Workspace data={getDashboardData()} calibrationExample={loadHomeCalibrationExample()} />;
+  const { paperCount, novelCount, findingCount, ...data } = getDashboardData();
+  return <Workspace data={data} calibrationExample={loadHomeCalibrationExample()} paperCount={paperCount} novelCount={novelCount} findingCount={findingCount} />;
 }

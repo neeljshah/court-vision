@@ -79,10 +79,14 @@ export const metadata: Metadata = {
 // Primary customer workflows. Specialist research pages remain in the footer.
 const PILLARS: Array<{ href: string; label: string }> = [
   { href: "/analytics", label: "Overview" },
+  { href: "/analytics/papers", label: "Papers" },
+  { href: "/analytics/calibration", label: "Calibration" },
+  { href: "/analytics/state-reliability", label: "State reliability" },
+  { href: "/analytics/forecaster", label: "Forecaster" },
+  { href: "/analytics/novel", label: "Experimental metrics" },
   { href: "/analytics/lab", label: "Measurement lab" },
   { href: "/analytics/compare", label: "Compare" },
   { href: "/analytics/browse", label: "Library" },
-  { href: "/analytics/evidence", label: "Evidence" },
   { href: "/analytics/ask", label: "Ask Scout" },
 ];
 

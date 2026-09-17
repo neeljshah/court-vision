@@ -1,15 +1,24 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import type { DashboardData, Entity, HistoryPoint, Market, Mechanism, Module, Sport } from "./dashboardTypes";
 import { getResearchAnalyses } from "./researchData";
 import { buildDossierCoverage, type DossierCompletenessArtifact } from "./dossierCoverage";
+import { findingsIndex } from "./findingsIndex";
 
 const directory = join(process.cwd(), "public/data/showcase");
+const papersDirectory = join(process.cwd(), "public/data/papers");
+type LaunchCounts = { paperCount: number; novelCount: number; findingCount: number };
 // These versioned, public artifacts are required: a missing source must fail the build.
 function read<T>(name: string): T {
   const text = readFileSync(join(directory, `${name}.json`), "utf8");
   // Python exports contain bare NaN. Preserve quoted prose and missing values.
   return JSON.parse(text.replace(/"(?:\\.|[^"\\])*"|\bNaN\b/g, token => token === "NaN" ? "null" : token));
+}
+function countPublishedPapers(): number {
+  return readdirSync(papersDirectory).filter(file => file.endsWith(".json") && file !== "manifest-sample.json").reduce((count, file) => {
+    const paper = JSON.parse(readFileSync(join(papersDirectory, file), "utf8")) as { slug?: unknown };
+    return count + (typeof paper.slug === "string" && paper.slug.trim().length > 0 ? 1 : 0);
+  }, 0);
 }
 export function moduleCategory(id: string): string {
   if (/^novel_/.test(id)) return "Novel metrics";
@@ -29,7 +38,7 @@ const packs: { file: string; pack: string; sport: Sport; fields: string[] }[] = 
   { file: "tennis", pack: "tennis", sport: "tennis", fields: ["hard_wr_career", "clay_wr_career"] },
   { file: "calibration", pack: "calibration", sport: "all", fields: ["model_ece", "market_ece"] },
 ];
-export function getDashboardData(): DashboardData {
+export function getDashboardData(): DashboardData & LaunchCounts {
   const manifest = read<{ modules: { id: string; title: string; one_line: string; status: string; as_of: string | null }[]; checks_green?: { pass: number; total: number } }>("site_manifest");
   const modules: Module[] = manifest.modules.map(m => ({ id: m.id, title: m.title, description: m.one_line, category: moduleCategory(m.id), status: m.status, asOf: m.as_of }));
   const ledger = read<{ by_sport: Record<string, { mechanisms: Omit<Mechanism, "sport">[] }> }>("mechanism_ledger_export");
@@ -59,8 +68,10 @@ export function getDashboardData(): DashboardData {
   const coverage = read<DossierCompletenessArtifact>("dossier_completeness");
   const analyses = getResearchAnalyses().map(analysis => ({ id: analysis.id, title: analysis.title, sport: analysis.sport, rows: analysis.rows.length, asOf: analysis.asOf || null }));
   const recentAnalyses = [...analyses].sort((left, right) => (right.asOf || "").localeCompare(left.asOf || "")).slice(0, 6);
+  const novelCount = read<{ stats: unknown[] }>("novel_stats_index").stats.length;
   return { modules, mechanisms, markets, history, entities, checks: manifest.checks_green || null,
     analyses, recentAnalyses,
+    paperCount: countPublishedPapers(), novelCount, findingCount: findingsIndex.length,
     benchmarks: read<{ rows: DashboardData["benchmarks"] }>("cross_sport_scoreboard").rows,
     walkForward: read<DashboardData["walkForward"]>("forecaster/winprob_walk_forward_results"),
     pitches: { n: pitches.n_pitches, distribution: pitches.pitch_type_distribution, velocity: pitches.velo_percentiles_by_pitch_type },

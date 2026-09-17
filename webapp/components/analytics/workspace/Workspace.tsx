@@ -12,13 +12,19 @@ import { WorkspaceIntro } from "./WorkspaceIntro";
 import type { HomeCalibrationExample } from "@/lib/analytics/homeCalibrationExample";
 
 const views = [ { id: "overview", label: "Overview", Icon: ChartNoAxesCombined }, { id: "quality", label: "Model quality", Icon: Layers3 }, { id: "research", label: "Research ledger", Icon: FlaskConical }, { id: "entities", label: "Entity atlas", Icon: Users }, { id: "coverage", label: "Data coverage", Icon: Database }, { id: "library", label: "All analytics", Icon: BookOpen } ];
-export default function Workspace({ data, calibrationExample }: { data: DashboardData; calibrationExample: HomeCalibrationExample | null }) {
+export default function Workspace({ data, calibrationExample, paperCount, novelCount, findingCount }: {
+  data: DashboardData;
+  calibrationExample: HomeCalibrationExample | null;
+  paperCount: number;
+  novelCount: number;
+  findingCount: number;
+}) {
   const [sport, setSport] = useState<Sport>("all"); const [view, setActiveView] = useState("overview");
   const setView = (id: string) => { setActiveView(id); if (id === "library") setSport("all"); };
   const records = data.mechanisms.filter(m => sport === "all" || m.sport === sport);
   const entities = data.entities.filter(e => sport === "all" || e.sport === sport);
   return <div className="cv-workspace cv-overview"><div className="cv-workspace-inner">
-    <WorkspaceIntro example={calibrationExample} />
+    <WorkspaceIntro example={calibrationExample} paperCount={paperCount} novelCount={novelCount} findingCount={findingCount} />
     <div className="cv-controls"><div className="cv-sports" role="group" aria-label="Filter analytics by sport">{SPORTS.map(s => <button key={s.id} onClick={() => setSport(s.id)} aria-pressed={sport === s.id} disabled={view === "library"}>{s.label}</button>)}</div><span className="cv-snapshot"><span />Historical snapshots <b>2026</b></span></div>
     <nav className="cv-view-nav" aria-label="Analytics workspace views">{views.map(({ id, label, Icon }) => <button key={id} aria-pressed={view === id} onClick={() => setView(id)}><Icon size={16} />{label}</button>)}</nav>
     <div className="cv-view" key={view}>

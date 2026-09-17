@@ -6,7 +6,7 @@ const example = { bin_lo: 0.5, bin_hi: 0.6, mean_p: 0.5436, mean_y: 0.4619, n: 1
 
 describe("WorkspaceIntro", () => {
   it("renders the published calibration sentence and its reading sequence", () => {
-    render(<WorkspaceIntro example={example} />);
+    render(<WorkspaceIntro example={example} paperCount={29} novelCount={9} findingCount={17} />);
     const calibration = screen.getByRole("region", { name: "Published MLB calibration example" });
     expect(within(calibration).getByText(/These MLB\/soccer numbers are revision 2, computed on the segment-clean corpus/)).toBeInTheDocument();
     expect(within(calibration).getByRole("link", { name: "Read the finding." })).toHaveAttribute("href", expect.stringMatching(/^\/analytics\/findings\/ingame-join-integrity\/?$/));
@@ -19,5 +19,16 @@ describe("WorkspaceIntro", () => {
     expect(within(sequence).getByRole("link", { name: "Reliability" })).toHaveAttribute("href", expect.stringContaining("/analytics/calibration/"));
     expect(within(sequence).getByRole("link", { name: /repeated observations/i })).toHaveAttribute("href", expect.stringContaining("/analytics/observation-dependence/"));
     expect(within(sequence).getByRole("link", { name: /state reliability/i })).toHaveAttribute("href", expect.stringContaining("/analytics/state-reliability/"));
+  });
+
+  it("renders the data-derived research launch cards", () => {
+    render(<WorkspaceIntro example={example} paperCount={29} novelCount={9} findingCount={17} />);
+    const launch = screen.getByRole("navigation", { name: "Explore published sports and research" });
+    expect(within(launch).getByRole("link", { name: /Papers/ })).toHaveAttribute("href", expect.stringMatching(/\/analytics\/papers\/$/));
+    expect(within(launch).getByText("29 research papers")).toBeInTheDocument();
+    expect(within(launch).getByRole("link", { name: /Experimental metrics/ })).toHaveAttribute("href", expect.stringMatching(/\/analytics\/novel\/$/));
+    expect(within(launch).getByText("9 measured stats")).toBeInTheDocument();
+    expect(within(launch).getByRole("link", { name: /Findings/ })).toHaveAttribute("href", expect.stringMatching(/\/analytics\/findings\/$/));
+    expect(within(launch).getByText("17 published findings")).toBeInTheDocument();
   });
 });

@@ -1,6 +1,9 @@
+import { readFileSync, readdirSync } from "node:fs";
+import { join } from "node:path";
 import { getResearchAnalyses } from "@/lib/analytics/researchData";
 import { describe, expect, it } from "vitest";
 import { getDashboardData } from "./dashboardData";
+import { findingsIndex } from "./findingsIndex";
 
 describe("public analytics snapshot normalization", () => {
   const data = getDashboardData();
@@ -48,5 +51,17 @@ describe("public analytics snapshot normalization", () => {
     expect(data.recentAnalyses).toHaveLength(6);
     expect(data.recentAnalyses.every(analysis => data.analyses.some(all => all.id === analysis.id))).toBe(true);
     expect(data.recentAnalyses.map(analysis => analysis.asOf)).toEqual([...data.recentAnalyses].map(analysis => analysis.asOf).sort((left, right) => (right || "").localeCompare(left || "")));
+  });
+  it("derives research launch counts from the published snapshot", () => {
+    const papersDirectory = join(process.cwd(), "public/data/papers");
+    const paperCount = readdirSync(papersDirectory).filter(file => file.endsWith(".json") && file !== "manifest-sample.json").reduce((count, file) => {
+      const paper = JSON.parse(readFileSync(join(papersDirectory, file), "utf8")) as { slug?: unknown };
+      return count + (typeof paper.slug === "string" && paper.slug.trim().length > 0 ? 1 : 0);
+    }, 0);
+    const novelIndex = JSON.parse(readFileSync(join(process.cwd(), "public/data/showcase/novel_stats_index.json"), "utf8")) as { stats: unknown[] };
+
+    expect(data.paperCount).toBe(paperCount);
+    expect(data.novelCount).toBe(novelIndex.stats.length);
+    expect(data.findingCount).toBe(findingsIndex.length);
   });
 });
