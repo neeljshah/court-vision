@@ -3,9 +3,9 @@
  "generated_at": "2026-07-25T04:34:37.481061+00:00",
  "descriptive_only": true,
  "edge_claimed": false,
- "headline": "The closing reference forecast is well-calibrated: MLB moneyline is essentially efficient, tennis shows only a mild favorite-longshot bias.",
+ "headline": "The closing price is well-calibrated: MLB moneyline is essentially efficient, tennis shows only a mild favorite-longshot bias.",
  "method": "Proportional devig of the two-way closing price -> implied probability; favorite = max(q, 1-q); bucketed by favorite implied probability, each bucket reports n, mean implied, realized favorite win-rate, the gap, and a 95% Wilson interval -- each row is one independent match/game.",
- "grades": "the closing reference forecast, not our model",
+ "grades": "the closing price, not our model",
  "sports": {
   "tennis": {
    "book": "Pinnacle (close)",
@@ -123,7 +123,7 @@
   "each row is one independent match/game, so binomial Wilson CIs are valid here -- unlike in-game ticks, which are dependent within an event",
   "favorite is defined by closing price, not by any external ranking",
   "bucket boundaries are declared upfront, not tuned to the data",
-  "this grades the closing reference forecast's own calibration, not our model -- nothing here is a claim about beating it"
+  "this grades the closing price's own calibration, not our model -- nothing here is a claim about beating it"
  ],
  "receipt": {
   "source_parquets": [
