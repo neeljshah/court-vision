@@ -124,35 +124,53 @@
   }
  ],
  "evidence": [
-  {
-   "artifact": "calibration_stability.json",
-   "module": "calibration_stability",
-   "asOf": "2026-07-23T03:21:27.493056+00:00",
-   "fields": [
-    "sports.mlb.n_rows", "sports.mlb.n_games",
-    "sports.mlb.sides.model_prob.brier", "sports.mlb.sides.market_prob.brier",
-    "sports.mlb.sides.model_prob.n_eligible_bins", "sports.mlb.sides.model_prob.n_significant_bins",
-    "sports.mlb.sides.market_prob.n_eligible_bins", "sports.mlb.sides.market_prob.n_significant_bins",
-    "sports.mlb.sides.model_prob.bins[]", "sports.mlb.sides.market_prob.bins[]",
-    "sports.soccer_intl.n_rows", "sports.soccer_intl.n_games",
-    "sports.soccer_intl.sides.model_prob.brier", "sports.soccer_intl.sides.market_prob.brier",
-    "sports.soccer_intl.sides.model_prob.n_significant_bins", "sports.soccer_intl.sides.market_prob.n_significant_bins",
-    "n_boot", "ci_pct", "cluster_unit", "skipped[0]"
-   ]
-  },
-  {
-   "artifact": "state_conditioned_calibration.json",
-   "module": "state_conditioned_calibration",
-   "asOf": null,
-   "fields": [
-    "sports.mlb.n_records", "sports.mlb.n_files", "sports.mlb.n_skipped_no_state_field",
-    "sports.mlb.model_ece_n_weighted", "sports.mlb.market_ece_n_weighted",
-    "sports.mlb.buckets[] (time_bucket=late(inn7+), all prob_bucket bands, both sources)",
-    "sports.soccer_intl.n_records", "sports.soccer_intl.n_skipped_no_state_field",
-    "sports.soccer_intl.model_ece_n_weighted", "sports.soccer_intl.market_ece_n_weighted",
-    "ranked_worst_buckets[0]", "skipped[0]"
-   ]
-  }
+   {
+     "artifact": "calibration_stability.json",
+     "module": "calibration_stability",
+     "asOf": "2026-07-23T03:21:27.493056+00:00",
+     "fields": [
+       "sports.mlb.n_rows",
+       "sports.mlb.n_games",
+       "sports.mlb.sides.model_prob.brier",
+       "sports.mlb.sides.market_prob.brier",
+       "sports.mlb.sides.model_prob.n_eligible_bins",
+       "sports.mlb.sides.model_prob.n_significant_bins",
+       "sports.mlb.sides.market_prob.n_eligible_bins",
+       "sports.mlb.sides.market_prob.n_significant_bins",
+       "sports.mlb.sides.model_prob.bins[]",
+       "sports.mlb.sides.market_prob.bins[]",
+       "sports.soccer_intl.n_rows",
+       "sports.soccer_intl.n_games",
+       "sports.soccer_intl.sides.model_prob.brier",
+       "sports.soccer_intl.sides.market_prob.brier",
+       "sports.soccer_intl.sides.model_prob.n_significant_bins",
+       "sports.soccer_intl.sides.market_prob.n_significant_bins",
+       "n_boot",
+       "ci_pct",
+       "cluster_unit",
+       "skipped[]"
+     ]
+   },
+   {
+     "artifact": "state_conditioned_calibration.json",
+     "module": "state_conditioned_calibration",
+     "asOf": null,
+     "fields": [
+       "sports.mlb.n_records",
+       "sports.mlb.n_files",
+       "sports.mlb.n_skipped_no_state_field",
+       "sports.mlb.model_ece_n_weighted",
+       "sports.mlb.market_ece_n_weighted",
+       "sports.mlb.buckets[time_bucket=late(inn7+),source=model]",
+       "sports.mlb.buckets[time_bucket=late(inn7+),source=market]",
+       "sports.soccer_intl.n_records",
+       "sports.soccer_intl.n_skipped_no_state_field",
+       "sports.soccer_intl.model_ece_n_weighted",
+       "sports.soccer_intl.market_ece_n_weighted",
+       "ranked_worst_buckets[0]",
+       "skipped[]"
+     ]
+   }
  ],
  "limitations": [
   "The MLB corpus behind both artifacts failed a join-integrity check measured 2026-09-16 (126 of 227 game files mix ticks from more than one game; 27,076 of 78,986 ticks carry another game's label), so every MLB figure here is a withdrawn dated record, not a current measurement.",

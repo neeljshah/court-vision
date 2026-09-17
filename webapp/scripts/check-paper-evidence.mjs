@@ -9,6 +9,7 @@ const data = join(root, "public", "data");
 const papers = join(data, "papers");
 const forbidden = /(?<![A-Za-z0-9_])(edge|edges|bet|bets|betting|bettor|bettors|bookmaker|bookmakers|sportsbook|profit|profits|profitable|roi|wager|wagers|wagering|bankroll|bankrolls|payout|payouts|odds boost|financial returns?|betting returns?|dollar)(?![A-Za-z0-9])/i;
 const isBag = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
+const owns = (value, key) => Object.prototype.hasOwnProperty.call(value, key);
 
 function names(directory) {
   return existsSync(directory) ? readdirSync(directory).filter((entry) => entry.endsWith(".json")) : [];
@@ -42,16 +43,34 @@ const inspectorIds = sourceIds(/\bid:\s*["']([^"']+)["']/g, [join(analytics, "an
 function segments(path) {
   if (typeof path !== "string" || !path) return null;
   const output = [];
-  for (const segment of path.split(".")) {
+  const parts = [];
+  let part = "", bracket = false;
+  for (const character of path) {
+    if (character === "[") { if (bracket) return null; bracket = true; }
+    if (character === "]") { if (!bracket) return null; bracket = false; }
+    if (character === "." && !bracket) { if (!part) return null; parts.push(part); part = ""; }
+    else part += character;
+  }
+  if (bracket || !part) return null;
+  parts.push(part);
+  for (const segment of parts) {
     const match = /^([A-Za-z0-9_$-]+)((?:\[[^\]]*\])*)$/.exec(segment);
     if (!match) return null;
-    output.push({ property: match[1], selectors: [...match[2].matchAll(/\[([^\]]*)\]/g)].map((entry) => entry[1]) });
+    const selectors = [...match[2].matchAll(/\[([^\]]*)\]/g)].map((entry) => entry[1]);
+    if (selectors.some((selector) => selector !== "" && !/^\d+$/.test(selector)
+      && !selector.split(",").every((condition) => /^[A-Za-z0-9_$-]+=[A-Za-z0-9_$+().:/|-]+$/.test(condition))
+      && !/^[A-Za-z0-9_$+().:/|-]+$/.test(selector))) return null;
+    output.push({ property: match[1], selectors });
   }
   return output;
 }
 
 function select(values, selector) {
   if (selector === "") return values.flatMap((value) => Array.isArray(value) ? value : []);
+  if (/^\d+$/.test(selector)) {
+    const index = Number(selector);
+    return values.flatMap((value) => Array.isArray(value) && owns(value, String(index)) ? [value[index]] : []);
+  }
   const separator = selector.indexOf("=");
   if (separator > 0) {
     const conditions = selector.split(",").map((part) => {
@@ -59,9 +78,9 @@ function select(values, selector) {
       return position > 0 ? [part.slice(0, position), part.slice(position + 1)] : null;
     });
     if (conditions.some((condition) => !condition || !condition[1])) return [];
-    return values.flatMap((value) => Array.isArray(value) ? value.filter((entry) => isBag(entry) && conditions.every((condition) => String(entry[condition[0]]) === condition[1])) : []);
+    return values.flatMap((value) => Array.isArray(value) ? value.filter((entry) => isBag(entry) && conditions.every((condition) => owns(entry, condition[0]) && String(entry[condition[0]]) === condition[1])) : []);
   }
-  return values.flatMap((value) => isBag(value) && selector in value ? [value[selector]] : []);
+  return values.flatMap((value) => isBag(value) && owns(value, selector) ? [value[selector]] : []);
 }
 
 function fieldExists(value, path) {
@@ -69,7 +88,7 @@ function fieldExists(value, path) {
   if (!parsed) return false;
   let values = [value];
   for (const segment of parsed) {
-    values = values.flatMap((entry) => isBag(entry) && segment.property in entry ? [entry[segment.property]] : []);
+    values = values.flatMap((entry) => isBag(entry) && owns(entry, segment.property) ? [entry[segment.property]] : []);
     for (const selector of segment.selectors) values = select(values, selector);
     if (!values.length) return false;
   }

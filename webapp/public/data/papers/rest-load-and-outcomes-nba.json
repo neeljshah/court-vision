@@ -567,7 +567,7 @@
       "module": "nba_consistency_profiles",
       "asOf": "2026-04-12",
       "fields": [
-        "caveat",
+        "methodology.caveat",
         "not_this[1]"
       ]
     }

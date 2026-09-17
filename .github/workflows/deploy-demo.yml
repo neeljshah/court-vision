@@ -77,6 +77,7 @@ jobs:
           npx vitest run lib/analytics/libraryData.test.ts
           npx vitest run lib/analytics/libraryViewState.test.ts
           npx vitest run lib/analytics/paperViewState.test.ts
+          npx vitest run lib/analytics/paperEvidence.server.test.ts
           npx vitest run lib/analytics/claimHistory.test.ts
           npx vitest run lib/analytics/countContext.test.ts
           npx vitest run lib/analytics/matchupInsights.test.ts
@@ -98,6 +99,7 @@ jobs:
           npx vitest run components/analytics/compare/PitchResultComparison.test.tsx
           npx vitest run components/analytics/library/LibraryExplorer.test.tsx
           npx vitest run components/analytics/papers/PapersIndex.test.tsx
+          npx vitest run components/analytics/papers/PaperArticle.test.tsx
           npx vitest run 'app/(analytics)/analytics/papers/page.test.tsx'
           npx vitest run components/analytics/claim-history/ClaimHistory.test.tsx
           npx vitest run components/analytics/count-context/CountContext.test.tsx
@@ -131,6 +133,11 @@ jobs:
         run: |
           node scripts/verify-public-json.mjs
           node --test scripts/verify-public-json.test.mjs
+
+      - name: Verify paper evidence references
+        run: |
+          node scripts/check-paper-evidence.mjs
+          node --test scripts/check-paper-evidence.test.mjs
 
       - name: Static export (snapshot data mode)
         env:

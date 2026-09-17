@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { fieldPathExists, resolveEvidenceArtifact, validatePaperEvidence } from "./paperEvidence.server";
@@ -51,5 +51,38 @@ describe("paper evidence resolution", () => {
     expect(fieldPathExists(value, "pitch_type_distribution[pitch_type=FF].n")).toBe(true);
     expect(fieldPathExists(value, "counts[balls=0,strikes=0].n")).toBe(true);
     expect(fieldPathExists(value, "by_class[three_ball].prob_matrix[FF][FF]")).toBe(true);
+  });
+
+  it("resolves dots inside selectors and numeric array indexes", () => {
+    const value = {
+      grains: { "early(inn1-3)": { ".4-.6": { n: 12 } } },
+      move_by_bucket: { "6h+": { n: 8 } },
+      rows: [{ n: 3 }],
+      cells: [{ bucket: "lead_00|ot|ot", n: 80 }],
+    };
+    expect(fieldPathExists(value, "grains[early(inn1-3)][.4-.6].n")).toBe(true);
+    expect(fieldPathExists(value, "move_by_bucket[6h+].n")).toBe(true);
+    expect(fieldPathExists(value, "rows[0].n")).toBe(true);
+    expect(fieldPathExists(value, "cells[bucket=lead_00|ot|ot].n")).toBe(true);
+    expect(fieldPathExists(value, "rows[1].n")).toBe(false);
+  });
+
+  it("rejects malformed paths, prose and inherited properties", () => {
+    const inherited = Object.create({ hidden: { value: 1 } }) as Record<string, unknown>;
+    inherited.rows = [Object.create({ hidden: 1 })];
+    for (const path of ["a..b", "a[b", "a]b", "a[nested[key]]", "rows[0] prose", "rows[-1]"]) {
+      expect(fieldPathExists({ a: {}, rows: [] }, path)).toBe(false);
+    }
+    expect(fieldPathExists(inherited, "hidden.value")).toBe(false);
+    expect(fieldPathExists(inherited, "rows[0][hidden]")).toBe(false);
+  });
+
+  it("validates every committed public paper with the runtime resolver", () => {
+    const directory = join(process.cwd(), "public", "data", "papers");
+    for (const entry of readdirSync(directory).filter((name) => name.endsWith(".json"))) {
+      const paper = JSON.parse(readFileSync(join(directory, entry), "utf8"));
+      expect({ entry, reason: validatePaperEvidence(paper, artifacts, references) })
+        .toEqual({ entry, reason: null });
+    }
   });
 });

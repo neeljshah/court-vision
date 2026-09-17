@@ -333,30 +333,30 @@
       "module": "brier_skill_scores",
       "asOf": "2026-07-25T04:34:43.456609+00:00",
       "fields": [
-        "sports.mlb.grains.all.n",
-        "sports.mlb.grains.all.brier_model",
-        "sports.mlb.grains.all.brier_market",
-        "sports.mlb.grains.all.brier_clim",
-        "sports.mlb.grains.all.bss_model_vs_clim",
-        "sports.mlb.grains.all.bss_model_vs_market",
-        "sports.mlb.grains.early(inn1-3).n",
-        "sports.mlb.grains.early(inn1-3).brier_model",
-        "sports.mlb.grains.early(inn1-3).brier_market",
-        "sports.mlb.grains.early(inn1-3).brier_clim",
-        "sports.mlb.grains.early(inn1-3).bss_model_vs_clim",
-        "sports.mlb.grains.early(inn1-3).bss_model_vs_market",
-        "sports.mlb.grains.mid(inn4-6).n",
-        "sports.mlb.grains.mid(inn4-6).brier_model",
-        "sports.mlb.grains.mid(inn4-6).brier_market",
-        "sports.mlb.grains.mid(inn4-6).brier_clim",
-        "sports.mlb.grains.mid(inn4-6).bss_model_vs_clim",
-        "sports.mlb.grains.mid(inn4-6).bss_model_vs_market",
-        "sports.mlb.grains.late(inn7+).n",
-        "sports.mlb.grains.late(inn7+).brier_model",
-        "sports.mlb.grains.late(inn7+).brier_market",
-        "sports.mlb.grains.late(inn7+).brier_clim",
-        "sports.mlb.grains.late(inn7+).bss_model_vs_clim",
-        "sports.mlb.grains.late(inn7+).bss_model_vs_market",
+        "sports.mlb.grains[all].n",
+        "sports.mlb.grains[all].brier_model",
+        "sports.mlb.grains[all].brier_market",
+        "sports.mlb.grains[all].brier_clim",
+        "sports.mlb.grains[all].bss_model_vs_clim",
+        "sports.mlb.grains[all].bss_model_vs_market",
+        "sports.mlb.grains[early(inn1-3)].n",
+        "sports.mlb.grains[early(inn1-3)].brier_model",
+        "sports.mlb.grains[early(inn1-3)].brier_market",
+        "sports.mlb.grains[early(inn1-3)].brier_clim",
+        "sports.mlb.grains[early(inn1-3)].bss_model_vs_clim",
+        "sports.mlb.grains[early(inn1-3)].bss_model_vs_market",
+        "sports.mlb.grains[mid(inn4-6)].n",
+        "sports.mlb.grains[mid(inn4-6)].brier_model",
+        "sports.mlb.grains[mid(inn4-6)].brier_market",
+        "sports.mlb.grains[mid(inn4-6)].brier_clim",
+        "sports.mlb.grains[mid(inn4-6)].bss_model_vs_clim",
+        "sports.mlb.grains[mid(inn4-6)].bss_model_vs_market",
+        "sports.mlb.grains[late(inn7+)].n",
+        "sports.mlb.grains[late(inn7+)].brier_model",
+        "sports.mlb.grains[late(inn7+)].brier_market",
+        "sports.mlb.grains[late(inn7+)].brier_clim",
+        "sports.mlb.grains[late(inn7+)].bss_model_vs_clim",
+        "sports.mlb.grains[late(inn7+)].bss_model_vs_market",
         "honest_note",
         "generated_at"
       ]
@@ -369,7 +369,8 @@
         "headline_insight",
         "caveat",
         "as_of"
-      ]
+      ],
+      "path": "insights"
     },
     {
       "artifact": "brier_skill_scores.json",
@@ -378,7 +379,8 @@
       "fields": [
         "cited",
         "as_of"
-      ]
+      ],
+      "path": "insights"
     }
   ],
   "limitations": [

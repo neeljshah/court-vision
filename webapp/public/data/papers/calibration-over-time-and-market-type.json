@@ -98,46 +98,82 @@
   }
  ],
  "evidence": [
-  {
-   "artifact": "calibration_over_time.json",
-   "module": "calibration_over_time",
-   "asOf": null,
-   "fields": [
-    "mlb.2026-06.n", "mlb.2026-06.model_brier", "mlb.2026-06.market_brier", "mlb.2026-06.model_ece", "mlb.2026-06.market_ece",
-    "mlb.2026-07.n", "mlb.2026-07.model_brier", "mlb.2026-07.market_brier", "mlb.2026-07.model_ece", "mlb.2026-07.market_ece",
-    "soccer_intl.2026-06.n", "soccer_intl.2026-06.model_brier", "soccer_intl.2026-06.market_brier", "soccer_intl.2026-06.model_ece", "soccer_intl.2026-06.market_ece",
-    "soccer_intl.2026-07.n", "soccer_intl.2026-07.model_brier", "soccer_intl.2026-07.market_brier", "soccer_intl.2026-07.model_ece", "soccer_intl.2026-07.market_ece"
-   ]
-  },
-  {
-   "artifact": "calibration_by_market_type.json",
-   "module": "calibration_by_market_type",
-   "asOf": null,
-   "fields": [
-    "min_n", "n_bins",
-    "market_types.mlb_moneyline.n_rows", "market_types.mlb_moneyline.model_brier", "market_types.mlb_moneyline.market_brier",
-    "market_types.mlb_moneyline.model_ece", "market_types.mlb_moneyline.market_ece", "market_types.mlb_moneyline.brier_gap_model_minus_market",
-    "market_types.soccer_match.n_rows", "market_types.soccer_match.model_brier", "market_types.soccer_match.market_brier",
-    "market_types.soccer_match.model_ece", "market_types.soccer_match.market_ece", "market_types.soccer_match.brier_gap_model_minus_market",
-    "market_types.mlb_total.n_rows", "market_types.mlb_total.n_quote_tracks", "market_types.mlb_total.n_files",
-    "market_types.mlb_total.has_outcome", "market_types.mlb_total.brier",
-    "market_types.mlb_total.model_vs_market_divergence.median", "market_types.mlb_total.model_vs_market_divergence.mean", "market_types.mlb_total.model_vs_market_divergence.p90",
-    "skipped[0]"
-   ]
-  },
-  {
-   "artifact": "calibration_stability.json",
-   "module": "calibration_stability",
-   "asOf": "2026-07-23T03:21:27.493056+00:00",
-   "fields": [
-    "sports.mlb.n_rows", "sports.mlb.n_games",
-    "sports.mlb.sides.model_prob.brier", "sports.mlb.sides.model_prob.n_significant_bins",
-    "sports.mlb.sides.market_prob.brier", "sports.mlb.sides.market_prob.n_significant_bins",
-    "sports.soccer_intl.n_rows", "sports.soccer_intl.n_games",
-    "sports.soccer_intl.sides.model_prob.brier", "sports.soccer_intl.sides.model_prob.n_significant_bins",
-    "sports.soccer_intl.sides.market_prob.brier", "sports.soccer_intl.sides.market_prob.n_significant_bins"
-   ]
-  }
+   {
+     "artifact": "calibration_over_time.json",
+     "module": "calibration_over_time",
+     "asOf": null,
+     "fields": [
+       "mlb.2026-06.n",
+       "mlb.2026-06.model_brier",
+       "mlb.2026-06.market_brier",
+       "mlb.2026-06.model_ece",
+       "mlb.2026-06.market_ece",
+       "mlb.2026-07.n",
+       "mlb.2026-07.model_brier",
+       "mlb.2026-07.market_brier",
+       "mlb.2026-07.model_ece",
+       "mlb.2026-07.market_ece",
+       "soccer_intl.2026-06.n",
+       "soccer_intl.2026-06.model_brier",
+       "soccer_intl.2026-06.market_brier",
+       "soccer_intl.2026-06.model_ece",
+       "soccer_intl.2026-06.market_ece",
+       "soccer_intl.2026-07.n",
+       "soccer_intl.2026-07.model_brier",
+       "soccer_intl.2026-07.market_brier",
+       "soccer_intl.2026-07.model_ece",
+       "soccer_intl.2026-07.market_ece"
+     ]
+   },
+   {
+     "artifact": "calibration_by_market_type.json",
+     "module": "calibration_by_market_type",
+     "asOf": null,
+     "fields": [
+       "min_n",
+       "n_bins",
+       "market_types.mlb_moneyline.n_rows",
+       "market_types.mlb_moneyline.model_brier",
+       "market_types.mlb_moneyline.market_brier",
+       "market_types.mlb_moneyline.model_ece",
+       "market_types.mlb_moneyline.market_ece",
+       "market_types.mlb_moneyline.brier_gap_model_minus_market",
+       "market_types.soccer_match.n_rows",
+       "market_types.soccer_match.model_brier",
+       "market_types.soccer_match.market_brier",
+       "market_types.soccer_match.model_ece",
+       "market_types.soccer_match.market_ece",
+       "market_types.soccer_match.brier_gap_model_minus_market",
+       "market_types.mlb_total.n_rows",
+       "market_types.mlb_total.n_quote_tracks",
+       "market_types.mlb_total.n_files",
+       "market_types.mlb_total.has_outcome",
+       "market_types.mlb_total.brier",
+       "market_types.mlb_total.model_vs_market_divergence.median",
+       "market_types.mlb_total.model_vs_market_divergence.mean",
+       "market_types.mlb_total.model_vs_market_divergence.p90",
+       "skipped[]"
+     ]
+   },
+   {
+     "artifact": "calibration_stability.json",
+     "module": "calibration_stability",
+     "asOf": "2026-07-23T03:21:27.493056+00:00",
+     "fields": [
+       "sports.mlb.n_rows",
+       "sports.mlb.n_games",
+       "sports.mlb.sides.model_prob.brier",
+       "sports.mlb.sides.model_prob.n_significant_bins",
+       "sports.mlb.sides.market_prob.brier",
+       "sports.mlb.sides.market_prob.n_significant_bins",
+       "sports.soccer_intl.n_rows",
+       "sports.soccer_intl.n_games",
+       "sports.soccer_intl.sides.model_prob.brier",
+       "sports.soccer_intl.sides.model_prob.n_significant_bins",
+       "sports.soccer_intl.sides.market_prob.brier",
+       "sports.soccer_intl.sides.market_prob.n_significant_bins"
+     ]
+   }
  ],
  "limitations": [
   "Only two calendar months (2026-06 and 2026-07) exist per sport in calibration_over_time.json; a two-point series cannot establish whether either sport's month-over-month movement is a stable trend or a single-month swing, and no confidence interval is published on the month-to-month change.",

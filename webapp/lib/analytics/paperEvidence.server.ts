@@ -11,6 +11,7 @@ export type ResolvedPaperEvidence = { directory: EvidenceDirectory; file: string
 const root = () => process.cwd();
 const isBag = (value: unknown): value is Bag => value !== null && typeof value === "object" && !Array.isArray(value);
 const fileName = (artifact: string) => artifact.split(/[\\/]/).pop() || "";
+const owns = (value: object, key: string) => Object.prototype.hasOwnProperty.call(value, key);
 
 function evidenceFile(artifact: string, directory: EvidenceDirectory): string {
   return join(root(), "public", "data", directory, artifact);
@@ -35,10 +36,23 @@ export function resolveEvidenceArtifact(entry: PaperEvidence): ResolvedPaperEvid
 function segments(path: string): Array<{ property: string; selectors: string[] }> | null {
   if (!path) return null;
   const output: Array<{ property: string; selectors: string[] }> = [];
-  for (const segment of path.split(".")) {
+  const parts: string[] = [];
+  let part = "", bracket = false;
+  for (const character of path) {
+    if (character === "[") { if (bracket) return null; bracket = true; }
+    if (character === "]") { if (!bracket) return null; bracket = false; }
+    if (character === "." && !bracket) { if (!part) return null; parts.push(part); part = ""; }
+    else part += character;
+  }
+  if (bracket || !part) return null;
+  parts.push(part);
+  for (const segment of parts) {
     const match = /^([A-Za-z0-9_$-]+)((?:\[[^\]]*\])*)$/.exec(segment);
     if (!match) return null;
     const selectors = [...match[2].matchAll(/\[([^\]]*)\]/g)].map((entry) => entry[1]);
+    if (selectors.some((selector) => selector !== "" && !/^\d+$/.test(selector)
+      && !selector.split(",").every((condition) => /^[A-Za-z0-9_$-]+=[A-Za-z0-9_$+().:/|-]+$/.test(condition))
+      && !/^[A-Za-z0-9_$+().:/|-]+$/.test(selector))) return null;
     output.push({ property: match[1], selectors });
   }
   return output;
@@ -46,6 +60,10 @@ function segments(path: string): Array<{ property: string; selectors: string[] }
 
 function select(values: unknown[], selector: string): unknown[] {
   if (selector === "") return values.flatMap((value) => Array.isArray(value) ? value : []);
+  if (/^\d+$/.test(selector)) {
+    const index = Number(selector);
+    return values.flatMap((value) => Array.isArray(value) && owns(value, String(index)) ? [value[index]] : []);
+  }
   const separator = selector.indexOf("=");
   if (separator > 0) {
     const conditions = selector.split(",").map((part) => {
@@ -54,10 +72,10 @@ function select(values: unknown[], selector: string): unknown[] {
     });
     if (conditions.some((condition) => !condition || !condition[1])) return [];
     return values.flatMap((value) => Array.isArray(value)
-      ? value.filter((entry) => isBag(entry) && conditions.every((condition) => String(entry[condition![0]]) === condition![1]))
+      ? value.filter((entry) => isBag(entry) && conditions.every((condition) => owns(entry, condition![0]) && String(entry[condition![0]]) === condition![1]))
       : []);
   }
-  return values.flatMap((value) => isBag(value) && selector in value ? [value[selector]] : []);
+  return values.flatMap((value) => isBag(value) && owns(value, selector) ? [value[selector]] : []);
 }
 
 /** Supports dotted keys, [] wildcards, [key=value] array selectors, and keyed brackets. */
@@ -66,7 +84,7 @@ export function fieldPathExists(value: unknown, path: string): boolean {
   if (!parsed) return false;
   let values: unknown[] = [value];
   for (const segment of parsed) {
-    values = values.flatMap((entry) => isBag(entry) && segment.property in entry ? [entry[segment.property]] : []);
+    values = values.flatMap((entry) => isBag(entry) && owns(entry, segment.property) ? [entry[segment.property]] : []);
     for (const selector of segment.selectors) values = select(values, selector);
     if (!values.length) return false;
   }
