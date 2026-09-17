@@ -118,7 +118,23 @@ def test_spread_suppress_env_toggle_off(monkeypatch):
     assert r["exec_gate"]["spread_flag"] is True  # still recorded, just not enforced
 
 
+def test_gate_stamps_which_estimate_it_treated_as_fair():
+    """Audit 2026-09-17 defect #8: the gate passes the MODEL probability as
+    "fair", so expected_clv_pct rises with model-vs-market disagreement. Every
+    graded row must say so, and carry the market's own fair estimate beside it,
+    so the direction is readable without re-deriving it from source."""
+    ev = {"obtainable_decimal": 2.0, "bet_model_prob": 0.62,
+          "bet_devigged_price": 0.50}
+    g = X.evaluate_placement(ev, {})["exec_gate"]
+    assert g["fair_basis"] == "model"
+    assert g["fair_prob"] == 0.62
+    assert g["market_fair_prob"] == 0.50
+    # The gate fired on a 12pp model-vs-market gap, not on a price advantage.
+    assert g["passed"] is True and g["divergence"] == 0.12
+
+
 if __name__ == "__main__":
+    test_gate_stamps_which_estimate_it_treated_as_fair()
     test_big_edge_passes_no_drift()
     test_tiny_edge_suppressed_below_floor()
     test_adverse_drift_suppresses()

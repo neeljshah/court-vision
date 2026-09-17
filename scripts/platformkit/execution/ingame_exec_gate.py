@@ -175,6 +175,16 @@ def evaluate_placement(ev: Dict[str, Any], tick: Dict[str, Any], *,
     fair_prob = ev.get("bet_model_prob")
     g = _gate.gate(taken_decimal=taken_decimal, fair_prob=fair_prob,
                    threshold_pct=INGAME_EXPECTED_CLV_MIN_PCT)
+    # Which estimate the gate treated as fair, stamped on every row it produces.
+    # It is the MODEL, so expected_clv_pct here rises with model-vs-market
+    # DISAGREEMENT -- and Gate A-0 (docs/evidence/ingame/GATE_A0_2026-09-14.md)
+    # measured the in-play models BEHIND the contemporaneous Kalshi mid. A reader
+    # of a graded row must be able to tell that without re-deriving it from
+    # source. Changing which estimate is fair is a pre-registration decision
+    # (thresholds.py module docstring), not a stamp -- see
+    # docs/research/organization-sprint/PROPOSED_execution_hardening_2026-09-17.md.
+    g["fair_basis"] = "model"
+    g["market_fair_prob"] = ev.get("bet_devigged_price", ev.get("devigged_price"))
     drift = _drift_pct(taken_decimal, tick.get("fresh_obtainable_decimal"))
     g["drift_pct"] = drift
     depth = build_exec_depth(tick, ticker=ticker, now=now, sidecar_dir=sidecar_dir)
