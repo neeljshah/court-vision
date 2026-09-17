@@ -21,9 +21,42 @@ def _ledger(tmp_path, rows):
 _NOW = datetime(2026, 7, 20, 12, 0, tzinfo=timezone.utc)
 
 
-def test_missing_ledger_fails_open(tmp_path):
+def test_missing_ledger_is_an_empty_history_not_an_error(tmp_path):
+    # No file = no graded rows = CAPPED-but-under-cap, the same as an empty one.
     res = ib.allow("win_home", _NOW, tmp_path / "absent.jsonl")
-    assert res["allowed"] is True
+    assert res["allowed"] is True and res["state"] == "CAPPED"
+
+
+def test_unreadable_ledger_fails_closed(tmp_path, monkeypatch):
+    # Audit 2026-09-17 defect #7: allow() used to return allowed=True on ANY
+    # exception. A safety interlock whose state cannot be read is not known to be
+    # clear, and the grade capture upstream is never gated by this, so failing
+    # closed suppresses the placement only -- it never freezes measurement.
+    p = _ledger(tmp_path, [{"channel": "paper_ingame", "market": "win_home",
+                            "ts": "2026-07-19T01:00:00+00:00"}])
+
+    def _boom(*args, **kwargs):
+        raise OSError("device or resource busy")
+
+    monkeypatch.setattr(ib.Path, "open", _boom)
+    res = ib.allow("win_home", _NOW, p)
+    assert res["allowed"] is False
+    assert res["state"] == "ERROR_FAIL_CLOSED"
+
+
+def test_unreadable_ledger_raises_rather_than_reading_empty(tmp_path, monkeypatch):
+    p = _ledger(tmp_path, [{"channel": "paper_ingame", "market": "win_home",
+                            "ts": "2026-07-19T01:00:00+00:00"}])
+
+    def _boom(*args, **kwargs):
+        raise OSError("permission denied")
+
+    monkeypatch.setattr(ib.Path, "open", _boom)
+    try:
+        ib._load_channel_rows(p)
+    except ib.LedgerUnreadable:
+        return
+    raise AssertionError("an unreadable ledger must not read as an empty one")
 
 
 def test_no_graded_rows_caps_channel(tmp_path):

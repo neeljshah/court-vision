@@ -8,10 +8,18 @@ channel=="paper_ingame" rows and asks allow_placement() whether one more in-game
 placement is allowed: a bad graded stretch (negative rolling median CLV) CAPS the
 channel to BREAKER_CAPPED_MAX_PER_DAY placements instead of letting it bleed.
 
-SUPPRESS-ONLY + FAIL-OPEN (binding): this can only ever turn a would-be bet into
-no_bet; any error (missing ledger, bad rows, import failure) returns allowed=True
-so a broken breaker can never freeze measurement. Capture is upstream and always
-runs regardless. PAPER / UNITS only; no $ anywhere.
+SUPPRESS-ONLY: this can only ever turn a would-be bet into no_bet, never the
+reverse. A MISSING or empty ledger is not an error -- it yields no graded rows,
+which allow_placement already reads as CAPPED.
+
+FAIL-CLOSED on error (CORRECTED 2026-09-17, execution readiness audit defect #7).
+allow() used to return allowed=True on any exception, on the reasoning that "a
+broken breaker can never freeze measurement". That reasoning does not hold: the
+grade pair is captured in inplay_daytrader.on_tick BEFORE this gate runs and is
+never gated by it, so measurement continues either way -- the only thing a
+failure suppressed was the placement, which is exactly what an unreadable safety
+interlock should suppress. An interlock whose state cannot be read is not known
+to be clear. PAPER / UNITS only; no $ anywhere.
 
 Per-file test: python -m pytest tests/platformkit/ingame/test_inplay_breaker.py -q
 """
@@ -55,9 +63,17 @@ def _row_series(row: Dict[str, Any]) -> str:
                or row.get("taken_book") or MAKER_SERIES)
 
 
+class LedgerUnreadable(Exception):
+    """The breaker's own input could not be read -- state unknown, not clear."""
+
+
 def _load_channel_rows(ledger_path: Optional[Path],
                        series: str = MAKER_SERIES) -> List[Dict[str, Any]]:
-    """The ledger's paper_ingame rows for ONE CLV series (never raises; [] on any problem).
+    """The ledger's paper_ingame rows for ONE CLV series.
+
+    An ABSENT ledger is a legitimate empty history ([] -> CAPPED upstream). A
+    ledger that exists but cannot be read raises LedgerUnreadable, so allow()
+    can fail CLOSED instead of mistaking an unreadable file for a clean one.
 
     ponytail: full-ledger scan per ENTER tick, O(total ledger). Fine while the
     shared jsonl is small (in-game bets are rare); switch to a tail-read or
@@ -80,22 +96,21 @@ def _load_channel_rows(ledger_path: Optional[Path],
                         and _row_series(row) == series):
                     rows.append(row)
         return rows
-    except Exception as exc:  # noqa: BLE001 -- fail-open, never sink a tick
-        logger.debug("inplay_breaker ledger load failed: %s", exc)
-        return []
+    except Exception as exc:  # noqa: BLE001 -- surfaced, never a silent empty read
+        raise LedgerUnreadable(str(exc)) from exc
 
 
 def allow(market: str, now: datetime,
           ledger_path: Optional[Path] = None,
           series: str = MAKER_SERIES) -> Dict[str, Any]:
-    """One-more-placement verdict for the in-play channel (per CLV series). FAIL-OPEN."""
+    """One-more-placement verdict for the in-play channel (per CLV series). FAIL-CLOSED."""
     try:
         from scripts.platformkit.execution.circuit_breaker import allow_placement
         rows = _load_channel_rows(ledger_path, series=series)
         return allow_placement(rows, market, now.isoformat())
-    except Exception as exc:  # noqa: BLE001 -- a broken breaker never blocks measurement
-        logger.warning("inplay_breaker failed open: %s", exc)
-        return {"allowed": True, "state": "ERROR_FAIL_OPEN", "reason": "breaker_error"}
+    except Exception as exc:  # noqa: BLE001 -- unknown breaker state blocks placement
+        logger.warning("inplay_breaker failed closed: %s", exc)
+        return {"allowed": False, "state": "ERROR_FAIL_CLOSED", "reason": "breaker_error"}
 
 
 __all__ = ["CHANNEL", "MAKER_SERIES", "allow"]
