@@ -25,6 +25,7 @@ export type IngameIntegrityReceipt = {
   timing_artifacts_under_review: string[];
   timing_artifacts_regenerated: string[];
   timing_artifacts_note: string;
+  derived_artifacts_under_review: { artifact: string; stale_inputs: string; note: string }[];
   status: "regenerated";
   resolved_by: string;
   resolution_note: string;

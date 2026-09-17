@@ -16,7 +16,9 @@ it("renders the receipt, agreement, and artifact status tables", () => {
   expect(within(registry).getAllByText("state_conditioned_calibration")[0]).toBeInTheDocument();
   expect(within(registry).getAllByText("regenerated").length).toBeGreaterThan(0);
   expect(within(registry).getAllByText("blowout_dynamics").length).toBeGreaterThan(0);
-  expect(within(registry).queryByText("under-review")).not.toBeInTheDocument();
+  expect(within(registry).getAllByText("ess_ledger").length).toBeGreaterThan(0);
+  expect(within(registry).getAllByText("under-review").length).toBeGreaterThan(0);
+  expect(within(registry).getByText(/Stale input: residual_autocorrelation\./)).toBeInTheDocument();
   expect(screen.getByRole("heading", { name: "What clears the status" })).toBeInTheDocument();
 });
 
@@ -31,6 +33,11 @@ it("shows the regeneration before/after table and links the regeneration receipt
   expect(within(row as HTMLElement).getByText(/model 0\.0494, reference quote 0\.0397/)).toBeInTheDocument();
   expect(within(table).getAllByRole("row")).toHaveLength(14);
   expect(screen.getAllByText(/these are population changes, not forecaster improvement/i).length).toBeGreaterThan(0);
+  expect(screen.getByText(/27,076 of the 78,986 MLB ticks, 34\.3 percent/)).toBeInTheDocument();
+  expect(screen.getByText(/excluded 51,635, 65\.4 percent/)).toBeInTheDocument();
+  expect(screen.getByText(/excluded 4,738, 52\.6 percent/)).toBeInTheDocument();
+  expect(screen.queryByText(/a third of the MLB ticks/i)).not.toBeInTheDocument();
+  expect(screen.queryByText(/widens every interval/i)).not.toBeInTheDocument();
   expect(screen.getByRole("link", { name: "Read the full regeneration receipt" })).toHaveAttribute("href", expect.stringContaining("/data/audits/mlb-ingame-regeneration.json"));
 });
 

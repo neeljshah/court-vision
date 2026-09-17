@@ -12,7 +12,8 @@ function number(value: number): string {
 export function buildIngameJoinIntegrityFinding(receipt: IngameIntegrityReceipt, regeneration: IngameRegenerationReceipt, timing: IngameTimingRegenerationReceipt) {
   const mlb = receipt.per_sport.mlb;
   const soccer = receipt.per_sport.soccer_intl;
-  const reviewedArtifacts = [...receipt.exposed_artifacts, ...receipt.timing_artifacts_regenerated, ...receipt.timing_artifacts_under_review];
+  const derivedUnderReview = receipt.derived_artifacts_under_review;
+  const reviewedArtifacts = [...receipt.exposed_artifacts, ...receipt.timing_artifacts_regenerated, ...receipt.timing_artifacts_under_review, ...derivedUnderReview.map(entry => entry.artifact)];
   const statusRows = reviewedArtifacts.flatMap((artifact) => (["mlb", "soccer_intl"] as IntegritySport[])
     .map(sportId => ({ artifact, sport: sportLabels[sportId], state: status(artifact, sportId) }))
     .filter(row => row.state !== "clear"));
@@ -33,6 +34,7 @@ export function buildIngameJoinIntegrityFinding(receipt: IngameIntegrityReceipt,
     timingRegeneratedArtifacts: receipt.timing_artifacts_regenerated,
     timingNote: receipt.timing_artifacts_note,
     statusRows,
+    derivedUnderReview,
     regeneration: {
       measuredOn: regeneration.measured_on,
       revision: regeneration.revision_published,

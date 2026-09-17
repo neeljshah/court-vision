@@ -16,6 +16,8 @@ import { findingMeta } from "@/lib/analytics/og";
 import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
 
 import { FindingUnavailable } from "@/components/analytics/findings/FindingUnavailable";
+import { DataIntegrityNotice } from "@/components/analytics/DataIntegrityNotice";
+import { noticesForModules } from "@/lib/analytics/dataIntegrity";
 
 export const metadata: Metadata = {
   title: "Effective Sample Size",
@@ -111,15 +113,17 @@ const formulaBlock: CSSProperties = {
   whiteSpace: "pre-wrap",
 };
 
+const LEDGER_ID = "ess_ledger";
+
 export default function EffectiveSampleSizePage() {
-  const data = loadArtifact("ess_ledger") as EssLedger | null;
+  const data = loadArtifact(LEDGER_ID) as EssLedger | null;
 
   if (!data || !data.corpora?.length) {
     return (
       <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }}>
         <p className="overline">Findings / Effective Sample Size</p>
         <h1 style={h1}>How independent is our data, really?</h1>
-        <FindingUnavailable artifactId="ess_ledger" />
+        <FindingUnavailable artifactId={LEDGER_ID} />
       </div>
     );
   }
@@ -131,6 +135,14 @@ export default function EffectiveSampleSizePage() {
       <p className="overline">Findings / Effective Sample Size</p>
       <h1 style={h1}>How independent is our data, really?</h1>
       <p style={lede}>{headline}</p>
+      <DataIntegrityNotice notices={noticesForModules([LEDGER_ID])} moduleIds={[LEDGER_ID]} />
+      <p style={{ ...lede, fontSize: 15, marginTop: 12 }}>
+        Support label: this ledger is the joined-corpus measurement, revision 1. It was taken
+        on the MLB and international soccer in-game corpus before that corpus was re-segmented
+        into one stored file per game, and its recomposition on the segment-clean corpus is
+        pending, so every row below describes the joined corpus rather than the published
+        revision 2 population.
+      </p>
       {method ? <p style={{ ...lede, fontSize: 15, marginTop: 12 }}>{method}</p> : null}
 
       <FindingTableRegion label="Published measurements" style={{ marginTop: 24, overflowX: "auto", maxWidth: 700 }}>
@@ -143,7 +155,7 @@ export default function EffectiveSampleSizePage() {
               <th style={th}>Residual autocorr (rho)</th>
               <th style={th}>Effective sample (AR1)</th>
               <th style={th}>Honest anchor</th>
-              <th style={th}>CI must widen by</th>
+              <th style={th}>Implied interval-width factor</th>
             </tr>
           </thead>
           <tbody>
@@ -176,9 +188,11 @@ export default function EffectiveSampleSizePage() {
         rows within one game are near-duplicates because the outcome is fixed and the
         win-probability path is smooth, so {corpora[0].n_rows.toLocaleString()}{" "}
         {sportLabel(corpora[0].sport)} rows carry the independent information of at
-        most ~{corpora[0].ess_anchor.toLocaleString()} games. Every confidence
-        interval on a within-game analysis must therefore be widened by the factor in
-        the last column.
+        most ~{corpora[0].ess_anchor.toLocaleString()} games. The last column is the
+        interval-width factor that dependence implies for an estimate taken on these
+        rows; it is not an instruction to scale a published interval. Intervals on the
+        regenerated corpus are re-estimated by cluster bootstrap, never widened from an
+        earlier number.
       </p>
 
       {formula ? (

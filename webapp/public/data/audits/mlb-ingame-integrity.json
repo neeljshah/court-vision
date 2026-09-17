@@ -67,6 +67,18 @@
     "novel_market_foresight_premium"
   ],
   "timing_artifacts_note": "Mixed-game tick paths also distort timing measurements even where no outcome label is used, so these six were held back from the first pass. They were regenerated on 2026-09-17 from the same segment-clean corpus and published as revision 2; the before and after figures are in the mlb-ingame-timing-regeneration receipt. novel_market_foresight_premium no longer mixes revisions: it now reads the rebuilt info_arrival_curve and the rebuilt market_convergence. comeback_atlas was cleared on a different ground -- its corpus is the NBA reliability map, not this in-game join, so re-running it on the segmented roots reproduced every published cell. No timing artifact remains under review.",
+  "derived_artifacts_under_review": [
+    {
+      "artifact": "novel_overreaction_harvest_gap",
+      "stale_inputs": "market_overreaction, market_disagreement_profile",
+      "note": "Composed on 2026-07-25 from market_overreaction and market_disagreement_profile. Both inputs were rebuilt at revision 2 on the segment-clean corpus, so every figure here is still the revision 1 composition and is under review until it is recomposed."
+    },
+    {
+      "artifact": "ess_ledger",
+      "stale_inputs": "residual_autocorrelation",
+      "note": "Composed on 2026-07-25 from residual_autocorrelation. That input was rebuilt at revision 2, so this ledger still describes the joined MLB and international soccer corpus of 78,986 and 9,003 rows and is under review until it is recomposed."
+    }
+  ],
   "status": "regenerated",
   "resolved_by": "mlb-ingame-regeneration",
   "resolution_note": "The exposed artifacts were rebuilt from the segment-clean corpus on 2026-09-16; the values measured here are revision 1 and are withdrawn.",

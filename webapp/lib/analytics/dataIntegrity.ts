@@ -20,6 +20,34 @@ const exposedArtifacts: readonly string[] = receipt.exposed_artifacts;
 // Empty once every timing artifact is regenerated; the key stays so a future defect has a home.
 const timingArtifacts: readonly string[] = receipt.timing_artifacts_under_review;
 const timingRegeneratedArtifacts: readonly string[] = receipt.timing_artifacts_regenerated;
+// Artifacts composed from a rebuilt input that still carry revision 1 numbers.
+const derivedArtifactsUnderReview = receipt.derived_artifacts_under_review;
+
+function count(value: number): string {
+  return value.toLocaleString("en-US");
+}
+function share(part: number, whole: number): string {
+  return `${((part / whole) * 100).toFixed(1)} percent`;
+}
+
+/**
+ * The two MLB shares, derived from the receipts so they cannot drift apart.
+ * excluded is every tick segmentation dropped; mismatched is the smaller,
+ * specifically identified label-mismatch count. Conflating them overstates one
+ * and understates the other.
+ */
+export const mlbTickShares = (() => {
+  const segmentation = regeneration.segmentation.per_sport.mlb;
+  const ticksIn = segmentation.ticks_in;
+  const excluded = ticksIn - segmentation.ticks_kept;
+  const mismatched = receipt.per_sport.mlb.mismatched_ticks;
+  return {
+    ticksIn,
+    excluded,
+    mismatched,
+    sentence: `Segmentation excluded ${count(excluded)} of the ${count(ticksIn)} MLB ticks (${share(excluded, ticksIn)}); the specifically identified label mismatches were a smaller ${count(mismatched)} (${share(mismatched, ticksIn)}).`,
+  };
+})();
 
 /** Registry shape checked against the versioned incident receipt. */
 export const integrityRegistrySummary = {
@@ -32,6 +60,7 @@ export const integrityRegistrySummary = {
   exposedArtifacts,
   timingArtifacts,
   timingRegeneratedArtifacts,
+  derivedArtifactsUnderReview,
   perSport: receipt.per_sport,
 } as const;
 
@@ -39,7 +68,7 @@ const regeneratedNotice: DataIntegrityNotice = {
   id: "mlb-ingame-regenerated",
   title: "MLB in-game corpus integrity",
   measuredOn: regeneration.measured_on,
-  summary: "These MLB/soccer numbers are revision 2, computed on the segment-clean corpus (2026-09-16). Revision 1 values are withdrawn and kept in the regeneration receipt.",
+  summary: `These MLB/soccer numbers are revision 2, computed on the segment-clean corpus (2026-09-16). Revision 1 values are withdrawn and kept in the regeneration receipt. ${mlbTickShares.sentence}`,
   affectedModules: exposedArtifacts,
   status: "regenerated",
   detailRoute: "/analytics/findings/ingame-join-integrity/",
@@ -65,7 +94,17 @@ const reviewNotice: DataIntegrityNotice = {
   detailRoute: "/analytics/findings/ingame-join-integrity/",
 };
 
-export const dataIntegrityNotices: readonly DataIntegrityNotice[] = [regeneratedNotice, timingRegeneratedNotice, reviewNotice];
+const derivedReviewNotices: DataIntegrityNotice[] = derivedArtifactsUnderReview.map(entry => ({
+  id: `derived-review-${entry.artifact.replace(/_/g, "-")}`,
+  title: "Composed artifact awaiting recomposition",
+  measuredOn: integrityRegistrySummary.measuredOn,
+  summary: `${entry.note} Stale input: ${entry.stale_inputs}.`,
+  affectedModules: [entry.artifact],
+  status: "under-review",
+  detailRoute: "/analytics/findings/ingame-join-integrity/",
+}));
+
+export const dataIntegrityNotices: readonly DataIntegrityNotice[] = [regeneratedNotice, timingRegeneratedNotice, reviewNotice, ...derivedReviewNotices];
 
 /** Returns the published integrity state for one artifact and corpus sport. */
 export function status(moduleId: string, sport: IntegritySport): IntegrityStatus {
@@ -73,6 +112,7 @@ export function status(moduleId: string, sport: IntegritySport): IntegrityStatus
   if (exposedArtifacts.includes(moduleId)) return "regenerated";
   if (timingRegeneratedArtifacts.includes(moduleId)) return "regenerated";
   if (timingArtifacts.includes(moduleId)) return "under-review";
+  if (derivedArtifactsUnderReview.some(entry => entry.artifact === moduleId)) return "under-review";
   return "clear";
 }
 

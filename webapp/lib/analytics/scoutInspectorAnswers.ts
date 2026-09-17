@@ -5,21 +5,52 @@ import type { AskEntry } from "./askSearch";
 export type SourceArtifact = { id: string; artifact: string; asOf: string | null; data: unknown };
 export type ExplainerEssay = { slug: string; title: string; cited: string[]; body_md?: string; dek?: string };
 export type PaperRecord = { slug: string; title: string; date: string; abstract: string; evidence?: { artifact: string }[] };
-type SupportUnit = "forecast observations" | "games" | "transitions" | "cells" | "rows";
+type SupportUnit = "forecast observations" | "games" | "transitions" | "rows" | "pitches";
 type InspectorSupport = { sport: string; unit: SupportUnit; n: number; population?: string };
 
-const INSPECTOR_SUPPORT: Readonly<Record<string, readonly InspectorSupport[]>> = {
-  calibration: [{ sport: "MLB", unit: "forecast observations", n: 78986 }, { sport: "International soccer", unit: "forecast observations", n: 9003 }],
-  "state-reliability": [{ sport: "MLB", unit: "forecast observations", n: 78986 }, { sport: "International soccer", unit: "forecast observations", n: 9003 }],
-  "pitch-sequencing": [{ sport: "MLB", unit: "transitions", n: 512289 }],
-  "count-context": [{ sport: "MLB", unit: "rows", n: 693037 }],
-  "score-decomposition": [{ sport: "MLB", unit: "forecast observations", n: 78986 }, { sport: "International soccer", unit: "forecast observations", n: 9003 }],
-  "observation-dependence": [{ sport: "MLB", unit: "forecast observations", n: 78986 }, { sport: "International soccer", unit: "forecast observations", n: 9003 }],
-  "residual-anatomy": [{ sport: "MLB", unit: "forecast observations", n: 78986 }, { sport: "International soccer", unit: "forecast observations", n: 9003 }],
-  "blowout-timing": [{ sport: "MLB", unit: "games", n: 178 }, { sport: "International soccer", unit: "games", n: 29 }],
-  "state-contrasts": [{ sport: "MLB", population: "from state", unit: "cells", n: 2458 }, { sport: "MLB", population: "to state", unit: "cells", n: 2079 }, { sport: "International soccer", population: "from state", unit: "cells", n: 109 }, { sport: "International soccer", population: "to state", unit: "cells", n: 176 }],
-  "cross-sport-comparability": [{ sport: "MLB", population: "moneyline ingame", unit: "rows", n: 78986 }, { sport: "MLB", population: "totals margin", unit: "rows", n: 671 }, { sport: "International soccer", unit: "rows", n: 9003 }, { sport: "NBA", unit: "rows", n: 6371 }, { sport: "Tennis", unit: "rows", n: 55075 }],
-};
+const SPORT_LABELS: Record<string, string> = { mlb: "MLB", soccer_intl: "International soccer", soccer: "Soccer", nba: "NBA", tennis: "Tennis" };
+// First field present wins. Ordered so a row/record count beats a coarser game
+// count, and a transition count beats the raw pitch total behind it.
+const COUNT_FIELDS: ReadonlyArray<readonly [string, SupportUnit]> = [
+  ["n_rows", "forecast observations"],
+  ["n_records", "forecast observations"],
+  ["n_games_usable", "games"],
+  ["n_transitions", "transitions"],
+  ["n_pitches_total", "pitches"],
+];
+
+function sportLabel(id: string): string { return SPORT_LABELS[id] || id.replace(/_/g, " "); }
+
+function countsIn(sport: string, block: unknown, population?: string): InspectorSupport[] {
+  if (!block || typeof block !== "object") return [];
+  const record = block as Record<string, unknown>;
+  for (const [field, unit] of COUNT_FIELDS) {
+    const value = record[field];
+    if (typeof value === "number" && Number.isFinite(value)) return [{ sport: sportLabel(sport), unit, n: value, population }];
+  }
+  return [];
+}
+
+/**
+ * Reads the published support straight off the artifact the inspector cites, so
+ * a regeneration moves the answer without anyone editing a constant here.
+ * Three artifact shapes cover every registered inspector: a sports-keyed block,
+ * a rows array with its own per-row n, and a single-sport flat artifact.
+ */
+function supportFrom(artifact: SourceArtifact): InspectorSupport[] {
+  if (!artifact.data || typeof artifact.data !== "object") return [];
+  const record = artifact.data as Record<string, unknown>;
+  const sports = record.sports;
+  if (sports && typeof sports === "object") {
+    return Object.entries(sports as Record<string, unknown>).flatMap(([sport, block]) => countsIn(sport, block));
+  }
+  if (Array.isArray(record.rows)) {
+    return (record.rows as Record<string, unknown>[]).flatMap(row => typeof row.n === "number" && Number.isFinite(row.n)
+      ? [{ sport: sportLabel(String(row.sport || "")), unit: "rows" as const, n: row.n, population: String(row.market || "").split(" (")[0].replace(/_/g, " ") || undefined }]
+      : []);
+  }
+  return countsIn(String(record.sport || ""), record);
+}
 
 function supportSentence(support: readonly InspectorSupport[]): string {
   if (!support.length) return "Published support is described in the source artifact.";
@@ -33,7 +64,7 @@ function inspectorAnswers(artifacts: SourceArtifact[]): AskEntry[] {
   const index = new Map(artifacts.map(artifact => [artifact.id, artifact]));
   return analysisDestinations.map(destination => {
     const sources = destination.sourceModuleIds.map(id => index.get(id)).filter((value): value is SourceArtifact => Boolean(value));
-    return { q: `What does ${destination.title} measure?`, alt_phrasings: [destination.title, destination.id.replace(/-/g, " "), `${destination.title} inspector`], tags: ["inspector", "reading-room", ...destination.title.toLowerCase().split(" "), destination.id], bucket: "public-inspector", a: { status: "ok", answer: `${destination.title} ${pageVerb(destination.purpose)} Source artifact: ${sources.length ? sources.map(sourceName).join(", ") : "published source artifact not recorded"}. ${supportSentence(INSPECTOR_SUPPORT[destination.id] || [])} Date status: ${sources.map(dateFrom).join(", ") || "date unrecorded"}.`, source_artifact: sources[0]?.artifact || "webapp/public/data/showcase/site_manifest.json", as_of: sources[0] ? dateFrom(sources[0]) : "unknown", explore_path: destination.route } };
+    return { q: `What does ${destination.title} measure?`, alt_phrasings: [destination.title, destination.id.replace(/-/g, " "), `${destination.title} inspector`], tags: ["inspector", "reading-room", ...destination.title.toLowerCase().split(" "), destination.id], bucket: "public-inspector", a: { status: "ok", answer: `${destination.title} ${pageVerb(destination.purpose)} Source artifact: ${sources.length ? sources.map(sourceName).join(", ") : "published source artifact not recorded"}. ${supportSentence(sources.flatMap(supportFrom))} Date status: ${sources.map(dateFrom).join(", ") || "date unrecorded"}.`, source_artifact: sources[0]?.artifact || "webapp/public/data/showcase/site_manifest.json", as_of: sources[0] ? dateFrom(sources[0]) : "unknown", explore_path: destination.route } };
   });
 }
 
