@@ -216,7 +216,8 @@ def discover_sports():
     return sorted(d for d in os.listdir(IN_DIR) if os.path.isdir(os.path.join(IN_DIR, d)))
 
 
-def run():
+def compose():
+    """Pure per-sport absorption aggregation from the local corpora -- no writes."""
     sports = discover_sports()
     result = {
         "edge_claimed": False,
@@ -253,6 +254,12 @@ def run():
         if not reportable:
             result["reason"] = "no sport reached MIN_MOVES pregame move pairs"
 
+    result["plot_written"] = False
+    return result
+
+
+def run():
+    result = compose()
     os.makedirs(os.path.dirname(OUT_JSON), exist_ok=True)
     result["plot_written"] = make_plot(result) if result["status"] == "ok" else False
     with open(OUT_JSON, "w", encoding="utf-8") as f:
@@ -293,12 +300,15 @@ def check() -> None:
     assert _window(["x/2026-06-18.jsonl", "x/2026-07-17.jsonl", "x/2026-06-18.jsonl"]) == {
         "start": "2026-06-18", "end": "2026-07-17", "days": 2, "files": 3}
     if os.path.isdir(IN_DIR) and discover_sports():
-        res = run()
+        # Local data present: validate a pure in-memory recomposition. --check
+        # must never write out/micro_absorption.json or docs/img/micro_absorption.png.
+        res = compose()
         _validate_artifact(res)
         w = res["observation_window"]
         print(f"micro_absorption self-check OK -- window={w['start']}..{w['end']} "
               f"({w['days']} days, {w['files']} files), status={res['status']}, "
-              f"sports={ {s: v.get('status') for s, v in res['sports'].items()} }")
+              f"sports={ {s: v.get('status') for s, v in res['sports'].items()} } "
+              "(recomposed only, no write)")
     else:
         verify_recorded_artifact(OUT_JSON, _validate_artifact, "micro_absorption")
 
