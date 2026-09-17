@@ -1,0 +1,42 @@
+{
+  "as_of": "2026-07-23",
+  "measurement": {
+    "identity": "Out-of-sample in-game win-probability calibration, split into static, score-only, and combined arms."
+  },
+  "arms": [
+    {
+      "sport": "NBA",
+      "n": null,
+      "observed_on": "2026-07-23",
+      "static_brier": 0.209,
+      "score_only_brier": 0.172,
+      "combined_brier": 0.159,
+      "mechanical_share": "~73%",
+      "model_prior_share": "-0.014 (~27%)"
+    },
+    {
+      "sport": "MLB",
+      "n": null,
+      "observed_on": "2026-07-23",
+      "static_brier": 0.241,
+      "score_only_brier": 0.128,
+      "combined_brier": 0.126,
+      "mechanical_share": "~99%",
+      "model_prior_share": "-0.001 (~1%)"
+    }
+  ],
+  "sources": [
+    {
+      "path": "docs/INGAME_PROOF.md",
+      "role": "Recorded measurement table and interpretation."
+    },
+    {
+      "path": "scripts/platformkit/proof_nba/ingame_accuracy.py",
+      "role": "Original NBA analysis path."
+    },
+    {
+      "path": "scripts/platformkit/proof_mlb/ingame_accuracy.py",
+      "role": "Original MLB analysis path."
+    }
+  ]
+}
