@@ -38,14 +38,14 @@ describe("ResearchDetail", () => {
   it("puts integrity notices before measurements for affected sources only", () => {
     const { rerender } = render(<ResearchDetail analysis={brierAnalysis} related={[]} />);
     const notices = screen.getAllByRole("complementary", { name: "Data integrity" });
-    expect(notices).toHaveLength(2);
-    expect(notices[0]).toHaveTextContent("MLB in-game results are withdrawn pending corpus correction");
-    expect(notices[1]).toHaveTextContent("MLB/soccer rows are under review");
+    expect(notices).toHaveLength(1);
+    expect(notices[0]).toHaveTextContent("revision 2");
+    expect(notices[0]).toHaveTextContent("withdrawn");
     expect(notices[0].compareDocumentPosition(screen.getByText("Choose a measurement")) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
 
     rerender(<ResearchDetail analysis={{ ...analysis, sources: [{ id: "test-source", asOf: "2026-09-16" }, { id: "brier_skill_scores", asOf: "2026-09-16" }] }} related={[]} />);
     const secondaryNotices = screen.getAllByRole("complementary", { name: "Data integrity" });
-    expect(secondaryNotices).toHaveLength(2);
+    expect(secondaryNotices).toHaveLength(1);
     expect(within(secondaryNotices[0]).getAllByText("brier_skill_scores")).toHaveLength(1);
 
     rerender(<ResearchDetail analysis={analysis} related={[]} />);

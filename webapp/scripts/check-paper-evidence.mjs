@@ -17,6 +17,7 @@ function names(directory) {
 const showcase = new Set(names(join(data, "showcase")));
 const insights = new Set(names(join(data, "insights")));
 const artifacts = new Set([...showcase, ...insights]);
+const manifestIds = new Set((JSON.parse(readFileSync(join(root, "public", "data", "showcase", "site_manifest.json"), "utf8")).modules || []).map((entry) => entry.id));
 const paperIds = new Set(names(papers).flatMap((entry) => {
   try {
     const paper = JSON.parse(readFileSync(join(papers, entry), "utf8"));
@@ -134,6 +135,7 @@ function paperReason(paper) {
     const source = join(data, directory, entry.artifact);
     let artifact;
     try { artifact = JSON.parse(readFileSync(source, "utf8")); } catch { return `evidence[${index}] artifact ${entry.artifact} is unavailable in ${directory}`; }
+    if (typeof entry.module === "string" && !manifestIds.has(entry.module)) return `evidence[${index}] module ${entry.module} has no published module page`;
     for (const path of entry.fields) {
       const problem = fieldProblem(path);
       if (problem) return `evidence[${index}] field path ${path} ${problem}`;
@@ -143,7 +145,7 @@ function paperReason(paper) {
   if (!Array.isArray(paper.related)) return "related must be a list";
   for (const link of paper.related) {
     if (!isBag(link) || typeof link.id !== "string" || typeof link.kind !== "string") return "related entries need a known kind and an id";
-    const known = link.kind === "module" ? artifacts.has(`${link.id}.json`)
+    const known = link.kind === "module" ? (artifacts.has(`${link.id}.json`) && manifestIds.has(link.id))
       : link.kind === "inspector" ? inspectorIds.has(link.id)
         : link.kind === "analysis" ? analysisIds.has(link.id)
           : link.kind === "finding" ? findingIds.has(link.id)

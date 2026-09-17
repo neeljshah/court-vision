@@ -53,6 +53,7 @@ export function paperReferences(): PaperReferences {
   return {
     analysisIds: new Set(getResearchAnalyses().map(entry => entry.id)),
     findingIds: new Set(findingsIndex.map(entry => entry.slug)),
+    moduleIds: new Set(manifestModules().map(entry => entry.id)),
     paperIds,
   };
 }

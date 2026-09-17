@@ -29,13 +29,10 @@ describe("AskBox integrity warnings", () => {
     const stale = screen.getByText(staleText);
 
     expect(screen.getByRole("button", { name: /^Receipt: CITED/ })).toBeInTheDocument();
-    expect(notices).toHaveLength(2);
-    expect(notices.map(notice => notice.getAttribute("data-status"))).toEqual([
-      "withdrawn-pending-regeneration",
-      "under-review",
-    ]);
-    expect(screen.getAllByText("calibration_stability")).toHaveLength(2);
-    expect(screen.getAllByRole("link", { name: "Read the full finding" })).toHaveLength(2);
+    expect(notices).toHaveLength(1);
+    expect(notices.map(notice => notice.getAttribute("data-status"))).toEqual(["regenerated"]);
+    expect(screen.getAllByText("calibration_stability")).toHaveLength(1);
+    expect(screen.getAllByRole("link", { name: "Read the full finding" })).toHaveLength(1);
     expect(screen.getAllByRole("link", { name: "Read the full finding" })[0]).toHaveAttribute("href", "/analytics/findings/ingame-join-integrity");
     expect(notices[0].compareDocumentPosition(stale) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });

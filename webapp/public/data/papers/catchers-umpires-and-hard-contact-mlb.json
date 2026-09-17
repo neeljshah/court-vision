@@ -529,7 +529,6 @@
     },
     {
       "artifact": "atlas_mlb_batters_manifest.json",
-      "module": "atlas_mlb_batters_manifest",
       "asOf": "2026-07-23",
       "dateMeaning": "snapshot",
       "fields": [

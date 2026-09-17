@@ -25,7 +25,7 @@ export function readingEntries(): ReadingEntry[] {
   const analyses = new Map(getResearchAnalyses().map((analysis) => [analysis.id, analysis]));
   const papers: PaperEntry[] = loadPapers().map((paper) => ({
     id: paper.slug, title: paper.title, kind: "paper", sport: paper.sport, asOf: paper.date,
-    href: `/analytics/papers/${paper.slug}/`, sources: paper.evidence.map((evidence) => evidence.module),
+    href: `/analytics/papers/${paper.slug}/`, sources: paper.evidence.flatMap((evidence) => evidence.module ? [evidence.module] : []),
     population: `paper:${sportKey(paper.sport)}`, targets: paper.related as PaperTarget[],
   }));
   return [

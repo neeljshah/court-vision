@@ -21,12 +21,12 @@ export type PaperSection = { id: string; heading: string; blocks: PaperBlock[] }
 export type PaperEvidencePath = "showcase" | "insights";
 export type PaperDateMeaning = "snapshot" | "window" | "not-published";
 export type PaperEvidence = {
-  artifact: string; module: string; asOf: string | null; fields: string[];
+  artifact: string; module?: string; asOf: string | null; fields: string[];
   path?: PaperEvidencePath; dateMeaning?: PaperDateMeaning;
 };
 export type PaperRelated = { kind: PaperRelatedKind; id: string };
 export type PaperReferences = {
-  analysisIds?: ReadonlySet<string>; findingIds?: ReadonlySet<string>; paperIds?: ReadonlySet<string>;
+  analysisIds?: ReadonlySet<string>; findingIds?: ReadonlySet<string>; paperIds?: ReadonlySet<string>; moduleIds?: ReadonlySet<string>;
 };
 
 export type Paper = {
@@ -87,7 +87,8 @@ function evidenceReason(entry: unknown, index: number, artifacts: ReadonlySet<st
   const item = bag(entry);
   const where = `evidence[${index}]`;
   if (!item) return `${where} is not an object`;
-  if (!filled(item.artifact) || !filled(item.module)) return `${where} needs an artifact and a source id`;
+  if (!filled(item.artifact)) return `${where} needs an artifact`;
+  if (item.module !== undefined && !filled(item.module)) return `${where} module must be a source id when given`;
   if (!strings(item.fields)) return `${where} needs at least one field path`;
   if (item.asOf !== null && !filled(item.asOf)) return `${where} needs an asOf date or null`;
   if (item.path !== undefined && (typeof item.path !== "string" || !EVIDENCE_PATHS.has(item.path))) return `${where} path must be showcase or insights`;
@@ -126,6 +127,10 @@ export function validatePaper(value: unknown, artifacts: ReadonlySet<string>, re
   if (!Array.isArray(item.evidence) || item.evidence.length === 0) return "evidence is empty";
   for (let index = 0; index < item.evidence.length; index += 1) {
     const reason = evidenceReason(item.evidence[index], index, artifacts);
+    if (!reason && references?.moduleIds) {
+      const moduleId = (item.evidence[index] as { module?: unknown }).module;
+      if (typeof moduleId === "string" && !references.moduleIds.has(moduleId)) return `evidence[${index}] module ${moduleId} has no published module page`;
+    }
     if (reason) return reason;
   }
   if (!Array.isArray(item.related)) return "related must be a list";
@@ -134,7 +139,7 @@ export function validatePaper(value: unknown, artifacts: ReadonlySet<string>, re
     if (!target || typeof target.kind !== "string" || !RELATED_KINDS.has(target.kind) || !filled(target.id)) {
       return "related entries need a known kind and an id";
     }
-    if (target.kind === "module" && !artifacts.has(`${target.id}.json`)) return `related module ${target.id} has no published module page`;
+    if (target.kind === "module" && (!artifacts.has(`${target.id}.json`) || (references?.moduleIds && !references.moduleIds.has(target.id)))) return `related module ${target.id} has no published module page`;
     if (target.kind === "inspector" && !analysisDestinations.some(entry => entry.id === target.id)) return `related inspector ${target.id} is not registered`;
     if (target.kind === "analysis" && references?.analysisIds && !references.analysisIds.has(target.id)) return `related analysis ${target.id} is not registered`;
     if (target.kind === "finding" && references?.findingIds && !references.findingIds.has(target.id)) return `related finding ${target.id} is not registered`;

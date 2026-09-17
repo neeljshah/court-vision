@@ -21,7 +21,7 @@ function EvidenceBox({ paper }: { paper: Paper }) {
           <li key={`${entry.artifact}-${entry.module}`}>
             <span className="mono paper-artifact">{entry.artifact}</span>
             <span className="paper-note">{entry.asOf ? `as_of ${entry.asOf}` : "date not published"}</span>
-            <Link href={`/analytics/m/${entry.module}/`} prefetch={false}>Source path: /analytics/m/{entry.module}/</Link>
+            {entry.module ? <Link href={`/analytics/m/${entry.module}/`} prefetch={false}>Source path: /analytics/m/{entry.module}/</Link> : <span className="paper-note">Source file: /data/{entry.path || "showcase"}/{entry.artifact} (no module page)</span>}
             <details className="paper-fields">
               <summary>Evidence field inventory ({entry.fields.length} {entry.fields.length === 1 ? "path" : "paths"})</summary>
               <ul>
@@ -57,8 +57,8 @@ function MobileResult({ paper }: { paper: Paper }) {
 
 export function PaperArticle({ paper }: { paper: Paper }) {
   const related = resolveRelated(paper.related);
-  const integrityNotices = noticesForPaper(paper.evidence);
-  const evidenceModuleIds = paper.evidence.map(entry => entry.module);
+  const integrityNotices = noticesForPaper(paper.evidence.filter((entry): entry is typeof entry & { module: string } => typeof entry.module === "string"));
+  const evidenceModuleIds = paper.evidence.flatMap(entry => entry.module ? [entry.module] : []);
   const hasLimitationsSection = paper.sections.some(section => section.id === "limitations");
   return (
     <article className="paper">

@@ -100,4 +100,15 @@ describe("reading helpers", () => {
     expect(excerpt(paper.abstract, 80).endsWith("...")).toBe(true);
     expect(excerpt(paper.abstract, 80).length).toBeLessThanOrEqual(83);
   });
+  it("rejects a related module without a module page and accepts evidence without a module id", () => {
+    const paper = sample();
+    (paper.related as Array<{ kind: string; id: string }>).push({ kind: "module", id: "atlas_only" });
+    const base = sample();
+    const routable = new Set([...(base.evidence as Array<{ module: string }>).map((entry) => entry.module), ...(base.related as Array<{ kind: string; id: string }>).filter((link) => link.kind === "module").map((link) => link.id)]);
+    expect(validatePaper(paper, new Set([...publishedArtifacts(), "atlas_only.json"]), { moduleIds: routable })).toMatch(/has no published module page/);
+    const cited = sample();
+    const entry = (cited.evidence as Array<Record<string, unknown>>)[0];
+    delete entry.module;
+    expect(validatePaper(cited, publishedArtifacts(), { moduleIds: routable })).toBeNull();
+  });
 });

@@ -115,7 +115,7 @@ export function getLibraryEntries(): LibraryEntry[] {
     sport: paper.sport === "soccer_intl" ? "soccer" : paper.sport,
     kind: "paper", kindLabel: kindLabel.paper, status: "published", href: `/analytics/papers/${paper.slug}/`, asOf: paper.date,
     keywords: paper.keywords.join(" "), rows: null, fields: null, preview: [], previewLabel: "",
-    integrityNotice: integrityNotice(paper.evidence.map(evidence => evidence.module)),
+    integrityNotice: integrityNotice(paper.evidence.flatMap(evidence => evidence.module ? [evidence.module] : [])),
   }));
   return [...derived, ...sources, ...findings, ...inspectors, ...explainerEntries, ...paperEntries];
 }

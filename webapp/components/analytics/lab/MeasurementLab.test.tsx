@@ -33,7 +33,7 @@ describe("MeasurementLab sport filtering and inspection", () => {
     expect(screen.queryByRole("complementary", { name: "Data integrity" })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /Live Clock/ }));
     const notice = screen.getByRole("complementary", { name: "Data integrity" });
-    expect(notice).toHaveTextContent(/MLB\/soccer rows are under review.*novel_live_clock_fraction/);
+    expect(notice).toHaveTextContent(/revision 2.*novel_live_clock_fraction/);
     expect(notice.compareDocumentPosition(screen.getByText("Primary measurement")) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: /Cross-sport metric/ }));
     expect(screen.queryByRole("complementary", { name: "Data integrity" })).not.toBeInTheDocument();

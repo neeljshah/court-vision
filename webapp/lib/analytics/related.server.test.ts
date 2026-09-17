@@ -25,7 +25,7 @@ describe("server reading entries", () => {
     papers.forEach((paper) => paper.evidence.forEach((evidence) => {
       const source = entries.find((entry) => entry.kind === "module" && entry.id === evidence.module);
       if (source && (paper.sport === "all" || source.sport === "all" || source.sport === paper.sport)) {
-        expect(paperBacklinks("module", evidence.module, entries).map((link) => link.id)).toContain(paper.slug);
+        expect(paperBacklinks("module", evidence.module!, entries).map((link) => link.id)).toContain(paper.slug);
       }
     }));
   });
