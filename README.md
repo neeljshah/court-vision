@@ -83,7 +83,7 @@ Longer reads: [ARCHITECTURE.md](ARCHITECTURE.md) -
 [the full system tour](docs/SYSTEM_TOUR.md) -
 [how the honesty gates work](docs/HONESTY_SYSTEM.md) -
 [how the agentic build pipeline works](docs/BUILT_WITH_CLAUDE.md) -
-[use it from your own Claude via MCP](docs/MCP_QUICKSTART.md)
+[the MCP answer-engine interface](docs/MCP_QUICKSTART.md)
 
 ## Repository map
 
@@ -98,9 +98,10 @@ Longer reads: [ARCHITECTURE.md](ARCHITECTURE.md) -
 | [kernel/](kernel/) | sport-blind validated machinery |
 | [docs/INDEX.md](docs/INDEX.md) | the full documentation map |
 
-This repository is the public evidence surface. Bulk raw corpora (tracking imagery, harness data
-dumps), model artifacts, ledgers and operational material are kept in a private repository;
-reviewers can request read access.
+This repository is the public evidence surface. The production engine, sport adapters, API,
+operational tooling, bulk raw corpora, model artifacts and ledgers are kept in a private repository;
+reviewers can request read access. What is public is chosen by one reviewed allowlist
+([scripts/hooks/public_allowlist.txt](scripts/hooks/public_allowlist.txt)) that the push guard enforces.
 
 ## What this is not
 

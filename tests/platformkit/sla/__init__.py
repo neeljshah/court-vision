@@ -1,1 +1,0 @@
-# tests/platformkit/sla package

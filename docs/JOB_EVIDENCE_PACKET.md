@@ -1,5 +1,7 @@
 # Job Evidence Packet — Neel Shah
 
+> **Repository layout note (2026-09-17).** The public repository is the evidence surface: the analytics site, the documentation, the evidence artifacts, the eval gate and the sport-blind kernel. The production engine, adapters, API, operational tooling and bulk corpora (`src/`, `api/`, `domains/`, most of `scripts/` and `tests/`, `data/`) are kept in a private repository; reviewers can request read access. A path cited below that is not in this tree resolves there at tag `pre-minimize-2026-09-17`.
+
 > An honest, recruiter-facing summary of what this project demonstrates. Every claim
 > below was independently verified against the code, tests, and data artifacts by an
 > adversarial audit whose job was to *refute* the headlines, not confirm them. Where a

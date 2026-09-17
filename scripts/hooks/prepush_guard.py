@@ -9,14 +9,23 @@ Refuses (exit 1, reason on stderr) when, for any pushed range:
       .planning/, docs/research/, docs/strategy/, .claude/, ROADMAP.md), a
       youtube cookie jar, or an auth.json under a .codex home;
   (b) a commit adds a line matching a credential pattern;
-  (c) the ref update is a non-fast-forward (force-push is banned repo-wide).
+  (c) the ref update is a non-fast-forward (force-push is banned repo-wide);
+  (d) the remote is the PUBLIC repository and the pushed tip tree holds a path
+      that scripts/hooks/public_allowlist.txt does not allow (the engine and the
+      bulk corpora live in the private repository only).
 
 A pure delete (local sha all zeros) is allowed. Allowed pushes exit 0 with one
 line on stderr. Stdlib only, ASCII only, no side effects.
 """
+import fnmatch
+import os
 import re
 import subprocess
 import sys
+
+PUBLIC_REPO_SUFFIX = "neeljshah/court-vision"
+ALLOWLIST_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                              "public_allowlist.txt")
 
 PRIVATE_PREFIXES = ("data/", "vault/", ".planning/", "docs/research/",
                     "docs/strategy/", ".claude/")
@@ -95,6 +104,52 @@ def _scan(sha):
                         + " in " + cur)
 
 
+def load_allowlist(path=ALLOWLIST_FILE):
+    """Ordered (allow, pattern) rules; last match wins; unmatched = denied."""
+    rules = []
+    with open(path, encoding="utf-8") as fh:
+        for line in fh:
+            line = line.strip()
+            if line[:2] in ("+ ", "- "):
+                rules.append((line[0] == "+", line[2:].strip()))
+    return rules
+
+
+def is_public_path(path, rules):
+    ok = False
+    for allow, pat in rules:
+        if pat.endswith("/"):
+            hit = path.startswith(pat)
+        else:
+            hit = path == pat or fnmatch.fnmatchcase(path, pat)
+        if hit:
+            ok = allow
+    return ok
+
+
+def _is_public_remote(url):
+    url = (url or "").strip().rstrip("/")
+    if url.endswith(".git"):
+        url = url[:-4]
+    return url.lower().endswith(PUBLIC_REPO_SUFFIX)
+
+
+def _check_public_tree(sha):
+    """Refuse when the tip pushed to the public repo holds a non-public path."""
+    try:
+        rules = load_allowlist()
+    except OSError as exc:
+        _refuse("cannot read the public allowlist (%s) -- failing closed" % exc)
+    rc, out = _git(["ls-tree", "-r", "--name-only", "-z", sha])
+    if rc != 0:
+        _refuse("cannot list the tree of " + sha[:12])
+    bad = [p for p in out.split(chr(0)) if p and not is_public_path(p, rules)]
+    if bad:
+        _refuse("%d path(s) in %s are not allowed in the PUBLIC repository, e.g. %s"
+                " -- publish with scripts/hooks/publish_public.py instead"
+                % (len(bad), sha[:12], ", ".join(bad[:5])))
+
+
 def _commits(local, remote):
     if not _is_zero(remote) and _git(["cat-file", "-e",
                                       remote + "^{commit}"])[0] == 0:
@@ -108,6 +163,7 @@ def _commits(local, remote):
 
 def main():
     total = 0
+    public = _is_public_remote(sys.argv[2] if len(sys.argv) > 2 else "")
     for raw in sys.stdin.read().split("\n"):
         parts = raw.split()
         if len(parts) != 4:
@@ -121,6 +177,8 @@ def main():
                                remote_sha, local_sha])[0] != 0:
                 _refuse("non-fast-forward update to " + remote_ref
                         + " (force-push is banned; rebase instead)")
+        if public:
+            _check_public_tree(local_sha)
         for sha in _commits(local_sha, remote_sha):
             _scan(sha)
             total += 1

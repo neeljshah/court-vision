@@ -1,5 +1,9 @@
 # Contributing to CourtVision
 
+> **Repository layout note (2026-09-17).** The public repository is the evidence surface: the analytics site, the documentation, the evidence artifacts, the eval gate and the sport-blind kernel. The production engine, adapters, API, operational tooling and bulk corpora (`src/`, `api/`, `domains/`, most of `scripts/` and `tests/`, `data/`) are kept in a private repository; reviewers can request read access. A path cited below that is not in this tree resolves there at tag `pre-minimize-2026-09-17`.
+
+> The setup and test commands below describe the full private tree. On this public tree the runnable commands are the ones in [REPRODUCE.md](REPRODUCE.md).
+
 This project combines computer vision, data engineering, statistical modeling, and agentic infrastructure. Contributions are welcome -- clarity, reproducibility, and honesty about results are the non-negotiables.
 
 ---

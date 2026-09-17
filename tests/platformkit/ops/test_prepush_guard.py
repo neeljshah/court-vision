@@ -51,9 +51,14 @@ def _setup(tmp_path):
     return work, base
 
 
-def _run(work, local_sha, remote_sha):
+PUBLIC_URL = "https://github.com/neeljshah/court-vision.git"
+PRIVATE_URL = "https://github.com/neeljshah/court-vision-private.git"
+
+
+def _run(work, local_sha, remote_sha, url=None):
     line = "%s %s %s %s\n" % (REF, local_sha, REF, remote_sha)
-    return subprocess.run([sys.executable, str(GUARD)], cwd=str(work),
+    argv = [sys.executable, str(GUARD)] + (["origin", url] if url else [])
+    return subprocess.run(argv, cwd=str(work),
                           input=line.encode("ascii"),
                           stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
@@ -105,3 +110,41 @@ def test_case5_non_fast_forward_refused(tmp_path):
     p = _run(work, local_sha, remote_sha)
     assert p.returncode == 1, _err(p)
     assert "non-fast-forward" in _err(p) and REF in _err(p)
+
+
+# Cases 6-9: the PUBLIC remote only accepts a tip tree inside the allowlist
+# (scripts/hooks/public_allowlist.txt); the private remote is unaffected.
+
+def test_case6_engine_path_refused_on_the_public_remote(tmp_path):
+    work, base = _setup(tmp_path)
+    sha = _commit(work, "src/sim/engine.py", "x = 1\n", "engine code")
+    p = _run(work, sha, base, url=PUBLIC_URL)
+    assert p.returncode == 1, _err(p)
+    assert "src/sim/engine.py" in _err(p) and "PUBLIC" in _err(p)
+
+
+def test_case7_same_push_allowed_on_the_private_remote(tmp_path):
+    work, base = _setup(tmp_path)
+    sha = _commit(work, "src/sim/engine.py", "x = 1\n", "engine code")
+    p = _run(work, sha, base, url=PRIVATE_URL)
+    assert p.returncode == 0, _err(p)
+
+
+def test_case8_public_tip_is_checked_as_a_tree_not_as_a_diff(tmp_path):
+    # the engine file arrived in an EARLIER commit; a later docs-only commit is
+    # still refused because the tip tree holds the engine path.
+    work, base = _setup(tmp_path)
+    mid = _commit(work, "api/main.py", "y = 2\n", "api code")
+    _git(work, "push", "origin", "master")
+    tip = _commit(work, "docs/ok.md", "clean\n", "docs only")
+    p = _run(work, tip, mid, url=PUBLIC_URL)
+    assert p.returncode == 1, _err(p)
+    assert "api/main.py" in _err(p)
+
+
+def test_case9_allowlisted_tree_passes_on_the_public_remote(tmp_path):
+    work, base = _setup(tmp_path)
+    _commit(work, "docs/evidence/tracking/g1/memo.md", "memo\n", "memo")
+    sha = _commit(work, "kernel/validation/m.py", "z = 3\n", "kernel sample")
+    p = _run(work, sha, base, url=PUBLIC_URL)
+    assert p.returncode == 0, _err(p)

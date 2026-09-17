@@ -1,5 +1,7 @@
 # Documentation Index -- the whole system, link by link
 
+> **Repository layout note (2026-09-17).** The public repository is the evidence surface: the analytics site, the documentation, the evidence artifacts, the eval gate and the sport-blind kernel. The production engine, adapters, API, operational tooling and bulk corpora (`src/`, `api/`, `domains/`, most of `scripts/` and `tests/`, `data/`) are kept in a private repository; reviewers can request read access. A path cited below that is not in this tree resolves there at tag `pre-minimize-2026-09-17`.
+
 > **This is the map.** Land here from the [README](../README.md) and you can reach every
 > aspect of the system by following links -- from the raw data feeds, through the models, the
 > simulator, the calibration gates, the line-shopping and execution layer, the live in-game

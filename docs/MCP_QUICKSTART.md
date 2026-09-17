@@ -1,5 +1,9 @@
 # CourtVision MCP -- Quickstart (zero to connected)
 
+> **Repository layout note (2026-09-17).** The public repository is the evidence surface: the analytics site, the documentation, the evidence artifacts, the eval gate and the sport-blind kernel. The production engine, adapters, API, operational tooling and bulk corpora (`src/`, `api/`, `domains/`, most of `scripts/` and `tests/`, `data/`) are kept in a private repository; reviewers can request read access. A path cited below that is not in this tree resolves there at tag `pre-minimize-2026-09-17`.
+
+> The MCP server itself ships with the private distribution (it reads the private data lake and resolver ledgers). This page documents its interface and contract.
+
 Connect the CourtVision **fail-closed sports-intelligence** MCP server to Claude in
 under five minutes. You need a Claude subscription (Claude Code CLI or Claude
 Desktop) and Python 3.10+.

@@ -1,0 +1,68 @@
+# What may exist in the PUBLIC repository (github.com/neeljshah/court-vision).
+# Read by scripts/hooks/prepush_guard.py (refuses a push to the public remote whose
+# tip tree holds any other path) and by scripts/hooks/publish_public.py (the export).
+# Ordered rules, LAST MATCH WINS. "+ x" allows, "- x" denies. A rule ending in "/" is a
+# directory prefix; otherwise it is an exact path or an fnmatch glob ("*" crosses "/").
+# Everything not matched is denied. The full tree lives in the private repository.
+
+# root documents and repo chrome
++ README.md
++ EVIDENCE.md
++ RECEIPTS.md
++ REPRODUCE.md
++ ARCHITECTURE.md
++ VISION.md
++ CHANGELOG.md
++ CONTRIBUTING.md
++ SECURITY.md
++ CITATION.cff
++ LICENSE
++ CLAUDE.md
++ AGENTS.md
++ .gitignore
++ .gitattributes
++ pytest.ini
+
+# CI: the site deploy, the honesty gate, the proof harness
++ .github/
+- .github/workflows/ci.yml
+- .github/workflows/ci-cd.yml
+- .github/workflows/injury-feed-scrape.yml
+
+# documentation and evidence (written memos stay; bulk binaries and buyer/ops material do not)
++ docs/
+- docs/sell/
+- docs/operations/
+- docs/evidence/tracking/
++ docs/evidence/tracking/*.md
+- docs/evidence/harness/
++ docs/evidence/harness/*.md
+
+# the analytics site and everything behind it
++ webapp/
++ results/
++ scripts/__init__.py
++ scripts/platformkit/__init__.py
++ scripts/platformkit/analytics_showcase/
++ scripts/platformkit/benchmarks/
++ scripts/platformkit/intel_validation/
+
+# the engineering sample: validated machinery, the eval gate, execution discipline
++ kernel/
++ scripts/platformkit/eval_gate/
++ scripts/platformkit/execution/__init__.py
++ scripts/platformkit/execution/thresholds.py
++ scripts/platformkit/execution/venue_fees.py
++ scripts/platformkit/execution/circuit_breaker.py
++ scripts/platformkit/execution/paper_maker.py
++ scripts/platformkit/execution/markout.py
++ scripts/platformkit/execution/executor/
++ scripts/platformkit/clv_ledger.py
++ scripts/platformkit/test_clv_ledger_io.py
++ scripts/platformkit/check_ingame_join_integrity.py
++ scripts/platformkit/reject_ledger.py
+
+# the guard itself, and the tests a reviewer can run on this tree
++ scripts/hooks/
++ tests/platform/test_no_leak_paths_staged.py
++ tests/platformkit/ops/test_prepush_guard.py
