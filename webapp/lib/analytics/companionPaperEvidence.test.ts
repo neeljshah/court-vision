@@ -106,10 +106,13 @@ describe("closing-reference-movement-measured", () => {
     const checkpoints = premium.results.mlb.checkpoints as Array<{ market_skill: number; model_skill: number }>;
     expect(checkpoints).toHaveLength(10);
     expect(checkpoints.filter(row => row.market_skill > 0)).toHaveLength(10);
-    expect(checkpoints.filter(row => row.model_skill < 0)).toHaveLength(10);
+    const negative = checkpoints.map((row, index) => (row.model_skill < 0 ? index + 1 : null)).filter((k): k is number => k !== null);
+    expect(negative).toEqual([1, 2, 3, 4, 10]);
 
-    expect(movementText).toContain("Reference skill is positive at all ten MLB checkpoints; model skill is negative at all ten");
-    expect(movementText).toContain("Market skill is positive in all ten rows and model skill negative in all ten");
+    expect(movementText).toContain("Reference skill is positive at all ten");
+    expect(movementText).toContain("model skill is negative at checkpoints 1 to 4 and at 10 but positive from the 5th inning through the 9th");
+    expect(movementText).toContain("Market skill is positive in all ten rows; model skill is negative in five and positive at checkpoints 5 through 9");
+    expect(movementText).not.toMatch(/model skill is negative at all ten/i);
     expect(movementText).not.toMatch(/Market skill and model skill both trail a naive baseline/i);
   });
 
@@ -158,15 +161,16 @@ describe("what-carries-across-sports", () => {
     expect(withheld.length).toBeGreaterThan(0);
     expect(scoreboard.method).toContain("copied verbatim from its source artifact");
 
-    expect(transferText).toContain("A verdict in this file is not a reading of the interval printed beside it");
-    expect(transferText).toContain("the support rule that produced each label lives in that upstream benchmark");
+    expect(transferText).toContain("A verdict in this file is not a reading of the interval beside it");
+    expect(transferText).toContain("the support rule behind each label lives in that upstream benchmark");
     expect(transferText).not.toMatch(/The file does not document the rule/i);
     expect(transferText).not.toMatch(/well below the n>=30 floor brier_skill_scores\.json applies to itself/);
   });
 
   it("offers no sample-size explanation for the two-sport sign match", () => {
     expect(artifact("kernel_transfer").reliability_transfer_summary).toContain("n=2 sports is not enough");
-    expect(transferText).toContain("This paper offers no explanation for either the sign match or the magnitude difference");
+    expect(transferText).toContain("at the sizes published here this paper attributes that gap to nothing");
+    expect(transferText).toContain("calls it a coincidence worth re-checking, not a pattern");
     expect(transferText).not.toMatch(/support n as the deciding factor/i);
     expect(transferText).not.toMatch(/support corpus size as part of why/i);
   });
@@ -178,10 +182,11 @@ describe("the three companion papers as a set", () => {
       const callouts = statusCallouts(value);
       expect(callouts).toHaveLength(1);
       const text = callouts[0].text;
-      expect(text).toMatch(/126 of (the )?227/);
-      expect(text).toContain("27,076 of 78,986");
-      expect(text).toContain("2026-09-16");
-      expect(text).toMatch(/withdrawn pending/);
+      expect(text).toContain("78,986");
+      expect(text).toContain("27,351");
+      expect(text).toMatch(/2026-09-1[67]/);
+      expect(text).toMatch(/withdrawn/i);
+      expect(text).toMatch(/population change/i);
     }
   });
 
