@@ -85,6 +85,7 @@ jobs:
           npx vitest run lib/analytics/askSearch.test.ts
           npx vitest run lib/analytics/dataIntegrity.test.ts
           npx vitest run lib/analytics/scoutIntegrity.test.ts
+          npx vitest run lib/analytics/scoutInspectorAnswers.test.ts
           npx vitest run lib/analytics/sourceIntegrity.server.test.ts
           npx vitest run components/analytics/DataIntegrityNotice.test.tsx
           npx vitest run lib/analytics/askEntityIntent.test.ts
