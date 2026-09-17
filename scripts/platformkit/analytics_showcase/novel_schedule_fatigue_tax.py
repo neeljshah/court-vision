@@ -120,9 +120,7 @@ def build():
         "plot_written": False,
     }
     payload["index_card"] = _card(payload)
-    os.makedirs(os.path.dirname(OUT_JSON), exist_ok=True)
-    with open(OUT_JSON, "w", encoding="utf-8") as f:
-        json.dump(payload, f, indent=2)
+    # pure: the caller writes (the __main__ build path, after plotting); --check never does.
     return payload
 
 
@@ -200,11 +198,9 @@ def check():
     assert atl is not None and abs(atl["b2b_freq"] - 0.183) < 1e-6, atl
     # 0.183 * -1.73 = -0.31659
     assert abs(atl["sft_credible_pts_per100_ortg"] - (-0.3166)) < 1e-3, atl
-    payload["plot_written"] = plot(payload)
-    with open(OUT_JSON, "w", encoding="utf-8") as f:
-        json.dump(payload, f, indent=2)
+    # --check is read-only: it validates the recomputed payload and writes nothing.
     print(f"OK: novel_schedule_fatigue_tax ({len(payload['results'])} team-seasons, "
-          f"ATL 23-24 SFT {atl['sft_credible_pts_per100_ortg']:.3f}, plot={payload['plot_written']})")
+          f"ATL 23-24 SFT {atl['sft_credible_pts_per100_ortg']:.3f})")
 
 
 if __name__ == "__main__":
@@ -214,6 +210,7 @@ if __name__ == "__main__":
     else:
         p = build()
         p["plot_written"] = plot(p)
+        os.makedirs(os.path.dirname(OUT_JSON), exist_ok=True)
         with open(OUT_JSON, "w", encoding="utf-8") as f:
             json.dump(p, f, indent=2)
         print(json.dumps({"headline": p["headline"], "schedule_inequality": p["schedule_inequality"],

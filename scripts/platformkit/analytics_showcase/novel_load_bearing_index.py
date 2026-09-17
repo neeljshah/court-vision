@@ -107,9 +107,7 @@ def build():
         "plot_written": False,
     }
     payload["index_card"] = _card(payload)
-    os.makedirs(os.path.dirname(OUT_JSON), exist_ok=True)
-    with open(OUT_JSON, "w", encoding="utf-8") as f:
-        json.dump(payload, f, indent=2)
+    # pure: the caller writes (the __main__ build path, after plotting); --check never does.
     return payload
 
 
@@ -180,12 +178,10 @@ def check():
     assert den and abs(den["estimator_a_elo_onoff"]["delta_winprob"] - 0.5822) < 1e-4, den
     cha = next((r for r in payload["results"] if r["team"] == "CHA"), None)
     assert cha and abs(cha["estimator_b_raw_withwithout"]["delta_win_rate"] - 0.4543) < 1e-4, cha
-    payload["plot_written"] = plot(payload)
-    with open(OUT_JSON, "w", encoding="utf-8") as f:
-        json.dump(payload, f, indent=2)
+    # --check is read-only: it validates the recomputed payload and writes nothing.
     print(f"OK: novel_load_bearing_index ({len(payload['results'])} teams, "
           f"agree {payload['agreement_summary']['n_agree']}/{payload['agreement_summary']['n_teams_both_estimators']}, "
-          f"plot={payload['plot_written']})")
+          f"check only)")
 
 
 if __name__ == "__main__":
@@ -195,6 +191,7 @@ if __name__ == "__main__":
     else:
         p = build()
         p["plot_written"] = plot(p)
+        os.makedirs(os.path.dirname(OUT_JSON), exist_ok=True)
         with open(OUT_JSON, "w", encoding="utf-8") as f:
             json.dump(p, f, indent=2)
         print(json.dumps({"headline": p["headline"], "agreement_summary": p["agreement_summary"],

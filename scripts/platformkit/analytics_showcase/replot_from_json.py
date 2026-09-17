@@ -122,8 +122,13 @@ def check():
     target = "market_overreaction"
     json_path = os.path.join(OUT_DIR, target + ".json")
     before_json = md5(json_path)
+    png_path = getattr(importlib.import_module(PKG + target), "OUT_PNG")
+    png_before = open(png_path, "rb").read() if os.path.exists(png_path) else None
     row = replot(target)
     assert row["md5_after"], row
+    if png_before is not None:  # --check is read-only: put the published PNG back
+        with open(png_path, "wb") as fh:
+            fh.write(png_before)
     assert md5(json_path) == before_json, "replot must never rewrite " + json_path
     assert _int_keys({"10": 1, "2": 1}) == {10: 1, 2: 1}
     assert _int_keys({"a": 1}) == {"a": 1}
