@@ -24,7 +24,7 @@
         {
           "type": "callout",
           "label": "Status",
-          "text": "Revision 2, 2026-09-16. Revision 1 quoted artifacts built on the joined in-game corpus (78,986 MLB ticks across 227 files, as_of 2026-07-25), in which 126 of the 227 MLB files held ticks from more than one real game and 27,076 of 78,986 ticks carried another game's outcome label. Those values were withdrawn on 2026-09-16. This revision quotes the segment-clean corpus: 27,351 MLB ticks across 178 files and 4,265 soccer ticks across 27 files. Every number that moved is a population change, not forecaster improvement. One artifact read here, why_attribution.json, was not rebuilt and remains under review."
+          "text": "Revision 2, 2026-09-16. Revision 1 quoted artifacts built on the joined in-game corpus (78,986 MLB ticks across 227 files, as_of 2026-07-25), in which 126 of the 227 MLB files held ticks from more than one real game and 27,076 of 78,986 ticks carried another game's outcome label. Those values were withdrawn on 2026-09-16. This revision quotes the segment-clean corpus: 27,351 MLB ticks across 178 files and 4,265 soccer ticks across 27 files. Every number that moved is a population change, not forecaster improvement. The third artifact read here, why_attribution.json, was rebuilt on 2026-09-17 in the timing pass (receipt mlb-ingame-timing-regeneration.json), so all three now read one corpus and none is under review."
         },
         {
           "type": "p",
@@ -54,12 +54,12 @@
         },
         {
           "type": "p",
-          "text": "why_attribution.json (source_as_of not published) builds 40 MLB and 80 soccer_intl transitions from state_conditioned_calibration.json's model-source buckets, restricted to adjacent time buckets, dropping any bucket with n below 30, and recording winprob_delta alongside a min_support_n floor. NBA is skipped: only a checkpoint Brier exists for it."
+          "text": "why_attribution.json (as of 2026-09-17, source_as_of 2026-09-16) builds 40 MLB and 80 soccer_intl transitions from state_conditioned_calibration.json's model-source buckets, restricted to adjacent time buckets, dropping any bucket with n below 30, and recording winprob_delta alongside a min_support_n floor. NBA is skipped: only a checkpoint Brier exists for it."
         },
         {
           "type": "callout",
           "label": "Caution",
-          "text": "why_attribution.json was not rebuilt in the 2026-09-16 regeneration. The receipt lists it among five timing artifacts left under review, because mixed-game tick paths distort timing measurements even where no outcome label is used. Its largest MLB drop still runs from a mid(inn4-6)/.8-1 bucket of n=2,718 to a late(inn7+)/0-.2 bucket of n=5,431, where the regenerated cells now hold n=1,462 and n=2,884. Nothing from it is current."
+          "text": "why_attribution.json was rebuilt on 2026-09-17, last of the timing artifacts, and its buckets now match the cells it is built from: the mid(inn4-6)/.8-1 to late(inn7+)/0-.2 pair reads n=1,462 and n=2,884 where the withdrawn revision read 2,718 and 5,431. The rebuild also moved which sport holds the largest drop, from soccer to MLB."
         }
       ]
     },
@@ -270,7 +270,7 @@
         },
         {
           "type": "p",
-          "text": "Early innings carry the most mass (47.1 percent) on both more rows (36.7 percent of n) and a higher per-row rate (0.4733) than mid or late innings (0.4211 and 0.2438); late innings carry 16.8 percent of the mass on 28.7 percent of the rows. The early-inning dominance is not purely a count effect, and the decline is steeper than on the joined corpus, where the three rates read 0.4853, 0.4122 and 0.3392."
+          "text": "Early innings carry the most mass (47.1 percent) on both more rows (35.6 percent of n) and a higher per-row rate (0.4686) than mid or late innings (0.3512 and 0.2095); late innings carry 16.5 percent of the mass on 27.9 percent of the rows. The early-inning dominance is not purely a count effect, and the decline is steeper than on the joined corpus, where the three rates read 0.4853, 0.4122 and 0.3392."
         },
         {
           "type": "p",
@@ -440,7 +440,7 @@
         },
         {
           "type": "p",
-          "text": "soccer's per-row rate runs from 0.4320 to 0.5229 across the six windows, worst per row in the late ones. Minute 45-60 leads both the n share and the mass share, the count-effect pattern again; minute 75-90+ carries one of the highest rates on a small n share, so its mass share stays modest."
+          "text": "soccer's per-row rate runs from 0.4320 to 0.5096 across the six windows, worst per row in the late ones. Minute 45-60 leads both the n share and the mass share, the count-effect pattern again; minute 75-90+ carries one of the highest rates on a small n share, so its mass share stays modest."
         },
         {
           "type": "figure",
@@ -449,11 +449,11 @@
         },
         {
           "type": "p",
-          "text": "why_attribution.json reports winprob_delta = mean_y(to) - mean_y(from) over those transitions. It was not regenerated, so what follows records what it still says rather than a current reading. Its largest move is in soccer: minute 15-30/.4-.6 (mean_y=1.0, n=120) to 30-45/.2-.4 (mean_y=0.2317, n=123), winprob_delta=-0.7683. MLB's largest drop is -0.5395, built on the two buckets the join defect distorted most."
+          "text": "why_attribution.json reports winprob_delta = mean_y(to) - mean_y(from) over those transitions. On the segment-clean corpus its largest move is in MLB: mid(inn4-6)/.8-1 (mean_y=0.9651, n=1,462) to late(inn7+)/0-.2 (mean_y=0.0666, n=2,884), winprob_delta=-0.8985 at min_support_n=1,462. Revision 1 put the largest move in soccer at -0.7683; that ranking depended on the join defect. The soccer pair now reads 15-30/.4-.6 (mean_y=1.0, n=120) to 30-45/.2-.4 (mean_y=0.225, n=120), winprob_delta=-0.775."
         },
         {
           "type": "p",
-          "text": "The method caution on those deltas will still apply after a rebuild. None describes a single game moving from one state to the other: each is the difference between the realized win rate of all rows in the earlier bucket and of all rows in the later one, adjacent in time order but not matched game by game. A large contrast says the two states are associated with different realized outcomes on average; it does not say a game observed in the earlier state has that probability of reaching the later one."
+          "text": "The method caution on those deltas still applies. None describes a single game moving from one state to the other: each is the difference between the realized win rate of all rows in the earlier bucket and of all rows in the later one, adjacent in time order but not matched game by game. A large contrast says the two states are associated with different realized outcomes on average; it does not say a game observed in the earlier state has that probability of reaching the later one."
         }
       ]
     },
@@ -468,7 +468,7 @@
             "The corpus correction already ran that test on one cell and the reading failed: MLB's late(inn7+)/.8-1 cell went from this paper's example of systematic bias (calibration_error 0.2357) to one of its smallest (0.0397) with no change to the forecaster. Every cell-level reading here is exposed to the same failure.",
             "If MLB's early(inn1-3)/.4-.6 calibration_error grew materially above 0.0215 while its mean_abs_residual stayed near 0.49, the noise-dominated reading of that cell would no longer hold.",
             "soccer_intl's thinnest cells (several under n=50, one at n=7) would either persist or wash out with more games.",
-            "why_attribution.json's cross-sectional deltas would become evidence about actual in-game transitions only if paired with a game_id-linked panel; none is cited, and the artifact awaits a rebuild."
+            "why_attribution.json's cross-sectional deltas would become evidence about actual in-game transitions only if paired with a game_id-linked panel; the rebuild did not add one."
           ]
         }
       ]
@@ -481,7 +481,7 @@
           "type": "list",
           "items": [
             "Every figure here is revision 2, measured after segmentation removed a third of the MLB ticks and half the soccer ticks as mislabelled. The moves against revision 1 are population changes on a smaller corpus, not evidence that the forecaster improved.",
-            "why_attribution.json was not regenerated and is listed under review, so its transitions describe the pre-correction corpus and its bucket sizes no longer match the cells they were built from.",
+            "why_attribution.json was regenerated on 2026-09-17, a day after the two artifacts beside it; its bucket sizes now match the cells it is built from, and none of the three is under review.",
             "mean_abs_residual and total_abs_residual_mass carry no confidence interval; the mass rankings are point-estimate rankings, and the smaller corpus makes that absence matter more.",
             "668 of 27,351 MLB rows and 882 of 4,265 soccer_intl rows are dropped for carrying no game-state field.",
             "why_attribution.json's winprob_delta is an unpaired difference between two bucket-level group means, not an observed within-game transition, and it drops any bucket with n below 30.",
@@ -496,7 +496,7 @@
       "blocks": [
         {
           "type": "p",
-          "text": "The segment tables and the figure are drawn from the residual-anatomy inspector, which sorts MLB's 13 and soccer_intl's 25 cells by either measure. The state-reliability inspector holds the matching state cells used here to separate noise from real bias. The state-contrasts inspector holds why_attribution.json's transitions; read the in-game join-integrity finding first, because that artifact has not been rebuilt while the two beside it have."
+          "text": "The segment tables and the figure are drawn from the residual-anatomy inspector, which sorts MLB's 13 and soccer_intl's 25 cells by either measure. The state-reliability inspector holds the matching state cells used here to separate noise from real bias. The state-contrasts inspector holds why_attribution.json's transitions; the in-game join-integrity finding records when each of the three was rebuilt."
         }
       ]
     }
@@ -534,8 +534,12 @@
     {
       "artifact": "why_attribution.json",
       "module": "why_attribution",
-      "asOf": null,
+      "asOf": "2026-09-17",
+      "dateMeaning": "snapshot",
       "fields": [
+        "as_of",
+        "corpus",
+        "source_as_of",
         "method",
         "assumptions[]",
         "sports.mlb.n_transitions",
@@ -552,7 +556,7 @@
   ],
   "limitations": [
     "Every MLB and soccer figure here is revision 2, measured after segmentation removed a third of the MLB ticks and half the soccer ticks as mislabelled. The moves against revision 1 are population changes on a smaller, cleaner corpus, not evidence that the forecaster improved; it was not retrained between the two revisions.",
-    "why_attribution.json was not regenerated and is listed under review, so its transitions describe the pre-correction corpus and its bucket sizes no longer match the cells they were built from.",
+    "why_attribution.json was regenerated on 2026-09-17, a day after the two artifacts beside it; its bucket sizes now match the cells it is built from, and none of the three is under review.",
     "mean_abs_residual and total_abs_residual_mass carry no confidence interval; the mass rankings in Tables 1 and 3 are point-estimate rankings, not tested for statistical significance the way a bootstrapped reliability bin would be, and the smaller corpus makes that absence matter more than it did in revision 1.",
     "668 of 27,351 MLB rows and 882 of 4,265 soccer_intl rows are dropped for carrying no game-state field; that dropped share may not be a random sample, so the state-conditioned view still covers a subset of each corpus.",
     "why_attribution.json's winprob_delta is an unpaired difference between two bucket-level group means, not an observed within-game transition, and it drops any bucket with n below 30.",

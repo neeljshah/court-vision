@@ -14,7 +14,7 @@
     "calibration",
     "overreaction"
   ],
-  "abstract": "This paper measures four properties of the devigged closing price, the reference forecast used across the site, without attributing any of the movement to a cause. First, a market foresight premium (MFP) series shows how much resolving power the reference carries over a scoreboard-only model at successive in-game checkpoints, per bit of remaining uncertainty: reference skill is positive at all ten MLB checkpoints while model skill is negative at all ten, and MFP rises from 0.063 at checkpoint 1 (n=7,646) to 0.5208 by checkpoint 9 (n=2,282). That series was not rebuilt after the in-game corpus was re-segmented and stays under review. Second, a half-life estimate shows how many hours before start half of a sport's measured pregame line motion has occurred: 2.75 hours for international soccer, 3.67 for MLB, 4.76 for NBA, with tennis and WNBA censored at the coarsest measured boundary (\">6.0\"). Third, a bucketed breakdown of that same pregame motion shows where it concentrates in time, sport by sport. Fourth, a moved-to-price-versus-outcome test, bucketed by move size and rebuilt on 2026-09-16 from the segment-clean tick corpus, shows the moved-to price sitting 0.03 to 0.0642 above the eventual outcome rate in MLB (n=555 to 19,044) and 0.2671 to 0.3184 below it in international soccer (n=11 to 3,564); revision 1 of that table, computed on the joined corpus, read 0.0518 to 0.0801 and -0.1945 to -0.3648 on roughly three times the rows. The four instruments do not share one observation window, and the foresight-premium rows have not been rebuilt at all.",
+  "abstract": "This paper measures four properties of the devigged closing price, the reference forecast used across the site, without attributing any of the movement to a cause. First, a market foresight premium (MFP) series shows how much resolving power the reference carries over a scoreboard-only model at successive in-game checkpoints, per bit of remaining uncertainty: reference skill is positive at all ten MLB checkpoints, model skill is negative at five of them, and MFP reads 0.051 at checkpoint 1 (n=3,589) and 0.0159 at checkpoint 9 (n=1,110), its lowest reading. That series was rebuilt on 2026-09-17 from the segment-clean corpus, and revision 1's climb to 0.5208 is withdrawn. Second, a half-life estimate shows how many hours before start half of a sport's measured pregame line motion has occurred: 2.75 hours for international soccer, 3.67 for MLB, 4.76 for NBA, with tennis and WNBA censored at the coarsest measured boundary (\">6.0\"). Third, a bucketed breakdown of that same pregame motion shows where it concentrates in time, sport by sport. Fourth, a moved-to-price-versus-outcome test, bucketed by move size and rebuilt on 2026-09-16 from the segment-clean tick corpus, shows the moved-to price sitting 0.03 to 0.0642 above the eventual outcome rate in MLB (n=555 to 19,044) and 0.2671 to 0.3184 below it in international soccer (n=11 to 3,564); revision 1 of that table, computed on the joined corpus, read 0.0518 to 0.0801 and -0.1945 to -0.3648 on roughly three times the rows. The four instruments do not share one observation window.",
   "sections": [
     {
       "id": "question",
@@ -31,7 +31,7 @@
         {
           "type": "callout",
           "label": "Status",
-          "text": "Revision 1 of this paper quoted artifacts computed on the joined in-game corpus (78,986 MLB ticks, artifact as_of dates up to 2026-07-25), in which one stored tick file could hold ticks from more than one real game and carry another game's outcome label. Those values were withdrawn on 2026-09-16. The overreaction table below now quotes the segment-clean corpus -- 27,351 MLB ticks across 178 games and 4,265 soccer_intl ticks across 27 games, as_of 2026-09-16 -- and every number that moved there is a population change, not forecaster improvement: the forecaster did not change, and roughly a third of the MLB ticks and half the soccer ticks were removed because their outcome label belonged to another game. The foresight-premium table is a different case: novel_market_foresight_premium.json was not rebuilt in that pass, so its rows are still revision-1 values and stay under review. The half-life and absorption instruments read a separate scraped line-history feed and are untouched."
+          "text": "Revision 1 of this paper quoted artifacts computed on the joined in-game corpus (78,986 MLB ticks, artifact as_of dates up to 2026-07-25), in which one stored tick file could hold ticks from more than one real game and carry another game's outcome label. Those values are withdrawn. Both in-game tables below now quote the segment-clean corpus -- 27,351 MLB ticks across 178 stored games and 4,265 soccer_intl ticks across 27, of which 26,677 MLB and 3,383 soccer ticks fall inside the published checkpoints -- the overreaction table as_of 2026-09-16 and the foresight-premium table as_of 2026-09-17, receipt mlb-ingame-timing-regeneration.json. Every number that moved is a population change, not forecaster improvement: no forecaster changed; the removed rows carried another game's label. Nothing quoted here is under review any longer. The half-life and absorption instruments read a separate scraped line-history feed and are untouched."
         }
       ]
     },
@@ -41,7 +41,7 @@
       "blocks": [
         {
           "type": "p",
-          "text": "Four artifacts back this paper, and each carries its own observation window or none at all; they are not pooled. novel_market_foresight_premium.json holds a market foresight premium (MFP) series at successive in-game checkpoints for two sports: ten MLB innings (checkpoint n from 94 to 7,646) and nineteen international-soccer minute marks in 5-minute steps (checkpoint n from 37 to 429). MFP compares the reference's resolving power and a scoreboard-only model's, each relative to a naive baseline, and divides the gap by the reference's remaining entropy in bits (floored at 0.15 bits). It is composed from info_arrival_curve.json and market_convergence.json and publishes no as_of and no observation window. It was not rebuilt on 2026-09-16, and its two inputs are now in different states -- info_arrival_curve.json was rebuilt on the segment-clean corpus, market_convergence.json remains under review -- so every MFP row here is a revision-1 value that no longer matches its own published input."
+          "text": "Four artifacts back this paper, and each carries its own observation window or none at all; they are not pooled. novel_market_foresight_premium.json holds a market foresight premium (MFP) series at successive in-game checkpoints for two sports: ten MLB innings (checkpoint n from 46 to 3,589) and nineteen international-soccer minute marks in 5-minute steps (checkpoint n from 33 to 402). MFP compares the reference's resolving power and a scoreboard-only model's, each relative to a naive baseline, and divides the gap by the reference's remaining entropy in bits (floored at 0.15 bits). It is composed from info_arrival_curve.json and market_convergence.json and publishes an as_of of 2026-09-17 but no observation window. Both inputs are revision 2 on the segment-clean corpus -- info_arrival_curve.json rebuilt 2026-09-16, market_convergence.json 2026-09-17 -- so the series no longer mixes revisions."
         },
         {
           "type": "p",
@@ -89,7 +89,7 @@
       "blocks": [
         {
           "type": "p",
-          "text": "Checkpoint foresight, MLB. Table 1 lists all ten MLB checkpoints, all of them revision-1 values. Reference skill is positive at all ten and model skill negative at all ten, so the naive baseline is beaten by the reference throughout and never by the scoreboard-only model. MFP -- the reference's resolving-power gap over the model, normalized by remaining reference entropy -- rises through the game, from 0.063 at checkpoint 1 to a peak of 0.5208 at checkpoint 9. Checkpoint 10 (extra innings) drops to 0.2365 on n=94 and should be read as a thin tail, not a stable tenth step."
+          "text": "Checkpoint foresight, MLB. Table 1 lists all ten MLB checkpoints, rebuilt on the segment-clean corpus. Reference skill is positive at all ten, so the reference beats the naive baseline throughout; model skill is negative at checkpoints 1 to 4 and at 10 but positive from the 5th inning through the 9th, where the scoreboard-only model catches up. MFP -- the reference's resolving-power gap over the model, normalized by remaining reference entropy -- no longer rises through the game. It reads 0.051 at checkpoint 1, sits between 0.0831 and 0.181 from the 2nd inning through the 8th, and collapses to 0.0159 at checkpoint 9 as the two forecasters converge. The 0.411 at checkpoint 10 (extra innings, n=46) is the series maximum and a thin tail, not a tenth step. Revision 1's climb to a peak of 0.5208 depended on the joined corpus and is withdrawn."
         },
         {
           "type": "table",
@@ -105,86 +105,86 @@
           "rows": [
             [
               "1",
-              "7,646",
-              "0.0130",
-              "-0.0479",
-              "0.9669",
-              "0.0630"
+              "3,589",
+              "0.0333",
+              "-0.0154",
+              "0.9553",
+              "0.051"
             ],
             [
               "2",
-              "5,921",
-              "0.0619",
-              "-0.0272",
-              "0.9259",
-              "0.0963"
+              "2,803",
+              "0.0805",
+              "-0.0805",
+              "0.8971",
+              "0.1794"
             ],
             [
               "3",
-              "6,333",
-              "0.0619",
-              "-0.0205",
-              "0.8731",
-              "0.0944"
+              "3,097",
+              "0.074",
+              "-0.0406",
+              "0.7993",
+              "0.1434"
             ],
             [
               "4",
-              "6,266",
-              "0.0660",
-              "-0.0289",
-              "0.8417",
-              "0.1127"
+              "3,034",
+              "0.0386",
+              "-0.0951",
+              "0.7386",
+              "0.181"
             ],
             [
               "5",
-              "6,021",
-              "0.1074",
-              "-0.0184",
-              "0.7923",
-              "0.1588"
+              "3,139",
+              "0.1172",
+              "0.035",
+              "0.6583",
+              "0.1249"
             ],
             [
               "6",
-              "6,478",
-              "0.1664",
-              "-0.0253",
-              "0.7629",
-              "0.2513"
+              "3,579",
+              "0.1506",
+              "0.0648",
+              "0.6106",
+              "0.1404"
             ],
             [
               "7",
-              "6,311",
-              "0.2330",
-              "-0.0689",
-              "0.7219",
-              "0.4182"
+              "3,447",
+              "0.2463",
+              "0.1612",
+              "0.5414",
+              "0.1571"
             ],
             [
               "8",
-              "5,276",
-              "0.3141",
-              "-0.0409",
-              "0.6979",
-              "0.5086"
+              "2,833",
+              "0.3969",
+              "0.3574",
+              "0.4757",
+              "0.0831"
             ],
             [
               "9",
-              "2,282",
-              "0.3254",
-              "-0.0519",
-              "0.7244",
-              "0.5208"
+              "1,110",
+              "0.5547",
+              "0.5474",
+              "0.4589",
+              "0.0159"
             ],
             [
               "10",
-              "94",
-              "0.0146",
-              "-0.1926",
-              "0.8761",
-              "0.2365"
+              "46",
+              "0.2858",
+              "-0.0631",
+              "0.8488",
+              "0.411"
             ]
           ],
-          "note": "MLB checkpoints run 1 through 9 innings plus a checkpoint-10 extra-innings tail (n=94). Market skill is positive in all ten rows and model skill negative in all ten. International soccer runs 19 checkpoints from kickoff to the 90th minute, mean MFP 0.9211, mfp_last 1.7056; not tabulated here for space. Source: novel_market_foresight_premium.json results.mlb.checkpoints[]."
+          "note": "MLB checkpoints run 1 through 9 innings plus a checkpoint-10 extra-innings tail (n=46). Market skill is positive in all ten rows; model skill is negative in five and positive at checkpoints 5 through 9. International soccer runs 19 checkpoints from kickoff to the 90th minute, mean MFP 0.9225, mfp_last 1.4861; not tabulated here for space. Source: novel_market_foresight_premium.json results.mlb.checkpoints[]."
         },
         {
           "type": "p",
@@ -423,9 +423,10 @@
             "The overreaction bucket test is graded INCREMENTAL against a published cross-sport study and a published in-play soccer study; the contribution is applying the same instrument at consecutive-row grain to the corpora held here (market_overreaction.json novelty.verdict, novelty.closest_prior_work).",
             "Half-life and absorption totals sum ABSOLUTE per-snapshot moves, so they measure price churn, not net travel; a back-and-forth sequence inflates the same total one large repricing would (novel_line_half_life.json declared_confounds).",
             "Tennis and WNBA are censored, not zero: their 50-percent crossing falls past the 6-hour boundary of the coarsest bucket, so \">6.0\" is the most specific statement available (novel_line_half_life.json results[].half_life_label, crossing_in_open_bucket).",
-            "The MLB checkpoint-10 foresight row (extra innings) carries n=94, roughly two orders of magnitude below the largest checkpoint (n=7,646); its MFP of 0.2365 is a thin-sample estimate (novel_market_foresight_premium.json results.mlb.checkpoints[]).",
+            "The MLB checkpoint-10 foresight row (extra innings) carries n=46, nearly two orders of magnitude below the largest checkpoint (n=3,589); its MFP of 0.411, the highest in the series, is a thin-sample estimate (novel_market_foresight_premium.json results.mlb.checkpoints[]).",
+            "Model skill is positive at checkpoints 5 through 9, so MFP's late fall is the model closing on the reference, not the reference weakening (info_arrival_curve.json checkpoints.mlb).",
             "The four instruments do not share an observation window: the half-life and absorption artifacts read one scraped feed with a per-sport span (14 to 30 days, each ending 2026-07-17), while the foresight-premium and overreaction artifacts read the in-game tick corpora and publish no window at all (novel_line_half_life.json results[].observation_window; micro_absorption.json observation_window).",
-            "The overreaction rows were rebuilt on the segment-clean corpus and the foresight-premium rows were not, so the two tables in this paper no longer read the same tick set; a rebuild of novel_market_foresight_premium.json would be expected to move every MFP row, most obviously the late checkpoints, because its own input info_arrival_curve.json now reports 1,110 MLB ticks at the 9th-inning checkpoint where the withdrawn revision reported 2,282."
+            "Both in-game tables are revision 2, rebuilt a day apart (overreaction 2026-09-16, foresight premium 2026-09-17), and the rebuild moved every MFP row: info_arrival_curve.json now reports 1,110 MLB ticks at the 9th-inning checkpoint where the withdrawn revision reported 2,282."
           ]
         }
       ]
@@ -437,12 +438,12 @@
         {
           "type": "list",
           "items": [
-            "The market foresight premium mixes real information the market prices with plain misspecification of the single state-only model used as the model_skill baseline; a rising MFP shows only that this particular model trails the reference by a growing amount.",
+            "The market foresight premium mixes real information the market prices with plain misspecification of the single state-only model used as the model_skill baseline; an MFP above zero shows only that this particular model trails the reference at that checkpoint.",
             "The half-life and absorption instruments cover one scraped window per sport (14 to 30 days, each ending 2026-07-17), not a full season; neither the foresight-premium nor the overreaction artifact publishes an observation window.",
             "The overreaction bucket test compares a moved-to price against a realized outcome rate at consecutive-row grain, not at independent game-level grain, so bucket n overstates the number of independent observations behind each rate.",
             "None of the four artifacts records what caused a given price move, only that a move of a given size happened at a given time; nothing here should be read as a claim about why prices move.",
-            "The international-soccer 6-10pt overreaction bucket (n=11) and the MLB checkpoint-10 foresight row (n=94) are reported for completeness, not as reliable standalone estimates.",
-            "The overreaction table is revision 2, recomputed on the segment-clean corpus; the foresight-premium table is not, and its rows remain under review. The two should not be read as describing the same set of games."
+            "The international-soccer 6-10pt overreaction bucket (n=11) and the MLB checkpoint-10 foresight row (n=46) are reported for completeness, not as reliable standalone estimates.",
+            "Both in-game tables are revision 2 on the segment-clean corpus and neither is under review, but they were rebuilt a day apart and still publish no observation window."
           ]
         }
       ]
@@ -457,7 +458,7 @@
         },
         {
           "type": "p",
-          "text": "The novel_market_foresight_premium, novel_line_half_life, micro_absorption, and market_overreaction modules publish the charts and the full per-sport, per-checkpoint, and per-bucket arrays this paper's tables are drawn from, including what was left out for space (all 19 international-soccer checkpoints, and the kbo/npb/domestic-soccer exclusions noted in Tables 2 and 3). Read the in-game join-integrity finding, linked below, before taking any foresight-premium row here as current."
+          "text": "The novel_market_foresight_premium, novel_line_half_life, micro_absorption, and market_overreaction modules publish the charts and the full per-sport, per-checkpoint, and per-bucket arrays this paper's tables are drawn from, including what was left out for space (all 19 international-soccer checkpoints, and the kbo/npb/domestic-soccer exclusions noted in Tables 2 and 3). The in-game join-integrity finding, linked below, records which artifacts were rebuilt and when."
         }
       ]
     }
@@ -466,8 +467,12 @@
     {
       "artifact": "novel_market_foresight_premium.json",
       "module": "novel_market_foresight_premium",
-      "asOf": null,
+      "asOf": "2026-09-17",
+      "dateMeaning": "snapshot",
       "fields": [
+        "as_of",
+        "corpus",
+        "results.mlb.mfp_mean",
         "results.mlb.checkpoints[].checkpoint",
         "results.mlb.checkpoints[].n",
         "results.mlb.checkpoints[].market_skill",
@@ -562,8 +567,8 @@
     "The half-life and absorption instruments cover one scraped window per sport (14 to 30 days, all ending 2026-07-17), and the foresight-premium and overreaction artifacts publish no observation window at all, so the four instruments are not on one timeline.",
     "The overreaction bucket rows are built from correlated consecutive-row observations within games, not independent game-level draws, so bucket n overstates independent support.",
     "No artifact records why a price moved; this paper states when and by how much, never a cause.",
-    "The smallest rows in this paper (international-soccer 6-10pt overreaction bucket, n=11; MLB checkpoint-10 foresight row, n=94) are reported for completeness, not as reliable standalone estimates.",
-    "The overreaction table is revision 2 on the segment-clean corpus while the foresight-premium table was not rebuilt and remains under review, so the two tables no longer describe the same set of games."
+    "The smallest rows in this paper (international-soccer 6-10pt overreaction bucket, n=11; MLB checkpoint-10 foresight row, n=46) are reported for completeness, not as reliable standalone estimates.",
+    "Both in-game tables are revision 2 on the segment-clean corpus and neither is under review, but they were rebuilt a day apart and publish no observation window, so neither can be placed on the half-life artifact's calendar."
   ],
   "related": [
     {
