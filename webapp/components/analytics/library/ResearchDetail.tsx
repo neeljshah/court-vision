@@ -11,6 +11,7 @@ import { useResearchView } from "./useResearchView";
 import { LabTable, exportLabCSV } from "@/components/analytics/lab/LabTable";
 import { ResearchProvenance } from "./ResearchProvenance";
 import { MeasurementPosition } from "../lab/MeasurementPosition";
+import { TennisGapContext } from "./TennisGapContext";
 import { ResearchSourceContext } from "./ResearchSourceContext";
 import { MeasurementCoverage } from "./MeasurementCoverage";
 import { matchesResearchPopulation, researchComparisonPolicy } from "@/lib/analytics/researchComparisonPolicy";
@@ -54,6 +55,7 @@ export default function ResearchDetail({ analysis: a, related }: { analysis: Res
     <header className="research-heading"><p className="cv-eyebrow">{a.sport === "all" ? "Cross-sport" : a.sport.toUpperCase()} / {a.category}</p><h1>{a.title}</h1><p>{a.description}</p><div className="research-tags"><span>{a.novelty}</span><span>{a.rows.length} published rows</span><span>{a.fields.length} fields</span><span>{a.sources?.length ? "Source dates and observation windows below" : a.asOf ? `Source as of ${a.asOf.slice(0, 10)}` : "Date varies or is unrecorded; see scope"}</span></div></header>
     <DataIntegrityNotice notices={integrityNotices} moduleIds={sourceIds} />
     <div className="research-layout"><section className="cv-panel research-measurements" aria-label="Interactive analysis">
+      <TennisGapContext analysis={a} />
       <ResearchSourceContext sources={a.sources} fields={a.fields} />
       <div className="research-panel-title"><div><p className="cv-eyebrow">Published measurements</p><h2>Choose a measurement</h2></div><button className="lab-export" disabled={!rows.length} onClick={() => exportLabCSV(a, rows)}><Download size={14} /> Export CSV</button></div>
       <div className="lab-controls"><label className="lab-field-label lab-primary-field">Measurement<select value={metric} onChange={e => change({ metric: e.target.value })}>{a.fields.map(f => <option key={f.key} value={f.key}>{f.label}</option>)}</select></label><label className="lab-field-label">Population<select value={comparison.compatible ? group : showAllRows ? "all" : activePopulation?.key || ""} onChange={e => comparison.compatible ? change({ group: e.target.value, row: "" }) : change({ population: e.target.value, row: "" })}>{comparison.compatible ? <><option value="all">All published groups</option>{groups.map(g => <option key={g}>{g}</option>)}</> : <><option value="all">Show all rows (not comparable)</option>{comparison.populations.map(item => <option key={item.key} value={item.key}>{item.label}</option>)}</>}</select></label><label className="lab-field-label">Order<select value={ascending ? "asc" : "desc"} onChange={e => change({ ascending: e.target.value === "asc" })}><option value="desc">Highest first</option><option value="asc">Lowest first</option></select></label></div>
