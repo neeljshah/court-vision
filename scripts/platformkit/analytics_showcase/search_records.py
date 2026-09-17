@@ -54,6 +54,7 @@ FINDINGS = [
     ("League parity", "/analytics/findings/league-parity"),
     ("Lineup synergy", "/analytics/findings/lineup-synergy"),
     ("Favorite-longshot bias", "/analytics/findings/favorite-longshot"),
+    ("MLB in-game join integrity", "/analytics/findings/ingame-join-integrity"),
     ("Findings hub", "/analytics/findings"),
 ]
 

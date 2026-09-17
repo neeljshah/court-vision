@@ -1,12 +1,12 @@
 {
- "generated_at": "2026-07-25T11:12:18.726200+00:00",
+ "generated_at": "2026-09-17T14:59:02.609051+00:00",
  "descriptive_only": true,
  "counts": {
   "entity": 1549,
-  "module": 74,
-  "finding": 17,
+  "module": 77,
+  "finding": 18,
   "page": 9,
-  "total": 1649
+  "total": 1653
  },
  "records": [
   {
@@ -17449,10 +17449,34 @@
    "keywords": []
   },
   {
+   "id": "module:novel_pitch_repeat_excess",
+   "title": "Novel Pitch Repeat Excess",
+   "subtitle": "Analytic",
+   "href": "/analytics/m/novel_pitch_repeat_excess",
+   "type": "module",
+   "keywords": []
+  },
+  {
+   "id": "module:novel_rest_asymmetry",
+   "title": "Novel Rest Asymmetry",
+   "subtitle": "Analytic",
+   "href": "/analytics/m/novel_rest_asymmetry",
+   "type": "module",
+   "keywords": []
+  },
+  {
    "id": "module:novel_schedule_fatigue_tax",
    "title": "Novel Schedule Fatigue Tax",
    "subtitle": "Analytic",
    "href": "/analytics/m/novel_schedule_fatigue_tax",
+   "type": "module",
+   "keywords": []
+  },
+  {
+   "id": "module:novel_starter_rest_absorption",
+   "title": "Novel Starter Rest Absorption",
+   "subtitle": "Analytic",
+   "href": "/analytics/m/novel_starter_rest_absorption",
    "type": "module",
    "keywords": []
   },
@@ -17765,6 +17789,14 @@
    "title": "Favorite-longshot bias",
    "subtitle": "Findings",
    "href": "/analytics/findings/favorite-longshot",
+   "type": "finding",
+   "keywords": []
+  },
+  {
+   "id": "finding:mlb_in_game_join_integrity",
+   "title": "MLB in-game join integrity",
+   "subtitle": "Findings",
+   "href": "/analytics/findings/ingame-join-integrity",
    "type": "finding",
    "keywords": []
   },
