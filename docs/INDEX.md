@@ -16,12 +16,13 @@
 
 | You are a... | Read in this order |
 |--------------|--------------------|
-| **Recruiter / quant reviewer** | [README](../README.md) -> [JOB_EVIDENCE_PACKET](JOB_EVIDENCE_PACKET.md) -> [PREDICTOR_PLATFORM](PREDICTOR_PLATFORM.md) -> [PROOFS](PROOFS.md) -> [KNOWN_LIMITATIONS](KNOWN_LIMITATIONS.md) |
+| **Recruiter / quant reviewer** | [README](../README.md) -> [EVIDENCE index](../EVIDENCE.md) -> [live analytics site](https://neeljshah.github.io/court-vision/analytics/) ([site guide](ANALYTICS_SITE.md)) -> [JOB_EVIDENCE_PACKET](JOB_EVIDENCE_PACKET.md) -> [PREDICTOR_PLATFORM](PREDICTOR_PLATFORM.md) -> [PROOFS](PROOFS.md) -> [KNOWN_LIMITATIONS](KNOWN_LIMITATIONS.md) |
 | **Engineer / architect** | [ARCHITECTURE](../ARCHITECTURE.md) -> [PLATFORM](PLATFORM.md) -> [architecture/system-overview](architecture/system-overview.md) -> [ML_MODELS](ML_MODELS.md) -> [API](API.md) |
 | **Quant / methodology** | [quant-methodology](quant-methodology.md) -> [backtest-methodology](backtest-methodology.md) -> [research/validation-methodology](research/validation-methodology.md) -> [MARKET_EFFICIENCY_PROOF](MARKET_EFFICIENCY_PROOF.md) |
 | **Edge researcher** | [MARKET_EFFICIENCY_PROOF](MARKET_EFFICIENCY_PROOF.md) -> [quant-methodology](quant-methodology.md) -> [JOB_EVIDENCE_PACKET](JOB_EVIDENCE_PACKET.md) -> [KNOWN_LIMITATIONS](KNOWN_LIMITATIONS.md) |
 | **Operator / deployer** | [PRODUCTION_RUNBOOK](PRODUCTION_RUNBOOK.md) -> [operations/data-pipeline](operations/data-pipeline.md) -> [LIVE_OPERATOR_RUNBOOK](LIVE_OPERATOR_RUNBOOK.md) -> [DEPLOY_RAILWAY](DEPLOY_RAILWAY.md) |
 | **Curious how AI built it** | [BUILT_WITH_CLAUDE](BUILT_WITH_CLAUDE.md) |
+| **Want the long-form tour** | [SYSTEM_TOUR](SYSTEM_TOUR.md) (the pre-2026-09-17 README, kept whole) |
 
 New to the vocabulary? Keep the [GLOSSARY](GLOSSARY.md) open in a tab (CLV, leak-free,
 walk-forward, Shin devig, Brier, Kelly, devig, parity, ...).

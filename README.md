@@ -43,7 +43,8 @@ the system also built the instruments that caught his own overclaims, and publis
 - **[The retraction finding](https://neeljshah.github.io/court-vision/analytics/findings/retraction/)** -- what was claimed, what was wrong, how it was caught.
 
 The site is a static export built from [`webapp/`](webapp/) on every push; published JSON is
-scrubbed and receipt-checked in CI before it ships.
+scrubbed and receipt-checked in CI before it ships. Page-by-page map, data lineage and the CI gates:
+**[docs/ANALYTICS_SITE.md](docs/ANALYTICS_SITE.md)**.
 
 ## Verify it yourself (no private data, about 5 minutes)
 
