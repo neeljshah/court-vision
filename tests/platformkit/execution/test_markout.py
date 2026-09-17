@@ -4,11 +4,17 @@ Run: python -m pytest tests/platformkit/execution/test_markout.py -q
 """
 from __future__ import annotations
 
-from scripts.platformkit.execution.markout import markout, markout_summary
+import pytest
+
+from scripts.platformkit.execution.markout import (
+    UNKEYED_CLUSTER, markout, markout_summary)
 
 
 def _fill(side="yes", price=0.65, fee=0.01, game="g1"):
-    return {"side": side, "price": price, "fee_units": fee, "qty": 1, "game_id": game}
+    # "ticker" is what paper_maker._fill_record actually emits, and for the
+    # in-play moneyline channel one ticker is one game's market.
+    return {"side": side, "price": price, "fee_units": fee, "qty": 1,
+            "ticker": game}
 
 
 def test_fee_is_always_subtracted_never_credited():
@@ -50,6 +56,44 @@ def test_one_game_cannot_carry_the_whole_sample():
     # The Q17b lesson: everything in one cluster -> the CI must not certify it.
     fills = [_fill(game="only") for _ in range(40)]
     assert markout_summary(fills, [0.70] * 40)["verdict"] == "INSUFFICIENT"
+
+
+def test_fills_with_no_cluster_key_share_ONE_cluster():
+    # A per-fill fallback id would make 40 unkeyed fills from a single game look
+    # like 40 independent games and hand back a spuriously tight CI.
+    fills = [{"side": "yes", "price": 0.65, "fee_units": 0.01} for _ in range(40)]
+    out = markout_summary(fills, [0.70] * 40)
+    assert out["n"] == 40 and out["n_clusters"] == 1
+    assert out["verdict"] == "INSUFFICIENT"
+    assert out["ci_95_units"] == [None, None]
+
+
+def test_a_blank_cluster_key_is_also_unkeyed():
+    fills = [_fill(game="") for _ in range(40)]
+    assert markout_summary(fills, [0.70] * 40)["n_clusters"] == 1
+
+
+def test_unkeyed_fills_do_not_merge_with_keyed_ones():
+    fills = ([_fill(game="g%d" % g) for g in range(6)]
+             + [{"side": "yes", "price": 0.65, "fee_units": 0.01}])
+    out = markout_summary(fills, [0.70] * 7)
+    assert out["n_clusters"] == 7          # 6 real games + the unkeyed bucket
+    assert UNKEYED_CLUSTER == "__unkeyed__"
+
+
+def test_length_mismatch_raises_rather_than_zipping_short():
+    # Zipping short would drop the tail and report a confident number over a
+    # sample the caller never intended.
+    fills = [_fill(game="g%d" % g) for g in range(10)]
+    with pytest.raises(ValueError, match="one mid per fill"):
+        markout_summary(fills, [0.70] * 4)
+    with pytest.raises(ValueError):
+        markout_summary(fills[:2], [0.70] * 10)
+
+
+def test_equal_lengths_still_score_every_fill():
+    fills = [_fill(game="g%d" % g) for g in range(12) for _ in range(4)]
+    assert markout_summary(fills, [0.70] * len(fills))["n"] == len(fills)
 
 
 def test_unscorable_fills_are_counted_not_dropped():

@@ -19,7 +19,7 @@ Test: python -m pytest tests/platformkit/execution/test_markout.py -q
 """
 from __future__ import annotations
 
-from typing import Any, Dict, Iterable, List, Optional, Sequence
+from typing import Any, Dict, List, Optional, Sequence
 
 from scripts.platformkit.execution.entry_timing.study import cluster_boot_ci
 
@@ -57,10 +57,25 @@ def markout(fill: Dict[str, Any], later_mid: Any, fee: Any = None) -> Optional[f
     return gross - abs(cost)
 
 
-def markout_summary(fills: Iterable[Dict[str, Any]], later_mids: Sequence[Any],
-                    *, cluster_key: str = "game_id") -> Dict[str, Any]:
+UNKEYED_CLUSTER = "__unkeyed__"
+
+
+def markout_summary(fills: Sequence[Dict[str, Any]], later_mids: Sequence[Any],
+                    *, cluster_key: str = "ticker") -> Dict[str, Any]:
     """Mean fee-netted markout over paired (fill, later_mid), with a
     GAME-CLUSTERED bootstrap 95% CI.
+
+    *fills* and *later_mids* must be the SAME LENGTH -- one observed later mid
+    per fill. A mismatch raises ValueError rather than being zipped short, which
+    would silently drop the tail and report a confident number over a sample the
+    caller did not intend.
+
+    *cluster_key* defaults to "ticker", which is the field
+    paper_maker._fill_record actually emits; for the in-play moneyline channel
+    one ticker is one game's market, so ticker IS the game cluster. A fill
+    carrying no value for the key falls into ONE shared UNKEYED_CLUSTER, never a
+    fresh cluster per fill -- otherwise n unkeyed fills from a single game would
+    look like n independent games and produce a spuriously tight CI.
 
     Ticks inside one game are not independent, so the CI resamples whole games --
     reusing entry_timing.study.cluster_boot_ci, the same estimator the entry-timing
@@ -68,7 +83,17 @@ def markout_summary(fills: Iterable[Dict[str, Any]], later_mids: Sequence[Any],
     surfaced here as verdict INSUFFICIENT rather than dressed up as a result.
     Fills whose markout cannot be computed are counted in n_unscored, never
     silently dropped to 0.0.
+
+    NO LOOK-AHEAD is the CALLER's responsibility and is NOT enforced here: this
+    function cannot tell whether a supplied mid was observed after its fill.
+    Pair fills with mids drawn from a tick strictly later than fill["fill_ts"].
     """
+    fills = list(fills)
+    later_mids = list(later_mids)
+    if len(fills) != len(later_mids):
+        raise ValueError(
+            "markout_summary: %d fills but %d later_mids -- one mid per fill"
+            % (len(fills), len(later_mids)))
     values: List[float] = []
     clusters: List[Any] = []
     unscored = 0
@@ -78,7 +103,8 @@ def markout_summary(fills: Iterable[Dict[str, Any]], later_mids: Sequence[Any],
             unscored += 1
             continue
         values.append(value)
-        clusters.append((fill.get(cluster_key) or fill.get("ticker") or len(clusters)))
+        key = fill.get(cluster_key) if isinstance(fill, dict) else None
+        clusters.append(key if key not in (None, "") else UNKEYED_CLUSTER)
     n_clusters = len(set(clusters))
     if not values:
         return {"n": 0, "n_clusters": 0, "n_unscored": unscored, "mean_units": None,
@@ -111,4 +137,4 @@ if __name__ == "__main__":
     _demo()
 
 
-__all__ = ["markout", "markout_summary"]
+__all__ = ["markout", "markout_summary", "UNKEYED_CLUSTER"]
