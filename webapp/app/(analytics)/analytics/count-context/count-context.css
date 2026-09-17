@@ -36,3 +36,9 @@
 @media (max-width: 760px) { .cc-section-head { align-items: start; flex-direction: column; } .cc-group > div { grid-template-columns: 1fr; } }
 @media (max-width: 680px) { .cc-page { padding: 34px 16px 48px; } .cc-page h1 { font-size: 2.35rem; } .cc-selector button { min-height: 44px; } }
 @media (max-width: 560px) { .cc-outcomes .cc-table-wrap table { min-width: 560px; table-layout: fixed; } .cc-outcomes .cc-table-wrap th:first-child { position: sticky; left: 0; z-index: 2; width: 112px; min-width: 112px; background: var(--paper-raised); box-shadow: 6px 0 8px -8px var(--ink-3); } .cc-outcomes .cc-table-wrap thead th:first-child { z-index: 3; background: var(--paper-tint); } .cc-outcomes .cc-table-wrap thead th:not(:first-child) { width: 112px; min-width: 112px; white-space: normal; overflow-wrap: anywhere; line-height: 1.35; } }
+.cc-section-links { display: flex; flex-wrap: wrap; gap: 12px 24px; margin: 22px 0 30px; }
+.cc-section-links a { display: inline-flex; align-items: center; min-height: 44px; border-bottom: 1px solid var(--rule-strong); color: var(--ink); font-size: 14px; }
+.cc-section-links a:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.cc-anchor, .cc-class-section { scroll-margin-top: 100px; }
+.cc-class-section { margin-top: 52px; padding-top: 32px; border-top: 1px solid var(--rule-strong); }
+.cc-class-section > h2 { font-family: var(--font-display); font-size: clamp(26px, 4vw, 36px); color: var(--ink); font-weight: 500; }

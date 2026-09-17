@@ -60,7 +60,7 @@ export const analysisDestinations: readonly AnalysisDestination[] = [
     id: "count-context",
     route: "/analytics/count-context",
     title: "Count context",
-    purpose: "Inspect published pitch mix and outcome proxies by count-leverage class.",
+    purpose: "Compare exact ball-strike counts: top pitch share, coded strike rate, in-zone rate, and broader count-class pitch mixes.",
     sport: "mlb",
     sports: ["mlb"],
     populationId: "mlb_count_leverage_classes",
