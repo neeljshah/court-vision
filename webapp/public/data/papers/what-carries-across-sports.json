@@ -15,7 +15,7 @@
   "Brier",
   "transfer"
  ],
- "abstract": "CourtVision runs the same reliability decomposition and the same skill-score formula in more than one sport, but an identical formula run in two places does not by itself make the two results comparable. kernel_transfer.json (generated 2026-07-22) records five sport/market comparability decisions and marks only two reliability_comparable: mlb moneyline_ingame and soccer_intl moneyline_ingame, because both score a probability against a resolved binary win/loss outcome on the same 0-1 Murphy reliability scale. The other three are not comparable by construction: mlb totals_margin scores a run-count distribution with CRPS (n=671); nba win-probability stores per-checkpoint Brier means with no reliability split (n=6,371); tennis has no market-side probability at all (n=55,075). kernel_transfer.json has not been rebuilt since the in-game corpus was re-segmented on 2026-09-16, so its stored reliability figures (n=78,986 and n=9,003, gaps 0.00664 and 0.039414) are revision-1 copies; its source murphy_decomposition.json now reports gaps of 0.002194 for mlb (n=27,351) and 0.103894 for soccer_intl (n=4,265). The sign still agrees in both sports, but the ratio between the two gaps moves from about 5.9-fold to about 47-fold, and the source file itself calls a two-sport sign match a coincidence worth re-checking, not a pattern. cross_sport_scoreboard.json mixes a Brier-scale family and a CRPS-scale family inside one paired_delta_mean column; its ten mlb_ingame CRPS rows split 7 UNDERPOWERED to 3 MODEL_SHARPER_PROVISIONAL. brier_skill_scores.json, rebuilt on 2026-09-16, still returns a BSS below zero against the market at every grain in both sports.",
+ "abstract": "CourtVision runs the same reliability decomposition and the same skill-score formula in more than one sport, but an identical formula run in two places does not by itself make the two results comparable. kernel_transfer.json (recomposed 2026-09-17) records five sport/market comparability decisions and marks only two reliability_comparable: mlb moneyline_ingame and soccer_intl moneyline_ingame, because both score a probability against a resolved binary win/loss outcome on the same 0-1 Murphy reliability scale. The other three are not comparable by construction: mlb totals_margin is scored with CRPS (n=671); nba win-probability stores per-checkpoint Brier means with no reliability split (n=6,371); tennis has no market-side probability at all (n=55,075). Both comparable rows were recomposed from the revision-2 Murphy decomposition on 2026-09-17: the reliability gap is 0.002194 for mlb (n=27,351) and 0.103894 for soccer_intl (n=4,265). The sign agrees in both sports, the model being the less reliable side, but the magnitudes differ by about 47.4-fold and the two rows no longer attribute the gap to the same thing -- mlb's verdict reads resolution-driven, soccer_intl's now reads reliability-driven and fixable by recalibration. The file itself calls a two-sport sign match a coincidence worth re-checking, not a pattern. cross_sport_scoreboard.json, which was not rebuilt and reads a different corpus, mixes a Brier-scale and a CRPS-scale family inside one paired_delta_mean column; its ten mlb_ingame CRPS rows split 7 UNDERPOWERED to 3 MODEL_SHARPER_PROVISIONAL. brier_skill_scores.json, rebuilt on 2026-09-16, still returns a BSS below zero against the market at every grain in both sports.",
  "sections": [
   {
    "id": "question",
@@ -23,16 +23,16 @@
    "blocks": [
     {
      "type": "p",
-     "text": "CourtVision computes the same two cross-sport statistics in more than one sport: the Murphy reliability component of a Brier score, and the Brier Skill Score (BSS) against a market reference and a climatology reference. That raises a question before any cross-sport reading: is the result comparable, or does it only look comparable because the formula and the numeric scale are the same? kernel_transfer.json answers that row by row."
+     "text": "CourtVision computes the same two cross-sport statistics in more than one sport: the Murphy reliability component of a Brier score, and the Brier Skill Score (BSS) against a market and a climatology reference. That raises a question before any cross-sport reading: is the result comparable, or does it only look comparable because the formula and the scale are the same? kernel_transfer.json answers that row by row."
     },
     {
      "type": "p",
-     "text": "This paper works through three things in order: the five comparability decisions in kernel_transfer.json, two marked reliability_comparable and three not; cross_sport_scoreboard.json's 17 paired-delta rows, which put one column shape across two different underlying metrics; and brier_skill_scores.json, where the identical BSS formula runs on populations that differ sharply in size and base rate."
+     "text": "This paper works through three things: the five comparability decisions in kernel_transfer.json, two marked reliability_comparable and three not; cross_sport_scoreboard.json's 17 paired-delta rows, which put one column shape across two different metrics; and brier_skill_scores.json, where the identical BSS formula runs on populations differing sharply in size and base rate."
     },
     {
      "type": "callout",
      "label": "Status",
-     "text": "Revision 1 of this paper quoted artifacts computed on the joined in-game corpus (78,986 MLB ticks, artifact as_of dates up to 2026-07-25), in which one stored tick file could hold ticks from more than one real game and carry another game's outcome label. Those values were withdrawn on 2026-09-16. The skill-score table below now quotes the segment-clean corpus: 27,351 MLB ticks across 178 games and 4,265 soccer_intl ticks across 27 games, as_of 2026-09-16. Every number that moved is a population change, not forecaster improvement -- roughly a third of the MLB ticks and half the soccer ticks were removed because their outcome label belonged to another game. kernel_transfer.json and cross_sport_scoreboard.json were not rebuilt in that pass; their stored numbers are quoted as what those files hold, with the rebuilt source values beside them."
+     "text": "Revision 1 of this paper quoted artifacts computed on the joined in-game corpus (78,986 MLB ticks, artifact as_of dates up to 2026-07-25), in which one stored tick file could hold ticks from more than one real game and carry another game's outcome label. Those values were withdrawn on 2026-09-16. Tables 1 and 3 below now quote the segment-clean corpus: 27,351 MLB ticks across 178 games and 4,265 soccer_intl ticks across 27 games. Every number that moved is a population change, not forecaster improvement -- roughly a third of the MLB ticks and half the soccer ticks were removed because their outcome label belonged to another game. kernel_transfer.json was recomposed from the rebuilt decomposition on 2026-09-17. cross_sport_scoreboard.json was not rebuilt; its rows come from the CRPS benchmark files, a different corpus, and are quoted as published."
     }
    ]
   },
@@ -42,7 +42,7 @@
    "blocks": [
     {
      "type": "p",
-     "text": "kernel_transfer.json stores one row per sport/market combination under rows[], with fields including reliability_model, reliability_market, reliability_gap, reliability_unit, reliability_comparable, comparability_reason, verdict and n. Its method field states the file is composition only: numbers copied verbatim from murphy_decomposition.py and soccer_calibration_pack.py output, nothing recomputed. It carries 5 rows and a generated_at of 2026-07-22T22:55:23Z, and it was not rebuilt when murphy_decomposition.json was, so the figures it composes are revision-1 copies of a source that has since moved."
+     "text": "kernel_transfer.json stores one row per sport/market combination under rows[], with fields including reliability_model, reliability_market, reliability_gap, reliability_unit, reliability_comparable, comparability_reason, verdict and n. Its method field states the file is composition only: numbers copied verbatim from murphy_decomposition.py and soccer_calibration_pack.py output, nothing recomputed. It carries 5 rows and a generated_at of 2026-09-17T00:05:53Z, recomposed after murphy_decomposition.json was rebuilt, so its comparable rows read the segment-clean corpus."
     },
     {
      "type": "p",
@@ -65,7 +65,7 @@
    "blocks": [
     {
      "type": "p",
-     "text": "Every number below is copied from kernel_transfer.json, cross_sport_scoreboard.json, murphy_decomposition.json or brier_skill_scores.json; none is re-scored. Four quantities are trivial arithmetic on cited fields: the ratio of mlb to soccer_intl corpus size (27,351 / 4,265, about 6.4), the share of each sport's named grains that sum to its own all grain, the ratio of the two revision-1 reliability_gap values (about 5.9x, which kernel_transfer.json itself states), and the same ratio on the rebuilt murphy gaps (0.103894 / 0.002194, about 47x)."
+     "text": "Every number below is copied from kernel_transfer.json, cross_sport_scoreboard.json, murphy_decomposition.json or brier_skill_scores.json; none is re-scored. Two quantities are trivial arithmetic on cited fields: the ratio of mlb to soccer_intl corpus size (27,351 / 4,265, about 6.4), and the share of each sport's named grains that sum to its own all grain. The roughly 47.4-fold ratio between the two reliability gaps is not computed here; kernel_transfer.json's reliability_transfer_summary publishes it."
     },
     {
      "type": "p",
@@ -79,7 +79,7 @@
    "blocks": [
     {
      "type": "table",
-     "caption": "Cross-sport reliability comparability decisions (source kernel_transfer.json, generated 2026-07-22; not rebuilt after the 2026-09-16 re-segmentation)",
+     "caption": "Cross-sport reliability comparability decisions (source kernel_transfer.json, generated 2026-09-17, recomposed from the revision-2 Murphy decomposition)",
      "columns": [
       "Sport",
       "Market",
@@ -91,9 +91,9 @@
       [
        "mlb",
        "moneyline_ingame (murphy reliability decomposition)",
-       "78986",
+       "27351",
        "yes",
-       "+0.00664"
+       "+0.002194"
       ],
       [
        "mlb",
@@ -105,9 +105,9 @@
       [
        "soccer_intl",
        "moneyline_ingame (murphy reliability decomposition)",
-       "9003",
+       "4265",
        "yes",
-       "+0.039414"
+       "+0.103894"
       ],
       [
        "nba",
@@ -124,20 +124,20 @@
        "not applicable -- no market_prob side"
       ]
      ],
-     "note": "yes/no reproduces reliability_comparable verbatim; the gap is reliability_model minus reliability_market as stored. The two moneyline_ingame n and gap cells are revision-1 values; the rebuilt murphy_decomposition.json reads n=27,351 gap 0.002194 for mlb and n=4,265 gap 0.103894 for soccer_intl."
+     "note": "yes/no reproduces reliability_comparable verbatim; the gap is reliability_model minus reliability_market as stored. Both comparable rows are revision 2 on the segment-clean corpus; the withdrawn revision-1 pair is not restated here."
     },
     {
      "type": "list",
      "items": [
-      "Both comparable rows share one reason, given verbatim: both sides are Brier scores of a probability against a binary win/loss outcome, so the reliability component sits on the same 0-1 scale in both sports.",
-      "mlb totals_margin (n=671), not comparable: CRPS scores a full run-count distribution, not a binary outcome probability -- Murphy reliability/resolution is undefined for it here.",
+      "Both comparable rows share one reason, given verbatim: both sides are Brier scores of a probability against a binary outcome, so the reliability component sits on the same 0-1 scale.",
+      "mlb totals_margin (n=671), not comparable: CRPS scores a run-count distribution, not a binary outcome probability, so Murphy reliability is undefined for it here.",
       "nba winprob_ingame (n=6,371), not comparable: nba's benchmark stores per-checkpoint Brier MEANS only -- no 10-bin Murphy split has been computed for nba win-prob.",
       "tennis pregame_prior + ingame_surface_gate (n=55,075), not comparable: both gate receipts are model-vs-model checks, so there is no market_prob to decompose against."
      ]
     },
     {
      "type": "p",
-     "text": "Where the comparison is supported, the reliability_gap agrees in sign: the model is less reliable than the market in both sports. kernel_transfer.json still holds the revision-1 pair, +0.00664 on 78,986 mlb rows and +0.039414 on 9,003 soccer_intl rows, close to 5.9-fold apart. That file was not rebuilt and its source was: murphy_decomposition.json, as_of 2026-09-16, reports mlb model reliability 0.005619 against market 0.003425 (gap 0.002194, n=27,351) and soccer_intl 0.191982 against 0.088088 (gap 0.103894, n=4,265). The sign survives; the ratio does not, moving from about 5.9-fold to about 47-fold. Neither reading is a forecaster change: the mlb gap shrank because ticks scored against another game's result were dropped, and the soccer gap grew on a sample that lost half its ticks. kernel_transfer.json's own reliability_transfer_summary is explicit that two sports is not enough to call any of this a general cross-sport pattern."
+     "text": "Where the comparison is supported, the reliability_gap agrees in sign: the model is the less reliable side in both sports. The recomposed file reads 0.002194 for mlb (reliability_model 0.005619 against reliability_market 0.003425, n=27,351) and 0.103894 for soccer_intl (0.191982 against 0.088088, n=4,265), and its reliability_transfer_summary states the sign agreement and puts the magnitude difference at about 47.4-fold. Revision 1 of this paper quoted a far closer pair measured on the joined corpus; those values are withdrawn and are not restated. The rebuild changed more than the spread. The two verdict strings no longer describe the same mechanism: mlb still reads driven mainly by resolution, information not fixable by recalibration, while soccer_intl now reads driven mainly by reliability, calibration and fixable. So the shared sign means less than it did: in mlb the Brier gap is mostly an information deficit, in soccer_intl mostly a calibration one, and a recalibration that closed most of the soccer gap would leave most of the mlb gap standing. kernel_transfer.json's own summary is explicit that two sports is not enough to call any of this a general cross-sport pattern."
     }
    ]
   },
@@ -321,11 +321,11 @@
     },
     {
      "type": "p",
-     "text": "Within a metric family, most rows do not resolve in either direction. All four nba winprob checkpoints and the mlb_pregame row are labeled UNDERPOWERED or MARKET_SHARPER_PROVISIONAL, and the ten mlb_ingame CRPS rows split 7 UNDERPOWERED to 3 MODEL_SHARPER_PROVISIONAL, the split kernel_transfer.json's own mlb totals_margin row states verbatim. The three MODEL_SHARPER_PROVISIONAL rows are consecutive mlb_ingame total_runs checkpoints (end_inning_6, n=54; end_inning_7, n=55; end_inning_8, n=49), each still PROVISIONAL rather than settled."
+     "text": "Within a metric family, most rows do not resolve in either direction. All four nba winprob checkpoints and the mlb_pregame row are labeled UNDERPOWERED or MARKET_SHARPER_PROVISIONAL, and the ten mlb_ingame CRPS rows split 7 UNDERPOWERED to 3 MODEL_SHARPER_PROVISIONAL, the split kernel_transfer.json's mlb totals_margin row states verbatim. The three are consecutive mlb_ingame total_runs checkpoints (end_inning_6, n=54; end_inning_7, n=55; end_inning_8, n=49), each still PROVISIONAL rather than settled."
     },
     {
      "type": "p",
-     "text": "A verdict in this file is not a reading of the interval printed beside it. cross_sport_scoreboard.json's method field states that every value is copied verbatim from the artifact named in rows[].source, so the support rule behind each label lives in that upstream benchmark. That is why an interval excluding zero and an UNDERPOWERED label can coexist: mlb_ingame home_margin|end_inning_5 (n=26, CI 0.3259 to 1.4888) and the two soccer_intl rows (n=22 and n=17) each exclude zero and each read UNDERPOWERED. This file was not rebuilt after the re-segmentation either, so its rows are quoted as published."
+     "text": "A verdict in this file is not a reading of the interval beside it. cross_sport_scoreboard.json's method field states that every value is copied verbatim from the artifact named in rows[].source, so the support rule behind each label lives in that upstream benchmark. That is why an interval excluding zero and an UNDERPOWERED label can coexist: mlb_ingame home_margin|end_inning_5 (n=26, CI 0.3259 to 1.4888) and the two soccer_intl rows (n=22 and n=17) each exclude zero and each read UNDERPOWERED. This file was not rebuilt; its rows read the CRPS benchmark files, a different corpus from Tables 1 and 3."
     }
    ]
   },
@@ -454,7 +454,7 @@
     },
     {
      "type": "p",
-     "text": "BSS against market is negative at every one of the 11 grains listed, in both sports -- from -0.0918 (mlb, late) to -0.1133 (mlb, mid), and from -0.4687 (soccer_intl, 60-75) to -1.1707 (soccer_intl, 0-15). Every grain carries below_floor: false. That verdict is the one thing the re-segmentation did not change: revision 1 also returned a negative BSS at every grain, on a corpus three times the size. What changed is the spread. MLB's range tightened (revision 1 ran from -0.0794 to -0.4635) while soccer's widened, and both populations shrank: mlb's all grain now holds 27,351 rows against soccer_intl's 4,265 (about 6.4 times, where it was 8.8), base rates 0.4897 against 0.6911, and the named grains cover 97.6 and 79.3 percent of their sports, against 66.6 and 40.6 percent before."
+     "text": "BSS against market is negative at every one of the 11 grains listed, in both sports -- from -0.0918 (mlb, late) to -0.1133 (mlb, mid), and from -0.4687 (soccer_intl, 60-75) to -1.1707 (soccer_intl, 0-15). Every grain carries below_floor: false. That verdict is the one thing the re-segmentation did not change: revision 1 also returned a negative BSS at every grain, on a corpus three times the size. What changed is the spread. MLB's range tightened (revision 1 ran from -0.0794 to -0.4635) while soccer's widened, and both populations shrank: mlb's all grain now holds 27,351 rows against soccer_intl's 4,265 (about 6.4 times), base rates 0.4897 against 0.6911, and the named grains cover 97.6 and 79.3 percent of their sports."
     },
     {
      "type": "p",
@@ -478,7 +478,7 @@
     {
      "type": "list",
      "items": [
-      "If a third sport gained a market-side Murphy reliability decomposition and its reliability_gap sign disagreed with mlb and soccer_intl, the sign-agrees-across-two-sports reading would have to be dropped. The re-segmentation already showed how little the magnitudes hold: the ratio between the two gaps moved from about 5.9-fold to about 47-fold with no change to the forecaster.",
+      "If a third sport gained a market-side Murphy reliability decomposition and its reliability_gap sign disagreed, the sign-agrees-across-two-sports reading would have to be dropped. The mechanism attribution is already split -- resolution in mlb, reliability in soccer_intl -- so the shared sign is the only part of that reading still carrying weight.",
       "Verdict labels and confidence intervals are separate columns in cross_sport_scoreboard.json: the labels are copied verbatim from the upstream benchmark, so if its support rule changed, rows whose interval already excludes zero could change label with no new measurement.",
       "If the three mlb_ingame total_runs MODEL_SHARPER_PROVISIONAL checkpoints (n=49-55) reversed sign at a larger n, reading that run as a stable pattern would have to be dropped.",
       "If soccer_intl's BSS-vs-market figures moved into mlb's range (roughly -0.09 to -0.12) on a larger soccer_intl corpus, the current gap between the two sports would have to be re-read; at the sizes published here this paper attributes that gap to nothing."
@@ -493,13 +493,13 @@
     {
      "type": "list",
      "items": [
-      "Only 2 of the 5 kernel_transfer.json rows support any cross-sport reliability comparison; the other 3 are excluded by construction.",
+      "Only 2 of the 5 kernel_transfer.json rows support a cross-sport reliability comparison; the other 3 are excluded by construction.",
       "The reliability_gap sign match rests on two sports; kernel_transfer.json's own reliability_transfer_summary calls it a coincidence worth re-checking, not a pattern.",
       "cross_sport_scoreboard.json mixes a Brier-scale and a CRPS-scale metric family inside one paired_delta_mean column; comparing raw magnitudes across that boundary is not supported by the file.",
       "Verdict labels in cross_sport_scoreboard.json are copied verbatim from the upstream benchmark, not derived from the interval beside them, so a row can carry an interval excluding zero and still read UNDERPOWERED.",
       "brier_skill_scores.json's named grains do not sum to each sport's all row (97.6 percent of mlb rows, 79.3 percent of soccer_intl rows), so the per-grain and all-row figures describe overlapping but not identical sets of games.",
       "None of these artifacts tests why the market is more reliable than the model; a measured gap is reported, not a mechanism.",
-      "brier_skill_scores.json and murphy_decomposition.json are revision 2, rebuilt on the segment-clean corpus, while kernel_transfer.json and cross_sport_scoreboard.json were not rebuilt, so the tables in this paper do not all describe the same set of games."
+      "kernel_transfer.json, murphy_decomposition.json and brier_skill_scores.json are revision 2 on the segment-clean corpus, while cross_sport_scoreboard.json reads the CRPS benchmark files and was not rebuilt, so Table 2 does not describe the same set of games as Tables 1 and 3."
      ]
     }
    ]
@@ -510,11 +510,11 @@
    "blocks": [
     {
      "type": "p",
-     "text": "The cross-sport-comparability inspector is built on kernel_transfer.json and is where to check, before reading any number across sports, whether a pair is one of the two marked reliability_comparable. The score-decomposition inspector carries the Murphy detail, and the calibration inspector the per-grain BSS context behind Table 3."
+     "text": "The cross-sport-comparability inspector is built on kernel_transfer.json and is where to check whether a pair is one of the two marked reliability_comparable before reading any number across sports. The score-decomposition inspector carries the Murphy detail, the calibration inspector the per-grain BSS context behind Table 3."
     },
     {
      "type": "p",
-     "text": "Table 2 and the figure above are one view of the paired-delta rows the cross_sport_scoreboard module renders directly; check whether a sport/market pair is comparable first, then read its scoreboard or BSS numbers. The in-game join-integrity finding, linked below, records which of these artifacts were rebuilt and which were not."
+     "text": "Table 2 and the figure above are one view of the paired-delta rows the cross_sport_scoreboard module renders directly; check whether a pair is comparable first, then read its scoreboard or BSS numbers. The in-game join-integrity finding, linked below, records which artifacts were rebuilt and which were not."
     }
    ]
   }
@@ -523,7 +523,7 @@
   {
    "artifact": "kernel_transfer.json",
    "module": "kernel_transfer",
-   "asOf": "2026-07-22T22:55:23.467132+00:00",
+   "asOf": "2026-09-17T00:05:53.901291+00:00",
    "fields": [
     "generated_at",
     "n_rows",
@@ -540,8 +540,11 @@
     "honest_note",
     "rows[].verdict",
     "rows[].sources",
-    "method"
-   ]
+    "method",
+    "comparable_groups",
+    "novelty.verdict"
+   ],
+   "dateMeaning": "snapshot"
   },
   {
    "artifact": "cross_sport_scoreboard.json",
@@ -652,7 +655,7 @@
  ],
  "limitations": [
   "Only 2 of the 5 kernel_transfer.json rows support any cross-sport reliability comparison; the other 3 are excluded by construction, not measured and found equal.",
-  "The reliability_gap sign match between mlb and soccer_intl rests on n=2 sports; kernel_transfer.json's own summary calls it a coincidence worth re-checking, not a pattern, and the ratio between the two gaps moved from about 5.9-fold to about 47-fold when the corpus was re-segmented.",
+  "The reliability_gap sign match between mlb and soccer_intl rests on n=2 sports; kernel_transfer.json's own summary calls it a coincidence worth re-checking, not a pattern, and on the revision-2 rows the two gaps differ by about 47.4-fold and are attributed to different mechanisms.",
   "cross_sport_scoreboard.json mixes a Brier-scale metric family and a CRPS-scale metric family inside one paired_delta_mean column; comparing raw magnitudes across that boundary is not supported by the file.",
   "Two soccer_intl scoreboard rows (n=17, n=22) have confidence intervals that exclude zero yet carry an UNDERPOWERED verdict, and the file does not document the labeling rule.",
   "brier_skill_scores.json's named grains do not sum to each sport's all row (97.6 percent of mlb rows, 79.3 percent of soccer_intl rows), so grain-level and all-level figures describe overlapping but not identical row sets.",
