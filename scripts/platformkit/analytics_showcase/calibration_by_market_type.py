@@ -200,7 +200,8 @@ def build_verdict(market_types):
     return ("Brier scored only for market types whose corpora carry resolved outcomes: "
             + "; ".join(parts) + "." + tail) if parts else ("No market type met the n floor." + tail)
 
-def run():
+def compose():
+    """Pure per-market-type scoring from the local corpora (read-only) -- no writes."""
     result = {
         "edge_claimed": False,
         "descriptive_only": True,
@@ -231,14 +232,19 @@ def run():
         result["market_types"][key] = measure_unlabeled(deriv_dir, desc)
 
     result["verdict"] = build_verdict(result["market_types"])
-    os.makedirs(os.path.dirname(OUT_JSON), exist_ok=True)
-
     if any(v.get("scored") for v in result["market_types"].values()):
-        make_chart(result["market_types"])
         result["plot_written"] = True
     else:
         result["plot_written"] = False
         result["png_skipped_reason"] = "no labeled market type met the n floor"
+    return result
+
+
+def run():
+    result = compose()
+    os.makedirs(os.path.dirname(OUT_JSON), exist_ok=True)
+    if result["plot_written"]:
+        make_chart(result["market_types"])
     with open(OUT_JSON, "w", encoding="utf-8") as f:
         json.dump(result, f, indent=2)
     return result
@@ -255,8 +261,7 @@ def check():
             assert s and all(v["n_usable_model"] > 0 and 0.0 < v["model_brier"] < 1.0 for v in s)
         verify_recorded_artifact(OUT_JSON, validate, "calibration_by_market_type")
         return
-    result = run()
-    assert os.path.exists(OUT_JSON) and os.path.getsize(OUT_JSON) > 0, OUT_JSON
+    result = compose()
     mt = result["market_types"]
     assert mt, "no market types produced"
     scored = [v for v in mt.values() if v.get("scored")]
@@ -266,9 +271,7 @@ def check():
         assert 0.0 < v["model_brier"] < 1.0, v["model_brier"]
     for k in UNLABELED:  # honest no-outcome disclosure must hold for every unlabeled type
         assert mt[k]["has_outcome"] is False and mt[k].get("brier") is None, mt[k]
-    if result["plot_written"]:
-        assert os.path.exists(OUT_PNG) and os.path.getsize(OUT_PNG) > 0, OUT_PNG
-    print("OK: calibration_by_market_type self-check passed")
+    print("OK: calibration_by_market_type self-check passed (recomposed only, no write)")
 
 
 if __name__ == "__main__":
