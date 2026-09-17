@@ -6,13 +6,38 @@ import math
 from datetime import datetime, timezone
 from pathlib import Path
 from statistics import median
-from typing import Any, Dict, Iterable, List
+from typing import Any, Dict, Iterable, List, Optional
 
 from scripts.platformkit.clv_ledger import DEFAULT_LEDGER, is_clv_suspect, load_ledger
 from scripts.platformkit.pm_trading.clv_beatrate_rollup import _row_exec_mode
 
 _I = "INSUFFICIENT"
 _MIN_N = 8
+
+
+def utc_now_iso() -> str:
+    """The real UTC clock, ISO-8601 with offset. Injectable everywhere below so a
+    test can pin it -- never hardcoded into a CLI entry point, or the artifact is
+    stamped in its own future and its staleness gate can never fire."""
+    return datetime.now(timezone.utc).isoformat()
+
+
+def _parse_iso(value: Any) -> Optional[datetime]:
+    """Tolerant ISO parse (Z-suffix included -- native Z support is Py3.11+)."""
+    try:
+        dt = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return None
+    return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
+
+
+def _staleness_days(as_of: Any, now_iso: str) -> Any:
+    """Whole-day age of *as_of* measured against *now_iso*. _I when either is
+    unparseable -- never 0, which would assert freshness the data cannot support."""
+    stamp, now = _parse_iso(as_of), _parse_iso(now_iso)
+    if stamp is None or now is None:
+        return _I
+    return round((now - stamp).total_seconds() / 86400.0, 4)
 
 
 def _outcome(row: Dict[str, Any]) -> bool:
@@ -129,18 +154,30 @@ def rollup(rows: Iterable[Dict[str, Any]], *, now_iso: str) -> Dict[str, Any]:
             "fee_net_complete": gross == 0, "verdict": verdict, "row_classes": classes}
 
 
-def write_readout(ledger_path: Path, out_json: Path, memo_md: Path, *, now_iso: str) -> Dict[str, Any]:
-    """Read safely, write the consumer envelope, and append one daily memo row."""
+def write_readout(ledger_path: Path, out_json: Path, memo_md: Path, *,
+                  now_iso: Optional[str] = None) -> Dict[str, Any]:
+    """Read safely, write the consumer envelope, and append one daily memo row.
+
+    *now_iso* defaults to the real UTC clock; pass it only to pin the clock in a
+    test. staleness_days is measured from as_of against that same "now".
+    """
+    now_iso = now_iso or utc_now_iso()
     rows = load_ledger(Path(ledger_path))
     doc = rollup(rows, now_iso=now_iso)
     timestamps = [str(row.get("settled_at") or row.get("graded_at")) for row in rows if _kind(row) == "settled"]
+    as_of = max(timestamps) if timestamps else now_iso
     doc.update({"source_artifact": str(ledger_path).replace("\\", "/"),
                 # S71/F3: `as_of` stays ISO-parseable even with no settled rows --
                 # the "(no rows)" caveat moves to as_of_note, so a consumer can
                 # date the readout instead of failing to parse it.
-                "as_of": max(timestamps) if timestamps else now_iso,
+                "as_of": as_of,
                 "as_of_note": None if timestamps else "no settled rows -- as_of is the run time",
-                "generated_at": now_iso, "staleness_days": 0 if timestamps else _I,
+                "generated_at": now_iso,
+                # Measured, not asserted: the previous literal 0 claimed the series
+                # was current no matter how old its newest settled row was, and
+                # artifact_tools.finalize skips its own mtime check whenever this
+                # field is already set.
+                "staleness_days": _staleness_days(as_of, now_iso) if timestamps else _I,
                 "status": "ok" if timestamps else "no_data"})
     out_json.parent.mkdir(parents=True, exist_ok=True)
     out_json.write_text(json.dumps(doc, indent=2, sort_keys=True), encoding="utf-8")
@@ -153,9 +190,10 @@ def write_readout(ledger_path: Path, out_json: Path, memo_md: Path, *, now_iso: 
 
 
 def main() -> None:
-    now_iso = "2026-09-03T00:00:00+00:00"
+    now_iso = utc_now_iso()
     write_readout(DEFAULT_LEDGER, Path("data/frontend/analytics/execution_status.json"),
-                  Path("docs/evidence/execution/PAPER_LIVE_2026-09-03.md"), now_iso=now_iso)
+                  Path("docs/evidence/execution/PAPER_LIVE_%s.md" % now_iso[:10]),
+                  now_iso=now_iso)
 
 
 if __name__ == "__main__":
