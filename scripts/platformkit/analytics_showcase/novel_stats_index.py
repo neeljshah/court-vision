@@ -56,14 +56,15 @@ def _card_from(path):
     return card
 
 
-def build():
+def compose():
+    """Pure composition -- each card copied from its module's own novel_*.json output; no writes."""
     cards, skipped = [], []
     for path in _sources():
         try:
             cards.append(_card_from(path))
         except Exception as e:  # malformed artifact -> record, never crash the index
             skipped.append({"artifact": os.path.relpath(path, ROOT).replace("\\", "/"), "reason": str(e)})
-    payload = {
+    return {
         "edge_claimed": False,
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "method": "composition only -- each card copied from its module's own novel_*.json output",
@@ -71,6 +72,10 @@ def build():
         "stats": cards,
         "skipped": skipped,
     }
+
+
+def build():
+    payload = compose()
     os.makedirs(OUT_DIR, exist_ok=True)
     with open(OUT_JSON, "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2)
@@ -89,7 +94,7 @@ def check():
     if not _sources():
         verify_recorded_artifact(OUT_JSON, _validate, "novel_stats_index")
         return
-    payload = build()
+    payload = compose()
     _validate(payload)
     print(f"OK: novel_stats_index ({payload['n_stats']} stats: "
           f"{', '.join(c['module'] for c in payload['stats'])}; {len(payload['skipped'])} skipped)")
