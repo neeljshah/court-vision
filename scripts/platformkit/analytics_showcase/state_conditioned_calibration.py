@@ -180,7 +180,10 @@ def make_heatmap(all_rows, sports_present, out_png):
     plt.close(fig)
 
 
-def run():
+def compose():
+    """Pure per-bucket calibration aggregation from the local corpora -- no writes.
+    Returns (result, all_rows, sports_present); the latter two feed run()'s
+    heatmap and are not part of the published JSON."""
     result = {
         "edge_claimed": False,
         "story": (
@@ -226,16 +229,18 @@ def run():
         reverse=True,
     )
     result["ranked_worst_buckets"] = ranked[:15]
+    if not sports_present:
+        result["png_skipped_reason"] = "no sports had usable rows"
+    return result, all_rows, sports_present
 
+
+def run():
+    result, all_rows, sports_present = compose()
     os.makedirs(os.path.dirname(OUT_JSON), exist_ok=True)
     with open(OUT_JSON, "w", encoding="utf-8") as f:
         json.dump(result, f, indent=2)
-
     if sports_present:
         make_heatmap(all_rows, sports_present, OUT_PNG)
-    else:
-        result["png_skipped_reason"] = "no sports had usable rows"
-
     return result
 
 
@@ -257,7 +262,9 @@ def check():
             assert b[0]["calibration_error"] >= b[-1]["calibration_error"]
         verify_recorded_artifact(OUT_JSON, validate, "state_conditioned_calibration")
         return
-    result = run()
+    # Local data present: validate a pure in-memory recomposition. --check must
+    # never write out/state_conditioned_calibration.json or docs/img/state_calibration_heatmap.png.
+    result, _all_rows, _sports_present = compose()
     assert result["ranked_worst_buckets"], "expected at least one worst bucket"
     top = result["ranked_worst_buckets"][0]
     assert top["calibration_error"] >= result["ranked_worst_buckets"][-1]["calibration_error"], "not sorted desc"
@@ -268,9 +275,7 @@ def check():
         if total_n:
             recomputed = sum(r["calibration_error"] * r["n"] for r in model_rows) / total_n
             assert abs(recomputed - d["model_ece_n_weighted"]) < 1e-3, f"{sport} ECE mismatch"
-    assert os.path.exists(OUT_JSON)
-    assert os.path.exists(OUT_PNG)
-    print("OK: state_conditioned_calibration self-check passed")
+    print("OK: state_conditioned_calibration self-check passed (recomposed only, no write)")
 
 
 if __name__ == "__main__":
