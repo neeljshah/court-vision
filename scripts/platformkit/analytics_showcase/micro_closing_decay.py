@@ -158,7 +158,8 @@ def make_plot(result: Dict[str, Any]) -> bool:
     plt.close(fig)
     return True
 
-def run() -> Dict[str, Any]:
+def compose() -> Dict[str, Any]:
+    """Pure per-sport decay aggregation from the local corpora -- no writes."""
     result: Dict[str, Any] = {
         "edge_claimed": False,
         "method": ("Consensus (median) devigged market P(home win) bucketed by hours-to-start into "
@@ -189,9 +190,12 @@ def run() -> Dict[str, Any]:
                  "and describes only these dates."),
     }
     result["verdict"] = build_verdict(result["sports"])
+    return result
+
+
+def run() -> Dict[str, Any]:
+    result = compose()
     os.makedirs(os.path.dirname(OUT_JSON), exist_ok=True)
-    with open(OUT_JSON, "w", encoding="utf-8") as f:
-        json.dump(result, f, indent=2)
     result["plot_written"] = make_plot(result)
     with open(OUT_JSON, "w", encoding="utf-8") as f:
         json.dump(result, f, indent=2)
@@ -226,13 +230,14 @@ def check() -> None:
     if not _local_data_present():
         verify_recorded_artifact(OUT_JSON, validate, "micro_closing_decay")
         return
-    result = run()
+    # Local data present: validate a pure in-memory recomposition. --check must
+    # never write out/micro_closing_decay.json or docs/img/micro_closing_decay.png.
+    result = compose()
     validate(result)
-    assert os.path.exists(OUT_JSON)
     # score_bucket sanity: a perfect predictor has Brier 0, worst has 1.
     assert score_bucket([(1.0, 1), (0.0, 0)])["brier"] == 0.0
     assert score_bucket([(1.0, 0)])["brier"] == 1.0
-    print("OK: micro_closing_decay self-check passed")
+    print("OK: micro_closing_decay self-check passed (recomposed only, no write)")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
