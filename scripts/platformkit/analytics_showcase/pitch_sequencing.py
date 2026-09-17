@@ -9,6 +9,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+try:  # package-qualified when run via -m; bare when run as a script (check_all path)
+    from scripts.platformkit.analytics_showcase._clone_safe import verify_recorded_artifact
+except ImportError:
+    from _clone_safe import verify_recorded_artifact
+
 HERE = Path(__file__).parent
 REPO = Path(__file__).resolve().parents[3]
 OUT_JSON = HERE / "out" / "pitch_sequencing.json"
@@ -222,32 +227,43 @@ def main() -> dict:
     return showcase
 
 
+def _validate_ok(showcase: dict) -> None:
+    assert showcase["status"] == "ok"
+    assert showcase["n_transitions"] > 0
+    types = showcase["pitch_types"]
+    assert 0 < len(types) <= TOP_N
+    all_cls = next(e for e in showcase["by_class"] if e["class"] == "all")
+    assert "count_matrix" in all_cls, "'all' class fell below floor -- unexpected"
+    assert len(all_cls["count_matrix"]) == len(types)
+    assert all(len(r) == len(types) for r in all_cls["count_matrix"])
+    assert all_cls["n_in_matrix"] > 0
+    assert 0.0 < all_cls["coverage"] <= 1.0
+    assert all_cls["top_transition"]["n"] > 0
+    for i, row in enumerate(all_cls["prob_matrix"]):
+        for p in row:
+            assert p is None or 0.0 <= p <= 1.0
+        if not all_cls["row_below_floor"][i] and all_cls["row_n_from"][i] > 0:
+            assert sum(row) <= 1.0001, "conditional row exceeds 1"
+
+
 def _check():
-    # ponytail: build+write, then assert the outputs exist nonzero (the task's check)
+    # build_showcase() is pure (no writes) -- probe corpus presence BEFORE deciding
+    # whether to build+write, so a bare clone (no data/) never clobbers the committed
+    # artifact with a local_corpus_absent stub.
+    showcase = build_showcase()
+    if showcase["status"] != "ok":
+        assert showcase["status"] in ("local_corpus_absent", "insufficient_data")
+        assert "needed_artifact" in showcase or "note" in showcase
+        verify_recorded_artifact(OUT_JSON, _validate_ok, "pitch_sequencing")
+        print("check ok")
+        return
+    # Local data present: build+write is the legitimate, unchanged behavior.
     showcase = main()
-    assert showcase["status"] in ("ok", "local_corpus_absent", "insufficient_data")
     assert OUT_JSON.exists() and OUT_JSON.stat().st_size > 0, "JSON output missing/empty"
     loaded = json.loads(OUT_JSON.read_text(encoding="ascii"))
     assert loaded["status"] == showcase["status"]
-    if showcase["status"] == "ok":
-        assert showcase["n_transitions"] > 0
-        types = showcase["pitch_types"]
-        assert 0 < len(types) <= TOP_N
-        all_cls = next(e for e in showcase["by_class"] if e["class"] == "all")
-        assert "count_matrix" in all_cls, "'all' class fell below floor -- unexpected"
-        assert len(all_cls["count_matrix"]) == len(types)
-        assert all(len(r) == len(types) for r in all_cls["count_matrix"])
-        assert all_cls["n_in_matrix"] > 0
-        assert 0.0 < all_cls["coverage"] <= 1.0
-        assert all_cls["top_transition"]["n"] > 0
-        for i, row in enumerate(all_cls["prob_matrix"]):
-            for p in row:
-                assert p is None or 0.0 <= p <= 1.0
-            if not all_cls["row_below_floor"][i] and all_cls["row_n_from"][i] > 0:
-                assert sum(row) <= 1.0001, "conditional row exceeds 1"
-        assert OUT_PNG.exists() and OUT_PNG.stat().st_size > 0, "PNG output missing/empty"
-    else:
-        assert "needed_artifact" in showcase or "note" in showcase
+    _validate_ok(showcase)
+    assert OUT_PNG.exists() and OUT_PNG.stat().st_size > 0, "PNG output missing/empty"
     print("check ok")
 
 
