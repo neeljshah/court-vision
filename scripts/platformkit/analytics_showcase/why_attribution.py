@@ -119,7 +119,8 @@ def _as_of(cal: Dict[str, Any]) -> Optional[str]:
     return cal.get("as_of") or cal.get("generated_at")
 
 
-def run() -> Dict[str, Any]:
+def compose() -> Dict[str, Any]:
+    """Pure composition from the committed state_conditioned_calibration.json -- no writes."""
     result: Dict[str, Any] = {
         "edge_claimed": False,
         "source_artifact": "out/state_conditioned_calibration.json",
@@ -141,9 +142,6 @@ def run() -> Dict[str, Any]:
     if not os.path.exists(IN_JSON):
         result["status"] = "not_buildable"
         result["reason"] = "state_conditioned_calibration.json absent; cannot derive state transitions"
-        os.makedirs(os.path.dirname(OUT_JSON), exist_ok=True)
-        with open(OUT_JSON, "w", encoding="utf-8") as f:
-            json.dump(result, f, indent=2)
         return result
 
     with open(IN_JSON, encoding="utf-8") as f:
@@ -188,11 +186,18 @@ def run() -> Dict[str, Any]:
     else:
         result["verdict"] = "No sport produced adjacent-time transitions above the support floor."
 
+    return result
+
+
+def run() -> Dict[str, Any]:
+    result = compose()
     os.makedirs(os.path.dirname(OUT_JSON), exist_ok=True)
     with open(OUT_JSON, "w", encoding="utf-8") as f:
         json.dump(result, f, indent=2)
+    if result.get("status") == "not_buildable":
+        return result
 
-    result["plot_written"] = make_chart(result, OUT_PNG) if all_trans else False
+    result["plot_written"] = make_chart(result, OUT_PNG) if result.get("biggest_drops") else False
     with open(OUT_JSON, "w", encoding="utf-8") as f:
         json.dump(result, f, indent=2)
     return result
@@ -217,7 +222,7 @@ def check() -> None:
     if not os.path.exists(IN_JSON):
         verify_recorded_artifact(OUT_JSON, validate, "why_attribution")
         return
-    result = run()
+    result = compose()
     validate(result)
     assert os.path.exists(OUT_JSON)
     print("OK: why_attribution self-check passed")
