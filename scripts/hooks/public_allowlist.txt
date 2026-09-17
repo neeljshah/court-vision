@@ -62,6 +62,9 @@
 + scripts/platformkit/check_ingame_join_integrity.py
 + scripts/platformkit/reject_ledger.py
 
+# the four per-sport hypothesis ledgers (every verdict, NULLs included) -- read by the showcase
++ domains/*/knowledge/validation_ledger.jsonl
+
 # the guard itself, and the tests a reviewer can run on this tree
 + scripts/hooks/
 + tests/platform/test_no_leak_paths_staged.py
