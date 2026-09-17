@@ -14,6 +14,8 @@ import { MeasurementPosition } from "../lab/MeasurementPosition";
 import { ResearchSourceContext } from "./ResearchSourceContext";
 import { MeasurementCoverage } from "./MeasurementCoverage";
 import { matchesResearchPopulation, researchComparisonPolicy } from "@/lib/analytics/researchComparisonPolicy";
+import { noticesForModules } from "@/lib/analytics/dataIntegrity";
+import { DataIntegrityNotice } from "@/components/analytics/DataIntegrityNotice";
 
 export default function ResearchDetail({ analysis: a, related }: { analysis: ResearchAnalysis; related: { id: string; title: string }[] }) {
   const { state, change, reset } = useResearchView(a);
@@ -26,6 +28,8 @@ export default function ResearchDetail({ analysis: a, related }: { analysis: Res
   const showAllRows = !comparison.compatible && state.population === "all";
   const selectedCompatibility = showAllRows ? "unknown" : activePopulation?.compatibility || (comparison.compatible ? "compatible" : "unknown");
   const suppressPooledSummaries = selectedCompatibility !== "compatible";
+  const sourceIds = [...new Set([a.source, ...(a.sources || []).map(source => source.id)])];
+  const integrityNotices = noticesForModules(sourceIds);
   const groups = Array.from(new Set(a.rows.map(r => r.group)));
   const terms = query.toLowerCase().trim().split(/\s+/).filter(Boolean);
   const publishedPopulation = comparison.compatible ? a.rows.filter(r => group === "all" || r.group === group) : showAllRows ? a.rows : activePopulation ? a.rows.filter(r => matchesResearchPopulation(r, activePopulation)) : [];
@@ -48,6 +52,7 @@ export default function ResearchDetail({ analysis: a, related }: { analysis: Res
   return <div className="cv-workspace research-page"><div className="cv-workspace-inner">
     <Link className="research-back" href={`/analytics/browse/?sport=${a.sport}&kind=derived`}><ArrowLeft size={15} /> Analytics library</Link>
     <header className="research-heading"><p className="cv-eyebrow">{a.sport === "all" ? "Cross-sport" : a.sport.toUpperCase()} / {a.category}</p><h1>{a.title}</h1><p>{a.description}</p><div className="research-tags"><span>{a.novelty}</span><span>{a.rows.length} published rows</span><span>{a.fields.length} fields</span><span>{a.sources?.length ? "Source dates and observation windows below" : a.asOf ? `Source as of ${a.asOf.slice(0, 10)}` : "Date varies or is unrecorded; see scope"}</span></div></header>
+    <DataIntegrityNotice notices={integrityNotices} moduleIds={sourceIds} />
     <div className="research-layout"><section className="cv-panel research-measurements" aria-label="Interactive analysis">
       <ResearchSourceContext sources={a.sources} fields={a.fields} />
       <div className="research-panel-title"><div><p className="cv-eyebrow">Published measurements</p><h2>Choose a measurement</h2></div><button className="lab-export" disabled={!rows.length} onClick={() => exportLabCSV(a, rows)}><Download size={14} /> Export CSV</button></div>

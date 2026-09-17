@@ -77,13 +77,19 @@ jobs:
           npx vitest run lib/analytics/libraryData.test.ts
           npx vitest run lib/analytics/libraryViewState.test.ts
           npx vitest run lib/analytics/paperViewState.test.ts
+          npx vitest run lib/analytics/paperEvidence.server.test.ts
           npx vitest run lib/analytics/claimHistory.test.ts
           npx vitest run lib/analytics/countContext.test.ts
           npx vitest run lib/analytics/matchupInsights.test.ts
           npx vitest run lib/analytics/askSearch.test.ts
+          npx vitest run lib/analytics/dataIntegrity.test.ts
+          npx vitest run lib/analytics/scoutIntegrity.test.ts
+          npx vitest run lib/analytics/sourceIntegrity.server.test.ts
+          npx vitest run components/analytics/DataIntegrityNotice.test.tsx
           npx vitest run lib/analytics/askEntityIntent.test.ts
           npx vitest run lib/analytics/scoutCorpus.test.ts
           npx vitest run components/analytics/AskBox.test.tsx
+          npx vitest run components/analytics/AskBox.integrity.test.tsx
           npx vitest run components/analytics/compare/CompareExperience.test.tsx
           npx vitest run components/analytics/compare/MlbAtlasCompareExperience.test.tsx
           npx vitest run components/analytics/compare/TennisSurfaceComparison.test.tsx
@@ -93,6 +99,7 @@ jobs:
           npx vitest run components/analytics/compare/PitchResultComparison.test.tsx
           npx vitest run components/analytics/library/LibraryExplorer.test.tsx
           npx vitest run components/analytics/papers/PapersIndex.test.tsx
+          npx vitest run components/analytics/papers/PaperArticle.test.tsx
           npx vitest run 'app/(analytics)/analytics/papers/page.test.tsx'
           npx vitest run components/analytics/claim-history/ClaimHistory.test.tsx
           npx vitest run components/analytics/count-context/CountContext.test.tsx
@@ -106,6 +113,7 @@ jobs:
           npx vitest run components/analytics/library/TennisWindowResearch.test.tsx
           npx vitest run components/analytics/library/BasketballMatchupRange.test.tsx
           npx vitest run components/analytics/lab/MeasurementLab.test.tsx
+          npx vitest run components/analytics/lab/MeasurementLabIntegrity.test.tsx
           npx vitest run components/analytics/lab/LabPlot.test.tsx
           npx vitest run components/analytics/lab/ScatterSummary.test.tsx
           npx vitest run components/analytics/lab/DistributionSummary.test.tsx
@@ -119,6 +127,17 @@ jobs:
           npx vitest run components/analytics/CommandPalette.test.tsx
           npx vitest run components/analytics/AnalyticsNavigation.test.tsx
           npx vitest run components/analytics/workspace/Workspace.test.tsx
+          npx vitest run components/analytics/workspace/Research.test.tsx
+
+      - name: Verify published JSON
+        run: |
+          node scripts/verify-public-json.mjs
+          node --test scripts/verify-public-json.test.mjs
+
+      - name: Verify paper evidence references
+        run: |
+          node scripts/check-paper-evidence.mjs
+          node --test scripts/check-paper-evidence.test.mjs
 
       - name: Static export (snapshot data mode)
         env:
@@ -135,6 +154,7 @@ jobs:
           node scripts/check-analytics-copy.mjs --data
           node scripts/verify-analytics-export.mjs
           node --test scripts/verify-analytics-export.test.mjs
+          node scripts/verify-public-json.mjs out/data
 
       - uses: actions/configure-pages@v6
 

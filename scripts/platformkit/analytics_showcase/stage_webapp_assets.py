@@ -1,11 +1,7 @@
-"""Stage analytics-showcase artifacts into the webapp public tree.
+"""Stage analytics-showcase JSON and chart artifacts into the webapp public tree.
 
-Copies out/*.json -> webapp/public/data/showcase/ and the chart PNGs they
-reference -> webapp/public/img/showcase/, path-cleaned to be clone-safe (no
-box-local absolute, no backslashes, repo-relative). The 1,549 atlas card PNGs
-are NOT copied, only their manifests. Also repairs cp1252-mojibake entity
-names (_fix_mojibake) and stages docs/INGAME_PROOF.md's committed receipts
-into showcase/forecaster/ (stage_forecaster).
+Paths are made clone-safe, atlas card PNGs are skipped, mojibake is repaired,
+and docs/INGAME_PROOF.md's committed receipts are staged under forecaster/.
 
 Run:   python -m scripts.platformkit.analytics_showcase.stage_webapp_assets
 Check: python -m scripts.platformkit.analytics_showcase.stage_webapp_assets --check
@@ -26,10 +22,6 @@ _FORECASTER_DST = _DATA_DST / "forecaster"
 
 # Skip: the atlas card image tree (1,549 PNGs) is intentionally not staged.
 _ATLAS_IMG_PREFIX = "docs/img/atlas/"
-
-# Note: _iter_jsons() globs ALL of out/*.json, so novel_*.json, brand_logo_variants.json,
-# mechanism_ledger_export.json and evidence_index.json are already picked up as soon as
-# they exist in out/ -- no extra wiring needed, just re-run stage() after they land.
 
 # docs/INGAME_PROOF.md's headline (Brier 0.209->0.159 etc.) cites source scripts + the raw
 # settlement-join cache, not a committed JSON receipt. These already-staged aggregate files
@@ -170,8 +162,9 @@ def stage_forecaster():
                  "0.209->0.159 headline; the files above are the committed, "
                  "already-verified aggregates over the same real corpus."),
     }
-    (_FORECASTER_DST / "manifest.json").write_text(
-        json.dumps(manifest, indent=1, ensure_ascii=True), encoding="utf-8")
+    manifest_text = json.dumps(
+        manifest, indent=1, ensure_ascii=True, allow_nan=False)
+    (_FORECASTER_DST / "manifest.json").write_text(manifest_text, encoding="utf-8")
     print(f"forecaster: staged {len(included)} receipts, "
           f"{len(skipped)} cited paths honestly skipped (not git-tracked) "
           f"-> {_rel(_FORECASTER_DST)}")
@@ -187,13 +180,14 @@ def stage():
     for f in _iter_jsons():
         try:
             data = json.loads(f.read_text(encoding="utf-8"))
-        except (OSError, ValueError):
+        except OSError:
             continue
         data = _normalize(data)
         data = _fix_mojibake(data, mojibake_count)
         _png_refs(data, png_refs)
-        (_DATA_DST / f.name).write_text(
-            json.dumps(data, indent=1, ensure_ascii=True), encoding="utf-8")
+        serialized = json.dumps(
+            data, indent=1, ensure_ascii=True, allow_nan=False)
+        (_DATA_DST / f.name).write_text(serialized, encoding="utf-8")
         n_json += 1
     n_png = 0
     for rel in sorted(png_refs):
@@ -236,9 +230,11 @@ def check():
     mojibake_count = [0]
     for f in _iter_jsons():
         try:
-            data = _normalize(json.loads(f.read_text(encoding="utf-8")))
-        except (OSError, ValueError):
+            data = json.loads(f.read_text(encoding="utf-8"))
+        except OSError:
             continue
+        json.dumps(data, allow_nan=False)
+        data = _normalize(data)
         data = _fix_mojibake(data, mojibake_count)
         _assert_web_safe(f.name, data)
         n += 1

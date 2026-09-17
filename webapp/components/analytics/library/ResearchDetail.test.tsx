@@ -12,6 +12,7 @@ const analysis: ResearchAnalysis = {
 
 const brierAnalysis: ResearchAnalysis = {
   ...analysis, id: "brier-skill-score-by-game-phase", title: "Brier skill score by sport and game phase", sport: "all",
+  source: "brier_skill_scores",
   rows: [
     { id: "mlb-all", label: "MLB | all", group: "MLB", values: { score: 8, rate: 0.5 }, sourcePaths: ["sports.mlb.grains.all.brier_model"] },
     { id: "mlb-early", label: "MLB | early", group: "MLB", values: { score: 3, rate: 0.25 }, sourcePaths: ["sports.mlb.grains.early.brier_model"] },
@@ -34,6 +35,23 @@ beforeEach(() => window.history.replaceState(null, "", "/analytics/research/nba-
 afterEach(() => vi.restoreAllMocks());
 
 describe("ResearchDetail", () => {
+  it("puts integrity notices before measurements for affected sources only", () => {
+    const { rerender } = render(<ResearchDetail analysis={brierAnalysis} related={[]} />);
+    const notices = screen.getAllByRole("complementary", { name: "Data integrity" });
+    expect(notices).toHaveLength(2);
+    expect(notices[0]).toHaveTextContent("MLB in-game results are withdrawn pending corpus correction");
+    expect(notices[1]).toHaveTextContent("MLB/soccer rows are under review");
+    expect(notices[0].compareDocumentPosition(screen.getByText("Choose a measurement")) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+
+    rerender(<ResearchDetail analysis={{ ...analysis, sources: [{ id: "test-source", asOf: "2026-09-16" }, { id: "brier_skill_scores", asOf: "2026-09-16" }] }} related={[]} />);
+    const secondaryNotices = screen.getAllByRole("complementary", { name: "Data integrity" });
+    expect(secondaryNotices).toHaveLength(2);
+    expect(within(secondaryNotices[0]).getAllByText("brier_skill_scores")).toHaveLength(1);
+
+    rerender(<ResearchDetail analysis={analysis} related={[]} />);
+    expect(screen.queryByRole("complementary", { name: "Data integrity" })).not.toBeInTheDocument();
+  });
+
   it("separates Brier whole-corpus estimates and requires an explicit all-rows table", () => {
     render(<ResearchDetail analysis={brierAnalysis} related={[]} />);
     expect(screen.getByRole("combobox", { name: "Population" })).toHaveValue("sport=mlb");

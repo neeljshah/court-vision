@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
+import { renderToString } from "react-dom/server";
 import { AskBox } from "./AskBox";
 
 const entries = [{
@@ -149,5 +150,23 @@ describe("AskBox", () => {
     const noResult = screen.getByLabelText("No verified answer");
     expect(noResult).toHaveTextContent("No verified result.");
     expect(within(noResult).getByRole("link", { name: "Explore published questions" })).toHaveAttribute("href", "#scout-suggestions");
+  });
+  it("keeps server-rendered controls disabled until the linked question is restored", () => {
+    const tours = [{ label: "Start here", questions: ["Known question"] }];
+    const markup = renderToString(<AskBox entries={entries} tours={tours} />);
+    const doc = new DOMParser().parseFromString(markup, "text/html");
+    expect(doc.querySelector('form[aria-busy="true"]')).not.toBeNull();
+    expect(doc.querySelector("input")?.disabled).toBe(true);
+    expect([...doc.querySelectorAll("button")].every(button => button.disabled)).toBe(true);
+    expect(doc.body.textContent).toContain("Preparing Scout's published answers...");
+    window.history.replaceState(null, "", "/analytics/ask/?q=Known+question");
+    render(<AskBox entries={entries} tours={tours} />);
+    expect(screen.getByRole("search")).toHaveAttribute("aria-busy", "false");
+    expect(screen.getByLabelText("Ask Scout a question")).toBeEnabled();
+    expect(screen.getByLabelText("Ask Scout a question")).toHaveValue("Known question");
+    expect(screen.getByRole("button", { name: "Search Scout's cited answers" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "Known question" })).toBeEnabled();
+    expect(screen.getByRole("region", { name: "Scout answer" })).toHaveTextContent("Committed answer.");
+    window.history.replaceState(null, "", "/analytics/ask/");
   });
 });

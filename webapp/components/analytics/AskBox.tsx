@@ -3,6 +3,7 @@
 // no fetch, and no live-data path; retrieval only selects an existing envelope.
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { Receipt, type ReceiptData } from "./Receipt";
+import { DataIntegrityNotice } from "./DataIntegrityNotice";
 import Link from "next/link";
 
 // Source JSON files are static assets, not routes: a plain anchor (base-path prefixed by hand)
@@ -11,6 +12,7 @@ const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 import type { Verdict } from "./VerdictDot";
 import { typeset } from "@/lib/analytics/format";
 import { isReadingRoomPath } from "@/lib/analytics/scoutInspectorAnswers";
+import { scoutIntegrity } from "@/lib/analytics/scoutIntegrity";
 import {
   resolveQuestion,
   type AskAnswer,
@@ -120,6 +122,7 @@ function AnswerEnvelope({ result, query, onAsk, excludedQuestions, entries }: {
   }
 
   const { entry } = result;
+  const integrity = scoutIntegrity(entry.a);
   const related = result.kind === "related";
   const neutral = related || entry.a.status !== "ok";
   const publicArtifact = /^webapp\/public\/data\/(?:showcase|papers|explainers)\/[a-z0-9_-]+\.json$/i.test(entry.a.source_artifact);
@@ -141,6 +144,7 @@ function AnswerEnvelope({ result, query, onAsk, excludedQuestions, entries }: {
           </p>
         ) : null}
         {related ? <div style={{ ...questionStyle, fontStyle: "italic" }}>{entry.q}</div> : null}
+        <DataIntegrityNotice notices={integrity.notices} moduleIds={integrity.moduleIds} />
         <div style={answerStyle}>{typeset(entry.a.answer)}</div>
         <div style={chipRow}>
           {result.compareOffer ? <Link href={result.compareOffer.href} style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)" }}>{result.compareOffer.label}</Link> : null}
@@ -178,6 +182,7 @@ export function AskBox({ entries, tours }: { entries: AskEntry[]; tours: AskTour
   const inputRef = useRef<HTMLInputElement>(null);
   const resultRef = useRef<HTMLDivElement>(null);
   const [query, setQuery] = useState("");
+  const [ready, setReady] = useState(false);
   const [submittedQuery, setSubmittedQuery] = useState("");
   const [result, setResult] = useState<ResolvedQuestion | null>(null);
 
@@ -213,18 +218,20 @@ export function AskBox({ entries, tours }: { entries: AskEntry[]; tours: AskTour
   useEffect(() => {
     const prefilled = new URLSearchParams(window.location.search).get("q");
     if (prefilled) run(prefilled);
+    setReady(true);
     // URL prefill is intentionally read once for static export.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <div>
-      <form role="search" style={bar} onSubmit={(event) => { event.preventDefault(); run(query); }}>
+      <form role="search" aria-busy={!ready} style={bar} onSubmit={(event) => { event.preventDefault(); if (ready) run(query); }}>
         <span aria-hidden style={{ width: 24, height: 24, borderRadius: "50%", background: "var(--signal)", flex: "0 0 auto", opacity: 0.9 }} />
         <input
           ref={inputRef}
           style={inputStyle}
           value={query}
+          disabled={!ready}
           onChange={(event) => setQuery(event.target.value)}
           onKeyDown={(event) => {
             if (event.key === "Escape") clear();
@@ -234,10 +241,10 @@ export function AskBox({ entries, tours }: { entries: AskEntry[]; tours: AskTour
           aria-describedby="scout-help"
           enterKeyHint="search"
         />
-        <button type="submit" style={submit} disabled={!query.trim()} aria-label="Search Scout's cited answers">Ask</button>
+        <button type="submit" style={submit} disabled={!ready || !query.trim()} aria-label="Search Scout's cited answers">Ask</button>
       </form>
       <p id="scout-help" style={{ margin: "8px 6px 0", fontSize: 12.5, color: "var(--ink-3)" }}>
-        Press Enter to search. Escape clears the question. Scout searches published answers with source links.
+        {ready ? "Press Enter to search. Escape clears the question. Scout searches published answers with source links." : "Preparing Scout's published answers..."}
       </p>
 
       <div ref={resultRef} tabIndex={-1} role="region" aria-label="Scout answer" aria-live="polite" aria-atomic="true" style={result ? { marginTop: 16 } : undefined}>
@@ -250,7 +257,7 @@ export function AskBox({ entries, tours }: { entries: AskEntry[]; tours: AskTour
             <span className="overline" style={{ display: "block", marginBottom: 6, color: "var(--ink-3)" }}>{tour.label}</span>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
               {tour.questions.map((question) => (
-                <button key={question} type="button" style={pill} onClick={() => askTourAndFocus(question)}>{question}</button>
+                <button key={question} type="button" style={pill} disabled={!ready} onClick={() => askTourAndFocus(question)}>{question}</button>
               ))}
             </div>
           </div>
