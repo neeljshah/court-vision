@@ -69,7 +69,8 @@ def make_chart(ranked, out_png):
     plt.close(fig)
 
 
-def run():
+def compose():
+    """Pure segment aggregation from the local corpora (read-only) -- no writes."""
     result = {
         "edge_claimed": False,
         "story": (
@@ -104,16 +105,18 @@ def run():
 
     ranked = sorted(all_rows, key=lambda r: r["total_abs_residual_mass"], reverse=True)
     result["ranked_worst_segments"] = ranked[:15]
+    if not ranked:
+        result["png_skipped_reason"] = "no segments had usable rows"
+    return result
 
+
+def run():
+    result = compose()
     os.makedirs(os.path.dirname(OUT_JSON), exist_ok=True)
     with open(OUT_JSON, "w", encoding="utf-8") as f:
         json.dump(result, f, indent=2)
-
-    if ranked:
-        make_chart(ranked, OUT_PNG)
-    else:
-        result["png_skipped_reason"] = "no segments had usable rows"
-
+    if result["ranked_worst_segments"]:
+        make_chart(result["ranked_worst_segments"], OUT_PNG)
     return result
 
 
@@ -135,7 +138,9 @@ def check():
                        for i in range(len(r) - 1)), "not sorted desc"
         verify_recorded_artifact(OUT_JSON, validate, "residual_anatomy")
         return
-    result = run()
+    # Local data present: validate a pure in-memory recomposition. --check must
+    # never write out/residual_anatomy.json or docs/img/residual_anatomy.png.
+    result = compose()
     assert result["ranked_worst_segments"], "expected at least one worst segment"
     ranked = result["ranked_worst_segments"]
     assert all(ranked[i]["total_abs_residual_mass"] >= ranked[i + 1]["total_abs_residual_mass"]
@@ -143,9 +148,7 @@ def check():
     top = ranked[0]
     tol = 0.00005 * top["n"] + 1e-2  # rounding of mean_abs_residual (4dp) accumulates over n
     assert abs(top["mean_abs_residual"] * top["n"] - top["total_abs_residual_mass"]) < tol
-    assert os.path.exists(OUT_JSON)
-    assert os.path.exists(OUT_PNG)
-    print("OK: residual_anatomy self-check passed")
+    print("OK: residual_anatomy self-check passed (recomposed only, no write)")
 
 
 if __name__ == "__main__":
