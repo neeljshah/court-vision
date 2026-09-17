@@ -66,11 +66,17 @@ function segments(path) {
   return output;
 }
 
+const owns = (value, key) => Object.prototype.hasOwnProperty.call(value, key);
+
 function select(values, selector) {
   if (selector === "") return values.flatMap((value) => Array.isArray(value) ? value : isBag(value) ? Object.values(value) : []);
   if (selector.startsWith('"')) {
     const key = JSON.parse(selector);
-    return values.flatMap((value) => isBag(value) && key in value ? [value[key]] : []);
+    return values.flatMap((value) => isBag(value) && owns(value, key) ? [value[key]] : []);
+  }
+  if (/^\d+$/.test(selector)) {
+    const index = Number(selector);
+    return values.flatMap((value) => Array.isArray(value) && index < value.length ? [value[index]] : []);
   }
   const separator = selector.indexOf("=");
   if (separator > 0) {
@@ -79,9 +85,9 @@ function select(values, selector) {
       return position > 0 ? [part.slice(0, position), part.slice(position + 1)] : null;
     });
     if (conditions.some((condition) => !condition || !condition[1])) return [];
-    return values.flatMap((value) => Array.isArray(value) ? value.filter((entry) => isBag(entry) && conditions.every((condition) => String(entry[condition[0]]) === condition[1])) : []);
+    return values.flatMap((value) => Array.isArray(value) ? value.filter((entry) => isBag(entry) && conditions.every((condition) => owns(entry, condition[0]) && String(entry[condition[0]]) === condition[1])) : []);
   }
-  return values.flatMap((value) => isBag(value) && selector in value ? [value[selector]] : []);
+  return values.flatMap((value) => isBag(value) && owns(value, selector) ? [value[selector]] : []);
 }
 
 function fieldExists(value, path) {
@@ -89,7 +95,7 @@ function fieldExists(value, path) {
   if (!parsed) return false;
   let values = [value];
   for (const segment of parsed) {
-    if (segment.property) values = values.flatMap((entry) => isBag(entry) && segment.property in entry ? [entry[segment.property]] : []);
+    if (segment.property) values = values.flatMap((entry) => isBag(entry) && owns(entry, segment.property) ? [entry[segment.property]] : []);
     for (const selector of segment.selectors) values = select(values, selector);
     if (!values.length) return false;
   }

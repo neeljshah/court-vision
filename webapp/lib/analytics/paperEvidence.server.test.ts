@@ -60,4 +60,26 @@ describe("paper evidence resolution", () => {
     evidence[0].fields = ["sports.<sport>.n_series_used"];
     expect(validatePaperEvidence(paper, artifacts, references)).toMatch(/unsupported placeholder; use \[\] wildcard syntax/);
   });
+  it("resolves dots inside selectors and numeric array indexes", () => {
+    const value = {
+      grains: { "early(inn1-3)": { ".4-.6": { n: 12 } } },
+      move_by_bucket: { "6h+": { n: 8 } },
+      rows: [{ n: 3 }],
+      cells: [{ bucket: "lead_00|ot|ot", n: 80 }],
+    };
+    expect(fieldPathExists(value, "grains[early(inn1-3)][.4-.6].n")).toBe(true);
+    expect(fieldPathExists(value, "move_by_bucket[6h+].n")).toBe(true);
+    expect(fieldPathExists(value, "rows[0].n")).toBe(true);
+    expect(fieldPathExists(value, "cells[bucket=lead_00|ot|ot].n")).toBe(true);
+    expect(fieldPathExists(value, "rows[1].n")).toBe(false);
+  });
+  it("rejects malformed paths, prose and inherited properties", () => {
+    const inherited = Object.create({ hidden: { value: 1 } }) as Record<string, unknown>;
+    inherited.rows = [Object.create({ hidden: 1 })];
+    for (const path of ["a..b", "a[b", "a]b", "a[nested[key]]", "rows[0] prose", "rows[-1]"]) {
+      expect(fieldPathExists({ a: {}, rows: [] }, path)).toBe(false);
+    }
+    expect(fieldPathExists(inherited, "hidden.value")).toBe(false);
+    expect(fieldPathExists(inherited, "rows[0][hidden]")).toBe(false);
+  });
 });
