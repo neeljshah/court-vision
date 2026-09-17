@@ -50,7 +50,8 @@ def _overreaction(buckets):
     return num / den, used
 
 
-def build():
+def compose():
+    """Pure composition of the two committed input artifacts -- no writes."""
     over = json.loads(open(IN_OVER, encoding="utf-8").read()).get("buckets", {})
     disagree = json.loads(open(IN_DISAGREE, encoding="utf-8").read()).get("sports", {})
 
@@ -97,6 +98,11 @@ def build():
         "plot_written": False,
     }
     payload["index_card"] = _card(payload)
+    return payload
+
+
+def build():
+    payload = compose()
     os.makedirs(os.path.dirname(OUT_JSON), exist_ok=True)
     with open(OUT_JSON, "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2)
@@ -167,18 +173,30 @@ def _validate(d):
 
 
 def check():
-    if not (os.path.exists(IN_OVER) and os.path.exists(IN_DISAGREE)):
-        verify_recorded_artifact(OUT_JSON, _validate, "novel_overreaction_harvest_gap")
-        return
-    payload = build()
-    _validate(payload)
-    mlb = next((r for r in payload["results"] if r["sport"] == "mlb"), None)
-    assert mlb and abs(mlb["ohg"] - 0.0088) < 5e-4, mlb  # 0.0721 * (0.5-0.3773)
-    payload["plot_written"] = plot(payload)
-    with open(OUT_JSON, "w", encoding="utf-8") as f:
-        json.dump(payload, f, indent=2)
+    """Verify the COMMITTED artifact; deliberately do NOT recompose it.
+
+    Both inputs were rebuilt at revision 2 on the segment-clean corpus, so this
+    composition is listed under derived_artifacts_under_review in
+    webapp/public/data/audits/mlb-ingame-integrity.json and the site publishes it
+    as awaiting recomposition. A --check that rebuilt (and replotted) it would
+    resolve that published notice behind the disclosure -- and rewrite two
+    tracked files as a side effect of a read-only proof run. So: verify what is
+    committed, then REPORT how far the current inputs have moved from it.
+    Recomposition is the deliberate plain run, done with the receipt and the
+    pages that quote it.
+    """
+    payload = verify_recorded_artifact(OUT_JSON, _validate, "novel_overreaction_harvest_gap")
+    recorded = {r["sport"]: r["ohg"] for r in payload["results"]}
+    if os.path.exists(IN_OVER) and os.path.exists(IN_DISAGREE):
+        current = {r["sport"]: r["ohg"] for r in compose()["results"]}
+        pending = sorted(s for s, v in recorded.items() if current.get(s) != v)
+        if pending:
+            print("PENDING RECOMPOSITION (declared in webapp/public/data/audits/"
+                  "mlb-ingame-integrity.json -> derived_artifacts_under_review): "
+                  + "; ".join(f"{s} recorded OHG {recorded[s]} vs inputs now {current.get(s)}"
+                              for s in pending))
     print(f"OK: novel_overreaction_harvest_gap ({len(payload['results'])} sports, "
-          f"mlb OHG {mlb['ohg']:.4f} [honest null], plot={payload['plot_written']})")
+          f"mlb OHG {recorded.get('mlb')} [honest null])")
 
 
 if __name__ == "__main__":
