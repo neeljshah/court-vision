@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Receipt } from "@/components/analytics/Receipt";
 import { StateContrasts } from "@/components/analytics/state-contrasts/StateContrasts";
 import { InspectorReadingTrail } from "@/components/analytics/InspectorReadingTrail";
@@ -12,13 +13,18 @@ export const metadata: Metadata = {
 
 export default function StateContrastsPage() {
   const sports = loadStateContrasts();
-  if (!sports.length) return <div className="sc-page"><p className="overline">Calibration / State contrasts</p><h1>Compare published state buckets.</h1><p className="sc-lede">The published state contrast snapshot is not available in this build.</p></div>;
   return <div className="sc-page">
     <p className="overline">Calibration / State contrasts</p>
-    <h1>Compare adjacent state buckets.</h1>
+    <h1>{sports.length ? "Compare adjacent state buckets." : "Compare published state buckets."}</h1>
+    {!sports.length ? <>
+      <InspectorReadingTrail id="state-contrasts" />
+      <p className="sc-lede">The published state contrast snapshot is not available in this build.</p>
+      <Link href="/analytics/browse/">Browse published modules</Link>
+    </> : <>
     <p className="sc-lede">Select a sport and adjacent time buckets to inspect the published outcome-frequency difference while keeping both underlying populations in view.</p>
     <InspectorReadingTrail id="state-contrasts" />
     <StateContrasts sports={sports} />
     <div className="sc-receipt"><Receipt sourceArtifact="public/data/showcase/why_attribution.json" label="descriptive_only" verdict="descriptive_only" /></div>
+    </>}
   </div>;
 }

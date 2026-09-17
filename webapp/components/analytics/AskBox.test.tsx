@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { AskBox } from "./AskBox";
 
@@ -139,5 +139,15 @@ describe("AskBox", () => {
 
     expect(screen.getByText("Scout searches published answers and links each result to its source.")).toBeInTheDocument();
     expect(screen.getByText("Closest available question:")).toBeInTheDocument();
+  });
+
+  it("offers published questions after a query has no verified answer", () => {
+    render(<AskBox entries={entries} tours={[]} />);
+    fireEvent.change(screen.getByLabelText("Ask Scout a question"), { target: { value: "zqx vprt lmn" } });
+    fireEvent.click(screen.getByRole("button", { name: "Search Scout's cited answers" }));
+
+    const noResult = screen.getByLabelText("No verified answer");
+    expect(noResult).toHaveTextContent("No verified result.");
+    expect(within(noResult).getByRole("link", { name: "Explore published questions" })).toHaveAttribute("href", "#scout-suggestions");
   });
 });

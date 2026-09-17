@@ -21,12 +21,15 @@ type DependenceArtifact = Omit<Artifact, "floors" | "generated_at" | "as_of"> & 
 export default function ObservationDependencePage() {
   const data = loadArtifact("residual_autocorrelation") as DependenceArtifact | null;
   const sports = buildObservationDependence(data);
-  if (!data || !sports.length) return <div className="od-page"><p className="overline">Measurement / Observation dependence</p><h1>Repeated ticks are not repeated evidence.</h1><p className="od-lede">The published residual-autocorrelation exhibit is not available in this build.</p></div>;
-
-  const floors = data.floors;
+  const floors = data?.floors;
   return <div className="od-page">
     <p className="overline">Measurement / Observation dependence</p>
     <h1>Repeated ticks are not repeated evidence.</h1>
+    {!data || !sports.length ? <>
+      <InspectorReadingTrail id="observation-dependence" />
+      <p className="od-lede">The published residual-autocorrelation exhibit is not available in this build.</p>
+      <Link href="/analytics/browse/">Browse published modules</Link>
+    </> : <>
     <p className="od-lede">This exhibit makes the dependence behind in-game calibration measurements visible. It reads <span className="mono">residual_autocorrelation.json -&gt; sports.&lt;sport&gt;.autocorr_values.&#123;model, market&#125;[]</span>, retaining the model and market arrays as separate populations.</p>
     <section className="od-explanation" aria-labelledby="od-meaning">
       <h2 id="od-meaning">What the measure says</h2>
@@ -37,5 +40,6 @@ export default function ObservationDependencePage() {
     <InspectorReadingTrail id="observation-dependence" />
     <ObservationDependence sports={sports} asOf={data.generated_at || data.as_of || undefined} />
     <div className="od-receipt"><Receipt sourceArtifact="public/data/showcase/residual_autocorrelation.json" asOf={data.generated_at || data.as_of || undefined} label="descriptive_only" verdict="descriptive_only" /></div>
+    </>}
   </div>;
 }

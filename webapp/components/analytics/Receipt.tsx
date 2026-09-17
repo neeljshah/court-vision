@@ -29,10 +29,11 @@ const stamp: CSSProperties = {
   border: 0,
   background: "transparent",
   // Enlarge the touch target without shifting layout: the padding grows the hit
-  // box to ~44px wide / ~24px tall, the matching negative margin cancels the
+  // box to a 44px-tall target, the matching negative margin cancels the
   // occupied space so neighbours don't move (DESIGN core interaction, mobile).
-  padding: "6px 3px",
-  margin: "-6px -3px",
+  padding: "10px 3px",
+  margin: "-10px -3px",
+  minHeight: 44,
   borderRadius: 4,
   font: "inherit",
   fontFamily: "var(--font-mono)",
@@ -137,6 +138,7 @@ export function Receipt(r: ReceiptData) {
       <button
         ref={btnRef}
         type="button"
+        className="receipt-trigger"
         style={{
           ...stamp,
           // text-decoration (not border-bottom) so the hint stays tight to the text

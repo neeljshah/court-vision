@@ -21,6 +21,7 @@ describe("InspectorReadingTrail", () => {
   it.each(trails)("follows the authored reading trail for %s", (id, prerequisiteHref, nextHref) => {
     render(<InspectorReadingTrail id={id} />);
     const trail = screen.getByRole("region", { name: "Reading trail" });
+    expect(trail).toHaveClass("inspector-reading-trail");
     const readFirst = within(trail).getByText(/Read first:/).closest("p");
     const nextQuestion = within(trail).getByText(/Next question:/).closest("p");
     expect(readFirst).not.toBeNull();

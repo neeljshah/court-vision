@@ -50,4 +50,4 @@
 .calibration-table td:last-child { font-family: var(--font-sans); color: var(--ink-2); }
 .calibration-note { max-width: 790px; margin-top: 16px !important; padding-left: 14px; border-left: 2px solid var(--signal); }
 .calibration-receipt { margin-top: 22px; }
-@media (max-width: 680px) { .calibration-page { padding: 34px 16px 48px; } .cr-shell { margin-left: -2px; margin-right: -2px; padding: 17px; } .cr-controls { align-items: stretch; flex-direction: column; } .cr-toggle { width: fit-content; } .cr-worked-examples { grid-template-columns: 1fr; }.calibration-title { font-size: 2.35rem; } }
+@media (max-width: 680px) { .calibration-page { padding: 34px 16px 48px; } .cr-shell { margin-left: -2px; margin-right: -2px; padding: 17px; } .cr-controls { align-items: stretch; flex-direction: column; } .cr-controls select, .cr-toggle, .cr-toggle button { min-height: 44px; } .cr-toggle { width: fit-content; } .cr-worked-examples { grid-template-columns: 1fr; }.calibration-title { font-size: 2.35rem; } }

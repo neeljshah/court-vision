@@ -31,8 +31,15 @@ const MCP_CONFIG = `{
   }
 }`;
 const DOC = "https://github.com/neeljshah/court-vision/blob/master/docs/MCP_QUICKSTART.md";
+const SPORT_TAGS = new Set(["mlb", "nba", "soccer", "tennis"]);
+
+function countSports(entries: AskEntry[]): number {
+  return new Set(entries.flatMap((entry) => entry.tags).map((tag) => tag.toLowerCase().trim()).filter((tag) => SPORT_TAGS.has(tag))).size;
+}
+
 export default function AskPage() {
   const entries = loadScoutCorpus();
+  const sportCount = countSports(entries);
   return <div className="cv-workspace"><div className={`cv-workspace-inner ${styles.page}`}>
     <header className="cv-masthead"><div>
       <p className="cv-eyebrow"><span className="cv-square" /> Research assistant / Published evidence</p>
@@ -41,7 +48,7 @@ export default function AskPage() {
     </div></header>
     <div className={styles.coverage} aria-label="Search coverage">
       <span><b>{entries.length.toLocaleString("en-US")}</b> searchable entries</span>
-      <span><b>4</b> sports</span><span>Historical snapshots</span><span>Search runs in your browser</span>
+      <span><b>{sportCount}</b> sports</span><span>Historical snapshots</span><span>Search runs in your browser</span>
     </div>
     <AskBox entries={entries} tours={buildTours(entries)} />
     <section className={styles.next} aria-labelledby="scout-next">
@@ -57,7 +64,7 @@ export default function AskPage() {
       <div className={styles.connectBody}>
         <div><p className="cv-eyebrow">Documented integration / Requires setup</p>
           <h2>Use CourtVision tools from Claude.</h2>
-          <p>The repository documents nine typed MCP tools for scouting, comparisons, matchup previews, and source receipts. Tool availability depends on the artifacts in your local installation. Missing data returns an explicit status.</p>
+          <p>The repository documents a set of typed MCP tools for scouting, comparisons, matchup previews, and source receipts. Tool availability depends on the artifacts in your local installation. Missing data returns an explicit status.</p>
           <ol><li>Clone the repository and follow the Python setup in the quickstart.</li><li>Replace <code>&lt;REPO_ROOT&gt;</code> with your clone's absolute path in the Desktop configuration.</li><li>Restart Claude and verify the tool connection.</li></ol>
           <p>This public page searches committed snapshots. It does not connect to your Claude session or run the MCP backend. A hosted connector requires a separately available endpoint.</p>
           <a href={DOC} target="_blank" rel="noopener noreferrer">Read the full MCP quickstart on GitHub</a>

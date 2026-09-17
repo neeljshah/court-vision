@@ -56,4 +56,4 @@
 .ra-receipt { margin-top: 20px; }
 .ra-empty { margin-top: 20px; border: 1px dashed var(--rule-strong); border-radius: var(--radius-card); color: var(--ink-3); padding: 24px; }
 @media (max-width: 800px) { .ra-selected-view { grid-template-columns: 1fr; } }
-@media (max-width: 680px) { .ra-page { padding: 34px 16px 48px; } .ra-page h1 { font-size: 2.35rem; } .ra-sport-head { align-items: start; flex-direction: column; } .ra-rankings { grid-template-columns: 1fr; } }
+@media (max-width: 680px) { .ra-page { padding: 34px 16px 48px; } .ra-page h1 { font-size: 2.35rem; } .ra-sport-head { align-items: start; flex-direction: column; } .ra-rankings { grid-template-columns: 1fr; } .ra-controls button, .ra-grid button { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; } }

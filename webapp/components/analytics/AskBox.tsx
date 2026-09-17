@@ -111,7 +111,7 @@ function AnswerEnvelope({ result, query, onAsk, excludedQuestions, entries }: {
             ) : unavailable ? (
               <><strong style={{ color: "var(--ink)" }}>Scout's public corpus is unavailable.</strong> No answer can be verified until its committed sources load.</>
             ) : (
-              <><strong style={{ color: "var(--ink)" }}>No verified result.</strong> Scout searches published questions and answers. Try a player, team, sport, or a metric such as calibration, Brier score, pitch mix, or home advantage.</>
+              <><strong style={{ color: "var(--ink)" }}>No verified result.</strong> Scout searches published questions and answers. Try a player, team, sport, or a metric such as calibration, Brier score, pitch mix, or home advantage. <a href="#scout-suggestions" style={{ color: "var(--accent)", fontWeight: 700 }}>Explore published questions</a>.</>
             )}
           </div>
         </div>
@@ -244,7 +244,7 @@ export function AskBox({ entries, tours }: { entries: AskEntry[]; tours: AskTour
         {result ? <AnswerEnvelope result={result} query={submittedQuery} onAsk={askFollowUp} excludedQuestions={suggestedQuestions} entries={entries} /> : null}
       </div>
 
-      <section aria-label="Suggested Scout questions" style={{ margin: "22px 0 10px" }}>
+      <section id="scout-suggestions" aria-label="Suggested Scout questions" style={{ margin: "22px 0 10px" }}>
         {tours.map((tour) => (
           <div key={tour.label} style={{ marginBottom: 12 }}>
             <span className="overline" style={{ display: "block", marginBottom: 6, color: "var(--ink-3)" }}>{tour.label}</span>

@@ -33,4 +33,9 @@ describe("Receipt", () => {
     const button = screen.getByRole("button", { name: /receipt/i });
     expect(within(button).getByText("Snapshot generated 2026-07-25")).toBeInTheDocument();
   });
+
+  it("marks its touch target for the shared receipt treatment", () => {
+    render(<Receipt sourceArtifact="blowout_dynamics.json" verdict="descriptive_only" />);
+    expect(screen.getByRole("button", { name: /receipt/i })).toHaveClass("receipt-trigger");
+  });
 });

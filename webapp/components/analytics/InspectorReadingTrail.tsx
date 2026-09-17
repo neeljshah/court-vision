@@ -15,8 +15,14 @@ export function InspectorReadingTrail({ id }: { id: string }) {
   const links = [...backlinks, ...relatedReadingFor("inspector", id).filter((link) => !backlinks.some((backlink) => backlink.id === link.id && backlink.kind === link.kind)).slice(0, 3)];
   const integrityNotices = noticesForInspector(id);
   return <>
+    <style jsx global>{`
+      @media (max-width: 680px) {
+        .inspector-reading-trail { margin: 16px 0 22px !important; padding-top: 12px !important; }
+        .inspector-reading-trail a { display: inline-block; min-height: 44px; padding: 10px 0; }
+      }
+    `}</style>
     <DataIntegrityNotice notices={integrityNotices} moduleIds={inspector.sourceModuleIds} />
-    <section aria-label="Reading trail" style={{ margin: "18px 0 26px", paddingTop: 14, borderTop: "1px solid var(--rule)", color: "var(--ink-2)", fontSize: 14 }}>
+    <section className="inspector-reading-trail" aria-label="Reading trail" style={{ margin: "18px 0 26px", paddingTop: 14, borderTop: "1px solid var(--rule)", color: "var(--ink-2)", fontSize: 14 }}>
     <p className="overline">Reading trail</p>
     {inspector.prerequisiteId ? <p style={{ marginTop: 6 }}>Read first: {prerequisite ? <Link href={prerequisite.href}>{inspector.prerequisite}</Link> : inspector.prerequisite}</p> : null}
     {next ? <p style={{ marginTop: 4 }}>Next question: <Link href={next.route}>{inspector.nextQuestion}</Link></p> : null}

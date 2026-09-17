@@ -42,4 +42,4 @@
 .ps-table td button[aria-pressed="true"] { font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
 .ps-source-fields { margin-top: 18px; color: var(--ink-3); font-family: var(--font-mono); font-size: 11px; line-height: 1.6; }
 .ps-empty { margin-top: 20px; border: 1px dashed var(--rule-strong); border-radius: var(--radius-card); color: var(--ink-3); padding: 24px; }
-@media (max-width: 680px) { .ps-page { padding: 34px 16px 48px; } .ps-page h1 { font-size: 2.35rem; } .ps-detail { padding: 16px; } }
+@media (max-width: 680px) { .ps-page { padding: 34px 16px 48px; } .ps-page h1 { font-size: 2.35rem; } .ps-detail { padding: 16px; } .ps-controls button, .ps-table td button { min-height: 44px; display: inline-flex; align-items: center; } }
