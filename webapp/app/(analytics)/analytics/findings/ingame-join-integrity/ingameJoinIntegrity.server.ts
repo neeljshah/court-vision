@@ -1,5 +1,9 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+
+export type ArtifactReference = { id: string; href: string | null };
+
+type SiteManifest = { modules: { id: string }[] };
 
 export type Agreement = { n: number; frequency: number };
 export type SportIntegrityCounts = {
@@ -65,6 +69,22 @@ export type IngameTimingRegenerationReceipt = {
 
 function loadAudit<T>(basename: string): T {
   return JSON.parse(readFileSync(join(process.cwd(), "public", "data", "audits", basename), "utf8")) as T;
+}
+
+/** Resolves a published artifact to its static product or data route at export time. */
+export function resolveIngameArtifact(id: string): ArtifactReference {
+  const publicData = join(process.cwd(), "public", "data");
+  const manifest = JSON.parse(readFileSync(join(publicData, "showcase", "site_manifest.json"), "utf8")) as SiteManifest;
+  const base = process.env.NEXT_PUBLIC_BASE_PATH || "";
+  const showcasePath = join(publicData, "showcase", `${id}.json`);
+  const insightsPath = join(publicData, "insights", `${id}.json`);
+
+  if (manifest.modules.some(entry => entry.id === id) && existsSync(showcasePath)) {
+    return { id, href: `${base}/analytics/m/${id}/` };
+  }
+  if (existsSync(showcasePath)) return { id, href: `${base}/data/showcase/${id}.json` };
+  if (existsSync(insightsPath)) return { id, href: `${base}/data/insights/${id}.json` };
+  return { id, href: null };
 }
 
 /** Loads the committed incident receipt only while rendering the static export. */
