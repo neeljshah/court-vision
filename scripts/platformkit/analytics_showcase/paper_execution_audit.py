@@ -156,7 +156,8 @@ def write_md(report, path):
         f.write("\n".join(lines))
 
 
-def run():
+def compose():
+    """Pure report from the local pod-backup corpus (read-only) -- no writes."""
     from datetime import datetime, timezone
 
     recs = load_ledger(LEDGER_PATH)
@@ -164,7 +165,11 @@ def run():
     today_snapshot = json.load(open(TODAY_PATH, encoding="utf-8"))
     report = build_report(recs, settle_status, today_snapshot)
     report["generated_at"] = datetime.now(timezone.utc).isoformat()
+    return report
 
+
+def run():
+    report = compose()
     os.makedirs(os.path.dirname(OUT_JSON), exist_ok=True)
     with open(OUT_JSON, "w", encoding="utf-8") as f:
         json.dump(report, f, indent=2)
@@ -178,7 +183,9 @@ def check():
     corpus (data/pod_backup_2026_07_20/, gitignored) is absent -- e.g. on a
     fresh clone."""
     try:
-        report = run()
+        # Local data present: validate a pure in-memory recomposition. --check
+        # must never write out/paper_execution_audit.json or .md.
+        report = compose()
     except FileNotFoundError:
         def validate(d):
             assert d["edge_claimed"] is False
@@ -194,7 +201,7 @@ def check():
     assert report["status_split"].get("settled", 0) + report["status_split"].get("open", 0) == 83
     assert report["divergence_at_placement_pp"]["n"] > 0
     assert report["realized_clv_pct"] is None  # clv_pct is null for every row in this corpus
-    print("OK: paper_execution_audit self-check passed")
+    print("OK: paper_execution_audit self-check passed (recomposed only, no write)")
 
 
 if __name__ == "__main__":
