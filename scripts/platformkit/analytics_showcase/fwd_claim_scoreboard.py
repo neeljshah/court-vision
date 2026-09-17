@@ -162,7 +162,8 @@ def make_chart(families: List[Dict[str, Any]], summary: Dict[str, Any], out_png:
     plt.close(fig)
 
 
-def run() -> Dict[str, Any]:
+def compose() -> Dict[str, Any]:
+    """Pure composition from the 4 ledgers -- no writes."""
     rows = load_rows()
     families = build_families(rows)
     summary = summarize(families)
@@ -182,13 +183,18 @@ def run() -> Dict[str, Any]:
         "flipped_families": [f for f in families if f["flipped"]],
         "families": families,
     }
+    if not families:
+        result["png_skipped_reason"] = "no claim families -- ledgers absent or empty"
+    return result
+
+
+def run() -> Dict[str, Any]:
+    result = compose()
     os.makedirs(os.path.dirname(OUT_JSON), exist_ok=True)
     with open(OUT_JSON, "w", encoding="utf-8") as f:
         json.dump(result, f, indent=2)
-    if families:
-        make_chart(families, summary, OUT_PNG)
-    else:
-        result["png_skipped_reason"] = "no claim families -- ledgers absent or empty"
+    if result["families"]:
+        make_chart(result["families"], result["summary"], OUT_PNG)
     return result
 
 
@@ -197,9 +203,10 @@ def _rows_present() -> bool:
 
 
 def check() -> None:
-    """Self-check. Probes ledger presence FIRST: run() overwrites OUT_JSON, so
-    when the tracked ledgers are somehow absent we verify the committed artifact
-    instead of clobbering it with an empty result."""
+    """Self-check. Probes ledger presence FIRST: when the tracked ledgers are
+    somehow absent we verify the committed artifact instead of inventing a
+    result. When ledgers ARE present (the normal case) this composes (pure,
+    no write) and validates -- --check must never touch tracked files."""
     if not _rows_present():
         def validate(d: Dict[str, Any]) -> None:
             assert d.get("families"), "expected at least one claim family"
@@ -207,7 +214,7 @@ def check() -> None:
             assert s["confirms"] + s["nulls_or_worse"] <= s["n_families"], "status counts exceed families"
         verify_recorded_artifact(OUT_JSON, validate, "fwd_claim_scoreboard")
         return
-    # Invariant checks on live re-derivation.
+    # Invariant checks on a pure (no-write) re-derivation.
     fams = build_families(load_rows())
     assert fams, "expected at least one claim family"
     for fam in fams:
@@ -217,7 +224,7 @@ def check() -> None:
     for fam in fams:
         ts = [h["run_ts"] for h in fam["history"] if h["run_ts"]]
         assert ts == sorted(ts), f"history not time-ordered for {fam['hypothesis']}"
-    result = run()
+    result = compose()
     assert os.path.exists(OUT_JSON)
     assert os.path.exists(OUT_PNG)
     assert result["summary"]["n_families"] == len(fams)
