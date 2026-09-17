@@ -142,6 +142,20 @@ def test_case8_public_tip_is_checked_as_a_tree_not_as_a_diff(tmp_path):
     assert "api/main.py" in _err(p)
 
 
+def test_case10_deleting_a_private_path_is_allowed(tmp_path):
+    # a private file that reached the remote long ago must be removable: the
+    # deletion cannot leak content, while re-adding or editing it is refused.
+    work, base = _setup(tmp_path)
+    _git(work, "config", "core.hooksPath", str(tmp_path / "nohooks"))
+    added = _commit(work, "data/old.txt", "rows\n", "historic leak")
+    _git(work, "push", "origin", "master")
+    _git(work, "rm", "-q", "data/old.txt")
+    _git(work, "commit", "-m", "remove it")
+    tip = _git(work, "rev-parse", "HEAD")
+    p = _run(work, tip, added, url=PUBLIC_URL)
+    assert p.returncode == 0, _err(p)
+
+
 def test_case9_allowlisted_tree_passes_on_the_public_remote(tmp_path):
     work, base = _setup(tmp_path)
     _commit(work, "docs/evidence/tracking/g1/memo.md", "memo\n", "memo")

@@ -75,13 +75,14 @@ def _bad_path(path):
 
 def _scan(sha):
     """Refuse if this commit touches a private path or adds a credential."""
-    rc, names = _git(["diff-tree", "--no-commit-id", "--name-only", "-r",
-                      "--root", sha])
+    rc, names = _git(["diff-tree", "--no-commit-id", "--name-status", "-r",
+                      "--no-renames", "--root", sha])
     if rc != 0:
         _refuse("cannot read commit " + sha[:12])
-    for path in names.split("\n"):
-        path = path.strip()
-        if not path:
+    for row in names.split("\n"):
+        status, _, path = row.strip().partition("\t")
+        # a pure deletion removes content from the remote; it cannot leak any.
+        if not path or status == "D":
             continue
         why = _bad_path(path)
         if why:
