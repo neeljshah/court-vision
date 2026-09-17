@@ -57,15 +57,23 @@ function supportSentence(support: readonly InspectorSupport[]): string {
   if (!support.length) return "Published support is described in the source artifact.";
   return `Published support: ${support.map(item => `${item.sport}${item.population ? ` ${item.population}` : ""}: ${item.n.toLocaleString("en-US")} ${item.unit}`).join("; ")}.`;
 }
-function dateFrom(artifact: SourceArtifact): string { if (artifact.asOf) return artifact.asOf; const data = artifact.data; return data && typeof data === "object" && "as_of" in data && typeof data.as_of === "string" ? data.as_of : "date unrecorded"; }
+function dateFrom(artifact: SourceArtifact): string {
+  const data = artifact.data;
+  if (data && typeof data === "object" && "as_of" in data && typeof data.as_of === "string" && data.as_of.trim()) return data.as_of;
+  return artifact.asOf?.trim() ? artifact.asOf : "date unrecorded";
+}
 function sourceName(artifact: SourceArtifact): string { return artifact.artifact.replace("webapp/public/data/showcase/", ""); }
 function pageVerb(purpose: string): string { return purpose.replace(/^Inspect\b/, "inspects").replace(/^Read\b/, "reads").replace(/^Compare\b/, "compares"); }
+
+const EXACT_COUNT_QUESTIONS = ["exact count", "Compare exact count pitch profiles", "exact count pitch profile", "compare MLB counts 3-0 and 0-2", "compare balls and strikes", "MLB exact count"];
+const EXACT_COUNT_SCOPE = " Open the exact-count explorer to select two pre-pitch ball-strike counts and compare their published rates in percentage points. Exact-count n is the pitch cohort size only. The source does not publish exact-count pitch-type, coded-strike, or in-zone rate denominators; class-level denominators must not be substituted. Coded strikes include called, swinging, and foul strikes, not just whiffs. This is a descriptive historical comparison, not a forecast.";
 
 function inspectorAnswers(artifacts: SourceArtifact[]): AskEntry[] {
   const index = new Map(artifacts.map(artifact => [artifact.id, artifact]));
   return analysisDestinations.map(destination => {
     const sources = destination.sourceModuleIds.map(id => index.get(id)).filter((value): value is SourceArtifact => Boolean(value));
-    return { q: `What does ${destination.title} measure?`, alt_phrasings: [destination.title, destination.id.replace(/-/g, " "), `${destination.title} inspector`], tags: ["inspector", "reading-room", ...destination.title.toLowerCase().split(" "), destination.id], bucket: "public-inspector", a: { status: "ok", answer: `${destination.title} ${pageVerb(destination.purpose)} Source artifact: ${sources.length ? sources.map(sourceName).join(", ") : "published source artifact not recorded"}. ${supportSentence(sources.flatMap(supportFrom))} Date status: ${sources.map(dateFrom).join(", ") || "date unrecorded"}.`, source_artifact: sources[0]?.artifact || "webapp/public/data/showcase/site_manifest.json", source_module_ids: [...destination.sourceModuleIds], as_of: sources[0] ? dateFrom(sources[0]) : "unknown", explore_path: destination.route } };
+    const exactCount = destination.id === "count-context";
+    return { q: `What does ${destination.title} measure?`, alt_phrasings: [destination.title, destination.id.replace(/-/g, " "), `${destination.title} inspector`, ...(exactCount ? EXACT_COUNT_QUESTIONS : [])], tags: ["inspector", "reading-room", ...destination.title.toLowerCase().split(" "), destination.id], bucket: "public-inspector", a: { status: "ok", answer: `${destination.title} ${pageVerb(destination.purpose)} Source artifact: ${sources.length ? sources.map(sourceName).join(", ") : "published source artifact not recorded"}. ${supportSentence(sources.flatMap(supportFrom))} Date status: ${sources.map(dateFrom).join(", ") || "date unrecorded"}.${exactCount ? EXACT_COUNT_SCOPE : ""}`, source_artifact: sources[0]?.artifact || "webapp/public/data/showcase/site_manifest.json", source_module_ids: [...destination.sourceModuleIds], as_of: sources[0] ? dateFrom(sources[0]) : "unknown", explore_path: destination.route } };
   });
 }
 

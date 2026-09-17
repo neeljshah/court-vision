@@ -33,7 +33,9 @@ export function entityForms(entity: AtlasEntity): string[] {
   const nameParts = fullName.split(" ");
   const surname = nameParts.at(-1) || "";
   const givenName = nameParts.length > 1 ? nameParts[0] : "";
-  return Array.from(new Set([fullName, surname, givenName].filter(Boolean)));
+  // A numeric suffix in a count/metric label is not a person's name alias.
+  const aliases = [surname, givenName].filter(form => /[a-z]/.test(form));
+  return Array.from(new Set([fullName, ...aliases].filter(Boolean)));
 }
 
 function matchPosition(query: string, form: string): number {

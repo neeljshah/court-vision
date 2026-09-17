@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { analysisDestinations } from "./analysisDestinations";
 import { resolveQuestion } from "./askSearch";
 import { loadScoutCorpus } from "./scoutCorpus.server";
+import { buildReadingRoomAnswers } from "./scoutInspectorAnswers";
 
 const corpus = loadScoutCorpus();
 
@@ -19,6 +20,31 @@ describe("Scout reading-room answers", () => {
     const explainers = corpus.filter(entry => entry.bucket === "public-explainer");
     expect(explainers.length).toBeGreaterThan(0);
     expect(explainers.every(entry => /^\/analytics\/explainers\/[a-z0-9-]+\/$/.test(entry.a.explore_path || ""))).toBe(true);
+  });
+
+  it("prefers the cited artifact timestamp over stale manifest metadata", () => {
+    const source = { id: "mlb_count_leverage", artifact: "webapp/public/data/showcase/mlb_count_leverage.json", asOf: "2026-07-25T04:35:24Z", data: {} };
+    const answer = (data: unknown, asOf: string | null = source.asOf) => buildReadingRoomAnswers([{ ...source, data, asOf }], [], [])
+      .find(entry => entry.a.explore_path === "/analytics/count-context")!.a;
+    expect(answer({ as_of: "2026-07-25T11:13:19Z" }).as_of).toBe("2026-07-25T11:13:19Z");
+    expect(answer({ as_of: "2026-07-25T11:13:19Z" }).answer).not.toContain(source.asOf);
+    expect(answer({}).as_of).toBe(source.asOf);
+    expect(answer({ as_of: " " }).as_of).toBe(source.asOf);
+    expect(answer({}, null).as_of).toBe("date unrecorded");
+    expect(answer({}, " ").as_of).toBe("date unrecorded");
+  });
+
+  it("routes exact-count questions to the explorer without substituting rate denominators", () => {
+    for (const query of ["exact count", "Compare exact count pitch profiles", "compare MLB counts 3-0 and 0-2", "compare balls and strikes"]) {
+      const result = resolveQuestion(query, corpus);
+      expect(result, query).toMatchObject({ kind: "direct", entry: { bucket: "public-inspector", a: {
+        explore_path: "/analytics/count-context", source_artifact: "webapp/public/data/showcase/mlb_count_leverage.json",
+      } } });
+      expect(result.entry?.a.answer).toContain("n is the pitch cohort size only");
+      expect(result.entry?.a.answer).toContain("class-level denominators must not be substituted");
+      expect(result.entry?.a.answer).toContain("not just whiffs");
+      expect(result.entry?.a.answer).not.toContain("+30.52");
+    }
   });
 
   it("derives published support from the cited artifact, not an authored constant", () => {

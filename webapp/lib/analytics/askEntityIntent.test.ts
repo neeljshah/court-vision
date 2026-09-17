@@ -11,6 +11,18 @@ const atlasEntities: AtlasEntity[] = [
 ];
 
 describe("resolveEntityIntent", () => {
+  it("does not treat numeric count suffixes as ambiguous name aliases", () => {
+    const counts = ["count:0-0", "count:3-0", "count:0-2"].map(name => ({
+      name, pack: "mlb_pitch_types", slug: name.replace(/:/g, "_"),
+    }));
+    expect(resolveEntityIntent("compare MLB counts 3-0 and 0-2", counts)).toEqual({
+      entities: [], candidates: [], isComparison: false,
+    });
+    expect(resolveEntityIntent("count:3-0 profile", counts)).toMatchObject({
+      entities: [counts[1]], candidates: [],
+    });
+  });
+
   it("resolves a single surname to its published entity", () => {
     expect(resolveEntityIntent("Jokic profile", atlasEntities).entities).toEqual([atlasEntities[0]]);
   });
