@@ -150,6 +150,7 @@ main table { max-width: none; }
 }
 
 @media (max-width: 720px) {
+  .a-theme { width: 44px; height: 44px; min-width: 44px; min-height: 44px; }
   /* Keep the pillars in one swipeable row so every section remains reachable
      without making the mobile header grow unpredictably. */
   .a-navrow { gap: 14px; height: auto; flex-wrap: wrap; row-gap: 12px; padding: 10px 16px; }

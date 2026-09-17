@@ -7,7 +7,7 @@
 .lab-field-label select{color:var(--cv-text);background:var(--cv-surface);border:1px solid var(--cv-line);border-radius:5px;padding:10px;width:100%;font-size:12px}
 .lab-dataset-picker{display:none;margin-top:13px}
 .lab-nav-group{margin-top:24px}
-.lab-nav-group>.cv-eyebrow{font-size:9px;margin:0 10px 9px}
+.lab-nav-group>.cv-eyebrow{font-size:11px;margin:0 10px 9px}
 .lab-nav-group>button{background:none;border:1px solid transparent;display:flex;align-items:center;justify-content:space-between;gap:9px;text-align:left;width:100%;padding:11px 10px;border-radius:5px;font-size:11px;line-height:1.4}
 .lab-nav-group>button small{font-size:8px;color:var(--cv-muted);flex-shrink:0;text-align:right}
 .lab-nav-group>button[aria-pressed=true]{background:var(--cv-surface);border-color:var(--cv-line);box-shadow:0 1px 3px #00000006;color:var(--cv-blue)}
