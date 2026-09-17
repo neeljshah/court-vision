@@ -49,7 +49,7 @@ Isotonic regression is more flexible but requires more data. Use it for Tier 1 m
 
 ### Implementation
 
-[`src/prediction/prop_model_stack.py`](../../src/prediction/prop_model_stack.py) — `CalibrationLayer`
+`src/prediction/prop_model_stack.py` *(private repository)* — `CalibrationLayer`
 
 ```python
 class CalibrationLayer:
@@ -140,7 +140,7 @@ p_true = (p_observed - z) / (1 - 2z)
 
 z is solved numerically per market by finding the z that satisfies the market-clearance condition across all outcomes. On NBA mainline props, z ≈ 0.02–0.04. On low-liquidity alternates, z is higher.
 
-Implementation: [`src/prediction/betting_edge.py`](../../src/prediction/betting_edge.py)
+Implementation: `src/prediction/betting_edge.py` *(private repository)*
 
 **Why Shin over symmetric power-sum?** The symmetric power-sum devig (divide all probabilities by their sum to normalize to 1) treats both the over and under symmetrically. In practice, favourite-longshot bias creates systematic overpricing of long shots. Shin corrects for this asymmetry and produces less biased probability estimates.
 

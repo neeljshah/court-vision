@@ -27,7 +27,7 @@ two leakage paths:
 
 CourtVision enforces a strict temporal split: train on `game_date < t`, evaluate on
 `game_date ≥ t`. The walk-forward harness is in
-[src/prediction/prop_backtester.py](../src/prediction/prop_backtester.py).
+src/prediction/prop_backtester.py *(private repository)*.
 
 ### Season-purge window
 
@@ -84,7 +84,7 @@ On low-liquidity player prop alt-lines, *z* can exceed 0.06.
 **Why Pinnacle.** Pinnacle's low-vig, sharp-money model means its lines reflect more
 informed-bettor signal than recreational books. Devigging Pinnacle is as close to a
 market-consensus true probability as publicly available data affords. Implementation:
-[src/prediction/betting_edge.py](../src/prediction/betting_edge.py).
+src/prediction/betting_edge.py *(private repository)*.
 
 ---
 
@@ -118,7 +118,7 @@ of ~44% of maximum log-growth rate. This is the operating point for new markets.
 
 **Current system:** *k* = 0.25 for markets with fewer than 50 calibrated observations.
 Scale to *k* = 0.5 after 50+ obs with demonstrated calibration. Implemented in
-[src/prediction/betting_portfolio.py](../src/prediction/betting_portfolio.py).
+src/prediction/betting_portfolio.py *(private repository)*.
 
 ---
 
@@ -180,7 +180,7 @@ where *q_{1-α}* is the (1 − α)(1 + 1/n)-th quantile of the calibration resid
 with probability exactly (1 − α), regardless of model misspecification. The
 exchangeability assumption is mild (time ordering requires slight adjustment).
 
-**Current implementation:** [src/prediction/conformal_props.py](../src/prediction/conformal_props.py).
+**Current implementation:** src/prediction/conformal_props.py *(private repository)*.
 Phase 15.5 wires the interval output into `bet_selector.py` so each bet is tagged with
 (point_est, lo_80, hi_80, lo_95, hi_95).
 
@@ -196,7 +196,7 @@ curve to be monotone in the raw model score, which is the minimum constraint tha
 well-behaved probability estimates should satisfy.
 
 **Current implementation:** Global per-stat calibrator in
-[src/prediction/segment_calibrator.py](../src/prediction/segment_calibrator.py).
+src/prediction/segment_calibrator.py *(private repository)*.
 Reliability diagrams are in `/results`.
 
 ### Cohort-segmented calibration (Phase 14.8)

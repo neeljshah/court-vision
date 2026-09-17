@@ -3,7 +3,7 @@
 Concrete operational state of CourtVision as of **2026-06-11**. This file is kept honest so
 that the README and ARCHITECTURE don't have to litter their headline sections with caveats.
 Audit trail of fixes: [`../CHANGELOG.md`](../CHANGELOG.md). Live operational state:
-[`CLAUDE-state.md`](CLAUDE-state.md).
+`CLAUDE-state.md` *(private repository)*.
 
 The philosophy: surface the gaps explicitly so external readers (interviewers, collaborators,
 future contributors) can calibrate trust. Nothing is hidden; nothing is sugar-coated.

@@ -1,6 +1,6 @@
 # Improvements Log
 
-Log of system improvements, bug fixes, and quality upgrades from the early CV/tracking build (2026-03). Most recent first. This file was last updated 2026-03-18; it predates the multi-sport in-game/CLV work and is not kept current -- see [.planning/NOW.md](../.planning/NOW.md) for what the system is doing now.
+Log of system improvements, bug fixes, and quality upgrades from the early CV/tracking build (2026-03). Most recent first. This file was last updated 2026-03-18; it predates the multi-sport in-game/CLV work and is not kept current -- see .planning/NOW.md *(private repository)* for what the system is doing now.
 
 The vault-based session log this file used to point to has since been archived: `_vault_legacy_archive/Improvements/Tracker Improvements Log.md`. Current session/decision history lives in Claude's auto-memory, not the vault.
 
@@ -244,7 +244,7 @@ Self-improving data collection loop for player statistics:
 
 ## Planned Improvements (Priority Order)
 
-**Status as of 2026-03-18, untracked since:** none of the Phase 2.5/4.6/6 items below were ever marked done or dropped in this doc. The build has since moved on to multi-sport in-game models, CLV tracking, and claim validation (see [.planning/NOW.md](../.planning/NOW.md)) -- treat this section as a historical snapshot, not a live backlog.
+**Status as of 2026-03-18, untracked since:** none of the Phase 2.5/4.6/6 items below were ever marked done or dropped in this doc. The build has since moved on to multi-sport in-game models, CLV tracking, and claim validation (see .planning/NOW.md *(private repository)*) -- treat this section as a historical snapshot, not a live backlog.
 
 ### Phase 2.5 (Active)
 

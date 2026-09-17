@@ -5,7 +5,7 @@ Status: current as of 2026-07-15.
 Exhaustive catalog of features used by CourtVision's prop models. Features are
 grouped by data source tier. "Wired" means the feature is in the current training
 set for at least one prop model. Feature counts are approximate; exact column lists
-are in [src/features/feature_engineering.py](../src/features/feature_engineering.py).
+are in src/features/feature_engineering.py *(private repository)*.
 
 > **Honesty banner.** "Wired" and SHAP numbers below describe **accuracy / calibration**, not a
 > dollar edge. Against devigged closing lines the market is efficient (CLV ~= 0); the descriptive
@@ -109,7 +109,7 @@ lift is demonstrated. Their signal is not replicated by any public NBA dataset.
 
 **Source:** Frame-level event detections aggregated over rolling windows. Computed by
 `add_event_features` and `add_basket_features` in
-[src/features/feature_engineering.py](../src/features/feature_engineering.py).
+src/features/feature_engineering.py *(private repository)*.
 
 | Feature | Definition | Window | Wired |
 |---------|-----------|--------|-------|

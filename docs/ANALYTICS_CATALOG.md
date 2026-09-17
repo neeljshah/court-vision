@@ -150,7 +150,7 @@ What the intelligence layer covers, and -- critically -- which branded advanced 
 
 For the full RAPM-family reasoning and the do-not-fake metric list, see the public evidence
 page [evidence/industry-metrics.md](evidence/industry-metrics.md), the underlying
-[research/INDUSTRY_ANALYTICS_NBA.md](../jobsearch/research/INDUSTRY_ANALYTICS_NBA.md) *(local
+research/INDUSTRY_ANALYTICS_NBA.md *(private repository)* *(local
 only)*, and the packet.
 
 ---
@@ -237,7 +237,7 @@ own metadata, so a chart can never be shared without its provenance and the not-
 
 These are documented **measurement artifacts**. They appear in this repo only inside explicit
 retraction framing (see [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md) and
-[.claude/rules/no-edge-claims.md](../.claude/rules/no-edge-claims.md)), never as a current
+.claude/rules/no-edge-claims.md *(private repository)*), never as a current
 result of any analytic catalogued above:
 
 - the retracted pregame-ROI headline (a market-follow artifact; the model's own number is

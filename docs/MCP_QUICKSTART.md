@@ -213,5 +213,5 @@ clone.
 
 ---
 **See also:** [docs/AI_CONSUMER_CONTRACT.md](AI_CONSUMER_CONTRACT.md) (envelope
-rules) - [.claude/rules/no-edge-claims.md](../.claude/rules/no-edge-claims.md)
+rules) - .claude/rules/no-edge-claims.md *(private repository)*
 (why nothing here claims a dollar edge).

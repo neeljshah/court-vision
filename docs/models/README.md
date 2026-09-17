@@ -20,7 +20,7 @@ signals are catalogued, and the leak-avoidance/validation discipline every numbe
 | [model-registry.md](model-registry.md) | The NBA-specific model-artifact inventory (which `.pkl`/`.json` backs which stat) |
 | [feature-inventory.md](feature-inventory.md) | The NBA feature stack and the walk-forward-rejected feature blocks (honest REJECTs recorded) |
 | [calibration.md](calibration.md) | NBA-specific calibration detail (Shin devig worked example, per-tier ECE targets) predating the kernel extraction |
-| [MODEL_UNIVERSE.md](MODEL_UNIVERSE.md) | The NBA-specific model-planning catalog (legacy, pre-kernel-extraction) |
+| MODEL_UNIVERSE.md *(private repository)* | The NBA-specific model-planning catalog (legacy, pre-kernel-extraction) |
 
 ---
 

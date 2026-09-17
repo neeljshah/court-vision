@@ -7,7 +7,7 @@
 > "planned." Both are now real and different from that description: the platform is
 > multi-sport (`kernel/` + `domains/<sport>/`, four sports shipped), the self-improving loop is
 > built and running (not planned), and every sizing/execution number in this codebase is a
-> **unit**, never a dollar amount -- see [`../../.claude/rules/no-edge-claims.md`](../../.claude/rules/no-edge-claims.md)
+> **unit**, never a dollar amount -- see `../../.claude/rules/no-edge-claims.md` *(private repository)*
 > and [`../JOB_EVIDENCE_PACKET.md`](../JOB_EVIDENCE_PACKET.md) for why.
 
 ---

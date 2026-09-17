@@ -14,7 +14,7 @@ that governs every number produced downstream of these builders.
 
 ## The signal registry — spine of the signal layer
 
-**Builder:** [`scripts/signals/build_signal_registry.py`](../../scripts/signals/build_signal_registry.py)
+**Builder:** `scripts/signals/build_signal_registry.py` *(private repository)*
 **Outputs:**
 - `data/registry/signal_registry.parquet` — machine-readable catalog (gitignored; not committed)
 - `data/registry/SIGNAL_REGISTRY.md` — human-readable index, regenerated from the parquet
@@ -64,7 +64,7 @@ as walk-forward feature candidates.
 
 ### The signal factory — turning registry entries into candidate proposals
 
-**File:** [`scripts/platformkit/signals/signal_factory.py`](../../scripts/platformkit/signals/signal_factory.py)
+**File:** `scripts/platformkit/signals/signal_factory.py` *(private repository)*
 
 The signal factory is a *proposal generator*, not a model trainer. It reads two inputs —
 the vault's person-free taxonomy (named archetypes / defensive schemes, via
@@ -105,7 +105,7 @@ generated and inspected without ever touching a trained artifact.
 
 ## Role-aware ratings — the "2K-style" player overall
 
-**Builder:** [`scripts/team_system/build_player_ratings.py`](../../scripts/team_system/build_player_ratings.py)
+**Builder:** `scripts/team_system/build_player_ratings.py` *(private repository)*
 **Input:** `data/cache/team_system/attribute_vault.parquet` (87 context-adjusted attributes
 per player) + `data/cache/team_system/player_roles.parquet` (per-player archetype label)
 **Output:** `data/cache/team_system/player_ratings.parquet`
@@ -161,5 +161,5 @@ for team defense and player archetype assignment.
 - [`possession-simulators.md`](possession-simulators.md) — how ratings/signals feed the Monte Carlo engines
 - [`calibration-and-validation.md`](calibration-and-validation.md) — the honesty discipline every downstream number inherits
 - [`pregame-props.md`](pregame-props.md) — the NBA prop-pricing chain that consumes signals
-- [`MODEL_UNIVERSE.md`](MODEL_UNIVERSE.md) — the NBA-specific 350-model planning catalog (legacy, pre-kernel-extraction)
-- [`../../data/registry/SIGNAL_REGISTRY.md`](../../data/registry/SIGNAL_REGISTRY.md) — the generated human-readable signal index
+- `MODEL_UNIVERSE.md` *(private repository)* — the NBA-specific 350-model planning catalog (legacy, pre-kernel-extraction)
+- `../../data/registry/SIGNAL_REGISTRY.md` *(private repository)* — the generated human-readable signal index

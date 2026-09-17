@@ -11,7 +11,7 @@ ROADMAP phase number.
 
 ## Walk-Forward Harness
 
-**File:** [src/prediction/prop_backtester.py](../src/prediction/prop_backtester.py)
+**File:** src/prediction/prop_backtester.py *(private repository)*
 
 The backtester replays each test-set game using only the features that would have been
 known at tip-off. This requires three guarantees:
@@ -24,7 +24,7 @@ known at tip-off. This requires three guarantees:
    computed on a per-game basis sorted by `game_date` ascending. A game at position N
    in a player's game log uses only games 0 through N−1. This is enforced by the
    `add_rolling_features` function in
-   [src/features/feature_engineering.py](../src/features/feature_engineering.py).
+   src/features/feature_engineering.py *(private repository)*.
 
 3. **Season purge.** Any game from the same team within 48 hours of the test game is
    dropped from the training window. This prevents same-series autocorrelation leakage
@@ -71,7 +71,7 @@ uncertainty increases. Symmetric devig would register this as positive CLV even 
 no true edge. Shin devig is less susceptible because it fits the insider-fraction
 parameter *z* per market, which partially absorbs the vig-level change.
 
-Implementation: [src/prediction/betting_edge.py](../src/prediction/betting_edge.py).
+Implementation: src/prediction/betting_edge.py *(private repository)*.
 See [docs/quant-methodology.md](quant-methodology.md) for the mathematical derivation.
 
 ---

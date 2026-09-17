@@ -24,7 +24,7 @@
 
 Source: `nba_api` game logs, Kaggle NBA database, Basketball-Reference.
 
-Computed by [`src/features/feature_engineering.py`](../../src/features/feature_engineering.py) — `add_rolling_features`.
+Computed by `src/features/feature_engineering.py` *(private repository)* — `add_rolling_features`.
 
 | Feature | Description | Window |
 |---------|-------------|--------|

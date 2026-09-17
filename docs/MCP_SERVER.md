@@ -36,7 +36,7 @@ The caller MUST honor `status` verbatim -- never soften a refusal into a hedge:
 This engine produces **calibrated numbers and verified analytics, not a profit
 claim.** No dollar-edge / ROI / beat-the-market language, ever. See
 [AI_CONSUMER_CONTRACT.md](AI_CONSUMER_CONTRACT.md) for the full contract and
-[.claude/rules/no-edge-claims.md](../.claude/rules/no-edge-claims.md) for the
+.claude/rules/no-edge-claims.md *(private repository)* for the
 retracted-number list.
 
 ## Tools

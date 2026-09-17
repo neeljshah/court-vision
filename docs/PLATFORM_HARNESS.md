@@ -87,7 +87,7 @@ agent tier (`sonnet` by default); `review` picks the reviewer (`auto` or
 of this is trusted: schema (required fields present, `depends_on` resolves),
 honest-edge (no task `do`/`done_criteria`/`title` claims a betting edge
 exists, is proven, or is profitable -- the same discipline as
-[the no-edge-claims rule](../.claude/rules/no-edge-claims.md), enforced at
+the no-edge-claims rule *(private repository)*, enforced at
 the planning layer, not just at review time), and file-collision (tasks
 sharing a `parallel_group` that also share a file path must serialize, and
 lint catches that cheaply before the harness would catch it at wave time).

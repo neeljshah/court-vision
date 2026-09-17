@@ -247,7 +247,7 @@ Full field tables: [data_schema.md](data_schema.md). Sources, SLAs, and the
 ID-crosswalk landmine: [DATA.md](DATA.md).
 
 See also: [DATA.md](DATA.md) - [data_schema.md](data_schema.md) -
-[operations/data-pipeline.md](operations/data-pipeline.md) -
+operations/data-pipeline.md *(private repository)* -
 [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md) - [INDEX.md](INDEX.md)
 
 

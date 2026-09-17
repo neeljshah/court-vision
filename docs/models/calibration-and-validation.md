@@ -76,7 +76,7 @@ and reused by every sport.
 
 ### 1. The `IngestManifest` — provenance / leak-class contract
 
-**File:** [`scripts/platformkit/ingest_manifest_core.py`](../../scripts/platformkit/ingest_manifest_core.py)
+**File:** `scripts/platformkit/ingest_manifest_core.py` *(private repository)*
 
 Every corpus a sport depends on is declared as an `IngestSource(corpus, leak_class,
 sla_minutes, description)`. Four `leak_class` values are load-bearing:
@@ -102,7 +102,7 @@ manifest error, not a silent gap.
 
 ### 2. The `FeatureSpec` — train==inference parity contract
 
-**File:** [`scripts/platformkit/feature_spec_core.py`](../../scripts/platformkit/feature_spec_core.py)
+**File:** `scripts/platformkit/feature_spec_core.py` *(private repository)*
 
 A `FeatureSpec` is the frozen, ordered, versioned column list for one sport's base feature
 matrix — a tuple of `FeatureField(name, source, default, cast, source2, op)` entries.
@@ -134,7 +134,7 @@ is why it's cited in `docs/PLATFORM.md` as the cleanest reference.
 
 ### The complementary runtime check: `parity_ok()`
 
-**File:** [`improve/parity_check.py`](../../improve/parity_check.py)
+**File:** `improve/parity_check.py` *(private repository)*
 
 Where `FeatureSpec` prevents the bug structurally (one derivation point), `parity_ok()` is a
 runtime **assertion function** that can be called on any pair of `(train_features,

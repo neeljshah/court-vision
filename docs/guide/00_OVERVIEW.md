@@ -7,7 +7,7 @@
 >
 > **Read this first for honesty framing:** every number in this guide traces back to
 > [docs/JOB_EVIDENCE_PACKET.md](../JOB_EVIDENCE_PACKET.md), the adversarially-audited
-> truth source, and obeys [.claude/rules/no-edge-claims.md](../../.claude/rules/no-edge-claims.md).
+> truth source, and obeys .claude/rules/no-edge-claims.md *(private repository)*.
 
 ---
 

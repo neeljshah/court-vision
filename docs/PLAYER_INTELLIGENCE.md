@@ -2,7 +2,7 @@
 
 The intelligence system synthesizes **1,249 per-player dossiers** and **30 per-team scheme cards** from three raw inputs: NBA Stats API gamelogs + play-by-play microstructure, CV behavioral features extracted from broadcast video (defender distance, spacing, fatigue, shot quality), and possession-type / shot-clock tracking. Every dossier is deterministic and regenerable from raw data.
 
-> **Scope:** Descriptive intelligence + CV-ready substrate for the prediction stack. The player head improves early-to-mid-game projections (validated offline, shadow-tested, not yet live). Team-score / win-probability simulation holds up across the full game. Honest in-game validation results are in [.planning/ingame/](../.planning/ingame/).
+> **Scope:** Descriptive intelligence + CV-ready substrate for the prediction stack. The player head improves early-to-mid-game projections (validated offline, shadow-tested, not yet live). Team-score / win-probability simulation holds up across the full game. Honest in-game validation results are in .planning/ingame/ *(private repository)*.
 
 ---
 

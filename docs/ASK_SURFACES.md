@@ -307,7 +307,7 @@ that looks like in practice: a real answer with its evidence trail attached, or 
 
 ---
 
-*Related: [`docs/INTELLIGENCE.md`](INTELLIGENCE.md) - [`docs/JOB_EVIDENCE_PACKET.md`](JOB_EVIDENCE_PACKET.md) - [`docs/SPORTS_COVERAGE.md`](SPORTS_COVERAGE.md) - [`.claude/rules/no-edge-claims.md`](../.claude/rules/no-edge-claims.md)*
+*Related: [`docs/INTELLIGENCE.md`](INTELLIGENCE.md) - [`docs/JOB_EVIDENCE_PACKET.md`](JOB_EVIDENCE_PACKET.md) - [`docs/SPORTS_COVERAGE.md`](SPORTS_COVERAGE.md) - `.claude/rules/no-edge-claims.md` *(private repository)**
 
 *Last verified: 2026-07-10*
 

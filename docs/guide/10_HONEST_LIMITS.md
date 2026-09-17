@@ -6,7 +6,7 @@
 >
 > **Honesty rule.** The retracted numbers (+18.38% / 0.119 / +54% / 78.11 / 8.94 / 54.57)
 > are measurement artifacts. They appear here ONLY inside the retraction section below,
-> never as live results. Rule source: [.claude/rules/no-edge-claims.md](../../.claude/rules/no-edge-claims.md).
+> never as live results. Rule source: .claude/rules/no-edge-claims.md *(private repository)*.
 
 ---
 

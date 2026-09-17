@@ -13,6 +13,29 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 > L5-proxy ceiling — not realized edge. These historical entries are kept as an honest
 > record of what was claimed when. Full account: [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md).
 
+## [0.19.0] - 2026-09-17 -- The evidence surface
+
+### Changed
+- **The public repository is now the evidence surface.** One reviewed allowlist ([scripts/hooks/public_allowlist.txt](scripts/hooks/public_allowlist.txt)) decides what is public: the analytics site, the documentation, the evidence artifacts, the eval gate, the sport-blind kernel and the four per-sport hypothesis ledgers. The production engine, adapters, API, operational tooling and bulk corpora live in a private repository. The public tip went from 35,073 files to about 6,300; nothing was deleted, and no history was rewritten.
+- **The pre-push guard enforces it** ([scripts/hooks/prepush_guard.py](scripts/hooks/prepush_guard.py)): a push to the public remote is refused when its tip tree holds any path outside the allowlist. Ten enumerated test cases.
+- **README rewritten** to lead with the live analytics site, a results table, a rendered architecture diagram and a scale table. The previous README is kept whole as [docs/SYSTEM_TOUR.md](docs/SYSTEM_TOUR.md).
+
+### Added
+- [EVIDENCE.md](EVIDENCE.md): every claim with its number, verdict, artifact and reproduce command, rejects and retractions included, plus an execution-discipline section with its dormant-series caveat.
+- [docs/CAPABILITIES.md](docs/CAPABILITIES.md): the whole system on one page, public and private layers, with scale, status and a public place to verify each row.
+- [docs/ANALYTICS_SITE.md](docs/ANALYTICS_SITE.md): page-by-page data lineage and the CI gates behind the site.
+- [docs/GO_LIVE_GATES.md](docs/GO_LIVE_GATES.md): six pre-registered conditions that must all hold before any real order. None is claimed as met.
+- `CITATION.cff`, `SECURITY.md`.
+
+### Fixed
+- The proof harness (`python scripts/platformkit/analytics_showcase/check_all.py`) was red in CI for several days (stale pins after the revision-2 in-game regeneration, drive-absolute atlas card paths, a banned word in one artifact's prose, a missing search record). It is green on a bare clone, and it now fails when any `--check` writes to a tracked file; 25 modules that did so were made read-only.
+- The risk kill switch and the in-play breaker fail CLOSED: an unreadable state file is treated as engaged, a garbled ledger refuses placement, and the mutating risk routes always require a token. The CLV page reports price units.
+- Paper maker fills require a through-trade instead of filling against a zero-spread book; a fee-netted markout function exists (no series collected yet); the daily CLV readout ages off the real clock.
+- Two L5-proxy figures in an older "Measured" block below are now explicitly framed as retracted.
+
+### Measured (calibration only)
+- A verification of the published in-game MLB corpus found the per-game segmentation anchors on the wrong timestamp and splits on a scoreboard clock wobble, dropping about 14 percent of legitimate ticks. The published verdict does not change on the corrected selection (the model trails the market reference by about +0.016 Brier, interval excluding 0). A revision-3 regeneration is queued; nothing is retracted.
+
 ## [0.18.0] - 2026-06 — Multi-sport platform direction + in-game projector + self-improving loop
 
 ### Announced

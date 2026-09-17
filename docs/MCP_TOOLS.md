@@ -6,7 +6,7 @@ stdio JSON-RPC 2.0. It is a thin, honest interface on top of the answer engine
 **authors no numbers**. Every tool reads a value verbatim off a named source artifact,
 or fails closed. The binding client rules are in
 [docs/AI_CONSUMER_CONTRACT.md](AI_CONSUMER_CONTRACT.md); the no-edge rule is
-[.claude/rules/no-edge-claims.md](../.claude/rules/no-edge-claims.md).
+.claude/rules/no-edge-claims.md *(private repository)*.
 
 - **Server entry:** `python -m scripts.platformkit.mcp_server.server` (registered as
   `courtvision` in `.mcp.json`; launch from repo root).

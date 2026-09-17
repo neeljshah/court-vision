@@ -190,7 +190,7 @@ metrics). The load-bearing artifacts the serving graph actually reads:
 
 ## Model Serving
 
-All Tier 1–2B models are registered in `data/models/model_registry.json` and served via [`api/main.py`](../../api/main.py).
+All Tier 1–2B models are registered in `data/models/model_registry.json` and served via `api/main.py` *(private repository)*.
 
 **API endpoints:**
 - `POST /predict/player-props` — batch prediction for a slate

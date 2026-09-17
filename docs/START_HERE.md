@@ -185,7 +185,7 @@ python scripts/batch_season.py --season 2025-26
 | Pinnacle real-close CLV | First reading on real Pinnacle closes | ⏳ Oct 2026 preseason (daemon collecting) |
 | Live trading desk UI | `/scan` + `/clv` + `/parlays` + `/live/{game_id}` + SSE arbs | ✅ Shipped 2026-05-27 |
 
-For the full phase log see [ROADMAP.md](ROADMAP.md); for the forward strategic roadmap see [../ROADMAP.md](../ROADMAP.md).
+For the full phase log see [ROADMAP.md](ROADMAP.md); for the forward strategic roadmap see ../ROADMAP.md *(private repository)*.
 
 ---
 
@@ -204,7 +204,7 @@ For the full phase log see [ROADMAP.md](ROADMAP.md); for the forward strategic r
 | [EXECUTION_GUIDE.md](EXECUTION_GUIDE.md) | Running batch jobs, training, deployment |
 | [ROADMAP.md](ROADMAP.md) | Full phase-by-phase build plan |
 | [PROJECT_INDEX.md](PROJECT_INDEX.md) | Canonical repository navigation map |
-| [../MASTER_PLAN.md](../MASTER_PLAN.md) | Full strategic plan + canonical facts table |
+| ../MASTER_PLAN.md *(private repository)* | Full strategic plan + canonical facts table |
 
 ---
 

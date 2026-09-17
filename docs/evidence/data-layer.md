@@ -41,7 +41,7 @@ receipt.
   "generated" outnumbers "verified" by design, and every sidecar records `edge_claimed=false`.
 - **291,625-pair player-vs-player matchup matrix** built from **2,214** raw per-game tracking
   files across three seasons (`data/cache/coverage_faced_allseasons.parquet`, built by
-  [`build_coverage_allseasons.py`](../../scripts/intel/build_coverage_allseasons.py)). Its
+  `build_coverage_allseasons.py` *(private repository)*). Its
   own metadata bakes in "descriptive not causal, not a betting edge."
 - **6 keyless acquisition pipelines**, honestly staged. Some already produce data on disk
   (e.g. `bbref_advanced_extended.parquet` = **1,470** rows); others are wired but not yet
@@ -51,7 +51,7 @@ receipt.
 - **A data-completeness auditor** that measures its own per-attribute/per-window coverage:
   for NBA it audits **61 attributes across 6 windows** over a **505-player** active
   universe and reports **0 all-null attributes**
-  ([`profile_completeness.py`](../../scripts/platformkit/data_frontier/profile_completeness.py)
+  (`profile_completeness.py` *(private repository)*
   -> `data/frontend/ops/profile_completeness.json`). The system reports what it does not
   know yet instead of silently degrading.
 
@@ -71,7 +71,7 @@ not recompute any predictive-validity result.*
 
 Every derived feature corpus (the `asof_*` stems in each sport's `ingest_manifest.py`) is
 point-in-time-correct **by construction**, not by after-the-fact filtering. The shared
-primitive is [`asof_common.py`](../../scripts/platformkit/asof_common.py), which implements
+primitive is `asof_common.py` *(private repository)*, which implements
 snapshot-before-update:
 
 1. Sort events into a stable chronological order (stable mergesort, multi-key).
@@ -83,7 +83,7 @@ State is keyed by global entity id, so a player seen in two games accumulates on
 history. A debut entity snapshots to `NaN`, and a built-in assertion enforces "debut row =>
 NaN" so no row can ever see its own current event. The intel builders extend this with a
 strict expanding-window **`shift(1)`** join and confound flagging -- e.g.
-[`build_player_availability.py`](../../scripts/intel/outcome/build_player_availability.py)
+`build_player_availability.py` *(private repository)*
 downgrades a schedule-confounded signal and stamps "descriptive not causal, not a betting
 edge" into the artifact's metadata. Post-game columns (`home_win`, `target_over25`,
 `winner`) are training labels only, never pregame features.

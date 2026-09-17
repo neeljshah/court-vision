@@ -23,16 +23,17 @@ pip install "numpy>=1.24" "pandas>=2.0" "matplotlib>=3.8"
 python scripts/platformkit/analytics_showcase/check_all.py
 ```
 
-Expected output (final two lines; last recorded run as of 2026-07-23,
+Expected output (final two lines; last recorded run as of 2026-09-17,
 `scripts/platformkit/analytics_showcase/out/check_all_report.json`):
 
 ```
-total 52  pass 52  fail 0  no_check 0  runtime <N>s
+total 110  pass 96  fail 0  no_check 14  runtime <N>s
 wrote scripts/platformkit/analytics_showcase/out/check_all_report.json
 ```
 
 The module count grows as more showcase modules are authored -- do not treat
-"52" as fixed, treat "0 FAIL" as the bar. `check_all.py` runs each module
+"110" as fixed, treat "0 FAIL" as the bar. `no_check` modules have no self-check yet and are listed by name in the
+report. The run also fails if any `--check` writes to a tracked file, so running it never alters your clone. `check_all.py` runs each module
 sequentially as `python -m <module> --check`; a module's `--check` re-verifies
 its own committed `out/*.json` (or a synthetic self-check with a known
 answer) and asserts the result matches -- no network, no `data/`.

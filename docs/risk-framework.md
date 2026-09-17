@@ -17,7 +17,7 @@ breakers are implemented and the Phase 19 paper-trading gate passes.
 Position sizes are intended to be computed by a QP optimizer (Phase 15.7,
 `src/prediction/portfolio_optimizer.py`) subject to the constraints below. Phase 15.7
 is not shipped -- that module does not exist yet -- so greedy fractional Kelly in
-[src/prediction/betting_portfolio.py](../src/prediction/betting_portfolio.py) applies
+src/prediction/betting_portfolio.py *(private repository)* applies
 the same numeric limits as soft constraints today.
 
 ### Per-bet constraints

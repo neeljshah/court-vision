@@ -189,7 +189,7 @@ On Novig and ProphetX, the router can post lines rather than match them. Mechani
 
 ---
 
-*See [system-overview.md](system-overview.md) for routing context. See [account-longevity.md](../strategy/account-longevity.md) for limiting avoidance strategy. See [timing-layer.md](../strategy/timing-layer.md) for when to bet throughout the day.*
+*See [system-overview.md](system-overview.md) for routing context. See account-longevity.md *(private repository)* for limiting avoidance strategy. See timing-layer.md *(private repository)* for when to bet throughout the day.*
 
 See also: [BETTING](../BETTING.md) (edge/EV/CLV math, line-shopping)  - 
 [decisions](../decisions.md) (tier floors, no-bet, dual gate)  - 

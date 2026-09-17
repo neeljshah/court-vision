@@ -44,6 +44,7 @@
 + scripts/__init__.py
 + scripts/platformkit/__init__.py
 + scripts/platformkit/analytics_showcase/
+- scripts/platformkit/analytics_showcase/out_segmented/
 + scripts/platformkit/benchmarks/
 + scripts/platformkit/intel_validation/
 

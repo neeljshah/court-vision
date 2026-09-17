@@ -9,7 +9,7 @@ number quoted was run live for this doc.
 For the older, broader setup + CV-pipeline walkthrough see [DEMO.md](DEMO.md). For every
 number's proof artifact and the do-not-claim list, see
 [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md). Nothing here is a dollar edge, an ROI,
-or a "beat the market" claim -- see [../.claude/rules/no-edge-claims.md](../.claude/rules/no-edge-claims.md)
+or a "beat the market" claim -- see ../.claude/rules/no-edge-claims.md *(private repository)*
 if you're checking.
 
 ```bash
@@ -158,7 +158,7 @@ mlb    mlb_sp_ra_diff_asof             REJECT  manual            2026-07-09  aso
 ...
 ```
 
-Pair it with the ranked, human-readable [gap_ledger_2026-07-11.md](research/gap_ledger_2026-07-11.md)
+Pair it with the ranked, human-readable gap_ledger_2026-07-11.md *(private repository)*
 (31 ranked open items from the most recent full-system audit, each with its own verdict
 and evidence) and [JOB_EVIDENCE_PACKET.md section 4](JOB_EVIDENCE_PACKET.md#4-do-not-claim-list-never-put-these-in-front-of-a-recruiter),
 the do-not-claim list. **The negative-result count is meant to dwarf the positive one.**

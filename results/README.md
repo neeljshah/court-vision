@@ -8,7 +8,7 @@ This directory will contain reliability diagrams, CLV plots, and per-model ECE o
 
 The 80-game CV ingest run is stalled, not progressing: as of 2026-07-15, 9 CLEAN + 20 PARTIAL of 307 tracked games (81 processed, 26 verified, 46 REJECT), still short of the 80-CLEAN target, with 0 games processed in the last 24h.
 
-Metrics available right now: [`data/models/model_registry.json`](../data/models/model_registry.json) — API-data holdout R² and MAE per model, walk-forward temporal CV.
+Metrics available right now: `data/models/model_registry.json` *(private repository)* — API-data holdout R² and MAE per model, walk-forward temporal CV.
 
 ## Artifact schema (post-run)
 

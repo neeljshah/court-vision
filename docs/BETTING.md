@@ -387,7 +387,7 @@ See also: [EXECUTION_GUIDE](EXECUTION_GUIDE.md)  -  [decisions](decisions.md)  -
 [risk-framework](risk-framework.md)  - 
 [architecture/execution-engine](architecture/execution-engine.md)  - 
 [label_strategy](label_strategy.md)  -  [docs/DATA.md](DATA.md)  -  [docs/DEMO.md](DEMO.md)  - 
-[PREDICTIONS_QUICKSTART.md](../PREDICTIONS_QUICKSTART.md) ·
+PREDICTIONS_QUICKSTART.md *(private repository)* ·
 [docs/JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md)
 
 

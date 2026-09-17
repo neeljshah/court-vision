@@ -22,7 +22,7 @@
 | **Engineer / architect** | [ARCHITECTURE](../ARCHITECTURE.md) -> [PLATFORM](PLATFORM.md) -> [architecture/system-overview](architecture/system-overview.md) -> [ML_MODELS](ML_MODELS.md) -> [API](API.md) |
 | **Quant / methodology** | [quant-methodology](quant-methodology.md) -> [backtest-methodology](backtest-methodology.md) -> [research/validation-methodology](research/validation-methodology.md) -> [MARKET_EFFICIENCY_PROOF](MARKET_EFFICIENCY_PROOF.md) |
 | **Edge researcher** | [MARKET_EFFICIENCY_PROOF](MARKET_EFFICIENCY_PROOF.md) -> [quant-methodology](quant-methodology.md) -> [JOB_EVIDENCE_PACKET](JOB_EVIDENCE_PACKET.md) -> [KNOWN_LIMITATIONS](KNOWN_LIMITATIONS.md) |
-| **Operator / deployer** | [PRODUCTION_RUNBOOK](PRODUCTION_RUNBOOK.md) -> [operations/data-pipeline](operations/data-pipeline.md) -> [LIVE_OPERATOR_RUNBOOK](LIVE_OPERATOR_RUNBOOK.md) -> [DEPLOY_RAILWAY](DEPLOY_RAILWAY.md) |
+| **Operator / deployer** | [PRODUCTION_RUNBOOK](PRODUCTION_RUNBOOK.md) -> operations/data-pipeline *(private repository)* -> [LIVE_OPERATOR_RUNBOOK](LIVE_OPERATOR_RUNBOOK.md) -> [DEPLOY_RAILWAY](DEPLOY_RAILWAY.md) |
 | **Curious how AI built it** | [BUILT_WITH_CLAUDE](BUILT_WITH_CLAUDE.md) |
 | **Want the long-form tour** | [SYSTEM_TOUR](SYSTEM_TOUR.md) (the pre-2026-09-17 README, kept whole) |
 
@@ -43,7 +43,7 @@ reprice. Follow the links to go as deep as you want at any stage.
 
 | Stage | What happens | Go deep |
 |-------|--------------|---------|
-| **1. DATA** | Keyless, leak-free, as-of-stamped ingest across 5 sports (ESPN, MLB StatsAPI, Sackmann, football-data) + prediction markets (Kalshi, Polymarket) + DFS prop feeds (Underdog, PrizePicks, FanDuel, DraftKings) | [DATA](DATA.md) - [data_schema](data_schema.md) - [operations/data-pipeline](operations/data-pipeline.md) |
+| **1. DATA** | Keyless, leak-free, as-of-stamped ingest across 5 sports (ESPN, MLB StatsAPI, Sackmann, football-data) + prediction markets (Kalshi, Polymarket) + DFS prop feeds (Underdog, PrizePicks, FanDuel, DraftKings) | [DATA](DATA.md) - [data_schema](data_schema.md) - operations/data-pipeline *(private repository)* |
 | **2. SIGNALS** | Leak-safe per-entity features + priors: team ratings (Elo / EW-Poisson / serve-hold), per-player per-exposure rates, ~190-feature NBA prop stack, 48 atlases, playstyle archetypes | [signal-inventory](signal-inventory.md) - [models/feature-inventory](models/feature-inventory.md) - [INTELLIGENCE](INTELLIGENCE.md) - [PLAYER_INTELLIGENCE](PLAYER_INTELLIGENCE.md) |
 | **3. MODELS** | One calibrated win-probability per sport (the anchor) + per-player count distributions (Poisson / Negative-Binomial, dispersion-calibrated) | [ML_MODELS](ML_MODELS.md) - [models/model-registry](models/model-registry.md) - [models/calibration](models/calibration.md) |
 | **4. ENGINES** | JointDistribution (coherent score matrix) + possession Monte-Carlo sim (emergent teammate correlation) + the live repricer (conditions on realized state) | [architecture/possession-simulator](architecture/possession-simulator.md) - [LIVE_ENGINE_V2](LIVE_ENGINE_V2.md) |
@@ -120,7 +120,7 @@ reprice. Follow the links to go as deep as you want at any stage.
 
 ### Product / platform
 - [PREDICTOR_PLATFORM](PREDICTOR_PLATFORM.md) -- full product: thesis, scorecards, architecture
-- [PREDICTOR_QUICKSTART](PREDICTOR_QUICKSTART.md) / [PREDICTIONS_QUICKSTART](../PREDICTIONS_QUICKSTART.md) -- run a prediction in 60s
+- [PREDICTOR_QUICKSTART](PREDICTOR_QUICKSTART.md) / PREDICTIONS_QUICKSTART *(private repository)* -- run a prediction in 60s
 - [PLATFORM](PLATFORM.md) -- kernel + adapter multi-sport architecture
 - [PLATFORM_TOOLING](PLATFORM_TOOLING.md) -- the platformkit CLI + proof-module surface
 - [PLATFORM_HARNESS](PLATFORM_HARNESS.md) -- the platformkit build/test/gate harness underneath the CLI
@@ -190,7 +190,7 @@ reprice. Follow the links to go as deep as you want at any stage.
 - [DEPLOY_RAILWAY](DEPLOY_RAILWAY.md) -- Railway deploy
 - [daily_workflow_cron](daily_workflow_cron.md) -- scheduled jobs
 - [DAEMONS](DAEMONS.md) -- the always-on background daemons (governors, reapers, capture loops) and what each one guards
-- [operations/](operations/data-pipeline.md) -- data-pipeline, deployment, full-game-production, RunPod runbooks, backfill
+- operations/ *(private repository)* -- data-pipeline, deployment, full-game-production, RunPod runbooks, backfill
 
 ### Computer-vision lineage (origin, not the headline)
 - [TRACKING](TRACKING.md) -- multi-sport tracking status, coordinate contract, demo evidence (2026-09-01)

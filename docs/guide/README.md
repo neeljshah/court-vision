@@ -16,7 +16,7 @@ money is **default-DENY**.
 
 > **Honesty rail.** Every number in this guide traces back to the adversarially
 > audited [docs/JOB_EVIDENCE_PACKET.md](../JOB_EVIDENCE_PACKET.md) and obeys
-> [.claude/rules/no-edge-claims.md](../../.claude/rules/no-edge-claims.md). Calibration,
+> .claude/rules/no-edge-claims.md *(private repository)*. Calibration,
 > not edge. An honest REJECT is a SUCCESS here, not a failure.
 
 ---

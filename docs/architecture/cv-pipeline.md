@@ -76,7 +76,7 @@ AV1-encoded videos are quarantined — the decoder lacks AV1 hardware support. O
 
 Model: `resources/yolov8n.pt` (standard pretrained). Runs at batch size 12 by default. Detects players, refs, and ball per frame.
 
-Key implementation detail: `_VRAM_FLUSH_INTERVAL` must be 3000 (not 100). Setting flush to every 100 frames forces GPU sync barriers that stall CPU stages → 10× slowdown. See [`src/pipeline/unified_pipeline.py`](../../src/pipeline/unified_pipeline.py).
+Key implementation detail: `_VRAM_FLUSH_INTERVAL` must be 3000 (not 100). Setting flush to every 100 frames forces GPU sync barriers that stall CPU stages → 10× slowdown. See `src/pipeline/unified_pipeline.py` *(private repository)*.
 
 ### Stage 3: SIFT Homography
 
@@ -90,15 +90,15 @@ The homography is the prerequisite for all spatial features. A failed or degrade
 
 Standard multi-object tracking. Kalman filter predicts next frame position for each track; Hungarian algorithm assigns detections to existing tracks by minimizing total distance cost. Handles brief occlusions by maintaining track state through missed frames (max gap: configurable).
 
-Implementation: [`src/tracking/advanced_tracker.py`](../../src/tracking/advanced_tracker.py) — `AdvancedFeetDetector`
+Implementation: `src/tracking/advanced_tracker.py` *(private repository)* — `AdvancedFeetDetector`
 
 ### Stage 5: OSNet Re-ID
 
 512-dimensional appearance embeddings computed per player crop. Gallery built from clean first-half frames; re-identification by cosine similarity against gallery. Assignment to player roster via jersey number OCR correlation.
 
-Implementation: [`src/tracking/osnet_reid.py`](../../src/tracking/osnet_reid.py)
+Implementation: `src/tracking/osnet_reid.py` *(private repository)*
 
-Team color tracking for primary assignment: [`src/tracking/color_reid.py`](../../src/tracking/color_reid.py) — `TeamColorTracker`
+Team color tracking for primary assignment: `src/tracking/color_reid.py` *(private repository)* — `TeamColorTracker`
 
 ### Stage 6: EasyOCR Jersey Number
 
@@ -127,7 +127,7 @@ Joins tracking data with event records on `(game_id, event_id, player_id)`. Comp
 | `handler_isolation` | Euclidean distance from ball-handler to nearest teammate | Isolation play detection |
 | `contest_pct` | Fraction of possession frames where defender within 2m | Sustained pressure metric |
 
-Implementation: [`src/features/feature_engineering.py`](../../src/features/feature_engineering.py) — `compute_spatial_features`
+Implementation: `src/features/feature_engineering.py` *(private repository)* — `compute_spatial_features`
 
 ---
 
@@ -174,7 +174,7 @@ accuracy number — none is reproduced.
 
 **OMP cap is required:** `OMP_NUM_THREADS=6 MKL_NUM_THREADS=6 OPENBLAS_NUM_THREADS=6`. Without it, parallel-4 workers oversubscribe thread pools → 45% of CFS periods throttled → ~3× slowdown.
 
-See [runpod-runbook.md](../operations/runpod-runbook.md) for full pod configuration.
+See runpod-runbook.md *(private repository)* for full pod configuration.
 
 ---
 

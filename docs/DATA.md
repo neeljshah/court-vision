@@ -143,7 +143,7 @@ Kalshi / Polymarket is read from ENV only and is **not** needed for public reads
 > daemons record prices; they never place orders and no $-edge is claimed. We
 > never fabricate a price: a feed/parse miss is logged and skipped, never filled
 > with a guess. `data/` is local-only and gitignored (see
-> [data/README.md](../data/README.md)); nothing here is published.
+> data/README.md *(private repository)*); nothing here is published.
 
 ### Per-sport source ledger (have / missing / how acquired)
 
@@ -435,7 +435,7 @@ data/cache/
 
 All of `data/domains/` and `data/cache/` is gitignored and local-only -- it is
 never committed and never published (see
-[data/README.md](../data/README.md) and the data-vault no-commit rule).
+data/README.md *(private repository)* and the data-vault no-commit rule).
 
 ---
 
@@ -482,9 +482,9 @@ def get_data(season: str, force: bool = False) -> dict:
 ---
 
 See also: [docs/BETTING.md](BETTING.md) · [docs/DEMO.md](DEMO.md) ·
-[PREDICTIONS_QUICKSTART.md](../PREDICTIONS_QUICKSTART.md) ·
+PREDICTIONS_QUICKSTART.md *(private repository)* ·
 [DATA_OUTPUTS.md](DATA_OUTPUTS.md) · [data_schema.md](data_schema.md) ·
-[operations/data-pipeline.md](operations/data-pipeline.md) ·
+operations/data-pipeline.md *(private repository)* ·
 [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md) ·
 [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md) · [INDEX.md](INDEX.md)
 

@@ -266,7 +266,7 @@ the ops freshness SLA. The probe's own Kalshi calls are governor-registered
 ---
 
 *Related: [`docs/PAPER_TRADING_STACK.md`](PAPER_TRADING_STACK.md) -
-[`docs/DATA.md`](DATA.md) - [`docs/operations/data-pipeline.md`](operations/data-pipeline.md) -
+[`docs/DATA.md`](DATA.md) - `docs/operations/data-pipeline.md` *(private repository)* -
 [`docs/JOB_EVIDENCE_PACKET.md`](JOB_EVIDENCE_PACKET.md)*
 
 *Last verified: 2026-07-07*

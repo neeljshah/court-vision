@@ -396,7 +396,7 @@ Updated continuously during the season:
 
 7. **Prices are captured, never fabricated**: a missing line or odds field yields an omitted node / skipped row (never a guessed number). All capture is PAPER / measurement only; no $-edge is claimed. `data/` is local-only and gitignored.
 
-See also: [DATA.md](DATA.md) - [DATA_OUTPUTS.md](DATA_OUTPUTS.md) - [operations/data-pipeline.md](operations/data-pipeline.md) - [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md) - [INDEX.md](INDEX.md)
+See also: [DATA.md](DATA.md) - [DATA_OUTPUTS.md](DATA_OUTPUTS.md) - operations/data-pipeline.md *(private repository)* - [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md) - [INDEX.md](INDEX.md)
 
 
 ---

@@ -65,7 +65,7 @@ collapses.
       `VALIDATION_PENDING`; no real-data win is claimed until a human runs it. The honest
       expected outcome is still MATCHES_CLOSE / market-efficient -- a success, not a miss.
 - [ ] **Odds-API key rotation** -- the the-odds-api key appeared in public git history;
-      treat it as compromised and rotate it. See [docs/SECURITY_REMEDIATION.md](SECURITY_REMEDIATION.md)
+      treat it as compromised and rotate it. See docs/SECURITY_REMEDIATION.md *(private repository)*
       ("ROTATE THE KEY").
 - [ ] **Public push** -- this package is committed LOCAL-ONLY. Pushing to a public /
       buyer-facing origin is a deliberate human decision (and must follow the security
@@ -73,7 +73,7 @@ collapses.
 - [ ] **Git-history scrub / fresh clean repo** -- prior revisions still contain the
       gitignored betting data + key. Pick Option A (fresh clean repo, recommended),
       Option B (`git filter-repo` history rewrite), or Option C (private repo) from
-      [docs/SECURITY_REMEDIATION.md](SECURITY_REMEDIATION.md). Buyer-facing publication is
+      docs/SECURITY_REMEDIATION.md *(private repository)*. Buyer-facing publication is
       gated on this.
 
 ## Verify (offline, each < 60s)
