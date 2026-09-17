@@ -78,6 +78,13 @@ scripts/batch_season.py               # Batch runner
 database/schema.sql                   # PostgreSQL
 ```
 
+### Two repositories, one working tree (since 2026-09-17)
+- **Main dir `master` = the FULL tree**, upstream `private/trunk` (court-vision-private). Commit here; `git push private master:trunk`.
+- **The public repo (`origin`, court-vision) holds only the allowlisted subset** in `scripts/hooks/public_allowlist.txt`. Never `git push origin master` from the main dir -- the pre-push guard refuses any public push whose tree holds a non-allowlisted path.
+- Publish public-facing changes with `python scripts/hooks/publish_public.py` (exports into the `../court-vision-public` worktree, branch `public-master`), run the gates, then `git -C ../court-vision-public push origin public-master:master`. First `git fetch origin && git merge origin/master` so direct analytics-lane pushes are never overwritten.
+- Analytics-site lanes touch public paths only and keep pushing to `origin master` directly (after `git fetch origin && git rebase origin/master`).
+- If you are reading this in the PUBLIC clone: the engine (`src/`, `api/`, `domains/`, most of `scripts/` and `tests/`) is not here by design.
+
 ### Rules
 Binding invariants live in `.claude/rules/` and load via these imports (do not restate them here):
 @.claude/rules/no-edge-claims.md

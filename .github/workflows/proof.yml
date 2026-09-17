@@ -31,11 +31,12 @@ jobs:
         with:
           python-version: "3.11"
           cache: pip
+          cache-dependency-path: scripts/platformkit/analytics_showcase/requirements.txt
 
       - name: Install showcase deps
         run: |
           python -m pip install --upgrade pip
-          pip install "numpy>=1.24" "pandas>=2.0" "matplotlib>=3.8"
+          pip install -r scripts/platformkit/analytics_showcase/requirements.txt
 
       - name: Run check_all.py (fails the job on any non-zero exit)
         run: python scripts/platformkit/analytics_showcase/check_all.py

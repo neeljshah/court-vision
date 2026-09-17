@@ -4,6 +4,12 @@ This is the landing pad for Cursor, Aider, Codex CLI, OpenCode, and other AI dev
 
 ---
 
+## Repository layout (since 2026-09-17) -- read before any push
+
+The public repository holds only the paths allowed by `scripts/hooks/public_allowlist.txt` (the analytics site, docs, evidence, the eval gate, the kernel). The full tree lives in a private repository. Analytics-site work: `git fetch origin && git rebase origin/master`, then push to `origin master` as before. Anything else: commit on the full `master` line and publish with `python scripts/hooks/publish_public.py`. The pre-push guard refuses a public push whose tree holds a non-allowlisted path; do not work around it.
+
+---
+
 ## What this repo is
 
 **CourtVision** — end-to-end NBA intelligence platform, built solo by [Neel Shah](https://neelshahportfolio.netlify.app). The system takes raw broadcast video, converts it to court-coordinate tracking data at ~$0.10/game, feeds that into a prediction + decision stack, and wraps everything in an agentic self-improving loop.
