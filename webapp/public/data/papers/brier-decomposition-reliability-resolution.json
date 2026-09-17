@@ -33,7 +33,7 @@
         },
         {
           "type": "p",
-          "text": "Before reading what the split says, this paper checks whether its own arithmetic closes: does reliability minus resolution plus uncertainty reproduce the directly computed Brier it is built beside. Only then does it read which component each sport's difference against the market sits in, and it separately reads brier_skill_scores.json to see whether the market's advantage is steady across the game or concentrated in one part of it. That second question is the one the corpus correction changed most."
+          "text": "First this paper checks whether its own arithmetic closes: does reliability minus resolution plus uncertainty reproduce the directly computed Brier beside it. Only then does it read which component each sport's difference against the market sits in, and it separately reads brier_skill_scores.json to see whether the market's advantage is steady across the game or concentrated in one part of it. That second question is the one the corpus correction changed most."
         }
       ]
     },
@@ -70,7 +70,7 @@
       "blocks": [
         {
           "type": "p",
-          "text": "Every number in the tables below is copied directly from the two named artifacts. Two derived quantities are computed here, and both are trivial differences of cited numbers, reported as such: remainder = brier - reconstructed_brier (the gap between the directly computed Brier and the identity's own reconstruction of it), and, in the skill-score table, the grain totals used to check whether the named grains sum to the all grain. The reliability_gap and resolution_gap figures quoted for MLB and soccer (model minus market) are not computed here; they are copied from murphy_decomposition.json's own verdict text, which already states them."
+          "text": "Every number in the tables below is copied directly from the two named artifacts. Two derived quantities are computed here, and both are trivial differences of cited numbers, reported as such: remainder = brier - reconstructed_brier (the gap between the directly computed Brier and the identity's own reconstruction of it), and, in the skill-score table, the grain totals used to check whether the named grains sum to the all grain. The reliability_gap and resolution_gap figures quoted for MLB and soccer (model minus market) are copied from murphy_decomposition.json's own verdict text, not computed here."
         },
         {
           "type": "p",
@@ -285,11 +285,11 @@
           "type": "list",
           "items": [
             "murphy_decomposition.json covers only MLB moneyline and international-soccer moneyline; no NBA, tennis or WNBA rows exist in it, so nothing here generalizes to those sports.",
-            "Every figure here is revision 2, computed after a third of the MLB ticks and half the soccer ticks were removed as mislabelled. The moves against revision 1 are population changes on a smaller, cleaner sample, not evidence that the forecaster improved; it was not retrained between the two revisions.",
+            "Every figure here is revision 2. Segmentation excluded 51,635 of 78,986 MLB ticks (65.4 percent) and 4,738 of 9,003 soccer ticks (52.6 percent); 27,076 MLB ticks (34.3 percent) were the identified label mismatches, the rest going with quarantined files and unlabelled segments. Intervals were re-estimated by game-cluster bootstrap, not widened. The moves against revision 1 are population changes, not evidence that the forecaster improved; it was not retrained.",
             "The 10-bin reconstruction leaves remainders near -0.035 on both soccer_intl curves, and the file carries no second bin count and no per-bin residual, so this paper cannot say what produces them.",
             "Reliability, resolution and uncertainty describe an aggregate corpus, not a paired game-by-game comparison.",
             "A resolution difference is an arithmetic contribution to the Brier difference, not a cause.",
-            "The early/mid/late grains cover 26,683 of the all grain's 27,351 MLB rows; the remaining 668 stateless rows are not represented in the per-phase view, and the smaller corpus widens every interval this artifact does not print."
+            "The early/mid/late grains cover 26,683 of the all grain's 27,351 MLB rows; the remaining 668 stateless rows are not represented in the per-phase view, and this artifact prints no interval of its own."
           ]
         }
       ]
@@ -300,7 +300,7 @@
       "blocks": [
         {
           "type": "p",
-          "text": "The reliability curves behind Table 1 and the figure above are rendered in the score-decomposition inspector. The calibration inspector carries the wider reliability-bin context. The cross-sport-comparability inspector is the place to check whether MLB and soccer_intl are being compared like for like -- they are not: the corpora still differ by more than a factor of six (27,351 against 4,265 rows), and only these two sports carry a market-side decomposition."
+          "text": "The reliability curves behind Table 1 and the figure above are rendered in the score-decomposition inspector. The calibration inspector carries the wider reliability-bin context. The cross-sport-comparability inspector shows MLB and soccer_intl are not compared like for like: the corpora still differ by more than a factor of six (27,351 against 4,265 rows), and only these two sports carry a market-side decomposition."
         },
         {
           "type": "p",
@@ -399,7 +399,7 @@
   ],
   "limitations": [
     "murphy_decomposition.json covers only MLB moneyline and international-soccer moneyline; no NBA, tennis or WNBA rows exist in this artifact, so nothing here generalizes to those sports.",
-    "Every figure here is revision 2, computed after a third of the MLB ticks and half the soccer ticks were removed as mislabelled. The moves against revision 1 are population changes on a smaller, cleaner sample, not evidence that the forecaster improved; the forecaster was not retrained between the two revisions.",
+    "Every figure here is revision 2. Segmentation excluded 51,635 of 78,986 MLB ticks (65.4 percent) and 4,738 of 9,003 soccer ticks (52.6 percent); 27,076 MLB ticks (34.3 percent) were the identified label mismatches, the rest going with quarantined files and unlabelled segments. Intervals were re-estimated by game-cluster bootstrap, not widened. The moves against revision 1 are population changes, not evidence that the forecaster improved; the forecaster was not retrained between the two revisions.",
     "The 10-bin reconstruction leaves remainders near -0.035 on both soccer_intl curves, and the file carries no second bin count and no per-bin residual, so this paper cannot say what produces them.",
     "Reliability, resolution and uncertainty describe an aggregate corpus, not a paired game-by-game comparison; nothing here matches individual model calls against individual market calls on the same row.",
     "A resolution difference is an arithmetic contribution to the Brier difference, not a cause; nothing here identifies what produces it.",

@@ -29,7 +29,7 @@
         },
         {
           "type": "p",
-          "text": "How often does a CourtVision win forecast land close to what actually happened, and does that reliability hold once you condition on when in the game the forecast was made? This paper answers both for the two sports with graded in-game corpora, putting every model number next to a market reference number without assuming a shared bin label means the two came from the same rows."
+          "text": "How often does a CourtVision win forecast land close to what actually happened, and does that reliability hold once you condition on when in the game the forecast was made? This paper answers both for the two sports with graded in-game corpora, putting every model number next to a market reference number without assuming a shared bin label means the same rows."
         },
         {
           "type": "p",
@@ -55,7 +55,7 @@
         },
         {
           "type": "p",
-          "text": "Both artifacts skip one sport, mlb_clean, as a byte-identical duplicate of the mlb corpus, so the same games are not counted twice."
+          "text": "Both artifacts skip mlb_clean, a byte-identical duplicate of the mlb corpus, so the same games are not counted twice."
         }
       ]
     },
@@ -339,11 +339,11 @@
         },
         {
           "type": "p",
-          "text": "Revision 1's headline for this table was the top bin, and it was an artifact of the join defect. On the joined corpus the model's 0.9-1.0 bin read 0.9541 predicted against 0.6632 observed over 4,753 rows, a gap of -0.2909 whose interval sat entirely below zero, reported as severe overconfidence exactly where the model was most sure. On the segment-clean corpus the same bin reads 0.9516 against 0.9798 over 1,437 rows across 61 games, a gap of 0.0282 with a CI of -0.0063 to 0.0488 that straddles zero. A near-certain forecast attached to another game's outcome is the most expensive kind of mislabelled row, so the top bin absorbed the defect; on this corpus there is no detected miss in that bin at all."
+          "text": "Revision 1's headline for this table was the top bin, and it was an artifact of the join defect. On the joined corpus the model's 0.9-1.0 bin read 0.9541 predicted against 0.6632 observed over 4,753 rows, a gap of -0.2909 whose interval sat entirely below zero, reported as severe overconfidence where the model was most sure. On the segment-clean corpus the same bin reads 0.9516 against 0.9798 over 1,437 rows across 61 games, a gap of 0.0282 with a CI of -0.0063 to 0.0488 that straddles zero. A near-certain forecast attached to another game's outcome is the most expensive kind of mislabelled row, so the top bin absorbed the defect; on this corpus there is no detected miss in that bin at all."
         },
         {
           "type": "p",
-          "text": "Soccer_intl aggregate reliability (4,265 rows, 27 games): the model's Brier is 0.3325 against the market's 0.1952, and both sides show far more significant bins than MLB -- 8 of 9 eligible for the model, 7 of 9 for the market, one bin per side below the minimum-games floor. A significant interval is a departure that was detected, not a measure of how much data stands behind it. Both soccer Brier scores rose against revision 1 for a mechanical reason: the receipt records the draw share of scored ticks falling from 0.2615 to 0.1376, and a draw is cheap to score against a two-way probability. 27 games is a thin base for any sport-level verdict."
+          "text": "Soccer_intl aggregate reliability (4,265 rows, 27 games): the model's Brier is 0.3325 against the market's 0.1952, and both sides show far more significant bins than MLB -- 8 of 9 eligible for the model, 7 of 9 for the market, one bin per side below the minimum-games floor. A significant interval is a departure that was detected, not a measure of how much data stands behind it. Both soccer Brier scores rose against revision 1 for a mechanical reason: the receipt records the draw share of scored ticks falling from 0.2615 to 0.1376, and a draw is cheap against a two-way probability. 27 games is a thin base for any sport-level verdict."
         },
         {
           "type": "figure",
@@ -485,7 +485,7 @@
         {
           "type": "list",
           "items": [
-            "Every figure here is revision 2, measured after segmentation removed a third of the MLB ticks and half the soccer ticks as mislabelled. The moves against revision 1 are population changes on a smaller corpus, not evidence that the forecaster improved; it was not retrained between the two revisions.",
+            "Every figure here is revision 2. Segmentation excluded 51,635 of 78,986 MLB ticks (65.4 percent) and 4,738 of 9,003 soccer ticks (52.6 percent); 27,076 MLB ticks (34.3 percent) were the identified label mismatches, the rest going with quarantined files and unlabelled segments. Intervals were re-estimated by game-cluster bootstrap, not widened. The moves against revision 1 are population changes, not evidence that the forecaster improved; it was not retrained.",
             "state_conditioned_calibration.json's calibration_error carries no confidence interval, unlike the bootstrapped gap_ci in calibration_stability.json, so late-inning miss sizes cannot be tested for significance, and the derived late-inning pair inherits that absence.",
             "model_prob and market_prob bins share a label but are built independently per source, so cells at the same nominal band are drawn from different row sets and a cell-by-cell subtraction is unpaired.",
             "668 of 27,351 MLB rows and 882 of 4,265 soccer_intl rows carry no game-state field and are dropped from the state-conditioned view.",
@@ -501,11 +501,11 @@
       "blocks": [
         {
           "type": "p",
-          "text": "The interactive versions of the two tables live in the \"calibration\" inspector (aggregate bins, both sports) and the \"state-reliability\" inspector (game-phase x band cells, both sources). The \"observation-dependence\" inspector explains why resampling game_id is the right unit here."
+          "text": "The two tables live interactively in the \"calibration\" inspector (aggregate bins, both sports) and the \"state-reliability\" inspector (game-phase x band cells, both sources). The \"observation-dependence\" inspector explains why resampling game_id is the right unit here."
         },
         {
           "type": "p",
-          "text": "The figure is drawn from the calibration_stability module; the state-conditioned cells come from the state_conditioned_calibration module, which the site marks partial pending a confidence-interval pass. The join-integrity finding page carries the receipt."
+          "text": "The figure comes from the calibration_stability module; the state-conditioned cells from the state_conditioned_calibration module, which the site marks partial pending a confidence-interval pass. The join-integrity finding page carries the receipt."
         }
       ]
     }
@@ -560,7 +560,7 @@
     }
   ],
   "limitations": [
-    "Every figure here is revision 2, measured after segmentation removed a third of the MLB ticks and half the soccer ticks as mislabelled. The moves against revision 1 are population changes on a smaller, cleaner corpus, not evidence that the forecaster improved; it was not retrained between the two revisions.",
+    "Every figure here is revision 2. Segmentation excluded 51,635 of 78,986 MLB ticks (65.4 percent) and 4,738 of 9,003 soccer ticks (52.6 percent); 27,076 MLB ticks (34.3 percent) were the identified label mismatches, the rest going with quarantined files and unlabelled segments. Intervals were re-estimated by game-cluster bootstrap, not widened. The moves against revision 1 are population changes, not evidence that the forecaster improved; it was not retrained between the two revisions.",
     "state_conditioned_calibration.json's calibration_error carries no confidence interval, unlike the bootstrapped gap_ci in calibration_stability.json, so late-inning miss sizes cannot be tested for significance the way the aggregate bins can, and the derived late-inning pair inherits that absence.",
     "model_prob and market_prob bins share a label but are built independently per source, so a model cell and a market cell at the same nominal band are drawn from different row sets -- a cell-by-cell subtraction is an unpaired comparison, not a matched one.",
     "668 of 27,351 MLB rows and 882 of 4,265 soccer_intl rows carry no game-state field and are dropped from the state-conditioned view, so it still covers a subset of the aggregate corpus, albeit a far larger share than in revision 1.",

@@ -22,7 +22,7 @@
         {
           "type": "callout",
           "label": "Status",
-          "text": "Revision 2, published 2026-09-16. Revision 1 of this paper quoted artifacts computed on the joined in-game corpus -- 78,986 MLB ticks across 227 files, as_of 2026-07-25 -- in which 126 of the 227 MLB files held ticks from more than one real game and 27,076 of 78,986 ticks sat in a segment labelled with another game's outcome. Those values were withdrawn pending regeneration on 2026-09-16 and are not republished as current. This revision quotes the segment-clean corpus: 27,351 MLB ticks across 178 files and 4,265 international-soccer ticks across 27 files, as_of 2026-09-16. Every number that moved is a population change -- a third of the MLB ticks and half the soccer ticks were dropped because their outcome label belonged to another game -- and not forecaster improvement; the forecaster did not change. This callout is itself part of the contract described below: a paper whose artifacts are rebuilt carries a revision callout naming what was withdrawn and why. Receipt: public/data/audits/mlb-ingame-regeneration.json."
+          "text": "Revision 2, published 2026-09-16. Revision 1 of this paper quoted artifacts computed on the joined in-game corpus -- 78,986 MLB ticks across 227 files, as_of 2026-07-25 -- in which 126 of the 227 MLB files held ticks from more than one real game and 27,076 of 78,986 ticks sat in a segment labelled with another game's outcome. Those values were withdrawn pending regeneration on 2026-09-16 and are not republished as current. This revision quotes the segment-clean corpus: 27,351 MLB ticks across 178 files and 4,265 international-soccer ticks across 27 files, as_of 2026-09-16. Every number that moved is a population change, not forecaster improvement; the forecaster did not change. Segmentation excluded 51,635 of 78,986 MLB ticks (65.4 percent) and 4,738 of 9,003 soccer ticks (52.6 percent); 27,076 MLB ticks (34.3 percent) were the identified label mismatches, the rest going with quarantined files and unlabelled segments. Intervals were re-estimated by game-cluster bootstrap, not widened. This callout is itself part of the contract described below: a paper whose artifacts are rebuilt carries a revision callout naming what was withdrawn and why. Receipt: public/data/audits/mlb-ingame-regeneration.json."
         },
         {
           "type": "p",
@@ -200,7 +200,7 @@
         },
         {
           "type": "p",
-          "text": "One robustness property is already visible in the artifact. The cluster bootstrap resamples game_id rather than ticks, so a bin's interval widens when its ticks come from few games. The 0.5 to 0.6 bin, with 5,636 ticks from 114 games, carries an interval roughly 0.22 wide -- wider than the same bin's interval in revision 1, because the rebuild cut the games behind it. Any future reading that treats ticks as independent observations will report intervals that are too narrow, and this paper would rather be falsified by a wider one than supported by a narrower one."
+          "text": "One robustness property is already visible in the artifact. The cluster bootstrap resamples game_id rather than ticks, so a bin's interval widens when its ticks come from few games. The 0.5 to 0.6 bin, with 5,636 ticks from 114 games, carries an interval roughly 0.22 wide -- re-estimated by that bootstrap on the segment-clean corpus, not widened from a revision-1 figure. Any future reading that treats ticks as independent observations will report intervals that are too narrow, and this paper would rather be falsified by a wider one than supported by a narrower one."
         }
       ]
     },
@@ -219,7 +219,7 @@
             "Both artifacts were rebuilt from one corpus correction on one day, so a shared as_of of 2026-09-16 records when they were regenerated, not that they were independently confirmed.",
             "An n-weighted calibration error summarises absolute gaps, which means offsetting errors in opposite directions do not cancel. It is not comparable to a Brier score.",
             "Both artifacts are descriptive. Nothing in them identifies why a bin is miscalibrated, and a gap that excludes zero on one corpus is not a mechanism.",
-            "The corrected corpus is about a third of the size of the one revision 1 read, so every interval here is wider and every point estimate rests on fewer games."
+            "The corrected corpus holds 27,351 of the 78,986 MLB ticks revision 1 read, so every interval here was re-estimated on that smaller population and every point estimate rests on fewer games."
           ]
         }
       ]

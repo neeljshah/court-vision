@@ -268,7 +268,7 @@
         },
         {
           "type": "p",
-          "text": "Rows per game ranges from about 24 to about 49 across the 10 MLB bins, and it is not flat: the two middle bins show 38.6 and 49.4 rows per game against 23.6 in the 0.9-1.0 bin, on more games as well (100 and 114, against 61). A near-even game dwells near a toss-up for long stretches; a bin near 0 or 1 is entered once a game is decided and passed through quickly. The same n in two bins can stand for a different number of independent games. Every ratio is roughly a third of its revision-1 value."
+          "text": "Rows per game ranges from about 24 to about 49 across the 10 MLB bins, and it is not flat: the two middle bins show 38.6 and 49.4 rows per game against 23.6 in the 0.9-1.0 bin, on more games as well (100 and 114, against 61). A near-even game dwells near a toss-up for long stretches; a bin near 0 or 1 is entered once a game is decided and passed through quickly. The same n in two bins can stand for a different number of independent games. Every ratio is re-computed on the segment-clean corpus; the revision-1 ratios are withdrawn."
         },
         {
           "type": "p",
@@ -289,7 +289,7 @@
           "type": "list",
           "items": [
             "On the ledger's joined corpus both sports land with the game-count anchor below the AR(1) estimate (227 against 761 for MLB, 51 against 172 for soccer). The ledger's confound field states that AR(1) is a first-order approximation of a smooth terminal-constant path rather than a full independence model, and neither figure is published as a bound on the true effective sample size.",
-            "The corpus correction is itself the strongest available check on this paper's claim, and the claim passed: the MLB median lag-1 autocorrelation moved only from 0.9809 to 0.9713 when a third of the ticks were removed, so the dependence being measured is a property of how probability paths move, not of the join defect.",
+            "The corpus correction is itself the strongest available check on this paper's claim, and the claim passed: the MLB median lag-1 autocorrelation moved only from 0.9809 to 0.9713 when segmentation excluded 51,635 of 78,986 MLB ticks, so the dependence being measured is a property of how probability paths move, not of the join defect.",
             "residual_autocorrelation.json skips a duplicate mlb_clean corpus as byte-identical to mlb, so the counts above are not double-counting one source under two labels.",
             "Floors bound both ledgers: 4 MLB series were skipped as low_n and 1 as flat on each side, leaving 173 of 178, and calibration_stability.json will not report a bin built from fewer than 5 games -- which now bites, since one soccer bin per side falls below that floor. Both record what they dropped rather than thinning silently."
           ]
