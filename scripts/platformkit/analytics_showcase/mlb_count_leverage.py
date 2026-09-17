@@ -12,6 +12,10 @@ try:  # package-qualified when run via -m; bare when run as a script (check_all 
     from scripts.platformkit.analytics_showcase.atlas_factory import card_figure
 except ImportError:
     from atlas_factory import card_figure
+try:
+    from scripts.platformkit.analytics_showcase._clone_safe import verify_recorded_artifact
+except ImportError:
+    from _clone_safe import verify_recorded_artifact
 
 HERE = Path(__file__).parent
 REPO = Path(__file__).resolve().parents[3]
@@ -229,26 +233,37 @@ def main() -> dict:
     return showcase
 
 
+def _validate_ok(showcase: dict) -> None:
+    assert showcase["status"] == "ok"
+    assert showcase["n_pitches_valid_count"] > 0
+    assert len(showcase["chart_pitch_types"]) > 0
+    reported = [e for e in showcase["by_leverage_class"] if "outcome_proxies" in e]
+    assert reported, "no leverage class cleared the floor"
+    for e in reported:
+        assert 0 < e["pitch_type_n"] <= e["n"]
+        sr = e["outcome_proxies"]["strike_rate_type_S"]
+        assert sr is None or 0.0 <= sr <= 1.0
+    assert len(showcase["by_exact_count"]) > 0
+
+
 def _check():
-    # ponytail: build+write, then assert the outputs exist nonzero (the task's check)
+    # build_showcase() is pure (no writes) -- probe corpus presence BEFORE deciding
+    # whether to build+write, so a bare clone (no data/) never clobbers the committed
+    # artifact with a local_corpus_absent stub.
+    showcase = build_showcase()
+    if showcase["status"] != "ok":
+        assert showcase["status"] in ("local_corpus_absent", "insufficient_data")
+        assert "needed_artifact" in showcase or "note" in showcase
+        verify_recorded_artifact(OUT_JSON, _validate_ok, "mlb_count_leverage")
+        print("check ok")
+        return
+    # Local data present: build+write is the legitimate, unchanged behavior.
     showcase = main()
-    assert showcase["status"] in ("ok", "local_corpus_absent", "insufficient_data")
     assert OUT_JSON.exists() and OUT_JSON.stat().st_size > 0, "JSON output missing/empty"
     loaded = json.loads(OUT_JSON.read_text(encoding="ascii"))
     assert loaded["status"] == showcase["status"]
-    if showcase["status"] == "ok":
-        assert showcase["n_pitches_valid_count"] > 0
-        assert len(showcase["chart_pitch_types"]) > 0
-        reported = [e for e in showcase["by_leverage_class"] if "outcome_proxies" in e]
-        assert reported, "no leverage class cleared the floor"
-        for e in reported:
-            assert 0 < e["pitch_type_n"] <= e["n"]
-            sr = e["outcome_proxies"]["strike_rate_type_S"]
-            assert sr is None or 0.0 <= sr <= 1.0
-        assert len(showcase["by_exact_count"]) > 0
-        assert OUT_PNG.exists() and OUT_PNG.stat().st_size > 0, "PNG output missing/empty"
-    else:
-        assert "needed_artifact" in showcase or "note" in showcase
+    _validate_ok(showcase)
+    assert OUT_PNG.exists() and OUT_PNG.stat().st_size > 0, "PNG output missing/empty"
     print("check ok")
 
 
