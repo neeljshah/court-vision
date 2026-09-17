@@ -22,6 +22,21 @@ _SUSPENDED_MARKET = frozenset({"suspended", "halted", "paused", "closed",
 _TERMINAL_GAME = frozenset({"final", "post", "postponed", "suspended",
                             "canceled", "cancelled", "abandoned"})
 
+# Contracts per paper quote. Named so the fee below is charged on the size
+# actually quoted -- Kalshi's cent-ceiling applies ONCE per order batch
+# (venue_fees module docstring), so a hardcoded 1.0 in the fee call makes the
+# fee a constant $0.01 at every price and carries no price information.
+_QTY = 1
+
+# Half-spread assumed when a tick carries only a mid. Kalshi in-play spread_bp
+# p50 = 200bp on n=191,424 (pre-registered 2026-07-15, execution/thresholds.py
+# lines 19-23) -> 2 cents wide -> 1 cent per side.
+# ponytail: ONE constant for every sport, price and game phase. Ceiling: it
+# cannot see a widening late book, where the real half-spread is larger and this
+# rule is therefore OPTIMISTIC. Upgrade path: read the per-tick spread_bp the
+# book_depth capture already produces, once that capture has a ProcSpec.
+_ASSUMED_HALF_SPREAD_CENTS = 1
+
 
 def _market_suspended(tick: Dict[str, Any]) -> bool:
     """True when this tick says the market could not honestly fill a resting order:
@@ -68,6 +83,76 @@ def _seed_book(ticker: str, side: str, price_cents: int) -> Dict[str, Any]:
             "best_ask": min(0.99, (101 - price_cents) / 100.0)}
 
 
+def _cents(value: Any) -> Optional[int]:
+    try:
+        c = int(round(float(value) * 100.0))
+    except (TypeError, ValueError):
+        return None
+    return c if 1 <= c <= 99 else None
+
+
+def observed_book(tick: Dict[str, Any]) -> Optional[tuple]:
+    """(best_bid_cents, best_ask_cents) of the YES-home book this tick shows.
+
+    Prefers the tick's own quoted book (best_bid/best_ask, the same fields
+    ingame_exec_gate.build_exec_depth reads); falls back to the mid widened by
+    _ASSUMED_HALF_SPREAD_CENTS when only yes_home_prob is present. None when the
+    tick shows neither -- an unpriced tick can never fill a resting quote.
+    """
+    bid, ask = _cents(tick.get("best_bid")), _cents(tick.get("best_ask"))
+    if bid is not None and ask is not None and ask >= bid:
+        return bid, ask
+    mid = _cents(tick.get("yes_home_prob"))
+    if mid is None:
+        return None
+    return mid - _ASSUMED_HALF_SPREAD_CENTS, mid + _ASSUMED_HALF_SPREAD_CENTS
+
+
+def trades_through(side: str, price_cents: int, book: tuple) -> bool:
+    """True iff the observed book has traded THROUGH a resting quote at
+    *price_cents*, i.e. a counterparty crossed it -- not merely touched it.
+
+    A YES bid at L is only taken out once the yes offer sits strictly BELOW L; a
+    NO bid at L is the mirror (the yes bid must rise strictly above 100 - L).
+    Equality is the touch case and does NOT fill: at the touch the market is
+    trading at our price, which fills only the front of a queue we do not model.
+    """
+    bid_c, ask_c = book
+    return ask_c < price_cents if side == "yes" else bid_c > 100 - price_cents
+
+
+def _fill_book(ticker: str, side: str, price_cents: int) -> Dict[str, Any]:
+    """A book that crosses the resting order at OUR OWN price.
+
+    The mock exchange hands a taker any price improvement between the limit and
+    the touch; a maker has none -- the resting price IS the fill price. Pinning
+    the crossing level to price_cents keeps that improvement out of the series.
+    """
+    if side == "yes":
+        return {"ticker": ticker, "best_bid": max(0.01, (price_cents - 1) / 100.0),
+                "best_ask": price_cents / 100.0}
+    return {"ticker": ticker, "best_bid": (100 - price_cents) / 100.0,
+            "best_ask": min(0.99, (101 - price_cents) / 100.0)}
+
+
+def _fill_record(order: ExecOrder, quote: Dict[str, Any], tick: Dict[str, Any],
+                 book: tuple, now: datetime) -> Dict[str, Any]:
+    """The markout inputs for ONE fill, stamped at fill time.
+
+    Everything execution.markout.markout() needs to score this fill against a
+    LATER mid: the side, the price we actually filled at, the fee, and the fill
+    timestamp a +N-tick mark is measured from. Nothing is scored here -- the
+    later mid does not exist yet at fill time.
+    """
+    return {"side": order.side, "price": order.avg_fill_price_cents / 100.0,
+            "qty": order.filled_qty,
+            "fee_units": quote.get("maker_fee_units"),
+            "fee_dollars": quote.get("maker_fee_dollars"),
+            "book_cents": list(book),
+            "fill_ts": tick.get("src_ts") or now.isoformat(),
+            "ticker": order.ticker, "clv_series": quote.get("clv_series")}
+
+
 class PaperMakerAdapter:
     """Owns simulated resting quotes for one in-process paper day-trader."""
 
@@ -82,16 +167,25 @@ class PaperMakerAdapter:
         if price is None:
             return {"status": "rejected", "reason": "bad_quote_price"}
         ticker = str(tick.get("ticker") or game_id)
-        exchange = MockKalshiExchange([_seed_book(ticker, "yes" if side == "home" else "no", price)])
-        order = ExecOrder(ticker=ticker, side="yes" if side == "home" else "no",
-                          qty=1, price_cents=price, sport=sport)
+        order_side = "yes" if side == "home" else "no"
+        exchange = MockKalshiExchange([_seed_book(ticker, order_side, price)])
+        order = ExecOrder(ticker=ticker, side=order_side,
+                          qty=_QTY, price_cents=price, sport=sport)
         executor = OrderExecutor(exchange)
         executor.submit(order)
         ttl = _ttl_seconds(sport, tick)
+        # venue_fees is the ONE canonical schedule; charge it on the size actually
+        # quoted so the cent-ceiling is applied once per order, as the schedule
+        # specifies. fee_kalshi_maker returns DOLLARS for the whole order, hence
+        # both fields: maker_fee_dollars is that order total, maker_fee_units is
+        # the per-contract cost the units-denominated ledger consumes (a Kalshi
+        # contract pays $1, so per-contract dollars ARE probability points).
+        fee_dollars = fee_kalshi_maker(_QTY, price / 100.0)
         return {"status": "resting", "sport": sport, "order": order, "exchange": exchange,
                 "executor": executor, "expires_at": now.timestamp() + ttl,
                 "quote_prob": price / 100.0, "ttl_seconds": ttl,
-                "maker_fee_units": fee_kalshi_maker(1.0, price / 100.0),
+                "maker_fee_dollars": fee_dollars, "maker_fee_contracts": _QTY,
+                "maker_fee_units": fee_dollars / _QTY,
                 "units": dict(units), "clv_series": "paper_ingame_maker"}
 
     def advance(self, position: Dict[str, Any], tick: Dict[str, Any], *,
@@ -119,19 +213,23 @@ class PaperMakerAdapter:
             # arrives, or the TTL cancels it.
             return {"status": "resting", "order": order, "quote": quote,
                     "reason": "stale_state", "state_age_sec": age}
-        raw_home = tick.get("yes_home_prob")
-        try:
-            home = float(raw_home)
-        except (TypeError, ValueError):
-            return {"status": "resting", "order": order, "quote": quote}
-        if not 0.0 < home < 1.0:
-            return {"status": "resting", "order": order, "quote": quote}
-        row = {"ticker": order.ticker, "best_bid": home, "best_ask": home}
-        exchange.advance_book([row])
+        book = observed_book(tick)
+        if book is None:
+            return {"status": "resting", "order": order, "quote": quote,
+                    "reason": "no_observed_book"}
+        if not trades_through(order.side, order.price_cents, book):
+            # The market touched or sat away from the quote but never crossed it.
+            # The previous rule collapsed the book to a point at the mid, so a
+            # touch filled: adverse selection was impossible by construction and
+            # the series read optimistic.
+            return {"status": "resting", "order": order, "quote": quote,
+                    "reason": "no_through_trade", "book_cents": list(book)}
+        exchange.advance_book([_fill_book(order.ticker, order.side, order.price_cents)])
         executor.refresh(order)
         if order.filled_qty > 0:
-            return {"status": "filled", "order": order, "quote": quote}
+            return {"status": "filled", "order": order, "quote": quote,
+                    "fill": _fill_record(order, quote, tick, book, now)}
         return {"status": "resting", "order": order, "quote": quote}
 
 
-__all__ = ["PaperMakerAdapter"]
+__all__ = ["PaperMakerAdapter", "observed_book", "trades_through"]

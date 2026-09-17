@@ -47,7 +47,9 @@ def test_no_cross_never_records_a_bet(tmp_path):
     resting = dt.on_tick("mlb", "401860100", _tick(0.70), now=now + timedelta(seconds=1),
                          position=first["position"], ledger_path=ledger, grade_dir=grade)
     assert resting["action"] == "resting"
-    assert resting["reason"] == "maker_resting"
+    # The reason names WHICH fill condition failed (was the generic
+    # "maker_resting" before the through-trade rule landed).
+    assert resting["reason"] == "maker_no_through_trade"
     assert not ledger.exists()
 
 
