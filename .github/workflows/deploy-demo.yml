@@ -80,6 +80,7 @@ jobs:
           npx vitest run lib/analytics/paperEvidence.server.test.ts
           npx vitest run lib/analytics/claimHistory.test.ts
           npx vitest run lib/analytics/countContext.test.ts
+          npx vitest run lib/analytics/analysisDestinations.test.ts
           npx vitest run lib/analytics/exactCountContext.test.ts
           npx vitest run lib/analytics/matchupInsights.test.ts
           npx vitest run lib/analytics/askSearch.test.ts
@@ -103,6 +104,7 @@ jobs:
           npx vitest run components/analytics/papers/PapersIndex.test.tsx
           npx vitest run components/analytics/papers/PaperArticle.test.tsx
           npx vitest run 'app/(analytics)/analytics/papers/page.test.tsx'
+          npx vitest run 'app/(analytics)/analytics/count-context/page.test.tsx'
           npx vitest run components/analytics/claim-history/ClaimHistory.test.tsx
           npx vitest run components/analytics/count-context/CountContext.test.tsx
           npx vitest run components/analytics/count-context/ExactCountExplorer.test.tsx
