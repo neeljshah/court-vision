@@ -48,13 +48,14 @@ const seasonCell = (cell: Cell | undefined, maskRule: string) => cell
 function Grid({ caption, columns, rows, note }: { caption: string; columns: string[]; rows: string[][]; note?: string }) {
   return <figure className="ra-fig">
     <figcaption>{caption}</figcaption>
-    <div className="ra-scroll" tabIndex={0} role="region" aria-label={`${caption} (scrollable table)`}>
+    <div className="sr-scroll" tabIndex={0} role="region" aria-label={`${caption} (scrollable table)`} data-scroll-region>
       <table><thead><tr>{columns.map(column => <th key={column}>{column}</th>)}</tr></thead>
         <tbody>{rows.map(row => <tr key={row[0]} className={row.includes(MASKED) ? "ra-masked" : undefined}>
           {row.map((value, index) => <td key={columns[index]}>{value}</td>)}
         </tr>)}</tbody>
       </table>
     </div>
+    <p className="sr-scroll-hint">Scroll horizontally for all columns</p>
     {note ? <p className="ra-note">{note}</p> : null}
   </figure>;
 }
@@ -117,7 +118,7 @@ export function StarterRestAbsorptionPanel({ artifact = loadStarterRestAbsorptio
 
     <style>{`
       .ra{margin:22px 0;border:1px solid var(--rule);border-top:3px solid var(--signal);border-radius:var(--radius-card);background:var(--paper-raised);padding:18px 20px}
-      .ra-pop{font-size:13.5px;line-height:1.6;color:var(--ink-2);margin:8px 0 0}.ra-pop b{color:var(--ink)}.ra-fig{margin:20px 0 0}.ra-fig figcaption{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:7px}.ra-scroll{overflow-x:auto;border:1px solid var(--rule);border-radius:8px}.ra table{width:100%;border-collapse:collapse;font-size:12.5px}.ra th{text-align:left;white-space:nowrap;font-family:var(--font-mono);font-weight:500;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3);padding:8px 12px;border-bottom:1px solid var(--rule-strong);background:var(--paper-tint)}.ra td{padding:7px 12px;border-bottom:1px solid var(--rule);color:var(--ink-2);font-variant-numeric:tabular-nums;vertical-align:top}.ra tbody tr:last-child td{border-bottom:0}.ra tr.ra-masked td{color:var(--ink-3);font-style:italic}.ra-note{font-size:11.5px;line-height:1.55;color:var(--ink-3);margin-top:6px}.ra-verdict{margin-top:22px;padding:14px 16px;background:var(--paper-tint);border-left:3px solid var(--signal);border-radius:0 8px 8px 0}.ra-verdict p{font-size:13.5px;line-height:1.6;color:var(--ink-2);margin-top:6px}.ra-checks{margin-top:20px;padding-top:12px;border-top:1px solid var(--rule);font-size:12px;color:var(--ink-2)}.ra-checks summary{cursor:pointer;font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3)}.ra-checks ul{margin:8px 0 0 18px}.ra-checks li{margin:3px 0}
+      .ra-pop{font-size:13.5px;line-height:1.6;color:var(--ink-2);margin:8px 0 0}.ra-pop b{color:var(--ink)}.ra-fig{margin:20px 0 0}.ra-fig figcaption{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:7px}.sr-scroll{overflow-x:auto;border:1px solid var(--rule);border-radius:8px}.sr-scroll-hint{display:none}.ra table{width:100%;min-width:720px;border-collapse:collapse;font-size:12.5px}.ra th{text-align:left;white-space:nowrap;font-family:var(--font-mono);font-weight:500;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3);padding:8px 12px;border-bottom:1px solid var(--rule-strong);background:var(--paper-tint)}.ra td{padding:7px 12px;border-bottom:1px solid var(--rule);color:var(--ink-2);font-variant-numeric:tabular-nums;vertical-align:top}.ra tbody tr:last-child td{border-bottom:0}.ra tr.ra-masked td{color:var(--ink-3);font-style:italic}.ra-note{font-size:11.5px;line-height:1.55;color:var(--ink-3);margin-top:6px}.ra-verdict{margin-top:22px;padding:14px 16px;background:var(--paper-tint);border-left:3px solid var(--signal);border-radius:0 8px 8px 0}.ra-verdict p{font-size:13.5px;line-height:1.6;color:var(--ink-2);margin-top:6px}.ra-checks{margin-top:20px;padding-top:12px;border-top:1px solid var(--rule);font-size:12px;color:var(--ink-2)}.ra-checks summary{cursor:pointer;font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3)}.ra-checks ul{margin:8px 0 0 18px}.ra-checks li{margin:3px 0}@media(max-width:720px){.sr-scroll-hint{display:block;margin:8px 0 0;font-family:var(--font-mono);font-size:12px;color:var(--ink-3)}}
     `}</style>
   </section>;
 }

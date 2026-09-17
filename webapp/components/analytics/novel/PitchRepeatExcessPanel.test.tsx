@@ -16,6 +16,15 @@ describe("PitchRepeatExcessPanel", () => {
     }
   });
 
+  it("makes every published table focusable and announces the mobile scroll cue", () => {
+    render(<PitchRepeatExcessPanel />);
+    const regions = screen.getAllByRole("region", { name: /scrollable table/ });
+    expect(regions).toHaveLength(7);
+    for (const region of regions) expect(region).toHaveAttribute("tabindex", "0");
+    expect(new Set(regions.map(region => region.getAttribute("aria-label"))).size).toBe(7);
+    expect(screen.getAllByText("Scroll horizontally for all columns")).toHaveLength(7);
+  });
+
   it("states the measured population and the full dropped-pair waterfall", () => {
     render(<PitchRepeatExcessPanel />);
     expect(screen.getByText(/Measured population: 511,807 adjacent pitch pairs over 2,364 games and 864 pitchers/)).toBeInTheDocument();

@@ -11,6 +11,7 @@ describe("ModuleEvidence", () => {
     render(<ModuleEvidence evidence={{ availability: "partial", missingInputs: [], analyses: [], coverage: [{ population: "NBA", status: "ok", nGamesTotal: 12, nBucketsUsable: 2 }, { population: "TENNIS", status: "not_buildable", reason: "no map" }] }} />);
     expect(screen.getByText("NBA")).toBeInTheDocument();
     expect(screen.getByText("no map")).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "Published coverage (scrollable table)" })).toHaveAttribute("tabindex", "0");
   });
   it("links to a source module's interactive analysis", () => {
     render(<ModuleEvidence evidence={{ availability: "published", missingInputs: [], coverage: [], analyses: [{ id: "tennis-surface-support", title: "Surface Evidence Support" }] }} />);

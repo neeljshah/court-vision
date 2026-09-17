@@ -206,12 +206,7 @@ export default function NovelStatsPage() {
             ) : null}
 
             {c.is_honest_null ? (
-              <p className="nv-nullnote">
-                <b>A published null is a result, not a failure.</b> This stat measures our
-                own inability to convert a real market overshoot. It is on this page at
-                full size because the ones that do not work are the reason to trust the
-                ones that do.
-              </p>
+              <p className="nv-nullnote"><b>A published null is a result, not a failure.</b> This measurement records a market overshoot that this model did not convert. The result is retained with its source, window, and declared limits.</p>
             ) : null}
 
             <div className="nv-foot">
@@ -294,6 +289,7 @@ export default function NovelStatsPage() {
         .nv-close{margin-top:26px;font-size:15px;line-height:1.65;color:var(--ink-2);
           border-left:2px solid var(--signal);padding-left:16px}
         @media(max-width:860px){.nv-grid{grid-template-columns:minmax(0,1fr)}}
+        @media(max-width:600px){.nv{padding:32px 16px 48px}.nv-card{padding:18px 16px}.nv-meta{font-size:11px}.nv-steps li{gap:12px}}
       `}</style>
     </div>
   );

@@ -47,5 +47,7 @@ describe("StarterRestAbsorptionPanel", () => {
     const regions = screen.getAllByRole("region", { name: /scrollable table/ });
     expect(regions).toHaveLength(captions.length);
     for (const region of regions) expect(region).toHaveAttribute("tabindex", "0");
+    expect(new Set(regions.map(region => region.getAttribute("aria-label"))).size).toBe(captions.length);
+    expect(screen.getAllByText("Scroll horizontally for all columns")).toHaveLength(captions.length);
   });
 });

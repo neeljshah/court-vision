@@ -8,4 +8,10 @@ describe("NovelStatsPage", () => {
     expect(screen.getByText(/Estimator A: Observation window 2024-25/)).toBeInTheDocument();
     expect(screen.getByText(/Estimator B: Observation window 2025-26 regular season/)).toBeInTheDocument();
   });
+
+  it("states the honest null as retained evidence instead of a trust argument", () => {
+    render(<NovelStatsPage />);
+    expect(screen.queryByText(/reason to trust/i)).not.toBeInTheDocument();
+    expect(screen.getAllByText(/This measurement records a market overshoot/).length).toBeGreaterThan(0);
+  });
 });

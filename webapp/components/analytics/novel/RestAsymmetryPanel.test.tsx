@@ -16,6 +16,15 @@ describe("RestAsymmetryPanel", () => {
     }
   });
 
+  it("makes every published table focusable and announces the mobile scroll cue", () => {
+    render(<RestAsymmetryPanel />);
+    const regions = screen.getAllByRole("region", { name: /scrollable table/ });
+    expect(regions).toHaveLength(5);
+    for (const region of regions) expect(region).toHaveAttribute("tabindex", "0");
+    expect(new Set(regions.map(region => region.getAttribute("aria-label"))).size).toBe(5);
+    expect(screen.getAllByText("Scroll horizontally for all columns")).toHaveLength(5);
+  });
+
   it("keeps the schedule population and the priced subset apart", () => {
     render(<RestAsymmetryPanel />);
     expect(screen.getByText(/Schedule population: 4,793 games/)).toBeInTheDocument();

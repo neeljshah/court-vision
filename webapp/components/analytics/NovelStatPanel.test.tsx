@@ -8,6 +8,8 @@ describe("NovelStatPanel", () => {
     expect(screen.getByText("Half of the motion is done early.")).toBeInTheDocument();
     expect(screen.getByRole("columnheader", { name: "n move pairs" })).toBeInTheDocument();
     expect(screen.getByRole("cell", { name: "1200" })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "Published results 1 (scrollable table)" })).toHaveAttribute("tabindex", "0");
+    expect(screen.getByText("Scroll horizontally for all columns")).toBeInTheDocument();
   });
 
   it("renders no results table for a panels-shaped artifact", () => {

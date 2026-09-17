@@ -47,7 +47,7 @@ function Grid({ caption, columns, rows, note }: { caption: string; columns: stri
   return (
     <figure className="ra-fig">
       <figcaption>{caption}</figcaption>
-      <div className="ra-scroll" tabIndex={0} role="region" aria-label={`${caption} (scrollable table)`}>
+      <div className="ra-scroll" tabIndex={0} role="region" aria-label={`${caption} (scrollable table)`} data-scroll-region>
         <table>
           <thead>
             <tr>{columns.map(column => <th key={column}>{column}</th>)}</tr>
@@ -61,6 +61,7 @@ function Grid({ caption, columns, rows, note }: { caption: string; columns: stri
           </tbody>
         </table>
       </div>
+      <p className="ra-scroll-hint">Scroll horizontally for all columns</p>
       {note ? <p className="ra-note">{note}</p> : null}
     </figure>
   );
@@ -130,7 +131,7 @@ export function RestAsymmetryPanel({ artifact = loadRestAsymmetry() }: { artifac
         .ra-fig{margin:20px 0 0}
         .ra-fig figcaption{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:7px}
         .ra-scroll{overflow-x:auto;border:1px solid var(--rule);border-radius:8px}
-        .ra table{width:100%;border-collapse:collapse;font-size:12.5px}
+        .ra-scroll-hint{display:none}.ra table{width:100%;min-width:720px;border-collapse:collapse;font-size:12.5px}
         .ra th{text-align:left;white-space:nowrap;font-family:var(--font-mono);font-weight:500;font-size:11px;
           letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3);
           padding:8px 12px;border-bottom:1px solid var(--rule-strong);background:var(--paper-tint)}
@@ -142,6 +143,7 @@ export function RestAsymmetryPanel({ artifact = loadRestAsymmetry() }: { artifac
         .ra-verdict{margin-top:22px;padding:14px 16px;background:var(--paper-tint);
           border-left:3px solid var(--signal);border-radius:0 8px 8px 0}
         .ra-verdict p{font-size:13.5px;line-height:1.6;color:var(--ink-2);margin-top:6px}
+        @media(max-width:720px){.ra-scroll-hint{display:block;margin:8px 0 0;font-family:var(--font-mono);font-size:12px;color:var(--ink-3)}}
       `}</style>
     </section>
   );

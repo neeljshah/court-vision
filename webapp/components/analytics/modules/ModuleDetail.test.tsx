@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { ModuleDetail } from "./ModuleDetail";
 import type { Mod, Out } from "@/app/(analytics)/analytics/m/[id]/page";
@@ -50,5 +50,16 @@ describe("ModuleDetail", () => {
     render(<ModuleDetail mod={mod} out={out} subtitle="When a lead becomes permanent." insight={null} />);
     const papers = screen.getAllByRole("link").filter((link) => /\/analytics\/papers\//.test(link.getAttribute("href") || ""));
     expect(papers.length).toBeGreaterThan(0);
+  });
+
+  it("labels module tables and keeps the Scout continuation reachable", () => {
+    const unsafe = { ...mod, id: "ctx_team_states", title: "Team states", chart_path: "ctx_team_states.png" };
+    render(<ModuleDetail mod={unsafe} out={{ teams: [{ team: "ATL", n_games: 2 }] }} subtitle="Published team measurements." insight={{ cited: [{ field: "teams.0.team", value: "ATL", path: "ctx_team_states.json" }] }} />);
+    expect(screen.getByRole("region", { name: "Published replacement measurements (scrollable table)" })).toHaveAttribute("tabindex", "0");
+    expect(screen.getByRole("region", { name: "Published module receipts (scrollable table)" })).toHaveAttribute("tabindex", "0");
+    const receipts = screen.getByRole("table", { name: "Published module receipts" });
+    expect(within(receipts).getByRole("rowheader", { name: "teams.0.team" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Continue reading" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Ask Scout about this module" }).getAttribute("href")).toMatch(/^\/analytics\/ask\/?\?q=Team%20states$/);
   });
 });
