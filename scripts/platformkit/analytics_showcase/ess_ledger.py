@@ -5,17 +5,24 @@ import os
 import sys
 from datetime import datetime, timezone
 
+try:
+    from scripts.platformkit.analytics_showcase._clone_safe import verify_recorded_artifact
+except ImportError:
+    from _clone_safe import verify_recorded_artifact
+
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 SHOWCASE = os.path.join(ROOT, "scripts", "platformkit", "analytics_showcase")
 IN_JSON = os.path.join(SHOWCASE, "out", "residual_autocorrelation.json")
 OUT_JSON = os.path.join(SHOWCASE, "out", "ess_ledger.json")
 
 # Verified expected shape of the source artifact (guards against upstream drift).
+# Every literal is read from the committed out/residual_autocorrelation.json --
+# revision 2, recomputed on the segment-clean corpus (commit b063fb445).
 EXPECTED = {
-    "mlb": {"n_records": 78986, "n_series": 227, "model_median": 0.9809, "market_median": 0.9799,
-            "model_n_games": 222, "market_n_games": 225},
-    "soccer_intl": {"n_records": 9003, "n_series": 51, "model_median": 0.9624, "market_median": 0.9489,
-                    "model_n_games": 51, "market_n_games": 51},
+    "mlb": {"n_records": 27351, "n_series": 178, "model_median": 0.9713, "market_median": 0.9645,
+            "model_n_games": 173, "market_n_games": 173},
+    "soccer_intl": {"n_records": 4265, "n_series": 27, "model_median": 0.9662, "market_median": 0.9517,
+                    "model_n_games": 26, "market_n_games": 26},
 }
 
 
@@ -102,22 +109,48 @@ def _print_table(corpora):
               f"{c['ess_anchor']:>12}{c['infl_anchor']:>13}")
 
 
-def check():
-    payload = build()
+def _validate_recorded(payload):
+    """Internal consistency of the COMMITTED ledger: every derived figure must
+    follow from the row/game/rho numbers the artifact itself records. No literal
+    from any other artifact -- this validates the ledger, not the corpus."""
+    assert payload["descriptive_only"] is True and payload["edge_claimed"] is False
     corpora = {c["sport"]: c for c in payload["corpora"]}
-    assert set(corpora) == set(EXPECTED), corpora.keys()
+    assert set(corpora) == set(EXPECTED), sorted(corpora)
     for sport, c in corpora.items():
-        assert c["ess_anchor"] <= c["ess_ar1"], (sport, "ess_anchor > ess_ar1")
-        assert c["ess_anchor"] <= c["n_games"], (sport, "ess_anchor > n_games")
-        assert c["ess_ar1"] >= 1 and c["ess_anchor"] >= 1, (sport, "ess < 1")
-        assert c["infl_anchor"] >= c["infl_ar1"], (sport, "infl_anchor < infl_ar1")
-        assert c["infl_ar1"] > 1.0 and c["infl_anchor"] > 1.0, (sport, "inflation not > 1.0")
+        rho = c["rho_model"]
+        assert c["ess_ar1"] == int(c["n_rows"] * (1 - rho) / (1 + rho)), (sport, "ess_ar1")
+        assert c["ess_anchor"] == min(c["ess_ar1"], c["n_games"]), (sport, "ess_anchor")
+        assert c["infl_ar1"] == round(math.sqrt(c["n_rows"] / c["ess_ar1"]), 1), (sport, "infl_ar1")
+        assert c["infl_anchor"] == round(math.sqrt(c["n_rows"] / c["ess_anchor"]), 1), (sport, "infl_anchor")
+        assert c["ess_ar1"] >= 1 and c["infl_anchor"] >= c["infl_ar1"] > 1.0, (sport, "degenerate ESS")
         for k in ("ess_ar1", "ess_anchor", "infl_ar1", "infl_anchor"):
             v = c[k]
             assert not (isinstance(v, float) and (math.isnan(v) or math.isinf(v))), (sport, k, v)
-    mlb = corpora["mlb"]
-    assert mlb["ess_anchor"] == 227, mlb["ess_anchor"]
-    assert abs(mlb["infl_anchor"] - 18.7) < 1e-9, mlb["infl_anchor"]
+
+
+def check():
+    """Verify the COMMITTED ledger; deliberately do NOT recompose it.
+
+    out/ess_ledger.json is the 2026-07-25 composition. Its source,
+    residual_autocorrelation.json, has since been rebuilt at revision 2 on the
+    segment-clean corpus, so the ledger is listed under
+    derived_artifacts_under_review in webapp/public/data/audits/mlb-ingame-integrity.json
+    and the published pages disclose it as awaiting recomposition. Recomposing it
+    inside a --check would silently resolve that published notice, so the check
+    verifies the recorded artifact instead and REPORTS the pending delta.
+    Recomposition is the plain `python -m ...ess_ledger` run, done deliberately
+    together with the receipt and the pages that quote it.
+    """
+    payload = verify_recorded_artifact(OUT_JSON, _validate_recorded, "ess_ledger")
+    recorded = {c["sport"]: c["n_rows"] for c in payload["corpora"]}
+    with open(IN_JSON, encoding="utf-8") as f:
+        current = {s: v["n_records"] for s, v in json.load(f)["sports"].items()}
+    pending = sorted(s for s, n in recorded.items() if current.get(s) != n)
+    if pending:
+        print("PENDING RECOMPOSITION (declared in webapp/public/data/audits/"
+              "mlb-ingame-integrity.json -> derived_artifacts_under_review): "
+              + "; ".join(f"{s} ledger rows {recorded[s]} vs source now {current.get(s)}"
+                          for s in pending))
     print("OK")
 
 
