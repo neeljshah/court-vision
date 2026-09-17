@@ -574,3 +574,11 @@ graft/
 
 # evidence archives over the GitHub 100 MB limit stay local-only (S225 state archive, 274 MB)
 docs/evidence/harness/*_state_differentials.csv
+
+# public-tree minimization 2026-09-17 (kept on disk + in the private repo tag pre-minimize-2026-09-17)
+g304_local_renders/
+g304_local_renders_ext/
+.pytest_tmp_g410/
+/findings.md
+/task_plan.md
+/FINAL_REPORT.md
