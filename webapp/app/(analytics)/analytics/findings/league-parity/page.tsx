@@ -13,6 +13,10 @@ import { loadArtifact, type Artifact } from "@/lib/showcase.server";
 import { Receipt } from "@/components/analytics/Receipt";
 import { findingMeta } from "@/lib/analytics/og";
 
+import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
+
+import { FindingUnavailable } from "@/components/analytics/findings/FindingUnavailable";
+
 export const metadata: Metadata = {
   title: "A Parity Ledger",
   description:
@@ -118,7 +122,7 @@ export default function LeagueParityPage() {
       <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }}>
         <p className="overline">Findings / League parity</p>
         <h1 style={h1}>How competitive is each season? A parity ledger</h1>
-        <p style={lede}>Exhibit data not available in this build.</p>
+        <FindingUnavailable artifactId="league_parity_index" />
       </div>
     );
   }
@@ -143,7 +147,7 @@ export default function LeagueParityPage() {
         vs. a full 1230-game season, so read this as a small, honest description, not a trend.
       </p>
 
-      <div role="region" aria-label="Published measurements" data-scroll-region style={{ marginTop: 40, overflowX: "auto", maxWidth: 900 }}>
+      <FindingTableRegion label="Published measurements" style={{ marginTop: 40, overflowX: "auto", maxWidth: 900 }}>
         <table className="tnum" style={{ borderCollapse: "collapse", width: "100%", minWidth: 760 }}>
           <thead>
             <tr>
@@ -159,13 +163,13 @@ export default function LeagueParityPage() {
           <tbody>
             {data.seasons.map((s) => (
               <tr key={s.season}>
-                <td style={{ ...td, fontWeight: 600 }}>
+                  <th scope="row" style={{ ...td, fontWeight: 600 }}>
                   {s.season}
                   {s.looks_partial_vs_full_season ? <span style={partialTag}>partial season</span> : null}
                   {!s.meets_games_floor ? (
                     <span style={{ ...partialTag, color: "var(--ink-3)" }}>below games floor</span>
                   ) : null}
-                </td>
+                  </th>
                 <td style={td} className="mono">{s.n_games}</td>
                 <td style={td} className="mono">{s.n_teams}</td>
                 <td style={{ ...td, fontWeight: 600 }} className="mono">{s.win_share_gini}</td>
@@ -175,8 +179,7 @@ export default function LeagueParityPage() {
               </tr>
             ))}
           </tbody>
-        </table>
-      </div>
+        </table></FindingTableRegion>
 
       <div style={{ marginTop: 32, maxWidth: 700 }}>
         <p style={sectionH}>Methodology and confounds</p>

@@ -10,6 +10,10 @@ import { loadArtifact, type Artifact } from "@/lib/showcase.server";
 import { Receipt } from "@/components/analytics/Receipt";
 import { findingMeta } from "@/lib/analytics/og";
 
+import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
+
+import { FindingUnavailable } from "@/components/analytics/findings/FindingUnavailable";
+
 export const metadata: Metadata = {
   title: "Greater Than The Sum Of Their Parts",
   description:
@@ -88,7 +92,7 @@ function LineupTable({ title, rows, note }: { title: string; rows: LineupRow[]; 
     <section style={{ marginTop: 40 }}>
       <p style={sectionH}>{title}</p>
       {note ? <p style={{ ...lede, fontSize: 14.5, marginTop: 6, color: "var(--ink-3)" }}>{note}</p> : null}
-      <div role="region" aria-label="Published measurements" data-scroll-region style={{ marginTop: 16, overflowX: "auto", maxWidth: 900 }}>
+      <FindingTableRegion label="Published measurements" style={{ marginTop: 16, overflowX: "auto", maxWidth: 900 }}>
         <table className="tnum" style={{ borderCollapse: "collapse", width: "100%", minWidth: 760 }}>
           <thead>
             <tr>
@@ -114,8 +118,7 @@ function LineupTable({ title, rows, note }: { title: string; rows: LineupRow[]; 
               </tr>
             ))}
           </tbody>
-        </table>
-      </div>
+        </table></FindingTableRegion>
     </section>
   );
 }
@@ -128,7 +131,7 @@ export default function LineupSynergyPage() {
       <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }}>
         <p className="overline">Findings / Lineup synergy</p>
         <h1 style={h1}>Greater than the sum of their parts: a lineup-synergy ledger</h1>
-        <p style={lede}>Exhibit data not available in this build.</p>
+        <FindingUnavailable artifactId="lineup_synergy" />
       </div>
     );
   }

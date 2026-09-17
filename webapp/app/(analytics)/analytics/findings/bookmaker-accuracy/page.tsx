@@ -10,6 +10,10 @@ import { loadArtifact, type Artifact } from "@/lib/showcase.server";
 import { Receipt } from "@/components/analytics/Receipt";
 import { findingMeta } from "@/lib/analytics/og";
 
+import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
+
+import { FindingUnavailable } from "@/components/analytics/findings/FindingUnavailable";
+
 export const metadata: Metadata = {
   title: "How accurate were the market sources?",
   description:
@@ -89,7 +93,7 @@ function LeaderboardTable({ sport, block, verdict }: { sport: string; block: Spo
       <p style={{ ...lede, fontSize: 14.5, marginTop: 6, color: "var(--ink-3)" }}>
         Market: {block.market} &mdash; outcome: {block.outcome} &mdash; shared subset n={block.n_shared.toLocaleString()}
       </p>
-      <div role="region" aria-label="Published measurements" data-scroll-region style={{ marginTop: 16, overflowX: "auto", maxWidth: 700 }}>
+      <FindingTableRegion label={`${sport} published measurements`} style={{ marginTop: 16, overflowX: "auto", maxWidth: 700 }}>
         <table className="tnum" style={{ borderCollapse: "collapse", width: "100%", minWidth: 420 }}>
           <thead>
             <tr>
@@ -101,21 +105,20 @@ function LeaderboardTable({ sport, block, verdict }: { sport: string; block: Spo
           <tbody>
             {block.books.map((b, i) => (
               <tr key={b.book}>
-                <td style={{ ...td, fontWeight: 600 }}>
+                <th scope="row" style={{ ...td, fontWeight: 600 }}>
                   {b.book}
                   {i === 0 ? (
                     <span style={{ marginLeft: 8, fontSize: 11, fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.04em" }}>
                       sharpest
                     </span>
                   ) : null}
-                </td>
+                </th>
                 <td style={td} className="mono">{b.brier}</td>
                 <td style={td} className="mono">{b.n.toLocaleString()}</td>
               </tr>
             ))}
           </tbody>
-        </table>
-      </div>
+        </table></FindingTableRegion>
       <p style={{ ...noteBox, marginTop: 16 }}>{verdict}</p>
     </section>
   );
@@ -129,7 +132,7 @@ export default function BookmakerAccuracyPage() {
       <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }}>
         <p className="overline">Findings / Grading the books</p>
         <h1 style={h1}>How accurate were the market sources?</h1>
-        <p style={lede}>Exhibit data not available in this build.</p>
+        <FindingUnavailable artifactId="bookmaker_accuracy" />
       </div>
     );
   }
@@ -148,13 +151,13 @@ export default function BookmakerAccuracyPage() {
       <LeaderboardTable
         sport="Tennis -- match winner"
         block={tennis}
-        verdict="Pinnacle is the (barely) sharpest book, as the literature predicts -- but the gap to Bet365 is 0.0005 Brier, tiny next to the market average sitting between them."
+        verdict="In this published subset, Pinnacle has the lowest Brier score; the difference is 0.0005."
       />
 
       <LeaderboardTable
         sport="Soccer -- over/under 2.5 goals"
         block={soccer}
-        verdict="A dead heat: Pinnacle and the market average tie at 0.2395, Bet365 a hair behind at 0.2396. On this market the books are statistically indistinguishable -- an honest null of separation."
+        verdict="Pinnacle and the market average are both 0.2395. Bet365 is 0.0001 higher. On this market the books are statistically indistinguishable."
       />
 
       <div style={{ marginTop: 32, maxWidth: 700 }}>

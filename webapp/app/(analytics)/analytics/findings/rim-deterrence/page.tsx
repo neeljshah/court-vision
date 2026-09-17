@@ -10,6 +10,10 @@ import { loadArtifact, type Artifact } from "@/lib/showcase.server";
 import { Receipt } from "@/components/analytics/Receipt";
 import { findingMeta } from "@/lib/analytics/og";
 
+import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
+
+import { FindingUnavailable } from "@/components/analytics/findings/FindingUnavailable";
+
 export const metadata: Metadata = {
   title: "Who Bends The Shot Chart",
   description:
@@ -97,7 +101,7 @@ function SeasonTable({ block }: { block: SeasonBlock }) {
       <p style={{ ...lede, fontSize: 14.5, marginTop: 6, color: "var(--ink-3)" }}>
         n qualified (min_on &ge; {block.min_on_floor.toLocaleString()}) = {block.n_qualified.toLocaleString()}
       </p>
-      <div role="region" aria-label="Published measurements" data-scroll-region style={{ marginTop: 16, overflowX: "auto", maxWidth: 760 }}>
+      <FindingTableRegion label="Published measurements" style={{ marginTop: 16, overflowX: "auto", maxWidth: 760 }}>
         <table className="tnum" style={{ borderCollapse: "collapse", width: "100%", minWidth: 620 }}>
           <thead>
             <tr>
@@ -123,8 +127,7 @@ function SeasonTable({ block }: { block: SeasonBlock }) {
               </tr>
             ))}
           </tbody>
-        </table>
-      </div>
+        </table></FindingTableRegion>
     </section>
   );
 }
@@ -137,7 +140,7 @@ export default function RimDeterrencePage() {
       <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }}>
         <p className="overline">Findings / Rim deterrence</p>
         <h1 style={h1}>Who bends the shot chart: a rim-deterrence leaderboard</h1>
-        <p style={lede}>Exhibit data not available in this build.</p>
+        <FindingUnavailable artifactId="rim_deterrence" />
       </div>
     );
   }

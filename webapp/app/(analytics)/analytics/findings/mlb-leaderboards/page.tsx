@@ -12,6 +12,10 @@ import { loadArtifact, type Artifact } from "@/lib/showcase.server";
 import { Receipt } from "@/components/analytics/Receipt";
 import { findingMeta } from "@/lib/analytics/og";
 
+import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
+
+import { FindingUnavailable } from "@/components/analytics/findings/FindingUnavailable";
+
 export const metadata: Metadata = {
   title: "MLB Leaderboards",
   description:
@@ -62,20 +66,19 @@ function OozTable({ rows, headLabel }: { rows: NamedRate[]; headLabel: string })
   return (
     <div>
       <p style={boardHead}>{headLabel}</p>
-      <div role="region" aria-label="Published measurements" data-scroll-region style={tableWrap}>
+      <FindingTableRegion label="Published measurements" style={tableWrap}>
         <table className="tnum" style={{ borderCollapse: "collapse", width: "100%", minWidth: 280 }}>
           <thead><tr><th style={th}>Name</th><th style={th}>OOZ strike rate</th><th style={th}>n</th></tr></thead>
           <tbody>
             {rows.map((r, i) => (
               <tr key={`${r.name}-${i}`}>
-                <td style={td}>{r.name}</td>
+                <th scope="row" style={td}>{r.name}</th>
                 <td style={{ ...td, fontWeight: 600 }} className="mono">{r.ooz_strike_rate.toFixed(3)}</td>
                 <td style={td} className="mono">{r.n_ooz_called.toLocaleString()}</td>
               </tr>
             ))}
           </tbody>
-        </table>
-      </div>
+        </table></FindingTableRegion>
     </div>
   );
 }
@@ -88,7 +91,7 @@ export default function MlbLeaderboardsPage() {
       <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }}>
         <p className="overline">Findings / MLB leaderboards</p>
         <h1 style={h1}>Descriptive MLB leaderboards, with the nulls attached</h1>
-        <p style={lede}>Exhibit data not available in this build.</p>
+        <FindingUnavailable artifactId="mlb_descriptive_leaderboards" />
       </div>
     );
   }
@@ -125,13 +128,13 @@ export default function MlbLeaderboardsPage() {
           <p style={sectionLabel}>Platoon splits</p>
           <p style={caption}>{platoon_splits.label}</p>
           {platoon_splits.floor ? <p style={floorNote}>floor: {platoon_splits.floor} &middot; n_qualified {platoon_splits.n_qualified.toLocaleString()}</p> : null}
-          <div role="region" aria-label="Published split measurements" data-scroll-region style={{ ...tableWrap, marginTop: 12 }}>
+          <FindingTableRegion label="Published split measurements" style={{ ...tableWrap, marginTop: 12 }}>
             <table className="tnum" style={{ borderCollapse: "collapse", width: "100%", minWidth: 600 }}>
               <thead><tr><th style={th}>Batter</th><th style={th}>vs LHP</th><th style={th}>vs RHP</th><th style={th}>Delta</th><th style={th}>PA (L/R)</th></tr></thead>
               <tbody>
                 {platoon_splits.top.map((r, i) => (
                   <tr key={`${r.name}-${i}`}>
-                    <td style={td}>{r.name}</td>
+                    <th scope="row" style={td}>{r.name}</th>
                     <td style={td} className="mono">{r.rate_vs_l.toFixed(3)}</td>
                     <td style={td} className="mono">{r.rate_vs_r.toFixed(3)}</td>
                     <td style={{ ...td, fontWeight: 600 }} className="mono">{r.platoon_delta.toFixed(3)}</td>
@@ -139,8 +142,7 @@ export default function MlbLeaderboardsPage() {
                   </tr>
                 ))}
               </tbody>
-            </table>
-          </div>
+            </table></FindingTableRegion>
         </>
       ) : null}
 

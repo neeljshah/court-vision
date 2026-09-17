@@ -12,6 +12,10 @@ import { loadArtifact, type Artifact } from "@/lib/showcase.server";
 import { Receipt } from "@/components/analytics/Receipt";
 import { findingMeta } from "@/lib/analytics/og";
 
+import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
+
+import { FindingUnavailable } from "@/components/analytics/findings/FindingUnavailable";
+
 export const metadata: Metadata = {
   title: "Shrinkage",
   description:
@@ -62,9 +66,9 @@ function signed(v: number): string {
   return v >= 0 ? `+${v}` : String(v);
 }
 
-function RegressorTable({ rows }: { rows: RegressorRow[] }) {
+function RegressorTable({ rows, label }: { rows: RegressorRow[]; label: string }) {
   return (
-    <div role="region" aria-label="Published measurements" data-scroll-region style={tableWrap}>
+    <FindingTableRegion label={`${label} biggest regressors`} style={tableWrap}>
       <table className="tnum" style={{ borderCollapse: "collapse", width: "100%", minWidth: 560 }}>
         <thead>
           <tr>
@@ -78,7 +82,7 @@ function RegressorTable({ rows }: { rows: RegressorRow[] }) {
         <tbody>
           {rows.map((r, i) => (
             <tr key={`${r.name}-${i}`}>
-              <td style={td}>{r.name}</td>
+              <th scope="row" style={td}>{r.name}</th>
               <td style={td} className="mono">{r.n.toLocaleString()}</td>
               <td style={td} className="mono">{r.raw_rate}</td>
               <td style={{ ...td, fontWeight: 600 }} className="mono">{r.shrunk_rate}</td>
@@ -86,14 +90,13 @@ function RegressorTable({ rows }: { rows: RegressorRow[] }) {
             </tr>
           ))}
         </tbody>
-      </table>
-    </div>
+      </table></FindingTableRegion>
   );
 }
 
-function ShrunkTable({ rows }: { rows: Row[] }) {
+function ShrunkTable({ rows, label }: { rows: Row[]; label: string }) {
   return (
-    <div role="region" aria-label="Published measurements" data-scroll-region style={tableWrap}>
+    <FindingTableRegion label={`${label} shrunk leaderboard`} style={tableWrap}>
       <table className="tnum" style={{ borderCollapse: "collapse", width: "100%", minWidth: 480 }}>
         <thead>
           <tr>
@@ -106,15 +109,14 @@ function ShrunkTable({ rows }: { rows: Row[] }) {
         <tbody>
           {rows.map((r, i) => (
             <tr key={`${r.name}-${i}`}>
-              <td style={td}>{r.name}</td>
+              <th scope="row" style={td}>{r.name}</th>
               <td style={td} className="mono">{r.n.toLocaleString()}</td>
               <td style={td} className="mono">{r.raw_rate}</td>
               <td style={{ ...td, fontWeight: 600 }} className="mono">{r.shrunk_rate}</td>
             </tr>
           ))}
         </tbody>
-      </table>
-    </div>
+      </table></FindingTableRegion>
   );
 }
 
@@ -126,7 +128,7 @@ export default function ShrinkagePage() {
       <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }}>
         <p className="overline">Findings / Shrinkage</p>
         <h1 style={h1}>When the leaderboard regresses to the mean</h1>
-        <p style={lede}>Exhibit data not available in this build.</p>
+        <FindingUnavailable artifactId="mlb_shrinkage" />
       </div>
     );
   }
@@ -168,11 +170,11 @@ export default function ShrinkagePage() {
 
           <p style={boardHead}>Biggest regressors</p>
           <p style={caption}>The small-n rows the raw leaderboard overstated most.</p>
-          <RegressorTable rows={g.biggest_regressors} />
+          <RegressorTable rows={g.biggest_regressors} label={g.label} />
 
           <p style={boardHead}>Leaderboard after shrinkage</p>
           <p style={caption}>Ranked by shrunk rate &mdash; the honest ranking.</p>
-          <ShrunkTable rows={g.top_by_shrunk} />
+          <ShrunkTable rows={g.top_by_shrunk} label={g.label} />
         </div>
       ))}
 

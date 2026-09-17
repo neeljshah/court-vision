@@ -10,6 +10,10 @@ import { loadArtifact, type Artifact } from "@/lib/showcase.server";
 import { Receipt } from "@/components/analytics/Receipt";
 import { findingMeta } from "@/lib/analytics/og";
 
+import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
+
+import { FindingUnavailable } from "@/components/analytics/findings/FindingUnavailable";
+
 export const metadata: Metadata = {
   title: "Tennis: Momentum, Myths, and Altitude",
   description:
@@ -63,7 +67,7 @@ export default function TennisFindingsPage() {
       <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }}>
         <p className="overline">Findings / Tennis</p>
         <h1 style={h1}>Tennis: where momentum lives, and where it doesn&rsquo;t</h1>
-        <p style={lede}>Exhibit data not available in this build.</p>
+        <FindingUnavailable artifactId="tennis_grain_and_myths" />
       </div>
     );
   }
@@ -91,7 +95,7 @@ export default function TennisFindingsPage() {
           <h2 className="serif" style={h2}>{story.title}</h2>
           <p style={{ ...lede, fontSize: 15, marginTop: 10, maxWidth: "none" }}>{story.summary}</p>
 
-          <div role="region" aria-label="Published measurements" data-scroll-region style={{ marginTop: 16, overflowX: "auto" }}>
+          <FindingTableRegion label={`${story.title} measurements`} style={{ marginTop: 16, overflowX: "auto" }}>
             <table className="tnum" style={{ borderCollapse: "collapse", width: "100%", minWidth: 620 }}>
               <thead>
                 <tr>
@@ -105,10 +109,10 @@ export default function TennisFindingsPage() {
               <tbody>
                 {story.claims.map((c) => (
                   <tr key={c.hypothesis}>
-                    <td style={{ ...td, fontWeight: 600, whiteSpace: "normal" }}>
+                    <th scope="row" style={{ ...td, fontWeight: 600, whiteSpace: "normal" }}>
                       {humanize(c.hypothesis)}
                       <span style={gloss}>{c.reading}</span>
-                    </td>
+                    </th>
                     <td style={td} className="mono">
                       <span style={{ color: verdictColor(c.verdict), fontWeight: 600 }}>{c.verdict}</span>
                     </td>
@@ -118,8 +122,7 @@ export default function TennisFindingsPage() {
                   </tr>
                 ))}
               </tbody>
-            </table>
-          </div>
+            </table></FindingTableRegion>
 
           {si === 0 && pointClaim && gameClaim ? (
             <p style={callout}>

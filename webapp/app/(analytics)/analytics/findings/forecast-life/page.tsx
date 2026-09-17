@@ -13,6 +13,10 @@ import { loadArtifact, type Artifact } from "@/lib/showcase.server";
 import { Receipt } from "@/components/analytics/Receipt";
 import { findingMeta } from "@/lib/analytics/og";
 
+import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
+
+import { FindingUnavailable } from "@/components/analytics/findings/FindingUnavailable";
+
 export const metadata: Metadata = {
   title: "The Life of a Forecast",
   description:
@@ -69,7 +73,7 @@ export default function ForecastLifePage() {
       <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }}>
         <p className="overline">Findings / Life of a forecast</p>
         <h1 style={h1}>The life of a forecast</h1>
-        <p style={lede}>Exhibit data not available in this build.</p>
+        <FindingUnavailable artifactId="novel_line_half_life" />
       </div>
     );
   }
@@ -101,7 +105,7 @@ export default function ForecastLifePage() {
         season.
       </p>
 
-      <div role="region" aria-label="Published measurements" data-scroll-region style={tableWrap}>
+      <FindingTableRegion label="Published measurements" style={tableWrap}>
         <table className="tnum" style={{ borderCollapse: "collapse", width: "100%", minWidth: 640 }}>
           <thead>
             <tr>
@@ -117,7 +121,7 @@ export default function ForecastLifePage() {
           <tbody>
             {results.map((r) => (
               <tr key={r.sport}>
-                <td style={{ ...td, fontWeight: 600 }}>{sportLabel(r.sport)}</td>
+                <th scope="row" style={{ ...td, fontWeight: 600 }}>{sportLabel(r.sport)}</th>
                 <td style={td} className="mono">{r.half_life_label}</td>
                 <td style={td} className="mono">{r.cumulative_fraction_by_boundary_h["6.0"]}</td>
                 <td style={td} className="mono">{r.cumulative_fraction_by_boundary_h["3.0"]}</td>
@@ -127,8 +131,7 @@ export default function ForecastLifePage() {
               </tr>
             ))}
           </tbody>
-        </table>
-      </div>
+        </table></FindingTableRegion>
       <p style={{ ...standfirst, fontStyle: "normal", fontSize: 13, color: "var(--ink-3)" }}>
         Fractions are cumulative share of total absolute line motion completed by that many hours before tip (0..1, not a percent).
       </p>
@@ -147,7 +150,7 @@ export default function ForecastLifePage() {
       {inGameSports.map((sport) => (
         <div key={sport} style={{ marginTop: 28 }}>
           <p style={{ ...sectionH, fontSize: 16, marginTop: 0, fontWeight: 700 }}>{sportLabel(sport)}</p>
-          <div role="region" aria-label={`${sportLabel(sport)} measurements`} data-scroll-region style={tableWrap}>
+          <FindingTableRegion label={`${sportLabel(sport)} measurements`} style={tableWrap}>
             <table className="tnum" style={{ borderCollapse: "collapse", width: "100%", minWidth: 560 }}>
               <thead>
                 <tr>
@@ -162,7 +165,7 @@ export default function ForecastLifePage() {
               <tbody>
                 {Object.entries(checkpoints[sport]).map(([key, c]) => (
                   <tr key={key}>
-                    <td style={{ ...td, fontWeight: 600 }} className="mono">{key}</td>
+                    <th scope="row" style={{ ...td, fontWeight: 600 }} className="mono">{key}</th>
                     <td style={td} className="mono">{c.n.toLocaleString()}</td>
                     <td style={td} className="mono">{c.market_brier}</td>
                     <td style={td} className="mono">{c.model_brier}</td>
@@ -172,7 +175,7 @@ export default function ForecastLifePage() {
                 ))}
               </tbody>
             </table>
-          </div>
+          </FindingTableRegion>
         </div>
       ))}
 

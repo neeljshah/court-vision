@@ -7,7 +7,7 @@ import { resolveResearchSourceDestination } from "@/lib/analytics/researchSource
 import { RETRACTIONS } from "./retractions";
 
 export const metadata: Metadata = {
-  title: "The Retraction Story",
+  title: "Withdrawn measurements and corrections",
   description: "Six withdrawn headline figures, with the measurement failure, the withdrawal and editorial dates, and the published replacement where one exists.",
   ...findingMeta("retraction"),
 };
@@ -64,7 +64,7 @@ export default function RetractionPage() {
   return (
     <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }}>
       <p className="overline">Findings / Retraction</p>
-      <h1 style={h1}>The Retraction Story</h1>
+      <h1 style={h1}>Withdrawn measurements and corrections.</h1>
       <p style={lede}>
         These six headline figures were published, then withdrawn when their measurements failed.
         Each entry names the measurement, the defect, the date the withdrawal happened where the

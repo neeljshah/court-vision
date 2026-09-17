@@ -12,6 +12,10 @@ import { loadArtifact, type Artifact } from "@/lib/showcase.server";
 import { Receipt } from "@/components/analytics/Receipt";
 import { findingMeta } from "@/lib/analytics/og";
 
+import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
+
+import { FindingUnavailable } from "@/components/analytics/findings/FindingUnavailable";
+
 export const metadata: Metadata = {
   title: "Is the Market Calibrated?",
   description:
@@ -90,7 +94,7 @@ function BucketTable({ sport, block }: { sport: string; block: SportBlock }) {
       <p style={{ ...lede, fontSize: 14.5, marginTop: 6, color: "var(--ink-3)" }}>
         {block.book} &mdash; {block.market} &mdash; n={block.n_total.toLocaleString()}
       </p>
-      <div role="region" aria-label="Published measurements" data-scroll-region style={{ marginTop: 16, overflowX: "auto", maxWidth: 760 }}>
+      <FindingTableRegion label="Published measurements" style={{ marginTop: 16, overflowX: "auto", maxWidth: 760 }}>
         <table className="tnum" style={{ borderCollapse: "collapse", width: "100%", minWidth: 620 }}>
           <thead>
             <tr>
@@ -114,8 +118,7 @@ function BucketTable({ sport, block }: { sport: string; block: SportBlock }) {
               </tr>
             ))}
           </tbody>
-        </table>
-      </div>
+        </table></FindingTableRegion>
       <p style={{ ...noteBox, marginTop: 16 }}>
         <strong style={{ color: "var(--ink)" }}>Verdict &mdash; </strong>
         {block.verdict}.
@@ -132,7 +135,7 @@ export default function FavoriteLongshotPage() {
       <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }}>
         <p className="overline">Findings / Market calibration</p>
         <h1 style={h1}>Is the published market calibration consistent? A favorite-longshot audit</h1>
-        <p style={lede}>Exhibit data not available in this build.</p>
+        <FindingUnavailable artifactId="market_favorite_longshot" />
       </div>
     );
   }

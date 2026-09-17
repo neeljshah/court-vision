@@ -13,6 +13,10 @@ import { loadArtifact, type Artifact } from "@/lib/showcase.server";
 import { Receipt } from "@/components/analytics/Receipt";
 import { findingMeta } from "@/lib/analytics/og";
 
+import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
+
+import { FindingUnavailable } from "@/components/analytics/findings/FindingUnavailable";
+
 export const metadata: Metadata = {
   title: "Effective Sample Size",
   description:
@@ -115,7 +119,7 @@ export default function EffectiveSampleSizePage() {
       <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }}>
         <p className="overline">Findings / Effective Sample Size</p>
         <h1 style={h1}>How independent is our data, really?</h1>
-        <p style={lede}>Exhibit data not available in this build.</p>
+        <FindingUnavailable artifactId="ess_ledger" />
       </div>
     );
   }
@@ -129,7 +133,7 @@ export default function EffectiveSampleSizePage() {
       <p style={lede}>{headline}</p>
       {method ? <p style={{ ...lede, fontSize: 15, marginTop: 12 }}>{method}</p> : null}
 
-      <div role="region" aria-label="Published measurements" data-scroll-region style={{ marginTop: 24, overflowX: "auto", maxWidth: 700 }}>
+      <FindingTableRegion label="Published measurements" style={{ marginTop: 24, overflowX: "auto", maxWidth: 700 }}>
         <table className="tnum" style={{ borderCollapse: "collapse", width: "100%", minWidth: 620 }}>
           <thead>
             <tr>
@@ -145,7 +149,7 @@ export default function EffectiveSampleSizePage() {
           <tbody>
             {corpora.map((c) => (
               <tr key={c.sport}>
-                <td style={{ ...td, fontWeight: 600 }}>{sportLabel(c.sport)}</td>
+                <th scope="row" style={{ ...td, fontWeight: 600 }}>{sportLabel(c.sport)}</th>
                 <td style={td}>{c.n_rows.toLocaleString()}</td>
                 <td style={td}>{c.n_games.toLocaleString()}</td>
                 <td style={td} className="mono">
@@ -161,8 +165,7 @@ export default function EffectiveSampleSizePage() {
               </tr>
             ))}
           </tbody>
-        </table>
-      </div>
+        </table></FindingTableRegion>
 
       {/* The lead example is templated off corpora[0], never hardcoded: on a page
           whose entire point is number integrity, a prose "78,986 -> 227" that could

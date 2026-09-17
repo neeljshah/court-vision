@@ -1,0 +1,13 @@
+.region { overflow-x: auto; max-width: 100%; }
+.cue { display: none; }
+
+@media (max-width: 720px) {
+  .cue {
+    display: block;
+    margin-top: 6px;
+    color: var(--ink-3);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.4;
+  }
+}

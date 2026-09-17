@@ -47,9 +47,9 @@ export default function FindingsIndexPage() {
   return (
     <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }}>
       <p className="overline">Findings</p>
-      <h1 style={h1}>The honesty exhibits</h1>
+      <h1 style={h1}>Findings and revisions</h1>
       <p style={lede}>
-        These pages document how measurements hold up under review. Each exhibit
+        {findingsIndex.length} findings document how measurements hold up under review. Each exhibit
         either takes a number apart, deflates its own sample, or publishes a
         failed result alongside the dated source artifact.
       </p>
@@ -63,6 +63,10 @@ export default function FindingsIndexPage() {
               {f.title}
             </div>
             <p style={{ margin: 0, fontSize: 14.5, lineHeight: 1.6, color: "var(--ink-2)" }}>{f.dek}</p>
+            <p className="mono" style={{ marginTop: 12, fontSize: 12, color: "var(--ink-3)" }}>
+              as of {f.asOf || "date not published"} / {f.sport}
+            </p>
+            <p className="mono" style={{ marginTop: 4, fontSize: 12, color: "var(--ink-3)" }}>{f.artifactStatus}</p>
           </Link>
         ))}
       </div>

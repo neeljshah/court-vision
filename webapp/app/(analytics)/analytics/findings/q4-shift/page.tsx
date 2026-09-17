@@ -14,6 +14,10 @@ import { loadArtifact, type Artifact } from "@/lib/showcase.server";
 import { Receipt } from "@/components/analytics/Receipt";
 import { findingMeta } from "@/lib/analytics/og";
 
+import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
+
+import { FindingUnavailable } from "@/components/analytics/findings/FindingUnavailable";
+
 export const metadata: Metadata = {
   title: "The Q4 Shift",
   description:
@@ -96,7 +100,7 @@ function ShiftTable({ rows, statKey, headLabel }: { rows: ShiftRow[]; statKey: "
   return (
     <div>
       <p style={boardHead}>{headLabel}</p>
-      <div role="region" aria-label="Published measurements" data-scroll-region style={tableWrap}>
+      <FindingTableRegion label={`${statKey} ${headLabel} measurements`} style={tableWrap}>
         <table className="tnum" style={{ borderCollapse: "collapse", width: "100%", minWidth: 480 }}>
           <thead>
             <tr>
@@ -110,7 +114,7 @@ function ShiftTable({ rows, statKey, headLabel }: { rows: ShiftRow[]; statKey: "
           <tbody>
             {rows.map((r, i) => (
               <tr key={`${r.player_name}-${i}`}>
-                <td style={td}>{r.player_name}</td>
+                <th scope="row" style={td}>{r.player_name}</th>
                 <td style={td} className="mono">{String(r[q4Key])}</td>
                 <td style={td} className="mono">{String(r[q13Key])}</td>
                 <td style={{ ...td, fontWeight: 600 }} className="mono">{fmtShift(r.shift)}</td>
@@ -118,8 +122,7 @@ function ShiftTable({ rows, statKey, headLabel }: { rows: ShiftRow[]; statKey: "
               </tr>
             ))}
           </tbody>
-        </table>
-      </div>
+        </table></FindingTableRegion>
     </div>
   );
 }
@@ -131,8 +134,8 @@ export default function Q4ShiftPage() {
     return (
       <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }}>
         <p className="overline">Findings / Q4 shift</p>
-        <h1 style={h1}>The fourth-quarter shift &mdash; what we could measure, and what we refused</h1>
-        <p style={lede}>Exhibit data not available in this build.</p>
+        <h1 style={h1}>Observed Q4 rate shifts and their limits.</h1>
+        <FindingUnavailable artifactId="nba_q4_shift" />
       </div>
     );
   }
@@ -143,7 +146,7 @@ export default function Q4ShiftPage() {
   return (
     <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }}>
       <p className="overline">Findings / Q4 shift</p>
-      <h1 style={h1}>The fourth-quarter shift &mdash; what we could measure, and what we refused</h1>
+      <h1 style={h1}>Observed Q4 rate shifts and their limits.</h1>
       {headline ? <p style={lede}>{headline}</p> : null}
 
       {un_refusal_note ? (

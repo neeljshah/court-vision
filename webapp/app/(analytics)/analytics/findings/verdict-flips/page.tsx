@@ -11,6 +11,10 @@ import { Receipt } from "@/components/analytics/Receipt";
 import { VerdictFlipCases, type VerdictFlipCase } from "@/components/analytics/verdict-flips/VerdictFlipCases";
 import { findingMeta } from "@/lib/analytics/og";
 
+import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
+
+import { FindingUnavailable } from "@/components/analytics/findings/FindingUnavailable";
+
 export const metadata: Metadata = {
   title: "Verdict Flips",
   description:
@@ -53,7 +57,7 @@ export default function VerdictFlipsPage() {
       <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }}>
         <p className="overline">Findings / Verdict flips</p>
         <h1 style={h1}>When we changed our mind</h1>
-        <p style={lede}>Exhibit data not available in this build.</p>
+        <FindingUnavailable artifactId="verdict_flip_anatomy" />
       </div>
     );
   }
@@ -89,7 +93,7 @@ export default function VerdictFlipsPage() {
           <p style={{ ...lede, fontSize: 13, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--ink-3)", marginTop: 40, marginBottom: 0, maxWidth: "none" }}>
             Retracted-claim latency
           </p>
-          <div role="region" aria-label="Retracted-claim latency measurements" data-scroll-region style={{ marginTop: 12, overflowX: "auto" }}>
+          <FindingTableRegion label="Retracted-claim latency measurements" style={{ marginTop: 12, overflowX: "auto" }}>
             <table className="tnum" style={{ borderCollapse: "collapse", width: "100%", minWidth: 640 }}>
               <thead>
                 <tr>
@@ -102,15 +106,14 @@ export default function VerdictFlipsPage() {
               <tbody>
                 {retracted.map((r) => (
                   <tr key={`${r.sport}-${r.hypothesis}`}>
-                    <td style={{ ...td, fontWeight: 600 }}>{humanize(r.hypothesis)}</td>
+                    <th scope="row" style={{ ...td, fontWeight: 600 }}>{humanize(r.hypothesis)}</th>
                     <td style={td}>{sportLabel(r.sport)}</td>
                     <td style={td}>{r.days_lived == null ? "undated" : r.days_lived}</td>
                     <td style={{ ...td, whiteSpace: "normal" }}>{r.what_killed_it}</td>
                   </tr>
                 ))}
               </tbody>
-            </table>
-          </div>
+            </table></FindingTableRegion>
           {dating_coverage ? (
             <p style={{ ...lede, fontSize: 13, color: "var(--ink-3)", marginTop: 10, maxWidth: "none" }}>
               run_ts present on {dating_coverage.n_with_run_ts} of {dating_coverage.n_history_rows_total} history rows

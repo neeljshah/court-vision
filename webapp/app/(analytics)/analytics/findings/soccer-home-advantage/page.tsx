@@ -12,6 +12,10 @@ import { loadArtifact, type Artifact } from "@/lib/showcase.server";
 import { Receipt } from "@/components/analytics/Receipt";
 import { findingMeta } from "@/lib/analytics/og";
 
+import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
+
+import { FindingUnavailable } from "@/components/analytics/findings/FindingUnavailable";
+
 export const metadata: Metadata = {
   title: "Soccer Home-Advantage Decomposition",
   description:
@@ -112,7 +116,7 @@ export default function SoccerHomeAdvantagePage() {
       <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }}>
         <p className="overline">Findings / Home advantage</p>
         <h1 style={h1}>Home advantage in international football, and why the gap grew</h1>
-        <p style={lede}>Exhibit data not available in this build.</p>
+        <FindingUnavailable artifactId="soccer_home_advantage" />
       </div>
     );
   }
@@ -133,7 +137,7 @@ export default function SoccerHomeAdvantagePage() {
 
       <section style={{ marginTop: 40 }}>
         <p style={sectionH}>Venue split</p>
-        <div role="region" aria-label="Venue split measurements" data-scroll-region style={{ marginTop: 16, overflowX: "auto", maxWidth: 700 }}>
+        <FindingTableRegion label="Venue split measurements" style={{ marginTop: 16, overflowX: "auto", maxWidth: 700 }}>
           <table className="tnum" style={{ borderCollapse: "collapse", width: "100%", minWidth: 520 }}>
             <thead>
               <tr>
@@ -147,7 +151,7 @@ export default function SoccerHomeAdvantagePage() {
             </thead>
             <tbody>
               <tr>
-                <td style={{ ...td, fontWeight: 600 }}>True home</td>
+                <th scope="row" style={{ ...td, fontWeight: 600 }}>True home</th>
                 <td style={td} className="mono">{true_home.n.toLocaleString()}</td>
                 <td style={td} className="mono">{true_home.home_win_rate}</td>
                 <td style={td} className="mono">{true_home.draw_rate}</td>
@@ -155,7 +159,7 @@ export default function SoccerHomeAdvantagePage() {
                 <td style={td} className="mono">{true_home.goal_diff}</td>
               </tr>
               <tr>
-                <td style={{ ...td, fontWeight: 600 }}>Neutral</td>
+                <th scope="row" style={{ ...td, fontWeight: 600 }}>Neutral</th>
                 <td style={td} className="mono">{neutral.n.toLocaleString()}</td>
                 <td style={td} className="mono">{neutral.home_win_rate}</td>
                 <td style={td} className="mono">{neutral.draw_rate}</td>
@@ -163,8 +167,7 @@ export default function SoccerHomeAdvantagePage() {
                 <td style={td} className="mono">{neutral.goal_diff}</td>
               </tr>
             </tbody>
-          </table>
-        </div>
+          </table></FindingTableRegion>
         {data.hfa_effect ? (
           <p style={{ ...noteBox, marginTop: 16 }}>
             <strong style={{ color: "var(--ink)" }}>Effect &mdash; </strong>
@@ -177,7 +180,7 @@ export default function SoccerHomeAdvantagePage() {
       {data.by_era ? (
         <section style={{ marginTop: 40 }}>
           <p style={sectionH}>By era</p>
-          <div role="region" aria-label="Era measurements" data-scroll-region style={{ marginTop: 16, overflowX: "auto", maxWidth: 700 }}>
+          <FindingTableRegion label="Era measurements" style={{ marginTop: 16, overflowX: "auto", maxWidth: 700 }}>
             <table className="tnum" style={{ borderCollapse: "collapse", width: "100%", minWidth: 520 }}>
               <thead>
                 <tr>
@@ -190,17 +193,16 @@ export default function SoccerHomeAdvantagePage() {
               <tbody>
                 {data.by_era.map((e) => (
                   <tr key={e.era}>
-                    <td style={{ ...td, fontWeight: 600 }}>
+                      <th scope="row" style={{ ...td, fontWeight: 600 }}>
                       {e.era} (n={e.n_true_home.toLocaleString()}/{e.n_neutral.toLocaleString()})
-                    </td>
+                      </th>
                     <td style={td} className="mono">{e.true_home_goal_diff}</td>
                     <td style={td} className="mono">{e.neutral_goal_diff}</td>
                     <td style={td} className="mono">{e.effect_goal_diff}</td>
                   </tr>
                 ))}
               </tbody>
-            </table>
-          </div>
+            </table></FindingTableRegion>
           <p style={{ ...noteBox, marginTop: 16 }}>
             The effect grew because the neutral-venue difference collapsed, not because true-home advantage rose -- true-
             home goal diff is flat across both eras (0.6743 to 0.6745), while the neutral-venue goal diff fell from
@@ -212,7 +214,7 @@ export default function SoccerHomeAdvantagePage() {
       {data.by_tournament_type ? (
         <section style={{ marginTop: 40 }}>
           <p style={sectionH}>By tournament type</p>
-          <div role="region" aria-label="Tournament measurements" data-scroll-region style={{ marginTop: 16, overflowX: "auto", maxWidth: 700 }}>
+          <FindingTableRegion label="Tournament measurements" style={{ marginTop: 16, overflowX: "auto", maxWidth: 700 }}>
             <table className="tnum" style={{ borderCollapse: "collapse", width: "100%", minWidth: 520 }}>
               <thead>
                 <tr>
@@ -226,7 +228,7 @@ export default function SoccerHomeAdvantagePage() {
               <tbody>
                 {data.by_tournament_type.map((b) => (
                   <tr key={b.bucket}>
-                    <td style={{ ...td, fontWeight: 600 }}>{b.bucket}</td>
+                    <th scope="row" style={{ ...td, fontWeight: 600 }}>{b.bucket}</th>
                     <td style={td} className="mono">{b.n.toLocaleString()}</td>
                     <td style={td} className="mono">{b.true_home_goal_diff}</td>
                     <td style={td} className="mono">{b.neutral_goal_diff}</td>
@@ -234,8 +236,7 @@ export default function SoccerHomeAdvantagePage() {
                   </tr>
                 ))}
               </tbody>
-            </table>
-          </div>
+            </table></FindingTableRegion>
           <p style={{ ...noteBox, marginTop: 16 }}>
             The true-home edge is biggest in Qualifiers ({data.by_tournament_type.find((b) => b.bucket === "Qualifiers")?.effect_goal_diff}).
             Neutral games concentrate in Finals &amp; continental play (
