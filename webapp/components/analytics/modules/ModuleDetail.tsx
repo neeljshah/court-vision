@@ -3,7 +3,7 @@ import { Figure } from "@/components/analytics/charts/Figure";
 import { RelatedReading } from "@/components/analytics/RelatedReading";
 import { ScoutNote, type ScoutEnvelope } from "@/components/analytics/ScoutNote";
 import { VerdictLegend } from "@/components/analytics/VerdictLegend";
-import { artifactUrl, provenanceDate } from "@/lib/analytics/artifactProvenance";
+import { artifactDate, artifactUrl, provenanceDate } from "@/lib/analytics/artifactProvenance";
 import { classifyModuleEvidence } from "@/lib/analytics/moduleEvidence";
 import { getPublishedChartPresentation } from "@/lib/analytics/publishedChartPresentation";
 import { noticesForModules } from "@/lib/analytics/dataIntegrity";
@@ -36,7 +36,8 @@ function value(value: unknown): string {
 }
 
 export function ModuleDetail({ mod, out, insight, subtitle }: { mod: Mod; out: Out; insight: Insight | null; subtitle: string }) {
-  const asOf = provenanceDate(mod.as_of);
+  const date = artifactDate(out, mod.as_of);
+  const asOf = provenanceDate(date.asOf, date.dateKind);
   const cited = (insight?.cited || []).filter(cite => fact(cite.value));
   const descriptive = out.descriptive_only === true || /descriptive/i.test(insight?.caveat || "");
   const chart = mod.chart_path ? `${base}/img/showcase/${name(mod.chart_path)}` : null;
@@ -48,7 +49,7 @@ export function ModuleDetail({ mod, out, insight, subtitle }: { mod: Mod; out: O
   const source = cited[0]?.path || mod.out_path;
   const sourceHref = artifactUrl(source);
   const envelope: ScoutEnvelope = insight
-    ? { status: descriptive ? "descriptive_only" : "ok", prose: insight.headline_insight || "", chips: cited.slice(0, 4).map(cite => ({ value: text(cite.value), label: cite.field, sourceArtifact: cite.path || mod.out_path, asOf: mod.as_of, verdict: "descriptive_only" })) }
+    ? { status: descriptive ? "descriptive_only" : "ok", prose: insight.headline_insight || "", chips: cited.slice(0, 4).map(cite => ({ value: text(cite.value), label: cite.field, sourceArtifact: cite.path || mod.out_path, ...date, verdict: "descriptive_only" })) }
     : { status: "no_data", prose: "" };
 
   return <div className="wrap" style={{ paddingTop: 8 }}>
@@ -58,8 +59,8 @@ export function ModuleDetail({ mod, out, insight, subtitle }: { mod: Mod; out: O
     <DataIntegrityNotice notices={integrityNotices} moduleIds={[mod.id]} />
     <VerdictLegend style={{ margin: "0 0 24px" }} />
     <div className="mv-grid"><div>
-      {useChartImage && <Figure source={mod.out_path} asOf={mod.as_of} title={mod.title} verdict="descriptive_only"><img src={chart} alt={`${mod.title} chart`} style={{ width: "100%", height: "auto", display: "block" }} /></Figure>}
-      {chart && !useChartImage && <Figure source={mod.out_path} asOf={mod.as_of} title={mod.title} note={presentation.reason} verdict="descriptive_only"><div className="mv-data-figure" data-testid="published-data-figure" role="region" tabIndex={0} aria-label="Published replacement measurements (scrollable table)" data-scroll-region><table><thead><tr>{replacement.headers.map(header => <th key={header}>{header.replaceAll("_", " ")}</th>)}</tr></thead><tbody>{replacement.rows.map((row, index) => <tr key={index}>{replacement.headers.map(header => <td key={header}>{value(row[header])}</td>)}</tr>)}</tbody></table></div></Figure>}
+      {useChartImage && <Figure source={mod.out_path} {...date} title={mod.title} verdict="descriptive_only"><img src={chart} alt={`${mod.title} chart`} style={{ width: "100%", height: "auto", display: "block" }} /></Figure>}
+      {chart && !useChartImage && <Figure source={mod.out_path} {...date} title={mod.title} note={presentation.reason} verdict="descriptive_only"><div className="mv-data-figure" data-testid="published-data-figure" role="region" tabIndex={0} aria-label="Published replacement measurements (scrollable table)" data-scroll-region><table><thead><tr>{replacement.headers.map(header => <th key={header}>{header.replaceAll("_", " ")}</th>)}</tr></thead><tbody>{replacement.rows.map((row, index) => <tr key={index}>{replacement.headers.map(header => <td key={header}>{value(row[header])}</td>)}</tr>)}</tbody></table></div></Figure>}
       <ModuleReadingGuide howToRead={insight?.how_to_read} />
       <ModuleEvidence evidence={evidence} moduleId={mod.id} />
       {!chart && evidence.availability === "published" && <div className="mv-nochart mono">This source has no chart. Its cited measurements appear below.</div>}

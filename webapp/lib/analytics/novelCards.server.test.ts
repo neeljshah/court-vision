@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { getNovelCards } from "./novelCards.server";
+import { estimatorWindows, formatNovelSnapshot, getNovelCards } from "./novelCards.server";
 
 const showcase = join(process.cwd(), "public", "data", "showcase");
 const readJson = <T,>(file: string): T => JSON.parse(readFileSync(join(showcase, file), "utf8")) as T;
@@ -33,5 +33,29 @@ describe("getNovelCards", () => {
     expect(cards.find((card) => card.id === "novel_rest_asymmetry")?.lead).toBe(String(restContrast.delta_vs_equal));
     expect(cards.find((card) => card.id === "novel_starter_rest_absorption")?.lead).toBe(starterCells.filter((cell) => ["4", "5", "6 or more"].includes(String(cell.cell))).map((cell) => String(cell.win_frequency)).join(" / "));
     expect(cards.find((card) => card.id === "novel_pitch_repeat_excess")?.lead).toBe(String(pitchOverall.excess));
+  });
+
+  it("keeps mock source, generated, index, and estimator-window provenance distinct", () => {
+    const fixtures = [
+      { as_of: "2025-04-15" }, { generated_at: "2026-09-15" }, {},
+      { as_of: { elo: "2024-25 regular season", rolling_model: "2025-01-01 to 2025-04-01" } },
+    ];
+    expect(fixtures.map((artifact) => formatNovelSnapshot(artifact, "2026-09-16T08:00:00Z"))).toEqual([
+      "Source as of 2025-04-15",
+      "Snapshot generated 2026-09-15",
+      "Index generated 2026-09-16",
+      "Index generated 2026-09-16",
+    ]);
+    expect(estimatorWindows(fixtures[3])).toEqual([
+      ["Elo", "Observation window 2024-25 regular season"],
+      ["Rolling Model", "Observation window 2025-01-01 to 2025-04-01"],
+    ]);
+  });
+
+  it("marks malformed and missing mock date provenance unavailable", () => {
+    expect([
+      formatNovelSnapshot({ as_of: "not-a-date" }, "2026-09-16"),
+      formatNovelSnapshot({}, "not-a-date"),
+    ]).toEqual(["Date not published.", "Date not published."]);
   });
 });

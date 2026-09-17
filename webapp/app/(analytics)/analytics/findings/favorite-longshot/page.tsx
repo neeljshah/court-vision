@@ -182,6 +182,7 @@ export default function FavoriteLongshotPage() {
         <Receipt
           sourceArtifact="scripts/platformkit/analytics_showcase/out/market_favorite_longshot.json"
           asOf={data.generated_at || undefined}
+          dateKind="snapshot"
           label="descriptive_only"
           verdict="descriptive_only"
         />

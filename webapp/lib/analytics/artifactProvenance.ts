@@ -1,6 +1,6 @@
 import siteManifest from "@/public/data/showcase/site_manifest.json";
 
-export type DateKind = "snapshot" | "window";
+export type DateKind = "source" | "snapshot" | "window" | "published";
 export type ObservationWindow = { start: string; end: string };
 export type ProvenanceDate = string | ObservationWindow | null | undefined;
 
@@ -49,11 +49,12 @@ export function artifactUrl(source: string | null | undefined, base = basePath()
   return `${base}/data/showcase/${name}`;
 }
 
-/** Formats only published ISO dates; a snapshot stamp is never promoted to a window. */
+/** Keeps source dates, artifact generation dates, and observation windows distinct. */
 export function describeDate(value: ProvenanceDate, kind: DateKind): string {
-  if (kind === "snapshot") {
+  if (kind !== "window") {
     const date = typeof value === "string" ? isoDate(value) : null;
-    return date ? `Snapshot generated ${date}` : "Date not published.";
+    const labels = { snapshot: "Snapshot generated", source: "Source as of", published: "Published date" };
+    return date ? `${labels[kind]} ${date}` : "Date not published.";
   }
   const window = windowDates(value);
   if (window) return `Observation window ${window.start} to ${window.end}`;
@@ -65,11 +66,20 @@ export function describeDate(value: ProvenanceDate, kind: DateKind): string {
 
 const PLACEHOLDER_LABEL = /^(published snapshot|snapshot|n\/a|na|none|unknown|tbd|-+)$/i;
 function labelledWindow(label: string): boolean {
-  // an ISO stamp is a snapshot, never a window; a labelled span must name a year and not be a placeholder
+  // An ISO stamp is a date, never a window; a labelled span must name a year and not be a placeholder.
   return label.length > 0 && label.length <= 120 && isoDate(label) === null && /(19|20)[0-9]{2}/.test(label) && !PLACEHOLDER_LABEL.test(label);
 }
 
 /** Compatibility wrapper for older consumers while they adopt describeDate. */
-export function provenanceDate(value: ProvenanceDate, kind: DateKind | "observation_window" = "snapshot"): string {
+export function provenanceDate(value: ProvenanceDate, kind: DateKind | "observation_window" = "source"): string {
   return describeDate(value, kind === "observation_window" ? "window" : kind);
+}
+
+/** Resolves artifact fields before a manifest date that may have mixed origins. */
+export function artifactDate(artifact: Record<string, unknown>, fallback: ProvenanceDate): { asOf: ProvenanceDate; dateKind: DateKind } {
+  if (typeof artifact.as_of === "string") {
+    return { asOf: artifact.as_of, dateKind: labelledWindow(artifact.as_of) ? "window" : "source" };
+  }
+  if (typeof artifact.generated_at === "string") return { asOf: artifact.generated_at, dateKind: "snapshot" };
+  return { asOf: fallback, dateKind: describeDate(fallback, "window") !== "Date not published." ? "window" : "published" };
 }

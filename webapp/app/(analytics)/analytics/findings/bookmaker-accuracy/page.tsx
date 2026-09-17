@@ -204,6 +204,7 @@ export default function BookmakerAccuracyPage() {
         <Receipt
           sourceArtifact="scripts/platformkit/analytics_showcase/out/bookmaker_accuracy.json"
           asOf={data.generated_at || undefined}
+          dateKind="snapshot"
           label="descriptive_only"
           verdict="descriptive_only"
         />

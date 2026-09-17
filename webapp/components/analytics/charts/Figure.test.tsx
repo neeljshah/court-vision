@@ -34,4 +34,14 @@ describe("Figure", () => {
     render(<Figure source="data/showcase/blowout_dynamics.json" asOf="2026-07-25"><div>Chart</div></Figure>);
     expect(screen.getByText("n not published")).toBeInTheDocument();
   });
+
+  it("keeps source dates, generation, and observation coverage distinct", () => {
+    const { rerender } = render(<Figure source="blowout_dynamics.json" asOf="2026-07-19"><div>Chart</div></Figure>);
+    expect(screen.getByText("Source as of 2026-07-19")).toBeInTheDocument();
+    expect(screen.queryByText(/Snapshot generated/)).not.toBeInTheDocument();
+    rerender(<Figure source="blowout_dynamics.json" asOf="2026-07-23" dateKind="snapshot"><div>Chart</div></Figure>);
+    expect(screen.getByText("Snapshot generated 2026-07-23")).toBeInTheDocument();
+    rerender(<Figure source="blowout_dynamics.json" asOf={{ start: "2025-01-01", end: "2025-12-31" }} dateKind="window"><div>Chart</div></Figure>);
+    expect(screen.getByText("Observation window 2025-01-01 to 2025-12-31")).toBeInTheDocument();
+  });
 });

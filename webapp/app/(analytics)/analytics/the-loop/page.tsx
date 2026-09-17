@@ -168,7 +168,7 @@ export default function TheLoopPage() {
         </p>
         <p style={{ ...lede, marginTop: 6, display: "flex", flexWrap: "wrap", alignItems: "baseline", gap: "4px 10px" }}>
           <span style={{ fontStyle: "italic" }}>{hx?.headline || "we publish our nulls"}</span>
-          <Receipt sourceArtifact={`${OUT}/honesty_exhibit.json`} label="honesty exhibit (all ledgers)" asOf={day(hx?.generated_at)} verdict="null" />
+          <Receipt sourceArtifact={`${OUT}/honesty_exhibit.json`} label="honesty exhibit (all ledgers)" asOf={day(hx?.generated_at)} dateKind="snapshot" verdict="null" />
         </p>
       </section>
 

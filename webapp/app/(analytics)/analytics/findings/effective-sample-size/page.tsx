@@ -210,6 +210,7 @@ export default function EffectiveSampleSizePage() {
         <Receipt
           sourceArtifact={source_artifact || ""}
           asOf={generated_at || undefined}
+          dateKind="snapshot"
           label="descriptive_only"
           verdict="descriptive_only"
         />

@@ -6,6 +6,7 @@ import { getResearchAnalyses } from "./researchData";
 import { relatedHref, sortPapers, type Paper, type PaperReferences, type PaperRelated } from "./papers";
 import { validatePaperEvidence } from "./paperEvidence.server";
 import { validatePaper } from "./papers";
+import { artifactDate, type DateKind, type ProvenanceDate } from "./artifactProvenance";
 
 type ManifestModule = { id: string; title: string; out_path: string; chart_path: string | null; as_of: string | null };
 
@@ -90,7 +91,7 @@ export function loadPapers(): Paper[] {
 }
 
 type FigureFallback = { headers: string[]; rows: Array<Record<string, unknown>> };
-export type PaperFigure = { id: string; title: string; chartSrc: string | null; source: string; asOf: string; fallback: FigureFallback };
+export type PaperFigure = { id: string; title: string; chartSrc: string | null; source: string; asOf: ProvenanceDate; dateKind: DateKind; fallback: FigureFallback };
 
 function figureFallback(value: unknown): FigureFallback {
   const output = value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {};
@@ -112,12 +113,14 @@ export function paperFigure(id: string): PaperFigure | null {
   const base = process.env.NEXT_PUBLIC_BASE_PATH || "";
   let data: unknown = {};
   try { data = JSON.parse(readFileSync(join(root(), "public", "data", "showcase", fileName(found.out_path)), "utf8")); } catch { /* source card remains usable */ }
+  const date = artifactDate(data && typeof data === "object" && !Array.isArray(data) ? data as Record<string, unknown> : {}, found.as_of);
   return {
     id: found.id,
     title: found.title,
     chartSrc: found.chart_path ? `${base}/img/showcase/${fileName(found.chart_path)}` : null,
     source: found.out_path || `${found.id}.json`,
-    asOf: found.as_of || "",
+    asOf: date.asOf,
+    dateKind: date.dateKind,
     fallback: figureFallback(data),
   };
 }

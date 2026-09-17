@@ -5,12 +5,13 @@
 // Franklin 600 (serif is reserved for editorial headings, DESIGN Sec.11).
 
 import type { ReactNode, CSSProperties } from "react";
-import { artifactUrl, describeDate, type ProvenanceDate } from "@/lib/analytics/artifactProvenance";
+import { artifactUrl, describeDate, type DateKind, type ProvenanceDate } from "@/lib/analytics/artifactProvenance";
 import { verdictColor } from "./scale";
 
 export interface FigureProps {
   source: string;
   asOf: ProvenanceDate;
+  dateKind?: DateKind;
   children: ReactNode;
   title?: string;
   eyebrow?: string;
@@ -71,6 +72,7 @@ export const scrollFrame: CSSProperties = {
 export function Figure({
   source,
   asOf,
+  dateKind = "source",
   children,
   title,
   eyebrow,
@@ -161,7 +163,7 @@ export function Figure({
         <span aria-hidden style={{ color: "var(--rule-strong)" }}>
           &middot;
         </span>
-        <span>{describeDate(asOf, "snapshot")}</span>
+        <span>{describeDate(asOf, dateKind)}</span>
         <span aria-hidden style={{ color: "var(--rule-strong)" }}>
           &middot;
         </span>

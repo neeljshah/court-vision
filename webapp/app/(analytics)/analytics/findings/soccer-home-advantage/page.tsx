@@ -271,6 +271,7 @@ export default function SoccerHomeAdvantagePage() {
         <Receipt
           sourceArtifact="scripts/platformkit/analytics_showcase/out/soccer_home_advantage.json"
           asOf={data.generated_at || undefined}
+          dateKind="snapshot"
           label="descriptive_only"
           verdict="descriptive_only"
         />

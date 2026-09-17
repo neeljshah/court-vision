@@ -1,6 +1,7 @@
 import { Figure } from "@/components/analytics/charts/Figure";
 import { linear } from "@/components/analytics/charts/scale";
 import type { DependenceSide, DependenceSport } from "@/lib/analytics/observationDependence";
+import type { DateKind } from "@/lib/analytics/artifactProvenance";
 
 const SOURCE = "public/data/showcase/residual_autocorrelation.json";
 
@@ -33,12 +34,12 @@ function DotStrip({ sport, side }: { sport: string; side: DependenceSide }) {
   </div>;
 }
 
-export function ObservationDependence({ sports, asOf }: { sports: DependenceSport[]; asOf?: string }) {
+export function ObservationDependence({ sports, asOf, dateKind = "source" }: { sports: DependenceSport[]; asOf?: string; dateKind?: DateKind }) {
   return <>
     {sports.map((sport) => <section className="od-sport" key={sport.sport} aria-labelledby={`od-${sport.sport}`}>
       <h2 id={`od-${sport.sport}`}>{sportLabel(sport.sport)}</h2>
       <p className="od-sport-meta">Published corpus: {sport.nRecords?.toLocaleString() ?? "Not published"} ticks across {sport.nSeries?.toLocaleString() ?? "Not published"} candidate series.</p>
-      <Figure source={SOURCE} asOf={asOf || "published snapshot"} title={`${sportLabel(sport.sport)} within-game distributions`} subtitle="Each dot is one eligible game-side series. Model and market are separate populations; dots are not paired." verdict="descriptive_only">
+      <Figure source={SOURCE} asOf={asOf || "published snapshot"} dateKind={dateKind} title={`${sportLabel(sport.sport)} within-game distributions`} subtitle="Each dot is one eligible game-side series. Model and market are separate populations; dots are not paired." verdict="descriptive_only">
         <div className="od-strips">{sport.sides.map((side) => <DotStrip key={side.side} sport={sport.sport} side={side} />)}</div>
       </Figure>
     </section>)}

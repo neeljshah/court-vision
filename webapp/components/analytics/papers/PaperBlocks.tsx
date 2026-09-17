@@ -46,7 +46,7 @@ function FigureBlock({ block }: { block: Extract<PaperBlock, { type: "figure" }>
   if (published?.chartSrc && presentation.approved) {
     return (
       <div className="paper-figure">
-        <Figure source={published.source} asOf={published.asOf} title={published.title} verdict="descriptive_only">
+        <Figure source={published.source} asOf={published.asOf} dateKind={published.dateKind} title={published.title} verdict="descriptive_only">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={published.chartSrc} alt={`${published.title} chart`} style={{ width: "100%", height: "auto", display: "block" }} />
         </Figure>
@@ -57,7 +57,7 @@ function FigureBlock({ block }: { block: Extract<PaperBlock, { type: "figure" }>
   if (published?.chartSrc) {
     return (
       <div className="paper-figure">
-        <Figure source={published.source} asOf={published.asOf} title={published.title} note={presentation.reason} verdict="descriptive_only">
+        <Figure source={published.source} asOf={published.asOf} dateKind={published.dateKind} title={published.title} note={presentation.reason} verdict="descriptive_only">
           <div data-testid="published-data-figure" style={{ border: "1px solid var(--rule)", borderRadius: "var(--radius-card)", background: "var(--paper-tint)", padding: 12 }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontFamily: "var(--font-mono)", fontSize: 12 }}>
               <thead><tr>{published.fallback.headers.map(header => <th key={header} style={{ color: "var(--ink-3)", textAlign: "left", padding: "6px 4px" }}>{header.replaceAll("_", " ")}</th>)}</tr></thead>

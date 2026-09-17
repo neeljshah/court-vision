@@ -38,8 +38,8 @@ export default function ObservationDependencePage() {
       <p className="od-floors">Eligibility floors: at least {floors?.min_rows_per_game ?? "the published minimum"} rows per game and residual variance of at least {floors?.min_residual_variance ?? "the published minimum"}. Exclusions are shown by side below.</p>
     </section>
     <InspectorReadingTrail id="observation-dependence" />
-    <ObservationDependence sports={sports} asOf={data.generated_at || data.as_of || undefined} />
-    <div className="od-receipt"><Receipt sourceArtifact="public/data/showcase/residual_autocorrelation.json" asOf={data.generated_at || data.as_of || undefined} label="descriptive_only" verdict="descriptive_only" /></div>
+    <ObservationDependence sports={sports} asOf={data.generated_at || data.as_of || undefined} dateKind={data.generated_at ? "snapshot" : "source"} />
+    <div className="od-receipt"><Receipt sourceArtifact="public/data/showcase/residual_autocorrelation.json" asOf={data.generated_at || data.as_of || undefined} dateKind={data.generated_at ? "snapshot" : "source"} label="descriptive_only" verdict="descriptive_only" /></div>
     </>}
   </div>;
 }

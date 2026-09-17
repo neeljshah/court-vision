@@ -194,12 +194,14 @@ export default function ForecastLifePage() {
         <Receipt
           sourceArtifact="scripts/platformkit/analytics_showcase/out/novel_line_half_life.json"
           asOf={halfLife.as_of || halfLife.generated_at || undefined}
+          dateKind={halfLife.as_of ? "source" : halfLife.generated_at ? "snapshot" : undefined}
           label="descriptive_only"
           verdict="descriptive_only"
         />
         <Receipt
           sourceArtifact="scripts/platformkit/analytics_showcase/out/info_arrival_curve.json"
           asOf={arrival.as_of || arrival.generated_at || undefined}
+          dateKind={arrival.as_of ? "source" : arrival.generated_at ? "snapshot" : undefined}
           label="descriptive_only"
           verdict="descriptive_only"
         />

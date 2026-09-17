@@ -7,7 +7,7 @@
 // standalone /analytics/method page in the spec was never built).
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import Link from "next/link";
-import { artifactUrl, describeDate, type ProvenanceDate } from "@/lib/analytics/artifactProvenance";
+import { artifactUrl, describeDate, type DateKind, type ProvenanceDate } from "@/lib/analytics/artifactProvenance";
 import { VerdictDot, type Verdict } from "./VerdictDot";
 
 export interface ReceiptData {
@@ -15,6 +15,7 @@ export interface ReceiptData {
   label?: string; // measurement label, e.g. CONFIRMED_LOCAL / descriptive_only
   sourceArtifact: string; // committed artifact path
   asOf?: ProvenanceDate; // e.g. 2026-04-12
+  dateKind?: DateKind;
   n?: number; // sample size, when known
   corpus?: string; // corpus name, when known
   verdict: Verdict;
@@ -99,7 +100,7 @@ export function Receipt(r: ReceiptData) {
     return () => document.removeEventListener("pointerdown", onDown);
   }, [open]);
   // Quiet resting token: prefer as_of, else value, else the artifact basename.
-  const date = describeDate(r.asOf, "snapshot");
+  const date = describeDate(r.asOf, r.dateKind ?? "source");
   const hasPublishedDate = date !== "Date not published.";
   const resting = hasPublishedDate ? date : r.value || basename(r.sourceArtifact);
   const sourceHref = artifactUrl(r.sourceArtifact);

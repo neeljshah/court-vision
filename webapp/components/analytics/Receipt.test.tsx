@@ -31,7 +31,14 @@ describe("Receipt", () => {
   it("shows a published ISO date without accepting an arbitrary label", () => {
     render(<Receipt sourceArtifact="blowout_dynamics.json" asOf="2026-07-25" verdict="descriptive_only" />);
     const button = screen.getByRole("button", { name: /receipt/i });
-    expect(within(button).getByText("Snapshot generated 2026-07-25")).toBeInTheDocument();
+    expect(within(button).getByText("Source as of 2026-07-25")).toBeInTheDocument();
+  });
+
+  it("retains explicit generation and observation-window labels", () => {
+    const { rerender } = render(<Receipt sourceArtifact="blowout_dynamics.json" asOf="2026-07-25" dateKind="snapshot" verdict="descriptive_only" />);
+    expect(screen.getByRole("button", { name: /Snapshot generated 2026-07-25/ })).toBeInTheDocument();
+    rerender(<Receipt sourceArtifact="blowout_dynamics.json" asOf="2025-26 regular season" dateKind="window" verdict="descriptive_only" />);
+    expect(screen.getByRole("button", { name: /Observation window 2025-26 regular season/ })).toBeInTheDocument();
   });
 
   it("marks its touch target for the shared receipt treatment", () => {

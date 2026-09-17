@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { loadPapers, publishedArtifacts, resolveRelated } from "./papers.server";
+import { loadPapers, paperFigure, publishedArtifacts, resolveRelated } from "./papers.server";
 import {
   excerpt, filterPapers, paperKeywords, paperSports, paperWordCount, readingMinutes,
   relatedHref, sortPapers, validatePaper, type Paper,
@@ -74,6 +74,14 @@ describe("loadPapers", () => {
     expect(resolved.map(link => link.href)).toEqual(paper.related.map(relatedHref));
     expect(resolved.every(link => link.title.length > 0)).toBe(true);
     expect(resolved.find(link => link.kind === "inspector")?.href).toBe("/analytics/calibration/");
+  });
+});
+
+describe("paperFigure", () => {
+  it("uses public artifact source, generated, and observation-window provenance", () => {
+    expect(paperFigure("brier_skill_scores")).toMatchObject({ asOf: "2026-09-16", dateKind: "source" });
+    expect(paperFigure("agent_fleet_history")).toMatchObject({ asOf: "2026-07-22", dateKind: "snapshot" });
+    expect(paperFigure("cf_star_removal")).toMatchObject({ asOf: "2024-25 (Elo end-of-season) x 2024_25 on/off slice", dateKind: "window" });
   });
 });
 

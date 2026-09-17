@@ -191,7 +191,7 @@ export default function MlbLeaderboardsPage() {
       ) : null}
 
       <div style={{ marginTop: 24 }}>
-        <Receipt sourceArtifact={sourceArtifact} asOf={generated_at || undefined} label="descriptive_only" verdict="descriptive_only" />
+        <Receipt sourceArtifact={sourceArtifact} asOf={generated_at || undefined} dateKind="snapshot" label="descriptive_only" verdict="descriptive_only" />
       </div>
 
       <p style={{ ...lede, marginTop: 32 }}>

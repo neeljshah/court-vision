@@ -145,7 +145,7 @@ export default function TennisFindingsPage() {
       ) : null}
 
       <div style={{ marginTop: 20 }}>
-        <Receipt sourceArtifact={source_artifact || ""} asOf={generated_at || undefined} label="descriptive_only" verdict="descriptive_only" />
+        <Receipt sourceArtifact={source_artifact || ""} asOf={generated_at || undefined} dateKind="snapshot" label="descriptive_only" verdict="descriptive_only" />
       </div>
 
       <p style={{ ...lede, marginTop: 32 }}>

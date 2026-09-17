@@ -183,6 +183,7 @@ export default function LineupSynergyPage() {
         <Receipt
           sourceArtifact="scripts/platformkit/analytics_showcase/out/lineup_synergy.json"
           asOf={data.generated_at || undefined}
+          dateKind="snapshot"
           label="descriptive_only"
           verdict="descriptive_only"
         />

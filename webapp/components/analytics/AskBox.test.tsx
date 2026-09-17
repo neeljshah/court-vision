@@ -22,6 +22,8 @@ describe("AskBox", () => {
     expect(screen.getByLabelText("Cited answer")).toHaveTextContent("Known question");
     expect(screen.getByLabelText("Cited answer")).not.toHaveTextContent("A new, unsubmitted question");
     expect(window.location.search).toBe("?q=Known+question");
+    expect(screen.getByRole("button", { name: /Source as of 2026-01-01/ })).toBeInTheDocument();
+    expect(screen.queryByText(/Snapshot generated/)).not.toBeInTheDocument();
   });
 
   it("links a derived answer to its validated internal analysis path", () => {

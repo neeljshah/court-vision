@@ -25,20 +25,28 @@ export interface NovelCard extends NovelMeasurement {
 
 const readJson = <T,>(file: string): T => JSON.parse(readFileSync(join(DATA, file), "utf8")) as T;
 const asRow = (value: unknown): Row => value && typeof value === "object" && !Array.isArray(value) ? value as Row : {};
-const snapshot = (artifact: Row, fallback: string): string =>
-  provenanceDate(typeof artifact.as_of === "string" ? artifact.as_of : fallback);
+const indexGenerated = (value: string): string => {
+  const date = provenanceDate(value, "source");
+  return date.startsWith("Source as of ") ? `Index generated ${date.slice(13)}` : "Date not published.";
+};
 
-function estimatorWindows(artifact: Row): Array<[string, string]> {
+export const formatNovelSnapshot = (artifact: Row, indexDate: string): string => {
+  if (typeof artifact.as_of === "string") return provenanceDate(artifact.as_of, "source");
+  if (typeof artifact.generated_at === "string") return provenanceDate(artifact.generated_at, "snapshot");
+  return indexGenerated(indexDate);
+};
+
+export function estimatorWindows(artifact: Row): Array<[string, string]> {
   const asOf = asRow(artifact.as_of);
   return Object.entries(asOf)
     .filter(([, value]) => typeof value === "string" && value.length > 0)
-    .map(([key, value]) => [key.replace(/_/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase()), provenanceDate(value as string, "observation_window")]);
+    .map(([key, value]) => [key.replace(/_/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase()), provenanceDate(value as string, "window")]);
 }
 
 /** Reads the committed index and each card artifact for the static export. */
 export function getNovelCards(): NovelCard[] {
   const index = readJson<Index>("novel_stats_index.json");
-  const stamp = (index.generated_at || "").slice(0, 10);
+  const stamp = typeof index.generated_at === "string" ? index.generated_at : "";
   return (index.stats || []).map((entry) => {
     const artifact = readJson<Row>(`${entry.module}.json`);
     return {
@@ -46,7 +54,7 @@ export function getNovelCards(): NovelCard[] {
       title: entry.stat_name,
       abbrev: entry.abbrev,
       sourceArtifacts: entry.source_artifacts || [],
-      snapshot: snapshot(artifact, stamp),
+      snapshot: formatNovelSnapshot(artifact, stamp),
       confoundCount: Array.isArray(artifact.declared_confounds) ? artifact.declared_confounds.length : 0,
       estimatorWindows: estimatorWindows(artifact),
       ...selectNovelMeasurement(entry.module, artifact),

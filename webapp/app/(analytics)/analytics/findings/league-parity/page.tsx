@@ -205,6 +205,7 @@ export default function LeagueParityPage() {
         <Receipt
           sourceArtifact="scripts/platformkit/analytics_showcase/out/league_parity_index.json"
           asOf={data.generated_at || data.as_of || undefined}
+          dateKind={data.generated_at ? "snapshot" : data.as_of ? "source" : undefined}
           label="descriptive_only"
           verdict="descriptive_only"
         />

@@ -70,7 +70,7 @@ export function VerdictFlipCases({
           </ol>
           <div style={{ alignItems: "center", display: "flex", flexWrap: "wrap", gap: "10px 16px", marginTop: 16 }}>
             <Link href={`/analytics/the-loop#${familyId}`} style={{ fontSize: 13, fontWeight: 700 }}>View full ledger history</Link>
-            <span className="mono" style={{ color: "var(--ink-3)", fontSize: 11 }}>Case anatomy <Receipt sourceArtifact={ANATOMY_ARTIFACT} asOf={generatedAt} label="case anatomy artifact" verdict="descriptive_only" /></span>
+            <span className="mono" style={{ color: "var(--ink-3)", fontSize: 11 }}>Case anatomy <Receipt sourceArtifact={ANATOMY_ARTIFACT} asOf={generatedAt} dateKind="snapshot" label="case anatomy artifact" verdict="descriptive_only" /></span>
             <span className="mono" style={{ color: "var(--ink-3)", fontSize: 11 }}>Upstream scoreboard <Receipt sourceArtifact={upstreamArtifact} label="upstream scoreboard" verdict="descriptive_only" /></span>
           </div>
         </article>;

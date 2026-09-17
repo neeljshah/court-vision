@@ -31,6 +31,24 @@ describe("ModuleDetail", () => {
     expect(screen.getAllByText(/date not published/i).length).toBeGreaterThan(0);
   });
 
+  it("preserves module source dates and labelled coverage in figures and Scout receipts", () => {
+    const insight = { cited: [{ field: "games", value: 20, path: mod.out_path }] };
+    const { rerender } = render(<ModuleDetail mod={mod} out={{ ...out, as_of: mod.as_of }} subtitle="Published measurements." insight={insight} />);
+    expect(screen.getByRole("button", { name: /Source as of 2026-09-01/ })).toBeInTheDocument();
+    expect(screen.getByText("Source as of 2026-09-01", { selector: "figcaption span" })).toBeInTheDocument();
+    rerender(<ModuleDetail mod={{ ...mod, as_of: "2025-26 regular season (through 2026-04-12)" }} out={out} subtitle="Published measurements." insight={insight} />);
+    expect(screen.getByRole("button", { name: /Observation window 2025-26 regular season/ })).toBeInTheDocument();
+    expect(screen.getByText("Observation window 2025-26 regular season (through 2026-04-12)", { selector: "figcaption span" })).toBeInTheDocument();
+  });
+
+  it("uses artifact fields when the manifest date came from generation", () => {
+    const { rerender } = render(<ModuleDetail mod={mod} out={{ generated_at: "2026-09-01" }} subtitle="Published measurements." insight={null} />);
+    expect(screen.getByText("Snapshot generated 2026-09-01", { selector: "figcaption span" })).toBeInTheDocument();
+    rerender(<ModuleDetail mod={mod} out={{ as_of: "2026-07-19", generated_at: "2026-09-01" }} subtitle="Published measurements." insight={null} />);
+    expect(screen.getByText("Source as of 2026-07-19", { selector: "figcaption span" })).toBeInTheDocument();
+    expect(screen.queryByText(/Snapshot generated/)).not.toBeInTheDocument();
+  });
+
   it("uses a data figure instead of an unapproved PNG", () => {
     const unsafe = { ...mod, id: "ctx_team_states", title: "Team states", chart_path: "ctx_team_states.png" };
     render(<ModuleDetail mod={unsafe} out={{ teams: [{ team: "ATL", n_games: 2, front_runner_2h_margin: 1, comeback_2h_margin: 8 }] }} subtitle="Published team measurements." insight={null} />);

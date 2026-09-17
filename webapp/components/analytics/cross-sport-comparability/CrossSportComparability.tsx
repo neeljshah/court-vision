@@ -39,7 +39,7 @@ export function CrossSportComparability({ data }: { data: ComparabilityData }) {
       <h2 id="supported-heading">Supported reliability-component comparisons</h2>
       <p>These are the only rows with model and reference reliability components on the published 0-1 probability scale.</p>
       <div className="csc-legend"><span><i className="csc-model" />Model reliability</span><span><i className="csc-reference" />Reference reliability</span></div>
-      <Figure source="public/data/showcase/kernel_transfer.json" asOf={data.generatedAt.slice(0, 10)} title="Comparable reliability components" subtitle="Each pair retains its published population size."><ReliabilityChart rows={data.comparableRows} /></Figure>
+      <Figure source="public/data/showcase/kernel_transfer.json" asOf={data.generatedAt.slice(0, 10)} dateKind="snapshot" title="Comparable reliability components" subtitle="Each pair retains its published population size."><ReliabilityChart rows={data.comparableRows} /></Figure>
       <div className="csc-supported-list" aria-label="Comparable reliability rows">{data.comparableRows.map(row => <article key={row.id}><div><VerdictDot verdict="descriptive_only" /><strong>{sportLabel(row.sport)}</strong><span>{row.market}</span></div><p>Model {formatReliability(row.reliability_model)}; reference {formatReliability(row.reliability_market)}; n={row.n}.</p><Link href={row.evidence.href}>View {row.evidence.title}</Link></article>)}</div>
     </section>
     <section className="csc-section" aria-labelledby="unsupported-heading">
