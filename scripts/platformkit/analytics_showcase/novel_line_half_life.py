@@ -77,7 +77,8 @@ def _half_life(move_by_bucket):
     return round(BOUNDARY_H["0-1h"], 4), False, cum_at
 
 
-def build():
+def compose():
+    """Pure composition from the committed micro_absorption.json -- no writes."""
     src = json.loads(open(IN_JSON, encoding="utf-8").read())
     rows = []
     excluded = []
@@ -127,6 +128,11 @@ def build():
         "plot_written": False,
     }
     payload["index_card"] = _card(payload)
+    return payload
+
+
+def build():
+    payload = compose()
     os.makedirs(os.path.dirname(OUT_JSON), exist_ok=True)
     with open(OUT_JSON, "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2)
@@ -223,18 +229,15 @@ def check():
     if not os.path.exists(IN_JSON):
         verify_recorded_artifact(OUT_JSON, _validate, "novel_line_half_life")
         return
-    payload = build()
+    payload = compose()
     _validate(payload)
     mlb = next((r for r in payload["results"] if r["sport"] == "mlb"), None)
     assert mlb is not None and mlb["half_life_hours"] is not None
     assert 3.4 < mlb["half_life_hours"] < 3.9, mlb["half_life_hours"]
-    payload["plot_written"] = plot(payload)
-    with open(OUT_JSON, "w", encoding="utf-8") as f:
-        json.dump(payload, f, indent=2)
     w = payload["observation_window"]
     print(f"OK: novel_line_half_life ({len(payload['results'])} sports, mlb half-life "
           f"{mlb['half_life_hours']:.2f}h, window {w['start']}..{w['end']} {w['days']}d, "
-          f"plot={payload['plot_written']})")
+          f"recomposed only (no write))")
 
 
 if __name__ == "__main__":
