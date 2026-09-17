@@ -22,6 +22,11 @@
       "heading": "Question",
       "blocks": [
         {
+          "type": "callout",
+          "label": "Status",
+          "text": "blowout_dynamics.json and why_attribution.json read the MLB and international-soccer in-game tick corpus that the site's join-integrity finding, measured 2026-09-16, found partly mislabelled. Thirteen calibration artifacts were rebuilt from the re-segmented corpus on that date; these two timing artifacts were not, and remain under review. Mixed-game tick paths distort a timing measurement even where no outcome label is used, so every number below is the value published on the joined corpus and should be read as provisional until the timing artifacts are rebuilt."
+        },
+        {
           "type": "p",
           "text": "Broadcasters and viewers both use the intuition that a game is 'effectively over' once one side's lead gets big enough, well before the literal final tick. This paper does not assert that intuition -- it measures it, on the score path alone, for two sports where the underlying artifact carries per-game score ticks: MLB and international soccer."
         },
@@ -251,7 +256,8 @@
             "The international-soccer corpus is 29 games, and only the 1-goal threshold clears the artifact's own 10-game floor; the 2-goal (3 of 29 decided) and 3-goal (0 of 29 decided) cells are masked, so no soccer claim above 1 goal is supported by this artifact.",
             "MLB innings and soccer minutes are different clocks on different sports and are never pooled or converted to a common scale in this paper; nothing here compares how 'fast' a lead locks in across the two sports.",
             "This is a descriptive read of the score path, not a model or market probability; it says nothing about forecast calibration, and it is not a statement about how likely a lead was to hold at the moment it opened.",
-            "Only one corpus snapshot is reported here, with as_of not published on the source artifact; there is no walk-forward or multi-season replication showing these incidence and timing figures are stable across seasons or competitions."
+            "Only one corpus snapshot is reported here, with as_of not published on the source artifact; there is no walk-forward or multi-season replication showing these incidence and timing figures are stable across seasons or competitions.",
+            "The two source artifacts were not rebuilt in the 2026-09-16 in-game re-segmentation and are recorded as under review, so the figures here are provisional."
           ]
         }
       ]
@@ -333,9 +339,14 @@
     "The international-soccer corpus is 29 games, and only the 1-goal threshold clears the artifact's own 10-game floor; the 2-goal (3 of 29 decided) and 3-goal (0 of 29 decided) cells are masked, so no soccer claim above 1 goal is supported by this artifact.",
     "MLB innings and soccer minutes are different clocks on different sports and are never pooled or converted to a common scale in this paper; nothing here compares how fast a lead locks in across the two sports.",
     "This is a descriptive read of the score path, not a model or market probability; it says nothing about forecast calibration and is not a statement about how likely a lead was to hold at the moment it opened.",
-    "Only one corpus snapshot is reported here, with as_of not published on the source artifact; there is no walk-forward or multi-season replication showing these incidence and timing figures are stable across seasons or competitions."
+    "Only one corpus snapshot is reported here, with as_of not published on the source artifact; there is no walk-forward or multi-season replication showing these incidence and timing figures are stable across seasons or competitions.",
+    "The two source artifacts were not rebuilt in the 2026-09-16 in-game re-segmentation and are recorded as under review, so the figures here are provisional."
   ],
   "related": [
+    {
+      "kind": "finding",
+      "id": "ingame-join-integrity"
+    },
     {
       "kind": "inspector",
       "id": "blowout-timing"

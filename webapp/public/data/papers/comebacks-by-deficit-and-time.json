@@ -2,27 +2,41 @@
   "slug": "comebacks-by-deficit-and-time",
   "title": "Comebacks by deficit and time",
   "subtitle": "How often an NBA side that is behind at a given moment goes on to win, by deficit size and time remaining, with every cell's support",
-  "authors": ["CourtVision research"],
+  "authors": [
+    "CourtVision research"
+  ],
   "date": "2026-09-16",
   "sport": "nba",
-  "keywords": ["comebacks", "deficit", "time remaining", "game state", "reliability map", "NBA"],
-  "abstract": "This paper measures how often a side that is behind at a given moment in an NBA game goes on to win, broken out by how large the deficit is and by how much game time remained when that deficit was observed. The population is not one row per game; it is one row per recorded in-play tick, grouped into cells by deficit-magnitude band and time-remaining band, drawn from the same reliability-map corpus used elsewhere on this site (webapp/public/data/showcase/comeback_atlas.json, a reshaping of the NBA state-bucket calibration grid; as-of date not published on the source artifact). Within a cell, the reported win frequency is a tick-weighted mean of the eventual game outcome, not a game-weighted mean, so a game that lingers in a cell for many ticks pulls that cell's rate toward its own result more than a game that passes through briefly. This paper's main table follows the source's own sign convention throughout: the deficit side described is specifically the home side while it trails, at that instant, by a given margin. Across 46 published cells spanning a tied score plus six deficit bands (1-5 through 30-plus points) and up to seven time-remaining bands (six regulation windows plus overtime), the pattern is monotone in both directions at once: bigger deficits and less remaining time both push the come-back frequency toward zero, from 50.87% at a 1-5 point deficit with more than 36 minutes left (n=1,300 games) to 0.00% at a 30-plus point deficit inside the final two minutes (n=65 games). Four of the 46 cells sit below the source's 30-game floor and are reported with their raw counts but flagged, never smoothed. This is a historical frequency table built from realized outcomes, not a live forecast, a model, or a price, and it describes no single ongoing game.",
+  "keywords": [
+    "comebacks",
+    "deficit",
+    "time remaining",
+    "game state",
+    "reliability map",
+    "NBA"
+  ],
+  "abstract": "This paper measures how often a side that is behind at a given moment in an NBA game goes on to win, broken out by how large the deficit is and by how much game time remained when that deficit was observed. The population is not one row per game; it is one row per recorded in-play tick, grouped into cells by deficit-magnitude band and time-remaining band, drawn from webapp/public/data/showcase/comeback_atlas.json, a reshaping of the NBA state-bucket calibration grid with no as-of date published. Within a cell the reported win frequency is a tick-weighted mean of the eventual game outcome, not a game-weighted mean, so a game that lingers in a cell pulls that cell's rate toward its own result more than one that passes through briefly. The main table follows the source's own sign convention: the deficit side described is the home side while it trails. Across 46 published cells spanning a tied score plus six deficit bands (1-5 through 30-plus points) and up to seven time-remaining bands, the pattern is monotone in both directions at once: bigger deficits and less remaining time both push the come-back frequency toward zero, from 50.87% at a 1-5 point deficit with more than 36 minutes left (n=1,300 games) to 0.00% at a 30-plus point deficit inside the final two minutes (n=65 games). Four of the 46 cells sit below the source's 30-game floor and are reported with raw counts but flagged, never smoothed. This is a historical frequency table built from realized outcomes, not a live forecast, a model, or a price.",
   "sections": [
     {
       "id": "question",
       "heading": "Question",
       "blocks": [
         {
-          "type": "p",
-          "text": "Announcers and viewers both reach for a version of the same shorthand: once a deficit gets big enough, or the clock gets short enough, a game is effectively decided well before the final buzzer. This paper turns that shorthand into a measurement, for the NBA only. For an in-play state defined jointly by how large the scoring deficit is and how much game time remains, how often does the side that is behind at that moment go on to win by the end of the game."
+          "type": "callout",
+          "label": "Status",
+          "text": "comeback_atlas.json and blowout_dynamics.json were not rebuilt when the site's in-game artifacts were re-segmented on 2026-09-16; both remain under review, because mixed-game tick paths distort a timing measurement even where no outcome label is used. Every number below is the value published before that re-segmentation."
         },
         {
           "type": "p",
-          "text": "A companion module, blowout_dynamics, asks a related but different question for two other sports (MLB, international soccer): once a margin reaches a given size, does it ever get closed back below it before the last recorded tick. That is a persistence question about the margin itself, symmetric in which side holds it, and not conditioned on time remaining the way this paper's cells are. The two are contrasted only for definitions, below, and share no numbers."
+          "text": "Announcers and viewers both reach for the same shorthand: once a deficit gets big enough, or the clock short enough, a game is decided well before the final buzzer. This paper turns that shorthand into a measurement, for the NBA only. For an in-play state defined jointly by deficit size and time remaining, how often does the side behind at that moment go on to win."
         },
         {
           "type": "p",
-          "text": "Two definitions need to be pinned down before any number here means anything. 'Trailing' is defined by the sign of the home side's scoring margin (home score minus away score) at a recorded tick; the source's cells label a negative margin of a given size as that magnitude's deficit band, and this paper's main table follows that convention throughout, describing the home side specifically while it is behind. 'Comeback' means the game that produced that tick ended in a win for the side that was behind at that moment. Neither definition looks at a price or a forecast; both come directly from the scoreboard and the final result."
+          "text": "A companion module, blowout_dynamics, asks a related but different question for two other sports (MLB, international soccer): once a margin reaches a given size, does it ever get closed back below it before the last recorded tick. That is a persistence question about the margin itself, not conditioned on time remaining the way this paper's cells are. The two are contrasted only for definitions, and share no numbers."
+        },
+        {
+          "type": "p",
+          "text": "Two definitions need pinning down before any number here means anything. 'Trailing' is defined by the sign of the home side's scoring margin (home score minus away score) at a recorded tick; the source's cells label a negative margin of a given size as that magnitude's deficit band, and this paper's main table follows that convention throughout. 'Comeback' means the game that produced that tick ended in a win for the side that was behind at that moment. Neither definition looks at a price or a forecast; both come from the scoreboard and the final result."
         }
       ]
     },
@@ -36,7 +50,7 @@
         },
         {
           "type": "p",
-          "text": "The population behind every cell is recorded in-play ticks, not one row per game. The source's own honest note (source_honest_note) says it directly: aggregates in this file are tick-weighted, not game-weighted, so 'a bucket with more ticks from one game pulls its own average, stated here rather than hidden.' Each cell's n_games counts the distinct games that ever produced a tick landing in that deficit-and-time combination, while n_ticks counts how many ticks did so; since a game's final outcome is fixed, a game that spends many ticks in one cell (say, a long stretch holding a stable 8-point margin) influences that cell's rate more than a game passing through for a single tick. Recorded ticks per cell here range from 10 (the smallest, masked cell) to 26,824 (the 5-10 point deficit band in the final two minutes, where stoppages generate many ticks)."
+          "text": "The population behind every cell is recorded in-play ticks, not one row per game. The source's own honest note (source_honest_note) says it directly: aggregates in this file are tick-weighted, not game-weighted, so 'a bucket with more ticks from one game pulls its own average, stated here rather than hidden.' Each cell's n_games counts the distinct games that produced a tick in that deficit-and-time combination and n_ticks counts how many ticks did so; since a game's final outcome is fixed, a game that spends many ticks in one cell influences that cell's rate more than one passing through for a single tick. Recorded ticks per cell range from 10 (the smallest, masked cell) to 26,824 (the 5-10 point band in the final two minutes, where stoppages generate many ticks)."
         },
         {
           "type": "p",
@@ -55,7 +69,7 @@
       "blocks": [
         {
           "type": "p",
-          "text": "This paper does not compute a new statistic from raw play-by-play. It reads one published, already-aggregated file and reshapes its cells into a deficit-by-time table, exactly as the source module's own novelty note describes its own contribution: it takes the existing NBA reliability map and 'reshapes into a 2D lead x time-remaining atlas instead of a single time-checkpoint curve,' flagged as incremental rather than a new method (novelty.verdict = 'INCREMENTAL'). The nearest prior work the source cites is an arXiv working paper on real-time prediction markets (novelty.closest_prior_work); this paper reuses only the outcome side of that published cell structure, never a model or price number from it."
+          "text": "This paper does not compute a new statistic from raw play-by-play. It reads one published, already-aggregated file and reshapes its cells into a deficit-by-time table, as the source module's own novelty note describes its contribution: it takes the existing NBA reliability map and 'reshapes into a 2D lead x time-remaining atlas instead of a single time-checkpoint curve,' flagged incremental rather than a new method (novelty.verdict = 'INCREMENTAL'). This paper reuses only the outcome side of that published cell structure, never a model or price number from it."
         },
         {
           "type": "p",
@@ -69,20 +83,92 @@
       "blocks": [
         {
           "type": "p",
-          "text": "The table below reads left to right in game order: more than 36 minutes remaining (early game) on the left, through the final two minutes, to overtime on the right. Each cell is the tick-weighted come-back frequency (as a percent) and the number of distinct games behind it (n); masked cells show their raw game count with no rate, and a cell with no entry recorded no ticks at all in this corpus."
+          "text": "The table below reads left to right in game order: more than 36 minutes remaining on the left, through the final two minutes, to overtime on the right. Each cell is the tick-weighted come-back frequency and the number of distinct games behind it (n); masked cells show their raw game count with no rate, and a blank cell recorded no ticks at all."
         },
         {
           "type": "table",
           "caption": "NBA: come-back frequency by deficit (home side behind) and time remaining, all 46 published cells",
-          "columns": ["Deficit (home points behind)", "36+ min left", "24-36 min left", "12-24 min left", "5-12 min left", "2-5 min left", "0-2 min left", "Overtime"],
+          "columns": [
+            "Deficit (home points behind)",
+            "36+ min left",
+            "24-36 min left",
+            "12-24 min left",
+            "5-12 min left",
+            "2-5 min left",
+            "0-2 min left",
+            "Overtime"
+          ],
           "rows": [
-            ["Tied (0)", "54.06% (n=1317)", "55.30% (n=579)", "57.12% (n=459)", "51.85% (n=281)", "54.34% (n=166)", "44.52% (n=201)", "58.61% (n=80)"],
-            ["1-5", "50.87% (n=1300)", "47.90% (n=880)", "45.47% (n=683)", "40.52% (n=493)", "39.19% (n=361)", "1.29% (n=348)", "3.47% (n=58)"],
-            ["5-10", "39.89% (n=816)", "34.94% (n=739)", "29.77% (n=615)", "22.69% (n=458)", "16.99% (n=334)", "0.07% (n=295)", "1.04% (n=31)"],
-            ["10-15", "29.73% (n=339)", "24.25% (n=506)", "15.33% (n=456)", "10.28% (n=353)", "1.87% (n=236)", "0.00% (n=225)", "masked (n=3)"],
-            ["15-20", "23.89% (n=95)", "14.61% (n=255)", "8.67% (n=311)", "3.47% (n=249)", "0.00% (n=180)", "0.00% (n=159)", "no ticks recorded"],
-            ["20-30", "masked (n=26)", "9.43% (n=120)", "2.80% (n=205)", "0.20% (n=191)", "0.00% (n=149)", "0.00% (n=128)", "no ticks recorded"],
-            ["30+", "masked (n=1)", "masked (n=16)", "0.00% (n=49)", "0.00% (n=62)", "0.00% (n=64)", "0.00% (n=65)", "no ticks recorded"]
+            [
+              "Tied (0)",
+              "54.06% (n=1317)",
+              "55.30% (n=579)",
+              "57.12% (n=459)",
+              "51.85% (n=281)",
+              "54.34% (n=166)",
+              "44.52% (n=201)",
+              "58.61% (n=80)"
+            ],
+            [
+              "1-5",
+              "50.87% (n=1300)",
+              "47.90% (n=880)",
+              "45.47% (n=683)",
+              "40.52% (n=493)",
+              "39.19% (n=361)",
+              "1.29% (n=348)",
+              "3.47% (n=58)"
+            ],
+            [
+              "5-10",
+              "39.89% (n=816)",
+              "34.94% (n=739)",
+              "29.77% (n=615)",
+              "22.69% (n=458)",
+              "16.99% (n=334)",
+              "0.07% (n=295)",
+              "1.04% (n=31)"
+            ],
+            [
+              "10-15",
+              "29.73% (n=339)",
+              "24.25% (n=506)",
+              "15.33% (n=456)",
+              "10.28% (n=353)",
+              "1.87% (n=236)",
+              "0.00% (n=225)",
+              "masked (n=3)"
+            ],
+            [
+              "15-20",
+              "23.89% (n=95)",
+              "14.61% (n=255)",
+              "8.67% (n=311)",
+              "3.47% (n=249)",
+              "0.00% (n=180)",
+              "0.00% (n=159)",
+              "no ticks recorded"
+            ],
+            [
+              "20-30",
+              "masked (n=26)",
+              "9.43% (n=120)",
+              "2.80% (n=205)",
+              "0.20% (n=191)",
+              "0.00% (n=149)",
+              "0.00% (n=128)",
+              "no ticks recorded"
+            ],
+            [
+              "30+",
+              "masked (n=1)",
+              "masked (n=16)",
+              "0.00% (n=49)",
+              "0.00% (n=62)",
+              "0.00% (n=64)",
+              "0.00% (n=65)",
+              "no ticks recorded"
+            ]
           ],
           "note": "Source: webapp/public/data/showcase/comeback_atlas.json, cells[] filtered to lead_band='lead_00' or lead_band starting 'lead_-'; rate = outcome_rate x 100, n = n_games. masked = masked_n_lt_30 true (n_games below the published 30-game floor); 'no ticks recorded' = no cell exists for that combination."
         },
@@ -115,10 +201,25 @@
         {
           "type": "table",
           "caption": "Two independent come-back estimates for the same deficit and time, home-trailing versus derived away-trailing",
-          "columns": ["Deficit and time", "Home-trailing cell (direct)", "Away-trailing estimate (1 - home-leading rate)", "Agreement"],
+          "columns": [
+            "Deficit and time",
+            "Home-trailing cell (direct)",
+            "Away-trailing estimate (1 - home-leading rate)",
+            "Agreement"
+          ],
           "rows": [
-            ["1-5 points, final two minutes", "1.29% (n=348)", "1.35% (n=344, 1 - 98.65%)", "Close: within 0.06 points on similarly sized samples"],
-            ["5-10 points, 12-24 minutes left", "29.77% (n=615)", "25.01% (n=736, 1 - 74.99%)", "Looser: about 4.8 points apart"]
+            [
+              "1-5 points, final two minutes",
+              "1.29% (n=348)",
+              "1.35% (n=344, 1 - 98.65%)",
+              "Close: within 0.06 points on similarly sized samples"
+            ],
+            [
+              "5-10 points, 12-24 minutes left",
+              "29.77% (n=615)",
+              "25.01% (n=736, 1 - 74.99%)",
+              "Looser: about 4.8 points apart"
+            ]
           ],
           "note": "Away-trailing figures are a trivial complement (1 - outcome_rate) of webapp/public/data/showcase/comeback_atlas.json cells lead_+01_05|rem_00_02|reg and lead_+05_10|rem_12_24|reg; not part of the main table, shown only as a cross-check."
         },
@@ -132,7 +233,7 @@
         },
         {
           "type": "p",
-          "text": "This paper covers the NBA only, because the source module's cells are built from an NBA-specific reliability map. The blowout_dynamics module cited above measures a persistence question on different sports, with clock units (innings, minutes) never pooled together even within that module; it is mentioned only to show that 'once a margin gets big, is the game over' has been asked two different ways here, from two different artifacts, and the answers are not interchangeable."
+          "text": "This paper covers the NBA only, because the source module's cells are built from an NBA-specific reliability map. The blowout_dynamics module cited above measures a persistence question on different sports, with clock units never pooled even within that module; it is mentioned only to show that 'once a margin gets big, is the game over' has been asked two ways here, from two artifacts whose answers are not interchangeable."
         }
       ]
     },
@@ -148,7 +249,8 @@
             "Four of the 46 cells in the main table (and three more among the mirrored positive-lead cells) sit below the source's own 30-game floor; their raw counts are reported but no rate is read from them, and three deficit bands have no recorded overtime cell at all.",
             "This is a historical frequency table built from realized outcomes across many different games sharing a deficit-and-time label; it is not a live forecast, a calibrated model, or a price for any specific ongoing game, and it applies no adjustment for team strength, opponent quality, or which teams are involved.",
             "Only one corpus snapshot is reported, and the source artifact does not publish an as-of date (asOf: null); there is no walk-forward or multi-season replication here showing these rates are stable across seasons.",
-            "This paper covers the NBA only; the source module carries no MLB, soccer, or tennis cells, and the blowout_dynamics contrast referenced above measures a different question on different sports and is not a like-for-like comparison."
+            "This paper covers the NBA only; the source module carries no MLB, soccer, or tennis cells, and the blowout_dynamics contrast referenced above measures a different question on different sports and is not a like-for-like comparison.",
+            "comeback_atlas.json and blowout_dynamics.json were not rebuilt in the 2026-09-16 in-game re-segmentation and are recorded as under review, so these cells are provisional."
           ]
         }
       ]
@@ -245,14 +347,37 @@
     "Four of the 46 cells in the main table (and three more among the mirrored positive-lead cells) sit below the source's own 30-game floor; their raw counts are reported but no rate is read from them, and three deficit bands have no recorded overtime cell at all.",
     "This is a historical frequency table built from realized outcomes across many different games sharing a deficit-and-time label; it is not a live forecast, a calibrated model, or a price for any specific ongoing game, and it applies no adjustment for team strength, opponent quality, or which teams are involved.",
     "Only one corpus snapshot is reported, and the source artifact does not publish an as-of date (asOf: null); there is no walk-forward or multi-season replication here showing these rates are stable across seasons.",
-    "This paper covers the NBA only; the source module carries no MLB, soccer, or tennis cells, and the blowout_dynamics contrast referenced above measures a different question on different sports and is not a like-for-like comparison."
+    "This paper covers the NBA only; the source module carries no MLB, soccer, or tennis cells, and the blowout_dynamics contrast referenced above measures a different question on different sports and is not a like-for-like comparison.",
+    "comeback_atlas.json and blowout_dynamics.json were not rebuilt in the 2026-09-16 in-game re-segmentation and are recorded as under review, so these cells are provisional."
   ],
   "related": [
-    { "kind": "module", "id": "comeback_atlas" },
-    { "kind": "module", "id": "blowout_dynamics" },
-    { "kind": "inspector", "id": "blowout-timing" },
-    { "kind": "inspector", "id": "state-contrasts" },
-    { "kind": "analysis", "id": "comeback-rates-deficit-time" },
-    { "kind": "paper", "id": "lasting-leads-mlb-soccer" }
+    {
+      "kind": "finding",
+      "id": "ingame-join-integrity"
+    },
+    {
+      "kind": "module",
+      "id": "comeback_atlas"
+    },
+    {
+      "kind": "module",
+      "id": "blowout_dynamics"
+    },
+    {
+      "kind": "inspector",
+      "id": "blowout-timing"
+    },
+    {
+      "kind": "inspector",
+      "id": "state-contrasts"
+    },
+    {
+      "kind": "analysis",
+      "id": "comeback-rates-deficit-time"
+    },
+    {
+      "kind": "paper",
+      "id": "lasting-leads-mlb-soccer"
+    }
   ]
 }

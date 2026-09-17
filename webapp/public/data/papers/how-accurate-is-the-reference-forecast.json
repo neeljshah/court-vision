@@ -2,112 +2,341 @@
   "slug": "how-accurate-is-the-reference-forecast",
   "title": "How accurate is the reference forecast?",
   "subtitle": "Devigged accuracy by source, the favorite-longshot shape, and how much the close sharpens over pregame snapshots",
-  "authors": ["CourtVision research"],
+  "authors": [
+    "CourtVision research"
+  ],
   "date": "2026-09-16",
   "sport": "all",
-  "keywords": ["calibration", "devig", "favorite-longshot", "closing reference", "reliability", "source comparison"],
+  "keywords": [
+    "calibration",
+    "devig",
+    "favorite-longshot",
+    "closing reference",
+    "reliability",
+    "source comparison"
+  ],
   "abstract": "This paper checks the reference forecast against itself: how much closing devigged prices from different sources actually differ, whether the classic favorite-longshot miscalibration pattern shows up in those prices, and whether accuracy improves as a snapshot gets closer to the event start. Three published artifacts back it, each reading pregame or pre-start closing-price data rather than the in-game tick feed used elsewhere on the site. bookmaker_accuracy.json compares three named sources -- Pinnacle, MarketAvg, and Bet365 -- on the shared-game subset each one quoted: on tennis match winner (n=33,664) Pinnacle's Brier of 0.1975 sits marginally below Bet365's 0.1980; on soccer over/under 2.5 goals (n=15,112) the three sit within 0.0001 of each other (0.2395, 0.2395, 0.2396). No confidence interval or significance test on these gaps is published, so this paper reports 'not published' rather than a yes/no verdict on distinguishability. market_favorite_longshot.json buckets the closing price by implied favorite probability: tennis (n_total=33,713) shows a mild, monotone favorite-longshot bias rising from a -0.0026 gap in its lowest band to +0.0176 in its highest; MLB moneyline (n_total=27,983) shows no consistent direction across its four bands and is graded 'essentially efficient.' micro_closing_decay.json checks whether Brier improves toward the close on the two sports it can join to a settled outcome: WNBA (30 games) sharpens on an unpaired bucket comparison, T-6h Brier 0.245445 to close 0.228045; international soccer (13 games, underpowered throughout) does not on that same bucket comparison, and its one paired same-game test (n=7) shows an even larger reversal. The honest read: the closing price is close to a statistical dead heat across the named sources and largely free of favorite-longshot bias outside tennis, and the sharpening-toward-close evidence assembled here is thin, mixed, and in one case contradicted by its own paired subsample.",
   "sections": [
     {
       "id": "question",
       "heading": "Question",
       "blocks": [
-        {"type": "p", "text": "CourtVision's calibration papers usually grade a model against the devigged closing price as reference. This one turns the lens on the reference itself and asks three narrower questions, each answered from one published artifact. First, when more than one source publishes a closing price for the same games, how much do their devigged Brier scores actually differ, and can this site's own data say whether that difference is more than noise. Second, does the closing price show the textbook favorite-longshot pattern -- realized win rates running below the priced probability for heavy favorites and above it for longshots -- and in which sport. Third, does accuracy improve as a price gets closer to the event start, which is the practical justification for treating the close, rather than an earlier snapshot, as the reference used everywhere else on the site."},
-        {"type": "p", "text": "This is a descriptive exercise in the reference forecast's own reliability, not a claim about the CourtVision model or about acting on any priced probability. Nothing here compares the model to these sources; that comparison lives in the calibration and state-reliability inspectors and their companion papers. No number in this paper is computed beyond a same-artifact difference of two cited figures."}
+        {
+          "type": "p",
+          "text": "CourtVision's calibration papers usually grade a model against the devigged closing price as reference. This one turns the lens on the reference itself and asks three narrower questions, each answered from one published artifact. First, when more than one source publishes a closing price for the same games, how much do their devigged Brier scores actually differ, and can this site's own data say whether that difference is more than noise. Second, does the closing price show the textbook favorite-longshot pattern -- realized win rates running below the priced probability for heavy favorites and above it for longshots -- and in which sport. Third, does accuracy improve as a price gets closer to the event start, which is the practical justification for treating the close, rather than an earlier snapshot, as the reference used everywhere else on the site."
+        },
+        {
+          "type": "p",
+          "text": "This is a descriptive exercise in the reference forecast's own reliability, not a claim about the CourtVision model or about acting on any priced probability. Nothing here compares the model to these sources; that comparison lives in the calibration and state-reliability inspectors and their companion papers. No number in this paper is computed beyond a same-artifact difference of two cited figures."
+        }
       ]
     },
     {
       "id": "data",
       "heading": "Data and definitions",
       "blocks": [
-        {"type": "p", "text": "Three showcase artifacts back this paper. bookmaker_accuracy.json (generated 2026-07-25) compares three named sources -- Pinnacle, MarketAvg, and Bet365 -- by proportional-devig Brier score, on the subset of games every compared source quoted: n=33,664 for tennis match winner, n=15,112 for soccer over/under 2.5 goals. market_favorite_longshot.json (generated 2026-07-25) buckets one closing price per sport by implied favorite probability: a source labeled 'Pinnacle (close)' for tennis (n_total=33,713) and one labeled 'closing line' for MLB moneyline (n_total=27,983), each bucket carrying a 95 percent Wilson interval around its realized rate. micro_closing_decay.json compares Brier at four horizons before start (T-24h, T-6h, T-1h, close) against a settled ESPN-keyed outcome, for the two sports it could join to that outcome table: WNBA (30 games, captured 2026-07-04 to 2026-07-17) and international soccer, labeled soccer_intl (13 games, captured 2026-06-19 to 2026-07-17); the site manifest lists this module's as_of as null, so the per-sport as_of fields it does publish (both 2026-07-17) are the only dates available."},
-        {"type": "p", "text": "All three artifacts read published pregame or pre-start closing-price data -- committed odds parquets for the first two, a scraped line-history feed of consensus-median snapshots for the third -- not the MLB in-game tick corpus the site's join-integrity finding flags as partly mislabelled (126 of 227 files holding ticks from more than one real game). That quarantine does not apply here. It is also moot for two of the three artifacts: market_favorite_longshot.json has no soccer row at all, and micro_closing_decay.json's own not_joinable.mlb field says MLB is absent for an unrelated reason -- its line-history rows carry ESPN/odds-api ids while games.parquet uses date-team keys, so zero rows join, not that any tick is mislabeled."},
-        {"type": "p", "text": "One naming mismatch is worth flagging before the numbers. bookmaker_accuracy.json's non-tennis sport is keyed 'soccer' and scores an over/under 2.5-goals market (n_shared=15,112), while micro_closing_decay.json's comparable sport is keyed 'soccer_intl' and scores a home-win market (n_games_joined=13). These are different market types read from different observation windows. This paper reports each artifact's own numbers under its own label and does not pool them into one soccer figure."}
+        {
+          "type": "p",
+          "text": "Three showcase artifacts back this paper. bookmaker_accuracy.json (generated 2026-07-25) compares three named sources -- Pinnacle, MarketAvg, and Bet365 -- by proportional-devig Brier score, on the subset of games every compared source quoted: n=33,664 for tennis match winner, n=15,112 for soccer over/under 2.5 goals. market_favorite_longshot.json (generated 2026-07-25) buckets one closing price per sport by implied favorite probability: a source labeled 'Pinnacle (close)' for tennis (n_total=33,713) and one labeled 'closing line' for MLB moneyline (n_total=27,983), each bucket carrying a 95 percent Wilson interval around its realized rate. micro_closing_decay.json compares Brier at four horizons before start (T-24h, T-6h, T-1h, close) against a settled ESPN-keyed outcome, for the two sports it could join to that outcome table: WNBA (30 games, captured 2026-07-04 to 2026-07-17) and international soccer, labeled soccer_intl (13 games, captured 2026-06-19 to 2026-07-17); the site manifest lists this module's as_of as null, so the per-sport as_of fields it does publish (both 2026-07-17) are the only dates available."
+        },
+        {
+          "type": "p",
+          "text": "All three artifacts read published pregame or pre-start closing-price data -- committed odds parquets for the first two, a scraped line-history feed of consensus-median snapshots for the third -- not the MLB in-game tick corpus the join-integrity finding flagged as partly mislabelled (126 of 227 files) and re-segmented into revision 2 on 2026-09-16. That does not apply here. It is also moot for two of the three artifacts: market_favorite_longshot.json has no soccer row at all, and micro_closing_decay.json's own not_joinable.mlb field says MLB is absent for an unrelated reason -- its line-history rows carry ESPN/odds-api ids while games.parquet uses date-team keys, so zero rows join, not that any tick is mislabeled."
+        },
+        {
+          "type": "p",
+          "text": "One naming mismatch is worth flagging before the numbers. bookmaker_accuracy.json's non-tennis sport is keyed 'soccer' and scores an over/under 2.5-goals market (n_shared=15,112), while micro_closing_decay.json's comparable sport is keyed 'soccer_intl' and scores a home-win market (n_games_joined=13). These are different market types read from different observation windows. This paper reports each artifact's own numbers under its own label and does not pool them into one soccer figure."
+        }
       ]
     },
     {
       "id": "method",
       "heading": "Method",
       "blocks": [
-        {"type": "p", "text": "bookmaker_accuracy.json defines its devig as a proportional normalization of a two-way decimal-odds pair into a probability:"},
-        {"type": "math", "text": "p_A = (1/a) / ((1/a) + (1/b)), for decimal odds a on side A and b on side B"},
-        {"type": "p", "text": "market_favorite_longshot.json applies the same proportional devig to a two-way closing price and then labels whichever side carries the larger implied probability the favorite:"},
-        {"type": "math", "text": "favorite_prob = max(q, 1 - q), where q is the devigged probability of one side"},
-        {"type": "p", "text": "Comparing two sources' accuracy is only meaningful when both are scored on the same games -- otherwise a gap could just reflect one source covering an easier slate. bookmaker_accuracy.json already restricts every row to the shared-game subset all compared sources quoted, so Table 1 below is a paired, same-game comparison in that sense. What is missing is a second layer: a confidence interval or a formal test on the gap between two sources' Brier scores. The artifact reports point estimates only, so this paper marks every row in Table 1's distinguishability column 'not published' rather than inferring significance from n and an eyeballed gap size, which the source data does not license."},
-        {"type": "p", "text": "market_favorite_longshot.json's Wilson intervals are a different kind of interval: each one bounds a single band's own realized rate against its own implied probability, band by band, not a comparison between two sources or two sports. A favorite-longshot pattern, if present, should show the gap (realized minus implied) trending in one consistent direction as the band midpoint rises -- longshots at the low end of the scale outperforming their price, favorites at the high end underperforming theirs, or the reverse; a flat, near-zero gap with no consistent direction across bands is the no-pattern case."},
-        {"type": "callout", "label": "Definition", "text": "The 'closing reference' cited across CourtVision's calibration pages is the last available devigged price before an event starts: a single named source's closing quote in bookmaker_accuracy.json and market_favorite_longshot.json (Pinnacle, or the field literally labeled 'closing line'), or the 0-to-0.5-hour-before-start snapshot labeled 'close' in micro_closing_decay.json. It is the most complete price a source publishes because it is the last one taken before the outcome is known -- a statement about timing, not a claim that it is the most accurate snapshot in every sport measured here."}
+        {
+          "type": "p",
+          "text": "bookmaker_accuracy.json defines its devig as a proportional normalization of a two-way decimal-odds pair into a probability:"
+        },
+        {
+          "type": "math",
+          "text": "p_A = (1/a) / ((1/a) + (1/b)), for decimal odds a on side A and b on side B"
+        },
+        {
+          "type": "p",
+          "text": "market_favorite_longshot.json applies the same proportional devig to a two-way closing price and then labels whichever side carries the larger implied probability the favorite:"
+        },
+        {
+          "type": "math",
+          "text": "favorite_prob = max(q, 1 - q), where q is the devigged probability of one side"
+        },
+        {
+          "type": "p",
+          "text": "Comparing two sources' accuracy is only meaningful when both are scored on the same games -- otherwise a gap could just reflect one source covering an easier slate. bookmaker_accuracy.json already restricts every row to the shared-game subset all compared sources quoted, so Table 1 below is a paired, same-game comparison in that sense. What is missing is a second layer: a confidence interval or a formal test on the gap between two sources' Brier scores. The artifact reports point estimates only, so this paper marks every row in Table 1's distinguishability column 'not published' rather than inferring significance from n and an eyeballed gap size, which the source data does not license."
+        },
+        {
+          "type": "p",
+          "text": "market_favorite_longshot.json's Wilson intervals are a different kind of interval: each one bounds a single band's own realized rate against its own implied probability, band by band, not a comparison between two sources or two sports. A favorite-longshot pattern, if present, should show the gap (realized minus implied) trending in one consistent direction as the band midpoint rises -- longshots at the low end of the scale outperforming their price, favorites at the high end underperforming theirs, or the reverse; a flat, near-zero gap with no consistent direction across bands is the no-pattern case."
+        },
+        {
+          "type": "callout",
+          "label": "Definition",
+          "text": "The 'closing reference' cited across CourtVision's calibration pages is the last available devigged price before an event starts: a single named source's closing quote in bookmaker_accuracy.json and market_favorite_longshot.json (Pinnacle, or the field literally labeled 'closing line'), or the 0-to-0.5-hour-before-start snapshot labeled 'close' in micro_closing_decay.json. It is the most complete price a source publishes because it is the last one taken before the outcome is known -- a statement about timing, not a claim that it is the most accurate snapshot in every sport measured here."
+        }
       ]
     },
     {
       "id": "results",
       "heading": "Results",
       "blocks": [
-        {"type": "p", "text": "Source comparison. Table 1 lists all six source-sport-market rows in bookmaker_accuracy.json. On tennis match winner (n=33,664 for every source), Pinnacle's Brier (0.1975) sits marginally below MarketAvg's (0.1977) and Bet365's (0.1980); on soccer over/under 2.5 goals (n=15,112), all three sit within 0.0001 of each other (0.2395, 0.2395, 0.2396). The artifact's own headline calls the soccer result a statistical dead heat and grades the tennis gap 'barely sharpest' -- language this paper keeps rather than upgrading to a significance claim, since no confidence interval on any pairwise gap is published."},
-        {"type": "table", "caption": "Source comparison by sport and market (source: bookmaker_accuracy.json)", "columns": ["Sport", "Market", "Source", "Brier", "n", "Distinguishable"], "rows": [
-          ["Tennis", "match winner", "Pinnacle", "0.1975", "33,664", "not published"],
-          ["Tennis", "match winner", "MarketAvg", "0.1977", "33,664", "not published"],
-          ["Tennis", "match winner", "Bet365", "0.1980", "33,664", "not published"],
-          ["Soccer", "over/under 2.5 goals", "Pinnacle", "0.2395", "15,112", "not published"],
-          ["Soccer", "over/under 2.5 goals", "MarketAvg", "0.2395", "15,112", "not published"],
-          ["Soccer", "over/under 2.5 goals", "Bet365", "0.2396", "15,112", "not published"]
-        ], "note": "n is the shared-game subset every compared source quoted for that sport-market. bookmaker_accuracy.json publishes no confidence interval or significance test on a pairwise source gap, so 'Distinguishable' is reported not published rather than inferred from the point gap."},
-        {"type": "p", "text": "The artifact's own confounds note two reasons a small Brier gap should not be read as one source being more useful than another: accuracy differs from which source posts a price first, and the devig method shifts absolute Brier levels without changing which source ranks where."},
-        {"type": "p", "text": "Favorite-longshot shape. Table 2 gives tennis's five implied-probability bands from market_favorite_longshot.json. The gap (realized rate minus implied probability) is negative in the lowest band (-0.0026 at 0.50-0.60) and turns positive and grows through every higher band, reaching +0.0176 at 0.90-1.001 (n=1,850); the artifact's own verdict calls this a 'mild monotone favorite-longshot bias.' MLB moneyline does not show the same shape: across its four bands (n_total=27,983) the gap runs +0.0032, +0.0055, -0.0078, then +0.0161, with no consistent sign as the band rises, and the artifact grades it 'essentially efficient -- no systematic bias.'"},
-        {"type": "table", "caption": "Favorite-longshot bands, tennis match winner (source: market_favorite_longshot.json, sports.tennis)", "columns": ["Implied favorite probability band", "n", "Mean implied", "Realized rate", "Gap (realized - implied)", "95% Wilson CI (realized)"], "rows": [
-          ["0.50-0.60", "9,664", "0.5532", "0.5506", "-0.0026", "[0.5407, 0.5605]"],
-          ["0.60-0.70", "9,744", "0.6483", "0.6495", "0.0013", "[0.6400, 0.6589]"],
-          ["0.70-0.80", "7,570", "0.7474", "0.7563", "0.0089", "[0.7465, 0.7658]"],
-          ["0.80-0.90", "4,885", "0.8452", "0.8583", "0.0131", "[0.8483, 0.8678]"],
-          ["0.90-1.001", "1,850", "0.9321", "0.9497", "0.0176", "[0.9388, 0.9588]"]
-        ], "note": "Each row is one independent match. Source-reported verdict: mild monotone favorite-longshot bias."},
-        {"type": "figure", "module": "market_favorite_longshot", "caption": "Reliability of the closing devigged price by implied favorite-probability band, tennis match winner and MLB moneyline."},
-        {"type": "p", "text": "Every one of tennis's five bands, and three of MLB's four, carry a 95 percent Wilson interval that excludes zero gap in the same direction as the point estimate -- for example tennis's top band has wilson_lo=0.9388 and wilson_hi=0.9588, both above its own mean implied probability of 0.9321. MLB's 0.60-0.65 band is the exception, with wilson_hi=0.6280 sitting just above its own impl of 0.6233. That is evidence the gaps are not exactly zero within each sport's own bands, not evidence that tennis and MLB differ from each other -- no cross-sport test is published."},
-        {"type": "p", "text": "Sharpening toward the close. Table 3 gives micro_closing_decay.json's Brier at each measured horizon. WNBA's Brier falls from 0.245445 at T-6h (n=26) to 0.227515 at T-1h (n=29) to 0.228045 at close (n=29); its T-24h bucket carries n=0, so no reading exists that far out. International soccer runs the other way on the same bucket-level comparison: 0.135518 at T-24h (n=7) versus 0.137424 at close (n=13), a delta the artifact itself reports as -0.0019 and labels 'does NOT sharpen,' flagged underpowered throughout."},
-        {"type": "table", "caption": "Brier at fixed horizons before start (source: micro_closing_decay.json)", "columns": ["Sport", "Hours before close", "Brier", "n"], "rows": [
-          ["wnba", "6", "0.245445", "26"],
-          ["wnba", "1", "0.227515", "29"],
-          ["wnba", "0 (close)", "0.228045", "29"],
-          ["soccer_intl", "24", "0.135518", "7"],
-          ["soccer_intl", "6", "0.140881", "12"],
-          ["soccer_intl", "1", "0.136126", "13"],
-          ["soccer_intl", "0 (close)", "0.137424", "13"]
-        ], "note": "wnba's T-24h bucket has n=0 and is omitted; all soccer_intl rows are flagged underpowered in the source artifact. Each row is an unpaired bucket-level Brier, not a same-game repeated measurement."},
-        {"type": "p", "text": "This is where the paired-versus-unpaired distinction from the Method section matters inside a single artifact, not just across sources. Each wnba bucket comparison uses a different subset of games (26 at T-6h, 29 at close), so it is an unpaired comparison, not a same-game repeated measurement; wnba's close_vs_t24h_paired.n is 0, meaning no paired same-game test exists for wnba at all. International soccer does have a paired subsample -- the seven games with both a T-24h and a close reading -- and it tells a different, larger story: brier_t24h=0.135518 versus brier_close=0.156807 on that same n=7, a delta of -0.021289 (close_sharper=false), more than ten times the size of the unpaired -0.0019 delta quoted in the artifact's own headline verdict. The two deltas answer the same question on different, and disagreeing, samples."}
+        {
+          "type": "p",
+          "text": "Source comparison. Table 1 lists all six source-sport-market rows in bookmaker_accuracy.json. On tennis match winner (n=33,664 for every source), Pinnacle's Brier (0.1975) sits marginally below MarketAvg's (0.1977) and Bet365's (0.1980); on soccer over/under 2.5 goals (n=15,112), all three sit within 0.0001 of each other (0.2395, 0.2395, 0.2396). The artifact's own headline calls the soccer result a statistical dead heat and grades the tennis gap 'barely sharpest' -- language this paper keeps rather than upgrading to a significance claim, since no confidence interval on any pairwise gap is published."
+        },
+        {
+          "type": "table",
+          "caption": "Source comparison by sport and market (source: bookmaker_accuracy.json)",
+          "columns": [
+            "Sport",
+            "Market",
+            "Source",
+            "Brier",
+            "n",
+            "Distinguishable"
+          ],
+          "rows": [
+            [
+              "Tennis",
+              "match winner",
+              "Pinnacle",
+              "0.1975",
+              "33,664",
+              "not published"
+            ],
+            [
+              "Tennis",
+              "match winner",
+              "MarketAvg",
+              "0.1977",
+              "33,664",
+              "not published"
+            ],
+            [
+              "Tennis",
+              "match winner",
+              "Bet365",
+              "0.1980",
+              "33,664",
+              "not published"
+            ],
+            [
+              "Soccer",
+              "over/under 2.5 goals",
+              "Pinnacle",
+              "0.2395",
+              "15,112",
+              "not published"
+            ],
+            [
+              "Soccer",
+              "over/under 2.5 goals",
+              "MarketAvg",
+              "0.2395",
+              "15,112",
+              "not published"
+            ],
+            [
+              "Soccer",
+              "over/under 2.5 goals",
+              "Bet365",
+              "0.2396",
+              "15,112",
+              "not published"
+            ]
+          ],
+          "note": "n is the shared-game subset every compared source quoted for that sport-market. bookmaker_accuracy.json publishes no confidence interval or significance test on a pairwise source gap, so 'Distinguishable' is reported not published rather than inferred from the point gap."
+        },
+        {
+          "type": "p",
+          "text": "The artifact's own confounds note two reasons a small Brier gap should not be read as one source being more useful than another: accuracy differs from which source posts a price first, and the devig method shifts absolute Brier levels without changing which source ranks where."
+        },
+        {
+          "type": "p",
+          "text": "Favorite-longshot shape. Table 2 gives tennis's five implied-probability bands from market_favorite_longshot.json. The gap (realized rate minus implied probability) is negative in the lowest band (-0.0026 at 0.50-0.60) and turns positive and grows through every higher band, reaching +0.0176 at 0.90-1.001 (n=1,850); the artifact's own verdict calls this a 'mild monotone favorite-longshot bias.' MLB moneyline does not show the same shape: across its four bands (n_total=27,983) the gap runs +0.0032, +0.0055, -0.0078, then +0.0161, with no consistent sign as the band rises, and the artifact grades it 'essentially efficient -- no systematic bias.'"
+        },
+        {
+          "type": "table",
+          "caption": "Favorite-longshot bands, tennis match winner (source: market_favorite_longshot.json, sports.tennis)",
+          "columns": [
+            "Implied favorite probability band",
+            "n",
+            "Mean implied",
+            "Realized rate",
+            "Gap (realized - implied)",
+            "95% Wilson CI (realized)"
+          ],
+          "rows": [
+            [
+              "0.50-0.60",
+              "9,664",
+              "0.5532",
+              "0.5506",
+              "-0.0026",
+              "[0.5407, 0.5605]"
+            ],
+            [
+              "0.60-0.70",
+              "9,744",
+              "0.6483",
+              "0.6495",
+              "0.0013",
+              "[0.6400, 0.6589]"
+            ],
+            [
+              "0.70-0.80",
+              "7,570",
+              "0.7474",
+              "0.7563",
+              "0.0089",
+              "[0.7465, 0.7658]"
+            ],
+            [
+              "0.80-0.90",
+              "4,885",
+              "0.8452",
+              "0.8583",
+              "0.0131",
+              "[0.8483, 0.8678]"
+            ],
+            [
+              "0.90-1.001",
+              "1,850",
+              "0.9321",
+              "0.9497",
+              "0.0176",
+              "[0.9388, 0.9588]"
+            ]
+          ],
+          "note": "Each row is one independent match. Source-reported verdict: mild monotone favorite-longshot bias."
+        },
+        {
+          "type": "figure",
+          "module": "market_favorite_longshot",
+          "caption": "Reliability of the closing devigged price by implied favorite-probability band, tennis match winner and MLB moneyline."
+        },
+        {
+          "type": "p",
+          "text": "Every one of tennis's five bands, and three of MLB's four, carry a 95 percent Wilson interval that excludes zero gap in the same direction as the point estimate -- for example tennis's top band has wilson_lo=0.9388 and wilson_hi=0.9588, both above its own mean implied probability of 0.9321. MLB's 0.60-0.65 band is the exception, with wilson_hi=0.6280 sitting just above its own impl of 0.6233. That is evidence the gaps are not exactly zero within each sport's own bands, not evidence that tennis and MLB differ from each other -- no cross-sport test is published."
+        },
+        {
+          "type": "p",
+          "text": "Sharpening toward the close. Table 3 gives micro_closing_decay.json's Brier at each measured horizon. WNBA's Brier falls from 0.245445 at T-6h (n=26) to 0.227515 at T-1h (n=29) to 0.228045 at close (n=29); its T-24h bucket carries n=0, so no reading exists that far out. International soccer runs the other way on the same bucket-level comparison: 0.135518 at T-24h (n=7) versus 0.137424 at close (n=13), a delta the artifact itself reports as -0.0019 and labels 'does NOT sharpen,' flagged underpowered throughout."
+        },
+        {
+          "type": "table",
+          "caption": "Brier at fixed horizons before start (source: micro_closing_decay.json)",
+          "columns": [
+            "Sport",
+            "Hours before close",
+            "Brier",
+            "n"
+          ],
+          "rows": [
+            [
+              "wnba",
+              "6",
+              "0.245445",
+              "26"
+            ],
+            [
+              "wnba",
+              "1",
+              "0.227515",
+              "29"
+            ],
+            [
+              "wnba",
+              "0 (close)",
+              "0.228045",
+              "29"
+            ],
+            [
+              "soccer_intl",
+              "24",
+              "0.135518",
+              "7"
+            ],
+            [
+              "soccer_intl",
+              "6",
+              "0.140881",
+              "12"
+            ],
+            [
+              "soccer_intl",
+              "1",
+              "0.136126",
+              "13"
+            ],
+            [
+              "soccer_intl",
+              "0 (close)",
+              "0.137424",
+              "13"
+            ]
+          ],
+          "note": "wnba's T-24h bucket has n=0 and is omitted; all soccer_intl rows are flagged underpowered in the source artifact. Each row is an unpaired bucket-level Brier, not a same-game repeated measurement."
+        },
+        {
+          "type": "p",
+          "text": "This is where the paired-versus-unpaired distinction from the Method section matters inside a single artifact, not just across sources. Each wnba bucket comparison uses a different subset of games (26 at T-6h, 29 at close), so it is an unpaired comparison, not a same-game repeated measurement; wnba's close_vs_t24h_paired.n is 0, meaning no paired same-game test exists for wnba at all. International soccer does have a paired subsample -- the seven games with both a T-24h and a close reading -- and it tells a different, larger story: brier_t24h=0.135518 versus brier_close=0.156807 on that same n=7, a delta of -0.021289 (close_sharper=false), more than ten times the size of the unpaired -0.0019 delta quoted in the artifact's own headline verdict. The two deltas answer the same question on different, and disagreeing, samples."
+        }
       ]
     },
     {
       "id": "checks",
       "heading": "Robustness and what would falsify this",
       "blocks": [
-        {"type": "list", "items": [
-          "bookmaker_accuracy.json publishes point Brier only; every 'distinguishable' cell in Table 1 is reported not published because no confidence interval or paired test on the pairwise gap is in the artifact.",
-          "market_favorite_longshot.json's Wilson intervals bound one band's own gap, not a comparison across bands, sports, or sources; the pattern here would be falsified by a rebuild showing MLB's bands turning monotone like tennis's, or tennis's top band's interval crossing zero.",
-          "The soccer_intl sharpening question would be settled differently by a larger paired sample: the current paired test (n=7) already reverses the sign and more than doubles the size of the unpaired bucket-level reading.",
-          "wnba's own sharpening claim rests entirely on an unpaired comparison across 26-to-29-game buckets, because its T-24h bucket and its paired-test denominator are both n=0; a wider capture window would allow a first paired test.",
-          "bookmaker_accuracy.json's 'soccer' (over/under 2.5 goals) and micro_closing_decay.json's 'soccer_intl' (home win) come from different market types on different windows; treating them as one soccer answer would be a falsifiable overreach this paper avoids."
-        ]}
+        {
+          "type": "list",
+          "items": [
+            "bookmaker_accuracy.json publishes point Brier only; every 'distinguishable' cell in Table 1 is reported not published because no confidence interval or paired test on the pairwise gap is in the artifact.",
+            "market_favorite_longshot.json's Wilson intervals bound one band's own gap, not a comparison across bands, sports, or sources; the pattern here would be falsified by a rebuild showing MLB's bands turning monotone like tennis's, or tennis's top band's interval crossing zero.",
+            "The soccer_intl sharpening question would be settled differently by a larger paired sample: the current paired test (n=7) already reverses the sign and more than doubles the size of the unpaired bucket-level reading.",
+            "wnba's own sharpening claim rests entirely on an unpaired comparison across 26-to-29-game buckets, because its T-24h bucket and its paired-test denominator are both n=0; a wider capture window would allow a first paired test.",
+            "bookmaker_accuracy.json's 'soccer' (over/under 2.5 goals) and micro_closing_decay.json's 'soccer_intl' (home win) come from different market types on different windows; treating them as one soccer answer would be a falsifiable overreach this paper avoids."
+          ]
+        }
       ]
     },
     {
       "id": "limitations",
       "heading": "Limitations",
       "blocks": [
-        {"type": "list", "items": [
-          "No confidence interval or significance test on the source-to-source Brier gap is published in bookmaker_accuracy.json, so this paper cannot say whether Pinnacle, MarketAvg, or Bet365 differ by more than noise on either market.",
-          "The sharpening-toward-close question in micro_closing_decay.json is answered for only two sports and 43 total joined games (30 wnba, 13 soccer_intl); MLB, NBA, and tennis are absent from this instrument for join-key reasons unrelated to the close itself.",
-          "Every soccer_intl bucket in micro_closing_decay.json is flagged underpowered (n=7 to 13), and its one paired same-game test (n=7) already gives a different answer than the unpaired bucket-level comparison quoted in the artifact's own headline.",
-          "bookmaker_accuracy.json's 'soccer' (over/under 2.5 goals) and micro_closing_decay.json's 'soccer_intl' (home win) are different market types on different windows and are not pooled into one soccer reading here.",
-          "Proportional devig is one normalization among several; the source artifacts note it shifts absolute Brier and probability levels without changing which source or band ranks where, so a different devig method could move every number in this paper without changing its qualitative shape.",
-          "These are reliability measurements of the reference forecast's own closing price; nothing here scores the CourtVision model against these sources, and nothing here should be read as a statement about which source is more useful to follow."
-        ]}
+        {
+          "type": "list",
+          "items": [
+            "No confidence interval or significance test on the source-to-source Brier gap is published in bookmaker_accuracy.json, so this paper cannot say whether Pinnacle, MarketAvg, or Bet365 differ by more than noise on either market.",
+            "The sharpening-toward-close question in micro_closing_decay.json is answered for only two sports and 43 total joined games (30 wnba, 13 soccer_intl); MLB, NBA, and tennis are absent from this instrument for join-key reasons unrelated to the close itself.",
+            "Every soccer_intl bucket in micro_closing_decay.json is flagged underpowered (n=7 to 13), and its one paired same-game test (n=7) already gives a different answer than the unpaired bucket-level comparison quoted in the artifact's own headline.",
+            "bookmaker_accuracy.json's 'soccer' (over/under 2.5 goals) and micro_closing_decay.json's 'soccer_intl' (home win) are different market types on different windows and are not pooled into one soccer reading here.",
+            "Proportional devig is one normalization among several; the source artifacts note it shifts absolute Brier and probability levels without changing which source or band ranks where, so a different devig method could move every number in this paper without changing its qualitative shape.",
+            "These are reliability measurements of the reference forecast's own closing price; nothing here scores the CourtVision model against these sources, and nothing here should be read as a statement about which source is more useful to follow."
+          ]
+        }
       ]
     },
     {
       "id": "use",
       "heading": "How to read this on the site",
       "blocks": [
-        {"type": "p", "text": "The calibration inspector (inspector id calibration) carries the model-versus-market reliability bins and bootstrapped intervals that the companion paper calibration-over-time-and-market-type restates by month and market type; this paper's tables sit upstream of that comparison, describing the reference side alone. closing-reference-movement-measured covers a related but distinct question -- how the reference moves before it closes and how much resolving power it carries at each in-game checkpoint -- using different artifacts than the three read here."},
-        {"type": "p", "text": "All three artifacts publish their full per-sport and per-bucket arrays on the analytics site, including the international-soccer paired subsample and the not_joinable reasons for every excluded sport, which this paper's tables summarize but do not reproduce in full."}
+        {
+          "type": "p",
+          "text": "The calibration inspector (inspector id calibration) carries the model-versus-market reliability bins and bootstrapped intervals that the companion paper calibration-over-time-and-market-type restates by month and market type; this paper's tables sit upstream of that comparison, describing the reference side alone. closing-reference-movement-measured covers a related but distinct question -- how the reference moves before it closes and how much resolving power it carries at each in-game checkpoint -- using different artifacts than the three read here."
+        },
+        {
+          "type": "p",
+          "text": "All three artifacts publish their full per-sport and per-bucket arrays on the analytics site, including the international-soccer paired subsample and the not_joinable reasons for every excluded sport, which this paper's tables summarize but do not reproduce in full."
+        }
       ]
     }
   ],
@@ -235,11 +464,29 @@
     "These are reliability measurements of the reference forecast's own closing price; nothing here scores the CourtVision model against these sources, and nothing here should be read as a statement about which source is more useful to follow."
   ],
   "related": [
-    {"kind": "module", "id": "bookmaker_accuracy"},
-    {"kind": "module", "id": "market_favorite_longshot"},
-    {"kind": "module", "id": "micro_closing_decay"},
-    {"kind": "inspector", "id": "calibration"},
-    {"kind": "paper", "id": "closing-reference-movement-measured"},
-    {"kind": "paper", "id": "calibration-over-time-and-market-type"}
+    {
+      "kind": "module",
+      "id": "bookmaker_accuracy"
+    },
+    {
+      "kind": "module",
+      "id": "market_favorite_longshot"
+    },
+    {
+      "kind": "module",
+      "id": "micro_closing_decay"
+    },
+    {
+      "kind": "inspector",
+      "id": "calibration"
+    },
+    {
+      "kind": "paper",
+      "id": "closing-reference-movement-measured"
+    },
+    {
+      "kind": "paper",
+      "id": "calibration-over-time-and-market-type"
+    }
   ]
 }

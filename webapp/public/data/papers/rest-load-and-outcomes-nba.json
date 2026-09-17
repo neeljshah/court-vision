@@ -44,7 +44,7 @@
         },
         {
           "type": "p",
-          "text": "The Schedule Fatigue Tax module's mechanism_receipt field cites a separately tested effect, -1.73 points per 100 team offensive rating (rested minus back-to-back, n=4732, p=0.0056), and names the validation ledger as its source. That ledger, mechanism_ledger_export.json, records two b2b_rest_penalty measurement runs rather than one: the n=4732 run just cited, and a second run at n=7192 (effect -1.955, p=0.000117), each with its own rested-versus-back-to-back margin breakdown by game count. Both runs carry a null as_of, meaning unstamped by the ledger's own run-timestamp convention."
+          "text": "The Schedule Fatigue Tax module's mechanism_receipt field cites a separately tested effect, -1.73 points per 100 team offensive rating (rested minus back-to-back, n=4732, p=0.0056), and names the validation ledger as its source. The published ledger card, mechanism_ledger_export.json, reproduces that same run and nothing more precise: it names the back-to-back rest penalty as confirmed at an effect of -1.73 with p 0.005645490426098632 on a 4,732-game corpus. Its caveat field states that as_of is the recorded run_ts and is null for runs that predate run_ts stamping, so this run carries no timestamp, and that one mechanism can appear more than once across corpora."
         },
         {
           "type": "p",
@@ -84,9 +84,8 @@
         },
         {
           "type": "table",
-          "caption": "Team scoring margin by rest state, two independently recorded b2b_rest_penalty measurement runs",
+          "caption": "Team scoring margin by rest state, the recorded b2b_rest_penalty measurement run",
           "columns": [
-            "Measurement run",
             "Rest state",
             "n (games)",
             "Avg scoring margin",
@@ -94,35 +93,19 @@
           ],
           "rows": [
             [
-              "Run 1 (total n=4732)",
               "0 days rest (back-to-back)",
               "856",
               "-1.41",
               "0.0056"
             ],
             [
-              "Run 1 (total n=4732)",
               "1+ days rest",
               "3876",
               "+0.32",
               "0.0056"
-            ],
-            [
-              "Run 2 (total n=7192)",
-              "0 days rest (back-to-back)",
-              "1278",
-              "-1.61",
-              "0.000117"
-            ],
-            [
-              "Run 2 (total n=7192)",
-              "1+ days rest",
-              "5914",
-              "+0.35",
-              "0.000117"
             ]
           ],
-          "note": "mechanism_ledger_export.json, by_sport.basketball_nba.mechanisms[0] and [1]. Run 1 effect = -1.73 pts/100 ORtg; Run 2 effect = -1.955 pts/100 ORtg (both rested minus back-to-back, both verdict CONFIRMED_LOCAL). No confidence interval is published for either run, only the p-value shown, and both runs share the same corpus tag (player_boxscores_2024_25_2025_26) at different game-count cuts, not two independent corpora."
+          "note": "Effect -1.73 pts/100 ORtg (rested minus back-to-back), verdict CONFIRMED_LOCAL, on the corpus tag player_boxscores_2024_25_2025_26 with n=4732. The published ledger card (mechanism_ledger_export.json, insights copy) reproduces the effect, the p-value and the 4,732-game corpus; the per-rest-state split is the breakdown recorded alongside that run. No confidence interval is published, only the p-value shown."
         },
         {
           "type": "table",
@@ -432,7 +415,7 @@
       "blocks": [
         {
           "type": "p",
-          "text": "The tested rest effect was recorded twice, at two different game-count cuts of the same corpus tag (n=4732 and n=7192), both landing on a negative, statistically significant margin difference (p=0.0056 and p=0.000117) in the same direction. That is a within-corpus replication. The project's own standing discipline treats a single-corpus result as unconfirmed until it clears a second, independently sourced corpus; this note does not claim that second, independent corpus exists yet for b2b_rest_penalty."
+          "text": "The tested rest effect is recorded once on the published ledger card, at n=4732, with a negative and statistically significant margin difference (p=0.0056). That is one measurement on one corpus tag, not a replication. The project's own standing discipline treats a single-corpus result as unconfirmed until it clears a second, independently sourced corpus; this note does not claim that second corpus exists for b2b_rest_penalty, and it does not claim a within-corpus replication either."
         },
         {
           "type": "p",
@@ -573,7 +556,7 @@
   ],
   "limitations": [
     "SFT ranks team-seasons by a constant leaguewide effect times each team's own back-to-back frequency, so the ranking is mathematically the same as ranking by back-to-back frequency alone, not a team-specific measurement of fatigue severity.",
-    "The b2b_rest_penalty margin test (n=4732, p=0.0056 and a second run at n=7192, p=0.000117) compares two rest states within the same corpus tag, not two independent corpora, and rest state is chosen by the schedule rather than randomly assigned, so the result is an association, not a causal fatigue effect.",
+    "The b2b_rest_penalty margin test (n=4732, p=0.0056) compares two rest states within one corpus tag, on a single recorded run, and rest state is chosen by the schedule rather than randomly assigned, so the result is an association, not a causal fatigue effect.",
     "The Load-Bearing Index's two estimators are drawn from different seasons (2024-25 for the Elo on/off estimator, 2025-26 through 2026-04-12 for the raw active-versus-missed estimator), so their agreement on 1 of 30 teams is directional corroboration across different team-seasons, not a paired estimate of the same population.",
     "Both measures aggregate to the team level and do not control for roster changes, opponent strength, minutes distribution, or blowout-driven lineup substitutions, so neither establishes which specific player or unit interaction drives the observed gap.",
     "Estimator A in the Load-Bearing Index does not publish a game-count denominator for its win-probability comparison, so its ranking cannot be weighted by sample support the way estimator B's active and missed game counts allow."

@@ -6,60 +6,62 @@
  "date": "2026-09-16",
  "sport": "all",
  "keywords": ["calibration", "reliability", "monthly", "market type", "Brier", "ECE", "MLB", "soccer"],
- "abstract": "We checked whether CourtVision's in-game calibration holds steady across calendar months and across market types, using three showcase artifacts drawn from the same graded corpora: calibration_over_time.json (78,986 MLB rows split into June, n=33,290, and July, n=45,696; 9,003 soccer_intl rows split into June, n=5,874, and July, n=3,129), calibration_by_market_type.json (per-market-type Brier and expected calibration error, ECE), and calibration_stability.json (the season-long aggregate, as of 2026-07-23). Over the two available MLB months both sides got sharper: model ECE fell from 0.1165 to 0.0834 and market ECE fell from 0.0944 to 0.0635, narrowing the model-market gap slightly (0.0221 to 0.0199), though the market stayed ahead in both months. Soccer_intl moved the other way: model ECE rose from 0.2112 to 0.421 and market ECE from 0.1517 to 0.2961, on a July sample (n=3,129) thinner than June's (n=5,874). By market type, only mlb_moneyline (n=78,986; model Brier 0.237684 vs market 0.206653, gap +0.031031) and soccer_match (n=9,003; model 0.227887 vs 0.142726, gap +0.08516) carry resolved outcomes and can be scored; these two Briers, and their row counts, are numerically identical to the season-long aggregates already published in calibration_stability.json, so the market-type cut adds no independent MLB or soccer rows beyond that aggregate. The MLB run-total market (2,113 rescued quote-ticks) has no settlement join and is reported null by design -- only a model-vs-market divergence (median 0.116128) is disclosed, never a fabricated score. The honest read: two calendar months and two scorable market-type cells are not enough to call either a settled trend or a stable regime, and the market is at least as sharp as the model everywhere it can be checked here."
-,
+ "abstract": "We checked whether CourtVision's in-game calibration holds steady across calendar months and across market types, using three showcase artifacts rebuilt on 2026-09-16 from the segment-clean in-game corpus: calibration_over_time.json (27,351 MLB rows split into June, n=5,030, and July, n=22,321; 4,265 soccer_intl rows split into June, n=1,213, and July, n=3,052), calibration_by_market_type.json, and calibration_stability.json (the season-long aggregate). Revision 1 of this paper quoted the same three artifacts computed on a joined corpus in which one stored file could hold ticks from more than one real game; those values are withdrawn. Over the two available MLB months both sides got sharper -- model expected calibration error (ECE) fell from 0.1265 to 0.075 and reference-quote ECE from 0.121 to 0.0439 -- but the distance between them widened, from 0.0055 to 0.0311, reversing the narrowing revision 1 reported. Soccer_intl rose on both sides, model ECE from 0.3644 to 0.4243 and reference ECE from 0.2596 to 0.2952. By market type only mlb_moneyline (n=27,351 over 178 files; model Brier 0.166759 against reference 0.151008, gap 0.015752) and soccer_match (n=4,265 over 27 files; 0.332522 against 0.195157, gap 0.137365) carry resolved outcomes. The MLB run-total market (2,113 rescued quote-ticks) has no settlement join and is reported null by design. Two months and two scorable cells are not a trend, and the reference quote is the sharper side everywhere it can be checked here.",
  "sections": [
   {
    "id": "question",
    "heading": "Question",
    "blocks": [
-    {"type": "p", "text": "Calibration is not a single number checked once; it is a property that either holds up or does not as the underlying rows change -- by calendar month, or by what kind of market is being forecast. This paper asks two narrow questions with the artifacts on hand: does CourtVision's monthly calibration error move in a consistent direction across the only two calendar months available (2026-06 and 2026-07), for MLB and international soccer (soccer_intl); and does calibration differ by market type (moneyline-style game-winner markets versus an in-game run-total market) in a way that is visible before any scoring even happens, because one of those market types cannot be scored at all."},
-    {"type": "p", "text": "This is a descriptive reliability exercise. It reports whether stated probabilities track observed outcomes, split by month and by market type, against the devigged market close as the reference. It does not measure whether acting on either source's price would have produced a return, and it does not treat a two-month split as a real time series -- that limitation is addressed directly below rather than glossed over."}
+    {"type": "callout", "label": "Status", "text": "Revision 1 of this paper quoted artifacts computed on the joined in-game corpus (78,986 MLB ticks, artifact as_of dates up to 2026-07-25), in which one stored tick file could hold ticks from more than one real game and carry another game's outcome label. Those values were withdrawn on 2026-09-16. This revision quotes the segment-clean corpus: 27,351 MLB ticks across 178 games and 4,265 soccer_intl ticks across 27 games, as_of 2026-09-16, as recorded in the mlb-ingame-regeneration receipt. Every number that moved is a population change, not forecaster improvement. The forecaster did not change; roughly a third of the MLB ticks and half the soccer ticks were removed because their outcome label belonged to another game, and the smaller sample widens every interval."},
+    {"type": "p", "text": "Calibration is a property that either holds up or does not as the underlying rows change -- by calendar month, or by what kind of market is being forecast. This paper asks two narrow questions with the artifacts on hand: does CourtVision's monthly calibration error move in a consistent direction across the only two calendar months available (2026-06 and 2026-07), for MLB and international soccer (soccer_intl); and does calibration differ by market type in a way that is visible before any scoring happens, because one of those market types cannot be scored at all."},
+    {"type": "p", "text": "This is a descriptive reliability exercise. It reports whether stated probabilities track observed outcomes, split by month and by market type, against the devigged market close as the reference. It does not measure whether acting on either source's price would have produced a return, and it does not treat a two-month split as a real time series."}
    ]
   },
   {
    "id": "data",
    "heading": "Data and definitions",
    "blocks": [
-    {"type": "p", "text": "calibration_over_time.json holds one cell per sport per calendar-month window. Only two sports and two months are present: mlb has 2026-06 (n=33,290) and 2026-07 (n=45,696); soccer_intl has 2026-06 (n=5,874) and 2026-07 (n=3,129). Each cell reports model_brier, market_brier, model_ece, and market_ece for that sport-month, with a single shared n for both sides. The site manifest lists this module's as_of as null -- date not published -- so the only dating available is the window label itself (2026-06, 2026-07)."},
-    {"type": "p", "text": "calibration_by_market_type.json splits the same style of corpus by market type instead of by month: mlb_moneyline (in-game moneyline, game winner), soccer_match (in-game match result, 2-way as graded), and mlb_total (in-game over/under run total, rescued Kalshi KXMLBTOTAL quote-tracks). Each labeled type needs at least 30 usable rows (min_n=30) before a Brier or ECE is computed, with ECE built from 10 probability bins; mlb_clean_moneyline is explicitly skipped as a byte-identical duplicate of mlb_moneyline so the same games are not double-counted. Only mlb_moneyline and soccer_match carry a has_outcome flag of true; mlb_total's has_outcome is false because its rescued quote-ticks were never joined to a settlement, so brier is null by design rather than computed from an invented label. This module's as_of is also null in the site manifest."},
-    {"type": "p", "text": "calibration_stability.json supplies the aggregate context: a single season-long cluster-bootstrap reliability exhibit, as of 2026-07-23T03:21:27Z, covering the same two sports in full -- mlb (n_rows=78,986, n_games=227) and soccer_intl (n_rows=9,003, n_games=51). For each sport it reports a model-side Brier and market-side Brier, plus how many of 10 probability bins have a bootstrapped gap confidence interval that excludes zero (n_significant_bins): mlb model 4 of 10, mlb market 0 of 10; soccer_intl model 8 of 10, soccer_intl market 6 of 10."}
+    {"type": "p", "text": "calibration_over_time.json holds one cell per sport per calendar-month window. Only two sports and two months are present: mlb has 2026-06 (n=5,030) and 2026-07 (n=22,321); soccer_intl has 2026-06 (n=1,213) and 2026-07 (n=3,052). Each cell reports model_brier, market_brier, model_ece and market_ece for that sport-month, with a single shared n for both sides. The rebuilt artifact now carries its own as_of (2026-09-16) and names its corpus, the segmented in-game cache; the withdrawn revision published no as_of at all, so the only dating available then was the window label itself."},
+    {"type": "p", "text": "calibration_by_market_type.json splits the same corpus by market type instead of by month: mlb_moneyline (in-game moneyline, game winner), soccer_match (in-game match result, 2-way as graded), and mlb_total (in-game over/under run total, rescued Kalshi KXMLBTOTAL quote-tracks). Each labeled type needs at least 30 usable rows (min_n=30) before a Brier or ECE is computed, with ECE built from 10 probability bins; mlb_clean_moneyline is skipped as a byte-identical duplicate of mlb_moneyline. Only mlb_moneyline and soccer_match carry a has_outcome flag of true; mlb_total's has_outcome is false because its rescued quote-ticks were never joined to a settlement, so brier is null by design rather than computed from an invented label. Those quote-tracks are also the one part of this paper untouched by the regeneration: with no label to mis-assign, its 2,113 rows, 21 quote-tracks and 5 files read the same before and after. This artifact is dated 2026-09-16."},
+    {"type": "p", "text": "calibration_stability.json supplies the aggregate context: a season-long cluster-bootstrap reliability exhibit, as of 2026-09-16, covering the same two sports in full -- mlb (n_rows=27,351, n_games=178) and soccer_intl (n_rows=4,265, n_games=27, flagged low_power). For each sport it reports a model-side and a reference-side Brier, plus how many probability bins have a bootstrapped gap confidence interval that excludes zero (n_significant_bins) out of the bins with enough games to be eligible: mlb model 3 of 10 eligible bins, mlb reference 0 of 10; soccer_intl model 8 of 9, soccer_intl reference 7 of 9. Soccer loses one bin on each curve to the five-game floor, which is why its denominator is 9."}
    ]
   },
   {
    "id": "method",
    "heading": "Method",
    "blocks": [
-    {"type": "p", "text": "Within one cell -- one sport-month in calibration_over_time.json, or one market type in calibration_by_market_type.json -- the model score and the market score share a single reported n, which means both sides are scored over the same underlying rows for that cell. That makes a model-vs-market comparison inside a single month or a single market type a paired, same-row comparison: both numbers were computed from the identical set of graded observations."},
-    {"type": "p", "text": "Comparing across cells is a different matter. June rows and July rows are different games entirely; there is no shared game_id linking a June observation to a July one, so a month-over-month change in ECE or Brier is an unpaired comparison between two non-overlapping samples, not a repeated measurement of the same games at two points in time. The same applies across market types: mlb_moneyline rows and soccer_match rows are different sports and different games, so their Briers are not comparable to each other in any paired sense, only side by side as separate readouts. Neither calibration_over_time.json nor calibration_by_market_type.json publishes a confidence interval on a month-to-month or type-to-type difference, unlike calibration_stability.json's bootstrapped gap_ci on its probability bins -- so no significance test can be run here on whether June differs from July, or moneyline from match-result, beyond reporting the point estimates."},
+    {"type": "p", "text": "Within one cell -- one sport-month in calibration_over_time.json, or one market type in calibration_by_market_type.json -- the model score and the reference score share a single reported n, which means both sides are scored over the same underlying rows. That makes a model-versus-reference comparison inside a single month or market type a paired, same-row comparison: both numbers were computed from the identical set of graded observations."},
+    {"type": "p", "text": "Comparing across cells is a different matter. June rows and July rows are different games; no shared game_id links a June observation to a July one, so a month-over-month change in ECE or Brier is an unpaired comparison between two non-overlapping samples, not a repeated measurement. The same applies across market types: mlb_moneyline and soccer_match rows are different sports and different games, so their Briers sit side by side rather than in any paired relation. Neither artifact publishes a confidence interval on a month-to-month or type-to-type difference, unlike calibration_stability.json's bootstrapped gap_ci on its bins, so no significance test can be run here beyond reporting point estimates."},
     {"type": "math", "text": "gap = model_ece - market_ece (or model_brier - market_brier); no CI is published on this gap across months or market types"},
-    {"type": "p", "text": "A direct check of the three artifacts against each other shows they are not three independent samples but three different cuts of the same corpus. The two MLB monthly row counts sum exactly to the MLB aggregate: 33,290 + 45,696 = 78,986, which is both calibration_stability.json's sports.mlb.n_rows and calibration_by_market_type.json's market_types.mlb_moneyline.n_rows. The two soccer_intl monthly row counts do the same: 5,874 + 3,129 = 9,003, matching sports.soccer_intl.n_rows and market_types.soccer_match.n_rows exactly. And the market-type Briers are not just close to the aggregate Briers, they are identical to six decimal places: calibration_by_market_type.json's mlb_moneyline model_brier (0.237684) and market_brier (0.206653) match calibration_stability.json's sports.mlb.sides.model_prob.brier and sides.market_prob.brier exactly, and the same holds for soccer_match (0.227887 and 0.142726) against sports.soccer_intl. In other words, the monthly view is the full graded corpus split into its only two calendar months, and the moneyline/match-result market-type view is that same full corpus relabeled by market type, not a fresh sample."}
+    {"type": "p", "text": "Comparing revision 1 to revision 2 is not a comparison either. Revision 2 is what remains after every tick whose outcome label belonged to another game was removed, so a lower Brier or calibration error after segmentation says the earlier measurement was wrong, not that the forecaster got better. Every before-and-after pair below reads that way."},
+    {"type": "p", "text": "The three artifacts are not three independent samples but three cuts of one corpus, and that check survives the rebuild. The MLB monthly counts sum to the MLB aggregate (5,030 + 22,321 = 27,351), which is both calibration_stability.json's sports.mlb.n_rows and market_types.mlb_moneyline.n_rows; the soccer_intl months do the same (1,213 + 3,052 = 4,265). File counts agree too: mlb_moneyline's n_files (178) equals sports.mlb.n_games and soccer_match's (27) equals sports.soccer_intl.n_games. And the market-type Briers match the aggregate Briers to six decimals, 0.166759 and 0.151008 for MLB, 0.332522 and 0.195157 for soccer."}
    ]
   },
   {
    "id": "results",
    "heading": "Results",
    "blocks": [
-    {"type": "table", "caption": "Monthly reliability by sport, model vs market (source: calibration_over_time.json; as_of: date not published)", "columns": ["Sport", "Window", "n", "Model Brier", "Market Brier", "Model ECE", "Market ECE"], "rows": [
-      ["mlb", "2026-06", "33290", "0.2404", "0.2243", "0.1165", "0.0944"],
-      ["mlb", "2026-07", "45696", "0.2357", "0.1938", "0.0834", "0.0635"],
-      ["soccer_intl", "2026-06", "5874", "0.1729", "0.1156", "0.2112", "0.1517"],
-      ["soccer_intl", "2026-07", "3129", "0.3310", "0.1936", "0.4210", "0.2961"]
+    {"type": "table", "caption": "Monthly reliability by sport, model against the reference quote (source: calibration_over_time.json; as_of 2026-09-16)", "columns": ["Sport", "Window", "n", "Model Brier", "Reference Brier", "Model ECE", "Reference ECE"], "rows": [
+      ["mlb", "2026-06", "5030", "0.1968", "0.1873", "0.1265", "0.121"],
+      ["mlb", "2026-07", "22321", "0.16", "0.1428", "0.075", "0.0439"],
+      ["soccer_intl", "2026-06", "1213", "0.3273", "0.1955", "0.3644", "0.2596"],
+      ["soccer_intl", "2026-07", "3052", "0.3346", "0.195", "0.4243", "0.2952"]
      ],
-     "note": "n is shared between the model and market columns in each row (same underlying rows scored both ways); June and July are the only two windows published, for two sports."
+     "note": "n is shared between the model and reference columns in each row. June and July are the only two windows published, for two sports; all four cells are revision 2, recomputed on the segment-clean corpus."
     },
-    {"type": "p", "text": "MLB's two months move together and in the model's favor: the model's ECE fell from 0.1165 in June to 0.0834 in July while the market's fell from 0.0944 to 0.0635, so the gap between them narrowed from 0.0221 to 0.0199 -- a small narrowing, and the market was still the sharper side in both months. Soccer_intl went the other direction on both sides at once: model ECE rose from 0.2112 to 0.421 and market ECE rose from 0.1517 to 0.2961, so the gap widened from 0.0595 to 0.1249; the same widening shows up in Brier, from a June gap of 0.0573 (0.1729 vs 0.1156) to a July gap of 0.1374 (0.3310 vs 0.1936)."},
-    {"type": "p", "text": "Because the two MLB windows sum exactly to the MLB aggregate (33,290 + 45,696 = 78,986) and the two soccer_intl windows sum exactly to the soccer_intl aggregate (5,874 + 3,129 = 9,003), this is not a rolling monthly series that could in principle extend for years -- it is the entire currently graded corpus for each sport, cut into the only two calendar months it happens to span. A two-point series cannot distinguish a real trend from a single reversal: nothing in this artifact rules out a third month reversing either sport's direction, and soccer's July window (n=3,129) is itself the smallest cell in the table, smaller than its own June window (n=5,874)."},
-    {"type": "figure", "module": "calibration_over_time", "caption": "MLB and soccer_intl model vs market calibration error (ECE) and Brier, June and July 2026, from calibration_over_time.json."},
-    {"type": "table", "caption": "Reliability by market type (source: calibration_by_market_type.json; min_n=30 usable rows to score; as_of: date not published)", "columns": ["Market type", "Has outcome", "n", "Model Brier", "Market Brier", "Brier gap (model-market)", "Model ECE", "Market ECE"], "rows": [
-      ["mlb_moneyline", "yes", "78986", "0.237684", "0.206653", "0.031031", "0.097325", "0.070965"],
-      ["soccer_match", "yes", "9003", "0.227887", "0.142726", "0.08516", "0.275568", "0.201885"],
-      ["mlb_total", "no", "2113", "null", "null", "n/a (no outcome)", "n/a", "n/a"]
+    {"type": "p", "text": "MLB's two months move together in level but apart in distance. The model's ECE fell from 0.1265 in June to 0.075 in July while the reference quote's fell from 0.121 to 0.0439, so the difference between them widened from 0.0055 to 0.0311. Revision 1 read this the other way, reporting a gap that narrowed from 0.0221 to 0.0199, and that reading depended on the join defect: the mislabelled ticks were not spread evenly across the two months, so removing them changed which month looked worse. Under revision 2 the honest statement is that both sides are sharper in July than in June, that the reference quote is sharper than the model in both months, and that its July advantage is the larger of the two. The Brier gap says the same more gently, 0.0095 in June against 0.0172 in July. Both gaps are trivial subtractions of two cited fields, not separately published numbers, and neither carries an interval."},
+    {"type": "p", "text": "Soccer_intl moved one way on both sides at once: model ECE rose from 0.3644 to 0.4243 and reference ECE from 0.2596 to 0.2952, so the distance widened from 0.1048 to 0.1291; the Brier gap barely moved, 0.1318 in June (0.3273 against 0.1955) to 0.1396 in July (0.3346 against 0.195). The direction is the one revision 1 reported, but the sample changed shape as well as size: soccer's June window is now the thinner of the two (n=1,213 against July's n=3,052), where in the withdrawn revision June was the larger. Any claim that soccer degraded across the two months now rests on the thinner month coming first."},
+    {"type": "figure", "module": "calibration_over_time", "caption": "MLB and soccer_intl model and reference-quote calibration error and Brier, June and July 2026, from the revision-2 calibration_over_time.json."},
+    {"type": "table", "caption": "Reliability by market type (source: calibration_by_market_type.json; min_n=30 usable rows to score; as_of 2026-09-16)", "columns": ["Market type", "Has outcome", "Files", "n", "Model Brier", "Reference Brier", "Brier gap (model-reference)", "Model ECE", "Reference ECE"], "rows": [
+      ["mlb_moneyline", "yes", "178", "27351", "0.166759", "0.151008", "0.015752", "0.057367", "0.049057"],
+      ["soccer_match", "yes", "27", "4265", "0.332522", "0.195157", "0.137365", "0.400236", "0.281866"],
+      ["mlb_total", "no", "5", "2113", "null", "null", "n/a (no outcome)", "n/a", "n/a"]
      ],
-     "note": "mlb_total's has_outcome is false: its 2,113 rescued in-game quote-ticks (21 quote-tracks, 5 files) have no settlement join, so brier is reported null by design, not computed from a fabricated label. mlb_clean_moneyline is skipped as a byte-identical duplicate of mlb_moneyline."
+     "note": "mlb_total's has_outcome is false: its 2,113 rescued quote-ticks (21 quote-tracks, 5 files) have no settlement join, so brier is null by design, not computed from a fabricated label."
     },
-    {"type": "p", "text": "For the two market types that can be scored, the model trails the market by the same margin already reported in the season aggregate: +0.031031 Brier on mlb_moneyline and +0.08516 Brier on soccer_match, both figures taken directly from calibration_by_market_type.json's own brier_gap_model_minus_market field. Because these n and Brier values are identical to calibration_stability.json's whole-corpus numbers (see Method), the market-type table does not show a new, independently-sampled comparison for moneyline or match-result markets -- it shows the same season-long comparison relabeled by market type. The only genuinely new information in this artifact is the mlb_total row: 2,113 rows drawn from 21 quote-tracks across 5 files, with no resolved outcome to score against, so instead of a Brier the artifact reports a model-vs-market divergence (median absolute difference in probability) of 0.116128, mean 0.124782, p90 0.224736."},
-    {"type": "callout", "label": "Caution", "text": "Several of the cells above are thin relative to each other and should not be read as equally informative. Soccer_intl's July window (n=3,129) and its scored market-type twin, soccer_match (n=9,003), are an order of magnitude smaller than mlb's cells (n in the tens of thousands); calibration_stability.json's own bootstrap already shows soccer's aggregate bins failing far more often (model 8 of 10, market 6 of 10 significant) than MLB's (model 4 of 10, market 0 of 10), which is consistent with soccer being under-sampled rather than uniquely miscalibrated. And mlb_total's 2,113 rows cannot be scored at all, at any sample size, because the missing piece is a settlement join, not row count -- more unlabeled quote-ticks would not fix it."}
+    {"type": "p", "text": "For the two market types that can be scored, the model trails the reference quote by 0.015752 Brier on mlb_moneyline and 0.137365 on soccer_match, both read directly from brier_gap_model_minus_market. Both moved under the rebuild, in opposite directions: the MLB gap halved (0.031031 to 0.015752) and the soccer gap widened (0.08516 to 0.137365). The MLB move is the cleaner of the two -- the withdrawn number was inflated by ticks scored against another game's result. The soccer move has a mechanical cause recorded in the regeneration receipt: the draw share of scored soccer ticks fell from 0.2615 to 0.1376, and a draw scored against a two-way probability is expensive, so both sides post a higher Brier on the segmented sample (model 0.227887 to 0.332522, reference 0.142726 to 0.195157). The gap is the like-for-like line, and it widened."},
+    {"type": "p", "text": "Because these n, file-count and Brier values are identical to calibration_stability.json's whole-corpus numbers, the market-type table is not an independently sampled comparison for moneyline or match-result markets; it is the same season-long comparison relabeled. The only genuinely new information is the mlb_total row: 2,113 rows from 21 quote-tracks across 5 files with no resolved outcome, so instead of a Brier the artifact reports a model-versus-reference divergence (median absolute difference in probability) of 0.116128, mean 0.124782, p90 0.224736."},
+    {"type": "callout", "label": "Caution", "text": "The cells above are not equally informative. Soccer_intl is 27 games and 4,265 rows, an order of magnitude smaller than MLB's 178 games and 27,351 rows, and calibration_stability.json flags the whole soccer sport low_power; its bootstrap shows soccer's bins failing far more often (model 8 of 9 eligible bins significant, reference 7 of 9) than MLB's (model 3 of 10, reference 0 of 10). And mlb_total's 2,113 rows cannot be scored at any sample size: the missing piece is a settlement join, not row count."}
    ]
   },
   {
@@ -67,10 +69,11 @@
    "heading": "Robustness and what would falsify this",
    "blocks": [
     {"type": "list", "items": [
-     "A third calendar month for either sport, not yet published, would turn the current two-point comparison into a real trend check; until then, MLB's narrowing gap (0.0221 to 0.0199) and soccer's widening gap (0.0595 to 0.1249) are each consistent with either a genuine directional move or a single-month swing that a third month would reverse.",
-     "If mlb_total's rescued quote-tracks were ever joined to a settlement and scored, the resulting Brier could show the model closer, the market closer, or roughly tied -- the disclosed divergence (median 0.116128) measures disagreement between the two sides, not which one is closer to the outcome, so it does not predict the sign of a future score.",
-     "The exact match between calibration_by_market_type.json's mlb_moneyline and soccer_match numbers and calibration_stability.json's whole-sport aggregates is itself a check that passed: if the two artifacts had been built from different corpus snapshots, the row counts and Briers would not agree to six decimal places the way they do here.",
-     "If a future rebuild of calibration_over_time.json added rows that do not sum to the aggregate n_rows in calibration_stability.json, that would mean the monthly view had started drawing from a different or filtered corpus than the season aggregate -- as of this snapshot, the two MLB and two soccer_intl windows account for the full aggregate with nothing held out."
+     "A third calendar month for either sport would turn the current two-point comparison into a real trend check; until then, MLB's widening ECE gap (0.0055 to 0.0311) and soccer's (0.1048 to 0.1291) are each consistent with a genuine directional move or a single-month swing.",
+     "The revision-1 finding that MLB's model-to-reference gap was narrowing month over month did not survive the rebuild; it depended on mislabelled ticks distributed unevenly across June and July. Any future claim of a narrowing gap has to be established on the segment-clean corpus rather than carried forward.",
+     "If mlb_total's quote-tracks were ever joined to a settlement and scored, the resulting Brier could show the model closer, the reference closer, or a tie -- the disclosed divergence (median 0.116128) measures disagreement, not which side is closer to the outcome.",
+     "The exact match between calibration_by_market_type.json's scored rows and calibration_stability.json's whole-sport aggregates is a check that passed both before and after the rebuild: had the two artifacts been built from different snapshots, the row counts, file counts and Briers would not agree.",
+     "If a future rebuild of calibration_over_time.json added rows that do not sum to the aggregate n_rows in calibration_stability.json, the monthly view would be drawing from a different corpus; as of this snapshot the four windows account for the full aggregate."
     ]}
    ]
   },
@@ -79,11 +82,11 @@
    "heading": "Limitations",
    "blocks": [
     {"type": "list", "items": [
-     "Only two calendar months (2026-06 and 2026-07) exist per sport in calibration_over_time.json; a two-point series cannot establish whether either sport's month-over-month movement is a stable trend or a single-month swing, and no confidence interval is published on the month-to-month change.",
-     "calibration_over_time.json and calibration_by_market_type.json both carry a null as_of in the site manifest (date not published), so neither artifact's freshness relative to calibration_stability.json's dated 2026-07-23 snapshot can be independently confirmed beyond the calendar-month labels themselves.",
-     "The mlb_moneyline and soccer_match rows in calibration_by_market_type.json are numerically identical, in both n and Brier, to the season-long aggregates already published in calibration_stability.json, so this market-type view adds no independent MLB or soccer sample beyond that aggregate -- only the disclosed-null mlb_total row is new information.",
-     "mlb_total's model-vs-market divergence (median 0.116128 over 2,113 rows) measures disagreement between the two sides, not accuracy; with no resolved outcome it cannot say which side, if either, tracks what actually happened.",
-     "Soccer_intl's July window (n=3,129) is the thinnest scored cell in either artifact and is smaller than its own June window (5,874), so a month-over-month soccer comparison rests partly on a shrinking sample rather than two evenly sized windows.",
+     "Only two calendar months exist per sport in calibration_over_time.json; a two-point series cannot establish whether either sport's movement is a stable trend or a single-month swing, and no confidence interval is published on the change.",
+     "The corpus behind every scored number here lost 49 of 227 MLB files and 24 of 51 soccer files to the segmentation, so revision 2 is a cleaner but much smaller sample; none of these point estimates should be compared to the withdrawn ones as if the two measured the same population.",
+     "The mlb_moneyline and soccer_match rows are numerically identical, in n and Brier, to the aggregates in calibration_stability.json, so this market-type view adds no independent sample beyond that aggregate.",
+     "mlb_total's divergence (median 0.116128 over 2,113 rows) measures disagreement between the two sides, not accuracy; with no resolved outcome it cannot say which side tracks what actually happened.",
+     "Soccer_intl's June window (n=1,213) is the thinnest scored cell in either artifact and is smaller than its own July window (3,052), so the soccer comparison rests on an uneven pair of windows.",
      "These are calibration and reliability measurements only; nothing here establishes that acting on either source's probability would have produced a positive return."
     ]}
    ]
@@ -92,8 +95,9 @@
    "id": "use",
    "heading": "How to read this on the site",
    "blocks": [
-    {"type": "p", "text": "The aggregate reliability bins behind calibration_stability.json's numbers are published in the \"calibration\" inspector, with the same bootstrapped confidence intervals cited above. A separate, more granular cut -- conditioning on game phase (for example, MLB late innings) crossed with confidence band rather than on calendar month or market type -- is published in the \"state-reliability\" inspector and is the subject of the companion paper \"calibration-reliability-by-sport-and-state\"; that grid draws on state_conditioned_calibration.json, a fourth cut of much the same underlying MLB and soccer_intl corpora, and is not re-derived here."},
-    {"type": "p", "text": "The figure above is drawn from the calibration_over_time module. calibration_by_market_type is marked a partial-status exhibit on the showcase site because one of its three rows (mlb_total) is disclosed as unscorable rather than completed -- that partial status is the point of the module, not a defect in it."}
+    {"type": "p", "text": "The aggregate reliability bins behind calibration_stability.json are published in the \"calibration\" inspector with the same bootstrapped intervals cited above. A more granular cut -- game phase crossed with confidence band rather than month or market type -- is published in the \"state-reliability\" inspector and is the subject of the companion paper \"calibration-reliability-by-sport-and-state\", which draws on state_conditioned_calibration.json, likewise rebuilt on 2026-09-16."},
+    {"type": "p", "text": "The full account of the joined corpus, the re-segmentation and what each of the thirteen rebuilt artifacts moved by is published as the \"ingame-join-integrity\" finding, linked below. Five timing artifacts were not rebuilt in that pass and remain under review; none is cited here."},
+    {"type": "p", "text": "calibration_by_market_type is marked a partial-status exhibit on the showcase site because one of its three rows is disclosed as unscorable rather than completed -- that partial status is the point of the module, not a defect in it."}
    ]
   }
  ],
@@ -101,8 +105,10 @@
   {
    "artifact": "calibration_over_time.json",
    "module": "calibration_over_time",
-   "asOf": null,
+   "asOf": "2026-09-16",
+   "dateMeaning": "snapshot",
    "fields": [
+    "as_of", "corpus",
     "mlb.2026-06.n", "mlb.2026-06.model_brier", "mlb.2026-06.market_brier", "mlb.2026-06.model_ece", "mlb.2026-06.market_ece",
     "mlb.2026-07.n", "mlb.2026-07.model_brier", "mlb.2026-07.market_brier", "mlb.2026-07.model_ece", "mlb.2026-07.market_ece",
     "soccer_intl.2026-06.n", "soccer_intl.2026-06.model_brier", "soccer_intl.2026-06.market_brier", "soccer_intl.2026-06.model_ece", "soccer_intl.2026-06.market_ece",
@@ -112,43 +118,47 @@
   {
    "artifact": "calibration_by_market_type.json",
    "module": "calibration_by_market_type",
-   "asOf": null,
+   "asOf": "2026-09-16",
+   "dateMeaning": "snapshot",
    "fields": [
-    "min_n", "n_bins",
-    "market_types.mlb_moneyline.n_rows", "market_types.mlb_moneyline.model_brier", "market_types.mlb_moneyline.market_brier",
+    "min_n", "n_bins", "as_of", "corpus",
+    "market_types.mlb_moneyline.n_files", "market_types.mlb_moneyline.n_rows", "market_types.mlb_moneyline.model_brier", "market_types.mlb_moneyline.market_brier",
     "market_types.mlb_moneyline.model_ece", "market_types.mlb_moneyline.market_ece", "market_types.mlb_moneyline.brier_gap_model_minus_market",
-    "market_types.soccer_match.n_rows", "market_types.soccer_match.model_brier", "market_types.soccer_match.market_brier",
+    "market_types.soccer_match.n_files", "market_types.soccer_match.n_rows", "market_types.soccer_match.model_brier", "market_types.soccer_match.market_brier",
     "market_types.soccer_match.model_ece", "market_types.soccer_match.market_ece", "market_types.soccer_match.brier_gap_model_minus_market",
     "market_types.mlb_total.n_rows", "market_types.mlb_total.n_quote_tracks", "market_types.mlb_total.n_files",
     "market_types.mlb_total.has_outcome", "market_types.mlb_total.brier",
     "market_types.mlb_total.model_vs_market_divergence.median", "market_types.mlb_total.model_vs_market_divergence.mean", "market_types.mlb_total.model_vs_market_divergence.p90",
-        "skipped[].market_type",
-        "skipped[].reason"
+    "skipped[].market_type",
+    "skipped[].reason"
    ]
   },
   {
    "artifact": "calibration_stability.json",
    "module": "calibration_stability",
-   "asOf": "2026-07-23T03:21:27.493056+00:00",
+   "asOf": "2026-09-16",
+   "dateMeaning": "snapshot",
    "fields": [
+    "as_of",
     "sports.mlb.n_rows", "sports.mlb.n_games",
-    "sports.mlb.sides.model_prob.brier", "sports.mlb.sides.model_prob.n_significant_bins",
-    "sports.mlb.sides.market_prob.brier", "sports.mlb.sides.market_prob.n_significant_bins",
-    "sports.soccer_intl.n_rows", "sports.soccer_intl.n_games",
-    "sports.soccer_intl.sides.model_prob.brier", "sports.soccer_intl.sides.model_prob.n_significant_bins",
-    "sports.soccer_intl.sides.market_prob.brier", "sports.soccer_intl.sides.market_prob.n_significant_bins"
+    "sports.mlb.sides.model_prob.brier", "sports.mlb.sides.model_prob.n_eligible_bins", "sports.mlb.sides.model_prob.n_significant_bins",
+    "sports.mlb.sides.market_prob.brier", "sports.mlb.sides.market_prob.n_eligible_bins", "sports.mlb.sides.market_prob.n_significant_bins",
+    "sports.soccer_intl.n_rows", "sports.soccer_intl.n_games", "sports.soccer_intl.low_power",
+    "sports.soccer_intl.sides.model_prob.brier", "sports.soccer_intl.sides.model_prob.n_eligible_bins", "sports.soccer_intl.sides.model_prob.n_significant_bins",
+    "sports.soccer_intl.sides.market_prob.brier", "sports.soccer_intl.sides.market_prob.n_eligible_bins", "sports.soccer_intl.sides.market_prob.n_significant_bins"
    ]
   }
  ],
  "limitations": [
-  "Only two calendar months (2026-06 and 2026-07) exist per sport in calibration_over_time.json; a two-point series cannot establish whether either sport's month-over-month movement is a stable trend or a single-month swing, and no confidence interval is published on the month-to-month change.",
-  "calibration_over_time.json and calibration_by_market_type.json both carry a null as_of in the site manifest (date not published), so neither artifact's freshness relative to calibration_stability.json's dated 2026-07-23 snapshot can be independently confirmed beyond the calendar-month labels themselves.",
-  "The mlb_moneyline and soccer_match rows in calibration_by_market_type.json are numerically identical, in both n and Brier, to the season-long aggregates already published in calibration_stability.json, so this market-type view adds no independent MLB or soccer sample beyond that aggregate.",
-  "mlb_total's model-vs-market divergence (median 0.116128 over 2,113 rows) measures disagreement between the two sides, not accuracy; with no resolved outcome it cannot say which side, if either, tracks what actually happened.",
-  "Soccer_intl's July window (n=3,129) is the thinnest scored cell in either artifact and is smaller than its own June window (5,874), so a month-over-month soccer comparison rests partly on a shrinking sample.",
+  "Only two calendar months exist per sport in calibration_over_time.json; a two-point series cannot establish whether either sport's movement is a stable trend or a single-month swing, and no confidence interval is published on the change.",
+  "The corpus behind every scored number here lost 49 of 227 MLB files and 24 of 51 soccer files to the segmentation, so revision 2 is a cleaner but much smaller sample; none of these point estimates should be compared to the withdrawn ones as if the two measured the same population.",
+  "The mlb_moneyline and soccer_match rows are numerically identical, in n and Brier, to the aggregates in calibration_stability.json, so this market-type view adds no independent sample beyond that aggregate.",
+  "mlb_total's divergence (median 0.116128 over 2,113 rows) measures disagreement between the two sides, not accuracy; with no resolved outcome it cannot say which side tracks what actually happened.",
+  "Soccer_intl's June window (n=1,213) is the thinnest scored cell in either artifact and is smaller than its own July window (3,052), so the soccer comparison rests on an uneven pair of windows.",
   "These are calibration and reliability measurements only; nothing here establishes that acting on either source's probability would have produced a positive return."
  ],
  "related": [
+  {"kind": "finding", "id": "ingame-join-integrity"},
   {"kind": "inspector", "id": "calibration"},
   {"kind": "inspector", "id": "state-reliability"},
   {"kind": "module", "id": "calibration_over_time"},
