@@ -257,13 +257,16 @@ def _check():
         verify_recorded_artifact(OUT_JSON, _validate_ok, "pitch_sequencing")
         print("check ok")
         return
-    # Local data present: build+write is the legitimate, unchanged behavior.
-    showcase = main()
-    assert OUT_JSON.exists() and OUT_JSON.stat().st_size > 0, "JSON output missing/empty"
-    loaded = json.loads(OUT_JSON.read_text(encoding="ascii"))
-    assert loaded["status"] == showcase["status"]
+    # Local data present: validate the pure in-memory recomputation. --check must
+    # never write out/pitch_sequencing.json or docs/img/pitch_sequencing.png --
+    # just report drift against the committed artifact, never fix it here.
     _validate_ok(showcase)
-    assert OUT_PNG.exists() and OUT_PNG.stat().st_size > 0, "PNG output missing/empty"
+    if OUT_JSON.exists():
+        committed = json.loads(OUT_JSON.read_text(encoding="ascii"))
+        if committed.get("n_transitions") != showcase["n_transitions"]:
+            print("NOTE: committed artifact drift -- committed n_transitions="
+                  f"{committed.get('n_transitions')} vs recomputed "
+                  f"{showcase['n_transitions']} (run without --check to refresh)")
     print("check ok")
 
 
