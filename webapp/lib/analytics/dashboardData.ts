@@ -8,6 +8,14 @@ import { findingsIndex } from "./findingsIndex";
 const directory = join(process.cwd(), "public/data/showcase");
 const papersDirectory = join(process.cwd(), "public/data/papers");
 type LaunchCounts = { paperCount: number; novelCount: number; findingCount: number };
+export type DashboardSnapshot = {
+  asOf: string | null;
+  monthCount: number;
+  monthRange: string | null;
+  benchmarkAsOf: string | null;
+  integrityRevision: { measuredOn: string; revisionPublished: number } | null;
+};
+type DashboardResult = DashboardData & LaunchCounts & { snapshot: DashboardSnapshot };
 // These versioned, public artifacts are required: a missing source must fail the build.
 function read<T>(name: string): T {
   const text = readFileSync(join(directory, `${name}.json`), "utf8");
@@ -38,7 +46,7 @@ const packs: { file: string; pack: string; sport: Sport; fields: string[] }[] = 
   { file: "tennis", pack: "tennis", sport: "tennis", fields: ["hard_wr_career", "clay_wr_career"] },
   { file: "calibration", pack: "calibration", sport: "all", fields: ["model_ece", "market_ece"] },
 ];
-export function getDashboardData(): DashboardData & LaunchCounts {
+export function getDashboardData(): DashboardResult {
   const manifest = read<{ modules: { id: string; title: string; one_line: string; status: string; as_of: string | null }[]; checks_green?: { pass: number; total: number } }>("site_manifest");
   const modules: Module[] = manifest.modules.map(m => ({ id: m.id, title: m.title, description: m.one_line, category: moduleCategory(m.id), status: m.status, asOf: m.as_of }));
   const ledger = read<{ by_sport: Record<string, { mechanisms: Omit<Mechanism, "sport">[] }> }>("mechanism_ledger_export");
@@ -51,6 +59,18 @@ export function getDashboardData(): DashboardData & LaunchCounts {
   const historyData = read<Record<string, Record<string, Omit<HistoryPoint, "sport" | "month">>>>("calibration_over_time");
   // ponytail: the artifact carries header strings (as_of, corpus) beside its sport maps -- keep only the maps.
   const history: HistoryPoint[] = Object.entries(historyData).filter(([, months]) => months !== null && typeof months === "object").flatMap(([sport, months]) => Object.entries(months).map(([month, point]) => ({ ...point, month, sport: sport === "mlb" ? "mlb" : "soccer" })));
+  const months = [...new Set(history.map(point => point.month))].sort();
+  const manifestModule = (id: string) => manifest.modules.find(entry => entry.id === id);
+  const regeneration = read<{ measured_on?: string; revision_published?: number }>("../audits/mlb-ingame-regeneration");
+  const snapshot: DashboardSnapshot = {
+    asOf: manifestModule("calibration_over_time")?.as_of || null,
+    monthCount: months.length,
+    monthRange: months.length ? months.length === 1 ? months[0] : `${months[0]} to ${months[months.length - 1]}` : null,
+    benchmarkAsOf: manifestModule("cross_sport_scoreboard")?.as_of || null,
+    integrityRevision: typeof regeneration.measured_on === "string" && typeof regeneration.revision_published === "number"
+      ? { measuredOn: regeneration.measured_on, revisionPublished: regeneration.revision_published }
+      : null,
+  };
   const entities: Entity[] = packs.flatMap(pack => {
     const atlas = read<{ entries: { entity: string; sport?: string; card_path: string; key_numbers: Record<string, unknown>; as_of: string | null }[] }>(`atlas_${pack.file}_manifest`);
     const seen = new Set<string>();
@@ -69,7 +89,7 @@ export function getDashboardData(): DashboardData & LaunchCounts {
   const analyses = getResearchAnalyses().map(analysis => ({ id: analysis.id, title: analysis.title, sport: analysis.sport, rows: analysis.rows.length, asOf: analysis.asOf || null }));
   const recentAnalyses = [...analyses].sort((left, right) => (right.asOf || "").localeCompare(left.asOf || "")).slice(0, 6);
   const novelCount = read<{ stats: unknown[] }>("novel_stats_index").stats.length;
-  return { modules, mechanisms, markets, history, entities, checks: manifest.checks_green || null,
+  return { modules, mechanisms, markets, history, entities, checks: manifest.checks_green || null, snapshot,
     analyses, recentAnalyses,
     paperCount: countPublishedPapers(), novelCount, findingCount: findingsIndex.length,
     benchmarks: read<{ rows: DashboardData["benchmarks"] }>("cross_sport_scoreboard").rows,

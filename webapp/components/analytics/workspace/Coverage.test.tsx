@@ -19,4 +19,9 @@ describe("dossier coverage panel", () => {
     expect(screen.getByText("Pace Fit")).toBeInTheDocument();
     expect(screen.getByText("The artifact does not define how the published completeness score is derived.")).toBeInTheDocument();
   });
+
+  it("provides a route to entity profiles when coverage is unavailable", () => {
+    render(<Coverage data={data} sport="tennis" />);
+    expect(screen.getByRole("link", { name: "Open entity profiles." })).toHaveAttribute("href", expect.stringMatching(/^\/analytics\/compare\/?$/));
+  });
 });

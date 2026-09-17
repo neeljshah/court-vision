@@ -55,11 +55,17 @@ describe("analytics workspace interactions", () => {
   });
   it("shows the derived analysis count and six latest published analyses", () => {
     render(<Workspace data={data} calibrationExample={null} {...launchCounts} />);
-    expect(screen.getByRole("button", { name: /Derived analyses/ })).toHaveTextContent(String(getResearchAnalyses().length));
+    expect(screen.getByRole("link", { name: /Derived analyses/ })).toHaveTextContent(String(getResearchAnalyses().length));
+    expect(screen.getByRole("link", { name: /Derived analyses/ })).toHaveAttribute("href", expect.stringMatching(/\/analytics\/browse\/\?kind=derived$/));
     const recent = screen.getByRole("heading", { name: "Recently added analyses" }).closest("section")!;
     const links = within(recent).getAllByRole("link");
     expect(links).toHaveLength(6);
     expect(links.every(link => link.getAttribute("href")?.startsWith("/analytics/research/") ?? false)).toBe(true);
+  });
+  it("renders the snapshot date and experimental count from its supplied values", () => {
+    render(<Workspace data={{ ...data, snapshot: { ...data.snapshot, asOf: "2030-02-03" } }} calibrationExample={null} {...launchCounts} novelCount={12} />);
+    expect(screen.getByText("2030-02-03")).toBeInTheDocument();
+    expect(screen.getByText("12 experimental measurements for lineups, fatigue, forecasts, and dependence.")).toBeInTheDocument();
   });
   it("keeps the nine primary destinations without duplicate launch links", () => {
     render(<Workspace data={data} calibrationExample={null} {...launchCounts} />);

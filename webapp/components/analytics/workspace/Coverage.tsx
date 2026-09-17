@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Link from "next/link";
 import { humanize, number, type DashboardData, type Sport } from "@/lib/analytics/dashboardTypes";
 import { Empty, Panel } from "./Primitives";
 const pitchNames: Record<string, string> = { FF: "Four-seam fastball", SI: "Sinker", SL: "Slider", CH: "Changeup", ST: "Sweeper", FC: "Cutter", CU: "Curveball", FS: "Splitter", KC: "Knuckle curve" };
@@ -18,5 +19,5 @@ export function Coverage({ data, sport }: { data: DashboardData; sport: Sport })
     <p className="cv-footnote">The artifact does not define how the published completeness score is derived.</p>
     <h3>Categories filled per dossier</h3><div className="cv-fill-rates" role="img" aria-label="Categories filled histogram">{data.coverage.histogram.map(bin => <div key={bin.categoriesFilled}><div><span>{bin.categoriesFilled} categories</span><b>{number(bin.dossiers)} dossiers ({(bin.share * 100).toFixed(1)}%)</b></div><div className="cv-track"><i className="cv-bar cv-model" style={{ width: `${bin.dossiers / largestHistogramBin * 100}%` }} /></div></div>)}</div>
     <h3>Category fill rates</h3><div className="cv-fill-rates">{data.coverage.rates.map(r => <div key={r.name}><div><span>{humanize(r.name)}</span><b>{(r.value * 100).toFixed(1)}%</b></div><div className="cv-track"><i className="cv-bar cv-market" style={{ width: `${r.value * 100}%` }} /></div></div>)}</div><p className="cv-footnote">Fill rate is the fraction of dossiers containing a category. Presence does not establish accuracy.</p>
-  </Panel>}{sport !== "all" && sport !== "nba" && sport !== "mlb" && <Panel title="Coverage for this sport"><Empty>No equivalent pitch or dossier audit is published for this sport. Its entity profiles and research remain available in their tabs.</Empty></Panel>}</div>;
+  </Panel>}{sport !== "all" && sport !== "nba" && sport !== "mlb" && <Panel title="Coverage for this sport"><Empty>No equivalent pitch or dossier audit is published for this sport. <Link href="/analytics/compare/">Open entity profiles.</Link></Empty></Panel>}</div>;
 }

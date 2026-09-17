@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowUpRight, BookOpen, FileText, FlaskConical, Search, Sigma } from "lucide-react";
 import { base } from "@/lib/analytics/dashboardTypes";
 import type { HomeCalibrationExample } from "@/lib/analytics/homeCalibrationExample";
+import type { DashboardSnapshot } from "@/lib/analytics/dashboardData";
 
 function percentage(value: number): string {
   return `${(value * 100).toFixed(2)}%`;
@@ -20,11 +21,12 @@ function clusterLabel(value: string): string {
   return value.replace(/_id$/, "").replace(/_/g, " ");
 }
 
-export function WorkspaceIntro({ example, paperCount, novelCount, findingCount }: {
+export function WorkspaceIntro({ example, paperCount, novelCount, findingCount, snapshot }: {
   example: HomeCalibrationExample | null;
   paperCount: number;
   novelCount: number;
   findingCount: number;
+  snapshot: DashboardSnapshot;
 }) {
   return <>
     <header className="cv-intro">
@@ -32,7 +34,7 @@ export function WorkspaceIntro({ example, paperCount, novelCount, findingCount }
         <p className="cv-eyebrow"><span className="cv-square" /> CourtVision / forecast calibration</p>
         <h1>How forecasts<br /><span>compare with outcomes.</span></h1>
         {example ? <section className="cv-calibration-example" role="region" aria-label="Published MLB calibration example">
-          {example.integrity_status === "regenerated" ? <p style={{ color: "var(--signal-ink)", fontWeight: 600, marginBottom: 12 }}>These MLB/soccer numbers are revision 2, computed on the segment-clean corpus (2026-09-16). Revision 1 values are withdrawn and kept in the regeneration receipt. <Link href="/analytics/findings/ingame-join-integrity/">Read the finding.</Link></p> : null}
+          {example.integrity_status === "regenerated" ? <p style={{ color: "var(--signal-ink)", fontWeight: 600, marginBottom: 12 }}>These MLB/soccer numbers are revision {snapshot.integrityRevision?.revisionPublished ?? "published"}, computed on the segment-clean corpus ({snapshot.integrityRevision?.measuredOn || "published snapshot"}). Revision 1 values are withdrawn and kept in the regeneration receipt. <Link href="/analytics/findings/ingame-join-integrity/">Read the finding.</Link></p> : null}
           <p>For MLB, model forecasts of <strong>{binPercentage(example.bin_lo)} to {binPercentage(example.bin_hi)}</strong>, the mean forecast was <strong>{percentage(example.mean_p)}</strong> and the observed frequency was <strong>{percentage(example.mean_y)}</strong>, from <strong>{example.n.toLocaleString("en-US")}</strong> observations across <strong>{example.n_games.toLocaleString("en-US")}</strong> games. Snapshot date: <strong>{example.artifact_date || "Date not published."}</strong>{example.artifact_date ? "." : ""}</p>
           <div className="cv-calibration-bars" role="img" aria-label={`Forecast mean ${percentage(example.mean_p)} and observed frequency ${percentage(example.mean_y)}`}>
             <div><span>Forecast mean</span><strong>{percentage(example.mean_p)}</strong><i style={{ width: percentage(example.mean_p) }} /></div>

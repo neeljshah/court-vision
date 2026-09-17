@@ -40,7 +40,7 @@ const THEME_INIT = `(function(){try{var t=localStorage.getItem('cv-analytics-the
 // Post-hydration chrome: wire the theme toggle + mark the active nav pillar from the
 // current path. Vanilla JS keeps the root layout a server component (no client file,
 // no bundle) -- both are progressive enhancements over server-rendered links.
-const CHROME_JS = `(function(){var r=document.documentElement;var b=document.getElementById('a-theme-toggle');if(b){b.addEventListener('click',function(){var n=r.getAttribute('data-theme')==='dark'?'light':'dark';r.setAttribute('data-theme',n);try{localStorage.setItem('cv-analytics-theme',n);}catch(e){}});}})();`;
+const CHROME_JS = `(function(){var r=document.documentElement;var b=document.getElementById('a-theme-toggle');if(b){var sync=function(){var d=r.getAttribute('data-theme')==='dark';b.setAttribute('aria-pressed',d?'true':'false');b.setAttribute('aria-label',d?'Switch to light theme':'Switch to dark theme');};sync();b.addEventListener('click',function(){var n=r.getAttribute('data-theme')==='dark'?'light':'dark';r.setAttribute('data-theme',n);try{localStorage.setItem('cv-analytics-theme',n);}catch(e){}sync();});}})();`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_ORIGIN),
@@ -141,7 +141,7 @@ export default function AnalyticsRootLayout({ children }: { children: ReactNode 
             </Link>
             <AnalyticsNavigation links={PILLARS} />
             <PaletteTrigger />
-            <button id="a-theme-toggle" className="a-theme" type="button" aria-label="Toggle light or dark theme">
+            <button id="a-theme-toggle" className="a-theme" type="button" aria-pressed={false} aria-label="Switch to dark theme">
               <svg className="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
                 <circle cx="12" cy="12" r="4" />
                 <path strokeLinecap="round" d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1" />

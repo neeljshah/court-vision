@@ -1,5 +1,6 @@
 import { humanize, number, type DashboardData, type Sport } from "@/lib/analytics/dashboardTypes";
 import { Empty, Panel } from "./Primitives";
+import type { DashboardSnapshot } from "@/lib/analytics/dashboardData";
 
 export function WalkForward({ data }: { data: DashboardData["walkForward"] }) {
   return <Panel title="Basketball: performance across time splits" eyebrow="Published walk-forward evaluation" source="forecaster/winprob_walk_forward_results">
@@ -8,13 +9,13 @@ export function WalkForward({ data }: { data: DashboardData["walkForward"] }) {
     <p className="cv-footnote">Accuracy bars use a 0-100% axis. Means are across the published folds. These scores do not imply equivalent accuracy for a future game or current live performance.</p>
   </Panel>;
 }
-export function Benchmarks({ data, sport }: { data: DashboardData; sport: Sport }) {
+export function Benchmarks({ data, sport, snapshot }: { data: DashboardData; sport: Sport; snapshot: DashboardSnapshot }) {
   const rows = data.benchmarks.filter(r => sport === "all" || r.sport === sport || r.sport.startsWith(`${sport}_`));
   return <div className="cv-benchmarks">{(sport === "all" || sport === "nba") && <WalkForward data={data.walkForward} />}
     <Panel title="The cross-sport evaluation scoreboard" eyebrow={`${rows.length} published comparison rows`} source="cross_sport_scoreboard">
       <p className="cv-muted">Compare checkpoints within the same sport and metric. The source verdict and paired delta are reproduced verbatim; Brier and CRPS have different units and must not be pooled.</p>
       {rows.length ? <div className="cv-table-scroll" tabIndex={0} role="region" aria-label="Scrollable benchmark table"><table className="cv-benchmark-table"><caption className="sr-only">Published cross-sport benchmark deltas and confidence intervals</caption><thead><tr><th>Sport / metric</th><th>Checkpoint</th><th>n</th><th>Paired delta</th><th>95% interval</th><th>Recorded verdict</th></tr></thead><tbody>{rows.map((r, i) => <tr key={i}><td><strong>{humanize(r.sport)}</strong><span>{r.market}</span></td><td>{humanize(r.checkpoint).replace(/\|/g, " / ")}</td><td>{number(r.n)}</td><td>{r.paired_delta_mean.toFixed(4)}</td><td className="cv-ci">[{r.paired_delta_95ci[0].toFixed(4)}, {r.paired_delta_95ci[1].toFixed(4)}]</td><td><span className="cv-badge">{r.verdict.replace(/_/g, " ")}</span></td></tr>)}</tbody></table></div> : <Empty>No benchmark rows for this sport in this published scoreboard.</Empty>}
-      <p className="cv-footnote">July 22, 2026 snapshot. Delta direction follows the original artifact; interpret it with the recorded verdict, not color alone. For NBA Brier, the negative Q1 delta is recorded as MARKET_SHARPER_PROVISIONAL. A confidence interval excluding zero does not override a source verdict of UNDERPOWERED.</p>
+      <p className="cv-footnote">{snapshot.benchmarkAsOf || "Published snapshot"}. Delta direction follows the original artifact; interpret it with the recorded verdict, not color alone. For NBA Brier, the negative Q1 delta is recorded as MARKET_SHARPER_PROVISIONAL. A confidence interval excluding zero does not override a source verdict of UNDERPOWERED.</p>
     </Panel>
   </div>;
 }

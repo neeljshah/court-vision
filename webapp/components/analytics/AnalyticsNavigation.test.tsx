@@ -42,3 +42,36 @@ it("renders the ten header pillars in order and activates research descendants",
   view.rerender(<AnalyticsNavigation links={links} />);
   expect(screen.getByRole("link", { name: "Experimental metrics" })).toHaveAttribute("aria-current", "page");
 });
+
+it.each([
+  ["/analytics/papers/example/", "Papers"],
+  ["/analytics/calibration/example/", "Calibration"],
+  ["/analytics/state-reliability/example/", "State reliability"],
+  ["/analytics/forecaster/example/", "Forecaster"],
+  ["/analytics/novel/example/", "Experimental metrics"],
+  ["/analytics/lab/", "Measurement lab"],
+  ["/analytics/compare/", "Compare"],
+  ["/analytics/players/nba_players/example/", "Compare"],
+  ["/analytics/ask/", "Ask Scout"],
+  ["/analytics/about/", "Overview"],
+  ["/analytics/explainers/example/", "Overview"],
+  ["/analytics/evidence/", "Overview"],
+  ["/analytics/findings/example/", "Library"],
+  ["/analytics/research/example/", "Library"],
+  ["/analytics/m/example/", "Library"],
+  ["/analytics/browse/", "Library"],
+  ["/analytics/score-decomposition/", "Library"],
+  ["/analytics/residual-anatomy/", "Library"],
+  ["/analytics/observation-dependence/", "Library"],
+  ["/analytics/blowout-timing/", "Library"],
+  ["/analytics/state-contrasts/", "Library"],
+  ["/analytics/cross-sport-comparability/", "Library"],
+  ["/analytics/pitch-sequencing/", "Library"],
+  ["/analytics/count-context/", "Library"],
+])("maps %s to exactly one active pillar", (route, label) => {
+  path = route;
+  render(<AnalyticsNavigation links={links} />);
+  const active = screen.getAllByRole("link").filter(link => link.getAttribute("aria-current") === "page");
+  expect(active).toHaveLength(1);
+  expect(active[0]).toHaveTextContent(label);
+});

@@ -64,4 +64,11 @@ describe("public analytics snapshot normalization", () => {
     expect(data.novelCount).toBe(novelIndex.stats.length);
     expect(data.findingCount).toBe(findingsIndex.length);
   });
+  it("exposes published snapshot dates, the observed month range, and integrity revision", () => {
+    expect(data.snapshot.asOf).toBe("2026-09-16");
+    expect(data.snapshot.monthCount).toBe(2);
+    expect(data.snapshot.monthRange).toBe("2026-06 to 2026-07");
+    expect(data.snapshot.benchmarkAsOf).toBe("2026-07-22T20:15:22.041778+00:00");
+    expect(data.snapshot.integrityRevision).toEqual({ measuredOn: "2026-09-16", revisionPublished: 2 });
+  });
 });
