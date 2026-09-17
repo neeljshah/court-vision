@@ -48,15 +48,22 @@ describe("repeated-observations-and-effective-support", () => {
     expect(dependenceText).toContain("an estimated 10.2-fold interval-width increase");
     expect(dependenceText).not.toMatch(/inflation of the raw row count/i);
     expect(dependenceText).not.toMatch(/\d+(\.\d+)?x inflation/i);
+
+    // ess_ledger was not rebuilt on the segment-clean corpus, so its counts are still the joined
+    // ones and the paper has to disclose that rather than quietly mixing revisions.
+    expect(ledger.generated_at).toBe("2026-07-25T11:12:42.584390+00:00");
+    expect(mlb.n_rows).toBe(78986);
+    expect(mlb.n_games).toBe(227);
+    expect(dependenceText).toContain("ess_ledger.json was not regenerated");
   });
 
-  it("separates the 227 MLB series from the usable per-side counts", () => {
+  it("separates the 178 MLB series from the usable per-side counts", () => {
     const mlb = autocorrelation.sports.mlb;
-    expect(mlb.n_files).toBe(227);
-    expect(mlb.n_series).toBe(227);
-    expect(mlb.n_records).toBe(78986);
-    expect(mlb.model.n_games).toBe(222);
-    expect(mlb.market.n_games).toBe(225);
+    expect(mlb.n_files).toBe(178);
+    expect(mlb.n_series).toBe(178);
+    expect(mlb.n_records).toBe(27351);
+    expect(mlb.model.n_games).toBe(173);
+    expect(mlb.market.n_games).toBe(173);
     expect(mlb.model.skipped.low_n + mlb.model.skipped.flat).toBe(mlb.n_series - mlb.model.n_games);
     expect(mlb.market.skipped.low_n + mlb.market.skipped.flat).toBe(mlb.n_series - mlb.market.n_games);
 
@@ -64,6 +71,24 @@ describe("repeated-observations-and-effective-support", () => {
     expect(dependenceText).toContain(`${mlb.market.n_games} on the market side`);
     expect(dependenceText).toContain(`over the ${mlb.model.n_games} series usable on that side`);
     expect(dependenceText).not.toMatch(/227 usable series/);
+    expect(dependenceText).not.toMatch(/178 usable series/);
+    // the two artifacts now describe different corpora, so the paper must carry both counts
+    expect(dependenceText).toContain(`${mlb.n_series} segment-clean MLB series`);
+    expect(dependenceText).toContain("27,351");
+  });
+
+  it("merges the revision-2 corpus into the paper's single status callout", () => {
+    const callouts = statusCallouts(DEPENDENCE);
+    expect(callouts).toHaveLength(1);
+    const text = callouts[0].text;
+    expect(text).toContain("126 of the 227");
+    expect(text).toContain("27,076 of 78,986");
+    expect(text).toContain("27,351");
+    expect(text).toContain("4,265");
+    expect(text).toContain("2026-09-16");
+    expect(text).toMatch(/withdrawn/);
+    expect(text).toMatch(/population change/i);
+    expect(text).not.toMatch(/improvement in the forecaster/i);
   });
 
   it("drops the universal ESS ceiling and the subtraction-creates-autocorrelation claim", () => {

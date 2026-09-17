@@ -25,6 +25,8 @@ const paper = read<Paper>("papers", "brier-decomposition-reliability-resolution.
 const murphy = read<Murphy>("showcase", "murphy_decomposition.json");
 const skill = read<Skill>("showcase", "brier_skill_scores.json");
 const insight = read<{ as_of: string }>("insights", "brier_skill_scores.json");
+const regeneration = read<{ segmentation: { per_sport: { mlb: { stateless_ticks_kept: number } } } }>(
+  "audits", "mlb-ingame-regeneration.json");
 const manifest = read<{ modules: { id: string; as_of: string | null }[] }>("showcase", "site_manifest.json");
 
 const blocks = paper.sections.flatMap(section => section.blocks);
@@ -55,26 +57,36 @@ describe("Brier decomposition paper evidence", () => {
       expect(Number(remainder), `${sport} ${side}`).toBeCloseTo(block.brier - block.reconstructed_brier, 6);
     }
     // the same four figures carry the abstract
-    for (const signed of ["+0.000518", "-0.000377", "-0.065642", "-0.066812"]) {
+    for (const signed of ["-0.001568", "-0.000250", "-0.034231", "-0.035153"]) {
       expect(prose).toContain(signed);
+    }
+    // and the revision-1 four are named only where the paper withdraws them
+    for (const withdrawn of ["+0.000518", "-0.065642"]) {
+      expect(prose).toContain(withdrawn);
     }
   });
 
-  it("reports the MLB remainders as small and opposite in sign, not as a 0.0005 tolerance", () => {
+  it("reports both MLB remainders as small and negative, not as a 0.0005 tolerance", () => {
     const model = murphy.sports.mlb.model_prob;
     const market = murphy.sports.mlb.market_prob;
-    expect(model.brier - model.reconstructed_brier).toBeCloseTo(0.000518, 6);
-    expect(market.brier - market.reconstructed_brier).toBeCloseTo(-0.000377, 6);
+    expect(model.brier - model.reconstructed_brier).toBeCloseTo(-0.001568, 6);
+    expect(market.brier - market.reconstructed_brier).toBeCloseTo(-0.000250, 6);
+    // both sides now fall on the same side of zero, so the paper may not call them opposed
+    expect(model.brier - model.reconstructed_brier).toBeLessThan(0);
+    expect(market.brier - market.reconstructed_brier).toBeLessThan(0);
     expect(Math.abs(model.brier - model.reconstructed_brier)).toBeGreaterThan(0.0005);
     expect(prose).not.toMatch(/within 0\.0005/i);
-    expect(prose).toContain("small and opposite in sign");
+    expect(prose).not.toMatch(/opposite in sign/i);
+    expect(prose).toContain("small and negative");
+    expect(prose).toContain("-0.001568");
+    expect(prose).toContain("-0.000250");
   });
 
   it("keeps the soccer remainders without naming a cause for them", () => {
     const model = murphy.sports.soccer_intl.model_prob;
     const market = murphy.sports.soccer_intl.market_prob;
-    expect(model.brier - model.reconstructed_brier).toBeCloseTo(-0.065642, 6);
-    expect(market.brier - market.reconstructed_brier).toBeCloseTo(-0.066812, 6);
+    expect(model.brier - model.reconstructed_brier).toBeCloseTo(-0.034231, 6);
+    expect(market.brier - market.reconstructed_brier).toBeCloseTo(-0.035153, 6);
     expect(prose).toContain("no second bin count and no per-bin residual");
   });
 
@@ -89,27 +101,32 @@ describe("Brier decomposition paper evidence", () => {
   it("keeps the classified phase rows apart from the corpus total", () => {
     const grains = skill.sports.mlb.grains;
     const named = ["early(inn1-3)", "mid(inn4-6)", "late(inn7+)"].reduce((sum, key) => sum + grains[key].n, 0);
-    expect(named).toBe(52646);
-    expect(grains.all.n).toBe(78986);
-    const caution = paragraph("52,646 rows");
-    expect(caution).toContain("78,986");
-    expect(caution).toContain("26,340");
-    expect(prose).toContain("52,646 of the all grain's 78,986 MLB rows");
+    expect(named).toBe(26683);
+    expect(grains.all.n).toBe(27351);
+    // the unclassified remainder is exactly the stateless ticks the segmentation kept
+    const stateless = regeneration.segmentation.per_sport.mlb.stateless_ticks_kept;
+    expect(grains.all.n - named).toBe(stateless);
+    expect(stateless).toBe(668);
+    const caution = paragraph("26,683 rows");
+    expect(caution).toContain("27,351");
+    expect(caution).toContain("668");
+    expect(prose).toContain("26,683 of the all grain's 27,351 MLB rows");
   });
 
   it("says which timestamp is the artifact's, which the manifest's and which the insight's", () => {
-    expect(skill.generated_at).toBe("2026-07-25T11:12:35.314040+00:00");
-    expect(moduleAsOf("brier_skill_scores")).toBe("2026-07-25T04:34:43.456609+00:00");
-    expect(insight.as_of).toBe("2026-07-24T01:08:43.969532+00:00");
+    expect(skill.generated_at).toBe("2026-09-16T22:17:01.245611+00:00");
+    expect(moduleAsOf("brier_skill_scores")).toBe("2026-09-16");
+    expect(insight.as_of).toBe("2026-09-16");
     expect(murphy).not.toHaveProperty("generated_at");
-    expect(murphy).not.toHaveProperty("as_of");
-    expect(moduleAsOf("murphy_decomposition")).toBeNull();
+    expect(murphy).toHaveProperty("as_of", "2026-09-16");
+    expect(moduleAsOf("murphy_decomposition")).toBe("2026-09-16");
 
     const dates = paragraph("Dates:");
-    expect(dates).toContain("carries neither generated_at nor as_of");
-    expect(dates).toContain("generated_at 2026-07-25T11:12:35Z, which is when that artifact was produced");
-    expect(dates).toContain("site_manifest.json publishes the module with as_of 2026-07-25T04:34:43Z");
-    expect(dates).toContain("insights/brier_skill_scores.json file carries as_of 2026-07-24T01:08:43Z");
+    expect(dates).toContain("carries no generated_at, and states as_of 2026-09-16");
+    expect(dates).toContain("generated_at 2026-09-16T22:17:01Z, which is when that artifact was produced");
+    expect(dates).toContain("site_manifest.json publishes the module with as_of 2026-09-16");
+    expect(dates).toContain("insights/brier_skill_scores.json file carries as_of 2026-09-16");
+    expect(dates).not.toMatch(/2026-07-2[45]/);
   });
 
   it("opens Results with the MLB withdrawal status and repeats it in the abstract", () => {

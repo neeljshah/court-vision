@@ -101,28 +101,30 @@ describe("reliability paper evidence", () => {
     expect(prose).not.toContain("gap = mean_p - mean_y");
   });
 
-  it("labels 0.079 and 0.0591 as the all-state n-weighted ECE", () => {
-    expect(state.sports.mlb.model_ece_n_weighted).toBe(0.079);
-    expect(state.sports.mlb.market_ece_n_weighted).toBe(0.0591);
+  it("labels 0.0494 and 0.0397 as the all-state n-weighted ECE", () => {
+    expect(state.sports.mlb.model_ece_n_weighted).toBe(0.0494);
+    expect(state.sports.mlb.market_ece_n_weighted).toBe(0.0397);
     const said = paragraph("model_ece_n_weighted");
     expect(said).toContain("all-state");
-    expect(said).toContain("0.079");
-    expect(said).toContain("0.0591");
-    expect(sentenceWith(paper.abstract, "0.079")).toContain("all-state");
-    expect(sentenceWith(paper.abstract, "0.079")).not.toMatch(/late.inning/i);
+    expect(said).toContain("0.0494");
+    expect(said).toContain("0.0397");
+    expect(sentenceWith(paper.abstract, "0.0494")).toContain("all-state");
+    expect(sentenceWith(paper.abstract, "0.0494")).not.toMatch(/late.inning/i);
+    // the withdrawn revision-1 pair may appear only where the paper retracts it
+    expect(prose).not.toMatch(/0\.079 model against 0\.0591 market/);
   });
 
   it("derives the late-inning ECE from the published cells and says it is derived", () => {
     const model = lateWeighted("model");
     const market = lateWeighted("market");
-    expect(model.rows).toBe(13981);
-    expect(market.rows).toBe(13981);
-    expect(model.ece).toBeCloseTo(0.1537, 4);
-    expect(market.ece).toBeCloseTo(0.0587, 4);
+    expect(model.rows).toBe(7442);
+    expect(market.rows).toBe(7442);
+    expect(model.ece).toBeCloseTo(0.0395, 4);
+    expect(market.ece).toBeCloseTo(0.0454, 4);
     const said = paragraph("derived");
     expect(said).toContain(four(model.ece));
     expect(said).toContain(four(market.ece));
-    expect(said).toContain("13,981");
+    expect(said).toContain("7,442");
     expect(said).toContain("late(inn7+)");
   });
 
@@ -139,6 +141,26 @@ describe("reliability paper evidence", () => {
     expect(sentences[sentences.length - 1]).toContain("Status:");
     expect(sentences[sentences.length - 1]).toContain("withdrawn");
     expect(paper.related).toContainEqual({ kind: "finding", id: "ingame-join-integrity" });
+  });
+
+  it("retracts the revision-1 top-bin and late-cell conclusions instead of restating them", () => {
+    const top = stability.sports.mlb.sides.model_prob.bins[9];
+    expect([top.gap, top.significant]).toEqual([0.0282, false]);
+    const lateHigh = lateCells.find(cell => cell.source === "model" && cell.prob_bucket === ".8-1");
+    expect(lateHigh?.calibration_error).toBe(0.0397);
+    // Both headline misses of revision 1 are gone from the data, so each may appear exactly once,
+    // inside the paragraph that withdraws it, and never as a current reading.
+    for (const withdrawn of ["-0.2909", "0.2357"]) {
+      const carriers = blocks.filter(
+        block => (block.type === "p" || block.type === "callout") && block.text.includes(withdrawn));
+      expect(carriers, withdrawn).toHaveLength(1);
+      const said = (carriers[0] as TextBlock).text;
+      expect(said, withdrawn).toMatch(/revision 1/i);
+      expect(said, withdrawn).toContain("an artifact of the join defect");
+    }
+    // and the values that replaced them are the ones the paper reports
+    expect(prose).toContain(four(top.gap));
+    expect(prose).toContain(four(lateHigh!.calibration_error));
   });
 
   it("drops the claims that overreach the evidence", () => {

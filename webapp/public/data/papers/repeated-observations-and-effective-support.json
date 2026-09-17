@@ -1,385 +1,471 @@
 {
- "slug": "repeated-observations-and-effective-support",
- "title": "How many games actually sit behind a bin",
- "subtitle": "Within-game autocorrelation, effective sample size, and the game-cluster bootstrap for MLB and international-soccer calibration",
- "authors": [
-  "CourtVision research"
- ],
- "date": "2026-09-16",
- "sport": "all",
- "keywords": [
-  "effective sample size",
-  "autocorrelation",
-  "cluster bootstrap",
-  "calibration",
-  "MLB",
-  "soccer",
-  "dependence"
- ],
- "abstract": "Two published calibration exhibits report reliability bins built from tens of thousands of in-game probability rows, but a row is not a game. Within a match, the model and market probability paths move in small steps from one tick to the next, so consecutive rows sit close to their neighbor rather than arriving as fresh independent draws. This paper reads three already-published artifacts -- the lag-1 within-game residual-autocorrelation ledger, the effective-sample-size (ESS) ledger it feeds, and the game-cluster bootstrap behind the calibration-stability exhibit -- to state how much independent support a bin row count carries. In MLB, 78,986 rows drawn from 227 tick files carry a median model-side lag-1 autocorrelation of 0.9809 over the 222 series usable on that side; the AR(1) approximation puts the effective sample size at 761 rows and the conservative distinct-game anchor at 227, which the ledger reports as an estimated 18.7-fold interval-width increase under the game-count heuristic. International soccer shows 9,003 rows across 51 usable series, a median of 0.9624, an AR(1) ESS of 172, a game anchor of 51, and an estimated 13.3-fold interval-width increase. The calibration-stability exhibit already resamples whole games rather than rows for its 95 percent intervals (1,000 replicates, cluster unit game_id). The MLB figures are quarantined below pending a corpus regeneration. The reading is descriptive only: n in a bin caption counts rows, not evidence, and the game count is the number that should anchor how much a reader trusts it.",
- "sections": [
-  {
-   "id": "question",
-   "heading": "Question",
-   "blocks": [
+  "slug": "repeated-observations-and-effective-support",
+  "title": "How many games actually sit behind a bin",
+  "subtitle": "Within-game autocorrelation, effective sample size, and the game-cluster bootstrap for MLB and international-soccer calibration",
+  "authors": [
+    "CourtVision research"
+  ],
+  "date": "2026-09-16",
+  "sport": "all",
+  "keywords": [
+    "effective sample size",
+    "autocorrelation",
+    "cluster bootstrap",
+    "calibration",
+    "MLB",
+    "soccer",
+    "dependence"
+  ],
+  "abstract": "Two published calibration exhibits report reliability bins built from thousands of in-game probability rows, but a row is not a game. Within a match the probability paths move in small steps from one tick to the next, so consecutive rows sit close to their neighbor rather than arriving as fresh independent draws. This paper reads three already-published artifacts -- the lag-1 within-game residual-autocorrelation ledger, the effective-sample-size (ESS) ledger it feeds, and the game-cluster bootstrap behind the calibration-stability exhibit -- to state how much independent support a bin row count carries. On the segment-clean corpus MLB contributes 27,351 rows from 178 tick files with a median model-side lag-1 autocorrelation of 0.9713 over the 173 series usable on that side, and international soccer 4,265 rows across 27 files with a median of 0.9662 over 26 usable series. The ESS ledger was not rebuilt with them, so it still describes the joined corpus: 78,986 MLB rows against an AR(1) effective sample size of 761 and a distinct-game anchor of 227, reported as an estimated 18.7-fold interval-width increase under the game-count heuristic, and 9,003 soccer rows against an AR(1) figure of 172, a game anchor of 51 and an estimated 13.3-fold increase. The reading is descriptive only and survives the corpus correction intact: n in a bin caption counts rows, not evidence, and the game count is the number that should anchor how much a reader trusts it.",
+  "sections": [
     {
-     "type": "p",
-     "text": "A calibration bin on the published reliability page lists an n, sometimes in the thousands. The question here is what that n is actually made of: how many separate games contributed those rows, whether rows inside one game move independently of each other, and what the effective sample size behind a bin is once that dependence is counted. It also asks why the calibration-stability exhibit already resamples by game rather than by row, and what that choice buys a reader who wants to know how much a bin's gap can be trusted."
-    },
-    {
-     "type": "p",
-     "text": "This is a read of three artifacts CourtVision has already published, not a new measurement: the lag-1 within-game residual-autocorrelation ledger (residual_autocorrelation.json), the effective-sample-size ledger it feeds (ess_ledger.json), and the game-cluster bootstrap that already sits under the calibration-stability exhibit (calibration_stability.json). No new number is computed here beyond simple ratios of numbers each artifact already reports."
-    },
-    {
-     "type": "callout",
-     "label": "Status",
-     "text": "MLB conclusions in this paper are withdrawn pending regeneration of the MLB in-game corpus. The published in-game join-integrity finding, measured 2026-09-16, reports 126 of the 227 MLB tick files holding ticks from more than one real game, and 27,076 of 78,986 ticks sitting in a segment that carries another game's label. Every MLB row count, autocorrelation and effective-sample-size figure below is therefore a record of what was published on that tick set, not a current result. The method statements and the international-soccer figures are unaffected."
-    }
-   ]
-  },
-  {
-   "id": "data",
-   "heading": "Data and definitions",
-   "blocks": [
-    {
-     "type": "p",
-     "text": "residual_autocorrelation.json records the lag-1 sample autocorrelation of the signed residual (probability minus terminal outcome) for every (game_id, side) series, ordered by timestamp, for MLB and international soccer, on both the model side and the market side. It applies two floors before a series counts: at least 10 rows per game, and a minimum residual variance of 1e-9 (a series with a flat residual has no autocorrelation to measure). MLB contributes 227 files and 227 series across 78,986 rows, but the usable counts differ by side: 222 series survive the floors on the model side (2 skipped as low_n, 3 as flat) and 225 on the market side (2 skipped as low_n, none flat). International soccer contributes 51 series across 9,003 rows, with nothing skipped on either side. A third candidate corpus, labelled mlb_clean, is explicitly skipped as a byte-identical duplicate of the mlb corpus, so it never inflates either sport's row or series count."
-    },
-    {
-     "type": "p",
-     "text": "ess_ledger.json takes that autocorrelation and turns it into an effective-sample-size estimate: an AR(1) approximation (ESS_AR1) and a distinct-game anchor, then reports the minimum of the two as ess_anchor because the AR(1) formula is only a first-order model of a residual path that is, by construction, smooth and terminal-constant -- a stronger form of dependence than a single lag coefficient fully captures."
-    },
-    {
-     "type": "p",
-     "text": "calibration_stability.json is the reliability exhibit itself: 10 probability bins per sport per side (model and market), each carrying both n (rows) and n_games (distinct games), with a mean forecast, a mean outcome, and a calibration gap. The interval around that gap is not built by treating each row as an independent Bernoulli trial; it comes from a cluster bootstrap that resamples game_id with replacement 1,000 times, re-bins the resampled rows, and reports the 2.5th and 97.5th percentile of the gap distribution. A bin is only reported once its games clear a floor of 5 (min_games_per_bin_floor)."
-    },
-    {
-     "type": "p",
-     "text": "Why rows inside one game are not independent: the probability path itself moves in small steps. A tick is a small revision of the tick before it, so consecutive rows are near-duplicates rather than fresh draws, and that smoothness is what the lag-1 coefficient measures. Subtracting the game's terminal outcome to form the residual shifts every row in a series by the same constant and does not by itself create or change that serial dependence. A bin that happens to catch a game during a long stretch near, say, 55 percent will collect many rows that all say roughly the same thing about that one game, not many independent votes."
-    }
-   ]
-  },
-  {
-   "id": "method",
-   "heading": "Method",
-   "blocks": [
-    {
-     "type": "math",
-     "text": "ESS_AR1 = n_rows * (1 - rho) / (1 + rho)"
-    },
-    {
-     "type": "math",
-     "text": "CI inflation = sqrt(n_rows / ESS)"
-    },
-    {
-     "type": "p",
-     "text": "rho is the per-series lag-1 autocorrelation from residual_autocorrelation.json, summarized per sport as a median across games. ess_ledger.json applies the AR(1) formula to get ESS_AR1, then separately anchors on the raw distinct-game count for the same corpus, and reports ess_anchor as whichever of the two is smaller. Its second formula, sqrt(n_rows / ESS), is an interval-width factor: it estimates how much wider a confidence interval built on the effective sample size is than one built on the raw row count. It is not a statement that the row count is too large by that factor. The ledger labels the game count the conservative anchor: AR(1) is one specific dependence model, while the game count needs no model of the dependence structure at all, only the fact that no two games are the same draw."
-    },
-    {
-     "type": "p",
-     "text": "The calibration-stability bootstrap works at the game level, not the row level: each of the 1,000 replicates draws game_ids with replacement equal in number to the original game count, pulls every row belonging to each drawn game (so a resampled game contributes its full correlated run of rows), rebuilds the 10-bin reliability curve, and records the resulting gap and mean_y per bin. The reported gap_ci and mean_y_ci are the 2.5/97.5 percentile band (ci_pct) under seed 20260722 with 1,000 replicates (n_boot)."
-    }
-   ]
-  },
-  {
-   "id": "results",
-   "heading": "Results",
-   "blocks": [
-    {
-     "type": "table",
-     "caption": "Rows, series, and effective sample size per sport (model side)",
-     "columns": [
-      "Sport",
-      "Rows (n_rows)",
-      "Games (n_games)",
-      "Median lag-1 autocorr (model)",
-      "ESS, AR1 approx",
-      "ESS, game anchor",
-      "Interval-width factor at the game anchor"
-     ],
-     "rows": [
-      [
-       "MLB",
-       "78,986",
-       "227",
-       "0.9809 (over 222 usable model series)",
-       "761",
-       "227",
-       "18.7-fold wider"
-      ],
-      [
-       "Soccer (international)",
-       "9,003",
-       "51",
-       "0.9624 (over 51 usable model series)",
-       "172",
-       "51",
-       "13.3-fold wider"
+      "id": "question",
+      "heading": "Question",
+      "blocks": [
+        {
+          "type": "callout",
+          "label": "Status",
+          "text": "Revision 2, 2026-09-16. Revision 1 quoted artifacts built on the joined in-game corpus (78,986 MLB ticks across 227 files, as_of 2026-07-25), in which 126 of the 227 MLB files held ticks from more than one real game and 27,076 of 78,986 ticks carried another game's outcome label. Those values were withdrawn pending regeneration on 2026-09-16. This revision quotes the segment-clean corpus: 27,351 MLB ticks across 178 files and 4,265 international-soccer ticks across 27 files. Every number that moved is a population change, not forecaster improvement. One of the three artifacts read here, ess_ledger.json, was not rebuilt, so both corpora appear below and every figure names the one it came from."
+        },
+        {
+          "type": "p",
+          "text": "A calibration bin on the published reliability page lists an n, sometimes in the thousands. What is that n made of: how many separate games contributed those rows, whether rows inside one game move independently, and what the effective sample size behind a bin is once that dependence is counted. It also asks why the calibration-stability exhibit already resamples by game rather than by row."
+        },
+        {
+          "type": "p",
+          "text": "This is a read of three already-published artifacts, not a new measurement: residual_autocorrelation.json, the effective-sample-size ledger it feeds (ess_ledger.json), and the game-cluster bootstrap under calibration_stability.json. No new number is computed beyond simple ratios each artifact already reports. The 2026-09-16 correction rebuilt the first and third and left the second alone, which makes the question of which corpus a figure describes part of the answer."
+        }
       ]
-     ],
-     "note": "residual_autocorrelation.json sports.{mlb,soccer_intl}.n_records, .model.median, .model.n_games; ess_ledger.json corpora[].{n_rows,n_games,ess_ar1,ess_anchor,infl_anchor}. The interval-width factor is infl_anchor, defined by the ledger as sqrt(n_rows / ESS)."
     },
     {
-     "type": "p",
-     "text": "Both sports land on the game count as the tighter anchor: the AR(1) approximation alone would already say MLB rows carry only about 761 independent equivalents (an estimated 10.2-fold interval-width increase, per infl_ar1) and soccer rows about 172 (an estimated 7.2-fold increase), but the distinct-game floor is smaller still in both cases -- 227 and 51 -- so it is the number ess_ledger.json actually anchors on. share_ge_0_9, the share of usable game series with autocorrelation at least 0.9, is 0.955 for MLB model-side and 0.8235 for soccer model-side, so the great majority of games in both corpora sit in the high-dependence regime rather than a minority of outliers driving the median."
-    },
-    {
-     "type": "p",
-     "text": "Market-side rows show the same pattern: MLB market median autocorrelation is 0.9799 over 225 usable series (share_ge_0_9 0.9644) and soccer market median is 0.9489 over 51 (share_ge_0_9 0.8039). ess_ledger.json's rho_market figures (0.9799 for MLB, 0.9489 for soccer) match these, confirming the ESS ledger and the autocorrelation ledger describe the same underlying series."
-    },
-    {
-     "type": "figure",
-     "module": "residual_autocorrelation",
-     "caption": "Published lag-1 within-game residual-autocorrelation distribution, MLB and international soccer, model and market sides (residual_autocorrelation.json)."
-    },
-    {
-     "type": "table",
-     "caption": "MLB model-side reliability bins: rows versus games",
-     "columns": [
-      "Bin",
-      "Rows, n",
-      "Games, n_games",
-      "Rows per game",
-      "Calibration gap",
-      "95% gap CI excludes zero"
-     ],
-     "rows": [
-      [
-       "0.0-0.1",
-       "5,127",
-       "133",
-       "38.5",
-       "0.1819",
-       "yes"
-      ],
-      [
-       "0.1-0.2",
-       "4,495",
-       "137",
-       "32.8",
-       "0.0937",
-       "yes"
-      ],
-      [
-       "0.2-0.3",
-       "4,708",
-       "132",
-       "35.7",
-       "0.0578",
-       "no"
-      ],
-      [
-       "0.3-0.4",
-       "7,071",
-       "146",
-       "48.4",
-       "-0.0785",
-       "no"
-      ],
-      [
-       "0.4-0.5",
-       "14,736",
-       "167",
-       "88.2",
-       "-0.0653",
-       "no"
-      ],
-      [
-       "0.5-0.6",
-       "17,652",
-       "186",
-       "94.9",
-       "-0.0818",
-       "no"
-      ],
-      [
-       "0.6-0.7",
-       "9,214",
-       "160",
-       "57.6",
-       "-0.0711",
-       "no"
-      ],
-      [
-       "0.7-0.8",
-       "5,364",
-       "130",
-       "41.3",
-       "-0.0737",
-       "no"
-      ],
-      [
-       "0.8-0.9",
-       "5,866",
-       "138",
-       "42.5",
-       "-0.1138",
-       "yes"
-      ],
-      [
-       "0.9-1.0",
-       "4,753",
-       "118",
-       "40.3",
-       "-0.2909",
-       "yes"
+      "id": "data",
+      "heading": "Data and definitions",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "residual_autocorrelation.json records the lag-1 sample autocorrelation of the signed residual (probability minus terminal outcome) for every (game_id, side) series, ordered by timestamp, for both sports and both sides. Two floors apply before a series counts: at least 10 rows per game, and a minimum residual variance of 1e-9. On the segment-clean corpus MLB contributes 178 files and 178 series across 27,351 rows, and the usable counts now match across sides: 173 series survive the floors on the model side (4 skipped as low_n, 1 as flat) and 173 on the market side. International soccer contributes 27 files and 27 series across 4,265 rows, with 26 usable per side. A third corpus, mlb_clean, is skipped as a byte-identical duplicate."
+        },
+        {
+          "type": "p",
+          "text": "Revision 1 read 227 files, 227 series and 78,986 rows for MLB, with 222 usable model series and 225 usable market series. Those are withdrawn. The structural change matters more than the size: on the joined corpus the two sides disagreed about how many series were usable, because a mixed tick path could clear the floors on one side and not the other; on the 178 segment-clean MLB series the two sides now skip the same 5."
+        },
+        {
+          "type": "p",
+          "text": "ess_ledger.json turns that autocorrelation into an effective-sample-size estimate: an AR(1) approximation (ESS_AR1) and a distinct-game anchor, reporting the minimum of the two as ess_anchor because AR(1) is only a first-order model of a path that is smooth and terminal-constant. ess_ledger.json was not regenerated in the 2026-09-16 pass: it carries generated_at 2026-07-25 and still reads 78,986 MLB rows across 227 games and 9,003 soccer rows across 51, with rho_model 0.9809 against the 0.9713 median the rebuilt ledger now reports."
+        },
+        {
+          "type": "p",
+          "text": "calibration_stability.json is the reliability exhibit itself: 10 probability bins per sport per side, each carrying n (rows) and n_games (distinct games) with a mean forecast, a mean outcome and a calibration gap. The interval around that gap comes from a cluster bootstrap that resamples game_id with replacement 1,000 times, re-bins, and reports the 2.5th and 97.5th percentile. A bin is only reported once its games clear a floor of 5. It was rebuilt on the segment-clean corpus and is dated 2026-09-16."
+        },
+        {
+          "type": "p",
+          "text": "Why rows inside one game are not independent: the probability path moves in small steps. A tick is a small revision of the tick before it, so consecutive rows are near-duplicates rather than fresh draws, and that smoothness is what the lag-1 coefficient measures. Subtracting the terminal outcome to form the residual shifts every row in a series by the same constant and does not by itself create or change that serial dependence. A bin that catches a game during a long stretch near 55 percent collects many rows saying the same thing about one game, not many independent votes."
+        }
       ]
-     ],
-     "note": "calibration_stability.json sports.mlb.sides.model_prob.bins[].{bin_lo,bin_hi,n,n_games,gap,gap_ci,significant}; rows per game is n divided by n_games, a direct ratio of the two published columns",
-     "text": "Rows per game ranges from about 33 to 95 across the 10 MLB bins, and it is not flat: the two middle bins (0.4-0.5 and 0.5-0.6) show 88 and 95 rows per game against 33-49 in the tail bins, on more games as well (167 and 186, against 118-146). A near-even game dwells near a toss-up probability for long stretches; a bin near 0 or 1 is usually entered once a game is decided and passed through quickly. The same n in two different bins can therefore stand for a different number of independent games."
     },
     {
-     "type": "p",
-     "text": "Of MLB's 10 model-side bins, 4 have a 95 percent gap interval that excludes zero (n_significant_bins) and 6 fall within the noise the bootstrap allows; the market side shows 0 of 10 significant, at a Brier of 0.206653 against the model side's 0.237684. International soccer shows 8 of 10 model-side bins excluding zero and 6 of 10 on the market side (Brier 0.142726 market, 0.227887 model). The soccer corpus is smaller (51 games versus 227) and its worst series sits lower (minimum 0.4695 model-side, against 0.4866 for MLB), so its bins rest on fewer games and a wider spread of within-game dependence."
+      "id": "method",
+      "heading": "Method",
+      "blocks": [
+        {
+          "type": "math",
+          "text": "ESS_AR1 = n_rows * (1 - rho) / (1 + rho)"
+        },
+        {
+          "type": "math",
+          "text": "CI inflation = sqrt(n_rows / ESS)"
+        },
+        {
+          "type": "p",
+          "text": "rho is the per-series lag-1 autocorrelation, summarized per sport as a median across games. ess_ledger.json applies the AR(1) formula, then separately anchors on the distinct-game count, and reports whichever is smaller. Its second formula, sqrt(n_rows / ESS), is an interval-width factor: it estimates how much wider a confidence interval built on the effective sample size is than one built on the raw row count. It is not a statement that the row count is too large by that factor. The game count is the conservative anchor because it needs no model of the dependence structure, only the fact that no two games are the same draw."
+        },
+        {
+          "type": "p",
+          "text": "The calibration-stability bootstrap works at the game level: each of the 1,000 replicates draws game_ids with replacement, pulls every row belonging to each drawn game, rebuilds the curve, and records the resulting gap per bin. The reported gap_ci is the 2.5/97.5 percentile band under seed 20260722. Because it resamples games, the drop from 227 to 178 MLB games matters more to these intervals than the much larger drop in rows."
+        }
+      ]
     },
     {
-     "type": "p",
-     "text": "Of MLB's 10 model-side bins, 4 have a 95 percent gap interval that excludes zero (n_significant_bins) and 6 fall within the noise the bootstrap itself allows (n_within_noise_bins); the market side shows 0 of 10 significant and 10 of 10 within noise, at a Brier of 0.206653 against the model side's 0.237684. International soccer shows a different balance: 8 of 10 model-side bins have an interval excluding zero and 2 fall within noise, with the market side at 6 of 10 significant and 4 within noise (Brier 0.142726 for market against 0.227887 for model). The soccer corpus is both smaller (51 games versus 227) and shows a lower per-game autocorrelation floor in its worst series (minimum 0.4695 model-side, against 0.4866 for MLB), so its bins are supported by fewer games and by a wider spread of within-game dependence."
+      "id": "results",
+      "heading": "Results",
+      "blocks": [
+        {
+          "type": "table",
+          "caption": "Rows, series and within-game dependence per sport, segment-clean corpus (model side)",
+          "columns": [
+            "Sport",
+            "Rows (n_records)",
+            "Files and series",
+            "Usable series (model)",
+            "Median lag-1 autocorr (model)",
+            "Share of series at or above 0.9"
+          ],
+          "rows": [
+            [
+              "MLB",
+              "27,351",
+              "178",
+              "173",
+              "0.9713",
+              "0.896"
+            ],
+            [
+              "Soccer (international)",
+              "4,265",
+              "27",
+              "26",
+              "0.9662",
+              "0.8462"
+            ]
+          ],
+          "note": "residual_autocorrelation.json sports.{mlb,soccer_intl}.{n_records,n_files,n_series} and .model.{n_games,median,share_ge_0_9}, as of 2026-09-16."
+        },
+        {
+          "type": "table",
+          "caption": "Effective sample size as ess_ledger.json still reports it (joined corpus, not regenerated)",
+          "columns": [
+            "Sport",
+            "Rows (n_rows)",
+            "Games (n_games)",
+            "rho_model",
+            "ESS, AR1 approx",
+            "ESS, game anchor",
+            "Interval-width factor at the game anchor"
+          ],
+          "rows": [
+            [
+              "MLB",
+              "78,986",
+              "227",
+              "0.9809",
+              "761",
+              "227",
+              "18.7-fold wider"
+            ],
+            [
+              "Soccer (international)",
+              "9,003",
+              "51",
+              "0.9624",
+              "172",
+              "51",
+              "13.3-fold wider"
+            ]
+          ],
+          "note": "ess_ledger.json corpora[].{n_rows,n_games,rho_model,ess_ar1,ess_anchor,infl_anchor}, generated_at 2026-07-25. The interval-width factor is infl_anchor, defined by the ledger as sqrt(n_rows / ESS). These rows describe the joined corpus and have not been recomputed on the segment-clean one."
+        },
+        {
+          "type": "p",
+          "text": "On the ledger's own corpus both sports land on the game count as the tighter anchor: AR(1) alone would say MLB rows carry about 761 independent equivalents (an estimated 10.2-fold interval-width increase, per infl_ar1) and soccer rows about 172, but the distinct-game floor is smaller still -- 227 and 51 -- so it is what the ledger anchors on, reported as an estimated 18.7-fold interval-width increase under the game-count heuristic for MLB and an estimated 13.3-fold interval-width increase for soccer."
+        },
+        {
+          "type": "p",
+          "text": "Those factors cannot be carried onto the segment-clean corpus, and this paper does not recompute them. What can be said is which way the inputs moved. Row counts fell much faster than game counts -- MLB from 78,986 rows across 227 games to 27,351 across 178 -- so rows per game fell from about 348 to about 154, and the median model-side autocorrelation fell from 0.9809 to 0.9713. Both point the same way: a shorter, cleaner series holds fewer near-duplicate rows. The direction is clear; the magnitude is not published, and no substitute is offered."
+        },
+        {
+          "type": "p",
+          "text": "share_ge_0_9, the share of usable series with autocorrelation at least 0.9, is 0.896 for MLB model-side and 0.8462 for soccer model-side, so the great majority of games still sit in the high-dependence regime rather than a few outliers driving the median. Market-side rows match: MLB 0.9645 median over the same 173 series (share_ge_0_9 0.8613), soccer 0.9517 over 26 (0.7692). The central claim of this paper is unchanged by the correction, which is the most useful thing the regeneration establishes about it."
+        },
+        {
+          "type": "figure",
+          "module": "residual_autocorrelation",
+          "caption": "Published lag-1 within-game residual-autocorrelation distribution, MLB and international soccer, model and market sides (residual_autocorrelation.json, as of 2026-09-16)."
+        },
+        {
+          "type": "table",
+          "caption": "MLB model-side reliability bins: rows versus games (segment-clean corpus)",
+          "columns": [
+            "Bin",
+            "Rows, n",
+            "Games, n_games",
+            "Rows per game",
+            "Calibration gap",
+            "95% gap CI excludes zero"
+          ],
+          "rows": [
+            [
+              "0.0-0.1",
+              "2,072",
+              "86",
+              "24.1",
+              "0.0119",
+              "no"
+            ],
+            [
+              "0.1-0.2",
+              "1,900",
+              "73",
+              "26.0",
+              "-0.1099",
+              "yes"
+            ],
+            [
+              "0.2-0.3",
+              "1,774",
+              "69",
+              "25.7",
+              "-0.1384",
+              "yes"
+            ],
+            [
+              "0.3-0.4",
+              "2,217",
+              "80",
+              "27.7",
+              "-0.1232",
+              "no"
+            ],
+            [
+              "0.4-0.5",
+              "3,859",
+              "100",
+              "38.6",
+              "-0.0867",
+              "no"
+            ],
+            [
+              "0.5-0.6",
+              "5,636",
+              "114",
+              "49.4",
+              "0.0087",
+              "no"
+            ],
+            [
+              "0.6-0.7",
+              "4,026",
+              "95",
+              "42.4",
+              "-0.0043",
+              "no"
+            ],
+            [
+              "0.7-0.8",
+              "2,024",
+              "70",
+              "28.9",
+              "0.0752",
+              "no"
+            ],
+            [
+              "0.8-0.9",
+              "2,406",
+              "81",
+              "29.7",
+              "0.0927",
+              "yes"
+            ],
+            [
+              "0.9-1.0",
+              "1,437",
+              "61",
+              "23.6",
+              "0.0282",
+              "no"
+            ]
+          ],
+          "note": "calibration_stability.json sports.mlb.sides.model_prob.bins[].{bin_lo,bin_hi,n,n_games,gap,gap_ci,significant}, as of 2026-09-16; rows per game is n divided by n_games, a direct ratio of the two published columns."
+        },
+        {
+          "type": "p",
+          "text": "Rows per game ranges from about 24 to about 49 across the 10 MLB bins, and it is not flat: the two middle bins show 38.6 and 49.4 rows per game against 23.6 in the 0.9-1.0 bin, on more games as well (100 and 114, against 61). A near-even game dwells near a toss-up for long stretches; a bin near 0 or 1 is entered once a game is decided and passed through quickly. The same n in two bins can stand for a different number of independent games. Every ratio is roughly a third of its revision-1 value."
+        },
+        {
+          "type": "p",
+          "text": "Of MLB's 10 model-side bins, 3 have a 95 percent gap interval excluding zero and 7 fall within noise; the market side shows 0 of 10 significant, at a Brier of 0.151008 against the model's 0.166759. Soccer shows a different balance: 8 of its 9 eligible model-side bins exclude zero and 1 falls within noise, with the market at 7 of 9 (Brier 0.195157 against 0.332522). The soccer corpus is smaller (27 games against 178) and its worst series sits higher (minimum 0.4695 model-side, against -0.002 for MLB), so its bins rest on fewer games."
+        }
+      ]
+    },
+    {
+      "id": "checks",
+      "heading": "Robustness and what would falsify this",
+      "blocks": [
+        {
+          "type": "callout",
+          "label": "Definition",
+          "text": "Effective sample size (ESS) is the number of independent observations that would carry the same information as the correlated row count actually observed. ess_ledger.json reports two: an AR(1)-model estimate (ESS_AR1) and a distinct-game anchor, taking the smaller as the conservative headline (ess_anchor)."
+        },
+        {
+          "type": "list",
+          "items": [
+            "On the ledger's joined corpus both sports land with the game-count anchor below the AR(1) estimate (227 against 761 for MLB, 51 against 172 for soccer). The ledger's confound field states that AR(1) is a first-order approximation of a smooth terminal-constant path rather than a full independence model, and neither figure is published as a bound on the true effective sample size.",
+            "The corpus correction is itself the strongest available check on this paper's claim, and the claim passed: the MLB median lag-1 autocorrelation moved only from 0.9809 to 0.9713 when a third of the ticks were removed, so the dependence being measured is a property of how probability paths move, not of the join defect.",
+            "residual_autocorrelation.json skips a duplicate mlb_clean corpus as byte-identical to mlb, so the counts above are not double-counting one source under two labels.",
+            "Floors bound both ledgers: 4 MLB series were skipped as low_n and 1 as flat on each side, leaving 173 of 178, and calibration_stability.json will not report a bin built from fewer than 5 games -- which now bites, since one soccer bin per side falls below that floor. Both record what they dropped rather than thinning silently."
+          ]
+        },
+        {
+          "type": "p",
+          "text": "What would falsify the reading that n overstates independent support: if rows per game were close to 1 across bins, or if the published lag-1 autocorrelation were near zero, a row would behave like an independent draw. Neither holds on either corpus."
+        }
+      ]
+    },
+    {
+      "id": "limitations",
+      "heading": "Limitations",
+      "blocks": [
+        {
+          "type": "list",
+          "items": [
+            "ess_ledger.json was not regenerated on the segment-clean corpus, so its row counts, rho values, ESS figures and interval-width factors describe the joined corpora and are not current; no recomputed replacement is published, and none is estimated here.",
+            "The AR(1) approximation is a first-order model of a path the ledger itself calls smooth and terminal-constant, so the true independent information could sit below 761 for MLB and 172 for soccer -- which is why the ledger anchors on the game count instead.",
+            "The distinct-game anchor treats every game as equally informative regardless of how long it lingers in a state, so it does not carry the rows-per-game variation shown in the bin table.",
+            "These artifacts cover one MLB corpus (178 files, 173 usable series per side) and one international-soccer corpus (27 files, 26 usable per side); no NBA or tennis ledger is cited here.",
+            "The cluster bootstrap corrects the width of a bin's confidence interval, not the number of rows behind its point estimate, which is still computed once over all rows.",
+            "The three artifacts are still not dated from one run: residual_autocorrelation.json and calibration_stability.json were rebuilt as of 2026-09-16, while ess_ledger.json remains at 2026-07-25. The segment-clean corpus is also the output of one segmentation rule applied once."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "use",
+      "heading": "How to read this on the site",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "The observation-dependence inspector (/analytics/observation-dependence) shows the full published within-game residual-autocorrelation distribution behind the first table and the figure above, sport by sport and side by side. The calibration inspector (/analytics/calibration) shows the reliability bins themselves with their already-applied game-cluster interval, and its own prerequisite points a reader to the effective-sample-size finding first. Read the in-game join-integrity finding alongside any effective-sample-size figure here, because the ledger those figures come from still describes the pre-correction corpus."
+        },
+        {
+          "type": "callout",
+          "label": "Caution",
+          "text": "A bin's n counts rows, not evidence. Read n_games next to it, and treat the gap_ci -- built from a bootstrap that resamples whole games -- as the number that reflects how many independent chances the data had to come out differently. After segmentation there are fewer games behind every MLB bin, so those intervals are wider than revision 1 implied."
+        }
+      ]
     }
-   ]
-  },
-  {
-   "id": "checks",
-   "heading": "Robustness and what would falsify this",
-   "blocks": [
+  ],
+  "evidence": [
     {
-     "type": "callout",
-     "label": "Definition",
-     "text": "Effective sample size (ESS) is the number of independent observations that would carry the same information as the correlated row count actually observed. ess_ledger.json reports two: an AR(1)-model estimate (ESS_AR1) and a distinct-game anchor, taking the smaller as the conservative headline (ess_anchor)."
+      "artifact": "residual_autocorrelation.json",
+      "module": "residual_autocorrelation",
+      "asOf": "2026-09-16",
+      "fields": [
+        "method",
+        "floors.min_rows_per_game",
+        "floors.min_residual_variance",
+        "sports.mlb.n_records",
+        "sports.mlb.n_series",
+        "sports.mlb.n_files",
+        "sports.mlb.model.n_games",
+        "sports.mlb.model.median",
+        "sports.mlb.model.mean",
+        "sports.mlb.model.min",
+        "sports.mlb.model.share_ge_0_9",
+        "sports.mlb.model.skipped.low_n",
+        "sports.mlb.model.skipped.flat",
+        "sports.mlb.market.n_games",
+        "sports.mlb.market.median",
+        "sports.mlb.market.share_ge_0_9",
+        "sports.soccer_intl.n_records",
+        "sports.soccer_intl.n_series",
+        "sports.soccer_intl.model.n_games",
+        "sports.soccer_intl.model.median",
+        "sports.soccer_intl.model.min",
+        "sports.soccer_intl.model.share_ge_0_9",
+        "sports.soccer_intl.market.n_games",
+        "sports.soccer_intl.market.median",
+        "sports.soccer_intl.market.share_ge_0_9",
+        "skipped[].sport",
+        "skipped[].reason",
+        "verdict"
+      ]
     },
     {
-     "type": "list",
-     "items": [
-      "Both sports land with the game-count anchor below the AR(1) estimate (227 versus 761 for MLB, 51 versus 172 for soccer), so the game count is the figure ess_ledger.json anchors on. The ledger's confound field states that AR(1) is a first-order approximation of a smooth terminal-constant path rather than a full independence model, and neither figure is published as a bound on the true effective sample size.",
-      "residual_autocorrelation.json explicitly skips a duplicate mlb_clean corpus as byte-identical to mlb, so the MLB row and game counts used above are not double-counting one source under two labels.",
-      "Floors bound both ledgers: residual_autocorrelation.json requires at least 10 rows and a minimum residual variance before a game's series counts at all (on the MLB model side 2 series were skipped as low_n and 3 as flat, leaving 222 of 227; on the market side 2 were skipped, leaving 225; no soccer series was skipped), and calibration_stability.json will not report a bin built from fewer than 5 games. Both ledgers record what they dropped rather than thinning silently.",
-      "share_ge_0_9 (share of games with lag-1 autocorrelation at least 0.9) is high on both sides of both sports -- 0.955 MLB model, 0.9644 MLB market, 0.8235 soccer model, 0.8039 soccer market -- so the high median is not a few extreme games pulling up an otherwise low typical value."
-     ]
+      "artifact": "ess_ledger.json",
+      "module": "ess_ledger",
+      "asOf": "2026-07-25T11:12:42.584390+00:00",
+      "fields": [
+        "headline",
+        "formula",
+        "confound",
+        "corpora[sport=mlb].n_rows",
+        "corpora[sport=mlb].n_games",
+        "corpora[sport=mlb].rho_model",
+        "corpora[sport=mlb].rho_market",
+        "corpora[sport=mlb].ess_ar1",
+        "corpora[sport=mlb].ess_anchor",
+        "corpora[sport=mlb].infl_ar1",
+        "corpora[sport=mlb].infl_anchor",
+        "corpora[sport=soccer_intl].n_rows",
+        "corpora[sport=soccer_intl].n_games",
+        "corpora[sport=soccer_intl].rho_model",
+        "corpora[sport=soccer_intl].rho_market",
+        "corpora[sport=soccer_intl].ess_ar1",
+        "corpora[sport=soccer_intl].ess_anchor",
+        "corpora[sport=soccer_intl].infl_ar1",
+        "corpora[sport=soccer_intl].infl_anchor"
+      ]
     },
     {
-     "type": "p",
-     "text": "What would falsify the reading that n overstates independent support: if the rows-per-game ratio in table 2 were close to 1 across bins, or if the published lag-1 autocorrelation were near zero, a row would behave like an independent draw and the raw n would already approximate the effective sample size. Neither holds: rows per game run from 33 to 95 in the MLB bin table, and the median autocorrelation sits at 0.96-0.98 model-side in both sports."
+      "artifact": "calibration_stability.json",
+      "module": "calibration_stability",
+      "asOf": "2026-09-16",
+      "fields": [
+        "n_boot",
+        "ci_pct",
+        "cluster_unit",
+        "min_games_per_bin_floor",
+        "method",
+        "seed",
+        "sports.mlb.n_rows",
+        "sports.mlb.n_games",
+        "sports.mlb.sides.model_prob.brier",
+        "sports.mlb.sides.model_prob.n_eligible_bins",
+        "sports.mlb.sides.model_prob.n_significant_bins",
+        "sports.mlb.sides.model_prob.n_within_noise_bins",
+        "sports.mlb.sides.model_prob.bins[].bin_lo",
+        "sports.mlb.sides.model_prob.bins[].bin_hi",
+        "sports.mlb.sides.model_prob.bins[].n",
+        "sports.mlb.sides.model_prob.bins[].n_games",
+        "sports.mlb.sides.model_prob.bins[].gap",
+        "sports.mlb.sides.model_prob.bins[].gap_ci",
+        "sports.mlb.sides.model_prob.bins[].significant",
+        "sports.mlb.sides.market_prob.brier",
+        "sports.mlb.sides.market_prob.n_significant_bins",
+        "sports.mlb.sides.market_prob.n_within_noise_bins",
+        "sports.soccer_intl.n_rows",
+        "sports.soccer_intl.n_games",
+        "sports.soccer_intl.sides.model_prob.brier",
+        "sports.soccer_intl.sides.model_prob.n_significant_bins",
+        "sports.soccer_intl.sides.model_prob.n_within_noise_bins",
+        "sports.soccer_intl.sides.market_prob.brier",
+        "sports.soccer_intl.sides.market_prob.n_significant_bins",
+        "sports.soccer_intl.sides.market_prob.n_within_noise_bins",
+        "verdict"
+      ]
     }
-   ]
-  },
-  {
-   "id": "limitations",
-   "heading": "Limitations",
-   "blocks": [
+  ],
+  "limitations": [
+    "ess_ledger.json was not regenerated on the segment-clean corpus, so its row counts, rho values, ESS figures and interval-width factors describe the joined MLB and soccer corpora and are not current; no recomputed replacement is published, and none is estimated here.",
+    "The AR(1) approximation is a first-order model of a residual path that ess_ledger.json itself describes as smooth and terminal-constant, a stronger structure than one lag coefficient fully captures; the true independent information could sit below 761 for MLB and 172 for soccer, which is why the ledger reports the conservative game-count anchor rather than trusting ESS_AR1 alone.",
+    "The distinct-game anchor treats every game as equally informative regardless of how many bins it touches or how long it lingers in a state; it does not itself carry the rows-per-game variation shown in the bin table, so two bins with the same n_games are not guaranteed to be equally well supported.",
+    "These artifacts cover one MLB corpus (178 segment-clean tick files, 173 usable series per side) and one international-soccer corpus (27 files, 26 usable series per side); no NBA or tennis autocorrelation or ESS ledger is cited here, so this reading does not extend to those sports without their own published artifact.",
+    "The cluster bootstrap in calibration_stability.json corrects the width of each bin's confidence interval by resampling games, but the point estimates themselves (mean_p, mean_y, gap) are still computed once over all rows; the bootstrap changes how much a reader should trust the gap, not how many rows fed its calculation.",
+    "The three artifacts are still not dated from one pipeline run: residual_autocorrelation.json and calibration_stability.json were both rebuilt as of 2026-09-16, while ess_ledger.json remains at 2026-07-25."
+  ],
+  "related": [
     {
-     "type": "list",
-     "items": [
-      "The AR(1) approximation is a first-order model of a residual path that ess_ledger.json itself describes as smooth and terminal-constant, a stronger structure than one lag coefficient fully captures; the true independent information could sit below 761 for MLB and 172 for soccer, which is exactly why the ledger reports the conservative game-count anchor rather than trusting ESS_AR1 alone.",
-      "The distinct-game anchor treats every game as equally informative regardless of how many bins it touches or how long it lingers in a state; it does not itself carry the rows-per-game variation shown in table 2, so two bins with the same n_games are not guaranteed to be equally well supported if one draws its rows from far longer within-game dwell times.",
-      "These three artifacts cover one MLB corpus (227 tick files, 222-225 usable series by side) and one international-soccer corpus (51 games); no NBA or tennis autocorrelation or ESS ledger is cited here, so this reading does not extend to those sports without their own published artifact.",
-      "The cluster bootstrap in calibration_stability.json corrects the width of each bin's confidence interval by resampling games, but the point estimates themselves (mean_p, mean_y, gap) are still computed once over all rows; the bootstrap changes how much a reader should trust the gap, not how many rows fed the gap's own calculation.",
-      "The three artifacts are not dated from one pipeline run: residual_autocorrelation.json carries no as_of or generated_at field (date not published), ess_ledger.json is dated 2026-07-25, and calibration_stability.json is dated 2026-07-23.",
-      "The MLB tick corpus behind all three artifacts is the one the site's in-game join-integrity finding records as partly mislabelled (126 of 227 files holding more than one game, 27,076 of 78,986 ticks carrying another game's label, measured 2026-09-16), so the MLB autocorrelation, ESS and bin figures here are withdrawn pending regeneration and the reading rests on the soccer corpus and on the method itself."
-     ]
-    }
-   ]
-  },
-  {
-   "id": "use",
-   "heading": "How to read this on the site",
-   "blocks": [
-    {
-     "type": "p",
-     "text": "The observation-dependence inspector (/analytics/observation-dependence) shows the full published within-game residual-autocorrelation distribution behind table 1 and the figure above, sport by sport and side by side. The calibration inspector (/analytics/calibration) shows the reliability bins themselves with their already-applied game-cluster interval, and its own prerequisite points a reader to the effective-sample-size finding first. Read the in-game join-integrity finding before taking any MLB figure here as current."
+      "kind": "inspector",
+      "id": "observation-dependence"
     },
     {
-     "type": "callout",
-     "label": "Caution",
-     "text": "A bin's n counts rows, not evidence. Read n_games next to it, and treat the gap_ci -- built from a bootstrap that resamples whole games -- as the number that actually reflects how many independent chances the data had to come out differently."
+      "kind": "inspector",
+      "id": "calibration"
+    },
+    {
+      "kind": "module",
+      "id": "residual_autocorrelation"
+    },
+    {
+      "kind": "module",
+      "id": "ess_ledger"
+    },
+    {
+      "kind": "module",
+      "id": "calibration_stability"
+    },
+    {
+      "kind": "finding",
+      "id": "ingame-join-integrity"
     }
-   ]
-  }
- ],
- "evidence": [
-  {
-   "artifact": "residual_autocorrelation.json",
-   "module": "residual_autocorrelation",
-   "asOf": null,
-   "fields": [
-    "method",
-    "floors.min_rows_per_game",
-    "floors.min_residual_variance",
-     "sports.mlb.n_records", "sports.mlb.n_series", "sports.mlb.n_files",
-     "sports.mlb.model.n_games", "sports.mlb.model.median", "sports.mlb.model.mean", "sports.mlb.model.min", "sports.mlb.model.share_ge_0_9", "sports.mlb.model.skipped.low_n", "sports.mlb.model.skipped.flat",
-     "sports.mlb.market.n_games", "sports.mlb.market.median", "sports.mlb.market.share_ge_0_9",
-     "sports.soccer_intl.n_records", "sports.soccer_intl.n_series",
-     "sports.soccer_intl.model.n_games", "sports.soccer_intl.model.median", "sports.soccer_intl.model.min", "sports.soccer_intl.model.share_ge_0_9",
-     "sports.soccer_intl.market.n_games", "sports.soccer_intl.market.median", "sports.soccer_intl.market.share_ge_0_9",
-     "skipped[].sport", "skipped[].reason",
-    "verdict"
-   ]
-  },
-  {
-   "artifact": "ess_ledger.json",
-   "module": "ess_ledger",
-   "asOf": "2026-07-25T11:12:42.584390+00:00",
-   "fields": [
-    "headline",
-    "formula",
-    "confound",
-     "corpora[sport=mlb].n_rows", "corpora[sport=mlb].n_games", "corpora[sport=mlb].rho_model", "corpora[sport=mlb].rho_market", "corpora[sport=mlb].ess_ar1", "corpora[sport=mlb].ess_anchor", "corpora[sport=mlb].infl_ar1", "corpora[sport=mlb].infl_anchor",
-     "corpora[sport=soccer_intl].n_rows", "corpora[sport=soccer_intl].n_games", "corpora[sport=soccer_intl].rho_model", "corpora[sport=soccer_intl].rho_market", "corpora[sport=soccer_intl].ess_ar1", "corpora[sport=soccer_intl].ess_anchor", "corpora[sport=soccer_intl].infl_ar1", "corpora[sport=soccer_intl].infl_anchor"
-   ]
-  },
-  {
-   "artifact": "calibration_stability.json",
-   "module": "calibration_stability",
-   "asOf": "2026-07-23T03:21:27.493056+00:00",
-   "fields": [
-    "n_boot",
-    "ci_pct",
-    "cluster_unit",
-    "min_games_per_bin_floor",
-    "method",
-    "seed",
-     "sports.mlb.n_rows", "sports.mlb.n_games",
-     "sports.mlb.sides.model_prob.brier", "sports.mlb.sides.model_prob.n_eligible_bins", "sports.mlb.sides.model_prob.n_significant_bins", "sports.mlb.sides.model_prob.n_within_noise_bins",
-     "sports.mlb.sides.model_prob.bins[].bin_lo", "sports.mlb.sides.model_prob.bins[].bin_hi", "sports.mlb.sides.model_prob.bins[].n", "sports.mlb.sides.model_prob.bins[].n_games", "sports.mlb.sides.model_prob.bins[].gap", "sports.mlb.sides.model_prob.bins[].gap_ci", "sports.mlb.sides.model_prob.bins[].significant",
-     "sports.mlb.sides.market_prob.brier", "sports.mlb.sides.market_prob.n_significant_bins", "sports.mlb.sides.market_prob.n_within_noise_bins",
-     "sports.soccer_intl.n_rows", "sports.soccer_intl.n_games",
-     "sports.soccer_intl.sides.model_prob.brier", "sports.soccer_intl.sides.model_prob.n_significant_bins", "sports.soccer_intl.sides.model_prob.n_within_noise_bins",
-     "sports.soccer_intl.sides.market_prob.brier", "sports.soccer_intl.sides.market_prob.n_significant_bins", "sports.soccer_intl.sides.market_prob.n_within_noise_bins",
-    "verdict"
-   ]
-  }
- ],
- "limitations": [
-  "The AR(1) approximation is a first-order model of a residual path that is smooth and terminal-constant, a stronger structure than one lag coefficient fully captures, so the true independent information could sit below the reported ESS_AR1 values.",
-  "The distinct-game anchor treats every game as equally informative regardless of how many bins it touches or how long it dwells in a state, so it does not itself capture the rows-per-game variation shown in the MLB bin table.",
-  "These artifacts cover one MLB corpus (227 tick files, 222 usable model series and 225 usable market series) and one international-soccer corpus (51 games); no NBA or tennis autocorrelation or effective-sample-size ledger is cited here.",
-  "The game-cluster bootstrap corrects the width of a bin's confidence interval, not the number of rows behind its point estimate (mean_p, mean_y, gap), which is still computed once over all rows.",
-  "The three artifacts carry different or absent dates (residual_autocorrelation.json: date not published; ess_ledger.json: 2026-07-25; calibration_stability.json: 2026-07-23), so they are not guaranteed to reflect one shared pipeline run.",
-  "The MLB tick corpus behind all three artifacts is recorded as partly mislabelled by the site's in-game join-integrity finding, so every MLB figure here is withdrawn pending a corpus regeneration."
- ],
- "related": [
-  {
-   "kind": "inspector",
-   "id": "observation-dependence"
-  },
-  {
-   "kind": "inspector",
-   "id": "calibration"
-  },
-  {
-   "kind": "module",
-   "id": "residual_autocorrelation"
-  },
-  {
-   "kind": "module",
-   "id": "ess_ledger"
-  },
-  {
-   "kind": "module",
-   "id": "calibration_stability"
-  },
-  {
-   "kind": "finding",
-   "id": "ingame-join-integrity"
-  }
- ]
+  ]
 }
