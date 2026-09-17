@@ -44,6 +44,45 @@ def test_unreadable_ledger_fails_closed(tmp_path, monkeypatch):
     assert res["state"] == "ERROR_FAIL_CLOSED"
 
 
+def _raw(tmp_path, text):
+    p = tmp_path / "clv_ledger.jsonl"
+    p.write_text(text, encoding="utf-8")
+    return p
+
+
+_GOOD = ('{"channel": "paper_ingame", "market": "win_home", '
+         '"clv_pct": 2.0, "ts": "2026-07-19T01:00:00+00:00"}')
+
+
+def test_garbled_middle_line_fails_closed(tmp_path):
+    # A bad line SKIPPED is a garbled ledger read as a clean empty one. Only a
+    # trailing partial line is benign.
+    p = _raw(tmp_path, "\n".join([_GOOD, "{not json at all", _GOOD]) + "\n")
+    res = ib.allow("win_home", _NOW, p)
+    assert res["allowed"] is False
+    assert res["state"] == "ERROR_FAIL_CLOSED"
+
+
+def test_trailing_partial_line_is_tolerated(tmp_path):
+    # What a concurrent append looks like mid-write: the complete rows still
+    # grade and the breaker behaves exactly as if the partial line were absent.
+    clean = tmp_path / "clean.jsonl"
+    clean.write_text("\n".join([_GOOD] * 6) + "\n", encoding="utf-8")
+    partial = _raw(tmp_path, "\n".join([_GOOD] * 6) + '\n{"channel": "paper_i')
+    assert len(ib._load_channel_rows(partial)) == 6
+    assert ib.allow("win_home", _NOW, partial) == ib.allow("win_home", _NOW, clean)
+
+
+def test_blank_lines_are_never_treated_as_corruption(tmp_path):
+    p = _raw(tmp_path, "\n".join([_GOOD, "", _GOOD, ""]) + "\n")
+    assert len(ib._load_channel_rows(p)) == 2
+
+
+def test_empty_ledger_file_is_still_an_empty_history(tmp_path):
+    res = ib.allow("win_home", _NOW, _raw(tmp_path, ""))
+    assert res["allowed"] is True and res["state"] == "CAPPED"
+
+
 def test_unreadable_ledger_raises_rather_than_reading_empty(tmp_path, monkeypatch):
     p = _ledger(tmp_path, [{"channel": "paper_ingame", "market": "win_home",
                             "ts": "2026-07-19T01:00:00+00:00"}])

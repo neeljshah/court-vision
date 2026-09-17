@@ -75,6 +75,12 @@ def _load_channel_rows(ledger_path: Optional[Path],
     ledger that exists but cannot be read raises LedgerUnreadable, so allow()
     can fail CLOSED instead of mistaking an unreadable file for a clean one.
 
+    An unparseable LINE is the same problem in miniature: skipping it silently
+    turns a garbled ledger into an empty one, which reads as a clean history.
+    Exactly one case is benign -- a partial FINAL line, which is what a
+    concurrent append looks like mid-write. A bad line with any line after it
+    means the file is garbled and raises. Blank lines are always ignored.
+
     ponytail: full-ledger scan per ENTER tick, O(total ledger). Fine while the
     shared jsonl is small (in-game bets are rare); switch to a tail-read or
     BREAKER_WINDOW_DAYS date-window if the ledger grows past ~100k lines."""
@@ -86,16 +92,27 @@ def _load_channel_rows(ledger_path: Optional[Path],
         if not path.is_file():
             return []
         rows: List[Dict[str, Any]] = []
+        bad_line: Optional[int] = None
         with path.open("r", encoding="utf-8") as fh:
-            for line in fh:
+            for lineno, line in enumerate(fh, 1):
+                if bad_line is not None:
+                    # Another line followed the bad one, so it was not the
+                    # trailing partial write a concurrent append leaves.
+                    raise LedgerUnreadable(
+                        "unparseable ledger line %d of %s" % (bad_line, path))
+                if not line.strip():
+                    continue
                 try:
                     row = json.loads(line)
                 except ValueError:
+                    bad_line = lineno
                     continue
                 if (isinstance(row, dict) and row.get("channel") == CHANNEL
                         and _row_series(row) == series):
                     rows.append(row)
         return rows
+    except LedgerUnreadable:
+        raise  # already the right exception -- do not re-wrap its message
     except Exception as exc:  # noqa: BLE001 -- surfaced, never a silent empty read
         raise LedgerUnreadable(str(exc)) from exc
 
