@@ -110,7 +110,7 @@ export function CalibrationReliability({ series }: { series: ReliabilitySeries[]
     </div>
     {corpus && <p className="cr-corpus"><strong>{sportLabel(sport)}:</strong> {count(corpus.nRows)} ticks from {count(corpus.nGames)} games; ticks are not independent games.{corpus.lowPower ? " This corpus is flagged low power." : ""}</p>}
     <div className="cr-legend"><span><i className="cr-diagonal" />Perfect calibration</span>{selected.map(item => <span key={item.side}><i style={{ background: colors[item.side] }} />{labels[item.side]}</span>)}<span><i className="cr-hollow" />Low-n bin</span></div>
-    <div className="cr-chart-wrap">
+    <div className="cr-chart-wrap" role="region" aria-label="Reliability diagram (scrollable)" tabIndex={0}>
       <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label={`${sportLabel(sport)} reliability diagram`} data-testid="reliability-diagram">
         <line x1={PAD.left} x2={PAD.left + plot} y1={PAD.top + plot} y2={PAD.top} className="cr-reference" />
         {TICKS.map(tick => <g key={tick}>

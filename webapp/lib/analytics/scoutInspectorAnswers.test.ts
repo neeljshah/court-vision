@@ -37,6 +37,8 @@ describe("Scout reading-room answers", () => {
   it("routes exact-count questions to the explorer without substituting rate denominators", () => {
     for (const query of ["exact count", "Compare exact count pitch profiles", "compare MLB counts 3-0 and 0-2", "compare balls and strikes"]) {
       const result = resolveQuestion(query, corpus);
+      expect(result).not.toBeNull();
+      if (!result) throw new Error("result is null");
       expect(result, query).toMatchObject({ kind: "direct", entry: { bucket: "public-inspector", a: {
         explore_path: "/analytics/count-context", source_artifact: "webapp/public/data/showcase/mlb_count_leverage.json",
       } } });
