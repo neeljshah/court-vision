@@ -42,7 +42,8 @@ def _skill(naive, other):
     return (naive - other) / naive
 
 
-def build():
+def compose():
+    """Pure composition from the committed info_arrival_curve/market_convergence -- no writes."""
     brier = json.loads(open(IN_BRIER, encoding="utf-8").read()).get("checkpoints", {})
     entropy = json.loads(open(IN_ENTROPY, encoding="utf-8").read()).get("checkpoints", {})
     sports = {}
@@ -101,6 +102,11 @@ def build():
         "plot_written": False,
     }
     payload["index_card"] = _card(payload)
+    return payload
+
+
+def build():
+    payload = compose()
     os.makedirs(os.path.dirname(OUT_JSON), exist_ok=True)
     with open(OUT_JSON, "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2)
@@ -166,17 +172,14 @@ def check():
     if not (os.path.exists(IN_BRIER) and os.path.exists(IN_ENTROPY)):
         verify_recorded_artifact(OUT_JSON, _validate, "novel_market_foresight_premium")
         return
-    payload = build()
+    payload = compose()
     _validate(payload)
     mlb = payload["results"].get("mlb")
     assert mlb is not None
     first = mlb["checkpoints"][0]
     assert first["checkpoint"] == "1" and 0.04 < first["mfp"] < 0.08, first
-    payload["plot_written"] = plot(payload)
-    with open(OUT_JSON, "w", encoding="utf-8") as f:
-        json.dump(payload, f, indent=2)
     print(f"OK: novel_market_foresight_premium ({len(payload['results'])} sports, "
-          f"mlb cp1 MFP {first['mfp']:.3f}, plot={payload['plot_written']})")
+          f"mlb cp1 MFP {first['mfp']:.3f}, recomposed only (no write))")
 
 
 if __name__ == "__main__":
