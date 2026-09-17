@@ -157,7 +157,8 @@ def make_chart(sports, out_png):
     return True
 
 
-def run():
+def compose():
+    """Pure per-game autocorr aggregation from the local corpora (read-only) -- no writes."""
     result = {
         "edge_claimed": False,
         "descriptive_only": True,
@@ -189,11 +190,13 @@ def run():
         }
 
     result["verdict"] = build_verdict(result)
+    result["plot_written"] = False
+    return result
 
+
+def run():
+    result = compose()
     os.makedirs(os.path.dirname(OUT_JSON), exist_ok=True)
-    with open(OUT_JSON, "w", encoding="utf-8") as f:
-        json.dump(result, f, indent=2)
-
     result["plot_written"] = make_chart(result["sports"], OUT_PNG) if result["sports"] else False
     with open(OUT_JSON, "w", encoding="utf-8") as f:
         json.dump(result, f, indent=2)
@@ -227,11 +230,11 @@ def check():
         verify_recorded_artifact(OUT_JSON, validate, "residual_autocorrelation")
         return
 
-    result = run()
+    # Local data present: validate a pure in-memory recomposition. --check must
+    # never write out/residual_autocorrelation.json or docs/img/residual_autocorrelation.png.
+    result = compose()
     assert result["sports"], "no sports produced output"
-    assert os.path.exists(OUT_JSON) and os.path.getsize(OUT_JSON) > 0, "JSON output missing/empty"
-    assert os.path.exists(OUT_PNG) and os.path.getsize(OUT_PNG) > 0, "PNG output missing/empty"
-    print("OK: residual_autocorrelation self-check passed")
+    print("OK: residual_autocorrelation self-check passed (recomposed only, no write)")
 
 
 if __name__ == "__main__":
