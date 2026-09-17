@@ -1,6 +1,7 @@
 import { analysisDestinations } from "./analysisDestinations";
 import receipt from "../../public/data/audits/mlb-ingame-integrity.json";
 import regeneration from "../../public/data/audits/mlb-ingame-regeneration.json";
+import timingRegeneration from "../../public/data/audits/mlb-ingame-timing-regeneration.json";
 
 export type IntegritySport = "nba" | "mlb" | "soccer_intl" | "tennis";
 export type IntegrityStatus = "clear" | "regenerated" | "under-review";
@@ -15,17 +16,22 @@ export type DataIntegrityNotice = {
   detailRoute: string;
 };
 
-const exposedArtifacts = receipt.exposed_artifacts;
-const timingArtifacts = receipt.timing_artifacts_under_review;
+const exposedArtifacts: readonly string[] = receipt.exposed_artifacts;
+// Empty once every timing artifact is regenerated; the key stays so a future defect has a home.
+const timingArtifacts: readonly string[] = receipt.timing_artifacts_under_review;
+const timingRegeneratedArtifacts: readonly string[] = receipt.timing_artifacts_regenerated;
 
 /** Registry shape checked against the versioned incident receipt. */
 export const integrityRegistrySummary = {
   receiptId: "mlb-ingame-integrity",
   regenerationReceiptId: "mlb-ingame-regeneration",
+  timingRegenerationReceiptId: "mlb-ingame-timing-regeneration",
   measuredOn: receipt.measured_on,
   revisionPublished: regeneration.revision_published,
+  timingMeasuredOn: timingRegeneration.measured_on,
   exposedArtifacts,
   timingArtifacts,
+  timingRegeneratedArtifacts,
   perSport: receipt.per_sport,
 } as const;
 
@@ -35,6 +41,16 @@ const regeneratedNotice: DataIntegrityNotice = {
   measuredOn: regeneration.measured_on,
   summary: "These MLB/soccer numbers are revision 2, computed on the segment-clean corpus (2026-09-16). Revision 1 values are withdrawn and kept in the regeneration receipt.",
   affectedModules: exposedArtifacts,
+  status: "regenerated",
+  detailRoute: "/analytics/findings/ingame-join-integrity/",
+};
+
+const timingRegeneratedNotice: DataIntegrityNotice = {
+  id: "ingame-timing-regenerated",
+  title: "In-game timing artifacts regenerated",
+  measuredOn: timingRegeneration.measured_on,
+  summary: "This timing measurement is revision 2, rebuilt on the segment-clean corpus (2026-09-17). It now describes 178 MLB and 27 international soccer stored games; the revision 1 values are withdrawn and kept in the timing regeneration receipt.",
+  affectedModules: timingRegeneratedArtifacts,
   status: "regenerated",
   detailRoute: "/analytics/findings/ingame-join-integrity/",
 };
@@ -49,12 +65,13 @@ const reviewNotice: DataIntegrityNotice = {
   detailRoute: "/analytics/findings/ingame-join-integrity/",
 };
 
-export const dataIntegrityNotices: readonly DataIntegrityNotice[] = [regeneratedNotice, reviewNotice];
+export const dataIntegrityNotices: readonly DataIntegrityNotice[] = [regeneratedNotice, timingRegeneratedNotice, reviewNotice];
 
 /** Returns the published integrity state for one artifact and corpus sport. */
 export function status(moduleId: string, sport: IntegritySport): IntegrityStatus {
   if (sport !== "mlb" && sport !== "soccer_intl") return "clear";
   if (exposedArtifacts.includes(moduleId)) return "regenerated";
+  if (timingRegeneratedArtifacts.includes(moduleId)) return "regenerated";
   if (timingArtifacts.includes(moduleId)) return "under-review";
   return "clear";
 }

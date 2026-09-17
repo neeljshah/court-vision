@@ -5,12 +5,15 @@ import os
 from typing import Any, Dict, List, Optional, Tuple
 
 try:  # -m package invocation (check_all) vs bare-script invocation
-    from scripts.platformkit.analytics_showcase._clone_safe import verify_recorded_artifact
+    from scripts.platformkit.analytics_showcase._clone_safe import (
+        staged_input, verify_recorded_artifact)
 except ImportError:  # pragma: no cover - fallback for bare-script runs
-    from _clone_safe import verify_recorded_artifact
+    from _clone_safe import staged_input, verify_recorded_artifact
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-IN_JSON = os.path.join(ROOT, "scripts", "platformkit", "analytics_showcase", "out", "state_conditioned_calibration.json")
+# Corpus root: the state-conditioned buckets this attribution differences. With
+# CV_INGAME_CORPUS_SUFFIX set this is the staged segmented-corpus rebuild.
+IN_JSON = staged_input("state_conditioned_calibration.json")
 OUT_JSON = os.path.join(ROOT, "scripts", "platformkit", "analytics_showcase", "out", "why_attribution.json")
 OUT_PNG = os.path.join(ROOT, "docs", "img", "why_attribution.png")
 

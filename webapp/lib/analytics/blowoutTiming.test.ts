@@ -23,8 +23,8 @@ describe("blowout timing data", () => {
 
   it("preserves each sport's eligibility counts and the published floors", () => {
     const sports = loadBlowoutTiming();
-    expect(sports.find(sport => sport.sport === "mlb")).toMatchObject({ nGamesRaw: 178, nGamesUsable: 178, minTicksFloor: 10, minGamesPerThreshold: 10 });
-    expect(sports.find(sport => sport.sport === "soccer_intl")).toMatchObject({ nGamesRaw: 29, nGamesUsable: 29, minTicksFloor: 10, minGamesPerThreshold: 10 });
+    expect(sports.find(sport => sport.sport === "mlb")).toMatchObject({ nGamesRaw: 178, nGamesUsable: 174, minTicksFloor: 10, minGamesPerThreshold: 10 });
+    expect(sports.find(sport => sport.sport === "soccer_intl")).toMatchObject({ nGamesRaw: 27, nGamesUsable: 26, minTicksFloor: 10, minGamesPerThreshold: 10 });
   });
 
   it("derives incidence from decided games and total games on a fixture", () => {

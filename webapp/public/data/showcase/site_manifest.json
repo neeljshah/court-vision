@@ -39,7 +39,7 @@
    "chart_path": "docs/img/blowout_dynamics.png",
    "status": "partial",
    "edge_claimed": false,
-   "as_of": null,
+   "as_of": "2026-09-17",
    "evidence_page": null
   },
   {
@@ -149,7 +149,7 @@
    "chart_path": "docs/img/comeback_atlas.png",
    "status": "ok",
    "edge_claimed": false,
-   "as_of": null,
+   "as_of": "2026-09-17",
    "evidence_page": "docs/evidence/novel-analytics.md"
   },
   {
@@ -314,7 +314,7 @@
    "chart_path": "docs/img/market_convergence.png",
    "status": "ok",
    "edge_claimed": false,
-   "as_of": null,
+   "as_of": "2026-09-17",
    "evidence_page": null
   },
   {
@@ -518,12 +518,12 @@
   {
    "id": "novel_live_clock_fraction",
    "title": "Novel Live Clock Fraction",
-   "one_line": "mlb stays contested later (LCF 0.833) than soccer_intl (LCF 0.748). (nba comeback-rate cross-check 0.0146)",
+   "one_line": "mlb stays contested later (LCF 0.737) than soccer_intl (LCF 0.599). (nba comeback-rate cross-check 0.0146)",
    "out_path": "scripts/platformkit/analytics_showcase/out/novel_live_clock_fraction.json",
    "chart_path": "docs/img/novel_live_clock_fraction.png",
    "status": "ok",
    "edge_claimed": false,
-   "as_of": null,
+   "as_of": "2026-09-17",
    "evidence_page": null
   },
   {
@@ -540,12 +540,12 @@
   {
    "id": "novel_market_foresight_premium",
    "title": "Novel Market Foresight Premium",
-   "one_line": "mlb: MFP rises from 0.06 to 0.24 over the game (mean 0.25); soccer_intl: MFP rises from 0.64 to 1.71 over the game (mean 0.92)",
+   "one_line": "mlb: MFP rises from 0.05 to 0.41 over the game (mean 0.15); soccer_intl: MFP rises from 0.68 to 1.49 over the game (mean 0.92)",
    "out_path": "scripts/platformkit/analytics_showcase/out/novel_market_foresight_premium.json",
    "chart_path": "docs/img/novel_market_foresight_premium.png",
    "status": "ok",
    "edge_claimed": false,
-   "as_of": null,
+   "as_of": "2026-09-17",
    "evidence_page": null
   },
   {
@@ -837,12 +837,12 @@
   {
    "id": "why_attribution",
    "title": "Why Attribution",
-   "one_line": "Largest calibrated win-prob drop: soccer_intl 15-30:.4-.6 -> 30-45:.2-.4 = -0.7683 (min support n=120). Any in-game move decomposes into the adjacent-time bucket transition it crossed.",
+   "one_line": "Largest calibrated win-prob drop: mlb mid(inn4-6):.8-1 -> late(inn7+):0-.2 = -0.8985 (min support n=1462). Any in-game move decomposes into the adjacent-time bucket transition it crossed.",
    "out_path": "scripts/platformkit/analytics_showcase/out/why_attribution.json",
    "chart_path": "docs/img/why_attribution.png",
    "status": "partial",
    "edge_claimed": false,
-   "as_of": null,
+   "as_of": "2026-09-17",
    "evidence_page": "docs/evidence/true-intelligence.md"
   },
   {

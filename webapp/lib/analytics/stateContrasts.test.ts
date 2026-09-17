@@ -23,9 +23,9 @@ describe("state contrast data", () => {
   it("retains both published populations and the minimum support", () => {
     const contrast = loadStateContrasts().find(sport => sport.sport === "mlb")?.contrasts[0];
     expect(contrast).toMatchObject({
-      from: { time: "early(inn1-3)", probabilityBand: ".2-.4", meanOutcomeFrequency: 0.3596, n: 2458 },
-      to: { time: "mid(inn4-6)", probabilityBand: "0-.2", meanOutcomeFrequency: 0.2063, n: 2079 },
-      minSupportN: 2079,
+      from: { time: "early(inn1-3)", probabilityBand: ".2-.4", meanOutcomeFrequency: 0.2401, n: 1033 },
+      to: { time: "mid(inn4-6)", probabilityBand: "0-.2", meanOutcomeFrequency: 0.0239, n: 1088 },
+      minSupportN: 1033,
     });
   });
 
@@ -35,7 +35,7 @@ describe("state contrast data", () => {
     const soccer = sports.find(sport => sport.sport === "soccer_intl")?.contrasts || [];
     expect(sameBandContrasts(mlb)).toHaveLength(8);
     expect(sameBandContrasts(soccer)).toHaveLength(17);
-    expect(sameBandContrasts(mlb)[0]).toMatchObject({ from: { n: 2458 }, to: { n: 4413 }, minSupportN: 2458 });
+    expect(sameBandContrasts(mlb)[0]).toMatchObject({ from: { n: 1033 }, to: { n: 2285 }, minSupportN: 1033 });
   });
 
   it("returns no rows for a missing sport", () => {

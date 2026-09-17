@@ -3,14 +3,18 @@ import json
 import os
 
 try:
-    from scripts.platformkit.analytics_showcase._clone_safe import verify_recorded_artifact
+    from scripts.platformkit.analytics_showcase._clone_safe import (
+        staged_input, verify_recorded_artifact)
 except ImportError:
-    from _clone_safe import verify_recorded_artifact
+    from _clone_safe import staged_input, verify_recorded_artifact
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 SHOWCASE = os.path.join(ROOT, "scripts", "platformkit", "analytics_showcase")
-IN_BLOWOUT = os.path.join(SHOWCASE, "out", "blowout_dynamics.json")
-IN_XSPORT = os.path.join(SHOWCASE, "out", "xsport_structure.json")
+# Corpus roots. With CV_INGAME_CORPUS_SUFFIX set, blowout_dynamics resolves to its
+# staged segmented-corpus rebuild; xsport_structure has no staged copy and stays
+# published.
+IN_BLOWOUT = staged_input("blowout_dynamics.json")
+IN_XSPORT = staged_input("xsport_structure.json")
 OUT_JSON = os.path.join(SHOWCASE, "out", "novel_live_clock_fraction.json")
 OUT_PNG = os.path.join(ROOT, "docs", "img", "novel_live_clock_fraction.png")
 
@@ -172,8 +176,9 @@ def check():
     payload = build()
     _validate(payload)
     mlb = next((r for r in payload["results"] if r["sport"] == "mlb"), None)
-    # mlb near-median threshold = 3 (decided_frac 0.5337), LCF = decided_clockfrac_median 0.8333
-    assert mlb and mlb["near_median_threshold"] == 3 and abs(mlb["live_clock_fraction"] - 0.8333) < 1e-4, mlb
+    # revision 2 (segment-clean corpus): mlb near-median threshold = 3 (decided_frac 0.5575),
+    # LCF = decided_clockfrac_median 0.7368. Revision 1 read 0.8333 on the mixed-game corpus.
+    assert mlb and mlb["near_median_threshold"] == 3 and abs(mlb["live_clock_fraction"] - 0.7368) < 1e-4, mlb
     payload["plot_written"] = plot(payload)
     with open(OUT_JSON, "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2)

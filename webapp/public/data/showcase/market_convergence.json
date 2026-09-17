@@ -16,266 +16,266 @@
  "checkpoints": {
   "mlb": {
    "1": {
-    "n": 7646,
-    "mean_gap": 0.07,
-    "median_gap": 0.0562,
-    "mean_entropy_market_bits": 0.9669,
-    "mean_entropy_model_bits": 0.9765,
-    "mean_market_prob": 0.5273,
-    "mean_model_prob": 0.5228
+    "n": 3589,
+    "mean_gap": 0.0839,
+    "median_gap": 0.0683,
+    "mean_entropy_market_bits": 0.9553,
+    "mean_entropy_model_bits": 0.976,
+    "mean_market_prob": 0.5285,
+    "mean_model_prob": 0.5339
    },
    "2": {
-    "n": 5921,
-    "mean_gap": 0.0985,
-    "median_gap": 0.0698,
-    "mean_entropy_market_bits": 0.9259,
-    "mean_entropy_model_bits": 0.975,
-    "mean_market_prob": 0.5401,
-    "mean_model_prob": 0.5333
+    "n": 2803,
+    "mean_gap": 0.1189,
+    "median_gap": 0.0948,
+    "mean_entropy_market_bits": 0.8971,
+    "mean_entropy_model_bits": 0.9733,
+    "mean_market_prob": 0.5562,
+    "mean_model_prob": 0.5386
    },
    "3": {
-    "n": 6333,
-    "mean_gap": 0.1082,
-    "median_gap": 0.0998,
-    "mean_entropy_market_bits": 0.8731,
-    "mean_entropy_model_bits": 0.951,
-    "mean_market_prob": 0.5363,
-    "mean_model_prob": 0.5212
+    "n": 3097,
+    "mean_gap": 0.1117,
+    "median_gap": 0.0962,
+    "mean_entropy_market_bits": 0.7993,
+    "mean_entropy_model_bits": 0.9483,
+    "mean_market_prob": 0.5514,
+    "mean_model_prob": 0.5307
    },
    "4": {
-    "n": 6266,
-    "mean_gap": 0.1203,
-    "median_gap": 0.112,
-    "mean_entropy_market_bits": 0.8417,
-    "mean_entropy_model_bits": 0.9413,
-    "mean_market_prob": 0.5346,
-    "mean_model_prob": 0.5271
+    "n": 3034,
+    "mean_gap": 0.1284,
+    "median_gap": 0.1129,
+    "mean_entropy_market_bits": 0.7386,
+    "mean_entropy_model_bits": 0.938,
+    "mean_market_prob": 0.534,
+    "mean_model_prob": 0.527
    },
    "5": {
-    "n": 6021,
-    "mean_gap": 0.1315,
-    "median_gap": 0.09,
-    "mean_entropy_market_bits": 0.7923,
-    "mean_entropy_model_bits": 0.8039,
-    "mean_market_prob": 0.5291,
-    "mean_model_prob": 0.5142
+    "n": 3139,
+    "mean_gap": 0.0741,
+    "median_gap": 0.0718,
+    "mean_entropy_market_bits": 0.6583,
+    "mean_entropy_model_bits": 0.8042,
+    "mean_market_prob": 0.5355,
+    "mean_model_prob": 0.5186
    },
    "6": {
-    "n": 6478,
-    "mean_gap": 0.1489,
-    "median_gap": 0.0997,
-    "mean_entropy_market_bits": 0.7629,
-    "mean_entropy_model_bits": 0.7676,
-    "mean_market_prob": 0.5206,
-    "mean_model_prob": 0.5048
+    "n": 3579,
+    "mean_gap": 0.0781,
+    "median_gap": 0.0742,
+    "mean_entropy_market_bits": 0.6106,
+    "mean_entropy_model_bits": 0.7774,
+    "mean_market_prob": 0.5181,
+    "mean_model_prob": 0.5082
    },
    "7": {
-    "n": 6311,
-    "mean_gap": 0.1697,
-    "median_gap": 0.0974,
-    "mean_entropy_market_bits": 0.7219,
-    "mean_entropy_model_bits": 0.5996,
-    "mean_market_prob": 0.5108,
-    "mean_model_prob": 0.4885
+    "n": 3447,
+    "mean_gap": 0.0603,
+    "median_gap": 0.0508,
+    "mean_entropy_market_bits": 0.5414,
+    "mean_entropy_model_bits": 0.6203,
+    "mean_market_prob": 0.5044,
+    "mean_model_prob": 0.4904
    },
    "8": {
-    "n": 5276,
-    "mean_gap": 0.1992,
-    "median_gap": 0.0776,
-    "mean_entropy_market_bits": 0.6979,
-    "mean_entropy_model_bits": 0.4329,
-    "mean_market_prob": 0.5145,
-    "mean_model_prob": 0.52
+    "n": 2833,
+    "mean_gap": 0.0442,
+    "median_gap": 0.028,
+    "mean_entropy_market_bits": 0.4757,
+    "mean_entropy_model_bits": 0.4814,
+    "mean_market_prob": 0.506,
+    "mean_model_prob": 0.4837
    },
    "9": {
-    "n": 2282,
-    "mean_gap": 0.2436,
-    "median_gap": 0.2025,
-    "mean_entropy_market_bits": 0.7244,
-    "mean_entropy_model_bits": 0.3656,
-    "mean_market_prob": 0.4711,
-    "mean_model_prob": 0.4377
+    "n": 1110,
+    "mean_gap": 0.0537,
+    "median_gap": 0.0263,
+    "mean_entropy_market_bits": 0.4589,
+    "mean_entropy_model_bits": 0.4181,
+    "mean_market_prob": 0.4066,
+    "mean_model_prob": 0.394
    },
    "10": {
-    "n": 94,
-    "mean_gap": 0.2791,
-    "median_gap": 0.1818,
-    "mean_entropy_market_bits": 0.8761,
-    "mean_entropy_model_bits": 0.6638,
-    "mean_market_prob": 0.5728,
-    "mean_model_prob": 0.294
+    "n": 46,
+    "mean_gap": 0.2067,
+    "median_gap": 0.1676,
+    "mean_entropy_market_bits": 0.8488,
+    "mean_entropy_model_bits": 0.6009,
+    "mean_market_prob": 0.461,
+    "mean_model_prob": 0.2548
    }
   },
   "soccer_intl": {
    "0": {
-    "n": 165,
-    "mean_gap": 0.1548,
-    "median_gap": 0.1107,
-    "mean_entropy_market_bits": 0.8209,
-    "mean_entropy_model_bits": 0.8497,
-    "mean_market_prob": 0.4773,
-    "mean_model_prob": 0.3731
+    "n": 150,
+    "mean_gap": 0.163,
+    "median_gap": 0.1159,
+    "mean_entropy_market_bits": 0.8152,
+    "mean_entropy_model_bits": 0.8429,
+    "mean_market_prob": 0.4737,
+    "mean_model_prob": 0.3551
    },
    "5": {
-    "n": 238,
-    "mean_gap": 0.1627,
-    "median_gap": 0.1222,
-    "mean_entropy_market_bits": 0.8399,
-    "mean_entropy_model_bits": 0.8456,
-    "mean_market_prob": 0.4835,
-    "mean_model_prob": 0.3641
+    "n": 213,
+    "mean_gap": 0.1739,
+    "median_gap": 0.1562,
+    "mean_entropy_market_bits": 0.8354,
+    "mean_entropy_model_bits": 0.8365,
+    "mean_market_prob": 0.4793,
+    "mean_model_prob": 0.3429
    },
    "10": {
-    "n": 224,
-    "mean_gap": 0.177,
-    "median_gap": 0.1412,
-    "mean_entropy_market_bits": 0.8363,
-    "mean_entropy_model_bits": 0.8395,
-    "mean_market_prob": 0.5032,
-    "mean_model_prob": 0.3666
+    "n": 203,
+    "mean_gap": 0.1876,
+    "median_gap": 0.1564,
+    "mean_entropy_market_bits": 0.8352,
+    "mean_entropy_model_bits": 0.8374,
+    "mean_market_prob": 0.4971,
+    "mean_model_prob": 0.3448
    },
    "15": {
-    "n": 233,
-    "mean_gap": 0.1587,
-    "median_gap": 0.1253,
-    "mean_entropy_market_bits": 0.8082,
-    "mean_entropy_model_bits": 0.8026,
-    "mean_market_prob": 0.4809,
-    "mean_model_prob": 0.3559
+    "n": 208,
+    "mean_gap": 0.1683,
+    "median_gap": 0.1426,
+    "mean_entropy_market_bits": 0.8041,
+    "mean_entropy_model_bits": 0.7939,
+    "mean_market_prob": 0.4743,
+    "mean_model_prob": 0.3336
    },
    "20": {
-    "n": 215,
-    "mean_gap": 0.1607,
-    "median_gap": 0.1372,
+    "n": 192,
+    "mean_gap": 0.1689,
+    "median_gap": 0.1472,
     "mean_entropy_market_bits": 0.8275,
-    "mean_entropy_model_bits": 0.8096,
-    "mean_market_prob": 0.5036,
-    "mean_model_prob": 0.3779
+    "mean_entropy_model_bits": 0.802,
+    "mean_market_prob": 0.5007,
+    "mean_model_prob": 0.3591
    },
    "25": {
-    "n": 218,
-    "mean_gap": 0.1588,
-    "median_gap": 0.1313,
-    "mean_entropy_market_bits": 0.8131,
-    "mean_entropy_model_bits": 0.767,
-    "mean_market_prob": 0.4753,
-    "mean_model_prob": 0.3593
+    "n": 195,
+    "mean_gap": 0.166,
+    "median_gap": 0.1443,
+    "mean_entropy_market_bits": 0.8171,
+    "mean_entropy_model_bits": 0.7612,
+    "mean_market_prob": 0.4697,
+    "mean_model_prob": 0.3392
    },
    "30": {
-    "n": 219,
-    "mean_gap": 0.1455,
-    "median_gap": 0.1131,
-    "mean_entropy_market_bits": 0.7788,
-    "mean_entropy_model_bits": 0.6923,
-    "mean_market_prob": 0.4661,
-    "mean_model_prob": 0.3486
+    "n": 192,
+    "mean_gap": 0.1555,
+    "median_gap": 0.1361,
+    "mean_entropy_market_bits": 0.7881,
+    "mean_entropy_model_bits": 0.6912,
+    "mean_market_prob": 0.4662,
+    "mean_model_prob": 0.3383
    },
    "35": {
-    "n": 198,
-    "mean_gap": 0.1385,
-    "median_gap": 0.1188,
-    "mean_entropy_market_bits": 0.7556,
-    "mean_entropy_model_bits": 0.6581,
-    "mean_market_prob": 0.4667,
-    "mean_model_prob": 0.3614
+    "n": 173,
+    "mean_gap": 0.1469,
+    "median_gap": 0.1319,
+    "mean_entropy_market_bits": 0.7629,
+    "mean_entropy_model_bits": 0.6596,
+    "mean_market_prob": 0.4702,
+    "mean_model_prob": 0.3546
    },
    "40": {
-    "n": 211,
-    "mean_gap": 0.1535,
-    "median_gap": 0.1216,
-    "mean_entropy_market_bits": 0.7406,
-    "mean_entropy_model_bits": 0.6085,
-    "mean_market_prob": 0.443,
-    "mean_model_prob": 0.3312
+    "n": 189,
+    "mean_gap": 0.1606,
+    "median_gap": 0.1256,
+    "mean_entropy_market_bits": 0.7437,
+    "mean_entropy_model_bits": 0.611,
+    "mean_market_prob": 0.4486,
+    "mean_model_prob": 0.3283
    },
    "45": {
-    "n": 429,
-    "mean_gap": 0.1563,
-    "median_gap": 0.1212,
-    "mean_entropy_market_bits": 0.744,
-    "mean_entropy_model_bits": 0.6067,
-    "mean_market_prob": 0.401,
-    "mean_model_prob": 0.2886
+    "n": 402,
+    "mean_gap": 0.16,
+    "median_gap": 0.1256,
+    "mean_entropy_market_bits": 0.743,
+    "mean_entropy_model_bits": 0.6085,
+    "mean_market_prob": 0.3891,
+    "mean_model_prob": 0.2634
    },
    "50": {
-    "n": 197,
-    "mean_gap": 0.1154,
-    "median_gap": 0.0682,
-    "mean_entropy_market_bits": 0.6522,
-    "mean_entropy_model_bits": 0.4942,
-    "mean_market_prob": 0.4274,
-    "mean_model_prob": 0.3325
+    "n": 189,
+    "mean_gap": 0.1173,
+    "median_gap": 0.0808,
+    "mean_entropy_market_bits": 0.6488,
+    "mean_entropy_model_bits": 0.4842,
+    "mean_market_prob": 0.4306,
+    "mean_model_prob": 0.3287
    },
    "55": {
-    "n": 202,
-    "mean_gap": 0.1053,
-    "median_gap": 0.0612,
-    "mean_entropy_market_bits": 0.616,
-    "mean_entropy_model_bits": 0.4504,
-    "mean_market_prob": 0.3914,
-    "mean_model_prob": 0.3087
+    "n": 192,
+    "mean_gap": 0.1072,
+    "median_gap": 0.0637,
+    "mean_entropy_market_bits": 0.6193,
+    "mean_entropy_model_bits": 0.4544,
+    "mean_market_prob": 0.3922,
+    "mean_model_prob": 0.3035
    },
    "60": {
-    "n": 194,
-    "mean_gap": 0.1038,
-    "median_gap": 0.0497,
-    "mean_entropy_market_bits": 0.6276,
-    "mean_entropy_model_bits": 0.5027,
-    "mean_market_prob": 0.3825,
-    "mean_model_prob": 0.2935
+    "n": 189,
+    "mean_gap": 0.1026,
+    "median_gap": 0.0488,
+    "mean_entropy_market_bits": 0.624,
+    "mean_entropy_model_bits": 0.5062,
+    "mean_market_prob": 0.3746,
+    "mean_model_prob": 0.2816
    },
    "65": {
-    "n": 156,
-    "mean_gap": 0.1144,
-    "median_gap": 0.0509,
-    "mean_entropy_market_bits": 0.6637,
-    "mean_entropy_model_bits": 0.4798,
-    "mean_market_prob": 0.2942,
-    "mean_model_prob": 0.1913
+    "n": 154,
+    "mean_gap": 0.1141,
+    "median_gap": 0.0481,
+    "mean_entropy_market_bits": 0.6625,
+    "mean_entropy_model_bits": 0.481,
+    "mean_market_prob": 0.2878,
+    "mean_model_prob": 0.1818
    },
    "70": {
-    "n": 154,
-    "mean_gap": 0.1193,
-    "median_gap": 0.0646,
-    "mean_entropy_market_bits": 0.6739,
-    "mean_entropy_model_bits": 0.4551,
-    "mean_market_prob": 0.2887,
-    "mean_model_prob": 0.1752
+    "n": 152,
+    "mean_gap": 0.1175,
+    "median_gap": 0.0592,
+    "mean_entropy_market_bits": 0.6696,
+    "mean_entropy_model_bits": 0.4503,
+    "mean_market_prob": 0.2858,
+    "mean_model_prob": 0.1742
    },
    "75": {
-    "n": 136,
-    "mean_gap": 0.1442,
-    "median_gap": 0.1117,
-    "mean_entropy_market_bits": 0.7377,
-    "mean_entropy_model_bits": 0.4804,
-    "mean_market_prob": 0.3251,
-    "mean_model_prob": 0.1923
+    "n": 132,
+    "mean_gap": 0.1397,
+    "median_gap": 0.1043,
+    "mean_entropy_market_bits": 0.7297,
+    "mean_entropy_model_bits": 0.4728,
+    "mean_market_prob": 0.3199,
+    "mean_model_prob": 0.1919
    },
    "80": {
-    "n": 131,
-    "mean_gap": 0.1459,
-    "median_gap": 0.094,
-    "mean_entropy_market_bits": 0.6955,
-    "mean_entropy_model_bits": 0.3665,
-    "mean_market_prob": 0.238,
-    "mean_model_prob": 0.0959
+    "n": 127,
+    "mean_gap": 0.1416,
+    "median_gap": 0.0893,
+    "mean_entropy_market_bits": 0.6865,
+    "mean_entropy_model_bits": 0.3599,
+    "mean_market_prob": 0.2323,
+    "mean_model_prob": 0.0945
    },
    "85": {
-    "n": 101,
-    "mean_gap": 0.1481,
-    "median_gap": 0.0928,
-    "mean_entropy_market_bits": 0.5922,
-    "mean_entropy_model_bits": 0.1904,
-    "mean_market_prob": 0.1797,
-    "mean_model_prob": 0.0316
+    "n": 98,
+    "mean_gap": 0.1442,
+    "median_gap": 0.0927,
+    "mean_entropy_market_bits": 0.5823,
+    "mean_entropy_model_bits": 0.187,
+    "mean_market_prob": 0.1751,
+    "mean_model_prob": 0.0309
    },
    "90": {
-    "n": 37,
-    "mean_gap": 0.1062,
+    "n": 33,
+    "mean_gap": 0.0898,
     "median_gap": 0.07,
-    "mean_entropy_market_bits": 0.4394,
+    "mean_entropy_market_bits": 0.397,
     "mean_entropy_model_bits": 0.0,
-    "mean_market_prob": 0.1062,
+    "mean_market_prob": 0.0898,
     "mean_model_prob": 0.0
    }
   }
@@ -284,22 +284,24 @@
   "mlb": {
    "first_checkpoint": 1,
    "last_checkpoint": 10,
-   "gap_first": 0.07,
-   "gap_last": 0.2791,
-   "gap_delta_last_minus_first": 0.2091,
-   "entropy_market_first_bits": 0.9669,
-   "entropy_market_last_bits": 0.8761,
-   "entropy_market_delta_last_minus_first": -0.0908
+   "gap_first": 0.0839,
+   "gap_last": 0.2067,
+   "gap_delta_last_minus_first": 0.1228,
+   "entropy_market_first_bits": 0.9553,
+   "entropy_market_last_bits": 0.8488,
+   "entropy_market_delta_last_minus_first": -0.1065
   },
   "soccer_intl": {
    "first_checkpoint": 0,
    "last_checkpoint": 90,
-   "gap_first": 0.1548,
-   "gap_last": 0.1062,
-   "gap_delta_last_minus_first": -0.0486,
-   "entropy_market_first_bits": 0.8209,
-   "entropy_market_last_bits": 0.4394,
-   "entropy_market_delta_last_minus_first": -0.3815
+   "gap_first": 0.163,
+   "gap_last": 0.0898,
+   "gap_delta_last_minus_first": -0.0732,
+   "entropy_market_first_bits": 0.8152,
+   "entropy_market_last_bits": 0.397,
+   "entropy_market_delta_last_minus_first": -0.4182
   }
- }
+ },
+ "as_of": "2026-09-17",
+ "corpus": "data/cache/ingame_grade_joined/{mlb_segmented,soccer_intl_segmented}"
 }

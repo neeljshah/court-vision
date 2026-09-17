@@ -13,7 +13,10 @@ Usage:
         from _clone_safe import verify_recorded_artifact
 """
 import json
+import os
 from pathlib import Path
+
+_SHOWCASE = Path(__file__).resolve().parent
 
 
 def verify_recorded_artifact(out_json_path, validate, label):
@@ -27,3 +30,19 @@ def verify_recorded_artifact(out_json_path, validate, label):
     validate(data)
     print(f"PASS (recorded-artifact mode: local data absent) -- {label}: verified {p.name}")
     return data
+
+
+def staged_input(name):
+    """Resolve an upstream showcase artifact this module reads as its corpus.
+
+    With CV_INGAME_CORPUS_SUFFIX set (e.g. "_segmented") the staged
+    out_segmented/ copy -- rebuilt from the segmented in-game join corpus --
+    is preferred when it exists; otherwise, and for artifacts that were never
+    staged there, the published out/ copy is used. Default (env unset) is
+    always out/. Returns a str path.
+    """
+    if os.environ.get("CV_INGAME_CORPUS_SUFFIX"):
+        staged = _SHOWCASE / "out_segmented" / name
+        if staged.exists():
+            return str(staged)
+    return str(_SHOWCASE / "out" / name)

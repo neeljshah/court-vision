@@ -1,5 +1,5 @@
 import { status, type IntegritySport } from "@/lib/analytics/dataIntegrity";
-import type { IngameIntegrityReceipt, IngameRegenerationReceipt } from "./ingameJoinIntegrity.server";
+import type { IngameIntegrityReceipt, IngameRegenerationReceipt, IngameTimingRegenerationReceipt } from "./ingameJoinIntegrity.server";
 
 const sportLabels: Record<IntegritySport, string> = {
   nba: "NBA", mlb: "MLB", soccer_intl: "International soccer", tennis: "Tennis",
@@ -9,10 +9,10 @@ function number(value: number): string {
   return value.toLocaleString("en-US");
 }
 
-export function buildIngameJoinIntegrityFinding(receipt: IngameIntegrityReceipt, regeneration: IngameRegenerationReceipt) {
+export function buildIngameJoinIntegrityFinding(receipt: IngameIntegrityReceipt, regeneration: IngameRegenerationReceipt, timing: IngameTimingRegenerationReceipt) {
   const mlb = receipt.per_sport.mlb;
   const soccer = receipt.per_sport.soccer_intl;
-  const reviewedArtifacts = [...receipt.exposed_artifacts, ...receipt.timing_artifacts_under_review];
+  const reviewedArtifacts = [...receipt.exposed_artifacts, ...receipt.timing_artifacts_regenerated, ...receipt.timing_artifacts_under_review];
   const statusRows = reviewedArtifacts.flatMap((artifact) => (["mlb", "soccer_intl"] as IntegritySport[])
     .map(sportId => ({ artifact, sport: sportLabels[sportId], state: status(artifact, sportId) }))
     .filter(row => row.state !== "clear"));
@@ -30,6 +30,7 @@ export function buildIngameJoinIntegrityFinding(receipt: IngameIntegrityReceipt,
     leaderAgreement: `Game-level labels agree with the last stated score in all ${number(mlb.leader_wins_last_tick?.games || 0)} games with a leader (frequency ${(mlb.leader_wins_last_tick?.frequency || 0).toFixed(4)}).`,
     exposedArtifacts: receipt.exposed_artifacts,
     timingArtifacts: receipt.timing_artifacts_under_review,
+    timingRegeneratedArtifacts: receipt.timing_artifacts_regenerated,
     timingNote: receipt.timing_artifacts_note,
     statusRows,
     regeneration: {
@@ -40,6 +41,23 @@ export function buildIngameJoinIntegrityFinding(receipt: IngameIntegrityReceipt,
       checkerVerdict: regeneration.checker.verdict,
       reading: regeneration.reading,
       rows: regeneration.artifacts.map(row => ({
+        artifact: row.artifact,
+        population: row.n_field,
+        nBefore: number(row.n_before),
+        nAfter: number(row.n_after),
+        headlineBefore: row.headline_before,
+        headlineAfter: row.headline_after,
+      })),
+    },
+    timingRegeneration: {
+      measuredOn: timing.measured_on,
+      revision: timing.revision_published,
+      method: timing.method.summary,
+      overrideEnv: timing.method.override_env,
+      corpus: timing.method.corpus_after,
+      checkerVerdict: timing.checker.verdict,
+      reading: timing.reading,
+      rows: timing.artifacts.map(row => ({
         artifact: row.artifact,
         population: row.n_field,
         nBefore: number(row.n_before),

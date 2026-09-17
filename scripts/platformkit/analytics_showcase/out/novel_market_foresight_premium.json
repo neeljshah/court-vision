@@ -22,290 +22,290 @@
    "checkpoints": [
     {
      "checkpoint": "1",
-     "n": 7646,
-     "market_skill": 0.013,
-     "model_skill": -0.0479,
-     "entropy_market_bits": 0.9669,
+     "n": 3589,
+     "market_skill": 0.0333,
+     "model_skill": -0.0154,
+     "entropy_market_bits": 0.9553,
      "entropy_floored": false,
-     "mfp": 0.063
+     "mfp": 0.051
     },
     {
      "checkpoint": "2",
-     "n": 5921,
-     "market_skill": 0.0619,
-     "model_skill": -0.0272,
-     "entropy_market_bits": 0.9259,
+     "n": 2803,
+     "market_skill": 0.0805,
+     "model_skill": -0.0805,
+     "entropy_market_bits": 0.8971,
      "entropy_floored": false,
-     "mfp": 0.0963
+     "mfp": 0.1794
     },
     {
      "checkpoint": "3",
-     "n": 6333,
-     "market_skill": 0.0619,
-     "model_skill": -0.0205,
-     "entropy_market_bits": 0.8731,
+     "n": 3097,
+     "market_skill": 0.074,
+     "model_skill": -0.0406,
+     "entropy_market_bits": 0.7993,
      "entropy_floored": false,
-     "mfp": 0.0944
+     "mfp": 0.1434
     },
     {
      "checkpoint": "4",
-     "n": 6266,
-     "market_skill": 0.066,
-     "model_skill": -0.0289,
-     "entropy_market_bits": 0.8417,
+     "n": 3034,
+     "market_skill": 0.0386,
+     "model_skill": -0.0951,
+     "entropy_market_bits": 0.7386,
      "entropy_floored": false,
-     "mfp": 0.1127
+     "mfp": 0.181
     },
     {
      "checkpoint": "5",
-     "n": 6021,
-     "market_skill": 0.1074,
-     "model_skill": -0.0184,
-     "entropy_market_bits": 0.7923,
+     "n": 3139,
+     "market_skill": 0.1172,
+     "model_skill": 0.035,
+     "entropy_market_bits": 0.6583,
      "entropy_floored": false,
-     "mfp": 0.1588
+     "mfp": 0.1249
     },
     {
      "checkpoint": "6",
-     "n": 6478,
-     "market_skill": 0.1664,
-     "model_skill": -0.0253,
-     "entropy_market_bits": 0.7629,
+     "n": 3579,
+     "market_skill": 0.1506,
+     "model_skill": 0.0648,
+     "entropy_market_bits": 0.6106,
      "entropy_floored": false,
-     "mfp": 0.2513
+     "mfp": 0.1404
     },
     {
      "checkpoint": "7",
-     "n": 6311,
-     "market_skill": 0.233,
-     "model_skill": -0.0689,
-     "entropy_market_bits": 0.7219,
+     "n": 3447,
+     "market_skill": 0.2463,
+     "model_skill": 0.1612,
+     "entropy_market_bits": 0.5414,
      "entropy_floored": false,
-     "mfp": 0.4182
+     "mfp": 0.1571
     },
     {
      "checkpoint": "8",
-     "n": 5276,
-     "market_skill": 0.3141,
-     "model_skill": -0.0409,
-     "entropy_market_bits": 0.6979,
+     "n": 2833,
+     "market_skill": 0.3969,
+     "model_skill": 0.3574,
+     "entropy_market_bits": 0.4757,
      "entropy_floored": false,
-     "mfp": 0.5086
+     "mfp": 0.0831
     },
     {
      "checkpoint": "9",
-     "n": 2282,
-     "market_skill": 0.3254,
-     "model_skill": -0.0519,
-     "entropy_market_bits": 0.7244,
+     "n": 1110,
+     "market_skill": 0.5547,
+     "model_skill": 0.5474,
+     "entropy_market_bits": 0.4589,
      "entropy_floored": false,
-     "mfp": 0.5208
+     "mfp": 0.0159
     },
     {
      "checkpoint": "10",
-     "n": 94,
-     "market_skill": 0.0146,
-     "model_skill": -0.1926,
-     "entropy_market_bits": 0.8761,
+     "n": 46,
+     "market_skill": 0.2858,
+     "model_skill": -0.0631,
+     "entropy_market_bits": 0.8488,
      "entropy_floored": false,
-     "mfp": 0.2365
+     "mfp": 0.411
     }
    ],
    "n_checkpoints": 10,
-   "mfp_first": 0.063,
-   "mfp_last": 0.2365,
-   "mfp_mean": 0.2461,
-   "mfp_delta_last_minus_first": 0.1735
+   "mfp_first": 0.051,
+   "mfp_last": 0.411,
+   "mfp_mean": 0.1487,
+   "mfp_delta_last_minus_first": 0.36
   },
   "soccer_intl": {
    "checkpoints": [
     {
      "checkpoint": "0",
-     "n": 165,
-     "market_skill": 0.4649,
-     "model_skill": -0.0599,
-     "entropy_market_bits": 0.8209,
+     "n": 150,
+     "market_skill": 0.4883,
+     "model_skill": -0.0643,
+     "entropy_market_bits": 0.8152,
      "entropy_floored": false,
-     "mfp": 0.6393
+     "mfp": 0.6779
     },
     {
      "checkpoint": "5",
-     "n": 238,
-     "market_skill": 0.4422,
-     "model_skill": -0.1471,
-     "entropy_market_bits": 0.8399,
+     "n": 213,
+     "market_skill": 0.4673,
+     "model_skill": -0.1496,
+     "entropy_market_bits": 0.8354,
      "entropy_floored": false,
-     "mfp": 0.7016
+     "mfp": 0.7385
     },
     {
      "checkpoint": "10",
-     "n": 224,
-     "market_skill": 0.4624,
-     "model_skill": -0.1698,
-     "entropy_market_bits": 0.8363,
+     "n": 203,
+     "market_skill": 0.4788,
+     "model_skill": -0.1725,
+     "entropy_market_bits": 0.8352,
      "entropy_floored": false,
-     "mfp": 0.7559
+     "mfp": 0.7797
     },
     {
      "checkpoint": "15",
-     "n": 233,
-     "market_skill": 0.4191,
-     "model_skill": -0.2145,
-     "entropy_market_bits": 0.8082,
+     "n": 208,
+     "market_skill": 0.4403,
+     "model_skill": -0.2155,
+     "entropy_market_bits": 0.8041,
      "entropy_floored": false,
-     "mfp": 0.784
+     "mfp": 0.8156
     },
     {
      "checkpoint": "20",
-     "n": 215,
-     "market_skill": 0.3729,
-     "model_skill": -0.1946,
+     "n": 192,
+     "market_skill": 0.3952,
+     "model_skill": -0.1972,
      "entropy_market_bits": 0.8275,
      "entropy_floored": false,
-     "mfp": 0.6858
+     "mfp": 0.7158
     },
     {
      "checkpoint": "25",
-     "n": 218,
-     "market_skill": 0.2859,
-     "model_skill": -0.2676,
-     "entropy_market_bits": 0.8131,
+     "n": 195,
+     "market_skill": 0.3094,
+     "model_skill": -0.2715,
+     "entropy_market_bits": 0.8171,
      "entropy_floored": false,
-     "mfp": 0.6807
+     "mfp": 0.7108
     },
     {
      "checkpoint": "30",
-     "n": 219,
-     "market_skill": 0.2424,
-     "model_skill": -0.3711,
-     "entropy_market_bits": 0.7788,
+     "n": 192,
+     "market_skill": 0.2872,
+     "model_skill": -0.344,
+     "entropy_market_bits": 0.7881,
      "entropy_floored": false,
-     "mfp": 0.7877
+     "mfp": 0.8009
     },
     {
      "checkpoint": "35",
-     "n": 198,
-     "market_skill": 0.2194,
-     "model_skill": -0.3224,
-     "entropy_market_bits": 0.7556,
+     "n": 173,
+     "market_skill": 0.262,
+     "model_skill": -0.2964,
+     "entropy_market_bits": 0.7629,
      "entropy_floored": false,
-     "mfp": 0.7171
+     "mfp": 0.732
     },
     {
      "checkpoint": "40",
-     "n": 211,
-     "market_skill": 0.2018,
-     "model_skill": -0.4252,
-     "entropy_market_bits": 0.7406,
+     "n": 189,
+     "market_skill": 0.2329,
+     "model_skill": -0.4017,
+     "entropy_market_bits": 0.7437,
      "entropy_floored": false,
-     "mfp": 0.8466
+     "mfp": 0.8534
     },
     {
      "checkpoint": "45",
-     "n": 429,
-     "market_skill": 0.313,
-     "model_skill": -0.2648,
-     "entropy_market_bits": 0.744,
+     "n": 402,
+     "market_skill": 0.308,
+     "model_skill": -0.2975,
+     "entropy_market_bits": 0.743,
      "entropy_floored": false,
-     "mfp": 0.7766
+     "mfp": 0.8149
     },
     {
      "checkpoint": "50",
-     "n": 197,
-     "market_skill": -0.0278,
-     "model_skill": -0.6128,
-     "entropy_market_bits": 0.6522,
+     "n": 189,
+     "market_skill": -0.0211,
+     "model_skill": -0.6176,
+     "entropy_market_bits": 0.6488,
      "entropy_floored": false,
-     "mfp": 0.897
+     "mfp": 0.9193
     },
     {
      "checkpoint": "55",
-     "n": 202,
-     "market_skill": -0.0718,
-     "model_skill": -0.5369,
-     "entropy_market_bits": 0.616,
+     "n": 192,
+     "market_skill": -0.0626,
+     "model_skill": -0.5354,
+     "entropy_market_bits": 0.6193,
      "entropy_floored": false,
-     "mfp": 0.7549
+     "mfp": 0.7635
     },
     {
      "checkpoint": "60",
-     "n": 194,
-     "market_skill": -0.0404,
-     "model_skill": -0.5287,
-     "entropy_market_bits": 0.6276,
+     "n": 189,
+     "market_skill": -0.0523,
+     "model_skill": -0.549,
+     "entropy_market_bits": 0.624,
      "entropy_floored": false,
-     "mfp": 0.7781
+     "mfp": 0.796
     },
     {
      "checkpoint": "65",
-     "n": 156,
-     "market_skill": -0.1567,
-     "model_skill": -0.7093,
-     "entropy_market_bits": 0.6637,
+     "n": 154,
+     "market_skill": -0.1651,
+     "model_skill": -0.7257,
+     "entropy_market_bits": 0.6625,
      "entropy_floored": false,
-     "mfp": 0.8325
+     "mfp": 0.8462
     },
     {
      "checkpoint": "70",
-     "n": 154,
-     "market_skill": -0.352,
-     "model_skill": -0.9791,
-     "entropy_market_bits": 0.6739,
+     "n": 152,
+     "market_skill": -0.358,
+     "model_skill": -0.9763,
+     "entropy_market_bits": 0.6696,
      "entropy_floored": false,
-     "mfp": 0.9304
+     "mfp": 0.9234
     },
     {
      "checkpoint": "75",
-     "n": 136,
-     "market_skill": -0.1634,
-     "model_skill": -0.9658,
-     "entropy_market_bits": 0.7377,
+     "n": 132,
+     "market_skill": -0.1693,
+     "model_skill": -0.9452,
+     "entropy_market_bits": 0.7297,
      "entropy_floored": false,
-     "mfp": 1.0877
+     "mfp": 1.0634
     },
     {
      "checkpoint": "80",
-     "n": 131,
-     "market_skill": -0.2661,
-     "model_skill": -1.1949,
-     "entropy_market_bits": 0.6955,
+     "n": 127,
+     "market_skill": -0.2629,
+     "model_skill": -1.1626,
+     "entropy_market_bits": 0.6865,
      "entropy_floored": false,
-     "mfp": 1.3354
+     "mfp": 1.3107
     },
     {
      "checkpoint": "85",
-     "n": 101,
-     "market_skill": -0.522,
-     "model_skill": -1.5904,
-     "entropy_market_bits": 0.5922,
+     "n": 98,
+     "market_skill": -0.5103,
+     "model_skill": -1.5469,
+     "entropy_market_bits": 0.5823,
      "entropy_floored": false,
-     "mfp": 1.8041
+     "mfp": 1.7802
     },
     {
      "checkpoint": "90",
-     "n": 37,
-     "market_skill": -0.3982,
-     "model_skill": -1.1476,
-     "entropy_market_bits": 0.4394,
+     "n": 33,
+     "market_skill": -0.2424,
+     "model_skill": -0.8324,
+     "entropy_market_bits": 0.397,
      "entropy_floored": false,
-     "mfp": 1.7056
+     "mfp": 1.4861
     }
    ],
    "n_checkpoints": 19,
-   "mfp_first": 0.6393,
-   "mfp_last": 1.7056,
-   "mfp_mean": 0.9211,
-   "mfp_delta_last_minus_first": 1.0663
+   "mfp_first": 0.6779,
+   "mfp_last": 1.4861,
+   "mfp_mean": 0.9225,
+   "mfp_delta_last_minus_first": 0.8082
   }
  },
- "headline": "mlb: MFP rises from 0.06 to 0.24 over the game (mean 0.25); soccer_intl: MFP rises from 0.64 to 1.71 over the game (mean 0.92)",
+ "headline": "mlb: MFP rises from 0.05 to 0.41 over the game (mean 0.15); soccer_intl: MFP rises from 0.68 to 1.49 over the game (mean 0.92)",
  "index_card": {
   "stat_name": "Market Foresight Premium",
   "abbrev": "MFP",
   "module": "novel_market_foresight_premium",
   "formula": "MFP(t) = ((naive-market)/naive - (naive-model)/naive) / max(entropy_market_bits, 0.15)",
   "prior_art_verdict": "INCREMENTAL",
-  "headline": "mlb: MFP rises from 0.06 to 0.24 over the game (mean 0.25); soccer_intl: MFP rises from 0.64 to 1.71 over the game (mean 0.92)",
+  "headline": "mlb: MFP rises from 0.05 to 0.41 over the game (mean 0.15); soccer_intl: MFP rises from 0.68 to 1.49 over the game (mean 0.92)",
   "edge_claimed": false,
   "source_artifacts": [
    "scripts/platformkit/analytics_showcase/out/info_arrival_curve.json",
@@ -314,5 +314,7 @@
   "chart": "docs/img/novel_market_foresight_premium.png",
   "n_results": 2
  },
- "plot_written": true
+ "plot_written": true,
+ "as_of": "2026-09-17",
+ "corpus": "data/cache/ingame_grade_joined/{mlb_segmented,soccer_intl_segmented}"
 }

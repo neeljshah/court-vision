@@ -1172,5 +1172,7 @@
   "closest_prior_work": "arXiv 2606.07811 (~Jun 2026), 'When Do Markets Fully Process Public Information? Evidence from Real-Time Prediction Markets' -- Kalshi/NBA contract-minute join of market price, a state-only model, and terminal outcome; measures how fully the closing reference forecast has absorbed realized game state.",
   "how_ours_differs": "Same three-way (model, market, outcome) join, reshaped into a 2D lead x time-remaining atlas instead of a single time-checkpoint curve, off our own held reliability-map corpus (nba_checkpoints_full.parquet via calibration_grid.nba_grid). Not a new method -- do not claim first-ever."
  },
- "story": "Reliability map reshaped into a lead x time-remaining grid: 84 state buckets, 7 below the n>=30-games mask. This is a calibration atlas (model vs market vs realized frequency by game state), not an advantage/return claim."
+ "story": "Reliability map reshaped into a lead x time-remaining grid: 84 state buckets, 7 below the n>=30-games mask. This is a calibration atlas (model vs market vs realized frequency by game state), not an advantage/return claim.",
+ "as_of": "2026-09-17",
+ "corpus": "data/cache/calibration_grid/nba_reliability_map.json -- NBA in-play checkpoints, not the in-game join corpus; unaffected by the segmentation"
 }

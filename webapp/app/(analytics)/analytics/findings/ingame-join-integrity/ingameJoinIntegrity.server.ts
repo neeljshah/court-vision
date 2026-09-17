@@ -23,6 +23,7 @@ export type IngameIntegrityReceipt = {
   per_sport: { mlb: SportIntegrityCounts; soccer_intl: SportIntegrityCounts };
   exposed_artifacts: string[];
   timing_artifacts_under_review: string[];
+  timing_artifacts_regenerated: string[];
   timing_artifacts_note: string;
   status: "regenerated";
   resolved_by: string;
@@ -50,6 +51,17 @@ export type IngameRegenerationReceipt = {
   status: "regenerated";
 };
 
+export type IngameTimingRegenerationReceipt = {
+  version: number;
+  measured_on: string;
+  revision_published: number;
+  method: { summary: string; override_env: string; corpus_after: string };
+  checker: { verdict: string };
+  artifacts: RegeneratedArtifact[];
+  reading: string[];
+  status: "regenerated";
+};
+
 function loadAudit<T>(basename: string): T {
   return JSON.parse(readFileSync(join(process.cwd(), "public", "data", "audits", basename), "utf8")) as T;
 }
@@ -62,4 +74,9 @@ export function loadIngameIntegrityReceipt(): IngameIntegrityReceipt {
 /** Loads the committed revision-2 regeneration receipt for the before/after table. */
 export function loadIngameRegenerationReceipt(): IngameRegenerationReceipt {
   return loadAudit<IngameRegenerationReceipt>("mlb-ingame-regeneration.json");
+}
+
+/** Loads the committed revision-2 receipt for the six timing artifacts. */
+export function loadIngameTimingRegenerationReceipt(): IngameTimingRegenerationReceipt {
+  return loadAudit<IngameTimingRegenerationReceipt>("mlb-ingame-timing-regeneration.json");
 }

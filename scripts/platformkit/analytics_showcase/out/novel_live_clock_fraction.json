@@ -22,20 +22,20 @@
       "unit": "runs",
       "clock_field": "inning",
       "near_median_threshold": 3,
-      "decided_frac_of_games": 0.5337,
-      "n_games_decided": 95,
-      "n_games_total": 178,
-      "live_clock_fraction": 0.8333
+      "decided_frac_of_games": 0.5575,
+      "n_games_decided": 97,
+      "n_games_total": 174,
+      "live_clock_fraction": 0.7368
     },
     {
       "sport": "soccer_intl",
       "unit": "goals",
       "clock_field": "minute",
       "near_median_threshold": 1,
-      "decided_frac_of_games": 0.4828,
-      "n_games_decided": 14,
-      "n_games_total": 29,
-      "live_clock_fraction": 0.7475
+      "decided_frac_of_games": 0.4615,
+      "n_games_decided": 12,
+      "n_games_total": 26,
+      "live_clock_fraction": 0.5994
     }
   ],
   "not_buildable": [
@@ -53,14 +53,14 @@
     "nba_favorite_hold_rate": 0.9854,
     "note": "independent decisiveness cross-check from xsport_structure; nba has no LCF (no blowout corpus)."
   },
-  "headline": "mlb stays contested later (LCF 0.833) than soccer_intl (LCF 0.748). (nba comeback-rate cross-check 0.0146)",
+  "headline": "mlb stays contested later (LCF 0.737) than soccer_intl (LCF 0.599). (nba comeback-rate cross-check 0.0146)",
   "index_card": {
     "stat_name": "Live-Clock Fraction",
     "abbrev": "LCF",
     "module": "novel_live_clock_fraction",
     "formula": "LCF = decided_clockfrac_median at the non-masked threshold whose decided_frac_of_games is closest to 0.50 (higher = contested later).",
     "prior_art_verdict": "INCREMENTAL_NOVEL",
-    "headline": "mlb stays contested later (LCF 0.833) than soccer_intl (LCF 0.748). (nba comeback-rate cross-check 0.0146)",
+    "headline": "mlb stays contested later (LCF 0.737) than soccer_intl (LCF 0.599). (nba comeback-rate cross-check 0.0146)",
     "edge_claimed": false,
     "source_artifacts": [
       "scripts/platformkit/analytics_showcase/out/blowout_dynamics.json",
@@ -69,5 +69,7 @@
     "chart": "docs/img/novel_live_clock_fraction.png",
     "n_results": 2
   },
-  "plot_written": true
+  "plot_written": true,
+  "as_of": "2026-09-17",
+  "corpus": "data/cache/ingame_grade_joined/{mlb_segmented,soccer_intl_segmented}"
 }

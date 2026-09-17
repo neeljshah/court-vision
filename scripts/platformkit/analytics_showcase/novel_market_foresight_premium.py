@@ -3,14 +3,18 @@ import json
 import os
 
 try:
-    from scripts.platformkit.analytics_showcase._clone_safe import verify_recorded_artifact
+    from scripts.platformkit.analytics_showcase._clone_safe import (
+        staged_input, verify_recorded_artifact)
 except ImportError:
-    from _clone_safe import verify_recorded_artifact
+    from _clone_safe import staged_input, verify_recorded_artifact
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 SHOWCASE = os.path.join(ROOT, "scripts", "platformkit", "analytics_showcase")
-IN_BRIER = os.path.join(SHOWCASE, "out", "info_arrival_curve.json")       # model/market/naive brier
-IN_ENTROPY = os.path.join(SHOWCASE, "out", "market_convergence.json")     # mean_entropy_market_bits
+# Corpus roots: both upstream instruments. With CV_INGAME_CORPUS_SUFFIX set these
+# resolve to the staged segmented-corpus rebuilds, so the two inputs cannot mix
+# revisions.
+IN_BRIER = staged_input("info_arrival_curve.json")       # model/market/naive brier
+IN_ENTROPY = staged_input("market_convergence.json")     # mean_entropy_market_bits
 OUT_JSON = os.path.join(SHOWCASE, "out", "novel_market_foresight_premium.json")
 OUT_PNG = os.path.join(ROOT, "docs", "img", "novel_market_foresight_premium.png")
 

@@ -17,13 +17,14 @@ describe("DataIntegrityNotice", () => {
     expect(within(notices[0]).getByRole("link", { name: "Read the full finding" })).toHaveAttribute("href", expect.stringMatching(/^\/analytics\/findings\/ingame-join-integrity\/?$/));
   });
 
-  it("keeps the under-review wording for an artifact that was not regenerated", () => {
+  it("renders the timing revision-2 wording for a regenerated timing artifact", () => {
     const moduleIds = ["blowout_dynamics"];
     render(<DataIntegrityNotice notices={noticesForModules(moduleIds)} moduleIds={moduleIds} />);
     const notices = screen.getAllByRole("complementary", { name: "Data integrity" });
     expect(notices).toHaveLength(1);
-    expect(notices[0]).toHaveAttribute("data-status", "under-review");
-    expect(within(notices[0]).getByText(/it was not regenerated in this pass/)).toBeInTheDocument();
+    expect(notices[0]).toHaveAttribute("data-status", "regenerated");
+    expect(within(notices[0]).getByText(/rebuilt on the segment-clean corpus \(2026-09-17\)/)).toBeInTheDocument();
+    expect(within(notices[0]).getByText("blowout_dynamics")).toBeInTheDocument();
   });
 
   it("does not render without an applicable notice", () => {
@@ -31,7 +32,8 @@ describe("DataIntegrityNotice", () => {
     expect(screen.queryByRole("complementary", { name: "Data integrity" })).not.toBeInTheDocument();
   });
 
-  it("exposes exactly the regenerated and under-review notices", () => {
-    expect(dataIntegrityNotices.map((notice) => notice.status)).toEqual(["regenerated", "under-review"]);
+  it("exposes both regeneration notices and the unmatched review notice", () => {
+    expect(dataIntegrityNotices.map((notice) => notice.status)).toEqual(["regenerated", "regenerated", "under-review"]);
+    expect(dataIntegrityNotices.find((notice) => notice.status === "under-review")?.affectedModules).toEqual([]);
   });
 });
