@@ -15,7 +15,7 @@ export function InspectorReadingTrail({ id }: { id: string }) {
   const links = [...backlinks, ...relatedReadingFor("inspector", id).filter((link) => !backlinks.some((backlink) => backlink.id === link.id && backlink.kind === link.kind)).slice(0, 3)];
   const integrityNotices = noticesForInspector(id);
   return <>
-    <style jsx global>{`
+    <style>{`
       @media (max-width: 680px) {
         .inspector-reading-trail { margin: 16px 0 22px !important; padding-top: 12px !important; }
         .inspector-reading-trail a { display: inline-block; min-height: 44px; padding: 10px 0; }
