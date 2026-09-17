@@ -22,7 +22,7 @@
       "blocks": [
         {
           "type": "p",
-          "text": "This note asks two separate descriptive questions about a common theme: what an NBA team's schedule and its roster availability look like as conditioning variables known before a game tips off. First, does the back-to-back load a team carries across a season show up as a measurable production or margin tax, and how is that tax distributed across 90 published team-seasons. Second, how concentrated is a team's win outcome on its single most-indispensable player, measured two different ways from two different one-season windows, and how often do those two ways name the same player."
+          "text": "This note asks two separate descriptive questions about a common theme: what an NBA team's schedule and its roster availability look like as conditioning variables known before tip-off. First, does the back-to-back load a team carries across a season show up as a measurable production or margin tax, and how is that tax spread across 90 published team-seasons. Second, how concentrated is a team's win outcome on its single most-indispensable player, measured two ways from two one-season windows, and how often do the two name the same player."
         },
         {
           "type": "p",
@@ -44,7 +44,7 @@
         },
         {
           "type": "p",
-          "text": "The Schedule Fatigue Tax module's mechanism_receipt field cites a separately tested effect, -1.73 points per 100 team offensive rating (rested minus back-to-back, n=4732, p=0.0056), and names the validation ledger as its source. The published ledger card, mechanism_ledger_export.json, reproduces that same run and nothing more precise: it names the back-to-back rest penalty as confirmed at an effect of -1.73 with p 0.005645490426098632 on a 4,732-game corpus. Its caveat field states that as_of is the recorded run_ts and is null for runs that predate run_ts stamping, so this run carries no timestamp, and that one mechanism can appear more than once across corpora."
+          "text": "The Schedule Fatigue Tax module's mechanism_receipt field cites a separately tested effect, -1.73 points per 100 team offensive rating (rested minus back-to-back, n=4732, p 0.005645490426098632), and names the validation ledger as its source. The showcase export, mechanism_ledger_export.json, records two b2b_rest_penalty runs rather than one, both verdict CONFIRMED_LOCAL and both carrying the corpus tag player_boxscores_2024_25_2025_26: the n=4732 run just cited, and a second at n=7192 with effect -1.955 and p 0.0001174325580081608. Each run stores its own rested-versus-back-to-back split in an evidence string, and both carry a null as_of, unstamped by the ledger's own run_ts convention."
         },
         {
           "type": "p",
@@ -66,7 +66,7 @@
         },
         {
           "type": "p",
-          "text": "The rest-state margin test behind the -1.73 anchor compares average scoring margin on zero rest days (a back-to-back) against average margin on one or more rest days, within the same corpus of player boxscores. It is not a controlled experiment: teams and the league schedule-maker choose which games fall on a back-to-back, and travel, opponent quality and home-away patterns are not held fixed between the two rest states."
+          "text": "The rest-state margin test behind the -1.73 anchor compares average scoring margin on zero rest days (a back-to-back) against average margin on one or more rest days, within one corpus of player boxscores. It is not a controlled experiment: the schedule-maker chooses which games fall on a back-to-back, and travel, opponent quality and home-away patterns are not held fixed between the two rest states."
         },
         {
           "type": "p",
@@ -80,12 +80,13 @@
       "blocks": [
         {
           "type": "p",
-          "text": "Two tables below describe rest state directly at the player-game level; a third ranks team-seasons by the SFT construct; two more rank teams by the LBI construct, one per estimator."
+          "text": "Two tables below describe rest state at the player-game level; a third ranks team-seasons by SFT; two more rank teams by LBI, one per estimator."
         },
         {
           "type": "table",
-          "caption": "Team scoring margin by rest state, the recorded b2b_rest_penalty measurement run",
+          "caption": "Team scoring margin by rest state, the two recorded b2b_rest_penalty measurement runs",
           "columns": [
+            "Measurement run",
             "Rest state",
             "n (games)",
             "Avg scoring margin",
@@ -93,19 +94,35 @@
           ],
           "rows": [
             [
+              "Run 1 (total n=4732)",
               "0 days rest (back-to-back)",
               "856",
               "-1.41",
-              "0.0056"
+              "0.005645"
             ],
             [
+              "Run 1 (total n=4732)",
               "1+ days rest",
               "3876",
               "+0.32",
-              "0.0056"
+              "0.005645"
+            ],
+            [
+              "Run 2 (total n=7192)",
+              "0 days rest (back-to-back)",
+              "1278",
+              "-1.61",
+              "0.000117"
+            ],
+            [
+              "Run 2 (total n=7192)",
+              "1+ days rest",
+              "5914",
+              "+0.35",
+              "0.000117"
             ]
           ],
-          "note": "Effect -1.73 pts/100 ORtg (rested minus back-to-back), verdict CONFIRMED_LOCAL, on the corpus tag player_boxscores_2024_25_2025_26 with n=4732. The published ledger card (mechanism_ledger_export.json, insights copy) reproduces the effect, the p-value and the 4,732-game corpus; the per-rest-state split is the breakdown recorded alongside that run. No confidence interval is published, only the p-value shown."
+          "note": "mechanism_ledger_export.json (showcase copy), its two by_sport.basketball_nba.mechanisms records named b2b_rest_penalty. Run 1 effect -1.73 pts/100 ORtg, Run 2 effect -1.955, both rested minus back-to-back, both CONFIRMED_LOCAL on the corpus tag player_boxscores_2024_25_2025_26. The p-values are rounded; the ledger records 0.005645490426098632 and 0.0001174325580081608. No confidence interval is published for either run."
         },
         {
           "type": "table",
@@ -240,7 +257,7 @@
         {
           "type": "callout",
           "label": "Definition",
-          "text": "Schedule Fatigue Tax (SFT): a team-season's own back-to-back frequency multiplied by a single leaguewide effect size, either the tested -1.73 points per 100 team offensive rating (credible variant) or the raw -0.315 per-36 box-composite delta (descriptive variant). Load-Bearing Index (LBI): the largest measured gap, across a team's roster, between an outcome with one specific player and the same outcome without that player, computed two ways -- Elo on/off win probability, and raw active-versus-missed win rate -- from two different one-season windows. Rest state: whether a team played the previous calendar day (back-to-back, 0 days rest) or not (1 or more days rest); a back-to-back is fixed once the schedule is published, before the game in question is played."
+          "text": "Schedule Fatigue Tax (SFT): a team-season's own back-to-back frequency times a single leaguewide effect size, either the tested -1.73 points per 100 team offensive rating (credible variant) or the raw -0.315 per-36 box-composite delta (descriptive variant). Load-Bearing Index (LBI): the largest measured gap, across a team's roster, between an outcome with one specific player and the same outcome without him, computed two ways -- Elo on/off win probability and raw active-versus-missed win rate -- from two different one-season windows. Rest state: whether a team played the previous calendar day (back-to-back) or not; a back-to-back is fixed once the schedule is published."
         },
         {
           "type": "p",
@@ -415,7 +432,7 @@
       "blocks": [
         {
           "type": "p",
-          "text": "The tested rest effect is recorded once on the published ledger card, at n=4732, with a negative and statistically significant margin difference (p=0.0056). That is one measurement on one corpus tag, not a replication. The project's own standing discipline treats a single-corpus result as unconfirmed until it clears a second, independently sourced corpus; this note does not claim that second corpus exists for b2b_rest_penalty, and it does not claim a within-corpus replication either."
+          "text": "The tested rest effect is recorded twice, at n=4732 and at n=7192, both landing on a negative margin difference of the same sign and similar size (-1.73 and -1.955 points per 100 offensive rating, p 0.005645490426098632 and 0.0001174325580081608). What that does and does not establish is worth stating exactly. It establishes that a second, larger recorded run reproduced the sign and rough magnitude of the first. It does not establish an out-of-sample replication: both runs carry the same corpus tag, and the ledger records no relationship between the two row sets, so whether the 4,732 rows are a subset of the 7,192 is simply not recorded and cannot be assumed either way. The project's standing discipline treats a single-corpus result as unconfirmed until it clears a second, independently sourced corpus; this note does not claim that second corpus exists for b2b_rest_penalty."
         },
         {
           "type": "p",
@@ -439,7 +456,7 @@
           "type": "list",
           "items": [
             "SFT ranks team-seasons by a constant leaguewide effect times each team's own back-to-back frequency, so the ranking is mathematically the same as ranking by back-to-back frequency alone.",
-            "The b2b_rest_penalty margin test is an association between rest state and scoring margin within one corpus tag, not a randomized comparison, and rest days are chosen by the schedule-maker rather than assigned at random.",
+            "The two b2b_rest_penalty runs (n=4732 and n=7192) share one corpus tag and the overlap between their rows is not recorded, so they are not two independent samples; rest days are chosen by the schedule-maker rather than assigned at random, so either run is an association, not a randomized comparison.",
             "The two LBI estimators cover different seasons (2024-25 versus 2025-26 through 2026-04-12), so their 1-of-30 agreement is cross-season corroboration, not a paired estimate.",
             "Both measures aggregate to the team level and do not adjust for roster changes, opponent strength, minutes distribution, or blowout-driven lineup substitutions.",
             "Estimator A publishes no game-count denominator, so its ranking cannot be weighted by sample support the way estimator B's active and missed game counts allow."
@@ -453,7 +470,7 @@
       "blocks": [
         {
           "type": "p",
-          "text": "The observation-dependence inspector explains, in general, how sample size and observation windows change what a descriptive number can support; the same caution applies to every n and every as_of window cited above. The published figure for the Schedule Fatigue Tax module sits alongside its underlying rows in the analytics library. The nba-schedule-compression-profile analysis exposes the same schedule_density.json team-season rows behind an equal-weight compression index, a different summary of the same schedule shape, not a duplicate of SFT. The star-removal-team-win-probability and lineup-proxy-active-missed-record analyses expose the row-level scenarios and player tenure windows that feed LBI's two estimators. Read a team's SFT or LBI number next to its row in those analyses before treating either ranking as a settled team profile."
+          "text": "The observation-dependence inspector explains how sample size and observation windows change what a descriptive number can support; the same caution applies to every n and every as_of window cited above. The published figure for the Schedule Fatigue Tax module sits alongside its underlying rows in the analytics library. The nba-schedule-compression-profile analysis exposes the same schedule_density.json rows behind an equal-weight compression index, a different summary of the same schedule shape, not a duplicate of SFT. The star-removal-team-win-probability and lineup-proxy-active-missed-record analyses expose the scenarios and player tenure windows feeding LBI's two estimators. Read a team's SFT or LBI number next to its row there before treating either ranking as a settled profile."
         }
       ]
     }
@@ -522,6 +539,29 @@
       ]
     },
     {
+      "artifact": "mechanism_ledger_export.json",
+      "module": "mechanism_ledger_export",
+      "path": "showcase",
+      "asOf": null,
+      "dateMeaning": "not-published",
+      "fields": [
+        "source",
+        "by_sport.basketball_nba.mechanisms[mechanism=b2b_rest_penalty].mechanism",
+        "by_sport.basketball_nba.mechanisms[mechanism=b2b_rest_penalty,effect=-1.73].effect",
+        "by_sport.basketball_nba.mechanisms[mechanism=b2b_rest_penalty,effect=-1.73].p",
+        "by_sport.basketball_nba.mechanisms[mechanism=b2b_rest_penalty,effect=-1.73].corpus",
+        "by_sport.basketball_nba.mechanisms[mechanism=b2b_rest_penalty,effect=-1.73].evidence",
+        "by_sport.basketball_nba.mechanisms[mechanism=b2b_rest_penalty,effect=-1.73].verdict",
+        "by_sport.basketball_nba.mechanisms[mechanism=b2b_rest_penalty,effect=-1.73].as_of",
+        "by_sport.basketball_nba.mechanisms[mechanism=b2b_rest_penalty,effect=-1.955].effect",
+        "by_sport.basketball_nba.mechanisms[mechanism=b2b_rest_penalty,effect=-1.955].p",
+        "by_sport.basketball_nba.mechanisms[mechanism=b2b_rest_penalty,effect=-1.955].corpus",
+        "by_sport.basketball_nba.mechanisms[mechanism=b2b_rest_penalty,effect=-1.955].evidence",
+        "by_sport.basketball_nba.mechanisms[mechanism=b2b_rest_penalty,effect=-1.955].verdict",
+        "by_sport.basketball_nba.mechanisms[mechanism=b2b_rest_penalty,effect=-1.955].as_of"
+      ]
+    },
+    {
       "artifact": "novel_load_bearing_index.json",
       "module": "novel_load_bearing_index",
       "asOf": null,
@@ -556,7 +596,7 @@
   ],
   "limitations": [
     "SFT ranks team-seasons by a constant leaguewide effect times each team's own back-to-back frequency, so the ranking is mathematically the same as ranking by back-to-back frequency alone, not a team-specific measurement of fatigue severity.",
-    "The b2b_rest_penalty margin test (n=4732, p=0.0056) compares two rest states within one corpus tag, on a single recorded run, and rest state is chosen by the schedule rather than randomly assigned, so the result is an association, not a causal fatigue effect.",
+    "The b2b_rest_penalty margin test is recorded twice (n=4732 and n=7192) on the same corpus tag with no recorded overlap between the two row sets, so the second run is not an out-of-sample replication; rest state is chosen by the schedule rather than randomly assigned, so either run is an association, not a causal fatigue effect.",
     "The Load-Bearing Index's two estimators are drawn from different seasons (2024-25 for the Elo on/off estimator, 2025-26 through 2026-04-12 for the raw active-versus-missed estimator), so their agreement on 1 of 30 teams is directional corroboration across different team-seasons, not a paired estimate of the same population.",
     "Both measures aggregate to the team level and do not control for roster changes, opponent strength, minutes distribution, or blowout-driven lineup substitutions, so neither establishes which specific player or unit interaction drives the observed gap.",
     "Estimator A in the Load-Bearing Index does not publish a game-count denominator for its win-probability comparison, so its ranking cannot be weighted by sample support the way estimator B's active and missed game counts allow."
