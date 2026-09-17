@@ -39,6 +39,26 @@ def discover():
     return has_check, no_check
 
 
+def _tracked_dirty_paths():
+    """Set of tracked paths with uncommitted changes, or None if this isn't a git
+    checkout (or git is unavailable) -- the guard degrades gracefully then."""
+    try:
+        result = subprocess.run(
+            ["git", "status", "--porcelain"],
+            cwd=REPO_ROOT, capture_output=True, text=True, timeout=30,
+        )
+    except OSError:
+        return None
+    if result.returncode != 0:
+        return None
+    paths = set()
+    for line in result.stdout.splitlines():
+        if not line or line.startswith("??"):
+            continue  # untracked -- not a tracked-file mutation
+        paths.add(line[3:].strip())
+    return paths
+
+
 def run_one(path):
     # Every module's own docstring documents `-m scripts.platformkit.analytics_showcase.X`
     # invocation (some rely on it for absolute `from scripts...` imports to resolve) -- run
@@ -61,6 +81,10 @@ def run_one(path):
 
 
 def main():
+    # Snapshot the tracked tree BEFORE running any --check (and before writing our
+    # own OUT_JSON below) so any tracked file a --check mutates shows up in the diff.
+    before = _tracked_dirty_paths()
+
     has_check, no_check = discover()
     rows = []
 
@@ -99,11 +123,25 @@ def main():
     print(f"total {len(rows)}  pass {n_pass}  fail {n_fail}  no_check {n_no_check}  "
           f"runtime {total_s:.2f}s")
 
+    # Guard: a --check must be read-only w.r.t. tracked files. Flag any tracked path
+    # that went from clean to dirty over the module loop (before OUT_JSON is written).
+    guard_failed = False
+    if before is None:
+        print("note: not a git checkout (or git unavailable) -- skipping the no-tracked-writes guard")
+    else:
+        newly_dirty = sorted((_tracked_dirty_paths() or set()) - before)
+        if newly_dirty:
+            guard_failed = True
+            print()
+            print("GUARD FAILED: --check run(s) wrote to tracked files (a --check must be read-only):")
+            for p in newly_dirty:
+                print(f"    {p}")
+
     OUT_JSON.parent.mkdir(parents=True, exist_ok=True)
     OUT_JSON.write_text(json.dumps(rows, indent=2), encoding="utf-8")
     print(f"wrote {OUT_JSON}")
 
-    return 1 if n_fail else 0
+    return 1 if (n_fail or guard_failed) else 0
 
 
 if __name__ == "__main__":
