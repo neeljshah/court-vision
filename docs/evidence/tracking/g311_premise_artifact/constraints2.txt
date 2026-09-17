@@ -1,5 +1,0 @@
-opencv-python-headless<5
-opencv-python<5
-opencv-contrib-python<5
-numpy<3
-setuptools<81

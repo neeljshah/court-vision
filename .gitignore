@@ -582,3 +582,9 @@ g304_local_renders_ext/
 /findings.md
 /task_plan.md
 /FINAL_REPORT.md
+docs/evidence/tracking/**
+!docs/evidence/tracking/**/
+!docs/evidence/tracking/**/*.md
+docs/evidence/harness/**
+!docs/evidence/harness/**/
+!docs/evidence/harness/**/*.md
