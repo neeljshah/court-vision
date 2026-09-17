@@ -11,7 +11,7 @@ const SINGLE_POPULATION = [
   "nba-player-atlas-measurements", "nba-team-atlas-measurements", "mlb-batter-atlas-measurements", "soccer-team-atlas-measurements",
   "tennis-player-atlas-measurements", "mlb-pitch-type-atlas-measurements", "mlb-team-pitch-atlas-measurements", "mlb-count-state-atlas-measurements",
   "soccer-home-away-trailing-form-gap", "mlb-batter-p90-minus-mean-exit-velocity", "nba-opponent-total-range", "tennis-hard-recent-career-shift",
-  "tennis-clay-recent-career-shift", "tennis-grass-recent-career-shift", "pace-variance-favorite-probability", "star-removal-team-win-probability",
+  "tennis-clay-recent-career-shift", "tennis-grass-recent-career-shift", "tennis-clay-gap-window-shift", "tennis-grass-gap-window-shift", "pace-variance-favorite-probability", "star-removal-team-win-probability",
   "lineup-proxy-active-missed-record", "comeback-rates-deficit-time", "nba-venue-shooting-gap", "nba-venue-box-profile",
   "nba-player-venue-dispersion", "nba-pra-role-composition", "nba-context-ts-dominant-gap", "mlb-velocity-band-concentration",
   "mlb-shrinkage-displacement", "soccer-minute-calibration-support", "tennis-surface-prior-brier-delta", "nba-on-off-net-rating-by-player",
