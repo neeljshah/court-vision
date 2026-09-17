@@ -118,7 +118,8 @@ def plot(results, out_path):
     return True
 
 
-def run():
+def compose():
+    """Pure per-checkpoint gap/entropy aggregation from the local corpora -- no writes."""
     results, summaries = {}, {}
     for sport, pattern in CORPORA.items():
         rows = load_rows(sport, pattern)
@@ -128,7 +129,6 @@ def run():
         results[sport] = cps
         summaries[sport] = summarize(cps) if cps else {"note": "no checkpoints above floor"}
 
-    plot_written = plot(results, OUT_PNG)
     payload = {
         "edge_claimed": False,
         "descriptive_only": True,
@@ -152,10 +152,16 @@ def run():
             ),
         },
         "min_n": MIN_N,
-        "plot_written": plot_written,
+        "plot_written": False,
         "checkpoints": results,
         "summary": summaries,
     }
+    return payload
+
+
+def run():
+    payload = compose()
+    payload["plot_written"] = plot(payload["checkpoints"], OUT_PNG)
     os.makedirs(os.path.dirname(OUT_JSON), exist_ok=True)
     with open(OUT_JSON, "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2)
@@ -187,13 +193,12 @@ def check():
         verify_recorded_artifact(OUT_JSON, validate, "market_convergence")
         return
 
-    payload = run()
+    payload = compose()
     total = sum(len(v) for v in payload["checkpoints"].values())
     assert total > 0, "no checkpoints above floor -- outputs empty"
-    assert os.path.exists(OUT_JSON) and os.path.getsize(OUT_JSON) > 0
-    assert os.path.exists(OUT_PNG) and os.path.getsize(OUT_PNG) > 0
     n_sports = len([s for s in payload["checkpoints"] if payload["checkpoints"][s]])
-    print("OK: market_convergence self-check passed (%d checkpoints across %d sports)" % (total, n_sports))
+    print("OK: market_convergence self-check passed (%d checkpoints across %d sports, "
+          "recomposed only, no write)" % (total, n_sports))
 
 
 def main():
