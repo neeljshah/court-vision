@@ -225,9 +225,15 @@ prints no-improvement for NBA due to SYNTHETIC ANCHOR ARTIFACT; MLB/Soccer/Tenni
 
 **The thesis:** pregame MATCHES the devigged close on team-strength markets and is BEHIND on
 totals/ATP ONLY by freshness data a box model cannot see. IN-GAME conditioning (a pregame
-intelligence prior fused with realized state) is the decisive measured, calibrated, and delivered
-edge -- MLB/Soccer/Tennis WIN reproduced on committed fixtures; NBA in-game WIN is real-corpus
-(VALIDATION_PENDING), edge_claimed = False. No fabricated $ edge.
+intelligence prior fused with realized state) is sharper **versus a static pregame prior** --
+that is exactly what the table above measures, and it is a calibration result, not an edge.
+**Versus the contemporaneous market price the in-game models are BEHIND** (Gate A-0, measured
+2026-09-14 on paired ticks with a game-clustered bootstrap: MLB Brier 0.23768 model vs 0.20665
+market, delta +0.03103, 95% CI [0.01704, 0.04535], 227 games; soccer 0.22789 vs 0.14273, delta
++0.08516, CI [0.04876, 0.12696], 51 games -- `docs/evidence/ingame/GATE_A0_2026-09-14.md`; the
+per-game segmented revision leaves the verdict unchanged). The open question is the residual
+program: whether anything the model knows still adds once the price itself is the anchor.
+edge_claimed = False. No fabricated $ edge.
 
 ---
 
@@ -241,7 +247,7 @@ The hard-won lessons compound too:
 - **Single-fold lifts are artifacts:** the gate requires >=2 independent corpora
 - **Accuracy != edge:** minimizing MAE pulls toward the line in any sport
 - **Freshness beats retraining:** the pregame totals gap is data we cannot see, not a modeling miss
-- **In-game conditioning is the real, delivered edge:** proven and calibrated on all four sports
+- **In-game conditioning is sharper than a static prior, and still BEHIND the price:** calibrated on all four sports against a static pregame prior; Gate A-0 measures it BEHIND the contemporaneous market (MLB delta +0.03103, CI [0.01704, 0.04535]) -- a calibration result, not an edge
 - **Honest nulls and self-caught retractions are successes:** the rigor IS the product
 
 Each lesson is encoded in the kernel as a hard gate or a documented invariant. A new adapter inherits all of them on day one.
@@ -339,7 +345,7 @@ non-empty enough to onboard." Full per-sport inventory and the priority queue it
 The sport-agnostic machinery is shared, and NBA/MLB/Soccer/Tennis each run as adapters on top of it with leak-free proofs.
 
 ### Now -- Deepen the per-sport data funnel
-For each sport, ingest more reachable, fresher data to sharpen calibration and widen the in-game conditioning lead. Pregame markets are efficient; the gains are freshness, joint-market shape, and in-game state. The kernel-extraction harness (above) is running this concurrently against the platform backlog -- see [PLATFORM_HARNESS.md](PLATFORM_HARNESS.md) for live status.
+For each sport, ingest more reachable, fresher data to sharpen calibration and improve in-game conditioning against the price. Pregame markets are efficient; the gains are freshness, joint-market shape, and in-game state. The kernel-extraction harness (above) is running this concurrently against the platform backlog -- see [PLATFORM_HARNESS.md](PLATFORM_HARNESS.md) for live status.
 
 ### Next -- Broaden
 Additional sports each add an adapter without touching the kernel. Kernel improvements (calibration, walk-forward gating, the agent loop) benefit every sport simultaneously.
@@ -356,7 +362,7 @@ CourtVision began as an NBA broadcast-video computer-vision pipeline (YOLOv8 det
 
 No betting edge / ROI / profitable edge is claimed for any sport. The platform's own validation shows pregame markets are efficient: it MATCHES the devigged close on team-strength markets and is BEHIND on totals/ATP only by freshness data it cannot see. The retracted +18.38% ROI / endQ3-0.119 / +54% in-play numbers are documented measurement artifacts -- they appear ONLY in retraction context in [docs/JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md) and [docs/KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md), never as current.
 
-The value of the platform is two things: engineering compounding (shared infrastructure, shared discipline, shared agent loop across four sports) and the measured, calibrated, delivered in-game conditioning edge -- not a promised betting edge in any market.
+The value of the platform is two things: engineering compounding (shared infrastructure, shared discipline, shared agent loop across four sports) and the measured, calibrated in-game conditioning gain **versus a static pregame prior** -- which Gate A-0 measures as still BEHIND the contemporaneous market price. That is a calibration result, not an edge, and not a promised betting edge in any market.
 
 ---
 

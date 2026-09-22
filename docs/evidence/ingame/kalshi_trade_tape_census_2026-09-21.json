@@ -1,0 +1,31 @@
+{
+ "distinct_trades": 69577,
+ "files": 9,
+ "fractional_count_trades": 35841,
+ "malformed_rows": 0,
+ "note": "counts only; dedup on trade_id via in-process hash; no price or outcome statistic computed",
+ "per_sport": {
+  "mlb": {
+   "distinct_events": 97,
+   "distinct_tickers": 265,
+   "distinct_trades": 36369,
+   "dup_rows": 1024170,
+   "rows": 1060539
+  },
+  "wnba": {
+   "distinct_events": 59,
+   "distinct_tickers": 185,
+   "distinct_trades": 33208,
+   "dup_rows": 976725,
+   "rows": 1009933
+  }
+ },
+ "rows": 2070472,
+ "source": "data/cache/book_depth/_archive/kalshi_trades/*.jsonl",
+ "taker_side_counts": {
+  "no": 16401,
+  "yes": 53176
+ },
+ "trade_ts_max": "2026-07-17T05:16:02.896247Z",
+ "trade_ts_min": "2026-07-08T23:48:01.899969Z"
+}

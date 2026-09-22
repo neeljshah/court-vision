@@ -1,0 +1,1845 @@
+{
+  "counts_only_rule": "reads timestamps/tickers/sport/trade_id/taker_side/size-presence/quote-presence only; never a price/size/outcome VALUE",
+  "events": {
+    "KXMLBGAME-26JUL121605COLSF": {
+      "a_share": 0.0,
+      "game_date": "2026-07-12",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL121605COLSF-SF"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL121610AZLAD": {
+      "a_share": 1.0,
+      "game_date": "2026-07-12",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL121610AZLAD-AZ",
+        "KXMLBGAME-26JUL121610AZLAD-LAD"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": true,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": true,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": true,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL121610TORSD": {
+      "a_share": 1.0,
+      "game_date": "2026-07-12",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL121610TORSD-SD",
+        "KXMLBGAME-26JUL121610TORSD-TOR"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": true,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": true,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": true,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL142000ALNL": {
+      "a_share": 0.0,
+      "game_date": "2026-07-14",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL142000ALNL-AL",
+        "KXMLBGAME-26JUL142000ALNL-NL"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL161910NYMPHI": {
+      "a_share": 0.0,
+      "game_date": "2026-07-16",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL161910NYMPHI-NYM",
+        "KXMLBGAME-26JUL161910NYMPHI-PHI"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL171335TBBOSG1": {
+      "a_share": 0.0,
+      "game_date": "2026-07-17",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL171335TBBOSG1-BOS",
+        "KXMLBGAME-26JUL171335TBBOSG1-TB"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL171905LADNYY": {
+      "a_share": 0.0,
+      "game_date": "2026-07-17",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL171905LADNYY-LAD",
+        "KXMLBGAME-26JUL171905LADNYY-NYY"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL171910PITCLE": {
+      "a_share": 0.0,
+      "game_date": "2026-07-17",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL171910PITCLE-CLE",
+        "KXMLBGAME-26JUL171910PITCLE-PIT"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL171910TBBOSG2": {
+      "a_share": 0.0,
+      "game_date": "2026-07-17",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL171910TBBOSG2-BOS",
+        "KXMLBGAME-26JUL171910TBBOSG2-TB"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL171915CWSTOR": {
+      "a_share": 0.0,
+      "game_date": "2026-07-17",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL171915CWSTOR-CWS",
+        "KXMLBGAME-26JUL171915CWSTOR-TOR"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL171915TEXATL": {
+      "a_share": 0.0,
+      "game_date": "2026-07-17",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL171915TEXATL-ATL",
+        "KXMLBGAME-26JUL171915TEXATL-TEX"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL171940MIAMIL": {
+      "a_share": 0.0,
+      "game_date": "2026-07-17",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL171940MIAMIL-MIA",
+        "KXMLBGAME-26JUL171940MIAMIL-MIL"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL172005MINCHC": {
+      "a_share": 0.0,
+      "game_date": "2026-07-17",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL172005MINCHC-CHC",
+        "KXMLBGAME-26JUL172005MINCHC-MIN"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL172010BALHOU": {
+      "a_share": 0.0,
+      "game_date": "2026-07-17",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL172010BALHOU-BAL",
+        "KXMLBGAME-26JUL172010BALHOU-HOU"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL172010SDKC": {
+      "a_share": 0.0,
+      "game_date": "2026-07-17",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL172010SDKC-KC",
+        "KXMLBGAME-26JUL172010SDKC-SD"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL172040CINCOL": {
+      "a_share": 0.0,
+      "game_date": "2026-07-17",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL172040CINCOL-CIN",
+        "KXMLBGAME-26JUL172040CINCOL-COL"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL172138DETLAA": {
+      "a_share": 0.0,
+      "game_date": "2026-07-17",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL172138DETLAA-DET",
+        "KXMLBGAME-26JUL172138DETLAA-LAA"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL172140STLAZ": {
+      "a_share": 0.0,
+      "game_date": "2026-07-17",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL172140STLAZ-AZ",
+        "KXMLBGAME-26JUL172140STLAZ-STL"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL172140WSHATH": {
+      "a_share": 0.0,
+      "game_date": "2026-07-17",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL172140WSHATH-ATH",
+        "KXMLBGAME-26JUL172140WSHATH-WSH"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL172210SFSEA": {
+      "a_share": 0.0,
+      "game_date": "2026-07-17",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL172210SFSEA-SEA",
+        "KXMLBGAME-26JUL172210SFSEA-SF"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL181420MINCHC": {
+      "a_share": 0.0,
+      "game_date": "2026-07-18",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL181420MINCHC-CHC",
+        "KXMLBGAME-26JUL181420MINCHC-MIN"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL181507CWSTOR": {
+      "a_share": 0.0,
+      "game_date": "2026-07-18",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL181507CWSTOR-CWS",
+        "KXMLBGAME-26JUL181507CWSTOR-TOR"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL181510CINCOL": {
+      "a_share": 0.0,
+      "game_date": "2026-07-18",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL181510CINCOL-CIN",
+        "KXMLBGAME-26JUL181510CINCOL-COL"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL181605NYMPHI": {
+      "a_share": 0.0,
+      "game_date": "2026-07-18",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL181605NYMPHI-NYM",
+        "KXMLBGAME-26JUL181605NYMPHI-PHI"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL181610BALHOU": {
+      "a_share": 0.0,
+      "game_date": "2026-07-18",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL181610BALHOU-BAL",
+        "KXMLBGAME-26JUL181610BALHOU-HOU"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL181610MIAMIL": {
+      "a_share": 0.0,
+      "game_date": "2026-07-18",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL181610MIAMIL-MIA",
+        "KXMLBGAME-26JUL181610MIAMIL-MIL"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL181610PITCLE": {
+      "a_share": 0.0,
+      "game_date": "2026-07-18",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL181610PITCLE-CLE",
+        "KXMLBGAME-26JUL181610PITCLE-PIT"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL181610SDKC": {
+      "a_share": 0.0,
+      "game_date": "2026-07-18",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL181610SDKC-KC",
+        "KXMLBGAME-26JUL181610SDKC-SD"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL181610STLAZ": {
+      "a_share": 0.0,
+      "game_date": "2026-07-18",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL181610STLAZ-AZ",
+        "KXMLBGAME-26JUL181610STLAZ-STL"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL181610TBBOS": {
+      "a_share": 0.0,
+      "game_date": "2026-07-18",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL181610TBBOS-BOS",
+        "KXMLBGAME-26JUL181610TBBOS-TB"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL181610TEXATL": {
+      "a_share": 0.0,
+      "game_date": "2026-07-18",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL181610TEXATL-ATL",
+        "KXMLBGAME-26JUL181610TEXATL-TEX"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL182008LADNYY": {
+      "a_share": 0.0,
+      "game_date": "2026-07-18",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL182008LADNYY-LAD",
+        "KXMLBGAME-26JUL182008LADNYY-NYY"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL182008SFSEA": {
+      "a_share": 0.0,
+      "game_date": "2026-07-18",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL182008SFSEA-SEA",
+        "KXMLBGAME-26JUL182008SFSEA-SF"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL182205WSHATH": {
+      "a_share": 0.0,
+      "game_date": "2026-07-18",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL182205WSHATH-ATH",
+        "KXMLBGAME-26JUL182205WSHATH-WSH"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL182207DETLAA": {
+      "a_share": 0.0,
+      "game_date": "2026-07-18",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL182207DETLAA-DET",
+        "KXMLBGAME-26JUL182207DETLAA-LAA"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL191215CWSTOR": {
+      "a_share": 0.0,
+      "game_date": "2026-07-19",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL191215CWSTOR-CWS",
+        "KXMLBGAME-26JUL191215CWSTOR-TOR"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL191335NYMPHI": {
+      "a_share": 0.0,
+      "game_date": "2026-07-19",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL191335NYMPHI-NYM",
+        "KXMLBGAME-26JUL191335NYMPHI-PHI"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL191335TBBOS": {
+      "a_share": 0.0,
+      "game_date": "2026-07-19",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL191335TBBOS-BOS",
+        "KXMLBGAME-26JUL191335TBBOS-TB"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL191335TEXATL": {
+      "a_share": 0.0,
+      "game_date": "2026-07-19",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL191335TEXATL-ATL",
+        "KXMLBGAME-26JUL191335TEXATL-TEX"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL191340PITCLE": {
+      "a_share": 0.0,
+      "game_date": "2026-07-19",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL191340PITCLE-CLE",
+        "KXMLBGAME-26JUL191340PITCLE-PIT"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL191410BALHOU": {
+      "a_share": 0.0,
+      "game_date": "2026-07-19",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL191410BALHOU-BAL",
+        "KXMLBGAME-26JUL191410BALHOU-HOU"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL191410MIAMIL": {
+      "a_share": 0.0,
+      "game_date": "2026-07-19",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL191410MIAMIL-MIA",
+        "KXMLBGAME-26JUL191410MIAMIL-MIL"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL191410SDKC": {
+      "a_share": 0.0,
+      "game_date": "2026-07-19",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL191410SDKC-KC",
+        "KXMLBGAME-26JUL191410SDKC-SD"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL191420MINCHC": {
+      "a_share": 0.0,
+      "game_date": "2026-07-19",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL191420MINCHC-CHC",
+        "KXMLBGAME-26JUL191420MINCHC-MIN"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL191510CINCOL": {
+      "a_share": 0.0,
+      "game_date": "2026-07-19",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL191510CINCOL-CIN",
+        "KXMLBGAME-26JUL191510CINCOL-COL"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL191605WSHATH": {
+      "a_share": 0.0,
+      "game_date": "2026-07-19",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL191605WSHATH-ATH",
+        "KXMLBGAME-26JUL191605WSHATH-WSH"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL191607DETLAA": {
+      "a_share": 0.0,
+      "game_date": "2026-07-19",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL191607DETLAA-DET",
+        "KXMLBGAME-26JUL191607DETLAA-LAA"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL191610SFSEA": {
+      "a_share": 0.0,
+      "game_date": "2026-07-19",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL191610SFSEA-SEA",
+        "KXMLBGAME-26JUL191610SFSEA-SF"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL191610STLAZ": {
+      "a_share": 0.0,
+      "game_date": "2026-07-19",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL191610STLAZ-AZ",
+        "KXMLBGAME-26JUL191610STLAZ-STL"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXMLBGAME-26JUL191920LADNYY": {
+      "a_share": 0.0,
+      "game_date": "2026-07-19",
+      "gap_overlap_primary": null,
+      "sport": "mlb",
+      "start_unknown": false,
+      "tickers": [
+        "KXMLBGAME-26JUL191920LADNYY-LAD",
+        "KXMLBGAME-26JUL191920LADNYY-NYY"
+      ],
+      "tier_pass": {
+        "primary": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_1": {
+          "a": false,
+          "b": false,
+          "both": false
+        },
+        "relaxed_2": {
+          "a": false,
+          "b": false,
+          "both": false
+        }
+      }
+    },
+    "KXWNBAGAME-26JUL12CHIDAL": {
+      "a_share": null,
+      "game_date": "2026-07-12",
+      "gap_overlap_primary": null,
+      "sport": "wnba",
+      "start_unknown": true,
+      "tickers": [
+        "KXWNBAGAME-26JUL12CHIDAL-CHI",
+        "KXWNBAGAME-26JUL12CHIDAL-DAL"
+      ],
+      "tier_pass": {}
+    },
+    "KXWNBAGAME-26JUL12INDLV": {
+      "a_share": null,
+      "game_date": "2026-07-12",
+      "gap_overlap_primary": null,
+      "sport": "wnba",
+      "start_unknown": true,
+      "tickers": [
+        "KXWNBAGAME-26JUL12INDLV-IND",
+        "KXWNBAGAME-26JUL12INDLV-LV"
+      ],
+      "tier_pass": {}
+    },
+    "KXWNBAGAME-26JUL12NYTOR": {
+      "a_share": null,
+      "game_date": "2026-07-12",
+      "gap_overlap_primary": null,
+      "sport": "wnba",
+      "start_unknown": true,
+      "tickers": [
+        "KXWNBAGAME-26JUL12NYTOR-TOR"
+      ],
+      "tier_pass": {}
+    },
+    "KXWNBAGAME-26JUL12SEAWSH": {
+      "a_share": null,
+      "game_date": "2026-07-12",
+      "gap_overlap_primary": null,
+      "sport": "wnba",
+      "start_unknown": true,
+      "tickers": [
+        "KXWNBAGAME-26JUL12SEAWSH-SEA",
+        "KXWNBAGAME-26JUL12SEAWSH-WSH"
+      ],
+      "tier_pass": {}
+    },
+    "KXWNBAGAME-26JUL13LAATL": {
+      "a_share": null,
+      "game_date": "2026-07-13",
+      "gap_overlap_primary": null,
+      "sport": "wnba",
+      "start_unknown": true,
+      "tickers": [
+        "KXWNBAGAME-26JUL13LAATL-ATL",
+        "KXWNBAGAME-26JUL13LAATL-LA"
+      ],
+      "tier_pass": {}
+    },
+    "KXWNBAGAME-26JUL13PHXMIN": {
+      "a_share": null,
+      "game_date": "2026-07-13",
+      "gap_overlap_primary": null,
+      "sport": "wnba",
+      "start_unknown": true,
+      "tickers": [
+        "KXWNBAGAME-26JUL13PHXMIN-MIN",
+        "KXWNBAGAME-26JUL13PHXMIN-PHX"
+      ],
+      "tier_pass": {}
+    },
+    "KXWNBAGAME-26JUL14PDXCONN": {
+      "a_share": null,
+      "game_date": "2026-07-14",
+      "gap_overlap_primary": null,
+      "sport": "wnba",
+      "start_unknown": true,
+      "tickers": [
+        "KXWNBAGAME-26JUL14PDXCONN-CONN",
+        "KXWNBAGAME-26JUL14PDXCONN-PDX"
+      ],
+      "tier_pass": {}
+    },
+    "KXWNBAGAME-26JUL14WSHTOR": {
+      "a_share": null,
+      "game_date": "2026-07-14",
+      "gap_overlap_primary": null,
+      "sport": "wnba",
+      "start_unknown": true,
+      "tickers": [
+        "KXWNBAGAME-26JUL14WSHTOR-TOR",
+        "KXWNBAGAME-26JUL14WSHTOR-WSH"
+      ],
+      "tier_pass": {}
+    },
+    "KXWNBAGAME-26JUL15GSIND": {
+      "a_share": null,
+      "game_date": "2026-07-15",
+      "gap_overlap_primary": null,
+      "sport": "wnba",
+      "start_unknown": true,
+      "tickers": [
+        "KXWNBAGAME-26JUL15GSIND-GS",
+        "KXWNBAGAME-26JUL15GSIND-IND"
+      ],
+      "tier_pass": {}
+    },
+    "KXWNBAGAME-26JUL15LAMIN": {
+      "a_share": null,
+      "game_date": "2026-07-15",
+      "gap_overlap_primary": null,
+      "sport": "wnba",
+      "start_unknown": true,
+      "tickers": [
+        "KXWNBAGAME-26JUL15LAMIN-LA",
+        "KXWNBAGAME-26JUL15LAMIN-MIN"
+      ],
+      "tier_pass": {}
+    },
+    "KXWNBAGAME-26JUL15SEACHI": {
+      "a_share": null,
+      "game_date": "2026-07-15",
+      "gap_overlap_primary": null,
+      "sport": "wnba",
+      "start_unknown": true,
+      "tickers": [
+        "KXWNBAGAME-26JUL15SEACHI-CHI",
+        "KXWNBAGAME-26JUL15SEACHI-SEA"
+      ],
+      "tier_pass": {}
+    },
+    "KXWNBAGAME-26JUL16NYDAL": {
+      "a_share": null,
+      "game_date": "2026-07-16",
+      "gap_overlap_primary": null,
+      "sport": "wnba",
+      "start_unknown": true,
+      "tickers": [
+        "KXWNBAGAME-26JUL16NYDAL-DAL",
+        "KXWNBAGAME-26JUL16NYDAL-NY"
+      ],
+      "tier_pass": {}
+    },
+    "KXWNBAGAME-26JUL16PDXWSH": {
+      "a_share": null,
+      "game_date": "2026-07-16",
+      "gap_overlap_primary": null,
+      "sport": "wnba",
+      "start_unknown": true,
+      "tickers": [
+        "KXWNBAGAME-26JUL16PDXWSH-PDX",
+        "KXWNBAGAME-26JUL16PDXWSH-WSH"
+      ],
+      "tier_pass": {}
+    },
+    "KXWNBAGAME-26JUL17ATLTOR": {
+      "a_share": null,
+      "game_date": "2026-07-17",
+      "gap_overlap_primary": null,
+      "sport": "wnba",
+      "start_unknown": true,
+      "tickers": [
+        "KXWNBAGAME-26JUL17ATLTOR-ATL",
+        "KXWNBAGAME-26JUL17ATLTOR-TOR"
+      ],
+      "tier_pass": {}
+    },
+    "KXWNBAGAME-26JUL17CONNPHX": {
+      "a_share": null,
+      "game_date": "2026-07-17",
+      "gap_overlap_primary": null,
+      "sport": "wnba",
+      "start_unknown": true,
+      "tickers": [
+        "KXWNBAGAME-26JUL17CONNPHX-CONN",
+        "KXWNBAGAME-26JUL17CONNPHX-PHX"
+      ],
+      "tier_pass": {}
+    },
+    "KXWNBAGAME-26JUL17LACHI": {
+      "a_share": null,
+      "game_date": "2026-07-17",
+      "gap_overlap_primary": null,
+      "sport": "wnba",
+      "start_unknown": true,
+      "tickers": [
+        "KXWNBAGAME-26JUL17LACHI-CHI",
+        "KXWNBAGAME-26JUL17LACHI-LA"
+      ],
+      "tier_pass": {}
+    },
+    "KXWNBAGAME-26JUL17SEAIND": {
+      "a_share": null,
+      "game_date": "2026-07-17",
+      "gap_overlap_primary": null,
+      "sport": "wnba",
+      "start_unknown": true,
+      "tickers": [
+        "KXWNBAGAME-26JUL17SEAIND-IND",
+        "KXWNBAGAME-26JUL17SEAIND-SEA"
+      ],
+      "tier_pass": {}
+    },
+    "KXWNBAGAME-26JUL18NYIND": {
+      "a_share": null,
+      "game_date": "2026-07-18",
+      "gap_overlap_primary": null,
+      "sport": "wnba",
+      "start_unknown": true,
+      "tickers": [
+        "KXWNBAGAME-26JUL18NYIND-IND",
+        "KXWNBAGAME-26JUL18NYIND-NY"
+      ],
+      "tier_pass": {}
+    },
+    "KXWNBAGAME-26JUL18PDXMIN": {
+      "a_share": null,
+      "game_date": "2026-07-18",
+      "gap_overlap_primary": null,
+      "sport": "wnba",
+      "start_unknown": true,
+      "tickers": [
+        "KXWNBAGAME-26JUL18PDXMIN-MIN",
+        "KXWNBAGAME-26JUL18PDXMIN-PDX"
+      ],
+      "tier_pass": {}
+    },
+    "KXWNBAGAME-26JUL18WSHGS": {
+      "a_share": null,
+      "game_date": "2026-07-18",
+      "gap_overlap_primary": null,
+      "sport": "wnba",
+      "start_unknown": true,
+      "tickers": [
+        "KXWNBAGAME-26JUL18WSHGS-GS",
+        "KXWNBAGAME-26JUL18WSHGS-WSH"
+      ],
+      "tier_pass": {}
+    }
+  },
+  "generated_at": "2026-09-21T20:38:53.205487+00:00",
+  "grid_availability_share_by_horizon_s": {
+    "mlb": {
+      "120": 0.010101010101010102,
+      "30": 0.007575757575757576,
+      "300": 0.010101010101010102
+    },
+    "wnba": {
+      "120": null,
+      "30": null,
+      "300": null
+    }
+  },
+  "inputs": {
+    "book_depth_dir": "data/cache/book_depth/_archive/kalshi",
+    "trade_tape_dir": "data/cache/book_depth/_archive/kalshi_trades"
+  },
+  "manifest": [
+    {
+      "bytes": 61141818,
+      "path": "data/cache/book_depth/_archive/kalshi_trades/2026-07-11.jsonl",
+      "role": "trade_tape",
+      "sha256": "e33d48e5131ed3838f212230d467c7b36f3442a511fae456411d8b9b9a4d1718"
+    },
+    {
+      "bytes": 66401446,
+      "path": "data/cache/book_depth/_archive/kalshi_trades/2026-07-12.jsonl",
+      "role": "trade_tape",
+      "sha256": "3fa1f419ba25470bd8451a545c0825f3e15651e79c6703d0dfbc56eb3fba1b04"
+    },
+    {
+      "bytes": 60068158,
+      "path": "data/cache/book_depth/_archive/kalshi_trades/2026-07-13.jsonl",
+      "role": "trade_tape",
+      "sha256": "a33f90cf6ae07843cd20e9eaa4ef64c1a3524f0607047909205cef8f527027ba"
+    },
+    {
+      "bytes": 84704088,
+      "path": "data/cache/book_depth/_archive/kalshi_trades/2026-07-14.jsonl",
+      "role": "trade_tape",
+      "sha256": "74ad00b34212160c5d3675100642d719fe2ad9b94537a25bc0ec8ed64592a00f"
+    },
+    {
+      "bytes": 28337886,
+      "path": "data/cache/book_depth/_archive/kalshi_trades/2026-07-15.jsonl",
+      "role": "trade_tape",
+      "sha256": "f863586f6ad33d937088200217db3e8bdf27c6876720355670ab9c6a929a5181"
+    },
+    {
+      "bytes": 116859379,
+      "path": "data/cache/book_depth/_archive/kalshi_trades/2026-07-16.jsonl",
+      "role": "trade_tape",
+      "sha256": "dba5c7d6801fec70294ea1da552e8671ba5be4c135918ee446329f5a1763995e"
+    },
+    {
+      "bytes": 34300275,
+      "path": "data/cache/book_depth/_archive/kalshi_trades/2026-07-17.jsonl",
+      "role": "trade_tape",
+      "sha256": "b2edbea5e0dd40d8ab0eb67a24d660511df7f8faab7677838cc8e0ef7b0f390f"
+    },
+    {
+      "bytes": 5518767,
+      "path": "data/cache/book_depth/_archive/kalshi/2026-07-11.jsonl",
+      "role": "book_depth",
+      "sha256": "d71bc46deaf754bc8e7d0819e35962f3f402da8cec944889c009e2d977c7bc8e"
+    },
+    {
+      "bytes": 5663321,
+      "path": "data/cache/book_depth/_archive/kalshi/2026-07-12.jsonl",
+      "role": "book_depth",
+      "sha256": "0195d081f7fb82b8cf60f20ab2affc414c7d8d2e6f85d64902fa2c7946268624"
+    },
+    {
+      "bytes": 5188526,
+      "path": "data/cache/book_depth/_archive/kalshi/2026-07-13.jsonl",
+      "role": "book_depth",
+      "sha256": "7ffd290c0f4f9b8cb75fcbfc6f63e7710b5d173ae0f9f6eee37ef4bc28c96f3a"
+    },
+    {
+      "bytes": 6762976,
+      "path": "data/cache/book_depth/_archive/kalshi/2026-07-14.jsonl",
+      "role": "book_depth",
+      "sha256": "a362b7bd34768bc400628728563d13547ef6177a7e012c966e893e1c36018fda"
+    },
+    {
+      "bytes": 3635898,
+      "path": "data/cache/book_depth/_archive/kalshi/2026-07-15.jsonl",
+      "role": "book_depth",
+      "sha256": "de95e30cb7c36d1d7b25acc4611ed2b71db5dcb4b867ea9206e53375b2415ea1"
+    },
+    {
+      "bytes": 21257879,
+      "path": "data/cache/book_depth/_archive/kalshi/2026-07-16.jsonl",
+      "role": "book_depth",
+      "sha256": "6006c29915e6bbf2777781ed685ea32969fd366c08e803b805c446d49648b5ce"
+    },
+    {
+      "bytes": 5518188,
+      "path": "data/cache/book_depth/_archive/kalshi/2026-07-17.jsonl",
+      "role": "book_depth",
+      "sha256": "4a1e9c450ad8d4cf9365bfa4cbb6c41417d8a09423ca19b82aca2be6e601e1c2"
+    }
+  ],
+  "qualifies_30_events_primary": {
+    "mlb": false,
+    "wnba": false
+  },
+  "result_table": {
+    "mlb": {
+      "events_in_population": 50,
+      "events_with_decodable_start": 50,
+      "gap_overlapped_passing_primary": 0,
+      "tiers": {
+        "primary": {
+          "distinct_calendar_dates": 0,
+          "passing_a": 2,
+          "passing_b": 0,
+          "passing_both": 0
+        },
+        "relaxed_1": {
+          "distinct_calendar_dates": 0,
+          "passing_a": 2,
+          "passing_b": 0,
+          "passing_both": 0
+        },
+        "relaxed_2": {
+          "distinct_calendar_dates": 0,
+          "passing_a": 2,
+          "passing_b": 0,
+          "passing_both": 0
+        }
+      }
+    },
+    "wnba": {
+      "events_in_population": 20,
+      "events_with_decodable_start": 0,
+      "gap_overlapped_passing_primary": 0,
+      "tiers": {
+        "primary": {
+          "distinct_calendar_dates": 0,
+          "passing_a": 0,
+          "passing_b": 0,
+          "passing_both": 0
+        },
+        "relaxed_1": {
+          "distinct_calendar_dates": 0,
+          "passing_a": 0,
+          "passing_b": 0,
+          "passing_both": 0
+        },
+        "relaxed_2": {
+          "distinct_calendar_dates": 0,
+          "passing_a": 0,
+          "passing_b": 0,
+          "passing_both": 0
+        }
+      }
+    }
+  },
+  "thresholds": {
+    "primary": {
+      "bin_share_a": 0.8,
+      "bin_share_b": 0.9,
+      "gap_max_s": 120.0,
+      "gap_median_s": 45.0,
+      "gap_p95_s": 90.0,
+      "name": "primary"
+    },
+    "relaxed_1": {
+      "bin_share_a": 0.8,
+      "bin_share_b": 0.8,
+      "gap_max_s": 180.0,
+      "gap_median_s": 60.0,
+      "gap_p95_s": 120.0,
+      "name": "relaxed_1"
+    },
+    "relaxed_2": {
+      "bin_share_a": 0.6,
+      "bin_share_b": 0.6,
+      "gap_max_s": 300.0,
+      "gap_median_s": 90.0,
+      "gap_p95_s": 180.0,
+      "name": "relaxed_2"
+    }
+  },
+  "trade_hygiene": {
+    "conflicting_duplicates": 0,
+    "cross_date_shard_mismatches": 245927,
+    "identical_repeats": 1782065,
+    "total_trade_rows": 1850541,
+    "trade_ts_unparseable": 0,
+    "unique_trade_ids": 68476
+  },
+  "window_venue_dates": [
+    "2026-07-11",
+    "2026-07-12",
+    "2026-07-13",
+    "2026-07-14",
+    "2026-07-15",
+    "2026-07-16",
+    "2026-07-17"
+  ]
+}

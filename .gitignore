@@ -588,3 +588,6 @@ docs/evidence/tracking/**
 docs/evidence/harness/**
 !docs/evidence/harness/**/
 !docs/evidence/harness/**/*.md
+
+# S390 daily qualification: size-bounded prefix snapshots beside the artifact (deleted after the write; never tracked)
+*.snapshots/

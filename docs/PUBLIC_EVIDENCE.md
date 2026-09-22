@@ -90,9 +90,14 @@ produce.
 - Win-prob 5-way NNLS stack: **0.709 acc / 0.193 Brier** (3-fold WF).
 - In-play endQ3 residual heads cut MAE ~46% vs pregame (mostly mechanical; **~26% over a naive
   carry-forward baseline**, WF-validated, leak-clean).
-- **The one measured calibration win: in-game conditioning** -- conditioning on realized
-  mid-game state sharpens win-prob calibration **Brier 0.209 -> 0.159 (NBA), 0.241 -> 0.126
-  (MLB)**, real-corpus OOS, `edge_claimed=False` (a live book sees the score too). Decomposed
+- **The one measured calibration win: in-game conditioning, versus a static pregame prior**
+  -- conditioning on realized mid-game state sharpens win-prob calibration against a
+  static prior: **Brier 0.209 -> 0.159 (NBA), 0.241 -> 0.126 (MLB)**, real-corpus OOS,
+  `edge_claimed=False` (a live book sees the score too).
+  **Versus the contemporaneous market price the in-game models are BEHIND** (Gate A-0,
+  2026-09-14, paired ticks, game-clustered CI: MLB Brier 0.23768 vs 0.20665, delta +0.03103,
+  CI [0.01704, 0.04535], 227 games; soccer 0.22789 vs 0.14273, 51 games). The residual question
+  -- whether the model adds anything once the price is the anchor -- is open. Decomposed
   honestly: a rating-blind score-only baseline already reaches 0.172 (NBA) / 0.128 (MLB);
   the model's own pregame prior adds the last ~0.014 (NBA) / ~0.001 (MLB).
   Full three-arm receipts: [INGAME_PROOF.md](INGAME_PROOF.md) section 2a.
@@ -111,9 +116,14 @@ produce.
 
 ### 5 · PREDICTIONS — *the honest betting read*
 
-- **Against real closing lines, the market is efficient.** Full-season WF backtest (truncation-
-  invariance proven): model Brier 0.208 vs close 0.198; spread/total CLV ≈ 0; corr-with-outcome
-  = 0.001. PBP Finals replay: win-prob Brier 0.34–0.40 in-series (worse than coin flip).
+- **Against real closing lines, the market is efficient.** NBA held-out pregame win probability
+  against the Shin-devigged close: model Brier **0.1735** vs **0.1666**, gap +0.0069, 95% CI
+  [-0.0036, +0.0175], n=743 -- verdict `TRAILS_CLOSE` (the CI includes 0). Artifact:
+  `data/cache/kalshi_complete/own_lines_backtest_nba.json`.
+  (The older 0.208 vs 0.198 pair was corrected 2026-09-14 -- no artifact on disk, did not
+  reproduce -- see [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md) section 3.)
+  Spread/total CLV ≈ 0; corr-with-outcome = 0.001. PBP Finals replay: win-prob Brier 0.34–0.40
+  in-series (worse than coin flip).
 - Prop backtests match the market within noise; **no durable positive edge survives cross-corpus.**
   Every candidate signal was rejected on ≥2 independent corpora, and positive full-sample lifts
   sign-flip out-of-sample — the overfit signature, caught by the gate. Calibration/sharpness, not a
@@ -191,7 +201,10 @@ Full do-not-claim list with source-code root causes: **[JOB_EVIDENCE_PACKET.md](
 | The data/feature ceiling analysis | [CEILING.md](CEILING.md) |
 | CV pipeline deep-dive | [CV_TRACKING.md](CV_TRACKING.md) |
 
-*Last verified: 2026-06-11. Numbers reconciled to the leak-free audited figures in JOB_EVIDENCE_PACKET.md.*
+*Last verified: 2026-09-22. Numbers reconciled to the leak-free audited figures in JOB_EVIDENCE_PACKET.md.
+Reconciliation note: the pregame Brier pair in section 5 was reconciled to the packet's 2026-09-14 correction
+(0.1735 vs 0.1666, n=743, `TRAILS_CLOSE`); the in-game gain in section 3 is labelled as versus a static prior,
+with the Gate A-0 result versus the contemporaneous market price stated alongside it.*
 
 
 ---

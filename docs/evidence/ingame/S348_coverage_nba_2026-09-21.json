@@ -1,0 +1,204 @@
+{
+  "data_root": "C:\\Users\\neelj\\nba-ai-system\\data",
+  "sports": {
+    "nba": {
+      "inputs": {
+        "state": {
+          "present": true,
+          "path": [
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\models\\nba_ingame.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\nba_logistic_prior_v1.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\prestart_m0__nba.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\prestart_m0_attempt2__nba_nba_full.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\asof_box_extra.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\asof_box_extra_ext.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\asof_defender_rollup.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\asof_features.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\asof_features_ext.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\asof_player_adv.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\asof_quarter_shape.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\asof_runvar.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\asof_team_adv.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\atlas_player_position.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\box_integrity_quarantine.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\box_integrity_quarantine_2023_24_run.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\boxdetail_asof.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\boxdetail_gate_fast_break_pts_diff_asof.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\boxdetail_gate_foul_trouble_diff_asof.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\boxdetail_gate_largest_lead_diff_asof.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\boxdetail_gate_paint_pts_diff_asof.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\boxdetail_gate_summary.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\carryover_asof.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\composition_gate_verdict.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\corpus_b_coverage_report.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\crew_fatigue_r1.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\defender_matchup_states.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\espn_boxscores.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\espn_boxscores_2023_24.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\espn_boxscores_2023_24_state.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\espn_boxscores_2024_25.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\espn_boxscores_2024_25_state.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\espn_nba_game_bridge.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\game_finals_corrected.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\games.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\ingame_hypothesis_hot_night.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\ingame_hypothesis_hot_night_2024-25_rows.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\ingame_hypothesis_hot_night_2025-26_rows.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\ingame_hypothesis_scheme_fit.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\ingame_hypothesis_scheme_fit_2024-25_rows.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\ingame_hypothesis_scheme_fit_2025-26_rows.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\linescores.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\linescores_2024_25.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\nba_family2_a2_verdict.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\nba_pregame_stack_v1_verdict.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\nba_teamadv_stack_v1_verdict.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\odds.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\odds_snapshots\\snapshots.jsonl",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\player_boxscores.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\player_value_features.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\positional_weight_rows.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\positional_weight_verdict.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\postmortem.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\quality_validity_gate_verdict.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\reclaim_gate_blk_diff_asof.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\reclaim_gate_def_blocks_per_game_diff_asof.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\reclaim_gate_def_fg3_pct_allowed_diff_asof.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\reclaim_gate_def_fg_pct_allowed_diff_asof.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\reclaim_gate_def_matchup_min_diff_asof.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\reclaim_gate_def_pts_allowed_per36_diff_asof.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\reclaim_gate_def_switches_per_game_diff_asof.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\reclaim_gate_defender_rollup_summary.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\reclaim_gate_dreb_diff_asof.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\reclaim_gate_fg3m_diff_asof.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\reclaim_gate_oreb_pg_diff_asof.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\reclaim_gate_pace_diff_asof.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\reclaim_gate_stl_diff_asof.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\reclaim_gate_summary.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\reclaim_gate_tov_pg_diff_asof.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\reprocess_selfcheck.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\reprocess_selfcheck_positional.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\states_gate_ondisk_validation.json",
+            "C:\\Users\\neelj\\nba-ai-system\\domains\\basketball_nba\\knowledge\\knowledge.jsonl",
+            "C:\\Users\\neelj\\nba-ai-system\\domains\\basketball_nba\\knowledge\\validation_ledger.jsonl"
+          ],
+          "file_count": 74,
+          "distinct_games": null,
+          "first_date": "2022-10-18",
+          "last_date": "2026-06-13",
+          "bytes": 12107159,
+          "rows": 294520,
+          "reasons": [
+            "missing_date",
+            "missing_or_oversize_game_id"
+          ],
+          "status": "PARTIAL"
+        },
+        "price_series": {
+          "present": true,
+          "path": [
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\inplay_odds\\nba_checkpoints_full.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\inplay_odds\\nba_price_series.parquet"
+          ],
+          "file_count": 2,
+          "distinct_games": 3428,
+          "first_date": "2023-02-23",
+          "last_date": "2026-06-14",
+          "bytes": 27970254,
+          "rows": 8864881,
+          "reasons": [],
+          "status": "AVAILABLE"
+        },
+        "books": {
+          "present": true,
+          "path": [
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame_books\\_scratch\\kalshi_multi\\nba\\_heartbeat.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame_books_local\\kalshi\\nba\\2026-09-21.jsonl",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame_books_local\\kalshi\\nba\\_heartbeat.json"
+          ],
+          "file_count": 3,
+          "distinct_games": null,
+          "first_date": "2026-09-21",
+          "last_date": "2026-09-21",
+          "bytes": 177848,
+          "rows": 227,
+          "reasons": [
+            "missing_date",
+            "missing_or_oversize_game_id"
+          ],
+          "status": "PARTIAL"
+        },
+        "prints": {
+          "present": false,
+          "path": [],
+          "file_count": 0,
+          "distinct_games": 0,
+          "first_date": null,
+          "last_date": null,
+          "bytes": 0,
+          "rows": 0,
+          "reasons": [],
+          "status": "ABSENT"
+        },
+        "model": {
+          "present": true,
+          "path": [
+            "C:\\Users\\neelj\\nba-ai-system\\scripts\\platformkit\\frontend\\live_board.py"
+          ],
+          "module": "scripts.platformkit.frontend.live_board.live_model_home_prob",
+          "file_count": 1,
+          "distinct_games": null,
+          "first_date": null,
+          "last_date": null,
+          "bytes": 20150,
+          "status": "AVAILABLE",
+          "basis": "static_dispatch_only; runtime_not_verified"
+        },
+        "settlement": {
+          "present": true,
+          "path": [
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame_grade\\nba\\401859967.jsonl",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame_grade\\nba\\g1.jsonl",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\games.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\ingame_hypothesis_hot_night_2024-25_rows.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\ingame_hypothesis_hot_night_2025-26_rows.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\ingame_hypothesis_scheme_fit_2024-25_rows.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\ingame_hypothesis_scheme_fit_2025-26_rows.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\positional_weight_rows.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\postmortem.parquet"
+          ],
+          "file_count": 9,
+          "distinct_games": 6669,
+          "first_date": "2022-10-18",
+          "last_date": "2026-07-18",
+          "bytes": 369455,
+          "rows": 22257,
+          "reasons": [
+            "missing_date",
+            "missing_result"
+          ],
+          "status": "PARTIAL"
+        },
+        "joined": {
+          "present": false,
+          "path": [],
+          "file_count": 0,
+          "distinct_games": 0,
+          "first_date": null,
+          "last_date": null,
+          "bytes": 0,
+          "rows": 0,
+          "reasons": [],
+          "status": "ABSENT"
+        }
+      },
+      "missing": [
+        "state",
+        "books",
+        "prints",
+        "settlement",
+        "joined"
+      ],
+      "scoring_route": "MISSING:state,books,prints,settlement,joined"
+    }
+  }
+}

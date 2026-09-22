@@ -1,0 +1,131 @@
+{
+  "data_root": "C:\\Users\\neelj\\nba-ai-system\\data",
+  "sports": {
+    "npb": {
+      "inputs": {
+        "state": {
+          "present": true,
+          "path": [
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\npb\\ingame_base_fit_verdict.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\npb\\ingame_tail_scan.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\npb\\ingame_tail_verdict.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\npb\\npb_results.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\npb\\pregame_gate_verdict.json"
+          ],
+          "file_count": 5,
+          "distinct_games": null,
+          "first_date": "2022-03-25",
+          "last_date": "2026-07-16",
+          "bytes": 31603,
+          "rows": 4024,
+          "reasons": [
+            "missing_date",
+            "missing_or_oversize_game_id"
+          ],
+          "status": "PARTIAL"
+        },
+        "price_series": {
+          "present": true,
+          "path": [
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\inplay_odds\\npb_price_series.parquet"
+          ],
+          "file_count": 1,
+          "distinct_games": 298,
+          "first_date": "2026-05-02",
+          "last_date": "2026-07-08",
+          "bytes": 2083302,
+          "rows": 646834,
+          "reasons": [],
+          "status": "AVAILABLE"
+        },
+        "books": {
+          "present": true,
+          "path": [
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\depth_history\\npb\\2026-07-05.jsonl",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\depth_history\\npb\\2026-07-06.jsonl",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\depth_history\\npb\\2026-07-07.jsonl",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\depth_history\\npb\\2026-07-08.jsonl",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\depth_history\\npb\\2026-07-09.jsonl",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\depth_history\\npb\\2026-07-10.jsonl",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\depth_history\\npb\\2026-07-11.jsonl",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\depth_history\\npb\\2026-07-12.jsonl",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\depth_history\\npb\\2026-07-13.jsonl",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\depth_history\\npb\\2026-07-14.jsonl",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\depth_history\\npb\\2026-07-15.jsonl",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\depth_history\\npb\\2026-07-16.jsonl",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\depth_history\\npb\\2026-07-17.jsonl"
+          ],
+          "file_count": 13,
+          "distinct_games": 90,
+          "first_date": "2026-07-05",
+          "last_date": "2026-07-17",
+          "bytes": 14098810,
+          "rows": 14641,
+          "reasons": [],
+          "status": "AVAILABLE"
+        },
+        "prints": {
+          "present": false,
+          "path": [],
+          "file_count": 0,
+          "distinct_games": 0,
+          "first_date": null,
+          "last_date": null,
+          "bytes": 0,
+          "rows": 0,
+          "reasons": [],
+          "status": "ABSENT"
+        },
+        "model": {
+          "present": false,
+          "path": [],
+          "module": null,
+          "file_count": 0,
+          "distinct_games": null,
+          "first_date": null,
+          "last_date": null,
+          "bytes": 0,
+          "status": "ABSENT",
+          "basis": "static_dispatch_only; runtime_not_verified"
+        },
+        "settlement": {
+          "present": true,
+          "path": [
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\npb\\npb_results.parquet"
+          ],
+          "file_count": 1,
+          "distinct_games": null,
+          "first_date": "2022-03-25",
+          "last_date": "2026-07-16",
+          "bytes": 24926,
+          "rows": 3920,
+          "reasons": [
+            "missing_or_oversize_game_id",
+            "missing_result"
+          ],
+          "status": "PARTIAL"
+        },
+        "joined": {
+          "present": false,
+          "path": [],
+          "file_count": 0,
+          "distinct_games": 0,
+          "first_date": null,
+          "last_date": null,
+          "bytes": 0,
+          "rows": 0,
+          "reasons": [],
+          "status": "ABSENT"
+        }
+      },
+      "missing": [
+        "state",
+        "prints",
+        "model",
+        "settlement",
+        "joined"
+      ],
+      "scoring_route": "MISSING:state,prints,model,settlement,joined"
+    }
+  }
+}

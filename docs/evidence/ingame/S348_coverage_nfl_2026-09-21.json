@@ -1,0 +1,109 @@
+{
+  "data_root": "C:\\Users\\neelj\\nba-ai-system\\data",
+  "sports": {
+    "nfl": {
+      "inputs": {
+        "state": {
+          "present": false,
+          "path": [],
+          "file_count": 0,
+          "distinct_games": 0,
+          "first_date": null,
+          "last_date": null,
+          "bytes": 0,
+          "rows": 0,
+          "reasons": [],
+          "status": "ABSENT"
+        },
+        "price_series": {
+          "present": false,
+          "path": [],
+          "file_count": 0,
+          "distinct_games": 0,
+          "first_date": null,
+          "last_date": null,
+          "bytes": 0,
+          "rows": 0,
+          "reasons": [],
+          "status": "ABSENT"
+        },
+        "books": {
+          "present": true,
+          "path": [
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame_books_local\\kalshi\\nfl\\2026-09-21.jsonl",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame_books_local\\kalshi\\nfl\\_heartbeat.json"
+          ],
+          "file_count": 2,
+          "distinct_games": null,
+          "first_date": "2026-09-21",
+          "last_date": "2026-09-21",
+          "bytes": 2466293,
+          "rows": 3151,
+          "reasons": [
+            "missing_date",
+            "missing_or_oversize_game_id"
+          ],
+          "status": "PARTIAL"
+        },
+        "prints": {
+          "present": false,
+          "path": [],
+          "file_count": 0,
+          "distinct_games": 0,
+          "first_date": null,
+          "last_date": null,
+          "bytes": 0,
+          "rows": 0,
+          "reasons": [],
+          "status": "ABSENT"
+        },
+        "model": {
+          "present": false,
+          "path": [],
+          "module": null,
+          "file_count": 0,
+          "distinct_games": null,
+          "first_date": null,
+          "last_date": null,
+          "bytes": 0,
+          "status": "ABSENT",
+          "basis": "static_dispatch_only; runtime_not_verified"
+        },
+        "settlement": {
+          "present": false,
+          "path": [],
+          "file_count": 0,
+          "distinct_games": 0,
+          "first_date": null,
+          "last_date": null,
+          "bytes": 0,
+          "rows": 0,
+          "reasons": [],
+          "status": "ABSENT"
+        },
+        "joined": {
+          "present": false,
+          "path": [],
+          "file_count": 0,
+          "distinct_games": 0,
+          "first_date": null,
+          "last_date": null,
+          "bytes": 0,
+          "rows": 0,
+          "reasons": [],
+          "status": "ABSENT"
+        }
+      },
+      "missing": [
+        "state",
+        "price_series",
+        "books",
+        "prints",
+        "model",
+        "settlement",
+        "joined"
+      ],
+      "scoring_route": "MISSING:state,price_series,books,prints,model,settlement,joined"
+    }
+  }
+}

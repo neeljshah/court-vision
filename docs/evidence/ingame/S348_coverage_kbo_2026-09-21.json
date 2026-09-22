@@ -1,0 +1,141 @@
+{
+  "data_root": "C:\\Users\\neelj\\nba-ai-system\\data",
+  "sports": {
+    "kbo": {
+      "inputs": {
+        "state": {
+          "present": true,
+          "path": [
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\kbo\\ingame_base_fit_verdict.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\kbo\\ingame_tail_scan.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\kbo\\ingame_tail_verdict.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\kbo\\kbo_results.parquet",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\kbo\\naver_relay_live_sample_2026-07-05.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\kbo\\naver_relay_probe.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\kbo\\pregame_gate_verdict.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\kbo\\slate_2026-07-05.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\kbo\\slate_2026-07-07.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\kbo\\slate_2026-07-08.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\kbo\\slate_2026-07-09.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\kbo\\slate_2026-07-11.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\kbo\\slate_2026-07-16.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\kbo\\slate_2026-07-17.json",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\kbo\\slate_close_report_2026-07-05.json"
+          ],
+          "file_count": 15,
+          "distinct_games": null,
+          "first_date": "2022-04-02",
+          "last_date": "2026-07-16",
+          "bytes": 659351,
+          "rows": 3290,
+          "reasons": [
+            "missing_date",
+            "missing_or_oversize_game_id"
+          ],
+          "status": "PARTIAL"
+        },
+        "price_series": {
+          "present": true,
+          "path": [
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\inplay_odds\\kbo_price_series.parquet"
+          ],
+          "file_count": 1,
+          "distinct_games": 558,
+          "first_date": "2026-05-12",
+          "last_date": "2026-07-08",
+          "bytes": 3992300,
+          "rows": 1414315,
+          "reasons": [],
+          "status": "AVAILABLE"
+        },
+        "books": {
+          "present": true,
+          "path": [
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\depth_history\\kbo\\2026-07-05.jsonl",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\depth_history\\kbo\\2026-07-06.jsonl",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\depth_history\\kbo\\2026-07-07.jsonl",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\depth_history\\kbo\\2026-07-08.jsonl",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\depth_history\\kbo\\2026-07-09.jsonl",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\depth_history\\kbo\\2026-07-10.jsonl",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\depth_history\\kbo\\2026-07-11.jsonl",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\depth_history\\kbo\\2026-07-13.jsonl",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\depth_history\\kbo\\2026-07-14.jsonl",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\depth_history\\kbo\\2026-07-15.jsonl",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\depth_history\\kbo\\2026-07-16.jsonl",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\depth_history\\kbo\\2026-07-17.jsonl",
+            "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\depth_history\\kbo\\2026-07-27.jsonl"
+          ],
+          "file_count": 13,
+          "distinct_games": 102,
+          "first_date": "2026-07-05",
+          "last_date": "2026-07-27",
+          "bytes": 12998989,
+          "rows": 15180,
+          "reasons": [],
+          "status": "AVAILABLE"
+        },
+        "prints": {
+          "present": false,
+          "path": [],
+          "file_count": 0,
+          "distinct_games": 0,
+          "first_date": null,
+          "last_date": null,
+          "bytes": 0,
+          "rows": 0,
+          "reasons": [],
+          "status": "ABSENT"
+        },
+        "model": {
+          "present": false,
+          "path": [],
+          "module": null,
+          "file_count": 0,
+          "distinct_games": null,
+          "first_date": null,
+          "last_date": null,
+          "bytes": 0,
+          "status": "ABSENT",
+          "basis": "static_dispatch_only; runtime_not_verified"
+        },
+        "settlement": {
+          "present": true,
+          "path": [
+            "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\kbo\\kbo_results.parquet"
+          ],
+          "file_count": 1,
+          "distinct_games": null,
+          "first_date": "2022-04-02",
+          "last_date": "2026-07-16",
+          "bytes": 22080,
+          "rows": 3215,
+          "reasons": [
+            "missing_or_oversize_game_id",
+            "missing_result"
+          ],
+          "status": "PARTIAL"
+        },
+        "joined": {
+          "present": false,
+          "path": [],
+          "file_count": 0,
+          "distinct_games": 0,
+          "first_date": null,
+          "last_date": null,
+          "bytes": 0,
+          "rows": 0,
+          "reasons": [],
+          "status": "ABSENT"
+        }
+      },
+      "missing": [
+        "state",
+        "prints",
+        "model",
+        "settlement",
+        "joined"
+      ],
+      "scoring_route": "MISSING:state,prints,model,settlement,joined"
+    }
+  }
+}

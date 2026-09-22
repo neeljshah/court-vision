@@ -290,6 +290,26 @@ the repo will catch each one — which is disqualifying for a no-degree candidat
 schemas/artifacts read directly, headline graders read line-by-line. No repo files were edited
 during the audit. Last reconciled: 2026-06-11.*
 
+---
+
+## Machine-readable figure list
+
+Parsed by `scripts/platformkit/tracking/public_figures_check.py`. One figure per line, prefixed
+`RETRACTED:` or `CORRECTED:`, the figure text first, then ` -- ` and the reason. A figure below
+may appear on a public page (`README.md`, `EVIDENCE.md`, `docs/PUBLIC_EVIDENCE.md`) ONLY on a
+line that also carries the word retracted, corrected, superseded or do-not-claim, or under a
+markdown heading that does. Sources: `.claude/rules/no-edge-claims.md` and the 2026-09-14
+correction in section 3 above.
+
+RETRACTED: +18.38% -- pregame ROI, a market-follow grading artifact
+RETRACTED: 0.119 -- endQ3 win-prob Brier, a Q4 feature leak
+RETRACTED: +54% -- in-play ROI, an L5-proxy ceiling, not realized edge
+RETRACTED: 78.11 -- in-play accuracy, the same L5-proxy ceiling
+RETRACTED: 8.94 -- retracted inflated figure
+RETRACTED: 54.57 -- retracted inflated figure
+CORRECTED: 0.208 -- pregame model Brier; no artifact, did not reproduce; superseded 2026-09-14 by 0.1735 (n=743, TRAILS_CLOSE)
+CORRECTED: 0.198 -- closing-line Brier of that same pair; superseded 2026-09-14 by 0.1666 (n=743, TRAILS_CLOSE)
+
 
 ---
 <!-- nav-footer -->
