@@ -1,5 +1,6 @@
 import { field as f, snapshot } from "./labHelpers";
 import type { ResearchAnalysis, ResearchReference, ResearchRow } from "./researchTypes";
+import { buildBrierPhaseCoverage } from "./brierPhaseCoverage";
 
 type Grain = { n?: unknown; brier_model?: unknown; brier_market?: unknown; brier_clim?: unknown; bss_model_vs_clim?: unknown; bss_market_vs_clim?: unknown; bss_model_vs_market?: unknown; below_floor?: unknown };
 type SportScores = { grains?: unknown };
@@ -16,9 +17,11 @@ const generatedDate = (value: unknown): string | undefined => typeof value === "
 function rows(source: BrierSkillScoresSource): ResearchRow[] {
   if (!source.sports || typeof source.sports !== "object" || Array.isArray(source.sports)) return [];
   return Object.entries(source.sports as Record<string, unknown>).flatMap(([sport, entry]) => {
+    if (!entry || typeof entry !== "object" || Array.isArray(entry)) return [];
     const scores = entry as SportScores;
     if (!scores.grains || typeof scores.grains !== "object" || Array.isArray(scores.grains)) return [];
     return Object.entries(scores.grains as Record<string, unknown>).flatMap(([grain, value]) => {
+      if (!value || typeof value !== "object" || Array.isArray(value)) return [];
       const row = value as Grain;
       if (!finite(row.n) || row.n < 0 || !finite(row.brier_model) || row.brier_model < 0 || !finite(row.brier_market) || row.brier_market < 0 || !finite(row.brier_clim) || row.brier_clim < 0 || !finite(row.bss_model_vs_clim) || !finite(row.bss_market_vs_clim) || !finite(row.bss_model_vs_market)) return [];
       return [{
@@ -49,6 +52,7 @@ export function buildBrierSkillScoresResearch(source: BrierSkillScoresSource): R
     status: "Descriptive calibration subset",
     fields: [f("model_vs_market_bss", "Model versus Market Brier skill score", "number", 4), f("model_vs_climatology_bss", "Model versus Climatology Brier skill score", "number", 4), f("market_vs_climatology_bss", "Market versus Climatology Brier skill score", "number", 4), f("model_brier", "Model Brier", "number", 4), f("market_brier", "Market Brier", "number", 4), f("climatology_brier", "Climatology Brier", "number", 4), f("scored_rows", "Scored rows", "number", 0)],
     rows: analysisRows,
+    phaseCoverage: buildBrierPhaseCoverage(source || {}),
     formula: "bss_model_vs_clim = 1 - brier_model / brier_clim. bss_market_vs_clim = 1 - brier_market / brier_clim. bss_model_vs_market = 1 - brier_model / brier_market; n is the published support.",
     bindings: [
       { operand: "brier_model", sourcePath: "sports.*.grains.*.brier_model", valueKey: "model_brier", label: "Model Brier" },

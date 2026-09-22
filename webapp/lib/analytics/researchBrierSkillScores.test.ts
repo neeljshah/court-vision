@@ -21,5 +21,9 @@ describe("Brier skill scores research", () => {
   it("returns no rows for missing or malformed grains", () => {
     expect(buildBrierSkillScoresResearch({ sports: { mlb: { grains: { all: { ...grain(), brier_clim: -1 } } } } })[0].rows).toEqual([]);
     expect(buildBrierSkillScoresResearch({})[0].rows).toEqual([]);
+    const malformed = buildBrierSkillScoresResearch({ sports: { mlb: { grains: { all: grain(), "early(inn1-3)": null } }, soccer_intl: null } })[0];
+    expect(malformed.rows).toHaveLength(1);
+    expect(malformed.phaseCoverage?.find(item => item.sport === "mlb")?.fraction).toBeNull();
+    expect(malformed.phaseCoverage?.find(item => item.sport === "mlb")?.reason).toBeTruthy();
   });
 });

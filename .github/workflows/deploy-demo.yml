@@ -74,6 +74,8 @@ jobs:
           npx vitest run lib/analytics/pitchResultComparison.test.ts
           npx vitest run lib/analytics/mlbAtlasFamily.test.ts
           npx vitest run lib/analytics/researchBasketball.test.ts
+          npx vitest run lib/analytics/brierPhaseCoverage.test.ts
+          npx vitest run lib/analytics/researchBrierSkillScores.test.ts
           npx vitest run lib/analytics/researchMultisport.test.ts
           npx vitest run lib/analytics/researchValidation.test.ts
           npx vitest run lib/analytics/researchBasketballDepth.test.ts
@@ -120,6 +122,7 @@ jobs:
           npx vitest run components/analytics/count-context/CountContext.test.tsx
           npx vitest run components/analytics/count-context/ExactCountExplorer.test.tsx
           npx vitest run components/analytics/library/ResearchDetail.test.tsx
+          npx vitest run components/analytics/library/BrierPhaseCoveragePanel.test.tsx
           npx vitest run components/analytics/library/MeasurementCoverage.test.tsx
           npx vitest run components/analytics/library/useResearchView.test.tsx
           npx vitest run components/analytics/library/MlbBatterContact.test.tsx

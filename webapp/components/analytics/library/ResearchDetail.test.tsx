@@ -3,6 +3,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import ResearchDetail from "./ResearchDetail";
 import * as table from "../lab/LabTable";
 import type { ResearchAnalysis } from "@/lib/analytics/researchTypes";
+import { buildBrierPhaseCoverage } from "@/lib/analytics/brierPhaseCoverage";
+import brierSource from "@/public/data/showcase/brier_skill_scores.json";
 
 const analysis: ResearchAnalysis = {
   id: "nba-matchup-test", title: "Test matchup analysis", sport: "nba", category: "Matchups", source: "test-source", description: "Historical profile comparison", scope: "Published rows only", caveat: "Descriptive", status: "published", formula: "x / y", interpretation: "Read the measured rows", references: [], novelty: "Derived analysis",
@@ -13,6 +15,7 @@ const analysis: ResearchAnalysis = {
 const brierAnalysis: ResearchAnalysis = {
   ...analysis, id: "brier-skill-score-by-game-phase", title: "Brier skill score by sport and game phase", sport: "all",
   source: "brier_skill_scores",
+  phaseCoverage: buildBrierPhaseCoverage(brierSource),
   rows: [
     { id: "mlb-all", label: "MLB | all", group: "MLB", values: { score: 8, rate: 0.5 }, sourcePaths: ["sports.mlb.grains.all.brier_model"] },
     { id: "mlb-early", label: "MLB | early", group: "MLB", values: { score: 3, rate: 0.25 }, sourcePaths: ["sports.mlb.grains.early.brier_model"] },
@@ -64,6 +67,21 @@ describe("ResearchDetail", () => {
     expect(screen.queryByRole("region", { name: "Measurement summary" })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Data table" }));
     expect(screen.getAllByRole("table")).toHaveLength(2);
+  });
+
+  it("keeps phase coverage tied to the selected sport and independent of row search", () => {
+    render(<ResearchDetail analysis={brierAnalysis} related={[]} />);
+    expect(screen.getByRole("article", { name: "MLB phase coverage" })).toHaveTextContent("97.56%");
+    expect(screen.queryByRole("article", { name: "International soccer phase coverage" })).not.toBeInTheDocument();
+    fireEvent.change(screen.getByRole("textbox", { name: "Search analysis rows" }), { target: { value: "absent row" } });
+    expect(screen.getByRole("article", { name: "MLB phase coverage" })).toHaveTextContent("26,683");
+    fireEvent.change(screen.getByRole("combobox", { name: "Population" }), { target: { value: "sport=soccer_intl" } });
+    expect(screen.getByRole("article", { name: "International soccer phase coverage" })).toHaveTextContent("79.32%");
+    expect(screen.queryByRole("article", { name: "MLB phase coverage" })).not.toBeInTheDocument();
+    fireEvent.change(screen.getByRole("combobox", { name: "Population" }), { target: { value: "all" } });
+    expect(screen.getByRole("article", { name: "MLB phase coverage" })).toBeInTheDocument();
+    expect(screen.getByRole("article", { name: "International soccer phase coverage" })).toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "Measurement summary" })).not.toBeInTheDocument();
   });
 
   it("pools nothing for a mixed analysis whose rows publish no population", () => {
