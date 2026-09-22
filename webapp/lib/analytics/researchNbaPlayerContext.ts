@@ -4,7 +4,7 @@ import type { ResearchAnalysis, ResearchReference, ResearchRow, ResearchSource }
 
 type Entry = Record<string, unknown>;
 type PlayerContextSources = { consistency: Entry; q4: Entry; context: Entry; onOff: Entry; atlas: Entry };
-type PlayerCell = { name: string; paths: string[]; values: Record<string, number | null>; modules: Set<string> };
+type PlayerCell = { name: string; paths: string[]; values: Record<string, number | null>; modules: Set<string>; windows: Record<string, string> };
 
 const REFERENCES: ResearchReference[] = [{
   title: "Published NBA player snapshot modules",
@@ -31,13 +31,14 @@ function playerHrefs(source: Entry | undefined): Map<string, string> {
   return new Map(entrySlugs(valid).map(({ slug, entry }) => [playerKey(entry.entity), `/analytics/players/nba_players/${slug}`]));
 }
 
-function setCell(cells: Map<string, PlayerCell>, name: string, module: string, values: Record<string, number | null>, paths: string[]) {
+function setCell(cells: Map<string, PlayerCell>, name: string, module: string, values: Record<string, number | null>, paths: string[], windows: Record<string, string> = {}) {
   const key = playerKey(name);
   if (!key) return;
-  const current = cells.get(key) || { name, paths: [], values: {}, modules: new Set<string>() };
+  const current = cells.get(key) || { name, paths: [], values: {}, modules: new Set<string>(), windows: {} };
   current.name = current.name || name;
   current.modules.add(module);
   Object.assign(current.values, values);
+  Object.assign(current.windows, windows);
   current.paths.push(...paths);
   cells.set(key, current);
 }
@@ -66,7 +67,8 @@ function onOffCells(source: Entry, cells: Map<string, PlayerCell>) {
         const key = playerKey(name);
         if (!name || seen.has(key)) continue;
         seen.add(key);
-        setCell(cells, name, "on_off_showcase", { net_rating_delta: numberAt(row, "net_rating_delta") }, [`on_off_showcase.seasons.${season}.${list}[].player_name`, `on_off_showcase.seasons.${season}.${list}[].net_rating_delta`]);
+        const window = season.replace(/_(\d{2})$/, "-$1");
+        setCell(cells, name, "on_off_showcase", { net_rating_delta: numberAt(row, "net_rating_delta"), on_off_minutes: numberAt(row, "min_on") }, [`on_off_showcase.seasons.${season}.${list}[].player_name`, `on_off_showcase.seasons.${season}.${list}[].net_rating_delta`, `on_off_showcase.seasons.${season}.${list}[].min_on`], { net_rating_delta: window, on_off_minutes: window });
       }
     }
   }
@@ -96,13 +98,20 @@ export function buildNbaPlayerContextResearch(source: PlayerContextSources): Res
   const minimumSources = threeSourceRows.length >= 40 ? 3 : 2;
   const selected = allCells.filter(cell => cell.modules.size >= minimumSources).sort((left, right) => left.name.localeCompare(right.name));
   const hrefs = playerHrefs(source?.atlas);
-  const rows: ResearchRow[] = selected.map(cell => ({ id: `nba-player-context-${playerKey(cell.name)}`, label: cell.name, group: `${cell.modules.size} published sources`, values: { consistency_cv: null, q4_points_shift: null, q4_rebounds_shift: null, q4_assists_shift: null, context_sensitivity: null, home_away_ts_difference: null, net_rating_delta: null, career_points_per36: null, career_rebounds_per36: null, career_assists_per36: null, ...cell.values }, note: `Published in ${cell.modules.size} joined source modules. Null means that source module did not publish this measurement for the player.`, href: hrefs.get(playerKey(cell.name)), sourcePaths: [...new Set(cell.paths)] }));
+  const rows: ResearchRow[] = selected.map(cell => ({
+    id: `nba-player-context-${playerKey(cell.name)}`, label: cell.name, group: `${cell.modules.size} published sources`,
+    values: { consistency_cv: null, q4_points_shift: null, q4_rebounds_shift: null, q4_assists_shift: null, context_sensitivity: null, home_away_ts_difference: null, net_rating_delta: null, on_off_minutes: null, career_points_per36: null, career_rebounds_per36: null, career_assists_per36: null, ...cell.values },
+    note: `Published in ${cell.modules.size} joined source modules. Null means that source module did not publish this measurement for the player.${cell.windows.net_rating_delta ? ` On/off season: ${cell.windows.net_rating_delta}, the latest season where this name appears in the published top/bottom lists; not necessarily the latest season played.` : " On/off season: not published for this row."}`,
+    windows: cell.windows, bindingValues: { on_off_season: cell.windows.net_rating_delta || null },
+    href: hrefs.get(playerKey(cell.name)), sourcePaths: [...new Set(cell.paths)],
+  }));
+  const onOffWindows = [...new Set(rows.flatMap(row => row.windows?.net_rating_delta ? [row.windows.net_rating_delta] : []))].sort();
   const sourceTotals = new Map<string, number>([["nba_consistency_profiles", 0], ["nba_q4_shift", 0], ["ctx_player_splits", 0], ["on_off_showcase", 0], ["atlas_nba_manifest", 0]]);
   for (const cell of allCells) for (const moduleId of cell.modules) sourceTotals.set(moduleId, (sourceTotals.get(moduleId) || 0) + 1);
   const sourceCoverage = [...sourceTotals].map(([module, total]) => coverage(module, selected, total)).join("; ");
   const excludedNames = allCells.filter(cell => cell.modules.size === 1 && !cell.modules.has("atlas_nba_manifest")).map(cell => cell.name).sort((left, right) => left.localeCompare(right));
   const sources: ResearchSource[] = [
-    { id: "nba_consistency_profiles", asOf: text(source?.consistency?.as_of) || "not published", fields: ["consistency_cv"] }, { id: "nba_q4_shift", asOf: text(source?.q4?.generated_at) || "not published", fields: ["q4_points_shift", "q4_rebounds_shift", "q4_assists_shift"] }, { id: "ctx_player_splits", asOf: "not published", fields: ["context_sensitivity", "home_away_ts_difference"] }, { id: "on_off_showcase", asOf: "not published", fields: ["net_rating_delta"] }, { id: "atlas_nba_manifest", asOf: atlasAsOf(source?.atlas), fields: ["career_points_per36", "career_rebounds_per36", "career_assists_per36"] },
+    { id: "nba_consistency_profiles", asOf: text(source?.consistency?.as_of) || "not published", fields: ["consistency_cv"] }, { id: "nba_q4_shift", asOf: text(source?.q4?.generated_at) || "not published", fields: ["q4_points_shift", "q4_rebounds_shift", "q4_assists_shift"] }, { id: "ctx_player_splits", asOf: "not published", fields: ["context_sensitivity", "home_away_ts_difference"] }, { id: "on_off_showcase", asOf: "not published", fields: ["net_rating_delta", "on_off_minutes"], rowWindows: { net_rating_delta: onOffWindows, on_off_minutes: onOffWindows } }, { id: "atlas_nba_manifest", asOf: atlasAsOf(source?.atlas), fields: ["career_points_per36", "career_rebounds_per36", "career_assists_per36"] },
   ];
   return [{
     id: "nba-player-context-consistency-q4-venue-onoff",
@@ -112,14 +121,14 @@ export function buildNbaPlayerContextResearch(source: PlayerContextSources): Res
     source: "atlas_nba_manifest",
     sources,
     question: "Which published player consistency, Q4, venue-context, on-off, and per-36 measurements can be read together for the same names?",
-    method: "Normalize player names by lower-casing and removing diacritics and punctuation; no alias map is used. Keep rows meeting the stated source-count floor and retain unavailable measurements as null.",
+    method: "Normalize player names by lower-casing and removing diacritics and punctuation; no alias map is used. Keep rows meeting the stated source-count floor and retain unavailable measurements as null. On/off selects the latest season containing that name in the published top/bottom lists, retaining its on-court minutes and season together.",
     description: "Published player subsets are joined by normalized name so their available consistency, late-quarter, venue-context, on-off, and per-36 values remain side by side.",
     scope: `${rows.length} player names from at least ${minimumSources} published sources. Sources: ${sources.map(item => `${item.id} (as of ${item.asOf})`).join("; ")}.`,
     caveat: `The three-source join produced ${threeSourceRows.length} names, below the 40-row floor, so this analysis uses a two-source join. Join coverage among retained names: ${sourceCoverage}. Source-only names excluded from the join: ${excludedNames.join(", ") || "none"}. No alias map was needed; source windows, populations, and definitions differ.`,
     status: "Descriptive cross-module profile",
-    fields: [sourced("nba_consistency_profiles", "consistency_cv", "Consistency CV", "number", 4), sourced("nba_q4_shift", "q4_points_shift", "Q4 points shift per 36", "number", 2), sourced("nba_q4_shift", "q4_rebounds_shift", "Q4 rebounds shift per 36", "number", 2), sourced("nba_q4_shift", "q4_assists_shift", "Q4 assists shift per 36", "number", 2), sourced("ctx_player_splits", "context_sensitivity", "Context sensitivity", "number", 4), sourced("ctx_player_splits", "home_away_ts_difference", "Home minus away true-shooting difference", "pp", 2), sourced("on_off_showcase", "net_rating_delta", "Net rating delta", "number", 3), sourced("atlas_nba_manifest", "career_points_per36", "Atlas corpus points per 36", "number", 1), sourced("atlas_nba_manifest", "career_rebounds_per36", "Atlas corpus rebounds per 36", "number", 1), sourced("atlas_nba_manifest", "career_assists_per36", "Atlas corpus assists per 36", "number", 1)],
+    fields: [sourced("nba_consistency_profiles", "consistency_cv", "Consistency CV", "number", 4), sourced("nba_q4_shift", "q4_points_shift", "Q4 points shift per 36", "number", 2), sourced("nba_q4_shift", "q4_rebounds_shift", "Q4 rebounds shift per 36", "number", 2), sourced("nba_q4_shift", "q4_assists_shift", "Q4 assists shift per 36", "number", 2), sourced("ctx_player_splits", "context_sensitivity", "Context sensitivity", "number", 4), sourced("ctx_player_splits", "home_away_ts_difference", "Home minus away true-shooting difference", "pp", 2), sourced("on_off_showcase", "net_rating_delta", "On/off margin delta per 48", "number", 3), sourced("on_off_showcase", "on_off_minutes", "On/off on-court minutes", "number", 2), sourced("atlas_nba_manifest", "career_points_per36", "Atlas corpus points per 36", "number", 1), sourced("atlas_nba_manifest", "career_rebounds_per36", "Atlas corpus rebounds per 36", "number", 1), sourced("atlas_nba_manifest", "career_assists_per36", "Atlas corpus assists per 36", "number", 1)],
     rows,
-    formula: "consistency_cv, q4_points_shift, q4_rebounds_shift, q4_assists_shift, context_sensitivity, home_away_ts_difference, net_rating_delta, career_points_per36, career_rebounds_per36, and career_assists_per36 are copied from their named source fields. Q4 shifts are published Q4 minus Q1-Q3 values.",
+    formula: "consistency_cv, q4_points_shift, q4_rebounds_shift, q4_assists_shift, context_sensitivity, home_away_ts_difference, net_rating_delta, on_off_minutes, career_points_per36, career_rebounds_per36, and career_assists_per36 are copied from their named source fields. Q4 shifts are published Q4 minus Q1-Q3 values. net_rating_delta is net_rating_on_per48 minus net_rating_off_per48; on_off_minutes is min_on for on_off_season. Minutes describe on-court support only; off-court minutes are not published in these rows.",
     bindings: [
       { operand: "consistency_cv", sourcePath: "nba_consistency_profiles.*[].composite_cv_shrunk", valueKey: "consistency_cv", label: "Consistency CV" },
       { operand: "q4_points_shift", sourcePath: "nba_q4_shift.pts_shift.*[].shift", valueKey: "q4_points_shift", label: "Q4 points shift per 36" },
@@ -127,12 +136,14 @@ export function buildNbaPlayerContextResearch(source: PlayerContextSources): Res
       { operand: "q4_assists_shift", sourcePath: "nba_q4_shift.ast_shift.*[].shift", valueKey: "q4_assists_shift", label: "Q4 assists shift per 36" },
       { operand: "context_sensitivity", sourcePath: "ctx_player_splits.players[].context_sensitivity_score", valueKey: "context_sensitivity", label: "Context sensitivity" },
       { operand: "home_away_ts_difference", sourcePath: "ctx_player_splits.players[].splits.home_away.delta_ts_pct", valueKey: "home_away_ts_difference", label: "Home minus away true-shooting difference" },
-      { operand: "net_rating_delta", sourcePath: "on_off_showcase.seasons.*.*[].net_rating_delta", valueKey: "net_rating_delta", label: "Net rating delta" },
+      { operand: "net_rating_delta", sourcePath: "on_off_showcase.seasons.*.*[].net_rating_delta", valueKey: "net_rating_delta", label: "On/off margin delta per 48" },
+      { operand: "on_off_minutes", sourcePath: "on_off_showcase.seasons.*.*[].min_on", valueKey: "on_off_minutes", label: "On/off on-court minutes" },
+      { operand: "on_off_season", sourcePath: "on_off_showcase.seasons (selected season key)", valueKey: "on_off_season", label: "On/off season" },
       { operand: "career_points_per36", sourcePath: "atlas_nba_manifest.entries[].key_numbers.career_pts_per36", valueKey: "career_points_per36", label: "Atlas corpus points per 36" },
       { operand: "career_rebounds_per36", sourcePath: "atlas_nba_manifest.entries[].key_numbers.career_reb_per36", valueKey: "career_rebounds_per36", label: "Atlas corpus rebounds per 36" },
       { operand: "career_assists_per36", sourcePath: "atlas_nba_manifest.entries[].key_numbers.career_ast_per36", valueKey: "career_assists_per36", label: "Atlas corpus assists per 36" },
     ],
-    interpretation: "Compare each measurement within its source definition and treat missing cells as unavailable, not as zero.",
+    interpretation: "Compare each measurement within its source definition and treat missing cells as unavailable, not as zero. On/off differences use the source's per-48-minute scale, not per-100-possession NBA NetRtg. Check the selected season and on-court minutes before comparing players; the published top/bottom lists are selective and roster-confounded, not causal player-impact estimates.",
     references: REFERENCES,
     novelty: "Derived analysis",
     asOf: "2026-07-24",
