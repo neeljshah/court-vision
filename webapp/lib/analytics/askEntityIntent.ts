@@ -28,14 +28,23 @@ export function normalizeEntityName(value: string): string {
     .trim();
 }
 
+function fullEntityForms(entity: AtlasEntity): string[] {
+  const publishedName = normalizeEntityName(entity.name);
+  if (entity.pack !== "tennis" || !/\s+\((ATP|WTA)\)\s*$/i.test(entity.name)) {
+    return [publishedName];
+  }
+  const playerName = normalizeEntityName(entity.name.replace(/\s+\((ATP|WTA)\)\s*$/i, ""));
+  return Array.from(new Set([publishedName, playerName]));
+}
+
 export function entityForms(entity: AtlasEntity): string[] {
-  const fullName = normalizeEntityName(entity.name);
-  const nameParts = fullName.split(" ");
+  const fullNames = fullEntityForms(entity);
+  const nameParts = fullNames.at(-1)!.split(" ");
   const surname = nameParts.at(-1) || "";
   const givenName = nameParts.length > 1 ? nameParts[0] : "";
   // A numeric suffix in a count/metric label is not a person's name alias.
   const aliases = [surname, givenName].filter(form => /[a-z]/.test(form));
-  return Array.from(new Set([fullName, ...aliases].filter(Boolean)));
+  return Array.from(new Set([...fullNames, ...aliases].filter(Boolean)));
 }
 
 function matchPosition(query: string, form: string): number {
@@ -73,12 +82,22 @@ export function resolveEntityIntent(query: string, atlasEntities: AtlasEntity[])
   if (!normalizedQuery) return { entities: [], candidates: [], isComparison: false };
 
   const stopList = atlasStopList(atlasEntities);
-  const fullMatches = atlasEntities.flatMap((entity) => {
-    const fullName = normalizeEntityName(entity.name);
-    const position = matchPosition(normalizedQuery, fullName);
-    return position >= 0 ? [{ entity, position, fullName }] : [];
+  const possibleFullMatches = atlasEntities.flatMap((entity) => {
+    const forms = fullEntityForms(entity);
+    return forms.flatMap((fullName, formIndex) => {
+      const position = matchPosition(normalizedQuery, fullName);
+      return position >= 0 ? [{ entity, position, fullName, isPublished: formIndex === 0 }] : [];
+    });
   });
-  const consumedAliases = new Set(fullMatches.flatMap(({ entity }) => entityForms(entity).slice(1)));
+  const exactQualifiedNames = new Set(possibleFullMatches
+    .filter(({ entity, isPublished }) => isPublished && fullEntityForms(entity).length > 1)
+    .map(({ entity }) => fullEntityForms(entity)[1]));
+  const fullMatches = possibleFullMatches.filter(({ entity, fullName, isPublished }) =>
+    !exactQualifiedNames.has(fullName) || (isPublished && fullEntityForms(entity).length > 1));
+  const consumedAliases = new Set(fullMatches.flatMap(({ entity }) => {
+    const forms = entityForms(entity);
+    return forms.slice(fullEntityForms(entity).length);
+  }));
   const resolved = new Map<string, { entity: AtlasEntity; position: number }>();
   const ambiguous = new Map<string, { entity: AtlasEntity; position: number }>();
 
@@ -91,7 +110,7 @@ export function resolveEntityIntent(query: string, atlasEntities: AtlasEntity[])
   const aliases = new Map<string, { entity: AtlasEntity; position: number; isGivenName: boolean }[]>();
   atlasEntities.forEach((entity) => {
     const forms = entityForms(entity);
-    forms.slice(1).forEach((form, index) => {
+    forms.slice(fullEntityForms(entity).length).forEach((form, index) => {
       if (stopList.has(form) || consumedAliases.has(form)) return;
       const position = matchPosition(normalizedQuery, form);
       if (position < 0) return;

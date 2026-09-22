@@ -101,6 +101,29 @@ describe("loadScoutCorpus", () => {
     expect(resolveQuestion("Curry", corpus)).toMatchObject({ entry: null, kind: "none" });
   });
 
+  it("resolves published tennis profiles with or without their ATP qualifier", () => {
+    const atlasEntities = corpus.flatMap((entry) => entry.entity ? [entry.entity] : []);
+    const sinner = atlasEntities.find((entity) => entity.slug === "jannik_sinner_atp")!;
+    const alcaraz = atlasEntities.find((entity) => entity.slug === "carlos_alcaraz_atp")!;
+    const djokovic = atlasEntities.find((entity) => entity.slug === "novak_djokovic_atp")!;
+    const zverevs = atlasEntities.filter((entity) => entity.pack === "tennis" && /zverev/i.test(entity.name));
+
+    expect(resolveEntityIntent("Sinner vs Alcaraz", atlasEntities)).toMatchObject({
+      entities: [sinner, alcaraz], candidates: [], isComparison: true,
+    });
+    expect(resolveQuestion("Sinner vs Alcaraz", corpus)?.compareOffer).toEqual({
+      label: "Compare Jannik Sinner (ATP) and Carlos Alcaraz (ATP)",
+      href: "/analytics/compare?pack=tennis&a=jannik_sinner_atp&b=carlos_alcaraz_atp",
+    });
+    expect(resolveEntityIntent("Novak Djokovic", atlasEntities).entities).toEqual([djokovic]);
+    expect(resolveEntityIntent("Novak Djokovic (ATP)", atlasEntities).entities).toEqual([djokovic]);
+    expect(zverevs).toHaveLength(2);
+    expect(resolveEntityIntent("Zverev", atlasEntities)).toMatchObject({
+      entities: [], candidates: zverevs, isComparison: false,
+    });
+    expect(resolveEntityIntent("Alexander Zverev", atlasEntities).entities).toEqual([zverevs[0]]);
+  });
+
   it("does not answer a named entity directly when the query adds conflicting scope", () => {
     const queries = [
       "Tell me about Ohtani basketball rebounds",

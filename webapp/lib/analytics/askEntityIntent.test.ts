@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { resolveEntityIntent, type AtlasEntity } from "./askEntityIntent";
+import { entityForms, resolveEntityIntent, type AtlasEntity } from "./askEntityIntent";
 
 const atlasEntities: AtlasEntity[] = [
   { name: "Nikola Jokic", pack: "nba_players", slug: "nikola_jokic" },
@@ -8,6 +8,10 @@ const atlasEntities: AtlasEntity[] = [
   { name: "Seth Curry", pack: "nba_players", slug: "seth_curry" },
   { name: "Alex Smith", pack: "nba_players", slug: "alex_smith" },
   { name: "Alex Smith", pack: "tennis", slug: "alex_smith" },
+  { name: "Jannik Sinner (ATP)", pack: "tennis", slug: "jannik_sinner_atp" },
+  { name: "Carlos Alcaraz (ATP)", pack: "tennis", slug: "carlos_alcaraz_atp" },
+  { name: "Iga Swiatek (WTA)", pack: "tennis", slug: "iga_swiatek_wta" },
+  { name: "Novak Djokovic (ATP)", pack: "tennis", slug: "novak_djokovic_atp" },
 ];
 
 describe("resolveEntityIntent", () => {
@@ -80,5 +84,55 @@ describe("resolveEntityIntent", () => {
     expect(resolveEntityIntent("pitch velocity", [
       { name: "Pitch Type FF", pack: "mlb_pitch", slug: "pitch_type_ff" },
     ])).toMatchObject({ entities: [], candidates: [], isComparison: false });
+  });
+
+  it("resolves qualified tennis names by full name or surname", () => {
+    expect(resolveEntityIntent("Novak Djokovic", atlasEntities).entities).toEqual([atlasEntities[9]]);
+    expect(resolveEntityIntent("Djokovic profile", atlasEntities).entities).toEqual([atlasEntities[9]]);
+    expect(resolveEntityIntent("Iga Swiatek (WTA)", atlasEntities).entities).toEqual([atlasEntities[8]]);
+    expect(resolveEntityIntent("Swiatek", atlasEntities).entities).toEqual([atlasEntities[8]]);
+  });
+
+  it("recognizes a tennis pair without requiring published qualifiers", () => {
+    expect(resolveEntityIntent("Sinner vs Alcaraz", atlasEntities)).toMatchObject({
+      entities: [atlasEntities[6], atlasEntities[7]], candidates: [], isComparison: true,
+    });
+  });
+
+  it("normalizes accents in qualified tennis names", () => {
+    const accented = { name: "Iga \u015awi\u0105tek (WTA)", pack: "tennis", slug: "iga_swiatek" };
+    expect(resolveEntityIntent("Iga Swiatek", [accented]).entities).toEqual([accented]);
+  });
+
+  it("does not let a tour qualifier alone identify a player", () => {
+    expect(resolveEntityIntent("ATP", atlasEntities)).toMatchObject({
+      entities: [], candidates: [], isComparison: false,
+    });
+    expect(resolveEntityIntent("WTA", atlasEntities)).toMatchObject({
+      entities: [], candidates: [], isComparison: false,
+    });
+  });
+
+  it("only removes known qualifiers from names in the tennis pack", () => {
+    const unknown = { name: "Pat Lee (Legend)", pack: "tennis", slug: "pat_lee_legend" };
+    const otherPack = { name: "Pat Lee (ATP)", pack: "nba_players", slug: "pat_lee_atp" };
+    expect(entityForms(unknown)).not.toContain("pat lee");
+    expect(entityForms(otherPack)).not.toContain("pat lee");
+    expect(resolveEntityIntent("Pat Lee ATP", [otherPack]).entities).toEqual([otherPack]);
+  });
+
+  it("preserves exact qualified-name priority and surname ambiguity", () => {
+    const atp = { name: "Alex Smith (ATP)", pack: "tennis", slug: "alex_smith_atp" };
+    const wta = { name: "Alex Smith (WTA)", pack: "tennis", slug: "alex_smith_wta" };
+    const nba = { name: "Alex Smith", pack: "nba_players", slug: "alex_smith" };
+    expect(resolveEntityIntent("Alex Smith ATP", [atp, wta, nba])).toMatchObject({
+      entities: [atp], candidates: [], isComparison: false,
+    });
+    expect(resolveEntityIntent("Alex Smith", [atp, wta, nba])).toMatchObject({
+      entities: [], candidates: [atp, wta, nba], isComparison: false,
+    });
+    expect(resolveEntityIntent("Smith", [atp, wta])).toMatchObject({
+      entities: [], candidates: [atp, wta], isComparison: false,
+    });
   });
 });
