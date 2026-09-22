@@ -100,9 +100,9 @@ main table { max-width: none; }
 .a-mark span { color: #82abfa; font-weight: 800; font-size: 14px; line-height: 1; transform: translateY(-1px); }
 .a-name { font-family: var(--font-sans); font-weight: 600; font-size: 18px; letter-spacing: -.035em; color: var(--ink); }
 .a-kicker { font-weight: 700; font-size: 9px; letter-spacing: .14em; color: var(--ink-3); border-left: 1px solid var(--rule-strong); padding-left: 8px; margin-left: 2px; }
-.navlinks { display: flex; gap: 18px; margin-left: auto; min-width: 0; font-size: 12px; font-weight: 500; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 2px; scrollbar-width: none; -webkit-overflow-scrolling: touch; mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 20px), transparent 100%); -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 20px), transparent 100%); }
+.navlinks { display: flex; gap: 18px; margin-left: auto; min-width: 0; font-size: 12px; font-weight: 500; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 2px; padding-inline-end: 20px; scrollbar-width: none; -webkit-overflow-scrolling: touch; mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 20px), transparent 100%); -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 20px), transparent 100%); }
 .navlinks::-webkit-scrollbar { display: none; }
-.navlinks a { color: var(--ink-2); white-space: nowrap; min-height: 44px; min-width: 44px; justify-content: center; display: inline-flex; align-items: center; padding: 4px 4px; border-bottom: 2px solid transparent; transition: color var(--dur-fast) var(--ease-ui), border-color var(--dur-fast) var(--ease-ui); }
+.navlinks a { color: var(--ink-2); white-space: nowrap; flex-shrink: 0; min-height: 44px; min-width: 44px; justify-content: center; display: inline-flex; align-items: center; padding: 4px 4px; border-bottom: 2px solid transparent; transition: color var(--dur-fast) var(--ease-ui), border-color var(--dur-fast) var(--ease-ui); }
 .navlinks a:hover { color: var(--ink); text-decoration: none; }
 .navlinks a:hover, .navlinks a:focus-visible { color: var(--ink); text-decoration: none; }
 .navlinks a.active { color: var(--ink); border-bottom-color: var(--accent); font-weight: 650; }
