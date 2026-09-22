@@ -1,6 +1,10 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import * as source from "./labHelpers";
 import { multisportResearch } from "./researchMultisport";
 import { outcomeBalance, safeDivide, supportRate, velocityShape } from "./researchMultisportHelpers";
+
+const readSnapshot = source.snapshot;
+afterEach(() => vi.restoreAllMocks());
 
 describe("multisportResearch", () => {
   const analyses = multisportResearch();
@@ -65,7 +69,29 @@ describe("multisportResearch", () => {
     expect(alignment.scope).toContain("strength is the 2026-06-28 snapshot");
     expect(alignment.caveat).toContain("unmatched as-of definitions");
     expect(alignment.caveat).toContain("not a synchronized snapshot");
+    expect(alignment.scope).toContain("Shared teams in the published rankings: 153");
+    expect(alignment.scope).toContain("form-only teams 26; strength-only teams 0");
+    expect(alignment.rows).toHaveLength(153);
+    expect(alignment.caveat).toContain("excluded, not scored as disagreements or zero values");
   });
+
+  it.each([undefined, null, -1, 1.5, "26", Number.NaN, Number.MAX_SAFE_INTEGER + 1])(
+    "keeps unavailable cohort counts distinct from zero (%s)", (invalid) => {
+      vi.spyOn(source, "snapshot").mockImplementation(<T,>(id: string): T => {
+        const data = readSnapshot<Record<string, unknown>>(id);
+        if (id !== "soccer_form_stability") return data as T;
+        return { ...data, concordance: {
+          ...(data.concordance as Record<string, unknown>),
+          n_overlap: invalid, n_form_only: invalid, n_strength_only: 0,
+        } } as T;
+      });
+      const alignment = multisportResearch().find(a => a.id === "soccer-form-strength-alignment")!;
+      expect(alignment.scope).toContain("Shared teams in the published rankings: unavailable");
+      expect(alignment.scope).toContain("form-only teams unavailable; strength-only teams 0");
+      expect(alignment.rows).toHaveLength(153);
+      expect(alignment.rows.find(r => r.label === "Albania")!.values.same_direction).toBeNull();
+    },
+  );
 
   it("discloses that the MLB count-rate contrast uses separate denominators", () => {
     const count = analyses.find(a => a.id === "mlb-count-contrast")!;
