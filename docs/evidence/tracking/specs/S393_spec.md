@@ -94,3 +94,59 @@ rows by the orchestrator, recorded here so this row can land): UTC-midnight trac
 rollovers and a live game discovered FINAL being pruned without its final row (local_state_capture.py:119, :129, :161);
 competition-shape changes (missing / duplicate competitions, walkover, retired) losing or misdescribing events across the ESPN
 pollers and tennis. This row's memo names both gaps under NOT VERIFIED.
+
+AMENDMENT 5 (2026-09-22 23:0xZ; binding; from the astra round-10 critique on fix 1j). (a) COUNTERS ADVANCE ONLY ON A SUCCESSFUL
+APPEND: MEASURED -- with one NBA event lacking a start and a writer that raises before its first append, the refresh emitted 0
+rows yet published unavailable 1 (local_state_capture.py:213); the retry then emitted the row without a second increment, so
+the failed refresh published an unsupported count. RULING: every schedule counter (unavailable, partial, superseded, conflicts,
+missing_game_id) is staged per refresh and committed only after the row it describes is durably appended; a refresh that
+raises before its appends publishes no counter movement; test: writer raises before the first append -> counters unchanged;
+the retry -> counters move exactly once. (b) THE REPRESENTATIVE COMPARES NORMALIZED INSTANTS: MEASURED -- request timestamps
+'2026-09-22T01:00:00+02:00' and '2026-09-22T00:00:00Z' with equal hashes selected the second in both orders although the first
+is an hour earlier (local_state_capture_sources.py:80, a lexical comparison). RULING: the earliest-request rule of AMENDMENT 2(c)
+compares instants after parse_venue_time normalization, then raw sha256, then the receipt id text; test with mixed offsets in
+both orders. (c) DIRECT HELPERS COUNT TOO: MEASURED -- mlb_poll called directly with dateTime None returns (None, 'unavailable')
+with its unavailable counter at 0 (sources.py:177) while the deferred capture path counts; RULING: the direct helper reports
+through the same staged-counter path (or is documented as capture-only and refuses direct use); test. (d) NEW GAPS, out of
+scope, allocated by the orchestrator: cross-identity reconciliation when a gamePk is renumbered (1 -> 2 emits both (1,
+remembered) and (2, null)); recovery after a restart restores STATE but not the remembered SCHEDULE (local_state_capture_io.py:161;
+archived feed B becomes discovery A) -- the second joins S407's scope (the terminal row and the remembered schedule both survive
+a rollover / restart); the memo's NOT VERIFIED names both. (e) S407 / S408 reproduce as excluded, unchanged.
+
+AMENDMENT 6 (2026-09-22 23:2xZ; binding; from the codex sol round-10 verdict on fix 1j). (a) THE TIE-BREAK USES A FIELD THE
+PRODUCTION RECEIPT CARRIES: MEASURED -- AMENDMENT 4(d)'s final tie-break expects receipt_id, but the landed ReceiptGetter
+(local_state_capture_io.py:113) never emits that field, so two production receipts with equal request instant and equal raw
+sha256 but different response_end select differently by input order (forward / reverse gave ['...01Z', '...02Z']); the
+synthetic test passed only because it injected a non-production receipt_id. RULING: the final component is receipt_id when
+present, otherwise the canonical sorted JSON serialization of the COMPLETE receipt (all fields, sort_keys, no whitespace), so the
+selection is order-independent on the real field set; the both-orders test uses the ACTUAL ReceiptGetter field set. (b) Every
+other AMENDMENT 3-4 closure reproduced in both orders by the round-10 verifier: resolver lists [A] / [B] / [None] one row each,
+remembered starts retained on all five non-MLB sports, NFL / NCAAF / tennis surrogates two rows and two missing_game_id, no
+lower-rank regression, spelling and zone stability, emitted verdict rows -> counter deltas [1,1,1,1], pruned rows -> [0,0,0,0].
+
+AMENDMENT 7 (2026-09-23 00:2xZ; binding; from the astra round-11 critique of fix 1k). Two blockers, both MEASURED on
+constructs: (a) RESTART MUST NOT ABORT UNRELATED DISCOVERY -- the MLB merge at local_state_capture.py:165 did
+`.update(game)` on a known_games entry that S401 recovery never creates (recovery fills last_state independently), so
+"append game 1 LIVE, fail game 2's append, restart, discover [1 FINAL, 2 LIVE]" raised KeyError '1', n_tasks 0, new rows 0,
+tracked games [] -- game 2 lost with it. RULING: the merge is create-or-update (setdefault) for every sport; one game's
+failure never aborts the loop for another (per-game isolation, the failure counted and named); the construct above must
+track both games after restart with S401 preservation intact. (b) DIRECT HELPERS COUNT EMISSION, NOT DISCOVERY --
+_identity (sources.py:127) incremented missing_game_id before dedupe, so 1/2/3 identical id-null events yielded one row and
+counts 1/2/3 (NBA, soccer, NFL, NCAAF), and direct MLB discovery with gamePk None (sources.py:139) returned zero rows while
+counting 1. RULING: AMENDMENT 5 applies to every counter on every path -- missing_game_id moves once per EMITTED row lacking
+an id, after dedupe, and the direct helpers report through the same staged path as the capture loop; zero rows means zero
+movement. Both with pinned tests and before/after reproductions; everything else from fixes 1j-1k byte-identical in behaviour.
+
+AMENDMENT 8 (2026-09-23 02:0xZ; binding; from the sol round-12 REJECT of fix 1l). ISOLATION IS PER GAME ON EVERY PATH, AND
+COUNTERS PUBLISH ONLY FOR ROWS RETURNED -- MEASURED: (a) the tennis parser (local_state_capture_sources.py:234) wrapped the whole
+league in one handler, so two ATP competitions [bad, good] with bad.competitors[0].linescores = [{"period": "bad"}] captured []
+in one order and ['atp:good'] in the other, each reporting one TypeError without the failed competition's identity; (b) the direct
+helpers (sources.py:105) raised AttributeError on a malformed game (event a date None; event z venue "malformed") for NBA, soccer,
+NFL and NCAAF, returned no result, yet published {'scheduled_start_unavailable': 1}, and the malformed game prevented the valid
+game from being returned. RULING: AMENDMENT 7(a)'s per-game isolation applies to every parser and every direct helper for every
+sport: one malformed competition or game is counted under a named reason that carries the league / competition identity, and
+every other game is still returned -- byte-identical in either input order (both-order tests for the tennis parser and for every
+helper); staged counters are published only for rows successfully returned (a helper that returns nothing publishes nothing).
+BASE NOTE: the fix-1l candidate sat on an orphaned base commit (5a42c84ed, an amended-away S405 fix that carried a broken test
+file); the orchestrator moves the candidate files byte-for-byte to a fresh worktree on master, so no unrelated commit is part of
+the candidate. Everything from fixes 1j-1l byte-identical in behaviour otherwise.

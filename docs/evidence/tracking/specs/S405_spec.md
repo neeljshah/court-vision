@@ -81,3 +81,14 @@ Test: the one-game fixture asserts five keys with verdict UNDERPOWERED and a byt
 candidate. RULING: a size recorded in a memo is measured against the candidate at the moment the memo is written and
 is re-measured whenever the file changes; an unreproducible historical size is removed rather than carried. Test:
 the memo's stated size equals the byte size of the named file in the candidate tree.
+
+AMENDMENT 3 (2026-09-22 23:2xZ; binding; from the astra round-3 critique on fix 1c -- every round-2 item reproduced closed; one
+new blocker). LOSS CONSISTENCY COVERS EVERY ARM: MEASURED -- the AMENDMENT 1(d) validation recomputes only the C and D losses, so
+a stale REFERENCE-arm loss contaminates both reported subset cells and cancels in their difference: changing
+g2:1.d_subset.paired_losses.A.brier from 0.25 to 0.35 with probabilities and outcome unchanged was ACCEPTED, subset-C moved
+0.06 -> 0.035 and D 0.14 -> 0.115 while the contrast stayed 0.08 (nba_four_arm_trial.py:33, 100-103); the same passes for
+logloss. RULING: every saved arm loss in the subset rows (A, B, C, D; both metrics) is recomputed from the row's probability and
+outcome and must agree to 1e-12, else inconsistent_paired_loss names the arm, the row key and the metric; a test plants the A
+corruption above and one per other arm. NOTED, unchanged: the reported cells are computed immediately before the contrast by the
+normal runner path, so the equality assertion proves the difference, not each cell's agreement with the rows -- the arm-loss
+validation is what ties the cells to the rows.

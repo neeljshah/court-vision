@@ -113,3 +113,9 @@ boundary suite's fixture path and a deliberate edit to that one file changes bot
 d_subset.scored_keys, both audited as NOT_AUDITABLE with reason producer_field_absent, and the release verdict is
 reached with C.means NOT_AUDITABLE, said in words in the seal and the trial memo. Fix 1f is UNVERIFIED: no
 independent verdict on it exists, so the next round is the FIRST verification of AMENDMENT 4, not a re-verification.
+
+AMENDMENT 6 (2026-09-22 22:5xZ; binding; follows S417 AMENDMENT 1): the auditor reconstructs the PRIMARY contrast per the
+prereg's DECLARED arms -- after S417 lands the primary is C versus B (C_minus_B_<metric> == brier / logloss primary cells) with
+C_minus_A_<metric> audited as SECONDARY, and C_minus_Blag_<metric> audited as a secondary against the B_lag arm; the declared arms
+are read from the sealed draft's text, never assumed; a primary that names an arm the runner did not emit is NOT_AUDITABLE with
+reason producer_arm_absent. Scope: the next S395 fix round after S417 lands.

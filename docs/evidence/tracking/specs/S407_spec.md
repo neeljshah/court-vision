@@ -50,3 +50,9 @@ captures under data/cache/ingame_books_local/**, their lock, or any STOP file th
 tmp_path is not a capture STOP file, per S393 AMENDMENT 4(i)); no feature flag is flipped.
 ACCEPTANCE: per-file tests pass one at a time; --help works; <= 300 LOC; ASCII; contract Q6 vocabulary; the memo ends with a
 NOT VERIFIED list.
+
+AMENDMENT 1 (2026-09-22 23:0xZ; binding; scope extension from the S393 astra round-10 critique): recovery after a restart
+restores the last STATE but not the remembered SCHEDULE (local_state_capture_io.py:161 keeps status / state only), so an archived
+feed start B becomes a discovery start A after a restart. This row's scope now includes rebuilding the remembered (start, source)
+pair from the shard's last row per game on recovery -- without a network call -- so the S393 remembered-schedule rules hold across
+restarts and rollovers; test: two appends, restart after the first, the second refresh emits B with superseded unchanged.
