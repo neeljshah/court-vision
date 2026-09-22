@@ -253,6 +253,10 @@ export function CompareExperience() {
       return;
     }
     const hit = findByName(value);
+    if (packKey !== "mlb_pitch" && hit?.slug === aSlug) {
+      setBSlug(hit.slug); setASlug(bSlug); setBQuery(hit.name); setAQuery(b?.name || "");
+      return;
+    }
     if (hit && hit.slug !== aSlug) {
       setBSlug(hit.slug);
       if (packKey === "mlb_pitch") { setPairReady(Boolean(aSlug)); writeMlbUrl(explicitMlbFamily, aSlug || undefined, hit.slug); }
@@ -268,6 +272,7 @@ export function CompareExperience() {
   const bMatchesInput = Boolean(b && bQuery.trim() && b.name.toLocaleLowerCase() === bQuery.trim().toLocaleLowerCase());
   const unmatchedQuery = !aMatchesInput ? aQuery.trim() : !bMatchesInput ? bQuery.trim() : "";
   const noMatch = Boolean(data && unmatchedQuery);
+  const duplicate = noMatch && Boolean(findByName(unmatchedQuery)) && aQuery.trim().toLocaleLowerCase() === bQuery.trim().toLocaleLowerCase();
 
   return (
     <section className="compare-experience" aria-label="Entity comparison controls and results">
@@ -288,7 +293,7 @@ export function CompareExperience() {
       </div>
       <p className="compare-status">{data ? `${data.nInPack} profiles in ${info.label}.` : "Loading published pack data..."}</p>
       {error ? <p className="compare-error" role="alert">{error} <button type="button" onClick={() => setRetry((value) => value + 1)}>Retry</button></p> : null}
-      {noMatch ? <p className="compare-empty" role="status">No published profile named {unmatchedQuery} in this pack.</p> : null}
+      {noMatch ? <p className="compare-empty" role="status">{duplicate ? `${unmatchedQuery} is already selected. Choose a different profile for A or B.` : `No published profile named ${unmatchedQuery} in this pack.`}</p> : null}
       {pairReady && data?.key === packKey && a && b && aMatchesInput && bMatchesInput ? <ComparisonResults pack={data} a={a} b={b} manifest={info.manifest} sport={activeSport?.key} surface={surface} onSurfaceChange={setSurface} /> : null}
     </section>
   );

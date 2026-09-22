@@ -94,6 +94,34 @@ describe("MLB atlas comparison controls", () => {
     await waitFor(() => expect(window.location.search).toBe("?pack=mlb_pitch&family=team&b=bos"));
   });
 
+  it.each(["A", "B"])("explains a duplicate MLB profile in slot %s and recovers without replacing the other selection", async (slot) => {
+    window.history.replaceState(null, "", "/analytics/compare?pack=mlb_pitch&family=team&a=nyy&b=bos");
+    mockFamilyFetch(); render(<CompareExperience />);
+    await waitFor(() => expect(screen.getByLabelText("Profile A")).toHaveValue("team NYY"));
+    const input = screen.getByLabelText(`Profile ${slot}`);
+    const other = slot === "A" ? "team bos" : "team nyy";
+    const original = slot === "A" ? "team NYY" : "team BOS";
+    fireEvent.change(input, { target: { value: ` ${other} ` } });
+    expect(screen.getByRole("status")).toHaveTextContent(`${other} is already selected. Choose a different profile for A or B.`);
+    expect(screen.queryByRole("table", { name: "Published raw values" })).not.toBeInTheDocument();
+    expect(window.location.search).toBe("?pack=mlb_pitch&family=team&a=nyy&b=bos");
+    fireEvent.change(input, { target: { value: "Missing" } });
+    expect(screen.getByRole("status")).toHaveTextContent("No published profile named Missing in this pack.");
+    fireEvent.change(input, { target: { value: original } });
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+    expect(screen.getByRole("table", { name: "Published raw values" })).toBeInTheDocument();
+    fireEvent.change(input, { target: { value: "" } });
+    await waitFor(() => expect(input).toHaveValue(""));
+    const partialUrl = window.location.search;
+    expect(partialUrl).not.toContain(`${slot.toLowerCase()}=`);
+    fireEvent.change(input, { target: { value: other } });
+    expect(screen.getByRole("status")).toHaveTextContent("is already selected. Choose a different profile for A or B.");
+    expect(window.location.search).toBe(partialUrl);
+    fireEvent.change(input, { target: { value: original } });
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+    expect(screen.getByRole("table", { name: "Published raw values" })).toBeInTheDocument();
+  });
+
   it("keeps mixed legacy headers visible while withholding the comparison", async () => {
     window.history.replaceState(null, "", "/analytics/compare?pack=mlb_pitch&a=ff&b=nyy");
     mockFamilyFetch(); render(<CompareExperience />);

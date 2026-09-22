@@ -77,6 +77,35 @@ describe("CompareExperience controls", () => {
     expect(window.location.search).toContain("b=alpha");
   });
 
+  it.each(["change", "Enter"])("recovers a partial B query and swaps duplicate selections on %s", async (event) => {
+    const view = render(<CompareExperience />);
+    const a = screen.getByLabelText("Profile A");
+    const b = screen.getByLabelText("Profile B");
+    await waitFor(() => expect(a).toHaveValue("Alpha"));
+    fireEvent.change(b, { target: { value: "Al" } });
+    expect(screen.getByRole("status")).toHaveTextContent("No published profile named Al in this pack.");
+    expect(screen.queryByRole("heading", { name: "Largest measured differences" })).not.toBeInTheDocument();
+    expect(window.location.search).toBe("?pack=nba_players&a=alpha&b=beta");
+    if (event === "change") fireEvent.change(b, { target: { value: " alpha " } });
+    else fireEvent.keyDown(b, { key: "Enter", target: { value: " alpha " } });
+    await waitFor(() => expect(a).toHaveValue("Beta"));
+    expect(b).toHaveValue("Alpha");
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Largest measured differences" })).toBeInTheDocument();
+    expect(window.location.search).toBe("?pack=nba_players&a=beta&b=alpha");
+    fireEvent.keyDown(b, { key: "Enter" });
+    expect(a).toHaveValue("Beta");
+    expect(b).toHaveValue("Alpha");
+    view.unmount();
+    render(<CompareExperience />);
+    await waitFor(() => expect(screen.getByLabelText("Profile A")).toHaveValue("Beta"));
+    expect(screen.getByLabelText("Profile B")).toHaveValue("Alpha");
+    fireEvent.click(screen.getByRole("button", { name: "Swap profile A and profile B" }));
+    expect(screen.getByLabelText("Profile A")).toHaveValue("Alpha");
+    expect(screen.getByLabelText("Profile B")).toHaveValue("Beta");
+    expect(window.location.search).toBe("?pack=nba_players&a=alpha&b=beta");
+  });
+
   it("offers sport-first entry tabs and switches the active sport", async () => {
     render(<CompareExperience />);
     await screen.findByLabelText("Profile A");
