@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import siteManifest from "@/public/data/showcase/site_manifest.json";
+import { listPacks } from "@/lib/atlas.server";
 import { artifactDate, artifactUrl, describeDate, provenanceDate } from "./artifactProvenance";
 
 describe("artifact provenance", () => {
@@ -11,6 +12,19 @@ describe("artifact provenance", () => {
 
   it("does not create a link for an artifact absent from the export manifest", () => {
     expect(artifactUrl("private_measurement.json", "/court-vision")).toBeNull();
+    expect(artifactUrl("webapp/public/data/showcase/atlas_private.json", "/court-vision")).toBeNull();
+    expect(artifactUrl("atlas_tennis_manifest_draft.json", "/court-vision")).toBeNull();
+  });
+
+  it("links every staged public atlas pack without a wildcard publication rule", () => {
+    const packs = listPacks();
+    expect(packs).toHaveLength(7);
+    for (const pack of packs) {
+      const source = pack.chip.sourceArtifact;
+      const name = source.split("/").pop();
+      expect(artifactUrl(source, "/court-vision")).toBe(`/court-vision/data/showcase/${name}`);
+      expect(artifactUrl(source, "")).toBe(`/data/showcase/${name}`);
+    }
   });
 
   it("formats only a valid ISO snapshot date", () => {

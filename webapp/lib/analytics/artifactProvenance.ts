@@ -9,12 +9,20 @@ type ManifestModule = {
   out_path: string;
 };
 
-const publishedArtifacts = new Set(
-  (siteManifest.modules as ManifestModule[]).flatMap((entry) => [
+const publishedArtifacts = new Set([
+  ...(siteManifest.modules as ManifestModule[]).flatMap((entry) => [
     `${entry.id}.json`,
     fileName(entry.out_path),
-  ])
-);
+  ]),
+  // Staged atlas packs are public sources, but are not site_manifest modules.
+  "atlas_nba_manifest.json",
+  "atlas_nba_teams_manifest.json",
+  "atlas_mlb_batters_manifest.json",
+  "atlas_mlb_pitch_manifest.json",
+  "atlas_soccer_manifest.json",
+  "atlas_tennis_manifest.json",
+  "atlas_calibration_manifest.json",
+]);
 
 function fileName(path: string): string {
   return path.split(/[\\/]/).pop() || "";
@@ -41,7 +49,7 @@ function windowDates(value: ProvenanceDate): ObservationWindow | null {
   return start && end ? { start, end } : null;
 }
 
-/** Returns the exported JSON URL only for artifacts listed in the committed manifest. */
+/** Returns the exported JSON URL only for published modules and staged atlas packs. */
 export function artifactUrl(source: string | null | undefined, base = basePath()): string | null {
   if (!source) return null;
   const name = fileName(source.split(/[?#]/, 1)[0]);

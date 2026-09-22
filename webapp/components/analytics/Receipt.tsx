@@ -79,8 +79,9 @@ const path: CSSProperties = {
 
 export function Receipt(r: ReceiptData) {
   const [open, setOpen] = useState(false);
-  // right-anchor the popover when it would run off the right screen edge.
-  const [flip, setFlip] = useState(false);
+  // Offset from the wrapper so the complete popover stays in the viewport.
+  const [popLeft, setPopLeft] = useState(0);
+  const [popWidth, setPopWidth] = useState(300);
   // open upward when it would drop off the bottom (receipts low in the viewport).
   const [up, setUp] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
@@ -106,15 +107,20 @@ export function Receipt(r: ReceiptData) {
   const sourceHref = artifactUrl(r.sourceArtifact);
   const dashed = r.verdict === "not_testable";
 
-  // ponytail: decide the anchor side/vertical from the trigger's viewport rect on
-  // open. 312 = maxWidth 300 + 12px gutter; ~200 = the popover's tallest realistic
-  // height. No live measure of the popover itself.
+  // Decide placement from the trigger's viewport rect on open. The popup has a
+  // fixed maximum width, so clamping its viewport left edge keeps every trigger
+  // position inside the same 12px gutters without measuring after render.
   function openPop() {
-    const r = btnRef.current?.getBoundingClientRect();
-    setFlip(!!r && r.left + 312 > window.innerWidth);
+    const trigger = btnRef.current?.getBoundingClientRect();
+    const wrapper = wrapRef.current?.getBoundingClientRect();
+    const viewportWidth = document.documentElement.clientWidth || window.innerWidth;
+    const width = Math.min(300, Math.max(0, viewportWidth - 24));
+    const left = trigger ? Math.min(Math.max(trigger.left, 12), viewportWidth - 12 - width) : 0;
+    setPopWidth(width);
+    setPopLeft(wrapper ? left - wrapper.left : 0);
     // flip up only when it would overflow the bottom AND there is room above, so a
     // receipt near the top of the page never opens off the top.
-    setUp(!!r && r.bottom + 200 > window.innerHeight && r.top > 200);
+    setUp(!!trigger && trigger.bottom + 200 > window.innerHeight && trigger.top > 200);
     setOpen(true);
   }
 
@@ -165,18 +171,21 @@ export function Receipt(r: ReceiptData) {
           // The trigger's aria-expanded carries the open/closed state instead.
           style={{
             ...pop,
-            ...(flip ? { left: "auto", right: 0 } : null),
+            left: popLeft,
+            width: popWidth,
             ...(up ? { top: "auto", bottom: "calc(100% + 6px)" } : null),
           }}
         >
           {r.label ? (
             <strong
               style={{
+                display: "block",
                 fontFamily: "var(--font-mono)",
                 fontSize: 12,
                 color: "var(--ink)",
                 fontWeight: 500,
                 letterSpacing: "0.02em",
+                overflowWrap: "anywhere",
               }}
             >
               {r.label}
