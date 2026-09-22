@@ -49,6 +49,9 @@ jobs:
           npx vitest run lib/analytics/artifactProvenance.test.ts
           npx vitest run lib/analytics/novelCards.server.test.ts
           npx vitest run components/analytics/Receipt.test.tsx
+          npx vitest run components/analytics/PercentileBar.test.tsx
+          npx vitest run components/analytics/entities/EntityMeasurements.test.tsx
+          npx vitest run components/analytics/compare/ComparisonResults.test.tsx
           npx vitest run components/analytics/charts/Figure.test.tsx
           npx vitest run components/analytics/modules/ModuleDetail.test.tsx
           npx vitest run lib/analytics/papers.test.ts

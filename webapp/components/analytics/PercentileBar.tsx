@@ -16,7 +16,7 @@ export function PercentileBar({ pct, nRanked }: PercentileBarProps) {
     <div style={{ marginTop: 6 }}>
       <div
         role="img"
-        aria-label={`${pct}th percentile visual bar`}
+        aria-label={caption}
         style={{
           height: 4,
           borderRadius: 2,
