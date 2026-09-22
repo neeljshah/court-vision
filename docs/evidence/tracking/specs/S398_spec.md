@@ -210,3 +210,26 @@ non-strict count (pairs_matched 1.0) yields pair_table_invalid 1 and no results,
 rows', the stale NOT VERIFIED bullets and header counts reconciled, and the 45 Kalshi refusals attributed BY FIELD from this
 candidate's own quote() (which field was neither str nor Decimal -- null or absent -- per capture_version), since the landed
 read_rows admits integral numbers (S406 AMENDMENT 2).
+
+AMENDMENT 9 (2026-09-22 21:4xZ; binding; from the fix 1f report on AMENDMENTS 7-8, which closed 7(a)-(g) and
+8(a)-(c) with reproductions and left 8(d) open on real rows). (a) THE 45 REFUSALS ARE CENSUSED ON REAL ROWS OR
+LABELLED CONSTRUCT-ONLY: MEASURED -- fix 1f reproduced 8(d)'s memo reconciliation
+(8d memo: False -> True; 8d field: local_capture_runner_v1 no_bid_size NoneType) against CONSTRUCTED rows and closed
+with "The 45 real refusals were not re-censused; field attribution is construct-only", so AMENDMENT 8(d)'s
+per-capture_version field attribution has no real-archive evidence. RULING: the by-field attribution table is
+produced by running this candidate's own quote() over the SAME real Kalshi mlb shard that produced the 45, and every
+row of the table names its capture_version and the field that was neither str nor Decimal; until that run exists the
+table header and the memo say CONSTRUCT-ONLY in those words, the count 45 is never presented as attributed, and the
+NOT VERIFIED list carries the gap. Test: the memo's attribution counts sum to 45 and cite the real shard path, or
+the table is absent and the construct-only sentence is present.
+(b) THE CANDIDATE IS UNVERIFIED UNTIL A ROUND READS IT: MEASURED -- fix 1f reports 53 and 31 passing tests, preflight
+FAIL=0 and an empty owned-path diff against master, but no independent verdict on fix 1f exists. RULING: the fix
+agent's own counts are never the verification of record; the next round re-runs both suites, re-reads 7(a)-(g) and
+8(a)-(c) against the named lines, and states its own counts. Test: the round's transcript carries its own 53 / 31
+(or the counts it measures) beside the file paths it read.
+(c) CORRECTED READING: AMENDMENT 7(i) withdrew the float claim; the S406 real census (docs/evidence/harness/
+S406_census_real_2026-09-22.md) then showed the Kalshi prices and sizes are Decimal-origin number text (max 4 / 2 fractional
+digits) and that read_rows decodes with parse_int=Decimal, so an integral number is ADMITTED; the 45 refusals correspond to
+snapshot rows whose price fields are NULL (a null side of the book; 292 such rows shard-wide, 45 among the five paired
+tickers). The by-field table of (a) must therefore report null / absent fields per capture_version; nothing in this row
+converts a refusal, and the census of the encoding belongs to S406.

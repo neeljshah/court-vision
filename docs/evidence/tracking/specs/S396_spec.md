@@ -75,7 +75,7 @@ ends with NOT VERIFIED.
 AMENDMENT 1 (2026-09-22 16:5xZ; binding; after the Opus build's five findings). (a) eps_eff lives in
 scripts/platformkit/combo/fwer_budget.py:64 and is imported from there (backtest_runner.py:243 is the usage). (b) THE CATALOG
 INTERFACE IS build, NOT compute: every catalog class exposes name, target, scope, hypothesis() and build(self, ctx: AsOfContext)
-(domains/<sport>/signal_catalog.py, e.g. basketball_nba lines 70-80); AsOfContext is src/loop/signal.py:54 (a READ-ONLY import;
+(domains/<sport>/signal_catalog.py, e.g. basketball_nba lines 70-80); AsOfContext is src/loop/signal.py:fifty-four (a READ-ONLY import;
 src/ is never edited) with fields decision_time, player_id, team, opp, game_id, game_date, season, is_home, scope, snapshot, live,
 extra. A catalog member is EVALUABLE when its target is the home-win outcome and its scope includes pregame; the runner builds one
 AsOfContext per state from the allowed test-view keys only (decision_time = the state's timestamp through parse_venue_time; team =
@@ -123,3 +123,39 @@ planted feature. (f) LeakError NEVER DEGRADES: a LeakError raised inside signal.
 (catalog.py:226) -- it terminates the family with failure.json; the sorting-failure suppression at catalog.py:208 is removed.
 (g) UNEQUAL COVERAGE: members with different n_states enter the Romano-Wolf step-down only on the intersection of their state
 keys (recorded as n_states_common), or the family refuses unequal_coverage when the intersection is below the minimum.
+
+AMENDMENT 4 (2026-09-22 21:3xZ; binding; from the codex sol round-4 verdict on fix 1f, read together with the AMENDMENT 3 rulings fix 1g landed). (a) REAL LOADER ROWS OR NOT VALIDATED: MEASURED -- rows returned by the landed
+load_states carry an unzoned state_ts and carry neither reference_available_at nor settled_at, so the default runner
+refuses them twice over (signal_audit_catalog.py:282; decision_time_refused, then reference_availability_unknown
+once a Z is added). RULING: availability and settlement timestamps are supplied through the real loader / corpus
+contract and are NEVER synthesized, defaulted or back-filled by the runner; until that contract carries them the
+affected rows are marked NOT VALIDATED in the artifact and the memo, and the refusal of AMENDMENT 3(b) stands as the
+only other outcome. Test: a loader-shaped row without availability evidence yields NOT VALIDATED or
+reference_availability_unknown, never a scored member.
+(b) ALIAS-EQUIVALENT COMPUTATION SHARING EXISTS: MEASURED -- CHANGE 1's sharing is absent; MEMBER_FIELDS has no alias
+or computation identity and a search for alias across every candidate module returns nothing (signal_audit_family.py:43).
+RULING: a canonical computation key (or an explicit alias target) is part of the SEALED member identity and is
+validated at load; each canonical computation is evaluated ONCE, separate inventory rows are still emitted per alias,
+and every hypothesis is still counted in the allowance divisor. Test: two alias members of one canonical computation
+produce one evaluation, two inventory rows, and a divisor of two.
+(c) STRICT NUMERIC VALIDATION ON EVERY COUNT AND BOUND: MEASURED -- artifact validation accepted
+n_states_at_min_train=1.5 and ci_member_allowance=[nan,nan] (signal_audit_verdicts.py:155). RULING: every count is a
+strict non-boolean int (a float, bool or numeric string refuses) and every metric and interval bound is a
+non-boolean FINITE real (nan, inf and bool refuse), checked before the artifact is written. Tests: each of 1.5, True,
+"3", nan and inf refuses in the field where it is planted.
+(d) THE CRITIQUE ARCHIVE IS NOT A CANDIDATE FILE: MEASURED -- git status during verification carried a ninth
+untracked artifact, docs/evidence/harness/S396_astra_r4_critique_2026-09-22.md, outside AMENDMENT 2(a)'s pinned eight.
+RULING: AMENDMENT 2(a)'s owned set stays EIGHT files; an archived critique named by an amendment is evidence of the
+adjudication, archived and landed on its own pathspec, and is excluded from this row's candidate -- a verifier
+counting the owned set excludes it by name rather than rejecting the candidate for it. Test: the candidate's file
+census equals the pinned eight with the critique listed separately as archived evidence.
+(e) THE PERCENTILE SENTENCE IS CORRECTED: MEASURED -- the memo at S396_signal_audit_2026-09-22.md:194 says unresolved
+percentiles pin to extreme draws, but interval(arange(2000), 0.00015625) returned [0.156171875, 1998.843828125] --
+interpolated, not pinned. RULING: the memo describes the interpolation actually used and states plainly that nominal
+coverage in the tiny tail remains UNRESOLVED; no claim rests on that tail. Test: the memo's sentence quotes the
+reproduced endpoints above.
+(f) PYTHON 3.10 IS THE RUNTIME: MEASURED -- the fix lane ran the three test files on Python 3.12.3 because the default
+3.10 interpreter rejects a trailing Z in datetime.fromisoformat; the local environment (conda basketball_ai) is Python 3.10.20
+and the runner must run there. RULING: every timestamp parse goes through the landed parse_venue_time (never fromisoformat on
+a Z-suffixed text), and the per-file tests are run and reported under the default python of the repo (3.10); a round or fix
+report states the interpreter version it used. Test: the three test files pass under python 3.10 with a Z-suffixed fixture.

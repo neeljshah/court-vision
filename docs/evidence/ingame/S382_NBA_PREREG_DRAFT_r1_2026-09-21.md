@@ -13,8 +13,11 @@ Delta = candidate loss minus arm A loss. Negative means lower loss; positive
 means higher loss; zero means NULL. No direction is selected after outcomes.
 PRIMARY: period-stratified C-minus-A Brier on the proposed validation population.
 B-minus-A, D-minus-A and D-minus-C are secondary; D is conditional on provenance.
-The proposed primary population excludes S86-scored games; the exposure decision
-must be resolved at seal, as detailed below. No secondary can replace the primary.
+The primary population is the post-warm-up eligible population the S402 seal
+package pins as PRIMARY_GAMES 1570 of ELIGIBLE_GAMES 1593, with 23 warm-up
+games; the earlier 796-game exclusion proposal is withdrawn under the S392
+exposure disposition, which rejects any untouched-validation claim. No
+secondary can replace the primary.
 
 ## Arms and features
 
@@ -140,16 +143,31 @@ records. Report training counts including warm-up, phase support, exclusion
 histograms, and leave-one-game-out ranges without refitting. Weeks use each
 game's first-tick ISO year/week so that a game never splits weeks.
 
-EXPOSURE DECISION FOR SEAL: recommend EXCLUDE all 797 S86-scored games from any
-AHEAD claim. S86 already scored 232,951 ticks once. Report the full eligible
-population separately as descriptive and the remaining 796-game population as
-the proposed primary validation population. "Never-scored" here means never
-scored by S86; the audit also reports S58 scored all 1,593 games at one checkpoint.
-Thus these 796 games are NOT asserted to be untouched validation. Freeze game
-identities and adjudicate S58 exposure before sealing or claiming independence;
-unresolved exposure blocks a confirmatory interpretation. Neither exposure
-partition creates an additional independent corpus. D may have no eligible rows
-in the proposed primary; report that honestly, never promote its exposed subset.
+The NBA archive is historically exposed and supports no untouched-validation claim
+for A, B or C. S58 scored one checkpoint for every archive game; S86 used that
+baseline and inspected its screen half, and later rows examined the full source.
+Removing S86 games therefore does not restore independence. Treat all historical
+results as development/descriptive, including results on the complement of S86.
+Historical, S86-exposed and complement population sizes are pinned in the
+frozen-denominator block of this sealed text, not asserted in prose. Arm D remains
+DESCRIPTIVE ONLY pending original parameter-authoring records and independent
+provenance review: its constants' vintage is UNKNOWN, so no D cell may carry a
+verdict, be promoted, or be read as evidence for or against the primary. Any
+confirmatory population requires separately unexposed observations and a frozen
+identity/exposure manifest before a seal; this historical disposition alone
+authorizes no confirmatory claim.
+
+Preserve the period-stratified primary estimand declared above with equal weights
+across Q1-Q4, the existing whole-game uncertainty procedure and unchanged bars; on
+this historical archive its interpretation is descriptive only. Compare A, B, C and
+B_lag on identical full live-eligible keys regardless of model availability, and
+compare D only with A, B and C recomputed using its identical eligible paired keys,
+training populations, folds and weights. Do not transfer denominators between
+subsets or promote a favorable subset, arm or secondary cell. Empty eligible
+populations are reported honestly. The candidate archive supplies no untouched
+primary validation population; the earlier 796-game "proposed primary validation
+population" wording is withdrawn. Seasonal or exposure partitions do not create
+independent corpora.
 
 NBA late-game cohorts are EXPLORATORY, pre-declared here: quarter == 4,
 0 < seconds_remaining <= 300, abs(score_diff) <= 6; no OT membership.
@@ -161,6 +179,33 @@ Meeting this floor does not make any cohort confirmatory. All cohort counts,
 including period support within exposure and D subsets: TO-FREEZE-FROM-CENSUS.
 Today's late_game_cohorts.py supports MLB/NFL ONLY and REJECTS NBA with
 unsupported_sport. These thresholds are prospective, not an implemented NBA route.
+
+ARTIFACT VOCABULARY (so the sealed text and the landed artifacts agree).
+Populations: the SCORED PRIMARY population is the post-warm-up population
+pinned as PRIMARY_GAMES with its identity digest; the ELIGIBLE population is
+the census eligible set pinned as ELIGIBLE_GAMES with its digest; the two
+differ, and the scored primary identities united with the warm-up identities
+must equal the eligible identities exactly. The S86-exposed and S58-scored counts are inventory only:
+reported, never combined with either population and never used to derive one. The
+full paired set is handed to the period module, which counts warm-up rows itself, so
+the primary cell reports n_input over all rows and a nonzero n_warmup.
+Periods: OT rows are excluded from the four periods and counted; a game whose scored
+rows are all overtime stays in the primary identity set, contributes to no period,
+and is counted as ot_only_games. Bootstrap support (this freezes the S383
+behaviour): a draw in which a declared period has no supporting game is DISCARDED
+and COUNTED, never silently dropped and never renormalized; more than 20 discarded
+draws makes the cell UNDERPOWERED with reason period_support_insufficient.
+Labels: the primary cell carries label PRIMARY and every other cell SECONDARY; arm D
+cells carry SECONDARY DESCRIPTIVE, their verdict field is the word DESCRIPTIVE and
+the interval-derived label is reported separately as interval_verdict. A saved
+interval containing zero can never carry SINGLE-WINDOW or AHEAD, and no cell below
+30 scored games may carry either, whatever a reconstruction's tolerance.
+Census echo: this sealed text carries the S387 census denominators as one line per
+key prefixed CENSUS. plus a single combined census line; the prose adds no line
+beginning with a pinned name, and any line beginning CENSUS. that does not match the
+echo format is a refusal, never ignored. Producer gaps: a contrast or key the
+auditor expects and the output does not carry is recorded NOT_AUDITABLE with reason
+producer_field_absent, never PASS, and the trial memo states it in words.
 
 ## Bars and stop rule
 
@@ -249,4 +294,16 @@ Do not seal until ALL of the following are resolved:
   estimands and exposure constraints reviewed before a two-corpus conclusion.
 - The orchestrator reviews this draft and commits the eventual seal before metrics;
   ONE trial is charged and launch K is recorded before any authorized score.
+- The period module emits the declared primary contrast C_minus_B for both metrics,
+  computed through the reported cells' own machinery and weighting, and the trial
+  runner selects it as primary with C-minus-A beside it as SECONDARY; landed with
+  per-file tests before sealing. Closing row: S417.
+- The B_lag arm is landed end to end -- eligibility counting
+  no_prior_tick_for_b_lag, scorer arm and paired losses, period cells on the B_lag
+  subset, auditor arm inventory -- or this amendment is withdrawn from the text
+  before sealing. It is never dropped silently after the trial. Closing row: S417.
+- S405 landed (D_minus_C for both metrics and d_subset.scored_keys) and the S395
+  auditor landed with its primary reconstruction pointed at the declared primary
+  contrast, so the charged trial has no producer gap. Closing row: S417
+  (with S405 and S395).
 No lane adds a seal. This document remains DRAFT r1 and freezes nothing.

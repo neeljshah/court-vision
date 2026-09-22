@@ -68,3 +68,14 @@ is refused (it could inject a second pinned line). (c) CORRECTION 2: --closed ev
 directory (:109). (d) The census echo line is named CENSUS.eligible_games (never ELIGIBLE_GAMES) so an unanchored consumer pattern
 cannot match twice; every emitted pinned line is unique by name. (e) NOTE 4 accepted: a missing input file is a counted Stop with the
 report written (OSError caught into Stop), and a Stop after a successful reconciliation keeps the reconciliation table in the report.
+
+AMENDMENT 3 (2026-09-22 21:2xZ; binding for the next S402 follow-up; from the Opus closure assembly). MEASURED on the landed
+package (5bab58a3e): the only check a --closed <index>=<path> evidence argument receives is Path(path).is_file() -- the file's
+contents are never inspected, so any existing file closes any item. RULING (additive, a follow-up row before the seal): a
+closure evidence file must be a TRACKED path (git ls-files) and must contain the item's index token 'do-not-seal <index>' or
+the item's first eight words verbatim; a path failing either refuses closure_evidence_unrelated (counted); the report records
+per item the evidence path, its blob sha and which rule matched. Until that lands, the orchestrator closes items only with the
+artifacts named in .planning/direction/nba_seal_closures_2026-09-22.md (copied under docs/direction/), each of which names its
+item, and records the mapping in the seal memo. Also recorded: the real reconciliation run on the amended draft (2026-09-22,
+--allow-open) is transcribed as docs/evidence/harness/S402_reconciliation_real_2026-09-22.md -- differing_keys [], every key
+equal, do_not_seal 11 open, missing pin auditor.

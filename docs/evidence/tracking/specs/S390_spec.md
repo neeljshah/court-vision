@@ -155,3 +155,23 @@ served by the capture can still qualify on incidental receipts (served false, ve
 explicit and the memo says the denominator is the full selection; the qualification window is [scheduled_start, +3600 s) by the
 frozen bar (late starts lose coverage, extra innings do not extend it); unknown per-game reasons fail closed. (g) The memo records
 the copy wall clock and the snapshot bytes for the first real run when the orchestrator runs it.
+
+AMENDMENT 6 (2026-09-22 21:3xZ; binding; from the codex sol round-4 verdict on fix 1f, read after fix 1g landed AMENDMENT 5). (a) A VANISHED SOURCE NAMES ITS PATH: MEASURED by the round-4 verifier -- a source present at hash
+time and gone before the size-bounded copy escapes _snapshot as FileNotFoundError, and the outer handler reports a
+generic qualification_failed with no affected path (forward_qualification_daily.py:88-91; reproduction
+input=present_at_hash_then_vanished_before_copy output=('FileNotFoundError','vanished') named_paths=[]), which AMENDMENT 4(a) already forbids. RULING: every OSError raised while OPENING or READING a source inside _snapshot
+converts to ValueError("input_changed_during_run") carrying that path, so _snapshots records it in changed_inputs;
+an OSError raised while WRITING the snapshot DESTINATION keeps its own failure class and is never relabelled an
+input change. Tests: a source deleted between the hash and the copy refuses input_changed_during_run with the path
+present in changed_inputs; an unwritable destination still fails as a write error with its own reason.
+(b) A ROUND THAT CANNOT RUN TESTS SAYS SO: MEASURED -- the round-4 verifier executed none of the required 27/47/22
+cases because every case failed during tmp_path setup in a read-only environment, so the REJECT rests on static
+reading alone and the memo's 26/45/19 counts were never independently reproduced (fix 1g reports 27/47/22 passing).
+RULING: a verification round that cannot create a temporary directory records environment_unverifiable for the test
+clause and may NOT convert that inability into a candidate defect; the round is re-run with a writable TMPDIR before
+any test-based finding of that round is binding. Test: the verifier's transcript prints the resolved temporary root
+and the three pass counts, or prints environment_unverifiable beside them.
+(c) NOTED, unchanged: the round-3 closures (retained digest on prefix change, appended_bytes from the post-verification
+size, empty-selection parse, five family rows, unreadable_daily_artifact) and AMENDMENT 5(a) and 5(c) were reproduced
+by this round and need no fix; real archives, real qualification, a real ledger append, junction targets and
+large-shard runtime stay NOT VERIFIED and belong to the orchestrator's real run, not to this row's fix agent.

@@ -95,3 +95,21 @@ below the bar. (g) MALFORMED CENSUS ECHOES REFUSE: any draft line beginning 'CEN
 runner's attempt.json carries no descriptive_soccer; the auditor treats its absence on an NBA output as not-required (never a
 refusal), and the fixture must not invent fields the landed runner does not write. (i) NOTED, not changed: endpoint agreement
 cannot prove the producer's SEED / N_BOOT were used (outputs can coincide on constant populations); the memo says so.
+
+AMENDMENT 5 (2026-09-22 21:4xZ; binding; from the fix 1f report on AMENDMENT 4, which closed (a)-(h) with
+reproductions and left one gap). (a) THE PRODUCER'S SEED AND N_BOOT ARE AUDITED OR NAMED UNAUDITED: MEASURED -- fix 1f
+implemented every AMENDMENT 4 ruling with a BEFORE/AFTER flip per case, but closed with "Producer SEED/N_BOOT usage
+remains unverified", so the auditor never establishes that the producer drew with the sealed seed and bootstrap count.
+RULING: the auditor reads SEED and N_BOOT from the producer's own artifact and requires them to equal the sealed
+constants (imported, never re-declared); when the artifact carries neither, the check is NOT_AUDITABLE with reason
+producer_seed_absent -- never PASS -- and the memo's NOT VERIFIED list names it in those words. Tests: a mismatched
+seed refuses; an absent seed field yields NOT_AUDITABLE with that reason; a matching seed passes.
+(b) ONE SOURCE PER FIXTURE: MEASURED -- the first exposure run failed (1 failed, 83 passed) and passed only after the
+fixture copies were synchronized by hand, so the same fixture exists in more than one place and can drift silently
+between the boundary and exposure suites. RULING: each audited fixture has ONE on-disk source, loaded by both suites
+through a single helper; a second copy is a defect, not a maintenance task. Test: the exposure suite loads the
+boundary suite's fixture path and a deliberate edit to that one file changes both suites' outcomes.
+(c) NOTED, unchanged: AMENDMENT 3's producer gap stands -- the landed S394 runner emits no D_minus_C_<metric> and no
+d_subset.scored_keys, both audited as NOT_AUDITABLE with reason producer_field_absent, and the release verdict is
+reached with C.means NOT_AUDITABLE, said in words in the seal and the trial memo. Fix 1f is UNVERIFIED: no
+independent verdict on it exists, so the next round is the FIRST verification of AMENDMENT 4, not a re-verification.

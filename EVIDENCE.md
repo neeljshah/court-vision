@@ -11,6 +11,9 @@ Ground rules for this page:
   central result is that the market is efficient.
 - **Losses are listed.** `MARKET_SHARPER`, `BEHIND`, `UNDERPOWERED`, `REJECT`, and `RETRACTED`
   rows are part of the record, not footnotes.
+- **Power is stated before results.** The minimum detectable effect of every market-relative
+  row -- which rows could have answered their question at all -- is on
+  [docs/evidence/POWER_PAGE_2026-09-22.md](docs/evidence/POWER_PAGE_2026-09-22.md).
 - **No row without an artifact.** Numbers are transcribed from the cited file; the audited
   narrative and the do-not-claim list live in
   [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md), and every generated receipt in

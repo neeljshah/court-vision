@@ -47,3 +47,37 @@ row's probability and outcome (to 1e-12) refuses inconsistent_paired_loss -- the
 reported cell uses the other. (e) ONE-GAME AND EMPTY SUBSETS: scored_keys lists exactly the rows scored (never emptied by an
 underpowered verdict); the contrast cell carries verdict UNDERPOWERED with finite or null estimates and no exception; a repeat
 serialization of the same input is byte-identical (a permanent assertion).
+
+AMENDMENT 2 (2026-09-22 21:3xZ; binding; from the astra round-2 critique on fix 1b; the paired sol contract verdict
+for round 2 was never produced and this amendment does not wait on it). (a) THE CANONICAL SORT NEVER REACHES A
+PRE-EXISTING OUTPUT: MEASURED -- the AMENDMENT 1(b) sort is applied at nba_four_arm_trial.py:172 before predictions
+are saved and again at :178 for primary predictions, so the saved row list reorders (g2:6, an OT row, moves from
+after g2:5 to before g2:1) and existing fold_training_sizes reorders (January 1,6,11 becomes 6,11,1 for games
+z0,a1,b2) -- a pre-existing output changed, which the B2 rule forbids. RULING: the canonical (game_id, phase, key)
+sort is applied ONLY to the rows the S405 contrast consumes, in a local copy; every pre-existing writer keeps
+insertion order byte for byte. Test: capture every output of the landed runner and of the candidate on the synthetic
+fixture containing OT, remove ONLY the S405 fields, and compare serialized bytes -- the current golden test compares
+_primary alone and must be widened.
+(b) A POWERED CONTRAST KEEPS THE DESCRIPTIVE CONVENTION: MEASURED -- on 30 synthetic games spanning all four periods
+the existing D cell reports verdict="DESCRIPTIVE" with interval_verdict="BEHIND", while the contrast inserted at
+nba_four_arm_trial.py:104 (after _label has run) reports "BEHIND" in BOTH fields, though both labels remain
+"SECONDARY DESCRIPTIVE". RULING: the contrast cell carries the same two-field convention as every existing secondary
+cell -- verdict stays DESCRIPTIVE and only interval_verdict carries the direction -- whether the contrast is powered
+or underpowered. Test: a 30-game fixture (the fixture's complete scored game replicated across 30 distinct ids)
+asserts verdict="DESCRIPTIVE" and the directional value in interval_verdict; the existing tests exercise only
+UNDERPOWERED, which AMENDMENT 1(e) required.
+(c) THE DIAGNOSTICS ARE ASSERTED INDEPENDENTLY: MEASURED -- the leave-one-game-out range and the concentration value
+reproduce, but only through the interval assertions, which would also pass if either diagnostic were wrong in a way
+the interval absorbs. RULING: leave_one_game_out_range and largest_absolute_share each carry their OWN assertion
+against an independently computed expectation, not against the interval. Tests: the fixture asserts both values
+directly and a planted single-game perturbation moves each one in the expected direction.
+(d) ONE-GAME KEYS ARE KEPT: MEASURED -- the complete one-game fixture preserves five scored keys with UNDERPOWERED
+and serializes successfully, and empty input produces []; this follows AMENDMENT 1(e) and contradicts the reviewer's
+requested one-game []. RULING: AMENDMENT 1(e) STANDS -- scored_keys lists exactly the rows scored and is never
+emptied by an underpowered verdict; the one-game [] expectation is withdrawn and the memo records the adjudication.
+Test: the one-game fixture asserts five keys with verdict UNDERPOWERED and a byte-identical repeat serialization.
+(e) THE MEMO'S SOURCE SIZE IS RE-MEASURED: MEASURED -- the memo at S405_four_arm_contrast_2026-09-22.md:131 claims
+12,994 bytes while the current test file is 13,085 bytes, and the historical figure cannot be reproduced from this
+candidate. RULING: a size recorded in a memo is measured against the candidate at the moment the memo is written and
+is re-measured whenever the file changes; an unreproducible historical size is removed rather than carried. Test:
+the memo's stated size equals the byte size of the named file in the candidate tree.

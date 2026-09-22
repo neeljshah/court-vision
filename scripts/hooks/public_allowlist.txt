@@ -33,6 +33,7 @@
 + docs/
 - docs/sell/
 - docs/operations/
+- docs/direction/
 - docs/evidence/tracking/
 + docs/evidence/tracking/*.md
 - docs/evidence/harness/
