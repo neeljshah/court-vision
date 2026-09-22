@@ -14,6 +14,8 @@ Ground rules for this page:
 - **Power is stated before results.** The minimum detectable effect of every market-relative
   row -- which rows could have answered their question at all -- is on
   [docs/evidence/POWER_PAGE_2026-09-22.md](docs/evidence/POWER_PAGE_2026-09-22.md).
+- **The corpora are documented before the results.** Data cards and the defect register are on [docs/evidence/CORPUS_DATA_CARDS_2026-09-22.md](docs/evidence/CORPUS_DATA_CARDS_2026-09-22.md).
+- **Multiplicity is accounted for in writing.** The 0-of-60 result, its family, K and null are on [docs/evidence/MULTIPLICITY_MEMO_2026-09-22.md](docs/evidence/MULTIPLICITY_MEMO_2026-09-22.md).
 - **No row without an artifact.** Numbers are transcribed from the cited file; the audited
   narrative and the do-not-claim list live in
   [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md), and every generated receipt in
