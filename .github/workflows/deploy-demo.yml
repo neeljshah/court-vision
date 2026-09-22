@@ -144,6 +144,7 @@ jobs:
           npx vitest run components/analytics/residual-anatomy/ResidualAnatomy.test.tsx
           npx vitest run components/analytics/blowout-timing/BlowoutTiming.test.tsx
           npx vitest run components/analytics/lab/LabTable.test.ts
+          npx vitest run components/analytics/lab/TablePagination.test.tsx
           npx vitest run components/analytics/evidence/EvidenceGallery.test.tsx
           npx vitest run components/analytics/CommandPalette.test.tsx
           npx vitest run components/analytics/AnalyticsNavigation.test.tsx
