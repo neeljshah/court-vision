@@ -26,6 +26,7 @@ describe("getMultisportDepthResearch", () => {
     expect(shrinkage.rows.some(row => (row.values.regression || 0) < 0)).toBe(true);
     const tennis = analyses.find(analysis => analysis.id === "tennis-surface-prior-brier-delta")!;
     expect(tennis.status).toBe("Descriptive reject");
+    expect(tennis.surfaceFolds?.map(group => [group.tour, group.rows.length])).toEqual([["atp", 3], ["wta", 3]]);
     expect(tennis.rows.every(row => (row.values.delta || 0) > 0)).toBe(true);
     tennis.rows.forEach(row => expect(row.values.higher_error_folds).toBe(row.values.n_folds));
   });

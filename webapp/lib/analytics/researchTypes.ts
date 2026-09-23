@@ -1,5 +1,6 @@
 import type { LabDataset, LabField } from "./labTypes";
 import type { BrierPhaseCoverage } from "./brierPhaseCoverage";
+import type { TennisSurfaceFoldGroup } from "./tennisSurfaceFolds";
 
 export type ResearchReference = { title: string; url: string };
 export type ResearchSource = { id: string; asOf: string; fields?: string[]; rowWindows?: Record<string, string[]> };
@@ -23,6 +24,7 @@ export type ResearchAnalysis = Omit<LabDataset, "rows" | "fields"> & {
   sources?: ResearchSource[];
   bindings?: ResearchOperandBinding[];
   phaseCoverage?: BrierPhaseCoverage[];
+  surfaceFolds?: TennisSurfaceFoldGroup[];
   asOf?: string;
   novelty: "Derived analysis" | "Experimental formulation";
 };
