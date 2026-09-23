@@ -22,7 +22,8 @@ function validateRow(a: ResearchAnalysis, next: View): View {
   const comparison = researchComparisonPolicy(a.rows, a), initial = defaults(a);
   if (!comparison.compatible && next.population !== "all" && !comparison.populations.some(item => item.key === next.population)) next.population = initial.population;
   const terms = next.query.toLowerCase().trim().split(/\s+/).filter(Boolean);
-  const selected = visibleRows(a, next).find(r => r.id === next.row && terms.every(t => `${r.label} ${r.group} ${r.note || ""}`.toLowerCase().includes(t)));
+  const aggregateIds = new Set(comparison.aggregateRows.map(row => row.id));
+  const selected = visibleRows(a, next).find(r => r.id === next.row && (aggregateIds.has(r.id) || terms.every(t => `${r.label} ${r.group} ${r.note || ""}`.toLowerCase().includes(t))));
   return { ...next, row: selected?.id || "" };
 }
 

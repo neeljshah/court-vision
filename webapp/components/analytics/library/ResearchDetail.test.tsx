@@ -134,6 +134,28 @@ describe("ResearchDetail", () => {
 });
 
 describe("ResearchDetail investigation continuity", () => {
+  it.each(["early", "no matching phases"])("inspects visible whole-corpus rows while searching %s", query => {
+    const rendered = render(<ResearchDetail analysis={brierAnalysis} related={[]} />);
+    fireEvent.change(screen.getByRole("textbox", { name: "Search analysis rows" }), { target: { value: query } });
+    const trigger = screen.getByRole("button", { name: "Inspect MLB | all", exact: true });
+    trigger.focus();
+    fireEvent.click(trigger);
+    const inspector = screen.getByRole("region", { name: "Selected measurement" });
+    expect(inspector).toHaveTextContent("MLB | all");
+    expect(inspector).toHaveFocus();
+    expect(within(inspector).queryByRole("region", { name: "Measurement context" })).not.toBeInTheDocument();
+    expect(new URLSearchParams(window.location.search).get("row")).toBe("mlb-all");
+    fireEvent.keyDown(inspector, { key: "Escape" });
+    expect(trigger).toHaveFocus();
+    fireEvent.click(trigger);
+    rendered.unmount();
+    render(<ResearchDetail analysis={brierAnalysis} related={[]} />);
+    expect(screen.getByRole("region", { name: "Selected measurement" })).toHaveTextContent("MLB | all");
+    fireEvent.change(screen.getByRole("combobox", { name: "Population" }), { target: { value: "sport=soccer_intl" } });
+    expect(screen.queryByRole("region", { name: "Selected measurement" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Inspect MLB | all", exact: true })).not.toBeInTheDocument();
+  });
+
   it("uses paired scatter summaries and updates them with the visible search and population", () => {
     render(<ResearchDetail analysis={analysis} related={[]} />);
     fireEvent.click(screen.getByRole("button", { name: "Scatter plot" }));

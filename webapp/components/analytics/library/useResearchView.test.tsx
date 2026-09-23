@@ -56,6 +56,27 @@ beforeEach(() => window.history.replaceState(null, "", "/analytics/research/firs
 afterEach(() => window.history.replaceState(null, "", "/analytics/research/first/"));
 
 describe("useResearchView hydration intent", () => {
+  it("restores a visible aggregate despite phase search but rejects another sport's aggregate", () => {
+    const aggregates: ResearchAnalysis = { ...multisport, rows: [
+      ...multisport.rows.map(row => ({ ...row, sourcePaths: [`sports.${row.id === "mlb" ? "mlb" : "soccer_intl"}.grains.early.brier_model`] })),
+      { id: "mlb-all", label: "MLB | all", group: "MLB", values: { score: 3 }, sourcePaths: ["sports.mlb.grains.all.brier_model"] },
+    ] };
+    window.history.replaceState(null, "", "?population=all&q=no-match&row=mlb-all");
+    render(<State a={aggregates} />);
+    expect(view()).toMatchObject({ query: "no-match", row: "mlb-all" });
+    act(() => {
+      window.history.pushState(null, "", "?population=sport%3Dmlb&q=no-match&row=mlb-all");
+      window.dispatchEvent(new PopStateEvent("popstate"));
+    });
+    expect(view().row).toBe("mlb-all");
+    act(() => {
+      window.history.pushState(null, "", "?population=sport%3Dsoccer_intl&q=no-match&row=mlb-all");
+      window.dispatchEvent(new PopStateEvent("popstate"));
+    });
+    expect(view().row).toBe("");
+    expect(new URLSearchParams(window.location.search).has("row")).toBe(false);
+  });
+
   it("keeps an early query over restored valid fields and preserves unrelated URL parameters", () => {
     window.history.replaceState(null, "", "?metric=rate&group=East&utm_source=shared");
     render(<State a={analysis} intent="query" />);

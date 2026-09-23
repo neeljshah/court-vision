@@ -15,7 +15,8 @@ function rows(source: MlbCatcherOozSource): ResearchRow[] {
   const lists = [["top", source.catcher_ooz?.top], ["bottom", source.catcher_ooz?.bottom]] as const;
   return lists.flatMap(([selection, catchers]) => {
     if (!Array.isArray(catchers)) return [];
-    return (catchers as Catcher[]).flatMap((catcher, index) => {
+    return catchers.flatMap((value, index) => {
+      const catcher = typeof value === "object" && value !== null ? value as Catcher : {};
       if (typeof catcher.name !== "string" || !catcher.name || !finite(catcher.n_ooz_called) || catcher.n_ooz_called < 0 || !finite(catcher.ooz_strike_rate) || catcher.ooz_strike_rate < 0 || catcher.ooz_strike_rate > 1) return [];
       return [{
         id: `catcher-ooz-${selection}-${catcher.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${index}`,
@@ -23,7 +24,7 @@ function rows(source: MlbCatcherOozSource): ResearchRow[] {
         group: "MLB catchers",
         values: { out_of_zone_strike_rate: catcher.ooz_strike_rate, out_of_zone_called_pitches: catcher.n_ooz_called },
         note: `${selection === "top" ? "Upper" : "Lower"} published selection.`,
-        sourcePaths: [`catcher_ooz.${selection}[].name`, `catcher_ooz.${selection}[].ooz_strike_rate`, `catcher_ooz.${selection}[].n_ooz_called`],
+        sourcePaths: [`catcher_ooz.${selection}[${index}].name`, `catcher_ooz.${selection}[${index}].ooz_strike_rate`, `catcher_ooz.${selection}[${index}].n_ooz_called`],
       }];
     });
   }).sort((left, right) => right.values.out_of_zone_strike_rate! - left.values.out_of_zone_strike_rate! || left.label.localeCompare(right.label));
