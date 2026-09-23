@@ -101,6 +101,19 @@ describe("loadScoutCorpus", () => {
     expect(resolveQuestion("Curry", corpus)).toMatchObject({ entry: null, kind: "none" });
   });
 
+  it("retrieves soccer scoring form with its prior-match scope and exact analysis link", () => {
+    const result = resolveQuestion("Explain the analysis: Soccer form: attack and defense", corpus);
+    expect(result).toMatchObject({ kind: "direct", entry: { a: {
+      source_artifact: "webapp/public/data/showcase/atlas_soccer_manifest.json",
+      explore_path: "/analytics/research/soccer-trailing-attack-defense/",
+    } } });
+    if (result.kind === "direct") {
+      expect(result.entry?.a.answer).toContain("gf_l10");
+      expect(result.entry?.a.answer).toContain("ga_l10");
+      expect(result.entry?.a.answer).toMatch(/prior matches/i);
+    }
+  });
+
   it("resolves published tennis profiles with or without their ATP qualifier", () => {
     const atlasEntities = corpus.flatMap((entry) => entry.entity ? [entry.entity] : []);
     const sinner = atlasEntities.find((entity) => entity.slug === "jannik_sinner_atp")!;
