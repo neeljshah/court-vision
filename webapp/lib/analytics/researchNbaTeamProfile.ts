@@ -9,6 +9,9 @@ type TeamCell = { label: string; sourcePaths: string[]; values: Record<string, n
 const REFERENCES: ResearchReference[] = [{
   title: "Published NBA team snapshot modules",
   url: "https://github.com/neeljshah/court-vision/tree/master/webapp/public/data/showcase",
+}, {
+  title: "Published NBA team atlas producer",
+  url: "https://github.com/neeljshah/court-vision/blob/master/scripts/platformkit/analytics_showcase/nba_team_atlas.py",
 }];
 const finite = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value);
 const record = (value: unknown): Entry => value && typeof value === "object" && !Array.isArray(value) ? value as Entry : {};
@@ -23,6 +26,10 @@ function teamKey(value: unknown): string {
 function valueAt(value: unknown, key: string): number | null {
   const candidate = record(value)[key];
   return finite(candidate) ? candidate : null;
+}
+function countAt(value: unknown, key: string): number | null {
+  const candidate = record(value)[key];
+  return typeof candidate === "number" && Number.isSafeInteger(candidate) && candidate >= 0 ? candidate : null;
 }
 function latestByTeam(rows: unknown, valueKey: string): Map<string, Entry> {
   const latest = new Map<string, Entry>();
@@ -108,6 +115,8 @@ function buildRows(source: TeamProfileSources): { rows: ResearchRow[]; coverage:
       "atlas_nba_teams_manifest.entries[].entity",
       "atlas_nba_teams_manifest.entries[].key_numbers.pace_proxy_latest_season",
       "atlas_nba_teams_manifest.entries[].key_numbers.ppg_latest_season",
+      "atlas_nba_teams_manifest.entries[].key_numbers.games_total",
+      "atlas_nba_teams_manifest.entries[].key_numbers.seasons_covered",
     ];
     if (load) sourcePaths.push("novel_load_bearing_index.results[].estimator_a_elo_onoff.player_name", "novel_load_bearing_index.results[].estimator_a_elo_onoff.delta_winprob", "novel_load_bearing_index.results[].estimator_b_raw_withwithout.player_name", "novel_load_bearing_index.results[].estimator_b_raw_withwithout.delta_win_rate", "novel_load_bearing_index.results[].estimator_b_raw_withwithout.n_active", "novel_load_bearing_index.results[].estimator_b_raw_withwithout.n_missed", "novel_load_bearing_index.results[].agreement_same_player");
     if (fatigue.has(team)) sourcePaths.push("novel_schedule_fatigue_tax.results[].sft_credible_pts_per100_ortg");
@@ -121,6 +130,8 @@ function buildRows(source: TeamProfileSources): { rows: ResearchRow[]; coverage:
       values: {
         pace_proxy: valueAt(numbers, "pace_proxy_latest_season"),
         points_per_game: valueAt(numbers, "ppg_latest_season"),
+        atlas_games_total: countAt(numbers, "games_total"),
+        atlas_seasons_covered: countAt(numbers, "seasons_covered"),
         fragility_delta_estimator_a: valueAt(loadA, "delta_winprob"),
         fragility_delta_estimator_b: valueAt(loadB, "delta_win_rate"),
         fragility_estimator_b_active_games: valueAt(loadB, "n_active"),
@@ -164,7 +175,7 @@ export function buildNbaTeamProfileResearch(source: TeamProfileSources): Researc
   const halftimeFloor = valueAt(halftimeSource, "min_games_per_split");
   const halftimeAsOf = asOf(halftimeSource.as_of);
   const sources: ResearchSource[] = [
-    { id: "atlas_nba_teams_manifest", asOf: firstAsOf(record(source?.atlas)), fields: ["pace_proxy", "points_per_game"] },
+    { id: "atlas_nba_teams_manifest", asOf: firstAsOf(record(source?.atlas)), fields: ["pace_proxy", "points_per_game", "atlas_games_total", "atlas_seasons_covered"] },
     { id: "novel_load_bearing_index", asOf: "not published", fields: ["fragility_delta_estimator_a", "fragility_delta_estimator_b", "fragility_estimator_b_active_games", "fragility_estimator_b_missed_games"] },
     { id: "novel_schedule_fatigue_tax", asOf: "not published", fields: ["fatigue_tax_pts_per100"], rowWindows: rowWindows(built.rows, ["fatigue_tax_pts_per100"]) },
     { id: "schedule_density", asOf: "not published", fields: ["back_to_back_share"], rowWindows: rowWindows(built.rows, ["back_to_back_share"]) },
@@ -178,17 +189,19 @@ export function buildNbaTeamProfileResearch(source: TeamProfileSources): Researc
     source: "atlas_nba_teams_manifest",
     sources,
     question: "How do the published pace, fragility, schedule, and halftime-state measurements sit beside one another for each NBA team?",
-    method: `Join published team records by normalized abbreviation, retain every atlas team, and show missing module values as null rather than removing a team. Halftime margins are comparative only when both published split counts meet the source floor of ${halftimeFloor ?? "unpublished"} games and the source row is not masked; the halftime artifact is as of ${halftimeAsOf}.`,
+    method: `Join published team records by normalized abbreviation, retain every atlas team, and show missing module values as null rather than removing a team. Atlas games_total sums per-team unique-game counts across observed seasons and seasons_covered counts those observed seasons; pace and points per game remain latest-season measurements. Halftime margins are comparative only when both published split counts meet the source floor of ${halftimeFloor ?? "unpublished"} games and the source row is not masked; the halftime artifact is as of ${halftimeAsOf}.`,
     description: "The 30-team atlas is the anchor; published load-bearing, schedule, fatigue, and halftime-state values are placed alongside its pace and scoring measurements.",
     scope: `${built.rows.length} atlas teams. Sources: ${sources.map(item => `${item.id} (as of ${item.asOf})`).join("; ")}.`,
-    caveat: `Join coverage: ${built.coverage}. Estimator A and estimator B can name different players; inspect their published player names, agreement flag, and estimator B support counts before comparing the two deltas. The halftime source requires ${halftimeFloor ?? "an unpublished number of"} games in both led-at-half and trailed-at-half splits (artifact as of ${halftimeAsOf}); masked margins are null comparative values and their raw source values appear only in the labelled source disclosure. These modules use different windows and methods, so their values are not a common scale or a team ranking.`,
+    caveat: `Join coverage: ${built.coverage}. Atlas games and seasons describe full-corpus coverage; they are not denominators for latest-season pace or points per game. The totals do not publish season labels, earliest dates, or latest-season game counts, and the atlas as-of value is not a per-team coverage endpoint. Estimator A and estimator B can name different players; inspect their published player names, agreement flag, and estimator B support counts before comparing the two deltas. The halftime source requires ${halftimeFloor ?? "an unpublished number of"} games in both led-at-half and trailed-at-half splits (artifact as of ${halftimeAsOf}); masked margins are null comparative values and their raw source values appear only in the labelled source disclosure. These modules use different windows and methods, so their values are not a common scale or a team ranking.`,
     status: "Descriptive cross-module profile",
-    fields: [sourced("atlas_nba_teams_manifest", "pace_proxy", "Pace proxy", "number", 1), sourced("atlas_nba_teams_manifest", "points_per_game", "Points per game", "number", 1), sourced("novel_load_bearing_index", "fragility_delta_estimator_a", "Fragility delta, estimator A", "pp", 2), sourced("novel_load_bearing_index", "fragility_delta_estimator_b", "Fragility delta, estimator B", "pp", 2), sourced("novel_load_bearing_index", "fragility_estimator_b_active_games", "Estimator B active games", "number", 0), sourced("novel_load_bearing_index", "fragility_estimator_b_missed_games", "Estimator B missed games", "number", 0), sourced("novel_schedule_fatigue_tax", "fatigue_tax_pts_per100", "Fatigue tax, points per 100", "number", 3), sourced("schedule_density", "back_to_back_share", "Back-to-back share", "percent", 1), sourced("ctx_team_states", "halftime_games", "Halftime-state games", "number", 0), sourced("ctx_team_states", "halftime_led_at_half_games", "Led at half games", "number", 0), sourced("ctx_team_states", "halftime_trailed_at_half_games", "Trailed at half games", "number", 0), sourced("ctx_team_states", "halftime_required_games_per_split", "Required games per halftime split", "number", 0), sourced("ctx_team_states", "front_runner_second_half_margin", "Front-runner second-half margin", "number", 2), sourced("ctx_team_states", "comeback_second_half_margin", "Comeback second-half margin", "number", 2)],
+    fields: [sourced("atlas_nba_teams_manifest", "pace_proxy", "Pace proxy", "number", 1), sourced("atlas_nba_teams_manifest", "points_per_game", "Points per game", "number", 1), sourced("atlas_nba_teams_manifest", "atlas_games_total", "Atlas team games, full corpus", "number", 0), sourced("atlas_nba_teams_manifest", "atlas_seasons_covered", "Atlas seasons covered", "number", 0), sourced("novel_load_bearing_index", "fragility_delta_estimator_a", "Fragility delta, estimator A", "pp", 2), sourced("novel_load_bearing_index", "fragility_delta_estimator_b", "Fragility delta, estimator B", "pp", 2), sourced("novel_load_bearing_index", "fragility_estimator_b_active_games", "Estimator B active games", "number", 0), sourced("novel_load_bearing_index", "fragility_estimator_b_missed_games", "Estimator B missed games", "number", 0), sourced("novel_schedule_fatigue_tax", "fatigue_tax_pts_per100", "Fatigue tax, points per 100", "number", 3), sourced("schedule_density", "back_to_back_share", "Back-to-back share", "percent", 1), sourced("ctx_team_states", "halftime_games", "Halftime-state games", "number", 0), sourced("ctx_team_states", "halftime_led_at_half_games", "Led at half games", "number", 0), sourced("ctx_team_states", "halftime_trailed_at_half_games", "Trailed at half games", "number", 0), sourced("ctx_team_states", "halftime_required_games_per_split", "Required games per halftime split", "number", 0), sourced("ctx_team_states", "front_runner_second_half_margin", "Front-runner second-half margin", "number", 2), sourced("ctx_team_states", "comeback_second_half_margin", "Comeback second-half margin", "number", 2)],
     rows: built.rows,
-    formula: `pace_proxy, points_per_game, fragility_delta_estimator_a, fragility_delta_estimator_b, fragility_estimator_b_active_games, fragility_estimator_b_missed_games, fatigue_tax_pts_per100, back_to_back_share, halftime_games, halftime_led_at_half_games, halftime_trailed_at_half_games, and halftime_required_games_per_split are copied from their named source fields. At the source floor of ${halftimeFloor ?? "unpublished"} games per split (artifact as of ${halftimeAsOf}), front_runner_second_half_margin and comeback_second_half_margin are copied only if both split counts qualify and the source is unmasked; masked raw values are retained only in halftime_source_disclosure.`,
+    formula: `pace_proxy, points_per_game, atlas_games_total, atlas_seasons_covered, fragility_delta_estimator_a, fragility_delta_estimator_b, fragility_estimator_b_active_games, fragility_estimator_b_missed_games, fatigue_tax_pts_per100, back_to_back_share, halftime_games, halftime_led_at_half_games, halftime_trailed_at_half_games, and halftime_required_games_per_split are copied from their named source fields. Atlas coverage counts are descriptive full-corpus totals and do not supply a denominator or window endpoint for the latest-season fields. At the source floor of ${halftimeFloor ?? "unpublished"} games per split (artifact as of ${halftimeAsOf}), front_runner_second_half_margin and comeback_second_half_margin are copied only if both split counts qualify and the source is unmasked; masked raw values are retained only in halftime_source_disclosure.`,
     bindings: [
       { operand: "pace_proxy", sourcePath: "atlas_nba_teams_manifest.entries[].key_numbers.pace_proxy_latest_season", valueKey: "pace_proxy", label: "Pace proxy" },
       { operand: "points_per_game", sourcePath: "atlas_nba_teams_manifest.entries[].key_numbers.ppg_latest_season", valueKey: "points_per_game", label: "Points per game" },
+      { operand: "atlas_games_total", sourcePath: "atlas_nba_teams_manifest.entries[].key_numbers.games_total", valueKey: "atlas_games_total", label: "Atlas team games, full corpus" },
+      { operand: "atlas_seasons_covered", sourcePath: "atlas_nba_teams_manifest.entries[].key_numbers.seasons_covered", valueKey: "atlas_seasons_covered", label: "Atlas seasons covered" },
       { operand: "fragility_delta_estimator_a", sourcePath: "novel_load_bearing_index.results[].estimator_a_elo_onoff.delta_winprob", valueKey: "fragility_delta_estimator_a", label: "Fragility delta, estimator A" },
       { operand: "fragility_delta_estimator_b", sourcePath: "novel_load_bearing_index.results[].estimator_b_raw_withwithout.delta_win_rate", valueKey: "fragility_delta_estimator_b", label: "Fragility delta, estimator B" },
       { operand: "fragility_estimator_a_player", sourcePath: "novel_load_bearing_index.results[].estimator_a_elo_onoff.player_name", valueKey: "fragility_estimator_a_player", label: "Estimator A selected player" },

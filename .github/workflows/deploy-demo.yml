@@ -89,6 +89,7 @@ jobs:
           npx vitest run lib/analytics/researchSoccerFormGap.test.ts
           npx vitest run lib/analytics/researchSoccerScoring.test.ts
           npx vitest run lib/analytics/researchNbaPlayerContext.test.ts
+          npx vitest run lib/analytics/researchNbaTeamProfile.test.ts
           npx vitest run lib/analytics/publicCopy.test.ts
           npx vitest run lib/analytics/researchIntegration.test.ts
           npx vitest run lib/analytics/libraryData.test.ts
