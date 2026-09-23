@@ -3,7 +3,7 @@ import { resolveEntityIntent } from "./askEntityIntent";
 import { resolveQuestion } from "./askSearch";
 import { getResearchAnalyses } from "./researchData";
 import { loadScoutCorpus, loadScoutSourcesForTest } from "./scoutCorpus.server";
-import { scoutCorpusExpectedCount } from "./scoutCorpus";
+import { buildScoutCorpus, scoutCorpusExpectedCount, type ScoutSources } from "./scoutCorpus";
 // @ts-expect-error -- the executable scanner is deliberately dependency-free ESM.
 import { PROHIBITED_TOKEN_RE } from "../../scripts/check-analytics-copy.mjs";
 
@@ -99,6 +99,35 @@ describe("loadScoutCorpus", () => {
 
     expect(resolveQuestion("Nikola", corpus)).toMatchObject({ entry: null, kind: "none" });
     expect(resolveQuestion("Curry", corpus)).toMatchObject({ entry: null, kind: "none" });
+  });
+
+  it("carries the published pitch-type coverage limits for both SC and FF", () => {
+    const floors = sources.manifests.atlas_mlb_pitch_manifest.entries.find(entry => entry.entity === "pitch_type:SC")?.floors;
+    expect(typeof floors).toBe("string");
+    for (const code of ["SC", "FF"]) {
+      const profile = corpus.find(entry => entry.q === `What public metrics are available for pitch type ${code}?`);
+      expect(profile?.a.answer).toContain(`Published pitch-type coverage and limits: ${floors}`);
+    }
+    const sc = corpus.find(entry => entry.q === "What public metrics are available for pitch type SC?");
+    const ff = corpus.find(entry => entry.q === "What public metrics are available for pitch type FF?");
+    expect(sc?.a.answer).toContain("median velocity: 85.6 mph; recorded pitches: 7 pitches");
+    expect(ff?.a.answer).toContain("recorded pitches: 220235 pitches");
+  });
+
+  it("does not invent or spill pitch-type limits for absent, blank, malformed, or non-type floors", () => {
+    const entry = (entity: string, floors?: unknown) => ({ entity, card_path: `cards/${entity}.png`, key_numbers: { velo_p50: 90, n_pitches: 10 }, as_of: "2025-09-28", floors: floors as string });
+    const custom: ScoutSources = {
+      curated: { entries: [] },
+      manifests: {
+        atlas_mlb_pitch_manifest: { entries: [entry("pitch_type:AA"), entry("pitch_type:BB", "   "), entry("pitch_type:CC", { note: "malformed" }), entry("team:NYY", "team note")] },
+        atlas_mlb_batters_manifest: { entries: [entry("pitch_type:DD", "wrong pack note")] },
+      },
+      siteManifest: { modules: [] }, inspectorArtifacts: [], explainers: [], papers: [],
+    };
+    const profiles = buildScoutCorpus(custom).filter(record => record.bucket === "public-entity-profile");
+    expect(profiles).toHaveLength(5);
+    expect(profiles.every(profile => !profile.a.answer.includes("Published pitch-type coverage and limits:"))).toBe(true);
+    expect(profiles.every(profile => !profile.a.answer.includes("1000"))).toBe(true);
   });
 
   it("retrieves soccer scoring form with its prior-match scope and exact analysis link", () => {

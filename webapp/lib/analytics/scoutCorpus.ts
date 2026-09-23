@@ -4,7 +4,7 @@ import { entrySlugs } from "./comparisonData";
 import { getResearchAnalyses } from "./researchData";
 import { buildReadingRoomAnswers, type ExplainerEssay, type PaperRecord, type SourceArtifact } from "./scoutInspectorAnswers";
 
-type RawEntry = { entity: string; card_path: string; key_numbers: Record<string, unknown>; as_of?: string | null };
+type RawEntry = { entity: string; card_path: string; key_numbers: Record<string, unknown>; as_of?: string | null; floors?: string };
 type Manifest = { entries: RawEntry[] };
 type Metric = { key: string; label: string; unit: string; scale?: number };
 type Pack = { file: string; routePack: string; sport: string; kind: string; metrics: Metric[] };
@@ -42,7 +42,13 @@ function entityEntry(pack: Pack, entry: RawEntry, slug: string, aliases: Set<str
   const surname = words(name).at(-1) || "";
   const alternates = [`${name} profile`, `Tell me about ${name}`];
   if (surname.length >= 4 && aliases.has(surname)) alternates.push(surname, `${surname} profile`, `Tell me about ${surname}`);
-  return { q: `What public metrics are available for ${name}?`, alt_phrasings: alternates, tags: [pack.sport, pack.kind, "public-profile", ...words(name)], bucket: "public-entity-profile", entity: { name: entry.entity, pack: pack.routePack, slug }, a: { status: "ok", answer: values.length ? `Public ${pack.sport} ${pack.kind} profile for ${name}. As of ${entry.as_of || "date unrecorded"}: ${values.join("; ")}. This is a descriptive committed snapshot, not a current projection or live feed.` : `Public ${pack.sport} ${pack.kind} profile for ${name}. As of ${entry.as_of || "date unrecorded"}, the manifest has no configured numeric metrics for this profile. This is a descriptive committed snapshot, not a current projection or live feed.`, source_artifact: `webapp/public/data/showcase/${pack.file}.json`, as_of: entry.as_of || "unknown", explore_path: `/analytics/players/${pack.routePack}/${slug}` } };
+  const pitchTypeLimits = pack.file === "atlas_mlb_pitch_manifest"
+    && /^pitch_type:[a-z0-9]+$/i.test(entry.entity)
+    && typeof entry.floors === "string"
+    && entry.floors.trim()
+    ? ` Published pitch-type coverage and limits: ${entry.floors}`
+    : "";
+  return { q: `What public metrics are available for ${name}?`, alt_phrasings: alternates, tags: [pack.sport, pack.kind, "public-profile", ...words(name)], bucket: "public-entity-profile", entity: { name: entry.entity, pack: pack.routePack, slug }, a: { status: "ok", answer: values.length ? `Public ${pack.sport} ${pack.kind} profile for ${name}. As of ${entry.as_of || "date unrecorded"}: ${values.join("; ")}. This is a descriptive committed snapshot, not a current projection or live feed.${pitchTypeLimits}` : `Public ${pack.sport} ${pack.kind} profile for ${name}. As of ${entry.as_of || "date unrecorded"}, the manifest has no configured numeric metrics for this profile. This is a descriptive committed snapshot, not a current projection or live feed.${pitchTypeLimits}`, source_artifact: `webapp/public/data/showcase/${pack.file}.json`, as_of: entry.as_of || "unknown", explore_path: `/analytics/players/${pack.routePack}/${slug}` } };
 }
 
 function entityEntries(manifests: Record<string, Manifest>): AskEntry[] {
