@@ -142,3 +142,40 @@ the golden byte comparison against the landed runner (every other byte identical
 assertion it changes with before / after text in the memo; every other S405 test stays byte-identical; the S405 validation
 (all-arm both-metric loss consistency), the D-minus-C contrast at 1e-12 and the DESCRIPTIVE / interval_verdict convention keep
 their landed behaviour and values.
+
+AMENDMENT 8 (2026-09-23 02:4xZ; binding; from the sol round-1 REJECT and the astra round-1 corrections on build attempt i).
+(a) LANDED ENDPOINT ACCEPTANCE CHANGED -- MEASURED: with S405's primary_rows() and the first scored row's A probability set to
+0.0 in both the full row and the D subset (losses recomputed, no B_lag anywhere), the landed S405 code accepts (n_ticks 9) while
+the candidate refuses invalid_probability A=1 (baseline_four_arm_period.py:41). RULING: the landed acceptance of the endpoints
+0.0 and 1.0 with consistent losses is preserved for A, B, C and D exactly as landed; any strict bound the candidate introduced
+applies only where the landed code applied it; both-metric loss consistency stays; endpoint regression cases are pinned against
+the landed implementation (git show 32c9915f9). (b) B_lag VALIDATION BYPASSED WITHOUT SUBSET METADATA -- MEASURED: removing every
+b_lag_subset field and replacing one scored non-null B_lag probability with NaN (saved loss kept) was ACCEPTED (n_ticks 12,
+lag_report_present False, no refusal) -- invalid carried data admitted and the control arm silently vanished
+(baseline_four_arm_period.py:198). RULING: B_lag's probability and loss are validated independently of the subset metadata,
+before any cell is computed (NaN / non-finite / out-of-range refused under a named reason; a non-null probability with a
+missing or inconsistent loss refused inconsistent_paired_loss arm=B_lag); a scored row that carries B_lag but lacks the required
+b_lag_subset metadata is refused under a counted reason, never dropped from the control silently. (c) MEMO CLAIM NARROWED (astra):
+the LATENCY-EXPLAINED interpretation rule of the quoted amendment (the primary clears its interval condition while the lag control
+does not) is NOT implemented in this row -- nba_four_arm_trial.py:80 selects the primary independently and only copies the lag
+control into secondaries; the memo lists exactly which items are implemented and records LATENCY-EXPLAINED as a follow-up row for
+the orchestrator (the label is never emitted by this candidate). Everything else from attempt i byte-identical in behaviour.
+
+AMENDMENT 9 (2026-09-23 03:5xZ; binding; from the sol round-2 REJECT of fix 1j -- one blocker, MEASURED). THE CONTROL ARM MUST
+NOT DEPEND ON THE D-SUBSET BRANCH: with source_rows() scored at model_prob 0.6, stratified_cells carried b_lag_subset; after
+popping every row's d_subset the same rows gave n_ticks 12 with NO b_lag_subset -- valid, validated B_lag data silently vanished
+because the lag block is attached inside the D-subset branch and an early return discards it (baseline_four_arm_period.py:216).
+RULING: the validated lag block (the B_lag control contrast, both metrics, its subset counts and first-tick exclusions) attaches
+independently of the D-subset branch before any return; removing every D-subset field keeps both lag contrasts and their values
+byte-identical; a regression pins that construct. AMENDMENT 8 stays whole (endpoints as landed for A-D; B_lag validated before
+any cell; missing_b_lag_subset per row; LATENCY-EXPLAINED deferred). Everything else from fix 1j byte-identical in behaviour.
+
+AMENDMENT 10 (2026-09-23 04:1xZ; binding; from the astra round-2 REJECT of fix 1j; its first blocker is AMENDMENT 9). LAG
+MEMBERSHIP CONTRADICTIONS ARE VALIDATED BEFORE WARM-UP EXCLUSION -- MEASURED: on the supported fixture, the scored g1 12:01 tick
+with its full-row and subset B_lag and losses set to None, the subset dictionary retained with warmup True (training count still
+four) was ACCEPTED in both orders: lag ticks 12 -> 11 and the C-minus-B_lag Brier moved 0.038125239058035824 ->
+0.029399408745696944 while full ticks stayed 14; without the warmup flag the same null contradiction refuses missing_arm
+(baseline_four_arm_period.py:198). RULING: a row whose lag-subset metadata says the tick is IN the lag subset while its B_lag
+probability or loss is None (or the reverse) is refused under a named reason BEFORE any warm-up exclusion is applied, for every
+row including warm-up rows; the lag tick count and the control contrast can never move through such a row; a both-order test
+plants the warm-up contradiction. AMENDMENTS 8-9 stand whole. Everything else from fix 1j byte-identical in behaviour.

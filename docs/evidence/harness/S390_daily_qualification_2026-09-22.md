@@ -297,3 +297,14 @@ No commit, network, live capture or real ledger operation was performed.
   produced", because a missing artifact carries no evidence either way.
 - Nothing here is a claim about qualification quality. A FAIL day is an honest
   result of this row, not a defect of the row.
+
+## FIRST REAL RUN (orchestrator, 2026-09-23 00:41Z; AMENDMENT 7 record)
+
+Landed code e25ed056d over the 2026-09-22 shards, --as-of 2026-09-23T06:00:00Z, run_nonce s390-first-run-2026-09-22, 1 m 23 s.
+Six of six MLB games FAIL, qualified_games 0, refused 0 -- the expected honest result. Served games: TORBAL 0 qualified
+decisions (no linked state row for the whole window: NOT_LIVE 660, STATE_STALE 660); MILPHI 117 and MIACHC 103 qualified
+decisions of the 432 needed (ADAPTER_REFUSED 529 / 575, BOOK_STALE 526 / 568, LINKAGE_INVALID 746 / 785). Unserved games:
+1-4 qualified decisions each (capacity subset). Every reason count and the day diagnostics are transcribed verbatim in
+docs/evidence/tracking/specs/S390_spec.md AMENDMENT 7; the artifact is docs/evidence/forward/qualification/2026-09-22.json.
+Counts only; no frozen value moves; the next spec (S421) is the state linkage for game_key 824785 and the usable-book
+cadence versus the raw receipt cadence.

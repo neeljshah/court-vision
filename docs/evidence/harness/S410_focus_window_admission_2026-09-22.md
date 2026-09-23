@@ -263,3 +263,12 @@ NOT VERIFIED
 - Master-side test execution.
 - The revised real-shard run.
 - AMENDMENT 2 measurements: transcribed, not reproduced.
+
+## LANDED-CODE RE-RUN (orchestrator, 2026-09-23 00:42:48Z as-of; AMENDMENT 5 record)
+
+Artifact docs/evidence/harness/s410_runs/2026-09-22_landed_rerun.json (landed code 0b0362ac8; about 2.5 s). Six MLB games,
+all windows completed. Served three: focus opened 118.755464 / 117.205747 / 114.353302 s before scheduled start;
+receipts 660 / 658 / 690; in-window median 5.179321 / 5.181505 / 5.163793 s, p95 6.283947 / 6.663368 / 5.613433 s,
+max 18.012545 / 18.04493 / 8.457496 s; trailing boundary 0.833526 / 2.607217 / 3.386117 s; every frozen comparison met.
+Not served three (STLPIT, CLEBOS, CINATL): zero in-window receipts, quantiles absent, comparisons false -- the capacity
+subset. Counts only; a capture finding.

@@ -175,3 +175,29 @@ and the three pass counts, or prints environment_unverifiable beside them.
 size, empty-selection parse, five family rows, unreadable_daily_artifact) and AMENDMENT 5(a) and 5(c) were reproduced
 by this round and need no fix; real archives, real qualification, a real ledger append, junction targets and
 large-shard runtime stay NOT VERIFIED and belong to the orchestrator's real run, not to this row's fix agent.
+
+AMENDMENT 7 (2026-09-23 04:4xZ; RECORD, not a rule; the FIRST REAL RUN of the landed code e25ed056d by the orchestrator over the
+2026-09-22 shards after the 00:40Z boundary; --as-of 2026-09-23T06:00:00Z; run_nonce s390-first-run-2026-09-22; declared
+constants global_cap 1 / max_order_qty 1 / focus_tick_s 5 / reservation_ttl_s 5 / window_s 3600 / capture profile sha256
+5bb818074c5083049e804bffda59c2b5b701706048983d32bbb313120ea3607c; artifact docs/evidence/forward/qualification/2026-09-22.json;
+wall clock 1 m 23 s; snapshots 7 files / 398,431,477 bytes then removed; mlb books archive 359,982,871 bytes sha256
+4d51e331d9af5962d1d720409a1aa58095a64ad0790a0ef52b2ce825632ce06d with 252,238 bytes appended to the 2026-09-23 shard during
+the run; torn tail 0; changed_inputs []; refused 0). VERDICT: six of six MLB games FAIL, qualified_games 0 -- the expected
+honest result; the reason codes are the finding. Per game (book gap ms median / p95 / max; covered_ms; state_gap_max_ms;
+qualified decisions; reason counts): TORBAL served 5178 / 7980 / 287751; 0; 3600000; 0; NOT_LIVE 660, STATE_STALE 660,
+RESERVATION_INVALID 660, LINKAGE_INVALID 778, ADAPTER_REFUSED 146, BOOK_STALE 146, BOOK_CADENCE 1, COVERAGE_LOW 1,
+DECISIONS_LOW 1, STATE_GAP 1, TAPE_INCOMPLETE 1. MILPHI served 5202 / 189616 / 716332; 510471; 11090; 117; ADAPTER_REFUSED
+529, BOOK_STALE 526, LINKAGE_INVALID 746, RESERVATION_INVALID 541, BOOK_CADENCE 1, COVERAGE_LOW 1, DECISIONS_LOW 1,
+TAPE_INCOMPLETE 1. STLPIT unserved 297953 / 2043914 / 2043914; 7235; 11088; 2; LINKAGE_INVALID 73, RESERVATION_INVALID 2, plus
+the four single-count codes. CLEBOS unserved 396566 / 2044769 / 2044769; 5000; 11081; 1; LINKAGE_INVALID 73,
+RESERVATION_INVALID 3, plus the four. CINATL unserved 646567 / 1377337 / 1377337; 19353; 26090; 4; LINKAGE_INVALID 75, plus the
+four. MIACHC served 5219 / 218384 / 324319; 437941; 26104; 103; ADAPTER_REFUSED 575, BOOK_STALE 568, LINKAGE_INVALID 785,
+RESERVATION_INVALID 587, STATE_STALE 2, plus the four. Day diagnostics: inconsistent_touch 5121, one_sided_book 4857,
+price_out_of_range 3554, invalid_backfill_id 328, unlinked_state_row 8013, unconsumed_books_records 145921,
+unconsumed_trades_records 66134, unselected_trade_records 135884, missing_directional_team_evidence 30,
+missing_tape_lower_bound 3, open_backfill 4, conflicting_state_linkage 1, state_key_conflicted 1, LINKAGE_INVALID 1. READING
+(counts, not conclusions): the served games' RAW receipt cadence is the S410 picture (median about 5.2 s) but the USABLE-book
+cadence is not -- adapter refusals (one-sided / inconsistent books) and BOOK_STALE dominate the served games, and TORBAL had no
+linked state row for its entire window (state_gap_max = the window; NOT_LIVE at every decision) while its two served peers
+linked. NEXT SPEC (S421, to write): the state-to-market linkage for game_key 824785 and the unlinked_state_row 8013 count; the
+usable-book cadence vs receipt cadence gap. No frozen value moves.

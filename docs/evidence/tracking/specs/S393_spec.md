@@ -150,3 +150,50 @@ helper); staged counters are published only for rows successfully returned (a he
 BASE NOTE: the fix-1l candidate sat on an orphaned base commit (5a42c84ed, an amended-away S405 fix that carried a broken test
 file); the orchestrator moves the candidate files byte-for-byte to a fresh worktree on master, so no unrelated commit is part of
 the candidate. Everything from fixes 1j-1l byte-identical in behaviour otherwise.
+
+AMENDMENT 9 (2026-09-23 03:1xZ; binding; from the astra round-13 REJECT of fix 1m -- five blockers, all MEASURED on constructs;
+sol round 13 was ACCEPT WITH CORRECTIONS on the sandbox-only test execution). (a) KEYWORD COLLISION CRASHES THE RESTART PATH:
+local_state_capture_io.py:223 put last_adapter_error into metrics while the landed local_state_capture_commit.py:68 supplies that
+keyword explicitly and again through the snapshot -- restart after game 2's failed append, then discover [malformed 3, FINAL 1,
+LIVE 2]: TypeError dict() got multiple values for keyword argument 'last_adapter_error' in both orders after two valid rows.
+RULING: no S393 metric or snapshot key may collide with any keyword the landed commit module passes; the adapter diagnostics live
+under ONE new key (adapter_failures: a list of {identity, reason, sport}) that the commit module never names; a test drives the
+real commit path on that construct. (b) IDENTITY BEFORE ISOLATION: sources.py:238 evaluated comp.get('id') before entering the
+isolation, so competitions [17, good] captured [] in one order and ['atp:match1'] in the other, one unnamed AttributeError.
+RULING: every per-item operation -- identity construction included -- runs inside the isolation; a non-dict item is counted under
+a named reason with a positional surrogate identity and the peers still emit, both orders identical. (c) DIAGNOSTICS ARE
+BEST-EFFORT: an injected failure in diagnostic storage or callback (io.py:223) raised RuntimeError in both orders and discarded a
+valid peer's result. RULING: a diagnostic write failure is itself counted (diagnostic_write_failed) and never affects the row,
+the peers or the return value. (d) PUBLICATION IS ATOMIC: sources.py:105 applied staged counters one by one, so a failure in the
+second publication left unavailable at 8 with no result returned, on all six discovery / poller paths. RULING: staged deltas are
+computed fully, the result is constructed, and the deltas are applied in ONE step that cannot partially fail (a single dict
+update from a completed staging object after the return value exists); a test injects a failing counter object and asserts no
+movement. (e) DISTINCT FAILURES, DISTINCT IDENTITIES: two id-null malformed competitions both produced the diagnostic identity
+tennis:atp:None. RULING: a failed item's diagnostic identity is the AMENDMENT 2 stable surrogate when derivable, else a content
+hash of the raw item text (repeatable across runs, distinct across items); identified items keep their ids. Everything from fixes
+1j-1m byte-identical in behaviour otherwise (the round-13 sol reproductions must still hold).
+
+AMENDMENT 10 (2026-09-23 04:0xZ; binding; from the sol round-14 REJECT of fix 1n -- one blocker, MEASURED). BEST-EFFORT
+DIAGNOSTICS APPLY TO EVERY PATH, INCLUDING THE RESOLVER'S: with [event a officialDate 'bad', event good] and a metrics adapter
+whose drop() raises only for timestamp_parse_errors, the capture returned ['good'] instead of ['a', 'good'] with
+schedule_adapter_errors 1 and diagnostic_write_failed 0 -- in both orders, across NBA, soccer, NFL, NCAAF, MLB discovery and
+tennis (local_state_capture_sources.py:112): an optional-date diagnostic raised inside the dates resolver and took the whole row.
+RULING: AMENDMENT 9(c) covers every diagnostic write reachable from S393 code, including those inside the resolver and the
+landed helpers it calls -- owned code passes a GUARDED metrics adapter into the resolver (every write counts
+diagnostic_write_failed on failure and returns), so resolution continues and the row, its peers and the return value are
+unchanged; both-order tests cover every resolver diagnostic path. MEMO: every earlier round's reproduction keeps its exact source
+block (or cites an immutable archived artifact that holds it) so each claim stays reproducible byte-for-byte. Everything from
+fixes 1j-1n byte-identical in behaviour otherwise.
+
+AMENDMENT 11 (2026-09-23 04:1xZ; binding; from the astra round-14 REJECT of fix 1n -- two blockers, MEASURED). (a) COUNTING THE
+DIAGNOSTIC FAILURE MUST NOT RAISE: with [bad, good], a raising callback and a Counter whose get('diagnostic_write_failed') raises,
+both orders ended in RuntimeError with no result reaching the caller; the global diagnostic tally advanced to 1 first
+(local_state_capture_io.py:197). RULING: the diagnostic-failure counter is itself guarded -- a failure while counting a failure
+is absorbed after a best-effort global tally, never raises, never recurses; the row, the peers and the return value are
+unchanged; a both-order test plants the raising counter. (b) THE CONTENT HASH IS CANONICAL: an id-null tennis competition with
+malformed linescores and date {'value': ts, 'zone': 'America/Chicago'} produced equal_content True but same_identity False when
+only the date dict's key order was reversed -- the semantic branch serialized the malformed date object without sorted keys
+(io.py:248). RULING: the AMENDMENT 9(e) fallback identity hashes the WHOLE raw item as canonical JSON (sort_keys=True, fixed
+separators, default=repr for non-serializable values) so equal content gives equal identity regardless of key order or
+nesting, and different content gives different identities; a test reverses nested key orders. The memo rule of AMENDMENT 10
+stands (every earlier reproduction keeps its exact source). Everything from fixes 1j-1n byte-identical in behaviour otherwise.

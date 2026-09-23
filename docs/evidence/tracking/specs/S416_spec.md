@@ -157,3 +157,20 @@ admitted and counted by --as-of. (b) UNTIMED REFUSED ROWS CARRY NO STATUS -- MEA
 row's status is null; the feed's value, when present, is retained separately as feed_status text; a date-only start establishes
 no UTC instant and gets no midnight or requested-day fallback (refused, counted, recorded as text). Fixes 1b-1c byte-identical in
 behaviour otherwise.
+
+AMENDMENT 9 (2026-09-23 02:3xZ; binding; from the sol round-3 REJECT of fix 1c). THE RAW START TEXT IS LOST BEFORE THE SUPPLY
+SEES IT -- MEASURED: through the REAL parser, events[0].date = "2026-09-28" (date-only) and "bad" were both refused
+day_unverifiable with start_text "None" (forward_schedule_supply.py:193); the landed parser normalizes or nulls the selected date
+field before the supply adapter runs, and the test asserted exact text only with real_parser=False. RULING: S416 may make a
+SECOND additive change in forward_schedule_sources.py -- the parser carries the selected raw start value verbatim as start_text
+(the string itself; the text "None" only when the field is truly absent or null) beside its normalized value; no other parser
+field or behaviour changes (the eleven well-formed status variants and the landed writer stay byte-identical). The supply's
+refused rows populate start_text from that field, and a test asserts exact preservation THROUGH the real parser for the
+date-only, garbage and null cases. Fixes 1b-1c byte-identical in behaviour otherwise.
+
+AMENDMENT 10 (2026-09-23 03:2xZ; binding; from the sol round-4 REJECT of fix 1d; astra round 4 ACCEPT). A PRESENT EMPTY STRING
+IS NOT ABSENCE -- MEASURED: events[0].date = "" with the other start fields absent gave start_text "None" through the real parser
+(forward_schedule_sources.py:103): the `or` chain treats a present falsy value as missing. RULING: the landed selected value keeps
+driving the normalized instant exactly as landed; start_text is the first PRESENT non-null raw value verbatim (so "" stays ""),
+and the text "None" only when every start field is absent or null; a real-parser regression pins "", "   " (whitespace) and null.
+Fixes 1b-1d byte-identical in behaviour otherwise.

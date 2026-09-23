@@ -118,3 +118,14 @@ heartbeat file yields an explicit heartbeat_absent reason (never a silent empty 
 mtime is reported as Decimal text beside heartbeat_captured_at (reported, never thresholded -- the audit's denominator is
 unrelated). Everything else from fix 1b byte-identical in behaviour (the [start, end) boundary, the once-counted rollover
 duplicate, the absent quantiles for a not_started window, the imported frozen values).
+
+AMENDMENT 5 (2026-09-23 04:4xZ; record, not a rule; the orchestrator's re-run with the LANDED code 0b0362ac8 over the
+2026-09-22 book shards, --as-of 2026-09-23T00:42:48Z, after the 00:40Z shard boundary; artifact
+docs/evidence/harness/s410_runs/2026-09-22_landed_rerun.json; wall clock about 2.5 s). Six MLB games in the full selection, all
+windows completed. Served (three): TORBAL focus_open_lag_s -118.755464, receipts 660, gaps 661, median 5.179321 / p95 6.283947 /
+max 18.012545, trailing_boundary_s 0.833526; MILPHI -117.205747, 658 receipts, median 5.181505 / p95 6.663368 / max 18.04493,
+trailing 2.607217; MIACHC -114.353302, 690 receipts, median 5.163793 / p95 5.613433 / max 8.457496, trailing 3.386117 -- every
+frozen comparison (median <= 45, p95 <= 90, max <= 120) met for all three. Not served (three: STLPIT, CLEBOS, CINATL): zero
+in-window receipts, quantiles absent (quantile_absent 1 each, every comparison false) -- the capacity-subset finding of
+AMENDMENT 2, unchanged. two_per_hour_refused stays labelled a full-selection capacity diagnostic. Counts only; a capture finding,
+never a reason to move a frozen value.
