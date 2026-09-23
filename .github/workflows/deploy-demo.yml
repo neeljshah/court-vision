@@ -83,6 +83,7 @@ jobs:
           npx vitest run lib/analytics/researchMultisportDepth.test.ts
           npx vitest run lib/analytics/tennisSurfaceFolds.test.ts
           npx vitest run lib/analytics/researchTennisWindows.test.ts
+          npx vitest run lib/analytics/entityObservationContext.test.ts
           npx vitest run lib/analytics/researchTennisAdaptation.test.ts
           npx vitest run lib/analytics/researchBasketballMatchupRange.test.ts
           npx vitest run lib/analytics/researchMlbBatterContact.test.ts
