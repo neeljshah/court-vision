@@ -33,7 +33,7 @@ function validPair(raw: MatchupRangePair): Pair | null {
   const total = raw.mean_total;
   const meetings = raw.n_meetings;
   if (!row || !col || row === col || typeof total !== "number" || !Number.isFinite(total) || total < 0 ||
-      typeof meetings !== "number" || !Number.isInteger(meetings) || meetings <= 0) return null;
+      typeof meetings !== "number" || !Number.isSafeInteger(meetings) || meetings <= 0) return null;
   return { row, col, total, meetings };
 }
 
@@ -69,6 +69,19 @@ function teamNames(atlas?: MatchupRangeTeamAtlas): Map<string, string> {
   return new Map([...candidates].flatMap(([code, names]) => names.size === 1 ? [[code, [...names][0]] as const] : []));
 }
 
+function matchupSummary(pairs: Pair[]): { mean: number | null; sd: number | null; meetings: number | null } {
+  const meetings = pairs.reduce((sum, pair) => sum + pair.meetings, 0);
+  const weightedTotal = pairs.reduce((sum, pair) => sum + pair.meetings * pair.total, 0);
+  if (!Number.isSafeInteger(meetings) || meetings <= 0) return { mean: null, sd: null, meetings: null };
+  if (!Number.isFinite(weightedTotal)) return { mean: null, sd: null, meetings };
+  if (pairs.every(pair => pair.total === pairs[0].total)) return { mean: pairs[0].total, sd: 0, meetings };
+  const mean = weightedTotal / meetings;
+  if (!Number.isFinite(mean)) return { mean: null, sd: null, meetings };
+  const squared = pairs.reduce((sum, pair) => sum + pair.meetings * ((pair.total - mean) ** 2), 0);
+  const sd = Math.sqrt(squared / meetings);
+  return { mean, sd: Number.isFinite(sd) ? sd : null, meetings };
+}
+
 function rangeRows(source: MatchupRangeSource, names: Map<string, string>): LabRow[] {
   const byTeam = new Map<string, Pair[]>();
   const rawMinimum = source.mask?.min_meetings;
@@ -83,6 +96,7 @@ function rangeRows(source: MatchupRangeSource, names: Map<string, string>): LabR
     const high = ordered.find(pair => pair.total === ordered[ordered.length - 1].total)!;
     const lowTies = ordered.filter(pair => pair.total === low.total);
     const highTies = ordered.filter(pair => pair.total === high.total);
+    const summary = matchupSummary(ordered);
     const endpoints = (pairs: Pair[]) => pairs.map(pair => `${pair.col} (${pair.meetings} meetings)`).join(", ");
     return [{
       id: `matchup-range-${team.toLowerCase()}`,
@@ -95,8 +109,11 @@ function rangeRows(source: MatchupRangeSource, names: Map<string, string>): LabR
         high_meetings: high.meetings,
         low_meetings: low.meetings,
         opponents: ordered.length,
+        meeting_weighted_mean_total: summary.mean,
+        between_opponent_mean_total_sd: summary.sd,
+        meetings_across_pairings: summary.meetings,
       },
-      note: `${names.has(team) ? `Team: ${names.get(team)}. ` : ""}Highest opponent endpoint${highTies.length > 1 ? "s" : ""}: ${endpoints(highTies)}. Lowest opponent endpoint${lowTies.length > 1 ? "s" : ""}: ${endpoints(lowTies)}. Numeric meeting fields use the first alphabetic endpoint when tied.`,
+      note: `${names.has(team) ? `Team: ${names.get(team)}. ` : ""}Highest opponent endpoint${highTies.length > 1 ? "s" : ""}: ${endpoints(highTies)}. Lowest opponent endpoint${lowTies.length > 1 ? "s" : ""}: ${endpoints(lowTies)}. Numeric meeting fields use the first alphabetic endpoint when tied. Meeting-weighted fields use all ${ordered.length} included opponent pairings.`,
     }];
   });
 }
@@ -120,9 +137,9 @@ export function buildBasketballMatchupRangeResearch(source: MatchupRangeSource, 
     sport: "nba",
     category: "Matchup explorer",
     source: "nba_matchup_grid",
-    description: "For each team, compares its highest and lowest published opponent-specific mean combined point totals.",
+    description: "For each team, compares its highest and lowest published opponent-specific mean combined point totals and summarizes the included opponent means using their meeting support.",
     scope: `${rows.length} teams derived from the ${validGames === null ? "published input" : `${validGames}-game input corpus`} across ${seasons}${validDate ? `; latest input date ${validDate}` : ""}. ${validMinimum === null ? "Source meeting floor is unavailable or invalid; no rows are included." : `Each endpoint uses at least ${validMinimum} meetings.`}${names.size ? " Team names come separately from atlas_nba_teams_manifest and do not affect matchup values or dates." : ""}`,
-    caveat: "These are extrema among opponent means, so the range is selection-sensitive. Seasons and venues are pooled, with no published regular-season or playoff filter; rosters, opponent strength and recency are not adjusted. Team points are reconstructed by summing source player box-score points, without a published completeness audit. Pair means are serialized to two decimals, and endpoint meeting counts differ. The latest input date is not a per-pair cutoff. This describes prior games and is not a forecast.",
+    caveat: "These are extrema among opponent means, so the range is selection-sensitive. Seasons and venues are pooled, with no published regular-season or playoff filter; rosters, opponent strength and recency are not adjusted. Team points are reconstructed by summing source player box-score points, without a published completeness audit. Pair means are serialized to two decimals, so weighted results approximate calculations from full raw precision. The between-opponent SD describes differences among included pair means; within-pair variation is not published. Meeting support is a sum of team-meetings across included pairings, not independent observations; adding it across teams counts the same games twice. Endpoint meeting counts differ. The latest input date is not a per-pair cutoff. This describes prior games and is not a forecast.",
     status: "Descriptive",
     fields: [
       f("total_range", "High-low mean-total range"),
@@ -131,10 +148,13 @@ export function buildBasketballMatchupRangeResearch(source: MatchupRangeSource, 
       f("high_meetings", "Selected high-end pair meetings", "number", 0),
       f("low_meetings", "Selected low-end pair meetings", "number", 0),
       f("opponents", "Opponents represented", "number", 0),
+      f("meeting_weighted_mean_total", "Meeting-weighted mean combined total"),
+      f("between_opponent_mean_total_sd", "Between-opponent mean-total SD"),
+      f("meetings_across_pairings", "Team-meetings across included pairings", "number", 0),
     ],
     rows,
-    formula: "Range = max over opponents of mean(row-team points + opponent points per meeting) - min over opponents of that same mean.",
-    interpretation: "A larger value means the team's opponent-specific historical mean combined totals span a wider interval; inspect both endpoint means and their meeting counts.",
+    formula: "Range = max over opponents of mean(row-team points + opponent points per meeting) - min over opponents of that same mean. Meeting-weighted mean = sum(n_i * mean_total_i) / sum(n_i). Between-opponent mean-total SD = sqrt(sum(n_i * (mean_total_i - meeting-weighted mean)^2) / sum(n_i)); this is a population descriptive denominator with no sample correction. Meetings across pairings = sum(n_i) over included opponent rows.",
+    interpretation: "The range shows the interval between included opponent means. Read the meeting-weighted mean as their support-weighted center and the SD only as dispersion among those opponent means, alongside the included-pairing count and team-meeting support.",
     references: REFERENCES,
     novelty: "Derived analysis",
   }];
