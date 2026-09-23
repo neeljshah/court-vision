@@ -39,6 +39,15 @@ describe("Pitch mix count context", () => {
     expect(csv).toContain("Two-strike share within pitch type (percent; raw value)");
     expect(csv).toContain("Peak count: 0-0");
     expect(csv).toContain("Atlas as of 2025-09-28; Statcast local 2025 pull");
+    expect(csv).toContain('"Sources (JSON)"');
+    expect(csv).toContain('""id"":""statcast_showcase""');
+    expect(csv).toContain('""id"":""atlas_mlb_pitch_manifest""');
+    expect(csv).toContain('""asOf"":""not published; local 2025 pull""');
+    expect(csv).toContain('""asOf"":""2025-09-28""');
+    expect(csv).toContain('""sourceId"":""atlas_mlb_pitch_manifest""');
+    expect(csv).toContain("atlas_mlb_pitch_manifest.entries[entity=pitch_type:FF].key_numbers.count_state_pct");
+    expect(csv).toContain('""peak_count"":""0-0""');
+    expect(screen.getByText(/structured provenance uses JSON cells/)).toBeVisible();
     expect(rows[0].values.two_strike_share).toBeCloseTo(0.3003, 10);
   });
 

@@ -33,6 +33,14 @@ describe("NBA player on/off support", () => {
     expect(csv).toContain(",857.25,");
     expect(csv).toContain("On/off season: 2024-25");
     expect(csv).toContain("off-court minutes are not published");
+    expect(csv).toContain('"Sources (JSON)"');
+    for (const source of ["nba_consistency_profiles", "nba_q4_shift", "ctx_player_splits", "on_off_showcase", "atlas_nba_manifest"]) {
+      expect(csv).toContain(`""id"":""${source}""`);
+    }
+    expect(csv).toContain('""sourceId"":""on_off_showcase""');
+    expect(csv).toContain('""on_off_season"":""2024-25""');
+    expect(csv).toContain('""on_off_minutes"":""2024-25""');
+    expect(csv).toContain("on_off_showcase.seasons.2024_25.top_15[].min_on");
   });
 
   it("shows unavailable support for a player outside the published on/off lists", () => {
