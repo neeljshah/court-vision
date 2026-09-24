@@ -7,6 +7,7 @@ export type ResearchSource = { id: string; asOf: string; fields?: string[]; rowW
 export type ResearchField = LabField & { sourceId?: string };
 export type ResearchOperandBinding = { operand: string; sourcePath: string; valueKey: string; label: string };
 export type ResearchOperandValue = number | string | null;
+export type ResearchPopulationDefinition = { status: "unpublished"; reason: string };
 export type ResearchRow = LabDataset["rows"][number] & {
   sourcePaths?: string[];
   href?: string;
@@ -16,6 +17,7 @@ export type ResearchRow = LabDataset["rows"][number] & {
 export type ResearchAnalysis = Omit<LabDataset, "rows" | "fields"> & {
   fields: ResearchField[];
   rows: ResearchRow[];
+  populationDefinition?: ResearchPopulationDefinition;
   question?: string;
   method?: string;
   formula: string;

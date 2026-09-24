@@ -4,7 +4,7 @@
 // to the SAME identity. An identity is read from the row's own published fields
 // first, then from the analysis definition. A row whose identity cannot be read
 // stays unknown -- it is never treated as compatible by default.
-import type { ResearchRow } from "./researchTypes";
+import type { ResearchPopulationDefinition, ResearchRow } from "./researchTypes";
 
 export type ResearchRowPopulation = {
   key: string;
@@ -14,7 +14,7 @@ export type ResearchRowPopulation = {
   aggregate: boolean;
   known: boolean;
 };
-export type ResearchPopulationContext = { sport?: string };
+export type ResearchPopulationContext = { sport?: string; populationDefinition?: ResearchPopulationDefinition };
 
 export const UNKNOWN_POPULATION_KEY = "missing-definition";
 export const UNKNOWN_POPULATION_LABEL = "Population not published";
@@ -46,6 +46,7 @@ function sportFromText(row: ResearchRow): string | undefined {
 }
 
 export function researchRowIdentity(row: ResearchRow, context?: ResearchPopulationContext): Identity {
+  if (context?.populationDefinition?.status === "unpublished") return UNKNOWN;
   const paths = row.sourcePaths || [];
   const found = paths.map(fromPath).filter((value): value is Identity => value !== null);
   if (found.length) {

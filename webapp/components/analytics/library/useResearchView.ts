@@ -6,7 +6,7 @@ import type { ResearchAnalysis } from "@/lib/analytics/researchTypes";
 type View = { metric: string; second: string; group: string; population: string; query: string; ascending: boolean; view: string; row: string };
 const defaults = (a: ResearchAnalysis): View => {
   const comparison = researchComparisonPolicy(a.rows, a);
-  return { metric: a.fields[0].key, second: a.fields[1]?.key || a.fields[0].key, group: "all", population: comparison.compatible ? "all" : comparison.populations.find(item => item.compatibility === "compatible")?.key || "all", query: "", ascending: false, view: "rank", row: "" };
+  return { metric: a.fields[0].key, second: a.fields[1]?.key || a.fields[0].key, group: "all", population: comparison.compatible ? "all" : comparison.populations.find(item => item.compatibility === "compatible")?.key || "all", query: "", ascending: false, view: a.populationDefinition?.status === "unpublished" ? "table" : "rank", row: "" };
 };
 const parameters = { metric: "metric", second: "y", group: "group", population: "population", query: "q", ascending: "order", view: "view", row: "row" } as const;
 

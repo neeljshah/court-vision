@@ -22,6 +22,21 @@ describe("researchComparisonPolicy", () => {
     expect(researchComparisonPolicy([row("phase", "sports.mlb.grains.early.brier_model"), row("missing", "entries[].value")]).compatibility).toBe("unknown");
   });
 
+  it("does not infer comparability when required population context is unpublished", () => {
+    const rows = [row("path", "sports.soccer.grains.all.gf_l10"), plain("named", "soccer", "Team")];
+    const policy = researchComparisonPolicy(rows, {
+      sport: "soccer",
+      populationDefinition: { status: "unpublished", reason: "League and match dates are not published." },
+    });
+    expect(policy.compatibility).toBe("unknown");
+    expect(policy.compatible).toBe(false);
+    expect(policy.reason).toBe("League and match dates are not published.");
+    expect(policy.aggregateRows).toEqual([]);
+    expect(policy.populations).toEqual([expect.objectContaining({
+      key: "missing-definition", compatibility: "unknown", rowCount: 2, rowIds: ["path", "named"],
+    })]);
+  });
+
   it("accepts one sport and one grain", () => {
     expect(researchComparisonPolicy([row("early", "sports.mlb.grains.early.brier_model")]).compatibility).toBe("compatible");
   });

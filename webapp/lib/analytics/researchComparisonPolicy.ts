@@ -56,7 +56,7 @@ export function researchComparisonPolicy(rows: ResearchRow[], analysis?: Researc
   const partitions = new Set(components.map(identity => identity.partition || ""));
   return {
     compatibility, compatible: false, populations, aggregateRows,
-    reason: compatibility === "unknown" ? "One or more published rows do not identify a population, so compatibility is unknown."
+    reason: compatibility === "unknown" ? analysis?.populationDefinition?.reason || "One or more published rows do not identify a population, so compatibility is unknown."
       : mixedAggregate ? "Whole-corpus estimates and their component phases are not comparable in one ranking."
       : sports.size > 1 ? "Rows describe different sports and are not comparable in one ranking."
       : partitions.size > 1 ? "Rows come from different published partitions and are not comparable in one ranking."

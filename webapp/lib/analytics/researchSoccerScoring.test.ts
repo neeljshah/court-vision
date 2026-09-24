@@ -11,6 +11,10 @@ describe("soccer trailing attack and defense", () => {
   it("covers the real snapshot with published values and provenance", () => {
     const analysis = getSoccerScoringResearch();
     expect(analysis).toMatchObject({ id: "soccer-trailing-attack-defense", title: "Soccer form: attack and defense", source: "atlas_soccer_manifest" });
+    expect(analysis.populationDefinition).toEqual({
+      status: "unpublished",
+      reason: "The source pools six divisions but does not publish each team's league or match dates; a comparable population cannot be verified.",
+    });
     expect(analysis.rows).toHaveLength(187);
     expect(analysis.fields.map(field => field.key)).toEqual(["gd_l10", "gf_l10", "ga_l10"]);
     expect(row(analysis, "Bayern Munich").values).toEqual({ gd_l10: 1.8, gf_l10: 3.2, ga_l10: 1.4 });

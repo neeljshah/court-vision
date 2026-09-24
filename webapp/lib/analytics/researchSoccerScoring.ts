@@ -105,6 +105,10 @@ export function buildSoccerScoringResearch(atlas: SoccerScoringAtlas): ResearchA
     id: "soccer-trailing-attack-defense",
     title: "Soccer form: attack and defense",
     sport: "soccer",
+    populationDefinition: {
+      status: "unpublished",
+      reason: "The source pools six divisions but does not publish each team's league or match dates; a comparable population cannot be verified.",
+    },
     category: "Team matchup context",
     source: SOURCE,
     status: "Descriptive",
