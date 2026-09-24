@@ -8,9 +8,9 @@ const row = (id: string, group: string, label = id, sourcePaths?: string[]): Res
 
 // One population: every row resolves to the same sport and partition.
 const SINGLE_POPULATION = [
-  "nba-player-atlas-measurements", "nba-team-atlas-measurements", "mlb-batter-atlas-measurements", "soccer-team-atlas-measurements",
+  "nba-player-atlas-measurements", "nba-team-atlas-measurements", "mlb-batter-atlas-measurements",
   "tennis-player-atlas-measurements", "mlb-pitch-type-atlas-measurements", "mlb-team-pitch-atlas-measurements", "mlb-count-state-atlas-measurements",
-  "soccer-home-away-trailing-form-gap", "mlb-batter-p90-minus-mean-exit-velocity", "nba-opponent-total-range", "tennis-hard-recent-career-shift",
+  "mlb-batter-p90-minus-mean-exit-velocity", "nba-opponent-total-range", "tennis-hard-recent-career-shift",
   "tennis-clay-recent-career-shift", "tennis-grass-recent-career-shift", "tennis-clay-gap-window-shift", "tennis-grass-gap-window-shift", "pace-variance-favorite-probability", "star-removal-team-win-probability",
   "lineup-proxy-active-missed-record", "comeback-rates-deficit-time", "nba-venue-shooting-gap", "nba-venue-box-profile",
   "nba-player-venue-dispersion", "nba-pra-role-composition", "nba-context-ts-dominant-gap", "mlb-velocity-band-concentration",
@@ -29,7 +29,7 @@ const MULTI_POPULATION = [
   "observed-cohort-shift", "cluster-interval-width", "calibration-support-concentration", "verdict-mix-entropy", "verdict-friction-share",
 ];
 // No population identity is published, so nothing may be pooled at all.
-const UNIDENTIFIED = ["answer-evidence-coverage", "soccer-trailing-attack-defense"];
+const UNIDENTIFIED = ["answer-evidence-coverage", "soccer-trailing-attack-defense", "soccer-home-away-trailing-form-gap", "soccer-team-atlas-measurements"];
 // Rates whose own published explanation says they answer different questions.
 const QA_RATE_ANALYSES = ["answer-evidence-coverage", "verdict-mix-entropy", "verdict-friction-share"];
 

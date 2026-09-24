@@ -14,7 +14,12 @@ describe("soccer home-versus-away trailing form", () => {
   it("covers the public atlas and preserves example operands", () => {
     const analysis = getSoccerFormGapResearch()[0];
     expect(analysis).toMatchObject({ id: "soccer-home-away-trailing-form-gap", title: "Soccer form: home versus away", source: "atlas_soccer_manifest" });
+    expect(analysis.populationDefinition).toEqual({
+      status: "unpublished",
+      reason: "The source pools six divisions but does not publish each team's league or match dates; a comparable population cannot be verified.",
+    });
     expect(analysis.rows).toHaveLength(187);
+    expect(analysis.rows.slice(0, 3).map(row => row.label)).toEqual(["Ajaccio", "Ajaccio GFCO", "Alaves"]);
     expect(analysis.fields.map(field => field.key)).toEqual(["home_minus_away_ppg", "ppg_home_l10", "ppg_away_l10"]);
     expect(analysis.rows.find(row => row.label === "Brest")?.values).toEqual({ home_minus_away_ppg: 1.3, ppg_home_l10: 1.9, ppg_away_l10: 0.6 });
     expect(analysis.rows.find(row => row.label === "Barcelona")?.values).toEqual({ home_minus_away_ppg: 0.9, ppg_home_l10: 3, ppg_away_l10: 2.1 });
@@ -44,6 +49,18 @@ describe("soccer home-versus-away trailing form", () => {
     expect(rows.map(row => [row.id, row.label])).toEqual([["soccer-form-gap-real-sociedad", "Real Sociedad"]]);
     const reordered = buildSoccerFormGapResearch({ entries: [unique] })[0].rows[0];
     expect(reordered.id).toBe("soccer-form-gap-real-sociedad");
+  });
+
+  it("keeps valid rows in source order even when their gaps differ or another entry is rejected", () => {
+    const rows = buildSoccerFormGapResearch({ entries: [
+      entry("Low", 0, 2), entry("Rejected", null, 1), entry("High", 3, 1), entry("Even", 1, 1),
+    ] })[0].rows;
+    expect(rows.map(row => [row.label, row.values.home_minus_away_ppg])).toEqual([
+      ["Low", -2], ["High", 2], ["Even", 0],
+    ]);
+    expect(rows.map(row => row.sourcePaths)).toEqual(Array(3).fill([
+      "entries[].key_numbers.ppg_home_l10", "entries[].key_numbers.ppg_away_l10",
+    ]));
   });
 
   it("fails closed on missing, nonfinite, out-of-range, or unfloored inputs", () => {

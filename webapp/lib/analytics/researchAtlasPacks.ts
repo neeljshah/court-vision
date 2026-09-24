@@ -66,22 +66,28 @@ export function buildAtlasResearch(pack: AtlasPack, manifest: AtlasManifest): Re
     sourcePaths: keys.map((key) => `entries[${manifest.sourceIndexes?.[index] ?? index}].key_numbers.${key}`),
   }));
   const publishedFloors = floors(entries);
+  const populationDefinition: ResearchAnalysis["populationDefinition"] = pack.source === "atlas_soccer_manifest" ? {
+    status: "unpublished",
+    reason: "The source pools six divisions but does not publish each team's league or match dates; a comparable population cannot be verified.",
+  } : undefined;
   return {
     id: pack.id,
     title: pack.title,
     sport: pack.sport,
+    populationDefinition,
     category: "Entity atlas",
     source: pack.source,
     question: `Which published measurements are recorded for ${pack.noun}?`,
     method: "Restates every finite scalar key_numbers field from each published entity card. Nested objects remain on the entity card and are not flattened here.",
     description: `Published scalar measurements for ${pack.noun}, with one row for each committed entity card.`,
     scope: `${rows.length} published ${pack.noun} rows and ${keys.length} scalar measurement fields.`,
-    caveat: publishedFloors || "The published manifest does not state a shared floor for this pack.",
+    caveat: [populationDefinition?.reason, publishedFloors || "The published manifest does not state a shared floor for this pack."].filter(Boolean).join(" "),
     status: "Descriptive",
     fields: keys.map(key => fieldFor(pack.key, key)),
     rows,
     formula: "Displayed values restate published scalar key_numbers fields. The field definitions preserve each published unit: already-percent values are normalized for percent display, and published fractions are shown as percentages.",
-    interpretation: "Sort a column to inspect the published measurements. Unavailable values remain unavailable, and a higher value is not a quality judgement.",
+    interpretation: populationDefinition ? "Inspect each team's published measurements in the data table. Fields retain their own source floors and windows; these rows do not establish a common league or observation period. Unavailable values remain unavailable."
+      : "Sort a column to inspect the published measurements. Unavailable values remain unavailable, and a higher value is not a quality judgement.",
     references: REFERENCES,
     novelty: "Derived analysis",
     asOf: dates(entries),

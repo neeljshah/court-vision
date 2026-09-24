@@ -22,9 +22,18 @@ describe("Published soccer home-away form investigation", () => {
 
     const exportCSV = vi.spyOn(table, "exportLabCSV").mockImplementation(() => undefined);
     render(<ResearchDetail analysis={analysis} related={[]} />);
+    expect(screen.getByRole("button", { name: "Data table" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("combobox", { name: "Order" })).toBeDisabled();
+    expect(screen.getByRole("combobox", { name: "Order" })).toHaveTextContent("Published source order");
+    expect(screen.getByRole("region", { name: "Population comparison notice" })).toHaveTextContent(analysis.populationDefinition?.reason || "");
+    expect(screen.queryByRole("region", { name: "Measurement summary" })).not.toBeInTheDocument();
+    expect(within(screen.getByRole("region", { name: "Scrollable measurements" })).getAllByRole("button", { name: /^Inspect / }).slice(0, 3).map(button => button.getAttribute("aria-label"))).toEqual([
+      "Inspect Ajaccio", "Inspect Ajaccio GFCO", "Inspect Alaves",
+    ]);
     fireEvent.change(screen.getByRole("textbox", { name: "Search analysis rows" }), { target: { value: "Brest" } });
-    fireEvent.click(screen.getByRole("button", { name: /^Inspect Brest:/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Inspect Brest" }));
     const selected = screen.getByRole("region", { name: "Selected measurement" });
+    expect(within(selected).queryByRole("region", { name: "Measurement context" })).not.toBeInTheDocument();
     expect(within(within(selected).getByText("Home minus away PPG").parentElement!).getByText("1.3")).toBeVisible();
     expect(within(within(selected).getByText("Home PPG, prior 10").parentElement!).getByText("1.9")).toBeVisible();
     expect(within(within(selected).getByText("Away PPG, prior 10").parentElement!).getByText("0.6")).toBeVisible();
@@ -53,5 +62,16 @@ describe("Published soccer home-away form investigation", () => {
     const measurements = screen.getByRole("region", { name: "Scrollable measurements" });
     for (const value of ["-1.5", "0.7", "2.2"]) expect(within(measurements).getByText(value)).toBeVisible();
     expect(new URLSearchParams(window.location.search).get("utm_source")).toBe("shared");
+  });
+
+  it("does not restore pooled charts or positions from an old URL", () => {
+    window.history.replaceState(null, "", "?population=sport%3Dsoccer&view=distribution&row=soccer-form-gap-brest");
+    render(<ResearchDetail analysis={analysis} related={[]} />);
+    expect(screen.getByRole("region", { name: "Population comparison notice" })).toHaveTextContent("comparable population cannot be verified");
+    expect(screen.queryByRole("region", { name: "Measurement summary" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "Measurement distribution" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "Measurement context" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Data table" }));
+    expect(screen.getByRole("region", { name: "Scrollable measurements" })).toBeVisible();
   });
 });

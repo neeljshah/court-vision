@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { buildAtlasResearch, getAtlasPackResearch, type AtlasManifest, type AtlasPack } from "./researchAtlasPacks";
+import soccerAtlas from "../../public/data/showcase/atlas_soccer_manifest.json";
+import { researchComparisonPolicy } from "./researchComparisonPolicy";
 
 const pack: AtlasPack = {
   key: "nba_players", source: "atlas_nba_manifest", id: "nba-player-atlas-measurements",
@@ -31,6 +33,37 @@ describe("atlas pack research", () => {
       { entity: "Unavailable", card_path: "unavailable.png", key_numbers: { career_games: null } },
     ] });
     expect(analysis.rows.map((row) => row.values.career_games)).toEqual([10, null]);
+  });
+
+  it("keeps soccer source order, nulls, and row references without inventing comparability", () => {
+    const analysis = buildAtlasResearch({ ...pack, key: "soccer", sport: "soccer", source: "atlas_soccer_manifest" }, { entries: [
+      { entity: "Zulu", card_path: "zulu.png", key_numbers: { gf_l10: 0.1, clean_sheet_rate_away: 0.7 }, floors: "n_prior>=10" },
+      { entity: "Alpha", card_path: "alpha.png", key_numbers: { gf_l10: 2.9, clean_sheet_rate_away: null }, floors: "n_prior_home>=10" },
+    ] });
+    expect(analysis.rows.map(row => row.label)).toEqual(["Zulu", "Alpha"]);
+    expect(analysis.rows.map(row => row.values)).toEqual([
+      { clean_sheet_rate_away: 0.7, gf_l10: 0.1 }, { clean_sheet_rate_away: null, gf_l10: 2.9 },
+    ]);
+    expect(analysis.rows[1].sourcePaths).toEqual(["entries[1].key_numbers.clean_sheet_rate_away", "entries[1].key_numbers.gf_l10"]);
+    expect(analysis.populationDefinition?.status).toBe("unpublished");
+    expect(researchComparisonPolicy(analysis.rows, analysis).compatibility).toBe("unknown");
+    expect(analysis.caveat).toContain("comparable population cannot be verified");
+    expect(analysis.caveat).toContain("n_prior>=10");
+    expect(analysis.caveat).toContain("n_prior_home>=10");
+  });
+
+  it("restricts only the unpartitioned soccer source while preserving its complete public atlas", () => {
+    const analyses = getAtlasPackResearch();
+    const soccer = analyses.find(analysis => analysis.id === "soccer-team-atlas-measurements")!;
+    expect(analyses.filter(analysis => analysis.populationDefinition).map(analysis => analysis.id)).toEqual([soccer.id]);
+    expect(soccer.rows.map(row => row.label)).toEqual(soccerAtlas.entries.map(entry => entry.entity));
+    expect(soccer.fields).toHaveLength(11);
+    for (const [index, row] of soccer.rows.entries()) {
+      expect(row.values).toEqual(soccerAtlas.entries[index].key_numbers);
+      expect(row.sourcePaths).toEqual(soccer.fields.map(field => `entries[${index}].key_numbers.${field.key}`));
+      expect(row.note).toBe(soccerAtlas.entries[index].floors);
+    }
+    expect(soccer.asOf).toBe("2026-07-18");
   });
 
   it("keeps nested measurements on the entity card rather than flattening them", () => {

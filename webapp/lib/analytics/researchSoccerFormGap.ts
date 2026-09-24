@@ -77,7 +77,7 @@ function analysisRows(entries: SoccerFormGapEntry[]): ResearchRow[] {
       note: `Team: ${label}. Source floors: n_prior_home>=10 and n_prior_away>=10. Each operand uses exactly 10 strictly prior matches at its venue; the match sets can cover different dates.`,
       sourcePaths: SOURCE_PATHS,
     }];
-  }).sort((left, right) => right.values.home_minus_away_ppg! - left.values.home_minus_away_ppg! || left.label.localeCompare(right.label));
+  });
 }
 
 export function buildSoccerFormGapResearch(atlas: SoccerFormGapAtlas): ResearchAnalysis[] {
@@ -92,6 +92,10 @@ export function buildSoccerFormGapResearch(atlas: SoccerFormGapAtlas): ResearchA
     id: "soccer-home-away-trailing-form-gap",
     title: "Soccer form: home versus away",
     sport: "soccer",
+    populationDefinition: {
+      status: "unpublished",
+      reason: "The source pools six divisions but does not publish each team's league or match dates; a comparable population cannot be verified.",
+    },
     category: "Team matchup context",
     source: "atlas_soccer_manifest",
     description: "Compares each team's points per game across its separately computed trailing 10 prior home and away matches.",
