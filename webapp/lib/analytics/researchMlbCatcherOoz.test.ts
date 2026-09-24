@@ -13,6 +13,13 @@ describe("MLB catcher out-of-zone research", () => {
       "catcher_ooz.top[0].ooz_strike_rate",
       "catcher_ooz.top[0].n_ooz_called",
     ]);
+    expect(analysis.fields).toContainEqual(expect.objectContaining({
+      key: "out_of_zone_called_pitches",
+      label: "Out-of-zone pitch support (type S/B)",
+    }));
+    expect(analysis.caveat).toContain("out-of-zone pitches with Statcast type S or B");
+    expect(analysis.caveat).toContain("called, swung, or fouled strikes");
+    expect(JSON.stringify(analysis)).not.toContain("Out-of-zone called pitches");
   });
 
   it("orders catcher rows by strike rate", () => {

@@ -7,6 +7,9 @@ export type MlbCatcherOozSource = { catcher_ooz?: { top?: unknown; bottom?: unkn
 const REFERENCES: ResearchReference[] = [{
   title: "Published MLB descriptive-leaderboard method",
   url: "https://github.com/neeljshah/court-vision/blob/master/scripts/platformkit/analytics_showcase/mlb_descriptive_leaderboards.py",
+}, {
+  title: "Published MLB catcher out-of-zone claims contract",
+  url: "https://github.com/neeljshah/court-vision/blob/master/scripts/platformkit/intel_validation/catcher_framing_claims.py",
 }];
 const finite = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value);
 const asOf = (value: unknown) => typeof value === "string" && Number.isFinite(Date.parse(value)) ? new Date(Date.parse(value)).toISOString().slice(0, 10) : undefined;
@@ -39,15 +42,15 @@ export function buildMlbCatcherOozResearch(source: MlbCatcherOozSource): Researc
     category: "Descriptive leaderboards",
     source: "mlb_descriptive_leaderboards",
     question: "Which published MLB catchers appear in the upper and lower out-of-zone strike rate selections, and what support is shown for each?",
-    method: "Restate the source's published upper and lower catcher selections with out-of-zone strike rate and out-of-zone called-pitch count.",
-    description: "Published catcher selections retain their out-of-zone strike rate and called-pitch support from the fixed Statcast corpus slice.",
+    method: "Restate the source's published upper and lower catcher selections with out-of-zone strike rate and out-of-zone pitch support (Statcast type S/B).",
+    description: "Published catcher selections retain their out-of-zone strike rate and type-S/B pitch support from the fixed Statcast corpus slice.",
     scope: `${analysisRows.length} published catcher selections from the source's fixed 2022-2023 corpus slice.`,
-    caveat: "The source describes this as a crude out-of-zone called-or-swung-strike measure, not a framing measure. It is a fixed historical slice and does not adjust for pitcher, batter, count, or location mix.",
+    caveat: "The source defines support as out-of-zone pitches with Statcast type S or B; its strike numerator includes called, swung, or fouled strikes and does not separate them. This is not a framing measure. It is a fixed historical slice and does not adjust for pitcher, batter, count, or location mix.",
     status: "Descriptive MLB subset",
-    fields: [f("out_of_zone_strike_rate", "Out-of-zone strike rate", "percent", 2), f("out_of_zone_called_pitches", "Out-of-zone called pitches", "number", 0)],
+    fields: [f("out_of_zone_strike_rate", "Out-of-zone strike rate", "percent", 2), f("out_of_zone_called_pitches", "Out-of-zone pitch support (type S/B)", "number", 0)],
     rows: analysisRows,
-    formula: "Out-of-zone strike rate is copied from the published ooz_strike_rate field. Out-of-zone called pitches is copied from the published n_ooz_called field.",
-    interpretation: "Read out-of-zone strike rate with out-of-zone called pitches; this selection is descriptive and is not a player-quality ranking.",
+    formula: "Out-of-zone strike rate is copied from the published ooz_strike_rate field. Out-of-zone pitch support (type S/B) is copied from the published n_ooz_called field.",
+    interpretation: "Read out-of-zone strike rate with its type-S/B pitch support; this selection is descriptive and is not a player-quality ranking.",
     references: REFERENCES,
     novelty: "Derived analysis",
     asOf: asOf(source?.observation_window?.as_of),

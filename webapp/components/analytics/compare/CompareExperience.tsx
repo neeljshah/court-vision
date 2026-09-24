@@ -279,7 +279,7 @@ export function CompareExperience() {
       <div className="compare-sport-switcher" aria-label="Choose a sport">
         <span className="compare-section-label">Start with a sport</span>
         <div className="compare-sport-tabs">
-          {SPORT_GROUPS.map((sport) => <button key={sport.key} type="button" aria-pressed={activeSport?.key === sport.key} className={activeSport?.key === sport.key ? "is-active" : ""} onClick={() => changePack(sport.packs[0])}>{sport.label}</button>)}
+          {SPORT_GROUPS.map((sport) => <button key={sport.key} type="button" aria-pressed={activeSport?.key === sport.key} className={activeSport?.key === sport.key ? "is-active" : ""} onClick={() => { if (activeSport?.key !== sport.key) changePack(sport.packs[0]); }}>{sport.label}</button>)}
         </div>
       </div>
       <div className={`compare-controls${packKey === "mlb_pitch" ? " has-family" : ""}`}>

@@ -209,6 +209,22 @@ describe("CompareExperience controls", () => {
     expect(screen.getByText("complete")).toBeInTheDocument();
   });
 
+  it("keeps an NBA team pair when the active Basketball tab is selected", async () => {
+    const teams = { entries: [
+      { entity: "BOS", card_path: "atlas/bos.png", key_numbers: { team_full_name: "Boston Celtics", ppg_latest_season: 116 } },
+      { entity: "DEN", card_path: "atlas/den.png", key_numbers: { team_full_name: "Denver Nuggets", ppg_latest_season: 118 } },
+    ] };
+    const teamPercentiles = { packs: { nba_teams: { n_in_pack: 2, fields: { ppg_latest_season: { n_ranked: 2 } }, entities: { bos: { ppg_latest_season: 25 }, den: { ppg_latest_season: 75 } } } } };
+    window.history.replaceState(null, "", "/analytics/compare?pack=nba_teams&a=bos&b=den");
+    vi.mocked(fetch).mockImplementation((input: RequestInfo | URL) => { const url = String(input); return Promise.resolve({ ok: true, json: async () => url.includes("atlas_nba_teams_manifest") ? teams : url.includes("percentiles") ? teamPercentiles : comparables } as Response); });
+    render(<CompareExperience />);
+    await waitFor(() => expect(screen.getByLabelText("Profile A")).toHaveValue("Boston Celtics"));
+    expect(screen.getByLabelText("Profile B")).toHaveValue("Denver Nuggets");
+    fireEvent.click(screen.getByRole("button", { name: "Basketball" }));
+    expect(window.location.search).toBe("?pack=nba_teams&a=bos&b=den");
+    expect(screen.getByLabelText("Profile A")).toHaveValue("Boston Celtics");
+  });
+
   it("restores a tennis surface deep link without serializing the default pack, updates it, and removes it outside tennis", async () => {
     window.history.replaceState({ next: true }, "", "/analytics/compare?pack=tennis&a=alpha&b=beta&surface=clay");
     vi.mocked(fetch).mockImplementation((input: RequestInfo | URL, _init?: RequestInit) => { const url = String(input); return Promise.resolve({ ok: true, json: async () => url.includes("atlas_tennis_manifest") ? tennisManifest : url.includes("percentiles") ? tennisPercentiles : comparables } as Response); });

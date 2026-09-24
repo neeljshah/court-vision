@@ -122,6 +122,17 @@ describe("MLB atlas comparison controls", () => {
     expect(screen.getByRole("table", { name: "Published raw values" })).toBeInTheDocument();
   });
 
+  it("keeps an MLB atlas family pair when the active Baseball tab is selected", async () => {
+    window.history.replaceState(null, "", "/analytics/compare?pack=mlb_pitch&family=team&a=nyy&b=bos");
+    mockFamilyFetch(); render(<CompareExperience />);
+    await waitFor(() => expect(screen.getByLabelText("Profile A")).toHaveValue("team NYY"));
+    expect(screen.getByLabelText("Profile B")).toHaveValue("team BOS");
+    fireEvent.click(screen.getByRole("button", { name: "Baseball" }));
+    expect(window.location.search).toBe("?pack=mlb_pitch&family=team&a=nyy&b=bos");
+    expect(screen.getByLabelText("MLB atlas record type")).toHaveValue("team");
+    expect(screen.getByLabelText("Profile A")).toHaveValue("team NYY");
+  });
+
   it("keeps mixed legacy headers visible while withholding the comparison", async () => {
     window.history.replaceState(null, "", "/analytics/compare?pack=mlb_pitch&a=ff&b=nyy");
     mockFamilyFetch(); render(<CompareExperience />);
