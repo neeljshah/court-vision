@@ -505,9 +505,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "MLB, marginally: the model's moneyline Brier gap to the close is +0.0039 in MLB (0.2429 vs 0.2390, n=13,992) versus +0.0063 in NBA (0.1735 vs 0.1672, n=372). Both are MATCH within noise, and the NBA sample is much smaller.",
-    "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
-    "as_of": "2026-07-07"
+    "answer": "The measured moneyline Brier gap is +0.0039 for MLB (13,992 held-out games; 95% interval [+0.0028, +0.0051]) and +0.0063 for NBA (372 held-out games; interval [-0.0042, +0.0168]) against proportionally devigged reference prices. MLB trails its close; the NBA interval includes zero but is too wide to establish parity. These different sport samples do not establish which model is closer overall, and the NBA reference price capture time is unverified.",
+    "source_artifact": "docs/evidence/pregame/DM_RECOMPUTE_2026-09-24.md",
+    "as_of": "2026-09-24"
    },
    "tags": [
     "nba",
@@ -1037,9 +1037,9 @@
    ],
    "a": {
     "status": "refused",
-    "answer": "This project publishes calibration and sharpness measurements. Zero real money has been placed. The finding is that the model matches efficient closing lines within noise and beats none of them, measured in Brier and BSS.",
-    "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
-    "as_of": "2026-07-23"
+    "answer": "The cited recomputation measures Brier probability error, not realized returns. MLB moneyline and soccer Over/Under 2.5 trail their proportionally devigged close references; the NBA moneyline result is inconclusive at 372 held-out games. It provides no realized-return measurement.",
+    "source_artifact": "docs/evidence/pregame/DM_RECOMPUTE_2026-09-24.md",
+    "as_of": "2026-09-24"
    },
    "tags": [
     "refused",
@@ -1075,9 +1075,9 @@
    ],
    "a": {
     "status": "no_data",
-    "answer": "There is no Pinnacle-specific closing-line-value corpus on disk to answer this. Closing-line value is measured forward, and no real sharp-market-source CLV reading has been produced yet. What is measured is the model matching devigged consensus closes within noise, not any single source.",
-    "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
-    "as_of": "2026-07-23"
+    "answer": "The recomputation notes that its soccer Over/Under 2.5 model was scored against Pinnacle and trails on that measured slice. It does not provide Pinnacle-specific closing-line value or establish general outperformance against Pinnacle closes, so this question cannot be answered broadly from the cited evidence.",
+    "source_artifact": "docs/evidence/pregame/DM_RECOMPUTE_2026-09-24.md",
+    "as_of": "2026-09-24"
    },
    "tags": [
     "no-data",

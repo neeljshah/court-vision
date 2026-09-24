@@ -20,6 +20,15 @@ describe("artifact provenance", () => {
     expect(artifactUrl(`${memo}?draft=1`, "")).toBeNull();
   });
 
+  it("links only the published forecaster manifest at its nested export path", () => {
+    const manifest = "webapp/public/data/showcase/forecaster/manifest.json";
+    expect(artifactUrl(manifest, "/court-vision")).toBe("/court-vision/data/showcase/forecaster/manifest.json");
+    expect(artifactUrl(manifest, "")).toBe("/data/showcase/forecaster/manifest.json");
+    expect(artifactUrl("private/forecaster/manifest.json", "/court-vision")).toBeNull();
+    expect(artifactUrl("webapp/public/data/showcase/unpublished/manifest.json", "")).toBeNull();
+    expect(artifactUrl(`${manifest}?draft=1`, "")).toBeNull();
+  });
+
   it("does not create a link for an artifact absent from the export manifest", () => {
     expect(artifactUrl("private_measurement.json", "/court-vision")).toBeNull();
     expect(artifactUrl("webapp/public/data/showcase/atlas_private.json", "/court-vision")).toBeNull();

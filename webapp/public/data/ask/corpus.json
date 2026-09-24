@@ -529,9 +529,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "MLB, marginally: the model's moneyline Brier gap to the close is +0.0039 in MLB (0.2429 vs 0.2390, n=13,992) versus +0.0063 in NBA (0.1735 vs 0.1672, n=372). Both are MATCH within noise, and the NBA sample is much smaller.",
-    "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
-    "as_of": "2026-07-07"
+    "answer": "The measured moneyline Brier gap is +0.0039 for MLB (13,992 held-out games; 95% interval [+0.0028, +0.0051]) and +0.0063 for NBA (372 held-out games; interval [-0.0042, +0.0168]) against proportionally devigged reference prices. MLB trails its close; the NBA interval includes zero but is too wide to establish parity. These different sport samples do not establish which model is closer overall, and the NBA reference price capture time is unverified.",
+    "source_artifact": "docs/evidence/pregame/DM_RECOMPUTE_2026-09-24.md",
+    "as_of": "2026-09-24"
    },
    "tags": [
     "nba",
@@ -1089,9 +1089,9 @@
    ],
    "a": {
     "status": "refused",
-    "answer": "This project publishes calibration and sharpness measurements. Zero real money has been placed. The finding is that the model matches efficient closing lines within noise and beats none of them, measured in Brier and BSS.",
-    "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
-    "as_of": "2026-07-23"
+    "answer": "The cited recomputation measures Brier probability error, not realized returns. MLB moneyline and soccer Over/Under 2.5 trail their proportionally devigged close references; the NBA moneyline result is inconclusive at 372 held-out games. It provides no realized-return measurement.",
+    "source_artifact": "docs/evidence/pregame/DM_RECOMPUTE_2026-09-24.md",
+    "as_of": "2026-09-24"
    },
    "tags": [
     "refused",
@@ -1129,9 +1129,9 @@
    ],
    "a": {
     "status": "no_data",
-    "answer": "There is no Pinnacle-specific closing-line-value corpus on disk to answer this. Closing-line value is measured forward, and no real sharp-market-source CLV reading has been produced yet. What is measured is the model matching devigged consensus closes within noise, not any single source.",
-    "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
-    "as_of": "2026-07-23"
+    "answer": "The recomputation notes that its soccer Over/Under 2.5 model was scored against Pinnacle and trails on that measured slice. It does not provide Pinnacle-specific closing-line value or establish general outperformance against Pinnacle closes, so this question cannot be answered broadly from the cited evidence.",
+    "source_artifact": "docs/evidence/pregame/DM_RECOMPUTE_2026-09-24.md",
+    "as_of": "2026-09-24"
    },
    "tags": [
     "no-data",
@@ -2510,9 +2510,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Shin devigging. The benchmark is stated throughout as the Shin-devigged closing line, and the leak-free forecaster is scored against it on the same real outcomes rather than against raw posted prices.",
-    "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
-    "as_of": "2026-07-07"
+    "answer": "The September 24 NBA moneyline, MLB moneyline, and soccer Over/Under 2.5 comparisons use proportional devig for their primary reference prices. The recomputation also reports Shin-devigged sensitivity checks separately; Shin excludes 9 MLB and 3 soccer rows without a valid Shin price, so its support differs. This method description applies to these three comparisons, not every published artifact.",
+    "source_artifact": "docs/evidence/pregame/DM_RECOMPUTE_2026-09-24.md",
+    "as_of": "2026-09-24"
    },
    "tags": [
     "devig",
@@ -3369,9 +3369,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Pregame is scored against the Shin-devigged closing line on completed games under the leak-free gate. In-game is scored tick by tick against the live market at recorded checkpoints, using Brier skill against both the market and a constant base rate -- 78,986 MLB rows and 9,003 soccer rows in the current pack. Neither uses a live feed; both read committed, settled corpora.",
+    "answer": "Pregame validation scores a forecast made before a game against its outcome and a pregame reference. In-game validation scores updated forecasts at recorded checkpoints. The published in-game Brier skill artifact compares the model with the market and a constant sport base rate over 27,351 MLB rows and 4,265 soccer rows; rows are observations, not distinct games. It was generated 2026-09-16, and its observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "ingame",
@@ -4181,9 +4181,9 @@
    ],
    "a": {
     "status": "refused",
-    "answer": "The published position is that the market is efficient and the model aims to match the closing price within noise, with a small measured in-game calibration improvement in narrow spots. The cross-sport scoreboard shows most head-to-head checkpoints favor the market or are underpowered.",
-    "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
-    "as_of": "2026-07-23"
+    "answer": "The current pregame Brier comparisons do not establish general superiority, and Brier measures overall probability error rather than calibration alone. MLB moneyline and soccer Over/Under 2.5 trail their proportionally devigged references; the NBA moneyline interval includes zero but is too wide to establish parity. This evidence cannot support a general calibration-only conclusion.",
+    "source_artifact": "docs/evidence/pregame/DM_RECOMPUTE_2026-09-24.md",
+    "as_of": "2026-09-24"
    },
    "tags": [
     "advantage",
@@ -4319,9 +4319,9 @@
    ],
    "a": {
     "status": "refused",
-    "answer": "The honest answer is no broad market-beating claim is made. The published position is that the market is efficient and the model matches the close within noise on team-strength markets, with only a few narrow, provisional in-game spots where it looks sharper. It is calibration, not a beat-the-books claim.",
-    "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
-    "as_of": "2026-07-23"
+    "answer": "No general market comparison advantage is established by the current pregame evidence. Against proportionally devigged reference prices, MLB moneyline and soccer Over/Under 2.5 trail, while the 372-game NBA moneyline interval includes zero but is too wide to establish parity. The NBA reference price capture time is unverified. These are probability-error comparisons, not a demonstrated strategy.",
+    "source_artifact": "docs/evidence/pregame/DM_RECOMPUTE_2026-09-24.md",
+    "as_of": "2026-09-24"
    },
    "tags": [
     "advantage",
@@ -7387,7 +7387,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "/analytics/forecaster assembles six committed aggregates: walk-forward win-probability results, state-conditioned calibration, the Murphy decomposition, calibration stability, Brier skill scores and the cross-sport scoreboard. Its headline is calibration: the model matches the devigged close pregame and trails the market in-game.",
+    "answer": "/analytics/forecaster assembles six committed aggregates: walk-forward win-probability results, state-conditioned calibration, the Murphy decomposition, calibration stability, Brier skill scores, and the cross-sport scoreboard. Open the page to inspect each published measurement, its support and uncertainty where reported, and its linked source. The manifest is dated 2026-07-23; individual exhibits may have their own dates and limits.",
     "source_artifact": "webapp/public/data/showcase/forecaster/manifest.json",
     "as_of": "2026-07-23"
    },
@@ -8346,9 +8346,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "No. Against real closing lines the finding is that the market is efficient. This is a calibrated predictor whose honest result is matching the devigged close within noise, plus a measured in-game conditioning improvement. Accuracy is not a market comparison, and an honest reject is treated as a success.",
-    "source_artifact": "docs/PUBLIC_EVIDENCE.md",
-    "as_of": "2026-06-11"
+    "answer": "No general advantage is established by the current pregame comparisons. MLB moneyline trails the proportionally devigged close by +0.0039 Brier (95% interval [+0.0028, +0.0051]); soccer Over/Under 2.5 trails by +0.0076 ([+0.0059, +0.0092]). NBA moneyline has a +0.0063 gap with an interval that includes zero ([-0.0042, +0.0168]); its 372-game sample is underpowered, and reference price timing is unverified. These are probability-error findings only.",
+    "source_artifact": "docs/evidence/pregame/DM_RECOMPUTE_2026-09-24.md",
+    "as_of": "2026-09-24"
    },
    "tags": [
     "no-comparative-conclusion",

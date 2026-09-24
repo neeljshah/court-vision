@@ -55,6 +55,9 @@ export function artifactUrl(source: string | null | undefined, base = basePath()
   if (source === "docs/evidence/pregame/DM_RECOMPUTE_2026-09-24.md") {
     return "https://github.com/neeljshah/court-vision/blob/1bfcaf034df3b8639c6b81cd550cbaf27498a229/docs/evidence/pregame/DM_RECOMPUTE_2026-09-24.md";
   }
+  if (source === "webapp/public/data/showcase/forecaster/manifest.json") {
+    return `${base}/data/showcase/forecaster/manifest.json`;
+  }
   const name = fileName(source.split(/[?#]/, 1)[0]);
   if (!name || !publishedArtifacts.has(name)) return null;
   return `${base}/data/showcase/${name}`;

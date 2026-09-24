@@ -516,9 +516,9 @@
    ],
    "a": {
     "status": "refused",
-    "answer": "The published position is that the market is efficient and the model aims to match the closing price within noise, with a small measured in-game calibration improvement in narrow spots. The cross-sport scoreboard shows most head-to-head checkpoints favor the market or are underpowered.",
-    "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
-    "as_of": "2026-07-23"
+    "answer": "The current pregame Brier comparisons do not establish general superiority, and Brier measures overall probability error rather than calibration alone. MLB moneyline and soccer Over/Under 2.5 trail their proportionally devigged references; the NBA moneyline interval includes zero but is too wide to establish parity. This evidence cannot support a general calibration-only conclusion.",
+    "source_artifact": "docs/evidence/pregame/DM_RECOMPUTE_2026-09-24.md",
+    "as_of": "2026-09-24"
    },
    "tags": [
     "advantage",
@@ -647,9 +647,9 @@
    ],
    "a": {
     "status": "refused",
-    "answer": "The honest answer is no broad market-beating claim is made. The published position is that the market is efficient and the model matches the close within noise on team-strength markets, with only a few narrow, provisional in-game spots where it looks sharper. It is calibration, not a beat-the-books claim.",
-    "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
-    "as_of": "2026-07-23"
+    "answer": "No general market comparison advantage is established by the current pregame evidence. Against proportionally devigged reference prices, MLB moneyline and soccer Over/Under 2.5 trail, while the 372-game NBA moneyline interval includes zero but is too wide to establish parity. The NBA reference price capture time is unverified. These are probability-error comparisons, not a demonstrated strategy.",
+    "source_artifact": "docs/evidence/pregame/DM_RECOMPUTE_2026-09-24.md",
+    "as_of": "2026-09-24"
    },
    "tags": [
     "advantage",

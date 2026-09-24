@@ -124,9 +124,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Shin devigging. The benchmark is stated throughout as the Shin-devigged closing line, and the leak-free forecaster is scored against it on the same real outcomes rather than against raw posted prices.",
-    "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
-    "as_of": "2026-07-07"
+    "answer": "The September 24 NBA moneyline, MLB moneyline, and soccer Over/Under 2.5 comparisons use proportional devig for their primary reference prices. The recomputation also reports Shin-devigged sensitivity checks separately; Shin excludes 9 MLB and 3 soccer rows without a valid Shin price, so its support differs. This method description applies to these three comparisons, not every published artifact.",
+    "source_artifact": "docs/evidence/pregame/DM_RECOMPUTE_2026-09-24.md",
+    "as_of": "2026-09-24"
    },
    "tags": [
     "devig",
@@ -940,9 +940,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Pregame is scored against the Shin-devigged closing line on completed games under the leak-free gate. In-game is scored tick by tick against the live market at recorded checkpoints, using Brier skill against both the market and a constant base rate -- 78,986 MLB rows and 9,003 soccer rows in the current pack. Neither uses a live feed; both read committed, settled corpora.",
+    "answer": "Pregame validation scores a forecast made before a game against its outcome and a pregame reference. In-game validation scores updated forecasts at recorded checkpoints. The published in-game Brier skill artifact compares the model with the market and a constant sport base rate over 27,351 MLB rows and 4,265 soccer rows; rows are observations, not distinct games. It was generated 2026-09-16, and its observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "ingame",

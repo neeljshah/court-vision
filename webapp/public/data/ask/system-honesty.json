@@ -162,9 +162,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "No. Against real closing lines the finding is that the market is efficient. This is a calibrated predictor whose honest result is matching the devigged close within noise, plus a measured in-game conditioning improvement. Accuracy is not a market comparison, and an honest reject is treated as a success.",
-    "source_artifact": "docs/PUBLIC_EVIDENCE.md",
-    "as_of": "2026-06-11"
+    "answer": "No general advantage is established by the current pregame comparisons. MLB moneyline trails the proportionally devigged close by +0.0039 Brier (95% interval [+0.0028, +0.0051]); soccer Over/Under 2.5 trails by +0.0076 ([+0.0059, +0.0092]). NBA moneyline has a +0.0063 gap with an interval that includes zero ([-0.0042, +0.0168]); its 372-game sample is underpowered, and reference price timing is unverified. These are probability-error findings only.",
+    "source_artifact": "docs/evidence/pregame/DM_RECOMPUTE_2026-09-24.md",
+    "as_of": "2026-09-24"
    },
    "tags": [
     "no-comparative-conclusion",

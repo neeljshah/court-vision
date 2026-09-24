@@ -47,7 +47,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "/analytics/forecaster assembles six committed aggregates: walk-forward win-probability results, state-conditioned calibration, the Murphy decomposition, calibration stability, Brier skill scores and the cross-sport scoreboard. Its headline is calibration: the model matches the devigged close pregame and trails the market in-game.",
+    "answer": "/analytics/forecaster assembles six committed aggregates: walk-forward win-probability results, state-conditioned calibration, the Murphy decomposition, calibration stability, Brier skill scores, and the cross-sport scoreboard. Open the page to inspect each published measurement, its support and uncertainty where reported, and its linked source. The manifest is dated 2026-07-23; individual exhibits may have their own dates and limits.",
     "source_artifact": "webapp/public/data/showcase/forecaster/manifest.json",
     "as_of": "2026-07-23"
    },

@@ -5,6 +5,11 @@ import { getResearchAnalyses } from "./researchData";
 import { loadScoutCorpus, loadScoutSourcesForTest } from "./scoutCorpus.server";
 import { buildScoutCorpus, scoutCorpusExpectedCount, type ScoutSources } from "./scoutCorpus";
 import calibrationMarket from "../../public/data/ask/calibration-market.json";
+import methodology from "../../public/data/ask/methodology.json";
+import noDataHonest from "../../public/data/ask/no-data-honest.json";
+import productTour from "../../public/data/ask/product-tour.json";
+import systemHonesty from "../../public/data/ask/system-honesty.json";
+import brierSkillScores from "../../public/data/showcase/brier_skill_scores.json";
 // @ts-expect-error -- the executable scanner is deliberately dependency-free ESM.
 import { PROHIBITED_TOKEN_RE } from "../../scripts/check-analytics-copy.mjs";
 
@@ -53,6 +58,42 @@ describe("loadScoutCorpus", () => {
     const nba = resolveQuestion("How close is the model to the NBA closing line?", corpus);
     expect(nba?.entry?.a.answer).toContain("capture time is unverified");
     expect(nba?.entry?.a.answer).toContain("too small to establish parity");
+  });
+
+  it("keeps nine Scout evidence answers scoped and synchronized with their buckets", () => {
+    const dm = "docs/evidence/pregame/DM_RECOMPUTE_2026-09-24.md";
+    const bss = "webapp/public/data/showcase/brier_skill_scores.json";
+    const manifest = "webapp/public/data/showcase/forecaster/manifest.json";
+    const buckets = [...calibrationMarket.entries, ...methodology.entries, ...noDataHonest.entries, ...productTour.entries, ...systemHonesty.entries];
+    const cases = [
+      ["Is the model tighter to the close in NBA or MLB?", dm, "2026-09-24", "ok", "[+0.0028, +0.0051]"],
+      ["Which devigging method do you use?", dm, "2026-09-24", "ok", "Shin-devigged sensitivity checks separately"],
+      ["What is the difference between the in-game and pregame validation?", bss, "unknown", "ok", `${brierSkillScores.sports.mlb.n_rows.toLocaleString("en-US")} MLB rows and ${brierSkillScores.sports.soccer_intl.n_rows.toLocaleString("en-US")} soccer rows`],
+      ["Does the model beat Pinnacle's closing line specifically?", dm, "2026-09-24", "no_data", "does not provide Pinnacle-specific closing-line value"],
+      ["Can you beat Vegas?", dm, "2026-09-24", "refused", "NBA reference price capture time is unverified"],
+      ["What can you show me about how good the predictions are?", manifest, "2026-07-23", "ok", "six committed aggregates"],
+      ["Does the system claim a market comparison advantage?", dm, "2026-09-24", "ok", "[+0.0059, +0.0092]"],
+      ["What return measurement or return does this system produce?", dm, "2026-09-24", "refused", "not realized returns"],
+      ["Is the model better calibrated than the closing reference?", dm, "2026-09-24", "refused", "rather than calibration alone"],
+    ] as const;
+    for (const [question, source, asOf, status, phrase] of cases) {
+      const result = resolveQuestion(question, corpus);
+      expect(result, question).toMatchObject({ kind: "direct", entry: { q: question, a: { status, source_artifact: source, as_of: asOf } } });
+      if (!result?.entry) throw new Error(`Missing answer for ${question}`);
+      expect(result.entry.a.answer).toContain(phrase);
+      const bucket = buckets.find((entry) => entry.q === question);
+      expect(bucket?.a).toEqual(result.entry.a);
+      expect(bucket?.alt_phrasings).toEqual(result.entry.alt_phrasings);
+      expect(bucket?.tags).toEqual(result.entry.tags);
+    }
+    const answer = (question: string) => corpus.find((entry) => entry.q === question)?.a.answer || "";
+    expect(answer(cases[0][0])).toContain("[-0.0042, +0.0168]");
+    expect(answer(cases[0][0])).toContain("do not establish which model is closer overall");
+    expect(answer(cases[1][0])).toContain("9 MLB and 3 soccer rows");
+    expect(answer(cases[2][0])).toContain(`generated ${brierSkillScores.generated_at.split("T")[0]}`);
+    expect(answer(cases[2][0])).toContain("observation window is not published");
+    expect(answer(cases[2][0])).not.toMatch(/Shin|78,986|9,003/);
+    expect(answer(cases[5][0])).not.toMatch(/matches the devigged close pregame|trails the market in-game/);
   });
 
   it("retrieves a derived formula with its source and denominator limits", () => {
