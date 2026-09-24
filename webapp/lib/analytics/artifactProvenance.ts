@@ -49,9 +49,12 @@ function windowDates(value: ProvenanceDate): ObservationWindow | null {
   return start && end ? { start, end } : null;
 }
 
-/** Returns the exported JSON URL only for published modules and staged atlas packs. */
+/** Returns a verified public source URL, or an exported JSON URL for published artifacts. */
 export function artifactUrl(source: string | null | undefined, base = basePath()): string | null {
   if (!source) return null;
+  if (source === "docs/evidence/pregame/DM_RECOMPUTE_2026-09-24.md") {
+    return "https://github.com/neeljshah/court-vision/blob/1bfcaf034df3b8639c6b81cd550cbaf27498a229/docs/evidence/pregame/DM_RECOMPUTE_2026-09-24.md";
+  }
   const name = fileName(source.split(/[?#]/, 1)[0]);
   if (!name || !publishedArtifacts.has(name)) return null;
   return `${base}/data/showcase/${name}`;

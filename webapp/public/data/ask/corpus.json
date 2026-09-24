@@ -9,9 +9,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Pregame, the leak-free forecaster tracks the Shin-devigged closing reference within noise on team-strength measurements (NBA moneyline Brier 0.1735 versus 0.1672; MLB moneyline 0.2429 versus 0.2390). In-game, its win-probability Brier is higher across every sport and checkpoint measured. The closing reference remains the lower-error comparison in these published measurements.",
-    "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
-    "as_of": "2026-07-07"
+    "answer": "The three recomputed pregame comparisons show no measured improvement over the proportionally devigged reference price. MLB moneyline trails the close: model Brier 0.2429 versus 0.2390 across 13,992 held-out games, with a model-minus-close gap of +0.0039 and a 95% interval of [+0.0028, +0.0051]. Soccer Over/Under 2.5 also trails: 0.2465 versus 0.2390 across 7,558 matches, gap +0.0076, interval [+0.0059, +0.0092]. NBA moneyline is inconclusive at 372 held-out games: 0.1735 versus 0.1672, gap +0.0063, interval [-0.0042, +0.0168]. That NBA interval includes zero but is too wide to establish parity, and the reference price's capture time is unverified.",
+    "source_artifact": "docs/evidence/pregame/DM_RECOMPUTE_2026-09-24.md",
+    "as_of": "2026-09-24"
    },
    "tags": [
     "model-vs-market",
@@ -89,9 +89,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Very close: on NBA moneyline the model's Brier is 0.1735 versus the devigged close's 0.1672 over 372 games, a gap of +0.0063, labeled MATCH (within sampling noise). It does not beat the close, which is the honest ceiling for an efficient market.",
-    "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
-    "as_of": "2026-07-07"
+    "answer": "On 372 held-out NBA moneyline games, model Brier is 0.1735 versus 0.1672 for the proportionally devigged reference price. The model-minus-reference gap is +0.0063, with a 95% interval of [-0.0042, +0.0168]. The interval includes zero, but this sample is too small to establish parity or rule out a meaningful deficit. The price is labeled a close in the study, although its capture time is unverified.",
+    "source_artifact": "docs/evidence/pregame/DM_RECOMPUTE_2026-09-24.md",
+    "as_of": "2026-09-24"
    },
    "tags": [
     "nba",
@@ -109,9 +109,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "It matches within noise: MLB moneyline model Brier 0.2429 versus the close's 0.2390 over 13,992 games, a gap of +0.0039, labeled MATCH. As with NBA, the model tracks the sharp close but does not beat it.",
-    "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
-    "as_of": "2026-07-07"
+    "answer": "The MLB moneyline model trails the proportionally devigged close on 13,992 held-out games. Model Brier is 0.2429 versus 0.2390 for the close; the model-minus-close gap is +0.0039, with a 95% interval of [+0.0028, +0.0051]. The interval stays above zero, so the model has higher measured Brier error on this sample.",
+    "source_artifact": "docs/evidence/pregame/DM_RECOMPUTE_2026-09-24.md",
+    "as_of": "2026-09-24"
    },
    "tags": [
     "mlb",
@@ -129,9 +129,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "On the soccer Over/Under-2.5 market the model's Brier is 0.2465 versus the close's 0.2390 over 7,558 matches, a gap of +0.0076, labeled MATCH within noise. Team-strength win markets match; the model does not beat them.",
-    "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
-    "as_of": "2026-07-07"
+    "answer": "For soccer Over/Under 2.5, the model trails the proportionally devigged close on 7,558 held-out matches. Model Brier is 0.2465 versus 0.2390 for the close; the model-minus-close gap is +0.0076, with a 95% interval of [+0.0059, +0.0092]. The interval stays above zero, so the close is measurably sharper on this market and sample.",
+    "source_artifact": "docs/evidence/pregame/DM_RECOMPUTE_2026-09-24.md",
+    "as_of": "2026-09-24"
    },
    "tags": [
     "soccer",

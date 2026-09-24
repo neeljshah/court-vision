@@ -10,6 +10,16 @@ describe("artifact provenance", () => {
     );
   });
 
+  it("links only the verified pregame memo at its pinned public revision", () => {
+    const memo = "docs/evidence/pregame/DM_RECOMPUTE_2026-09-24.md";
+    const url = "https://github.com/neeljshah/court-vision/blob/1bfcaf034df3b8639c6b81cd550cbaf27498a229/docs/evidence/pregame/DM_RECOMPUTE_2026-09-24.md";
+    expect(artifactUrl(memo, "/court-vision")).toBe(url);
+    expect(artifactUrl(memo, "")).toBe(url);
+    expect(artifactUrl("docs/evidence/pregame/unpublished.md", "/court-vision")).toBeNull();
+    expect(artifactUrl("private/DM_RECOMPUTE_2026-09-24.md", "")).toBeNull();
+    expect(artifactUrl(`${memo}?draft=1`, "")).toBeNull();
+  });
+
   it("does not create a link for an artifact absent from the export manifest", () => {
     expect(artifactUrl("private_measurement.json", "/court-vision")).toBeNull();
     expect(artifactUrl("webapp/public/data/showcase/atlas_private.json", "/court-vision")).toBeNull();

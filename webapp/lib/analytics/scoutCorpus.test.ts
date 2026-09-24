@@ -4,6 +4,7 @@ import { resolveQuestion } from "./askSearch";
 import { getResearchAnalyses } from "./researchData";
 import { loadScoutCorpus, loadScoutSourcesForTest } from "./scoutCorpus.server";
 import { buildScoutCorpus, scoutCorpusExpectedCount, type ScoutSources } from "./scoutCorpus";
+import calibrationMarket from "../../public/data/ask/calibration-market.json";
 // @ts-expect-error -- the executable scanner is deliberately dependency-free ESM.
 import { PROHIBITED_TOKEN_RE } from "../../scripts/check-analytics-copy.mjs";
 
@@ -29,6 +30,29 @@ describe("loadScoutCorpus", () => {
       expect(entry.a.as_of).toBe("2026-09-14");
       expect(entry.a.source_artifact).toBe("docs/JOB_EVIDENCE_PACKET.md");
     }
+  });
+
+  it("retrieves the corrected pregame comparisons with their measured uncertainty", () => {
+    const evidence = "docs/evidence/pregame/DM_RECOMPUTE_2026-09-24.md";
+    const cases = [
+      { question: "How does forecast calibration compare with the closing reference?", bucketQuestion: "Does the model actually beat the market comparison market?", scope: "three recomputed pregame comparisons", interval: "[-0.0042, +0.0168]" },
+      { question: "How close is the model to the NBA closing line?", scope: "372 held-out NBA moneyline games", interval: "[-0.0042, +0.0168]" },
+      { question: "How does the model do against the MLB moneyline close?", scope: "13,992 held-out games", interval: "[+0.0028, +0.0051]" },
+      { question: "Does the model match the market on soccer?", scope: "7,558 held-out matches", interval: "[+0.0059, +0.0092]" },
+    ];
+    for (const { question, bucketQuestion, scope, interval } of cases) {
+      const result = resolveQuestion(question, corpus);
+      expect(result, question).toMatchObject({ kind: "direct", entry: { q: question, a: { status: "ok", source_artifact: evidence, as_of: "2026-09-24" } } });
+      if (result?.kind !== "direct" || !result.entry) throw new Error(`No direct answer for ${question}`);
+      expect(result.entry.a.answer).toContain(scope);
+      expect(result.entry.a.answer).toContain(interval);
+      expect(result.entry.a.answer).toContain("proportionally devigged");
+      const sourceEntry = calibrationMarket.entries.find((entry) => entry.q === (bucketQuestion || question));
+      expect(sourceEntry?.a).toEqual(result.entry.a);
+    }
+    const nba = resolveQuestion("How close is the model to the NBA closing line?", corpus);
+    expect(nba?.entry?.a.answer).toContain("capture time is unverified");
+    expect(nba?.entry?.a.answer).toContain("too small to establish parity");
   });
 
   it("retrieves a derived formula with its source and denominator limits", () => {

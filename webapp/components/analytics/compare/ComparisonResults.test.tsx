@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { expect, it, vi } from "vitest";
 import type { ComparisonEntity, ComparisonPack } from "@/lib/analytics/comparisonData";
 import { ComparisonResults } from "./ComparisonResults";
@@ -8,6 +8,23 @@ vi.mock("next/link", () => ({ default: ({ children, ...props }: React.ComponentP
 
 const a: ComparisonEntity = { slug: "a", name: "Alpha", values: { rate: 0.6 }, percentiles: { rate: 82 } };
 const b: ComparisonEntity = { slug: "b", name: "Beta", values: { rate: 0.5 }, percentiles: { rate: 50 } };
+
+it("labels ranked NBA measurements by their corpus observation window", () => {
+  const alpha: ComparisonEntity = { ...a, values: { career_games: 50, seasons_played: 1 }, percentiles: { career_games: 80, seasons_played: 25 } };
+  const beta: ComparisonEntity = { ...b, values: { career_games: 100, seasons_played: 2 }, percentiles: { career_games: 40, seasons_played: 75 } };
+  const pack: ComparisonPack = {
+    key: "nba_players", nInPack: 2, metricKeys: ["career_games", "seasons_played"],
+    nRankedByMetric: { career_games: 2, seasons_played: 2 }, entities: [alpha, beta],
+  };
+  render(<ComparisonResults pack={pack} a={alpha} b={beta} manifest="atlas_nba_manifest.json" surface="hard" onSurfaceChange={() => undefined} />);
+  const ladder = screen.getByRole("heading", { name: "Percentile ladder" }).closest("section")!;
+  expect(within(ladder).getByText("Corpus games")).toBeInTheDocument();
+  expect(within(ladder).getByText("Seasons in corpus")).toBeInTheDocument();
+  expect(within(ladder).getByText("50")).toBeInTheDocument();
+  expect(within(ladder).getByText("100")).toBeInTheDocument();
+  expect(within(ladder).getByText("Percentile rank 80 among 2 measured profiles")).toBeInTheDocument();
+  expect(within(ladder).queryByText("career games")).not.toBeInTheDocument();
+});
 
 it("uses the per-field ranked count instead of the full pack size", () => {
   const pack: ComparisonPack = {
