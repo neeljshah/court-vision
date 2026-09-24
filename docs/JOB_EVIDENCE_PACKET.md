@@ -313,6 +313,7 @@ RETRACTED: 8.94 -- retracted inflated figure
 RETRACTED: 54.57 -- retracted inflated figure
 CORRECTED: 0.208 -- pregame model Brier; no artifact, did not reproduce; superseded 2026-09-14 by 0.1735 (n=743, TRAILS_CLOSE)
 CORRECTED: 0.198 -- closing-line Brier of that same pair; superseded 2026-09-14 by 0.1666 (n=743, TRAILS_CLOSE)
+SUPERSEDED 2026-09-24 (recompute, docs/evidence/pregame/DM_RECOMPUTE_2026-09-24.md): the same row reads n=372 scored (743 is the overlap; the first half is the fit), gap +0.0069, 95% CI [-0.0038, +0.0175], DM p 0.20, MATCHES_CLOSE under the written rule (CI includes 0) and underpowered (MDE 0.0152); MLB moneyline and soccer O/U 2.5 TRAIL the close with intervals excluding 0 (+0.0039 [+0.0028, +0.0051]; +0.0076 [+0.0059, +0.0092])
 
 
 ---

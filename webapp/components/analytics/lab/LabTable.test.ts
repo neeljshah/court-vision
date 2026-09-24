@@ -2,7 +2,7 @@ import { createElement } from "react";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import type { LabDataset } from "@/lib/analytics/labTypes";
-import type { ResearchAnalysis } from "@/lib/analytics/researchTypes";
+import type { ResearchAnalysis, ResearchRow } from "@/lib/analytics/researchTypes";
 import { buildLabCSV, exportLabCSV, LabTable } from "./LabTable";
 
 function parseCSV(csv: string): string[][] {
@@ -50,7 +50,7 @@ describe("buildLabCSV", () => {
   });
 
   it("appends exact research provenance columns and preserves each row's own context", () => {
-    const rows = [
+    const rows: ResearchRow[] = [
       { id: "one", label: "Quoted, row\none", group: "A", values: { score: 0, rate: -0.25 }, sourcePaths: ["cells[0].score", '=FORMULA("nested")'], bindingValues: { numerator: null, denominator: 0 }, windows: { score: "2024-25\nregular" }, definition: { population: "starters, only", threshold: 0 } },
       { id: "two", label: "Second", group: "B", values: { score: null, rate: 0 }, sourcePaths: ["cells[1].rate"], bindingValues: { numerator: 9 }, windows: { rate: "career, all" }, definition: { observationWindow: "career" } },
     ];
@@ -83,7 +83,7 @@ describe("buildLabCSV", () => {
   });
 
   it("adds headers for row-only provenance and retains explicit empty containers and zero values", () => {
-    const rowOnly = { ...basicDataset, rows: [] } as ResearchAnalysis;
+    const rowOnly = { ...basicDataset, rows: [] } as unknown as ResearchAnalysis;
     const table = parseCSV(buildLabCSV(rowOnly, [{ id: "x", label: "X", group: "G", values: { half: 0, rate: 0 }, sourcePaths: [], bindingValues: { n: 0, missing: null }, windows: {}, definition: { threshold: 0 } }]));
     expect(table[0].slice(-8)).toEqual(provenanceHeaders);
     expect(table[1].slice(-8)).toEqual(["", "", JSON.stringify(basicDataset.fields), "", "[]", '{"n":0,"missing":null}', "{}", '{"threshold":0}']);
@@ -115,8 +115,8 @@ describe("buildLabCSV", () => {
     const revokeObjectURL = vi.fn();
     Object.defineProperty(URL, "createObjectURL", { configurable: true, value: createObjectURL });
     Object.defineProperty(URL, "revokeObjectURL", { configurable: true, value: revokeObjectURL });
-    const click = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(function () { download = this.download; });
-    const timeout = vi.spyOn(globalThis, "setTimeout").mockImplementation(((handler: TimerHandler) => { if (typeof handler === "function") cleanup = handler; return 1; }) as typeof setTimeout);
+    const click = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(function (this: HTMLAnchorElement) { download = this.download; });
+    const timeout = vi.spyOn(globalThis, "setTimeout").mockImplementation(((handler: TimerHandler) => { if (typeof handler === "function") cleanup = handler as () => void; return 1; }) as typeof setTimeout);
     try {
       exportLabCSV(researchDataset, [{ id: "x", label: "X", group: "G", values: { score: 1, rate: 0 }, sourcePaths: ["cells[0].score"] }]);
       expect(createObjectURL).toHaveBeenCalledOnce();

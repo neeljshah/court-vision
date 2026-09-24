@@ -55,16 +55,16 @@ describe("Published NBA opponent mean-total investigation", () => {
 
   it("lets readers select the pair-mean dispersion, filter a team, and inspect its support", () => {
     render(<ResearchDetail analysis={analysis} related={[]} />);
-    fireEvent.change(screen.getByRole("combobox", { name: "Measurement", exact: true }), { target: { value: "between_opponent_mean_total_sd" } });
+    fireEvent.change(screen.getByRole("combobox", { name: "Measurement" }), { target: { value: "between_opponent_mean_total_sd" } });
     expect(screen.getByRole("status")).toHaveTextContent("30 matching rows; 30 contain between-opponent mean-total sd.");
     expect(new URLSearchParams(window.location.search).get("metric")).toBe("between_opponent_mean_total_sd");
     fireEvent.change(screen.getByRole("textbox", { name: "Search analysis rows" }), { target: { value: "Atlanta Hawks" } });
-    fireEvent.click(screen.getByRole("button", { name: "Inspect ATL: 9.1", exact: true }));
+    fireEvent.click(screen.getByRole("button", { name: "Inspect ATL: 9.1" }));
     const selected = screen.getByRole("region", { name: "Selected measurement" });
     expect(selected).toHaveTextContent("Team-meetings across included pairings239");
-    fireEvent.click(screen.getByRole("button", { name: "Data table", exact: true }));
-    expect(screen.getByRole("columnheader", { name: "Between-opponent mean-total SD", exact: true })).toBeVisible();
-    expect(screen.getByRole("columnheader", { name: "Team-meetings across included pairings", exact: true })).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: "Data table" }));
+    expect(screen.getByRole("columnheader", { name: "Between-opponent mean-total SD" })).toBeVisible();
+    expect(screen.getByRole("columnheader", { name: "Team-meetings across included pairings" })).toBeVisible();
   });
 
   it("finds published city and team names while preserving multi-word search", () => {

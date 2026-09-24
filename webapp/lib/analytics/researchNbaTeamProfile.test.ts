@@ -76,7 +76,7 @@ describe("NBA team profile research", () => {
 
   it("keeps Denver's different estimator players and agreement flag explicit", () => {
     const input = source();
-    input.atlas.entries.push({ entity: "DEN", card_path: "cards/denver.png", key_numbers: { team_full_name: "Denver Nuggets", pace_proxy_latest_season: 98, ppg_latest_season: 116 }, as_of: "2026-04-12" });
+    input.atlas.entries.push({ entity: "DEN", card_path: "cards/denver.png", key_numbers: { team_full_name: "Denver Nuggets", pace_proxy_latest_season: 98, ppg_latest_season: 116, games_total: 240, seasons_covered: 3 }, as_of: "2026-04-12" });
     input.loadBearing.results.push({ team: "DEN", estimator_a_elo_onoff: { player_name: "Nikola Jokic", delta_winprob: 0.5822 }, estimator_b_raw_withwithout: { player_name: "Aaron Gordon", delta_win_rate: 0.1818, n_active: 36, n_missed: 44 }, agreement_same_player: false });
     const row = buildNbaTeamProfileResearch(input)[0].rows.find(item => item.label === "Denver Nuggets")!;
     expect(row.values).toMatchObject({ fragility_delta_estimator_a: 0.5822, fragility_delta_estimator_b: 0.1818, fragility_estimator_b_active_games: 36, fragility_estimator_b_missed_games: 44 });

@@ -57,11 +57,11 @@ Source: `vault/_Edge_Maps/_Beat_The_Close.md`. Lower Brier/RMSE wins.
 
 | Sport / market | Metric | Our model | Close | Verdict | Why |
 |---|---|---|---|---|---|
-| NBA moneyline | Brier | 0.1735 | 0.1672 | MATCH (within noise) | MOV-aware Elo matches the devigged close |
+| NBA moneyline | Brier | 0.1735 | 0.1672 | MATCH (within noise; 2026-09-24 recompute: CI includes 0, underpowered) | MOV-aware Elo matches the devigged close |
 | NBA total O/U | RMSE | 19.17 | 18.11 | BEHIND | injury/lineup freshness a box model cannot see |
-| MLB moneyline | Brier | 0.2429 | 0.2390 | MATCH | tiny deficit = pitcher-blindness (close prices the SP) |
+| MLB moneyline | Brier | 0.2429 | 0.2390 | TRAILS_CLOSE on the interval (2026-09-24 recompute: CI [+0.0028, +0.0051]) | tiny deficit = pitcher-blindness (close prices the SP) |
 | MLB total O/U | RMSE | 4.72 | 4.44 | BEHIND | park / weather / SP freshness |
-| Soccer O/U-2.5 | Brier | 0.2465 | 0.2390 | MATCH | pooled Platt recalibration |
+| Soccer O/U-2.5 | Brier | 0.2465 | 0.2390 | TRAILS_CLOSE on the interval (2026-09-24 recompute: CI [+0.0059, +0.0092]) | pooled Platt recalibration |
 | Tennis ATP ml | Brier | 0.2177 | 0.2028 | BEHIND | ATP closes are very efficient |
 
 Thesis: pregame MATCHES the devigged close on team-strength markets and is BEHIND on
@@ -97,7 +97,7 @@ SUCCESSES (the correct result for an efficient market), not failures.
 | Claim (calibration only) | Runnable proof | Reproduce |
 |---|---|---|
 | NBA moneyline MATCHES the devigged close within noise | `proof_nba/ml_accuracy.py` | `python -m scripts.platformkit.proof_nba.ml_accuracy` |
-| MLB / Soccer moneyline+O/U MATCH the close | `proof_mlb/beat_the_close_ml.py`, `proof_soccer/beat_the_close_ou.py` | `python -m scripts.platformkit.proof_mlb.beat_the_close_ml` |
+| MLB moneyline / soccer O/U trail the close by small margins (2026-09-24 recompute) | `proof_mlb/beat_the_close_ml.py`, `proof_soccer/beat_the_close_ou.py` | `python -m scripts.platformkit.proof_mlb.beat_the_close_ml` |
 | NBA/MLB totals + ATP are BEHIND ONLY by freshness (data-bound, not a defect) | `proof_nba/asof_box_accuracy.py`, `proof_nba/totals_with_availability.py`, `proof_tennis/beat_the_close_ml.py` | `python -m scripts.platformkit.proof_nba.totals_with_availability` |
 | Every candidate pregame edge REJECTS across >=2 corpora; full-sample lifts SIGN-FLIP OOS | `edge_hunt_schedule.py`, `edge_hunt_scoreboard.py` | `python -m scripts.platformkit.edge_hunt_scoreboard` |
 | CLV exists as a MARKET phenomenon but is NOT ours to harvest (CLV-capture REJECT) | `hunt_line_movement.py` | `python -m scripts.platformkit.hunt_line_movement` |
@@ -164,7 +164,7 @@ Supporting NBA totals studies (calibration / ablation, all leak-free walk-forwar
 
 | Module | Claim it backs | Leak guard | Runtime | Reproduce |
 |---|---|---|---|---|
-| `proof_mlb/beat_the_close_ml.py` | MLB moneyline MATCH (Brier 0.2429 vs 0.2390) | Walk-forward MOV-Elo updates AFTER snapshot; held-out 2nd half; close is comparison only | heavy | `python -m scripts.platformkit.proof_mlb.beat_the_close_ml` |
+| `proof_mlb/beat_the_close_ml.py` | MLB moneyline TRAILS_CLOSE (Brier 0.2429 vs 0.2390; 2026-09-24 recompute, CI excludes 0) | Walk-forward MOV-Elo updates AFTER snapshot; held-out 2nd half; close is comparison only | heavy | `python -m scripts.platformkit.proof_mlb.beat_the_close_ml` |
 | `proof_mlb/beat_the_close_total.py` | MLB totals RMSE-vs-close (BEHIND-by-freshness) | Run-rate lambdas snapshot BEFORE result folded in; RMSE on held-out 2nd half | heavy | `python -m scripts.platformkit.proof_mlb.beat_the_close_total` |
 | `proof_mlb/ingame_accuracy.py` | MLB in-game WIN (0.241 -> 0.126 Brier) | Pregame = walk-forward Elo before update; mid-game = cumulative runs through inning k (innings>k never seen); recal fit on TRAIN only | heavy | `python -m scripts.platformkit.proof_mlb.ingame_accuracy` |
 | `proof_mlb/curve_oos.py` | OOS-validates the per-inning run curve (TRAIN 2010-16, VAL 2017-21) | Era-split: curve fit on TRAIN era only; VAL era never touches the fit; RMSE+bias never MAE | heavy | `python -m scripts.platformkit.proof_mlb.curve_oos` |
@@ -175,7 +175,7 @@ Supporting NBA totals studies (calibration / ablation, all leak-free walk-forwar
 
 | Module | Claim it backs | Leak guard | Runtime | Reproduce |
 |---|---|---|---|---|
-| `proof_soccer/beat_the_close_ou.py` | Soccer O/U-2.5 MATCH (Brier 0.2465 vs 0.2390) | EW Poisson ratings emit strictly pre-match snapshot; pooled Platt fit on 1st half, applied to 2nd; close is comparison only | heavy | `python -m scripts.platformkit.proof_soccer.beat_the_close_ou` |
+| `proof_soccer/beat_the_close_ou.py` | Soccer O/U-2.5 TRAILS_CLOSE (Brier 0.2465 vs 0.2390; 2026-09-24 recompute, CI excludes 0) | EW Poisson ratings emit strictly pre-match snapshot; pooled Platt fit on 1st half, applied to 2nd; close is comparison only | heavy | `python -m scripts.platformkit.proof_soccer.beat_the_close_ou` |
 | `proof_soccer/beat_the_close_1x2.py` | 1X2 beat-close (honest DATA NULL: corpus is O/U-2.5-only, no 1X2 close to devig) | Walk-forward lambdas/rho strictly pre-match; returns ok=False with the data explanation (a documented null, not a failure) | heavy | `python -m scripts.platformkit.proof_soccer.beat_the_close_1x2` |
 | `proof_soccer/ingame_ht_accuracy.py` | Soccer in-game WIN (1X2 0.626 -> 0.502; O/U-2.5 0.264 -> 0.176) | Halftime score = leak-free minute-45 state; full-time result is the future outcome; held-out split | heavy | `python -m scripts.platformkit.proof_soccer.ingame_ht_accuracy` |
 | `proof_soccer/division_calibration.py` | Per-division O/U-2.5 recalibration (ECE improvement, not edge) | Walk-forward leak-free engine; per-division recalibrators fit on earlier split, evaluated on held-out later split | heavy | `python -m scripts.platformkit.proof_soccer.division_calibration` |

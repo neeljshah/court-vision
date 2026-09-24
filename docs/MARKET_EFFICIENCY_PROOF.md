@@ -1,19 +1,22 @@
 # Market-Efficiency Proof -- a real-data edge hunt that rejected every candidate
 
 > The headline credential. I ran a real-data edge hunt across 4 sports and 6 independent
-> corpora, MATCHED the Shin-devigged closing line within noise on team-strength markets, and
+> corpora, matched or trailed the devigged closing line on team-strength markets (within noise on NBA
+> moneyline; small, measurable deficits on MLB moneyline and soccer O/U), and
 > REJECTED every candidate pregame edge -- including catching my own full-sample signals that
 > SIGN-FLIP out-of-sample. "The market is efficient; no edge survived" is the FEATURE here, not
 > a failure: it is the expected, correct result for efficient markets, and the self-auditing
 > harness that proves it is the credential.
 >
-> **Scope note (2026-09-24).** The MATCH label on the MLB moneyline and soccer O/U rows is a
-> magnitude statement (gaps of 0.0039 and 0.0076 Brier); no interval is published for those rows,
-> and at n in the thousands a gap that small can be statistically distinguishable from zero. A
-> recomputation with `scripts/platformkit/eval_gate/dm_test.py` is queued and will be recorded
-> here either way. The NBA moneyline row carries its interval in [EVIDENCE.md](../EVIDENCE.md)
-> (n=743, CI includes 0). The reproduce commands below run in the private tree; this page is a
-> recorded scoreboard on the public clone.
+> **Scope note (2026-09-24).** The MATCH labels in the table below were fixed-threshold rules
+> (gap at most 0.005 for MLB, 0.012 for soccer), not intervals. A recomputation with game-clustered
+> Diebold-Mariano intervals, run from each harness's own functions and reproducing every row to four
+> decimals first, is recorded in [the recompute memo](evidence/pregame/DM_RECOMPUTE_2026-09-24.md):
+> MLB moneyline and soccer O/U 2.5 TRAIL the close by small, measurable margins (intervals exclude 0);
+> NBA moneyline is indistinguishable from the close but underpowered (MDE 0.0150 vs gap 0.0063).
+> The honest reading is unchanged in direction (nothing beats the close) and sharper in wording:
+> "within noise" holds only for NBA. The reproduce commands below run in the private tree; this page
+> is a recorded scoreboard on the public clone.
 >
 > This is DECISION-SUPPORT, not a picks / profit / +EV / ROI product. Every number below is a
 > CALIBRATION / SHARPNESS measurement (Brier, RMSE, BSS) vs the devigged market close.
@@ -23,7 +26,7 @@
 
 ---
 
-## 1. Pregame baselines -- we MATCH the efficient close on team-strength markets
+## 1. Pregame baselines -- we match or trail the efficient close on team-strength markets
 
 Our leak-free OOS forecaster vs the Shin-devigged closing line, on the SAME real outcomes.
 MATCH = within sampling noise of the sharp close (the realistic best case for an efficient
@@ -34,14 +37,14 @@ cannot see; the gap is data-bound, not a model defect. Source: the per-market pr
 
 | Sport | Market | Metric | N | Our model | Close | Gap | Standing |
 |---|---|---|---|---|---|---|---|
-| NBA | moneyline | Brier | 372 | 0.1735 | 0.1672 | +0.0063 | MATCH |
+| NBA | moneyline | Brier | 372 | 0.1735 | 0.1672 | +0.0063 | MATCH (recompute 2026-09-24: 95% CI [-0.0042, +0.0168] includes 0; underpowered, MDE 0.0150) |
 | NBA | total O/U | RMSE | 372 | 19.17 | 18.11 | +1.06 | BEHIND (freshness) |
-| MLB | moneyline | Brier | 13,992 | 0.2429 | 0.2390 | +0.0039 | MATCH |
+| MLB | moneyline | Brier | 13,992 | 0.2429 | 0.2390 | +0.0039 | TRAILS_CLOSE on the interval (recompute 2026-09-24: 95% CI [+0.0028, +0.0051], DM p 3.6e-12; the MATCH label was a fixed 0.005 threshold) |
 | MLB | total O/U | RMSE | 1,679 | 4.72 | 4.44 | +0.28 | BEHIND (freshness) |
-| Soccer | O/U-2.5 | Brier | 7,558 | 0.2465 | 0.2390 | +0.0076 | MATCH |
+| Soccer | O/U-2.5 | Brier | 7,558 | 0.2465 | 0.2390 | +0.0076 | TRAILS_CLOSE on the interval (recompute 2026-09-24: 95% CI [+0.0059, +0.0092], DM p 1.1e-19; the MATCH label was a fixed 0.012 threshold) |
 | Tennis (ATP) | match-win | Brier | 7,374 | 0.2177 | 0.2028 | +0.0149 | BEHIND (freshness) |
 
-Team-strength win markets (NBA & MLB moneyline, soccer O/U) MATCH within sampling noise.
+NBA moneyline is within sampling noise of the close (underpowered); MLB moneyline and soccer O/U trail it by small margins whose intervals exclude 0 (recompute 2026-09-24).
 Totals / ATP are BEHIND ONLY by the freshness gap. Nothing BEATS the close pregame -- and that
 is the expected, honest outcome.
 

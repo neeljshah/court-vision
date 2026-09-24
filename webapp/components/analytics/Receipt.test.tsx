@@ -31,14 +31,14 @@ describe("Receipt", () => {
     render(<Receipt sourceArtifact={source} asOf="2026-07-19" verdict="descriptive_only" />);
     const button = screen.getByRole("button", { name: /Source as of 2026-07-19/ });
     fireEvent.click(button);
-    const link = screen.getByRole("link", { name: source, exact: true });
+    const link = screen.getByRole("link", { name: source });
     expect(link).toHaveAttribute("href", "/court-vision/data/showcase/atlas_tennis_manifest.json");
     expect(link).toHaveAttribute("download");
     expect(screen.queryByText(/not published/)).not.toBeInTheDocument();
     expect(button).toHaveAttribute("aria-expanded", "true");
     fireEvent.keyDown(link, { key: "Escape" });
     expect(button).toHaveAttribute("aria-expanded", "false");
-    expect(screen.queryByRole("link", { name: source, exact: true })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: source })).not.toBeInTheDocument();
   });
 
   it("treats a placeholder snapshot date as absent", () => {

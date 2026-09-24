@@ -23,11 +23,11 @@ const analysis: ResearchAnalysis = {
 beforeEach(() => window.history.replaceState(null, "", "/analytics/lab/"));
 
 function nextPage() {
-  fireEvent.click(screen.getByRole("button", { name: "Next", exact: true }));
+  fireEvent.click(screen.getByRole("button", { name: "Next" }));
   expect(screen.getByText("Page 2 / 3")).toBeInTheDocument();
 }
 function expectFirstPage() {
-  expect(screen.getByRole("button", { name: "Previous", exact: true })).toBeDisabled();
+  expect(screen.getByRole("button", { name: "Previous" })).toBeDisabled();
   expect(screen.getByText(/^Page 1 \/ /)).toBeInTheDocument();
 }
 
@@ -37,9 +37,9 @@ describe("measurement lab pagination context", () => {
     ["Published group", "NBA"], ["Primary measurement", "alternate"], ["Rank order", "asc"],
   ])("returns to the beginning when %s changes", (control, value) => {
     render(<MeasurementLab data={data} />);
-    fireEvent.click(screen.getByRole("button", { name: "Data table", exact: true }));
+    fireEvent.click(screen.getByRole("button", { name: "Data table" }));
     nextPage();
-    fireEvent.change(screen.getByRole("combobox", { name: control, exact: true }), { target: { value } });
+    fireEvent.change(screen.getByRole("combobox", { name: control }), { target: { value } });
     expectFirstPage();
     const firstRow = within(screen.getByRole("table")).getAllByRole("row")[1];
     expect(firstRow).toHaveTextContent(control === "Rank order" || control === "Primary measurement" ? "Team 31" : "Team 00");
@@ -47,12 +47,12 @@ describe("measurement lab pagination context", () => {
 
   it("starts filtered and cleared searches on the first page", () => {
     render(<MeasurementLab data={data} />);
-    fireEvent.click(screen.getByRole("button", { name: "Data table", exact: true }));
+    fireEvent.click(screen.getByRole("button", { name: "Data table" }));
     nextPage();
     fireEvent.change(screen.getByRole("textbox", { name: "Search measurement rows" }), { target: { value: "NBA" } });
     expectFirstPage();
     expect(screen.getByText("Page 1 / 2")).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Next", exact: true }));
+    fireEvent.click(screen.getByRole("button", { name: "Next" }));
     fireEvent.change(screen.getByRole("textbox", { name: "Search measurement rows" }), { target: { value: "" } });
     expectFirstPage();
     expect(screen.getByText("Page 1 / 3")).toBeInTheDocument();
@@ -63,9 +63,9 @@ describe("research ranking pagination context", () => {
   it.each([["Measurement", "alternate"], ["Order", "asc"]])(
     "shows the start of the new ranking when %s changes", (control, value) => {
       render(<ResearchDetail analysis={analysis} related={[]} />);
-      fireEvent.click(screen.getByRole("button", { name: "Data table", exact: true }));
+      fireEvent.click(screen.getByRole("button", { name: "Data table" }));
       nextPage();
-      fireEvent.change(screen.getByRole("combobox", { name: control, exact: true }), { target: { value } });
+      fireEvent.change(screen.getByRole("combobox", { name: control }), { target: { value } });
       expectFirstPage();
       expect(within(screen.getByRole("table")).getAllByRole("row")[1]).toHaveTextContent("Team 31");
     },
@@ -74,12 +74,12 @@ describe("research ranking pagination context", () => {
 
 it.each(["lab", "research"])("preserves the current page while inspecting a %s row", (surface) => {
   render(surface === "lab" ? <MeasurementLab data={data} /> : <ResearchDetail analysis={analysis} related={[]} />);
-  fireEvent.click(screen.getByRole("button", { name: "Data table", exact: true }));
+  fireEvent.click(screen.getByRole("button", { name: "Data table" }));
   nextPage();
-  screen.getByRole("button", { name: "Inspect Team 12", exact: true }).focus();
-  fireEvent.click(screen.getByRole("button", { name: "Inspect Team 12", exact: true }));
-  expect(screen.getByRole("region", { name: "Selected measurement", exact: true })).toHaveTextContent("Team 12");
-  fireEvent.click(screen.getByRole("button", { name: surface === "lab" ? "Close measurement details" : "Close measurement", exact: true }));
+  screen.getByRole("button", { name: "Inspect Team 12" }).focus();
+  fireEvent.click(screen.getByRole("button", { name: "Inspect Team 12" }));
+  expect(screen.getByRole("region", { name: "Selected measurement" })).toHaveTextContent("Team 12");
+  fireEvent.click(screen.getByRole("button", { name: surface === "lab" ? "Close measurement details" : "Close measurement" }));
   expect(screen.getByText("Page 2 / 3")).toBeInTheDocument();
-  expect(screen.getByRole("button", { name: "Inspect Team 12", exact: true })).toHaveFocus();
+  expect(screen.getByRole("button", { name: "Inspect Team 12" })).toHaveFocus();
 });

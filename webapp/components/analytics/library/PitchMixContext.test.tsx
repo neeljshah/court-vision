@@ -57,7 +57,7 @@ describe("Pitch mix count context", () => {
     fireEvent.change(screen.getByRole("textbox", { name: "Search analysis rows" }), { target: { value: "SC (n=7)" } });
     expect(screen.getByRole("status")).toHaveTextContent("1 matching row; 0 contain peak count share within pitch type");
     fireEvent.click(screen.getByRole("button", { name: "Data table" }));
-    fireEvent.click(screen.getByRole("button", { name: "Inspect SC", exact: true }));
+    fireEvent.click(screen.getByRole("button", { name: "Inspect SC" }));
     const selected = screen.getByRole("region", { name: "Selected measurement" });
     expect(selected).toHaveTextContent("Peak count: unavailable");
     expect(selected).toHaveTextContent("5/12 count shares published");

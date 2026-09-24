@@ -16,7 +16,7 @@ what exists and what it is evidence of, and what is not shown.
 
 CourtVision is an NBA-origin forecasting and decision-research system covering NBA, MLB, soccer
 and tennis. Its central result is deliberately unglamorous: **against real closing lines the
-market is efficient.** The pregame model matches the Shin-devigged close within noise; conditioning
+market is efficient.** The pregame model lands within noise of the devigged close on NBA moneyline and trails it by small, measurable margins on MLB moneyline and soccer totals; conditioning
 on the realized game state sharpens the forecast against a static prior, and the live market has
 that state too. Everything here is a calibration result. Nothing here is a betting-edge claim.
 
@@ -27,7 +27,7 @@ artifact -> reproduce command).
 
 | Question | What the record says | Verdict |
 |---|---|---|
-| Does the pregame model beat the closing line? | NBA held-out Brier 0.1735 vs 0.1666 for the devigged close (n=743, CI includes 0); same picture across six corpora | matches or trails the close -- never beats it |
+| Does the pregame model beat the closing line? | NBA held-out Brier 0.1735 vs 0.1666 for the devigged close (n=372 scored, CI includes 0, underpowered); MLB moneyline and soccer O/U trail by 0.0039 and 0.0076 Brier with intervals excluding 0; totals and ATP trail by more | matches or trails the close -- never beats it |
 | Does in-game state help? | vs a static pregame prior: NBA Brier 0.209 to 0.159, MLB 0.241 to 0.126 | sharper than static |
 | Does it beat the live market? | NBA end-Q1: market sharper (n=1,592). Later checkpoints: underpowered. Kalshi paired ticks (2026-09-14): model behind | no -- and the page says so |
 | How many discovered signals shipped? | 0 of 60 candidate classes; 513 recorded reject / defer verdicts | the gate rejects, by design |

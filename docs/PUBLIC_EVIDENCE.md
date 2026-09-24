@@ -118,7 +118,9 @@ produce.
 
 - **Against real closing lines, the market is efficient.** NBA held-out pregame win probability
   against the Shin-devigged close: model Brier **0.1735** vs **0.1666**, gap +0.0069, 95% CI
-  [-0.0036, +0.0175], n=743 -- verdict `TRAILS_CLOSE` (the CI includes 0). Artifact:
+  [-0.0036, +0.0175], n=743 -- verdict `TRAILS_CLOSE` (the CI includes 0) [superseded 2026-09-24 by the
+  recompute memo: n=372 scored, CI [-0.0038, +0.0175], DM p 0.20, `MATCHES_CLOSE`, underpowered (MDE 0.0152);
+  MLB moneyline and soccer O/U trail with intervals excluding 0 -- docs/evidence/pregame/DM_RECOMPUTE_2026-09-24.md]. Artifact:
   `data/cache/kalshi_complete/own_lines_backtest_nba.json`.
   (The older 0.208 vs 0.198 pair was corrected 2026-09-14 -- no artifact on disk, did not
   reproduce -- see [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md) section 3.)
@@ -203,7 +205,7 @@ Full do-not-claim list with source-code root causes: **[JOB_EVIDENCE_PACKET.md](
 
 *Last verified: 2026-09-22. Numbers reconciled to the leak-free audited figures in JOB_EVIDENCE_PACKET.md.
 Reconciliation note: the pregame Brier pair in section 5 was reconciled to the packet's 2026-09-14 correction
-(0.1735 vs 0.1666, n=743, `TRAILS_CLOSE`); the in-game gain in section 3 is labelled as versus a static prior,
+(0.1735 vs 0.1666, n=372 scored, `MATCHES_CLOSE` under the 2026-09-24 recompute, underpowered; MLB and soccer `TRAILS_CLOSE`); the in-game gain in section 3 is labelled as versus a static prior,
 with the Gate A-0 result versus the contemporaneous market price stated alongside it.*
 
 

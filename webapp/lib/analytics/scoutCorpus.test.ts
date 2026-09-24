@@ -136,6 +136,8 @@ describe("loadScoutCorpus", () => {
       source_artifact: "webapp/public/data/showcase/atlas_soccer_manifest.json",
       explore_path: "/analytics/research/soccer-trailing-attack-defense/",
     } } });
+    expect(result).not.toBeNull();
+    if (!result) throw new Error("null result");
     if (result.kind === "direct") {
       expect(result.entry?.a.answer).toContain("gf_l10");
       expect(result.entry?.a.answer).toContain("ga_l10");

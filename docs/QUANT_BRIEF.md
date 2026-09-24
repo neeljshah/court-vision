@@ -12,27 +12,29 @@ language or a retracted figure outside retraction framing.
 
 ## 1. Pricing quality against the market
 
-**Pregame, leak-free walk-forward, scored against the Shin-devigged close on the same outcomes**
-(source: [MARKET_EFFICIENCY_PROOF.md](MARKET_EFFICIENCY_PROOF.md); the NBA moneyline row is the
-[EVIDENCE.md](../EVIDENCE.md) version with its interval; the proof page prints the held-out half of
-the same artifact as 0.1735 vs 0.1672, n=372, MATCH):
+**Pregame, leak-free walk-forward, scored against the devigged close on the same outcomes**
+(source: [MARKET_EFFICIENCY_PROOF.md](MARKET_EFFICIENCY_PROOF.md) for the rows; the game-clustered
+intervals, Diebold-Mariano p-values and verdicts for the three win-market rows are from the
+[2026-09-24 recompute memo](evidence/pregame/DM_RECOMPUTE_2026-09-24.md), which reproduces each row to four decimals from the harness's own
+functions before attaching the interval; the NBA close is Shin-devigged there, 0.1666, where the proof
+page prints the proportional-devig close, 0.1672, on the same 372 scored games):
 
 | Sport | Market | Metric | N | Model | Close | Gap | Standing |
 |---|---|---|---|---|---|---|---|
-| NBA | moneyline | Brier | 743 | 0.1735 | 0.1666 | +0.0069, 95% CI [-0.0036, +0.0175] | TRAILS_CLOSE (CI includes 0) |
+| NBA | moneyline | Brier | 372 | 0.1735 | 0.1666 | +0.0069, 95% CI [-0.0038, +0.0175], DM p 0.20 | MATCHES_CLOSE (CI includes 0; underpowered: MDE 0.0152) |
 | NBA | total O/U | RMSE | 372 | 19.17 | 18.11 | +1.06 | BEHIND (freshness) |
-| MLB | moneyline | Brier | 13,992 | 0.2429 | 0.2390 | +0.0039 | MATCH |
+| MLB | moneyline | Brier | 13,992 | 0.2429 | 0.2390 | +0.0039, 95% CI [+0.0028, +0.0051], DM p 3.6e-12 | TRAILS_CLOSE (small, measurable) |
 | MLB | total O/U | RMSE | 1,679 | 4.72 | 4.44 | +0.28 | BEHIND (freshness) |
-| Soccer | O/U 2.5 | Brier | 7,558 | 0.2465 | 0.2390 | +0.0076 | MATCH |
+| Soccer | O/U 2.5 | Brier | 7,558 | 0.2465 | 0.2390 | +0.0076, 95% CI [+0.0059, +0.0092], DM p 1.1e-19 | TRAILS_CLOSE (small, measurable) |
 | Tennis (ATP) | match-win | Brier | 7,374 | 0.2177 | 0.2028 | +0.0149 | BEHIND (freshness) |
 
 Reading: the model trails the sharp close by small margins everywhere and beats it nowhere. On NBA
-moneyline the gap's interval includes zero. On MLB moneyline and soccer O/U 2.5 the gaps are 0.0039
-and 0.0076 Brier; the proof page labels those rows MATCH, but no interval is published for them, and
-at those sample sizes a gap this small can be statistically distinguishable from zero (a recomputation
-with the public [dm_test.py](../scripts/platformkit/eval_gate/dm_test.py) is queued). On totals and
-ATP it trails by more, by the freshness the close has (injuries, lineups, starters, weather) and a
-public box-score model does not. Every candidate signal (rest, back-to-back, travel, altitude, form,
+moneyline the gap is not distinguishable from zero, but the row is underpowered (a deficit the size
+of the MLB one could not be detected at n=372). On MLB moneyline and soccer O/U 2.5 the close is
+measurably sharper: the gaps are 1.6 percent and 3.2 percent of the close's Brier, with intervals
+that exclude zero (the proof page's MATCH label there was a fixed-threshold rule, not an interval;
+the recompute memo records this). On totals and ATP it trails by more, by the freshness the close
+has (injuries, lineups, starters, weather) and a public box-score model does not. Every candidate signal (rest, back-to-back, travel, altitude, form,
 head-to-head, MLB open-to-close CLV capture) was scored with a game-clustered Diebold-Mariano test
 and REJECTED (the MLB CLV-capture reject is on a confidence interval, not DM). On the NBA schedule signals (scored on the two calendar halves of the 2026 season),
 positive full-sample lifts reversed sign across halves; the MLB, soccer and tennis candidates
@@ -45,7 +47,7 @@ failed on both of their corpora or on the null-shuffle / Benjamini-Hochberg test
 |---|---|---|
 | NBA end of Q1, win probability | Brier 0.2006 vs 0.1922, delta -0.0084 [-0.0161, -0.0008], n=1,592 | MARKET_SHARPER_PROVISIONAL |
 | NBA halftime / end Q3 / Q4 under 5:00 | deltas -0.0040 / +0.0011 / +0.0019, all CIs include 0, n=1,593 | UNDERPOWERED |
-| MLB total runs, end of innings 6 / 7 / 8, CRPS | deltas 0.6392 / 0.7327 / 1.4201, CIs exclude 0, n=49-55 | MODEL_SHARPER_PROVISIONAL |
+| MLB total runs, end of innings 6 / 7 / 8, CRPS | deltas 0.6392 / 0.7327 / 1.4201, CIs exclude 0, n=49-55 | MODEL_SHARPER_PROVISIONAL (a small-sample retrospective diagnostic, transcribed from EVIDENCE.md; not treated here as evidence of market outperformance) |
 | Soccer home-win probability, minute 60 / 75 | Brier deltas -0.0931 / -0.1075 (market closer), n=22 / 17 | UNDERPOWERED |
 | Kalshi in-play paired ticks (Gate A-0), MLB win probability | Brier 0.2377 vs 0.2067, delta +0.0310 [0.0170, 0.0454], 227 games | BEHIND (measured on a corpus that later failed the join-integrity check; the per-game segmented revision, 178 games, keeps the verdict) |
 | Kalshi in-play paired ticks (Gate A-0), soccer | Brier 0.2279 vs 0.1427, 51 games | BEHIND (same corpus caveat: the soccer corpus also failed the join-integrity check, 27 of 51 files kept after segmentation) |
@@ -59,11 +61,13 @@ REB 1.92, AST 1.39, FG3M 0.89. Accuracy only; no market comparison exists for th
 
 ## 2. What exists, and what it is evidence of
 
-- **An independent reference line from public box-score and schedule data:** within 0.008 Brier of
-  the Shin-devigged close on NBA and MLB moneyline and soccer O/U 2.5 (the NBA gap indistinguishable
-  from zero), further behind on totals and ATP (table above).
+- **An independent reference line from public box-score and schedule data:** gaps of +0.0069,
+  +0.0039 and +0.0076 Brier to the devigged close on NBA moneyline, MLB moneyline and soccer O/U 2.5
+  respectively; the NBA gap is indistinguishable from zero at n=372, the MLB and soccer intervals
+  exclude zero, and totals and ATP trail by more
+  ([recompute memo](evidence/pregame/DM_RECOMPUTE_2026-09-24.md), [MARKET_EFFICIENCY_PROOF.md](MARKET_EFFICIENCY_PROOF.md)).
 - **In-game win-probability and MLB total-runs models,** sharper than a static pregame prior;
-  where a live market exists it is sharper than they are (table above).
+  where a live market exists it is sharper than they are ([EVIDENCE.md sections B and C](../EVIDENCE.md)).
 - **Devig:** four methods implemented from scratch, including the Shin (1992) model through a
   stable bisection solver, wired into the private engine's API (source not in this repository;
   [JOB_EVIDENCE_PACKET section 2C](JOB_EVIDENCE_PACKET.md)).
@@ -84,8 +88,9 @@ REB 1.92, AST 1.39, FG3M 0.89. Accuracy only; no market comparison exists for th
 
 ## 3. What is not shown -- read before the call
 
-- **No edge against the close pregame, and no established edge against the live market in-play**
-  (the one MODEL_SHARPER_PROVISIONAL row, MLB total runs, is provisional at n=49-55). No dollar,
+- **No edge against the close pregame, and no established edge against the live market in-play.**
+  The one MODEL_SHARPER_PROVISIONAL row (MLB total runs, n=49-55) is a small-sample retrospective
+  diagnostic recorded in EVIDENCE.md; it is not treated here as evidence of market outperformance. No dollar,
   ROI or return figure is claimed; retracted figures appear only inside retraction framing. Six
   earlier headline figures were retracted after the project's own instruments traced each one to
   a leak, a grading artifact, an overfit or regime dependence
@@ -101,8 +106,8 @@ REB 1.92, AST 1.39, FG3M 0.89. Accuracy only; no market comparison exists for th
 
 ## 4. What runs next, with dates
 
-- In-game capture (Kalshi order books plus game state) is scheduled under a prospective, committed
-  schedule; the first schedule was committed on 2026-09-22
+- In-game capture (Kalshi order books plus game state) is scheduled under prospective, committed
+  schedule files; the earliest records its selection at 2026-09-22T03:03Z
   ([schedules](evidence/forward/schedules/)).
 - The NBA in-game preregistration is a draft, not yet sealed; the seal waits on named amendments
   ([S382 draft r1](evidence/ingame/S382_NBA_PREREG_DRAFT_r1_2026-09-21.md)).
