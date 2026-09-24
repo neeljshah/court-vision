@@ -28,7 +28,7 @@
 
 ## 1. Pregame baselines -- we match or trail the efficient close on team-strength markets
 
-Our leak-free OOS forecaster vs the Shin-devigged closing line, on the SAME real outcomes.
+Our leak-free OOS forecaster vs the proportional-devigged closing line, on the SAME real outcomes.
 MATCH = within sampling noise of the sharp close (the realistic best case for an efficient
 market -- beating it would imply information the close lacks). BEHIND = the market's freshness
 edge (injuries / lineups / starting pitcher / park / weather) a public + box-score model
@@ -37,7 +37,7 @@ cannot see; the gap is data-bound, not a model defect. Source: the per-market pr
 
 | Sport | Market | Metric | N | Our model | Close | Gap | Standing |
 |---|---|---|---|---|---|---|---|
-| NBA | moneyline | Brier | 372 | 0.1735 | 0.1672 | +0.0063 | MATCH (recompute 2026-09-24: 95% CI [-0.0042, +0.0168] includes 0; underpowered, MDE 0.0150) |
+| NBA | moneyline | Brier | 372 | 0.1735 | 0.1672 | +0.0063 | MATCHES_CLOSE (recompute 2026-09-24: 95% CI [-0.0042, +0.0168] includes 0; underpowered, MDE 0.0150) |
 | NBA | total O/U | RMSE | 372 | 19.17 | 18.11 | +1.06 | BEHIND (freshness) |
 | MLB | moneyline | Brier | 13,992 | 0.2429 | 0.2390 | +0.0039 | TRAILS_CLOSE on the interval (recompute 2026-09-24: 95% CI [+0.0028, +0.0051], DM p 3.6e-12; the MATCH label was a fixed 0.005 threshold) |
 | MLB | total O/U | RMSE | 1,679 | 4.72 | 4.44 | +0.28 | BEHIND (freshness) |

@@ -57,16 +57,16 @@ Source: `vault/_Edge_Maps/_Beat_The_Close.md`. Lower Brier/RMSE wins.
 
 | Sport / market | Metric | Our model | Close | Verdict | Why |
 |---|---|---|---|---|---|
-| NBA moneyline | Brier | 0.1735 | 0.1672 | MATCH (within noise; 2026-09-24 recompute: CI includes 0, underpowered) | MOV-aware Elo matches the devigged close |
+| NBA moneyline | Brier | 0.1735 | 0.1672 | MATCHES_CLOSE (within noise; 2026-09-24 recompute: CI includes 0, underpowered) | MOV-aware Elo matches the devigged close |
 | NBA total O/U | RMSE | 19.17 | 18.11 | BEHIND | injury/lineup freshness a box model cannot see |
 | MLB moneyline | Brier | 0.2429 | 0.2390 | TRAILS_CLOSE on the interval (2026-09-24 recompute: CI [+0.0028, +0.0051]) | tiny deficit = pitcher-blindness (close prices the SP) |
 | MLB total O/U | RMSE | 4.72 | 4.44 | BEHIND | park / weather / SP freshness |
 | Soccer O/U-2.5 | Brier | 0.2465 | 0.2390 | TRAILS_CLOSE on the interval (2026-09-24 recompute: CI [+0.0059, +0.0092]) | pooled Platt recalibration |
 | Tennis ATP ml | Brier | 0.2177 | 0.2028 | BEHIND | ATP closes are very efficient |
 
-Thesis: pregame MATCHES the devigged close on team-strength markets and is BEHIND on
-totals / ATP ONLY by freshness data the market sees and we cannot. That gap is data-bound,
-not a model defect.
+Thesis: NBA moneyline MATCHES_CLOSE; MLB moneyline and soccer O/U TRAIL the close by small,
+interval-resolved margins; totals and ATP are BEHIND by freshness data the market sees and we
+cannot. That gap is data-bound, not a model defect.
 
 ### In-game (CONDITIONAL on realized state vs the static pregame line)
 Source: `vault/_Edge_Maps/_Ingame_Scoreboard.md`. Lower Brier = sharper.
@@ -148,7 +148,7 @@ Leak-guard column shows HOW each stays honest. All modules: never edit `src/` or
 
 | Module | Claim it backs | Leak guard | Runtime | Reproduce |
 |---|---|---|---|---|
-| `proof_nba/ml_accuracy.py` | NBA moneyline MATCH (Brier 0.1735 vs 0.1672) | MOV Elo updated AFTER each game snapshot; close is comparison forecaster only, never a model input | heavy | `python -m scripts.platformkit.proof_nba.ml_accuracy` |
+| `proof_nba/ml_accuracy.py` | NBA moneyline MATCHES_CLOSE (Brier 0.1735 vs 0.1672) | MOV Elo updated AFTER each game snapshot; close is comparison forecaster only, never a model input | heavy | `python -m scripts.platformkit.proof_nba.ml_accuracy` |
 | `proof_nba/asof_box_accuracy.py` | NBA totals RMSE-vs-close (the BEHIND-by-freshness row) | EW points-for/against snapshot-before-update; close used only as comparison | heavy | `python -m scripts.platformkit.proof_nba.asof_box_accuracy` |
 | `proof_nba/totals_calibration.py` | NBA O/U totals calibration (ECE/Brier + Gaussian sigma) | Walk-forward EW model, snapshot-before-update; sigma fit on 1st half, applied to 2nd | heavy | `python -m scripts.platformkit.proof_nba.totals_calibration` |
 | `proof_nba/totals_with_availability.py` | Tests whether AVAILABILITY closes the totals gap (freshness attribution) | Uses only WHO is a pre-game-known 0-min scratch + their PRIOR ppg; strict 0-min filter excludes in-game injuries | heavy | `python -m scripts.platformkit.proof_nba.totals_with_availability` |
