@@ -229,7 +229,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Because the gap is in resolution (information), not reliability (calibration). A Murphy decomposition of MLB in-game win-prob shows the model Brier 0.2377 versus market 0.2067, a gap of +0.0310 whose reliability part is only +0.0066 while the resolution part is -0.0235. Recalibrating a well-calibrated model cannot recover information the market already has.",
+    "answer": "Accuracy alone does not establish that forecast probabilities beat market probabilities. In this published MLB snapshot, model/market Brier is 0.166759/0.151008. The 10-bin Murphy components show a reliability gap of +0.002194 and a resolution gap of -0.014875; the larger resolution difference describes discrimination in these bins, not a causal explanation or proof that recalibration cannot help. Published snapshot dated 2026-09-16; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/murphy_decomposition.json",
     "as_of": "unknown"
    },
@@ -249,9 +249,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Partly. On MLB in-game win-prob, 4 of 10 probability bins have a calibration-gap 95% confidence interval that excludes zero (6 within noise), while the market has 0 of 10 miscalibrated bins. On soccer the model is worse (8 of 10 bins off), on a much smaller 51-game corpus. The market is better calibrated than the model in both sports.",
+    "answer": "Calibration varies by sport and probability bin. In MLB (27,351 rows, 178 games), 3/10 eligible model bins have pointwise 95% game-cluster-bootstrap gap intervals excluding zero, versus 0/10 market bins. In soccer (4,265 rows, 27 games), the counts are 8/9 model and 7/9 market bins. These pointwise intervals are not a joint guarantee that all other bins are calibrated. Published snapshot dated 2026-09-16; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/calibration_stability.json",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "calibration",
@@ -269,9 +269,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Yes, at the high end. In the MLB in-game 0.9-1.0 bin the model's mean predicted probability is 0.9541 but the outcomes only came in at 0.6632, a calibration gap of -0.2909 whose CI excludes zero. When it says a team is nearly certain to win, it wins closer to two-thirds of the time.",
+    "answer": "The current MLB 0.9-1.0 bin does not establish high-end overconfidence: 1,437 rows across 61 games have mean predicted probability 0.9516, observed frequency 0.9798, and outcome-minus-prediction gap +0.0282. Its pointwise 95% game-cluster-bootstrap gap interval [-0.0063, 0.0488] includes zero, so this bin alone establishes neither overconfidence, underconfidence, nor calibration. Other bins differ; see the reliability curves. Published snapshot dated 2026-09-16; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/calibration_stability.json",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "calibration",
@@ -309,7 +309,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "On MLB in-game moneyline the model's expected calibration error is 0.097325 versus the market's 0.070965; on soccer match-result the model is 0.275568 versus the market's 0.201885. The market is better calibrated on both, and the soccer numbers are large because that corpus is small and noisy.",
+    "answer": "For MLB in-game moneyline, model/market 10-bin ECE is 0.057367/0.049057 across 27,351 graded rows and 178 files. For soccer match result it is 0.400236/0.281866 across 4,265 rows and 27 files. The market has lower ECE in both published corpora; the soccer sample is smaller, and these descriptive scores do not establish lasting improvement. Files here are source files, not a count of games. Published snapshot dated 2026-09-16; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/calibration_by_market_type.json",
     "as_of": "unknown"
    },
@@ -329,7 +329,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Slightly, on MLB: the model's monthly Brier went from 0.2404 (2026-06) to 0.2357 (2026-07), and the market's from 0.2243 to 0.1938. The market improved more, so the model did not close the gap. Soccer moved the other way (model 0.331 in 2026-07), but that corpus is small.",
+    "answer": "The exhibit reports only 2026-06 and 2026-07 groups, not a durable trend. MLB model/market Brier moves from 0.1968/0.1873 (5,030 rows) to 0.1600/0.1428 (22,321 rows); model/market ECE moves from 0.1265/0.1210 to 0.0750/0.0439. Soccer model/market Brier moves from 0.3273/0.1955 (1,213 rows) to 0.3346/0.1950 (3,052 rows); ECE moves from 0.3644/0.2596 to 0.4243/0.2952. Different month groups do not isolate model improvement. Published snapshot dated 2026-09-16; the month groups are reported, but exact first and last observation dates are not published.",
     "source_artifact": "webapp/public/data/showcase/calibration_over_time.json",
     "as_of": "unknown"
    },
@@ -349,7 +349,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Weak, and on a small corpus. The soccer in-game model's Brier is 0.2279 versus the market's 0.1427 (gap +0.0852), and its minute-bucket weighted expected calibration error is 0.3580 over 9,003 rows. With only 51 games, single-fold reads are not durable, so it is flagged as descriptive.",
+    "answer": "In the 4,265-row soccer pack, model/market Brier is 0.332522/0.195157. The pack's minute-bucket weighted ECE is 0.3748 over 3,383 minute-bucket rows, a subset of the 4,265 headline rows. This aggregation differs from the ECE in other exhibits. The pack does not state a game count; single-fold reads are descriptive and not durable. Published snapshot dated 2026-09-16; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/soccer_calibration_pack.json",
     "as_of": "unknown"
    },
@@ -369,7 +369,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "No. The Murphy decomposition attributes the shortfall mainly to resolution, not reliability: MLB reliability gap +0.0066 versus resolution gap -0.0235, soccer reliability gap +0.0394 versus resolution gap -0.0446. Recalibration fixes reliability; the missing piece is information the market has, which recalibration cannot manufacture.",
+    "answer": "That is not established. In the 10-bin Murphy decomposition, MLB model-minus-market reliability is +0.002194 while resolution is -0.014875, so the observed MLB gap is mainly in resolution. Soccer reliability is +0.103894 and resolution is -0.032549, so its observed gap is mainly in reliability. Recalibration might address some reliability error, but this exhibit does not test a recalibration method or prove how much Brier would improve. Published snapshot dated 2026-09-16; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/murphy_decomposition.json",
     "as_of": "unknown"
    },
@@ -629,7 +629,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Soccer. The model's in-game Brier trails the market by +0.0852 in soccer (0.2279 vs 0.1427) versus +0.0310 in MLB (0.2377 vs 0.2067). The soccer corpus is also the smallest (9,003 rows), so its numbers carry wider uncertainty.",
+    "answer": "Among the two sports with published 10-bin Murphy components, soccer has the larger reliability (calibration) gap: model-minus-market +0.103894 versus MLB +0.002194. The total Brier gaps are different quantities: model/market Brier is 0.332522/0.195157 in soccer and 0.166759/0.151008 in MLB. This is a ranking of these corpora, not a universal cross-sport ordering; soccer has only 4,265 rows in this decomposition. Published snapshot dated 2026-09-16; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/murphy_decomposition.json",
     "as_of": "unknown"
    },
@@ -909,9 +909,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "The MLB in-game corpus is 78,986 graded rows across 227 games and the soccer corpus is 9,003 rows across 51 games. The MLB sample is large enough for cluster-bootstrapped reliability curves; the 51-game soccer sample is small, so its single-fold reads are flagged as not durable.",
+    "answer": "The calibration-stability exhibit has 27,351 MLB graded rows across 178 games and 4,265 soccer graded rows across 27 games. The 27-game soccer sample is limited; read its 8/9 model and 7/9 market eligible-bin counts cautiously. The 95% intervals are pointwise game-cluster-bootstrap intervals, not joint guarantees. Published snapshot dated 2026-09-16; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/calibration_stability.json",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "sample-size",
@@ -929,7 +929,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "No. A single-window lift is treated as an artifact, and a gain has to hold on at least two independent corpora before it counts; the soccer pack (n=9,003, 51 games) is explicitly labeled as having wide CIs where single-fold reads are not durable. The rejected candidates were precisely the ones that looked positive full-sample then sign-flipped.",
+    "answer": "The soccer pack reports 4,265 rows and explicitly warns that single-fold reads are not durable. It does not publish a game count or a cross-corpus replication test. A result from one fold can describe that fold, but these source values alone cannot establish stability or a general model improvement. Published snapshot dated 2026-09-16; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/soccer_calibration_pack.json",
     "as_of": "unknown"
    },
@@ -1269,9 +1269,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "MLB in-game moneyline, on both sides of the comparison: model ECE 0.097325 and market ECE 0.070965 over 78,986 rows, against soccer match result at model ECE 0.275568 and market ECE 0.201885 over 9,003 rows. Even the soccer market is less well calibrated than the MLB model.",
+    "answer": "Of the two scored market types in this exhibit, MLB in-game moneyline has the lower market 10-bin ECE: 0.049057 over 27,351 graded rows and 178 files, versus soccer match result 0.281866 over 4,265 rows and 27 files. Their model ECE values are 0.057367 and 0.400236, respectively. This compares these corpora and outcomes only; files are not games. Published snapshot dated 2026-09-16; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/calibration_by_market_type.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "calibration",
@@ -1289,9 +1289,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "MLB in-game moneyline: model 0.237684 versus market 0.206653, a gap of 0.031031. Soccer match result: model 0.227887 versus market 0.142726, a gap of 0.085160 -- nearly three times wider. Lower is better in both cases, so the model trails in both.",
+    "answer": "The market-type exhibit reports MLB in-game moneyline model/market Brier 0.166759/0.151008, with its reported model-minus-market gap +0.015752 over 27,351 rows. Soccer match result is 0.332522/0.195157, gap +0.137365 over 4,265 rows. Lower Brier is better, so the market leads in both published corpora. Published snapshot dated 2026-09-16; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/calibration_by_market_type.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "calibration",
@@ -1850,9 +1850,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Over 78,986 rows the model's Brier is 0.237684 against the market's 0.206653, a gap of +0.031031. The Murphy decomposition attributes most of that to resolution (-0.0235) rather than reliability (+0.0066), which means it is missing information rather than miscalibration -- recalibration will not close it.",
+    "answer": "Over 27,351 graded rows, the MLB model/market Brier is 0.1668/0.1510 in this kernel-transfer summary. Its Murphy reliability gap is +0.002194 and resolution gap is about -0.0149; the binned decomposition shows the larger difference in resolution. These descriptive components do not establish how a tested recalibration would perform. Generated 2026-09-17 UTC; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/kernel_transfer.json",
-    "as_of": "2026-07-22"
+    "as_of": "unknown"
    },
    "tags": [
     "mlb",
@@ -2070,9 +2070,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "MLB is nearly nine times the size of soccer: 78,986 graded in-game rows across 227 files against 9,003 rows across 51 files. That gap is why the MLB results carry verdicts and the soccer ones carry caveats.",
+    "answer": "The scored MLB moneyline corpus has 27,351 graded rows across 178 files; soccer match result has 4,265 rows across 27 files. MLB has about 6.4 times as many graded rows. The exhibit separately excludes byte-identical mlb_clean to avoid double-counting. File counts are not game counts, and corpus size alone does not determine a verdict. Published snapshot dated 2026-09-16; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/calibration_by_market_type.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "cross-sport",
@@ -3209,9 +3209,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "By identifying byte-identical duplicates and excluding them explicitly. The mlb_clean moneyline corpus is a byte-identical duplicate of mlb and is skipped with the reason recorded in the artifact, so the 78,986-row MLB moneyline sample is not silently counted twice.",
+    "answer": "The market-type artifact records mlb_clean_moneyline as skipped because mlb_clean is a byte-identical duplicate of mlb. The scored MLB moneyline total therefore remains 27,351 rows across 178 files, without adding that duplicate a second time. These are file counts, not game counts. Published snapshot dated 2026-09-16; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/calibration_by_market_type.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "dedupe",
@@ -9026,9 +9026,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "It is mostly an information gap, not a calibration one. The Murphy decomposition shows the MLB model Brier of 0.2377 trails the market's 0.2067 (a gap of +0.0310) driven mainly by resolution, and the soccer model's 0.2279 trails 0.1427 the same way. Resolution gaps are information the market has and the model does not -- they cannot be closed by recalibration.",
-    "source_artifact": "webapp/public/data/showcase/cross_sport_scoreboard.json",
-    "as_of": "2026-07-22"
+    "answer": "In the published 10-bin Murphy decomposition, both sports trail the market on Brier, but the component pattern differs. MLB model/market Brier is 0.166759/0.151008, with reliability gap +0.002194 and resolution gap -0.014875; the larger binned difference is resolution. Soccer is 0.332522/0.195157, with reliability gap +0.103894 and resolution gap -0.032549; the larger binned difference is reliability. These are descriptive components, not causal proof or a tested recalibration result. Published snapshot dated 2026-09-16; the observation window is not published.",
+    "source_artifact": "webapp/public/data/showcase/murphy_decomposition.json",
+    "as_of": "unknown"
    },
    "tags": [
     "murphy-decomposition",

@@ -808,9 +808,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "It is mostly an information gap, not a calibration one. The Murphy decomposition shows the MLB model Brier of 0.2377 trails the market's 0.2067 (a gap of +0.0310) driven mainly by resolution, and the soccer model's 0.2279 trails 0.1427 the same way. Resolution gaps are information the market has and the model does not -- they cannot be closed by recalibration.",
-    "source_artifact": "webapp/public/data/showcase/cross_sport_scoreboard.json",
-    "as_of": "2026-07-22"
+    "answer": "In the published 10-bin Murphy decomposition, both sports trail the market on Brier, but the component pattern differs. MLB model/market Brier is 0.166759/0.151008, with reliability gap +0.002194 and resolution gap -0.014875; the larger binned difference is resolution. Soccer is 0.332522/0.195157, with reliability gap +0.103894 and resolution gap -0.032549; the larger binned difference is reliability. These are descriptive components, not causal proof or a tested recalibration result. Published snapshot dated 2026-09-16; the observation window is not published.",
+    "source_artifact": "webapp/public/data/showcase/murphy_decomposition.json",
+    "as_of": "unknown"
    },
    "tags": [
     "murphy-decomposition",

@@ -788,9 +788,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "By identifying byte-identical duplicates and excluding them explicitly. The mlb_clean moneyline corpus is a byte-identical duplicate of mlb and is skipped with the reason recorded in the artifact, so the 78,986-row MLB moneyline sample is not silently counted twice.",
+    "answer": "The market-type artifact records mlb_clean_moneyline as skipped because mlb_clean is a byte-identical duplicate of mlb. The scored MLB moneyline total therefore remains 27,351 rows across 178 files, without adding that duplicate a second time. These are file counts, not game counts. Published snapshot dated 2026-09-16; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/calibration_by_market_type.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "dedupe",

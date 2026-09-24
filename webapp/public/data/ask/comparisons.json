@@ -68,9 +68,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "MLB in-game moneyline, on both sides of the comparison: model ECE 0.097325 and market ECE 0.070965 over 78,986 rows, against soccer match result at model ECE 0.275568 and market ECE 0.201885 over 9,003 rows. Even the soccer market is less well calibrated than the MLB model.",
+    "answer": "Of the two scored market types in this exhibit, MLB in-game moneyline has the lower market 10-bin ECE: 0.049057 over 27,351 graded rows and 178 files, versus soccer match result 0.281866 over 4,265 rows and 27 files. Their model ECE values are 0.057367 and 0.400236, respectively. This compares these corpora and outcomes only; files are not games. Published snapshot dated 2026-09-16; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/calibration_by_market_type.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "calibration",
@@ -87,9 +87,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "MLB in-game moneyline: model 0.237684 versus market 0.206653, a gap of 0.031031. Soccer match result: model 0.227887 versus market 0.142726, a gap of 0.085160 -- nearly three times wider. Lower is better in both cases, so the model trails in both.",
+    "answer": "The market-type exhibit reports MLB in-game moneyline model/market Brier 0.166759/0.151008, with its reported model-minus-market gap +0.015752 over 27,351 rows. Soccer match result is 0.332522/0.195157, gap +0.137365 over 4,265 rows. Lower Brier is better, so the market leads in both published corpora. Published snapshot dated 2026-09-16; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/calibration_by_market_type.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "calibration",
@@ -639,9 +639,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Over 78,986 rows the model's Brier is 0.237684 against the market's 0.206653, a gap of +0.031031. The Murphy decomposition attributes most of that to resolution (-0.0235) rather than reliability (+0.0066), which means it is missing information rather than miscalibration -- recalibration will not close it.",
+    "answer": "Over 27,351 graded rows, the MLB model/market Brier is 0.1668/0.1510 in this kernel-transfer summary. Its Murphy reliability gap is +0.002194 and resolution gap is about -0.0149; the binned decomposition shows the larger difference in resolution. These descriptive components do not establish how a tested recalibration would perform. Generated 2026-09-17 UTC; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/kernel_transfer.json",
-    "as_of": "2026-07-22"
+    "as_of": "unknown"
    },
    "tags": [
     "mlb",
@@ -848,9 +848,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "MLB is nearly nine times the size of soccer: 78,986 graded in-game rows across 227 files against 9,003 rows across 51 files. That gap is why the MLB results carry verdicts and the soccer ones carry caveats.",
+    "answer": "The scored MLB moneyline corpus has 27,351 graded rows across 178 files; soccer match result has 4,265 rows across 27 files. MLB has about 6.4 times as many graded rows. The exhibit separately excludes byte-identical mlb_clean to avoid double-counting. File counts are not game counts, and corpus size alone does not determine a verdict. Published snapshot dated 2026-09-16; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/calibration_by_market_type.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "cross-sport",
