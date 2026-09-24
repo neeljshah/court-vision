@@ -201,3 +201,25 @@ cadence is not -- adapter refusals (one-sided / inconsistent books) and BOOK_STA
 linked state row for its entire window (state_gap_max = the window; NOT_LIVE at every decision) while its two served peers
 linked. NEXT SPEC (S421, to write): the state-to-market linkage for game_key 824785 and the unlinked_state_row 8013 count; the
 usable-book cadence vs receipt cadence gap. No frozen value moves.
+
+AMENDMENT 8 (2026-09-23 05:3xZ; CORRECTION to AMENDMENT 7's reading, not a rule; supersedes by ADDING, never by editing).
+AMENDMENT 7's reading says TORBAL "had no linked state row for its entire window". That phrasing is WRONG and a later probe
+(recorded in docs/evidence/tracking/specs/S421_spec.md (d)) measured the truth: the state shard
+data/cache/ingame_capture_view_v2/state/mlb/2026-09-22.jsonl holds 417 rows keyed game_key "824785" and EVERY one carries status
+"pre"; the two served peers carry both phases (823412: 316 pre + 592 live; 824624: 371 pre + 262 live). The rows exist and link;
+they never say live, and forward_replay_qualification.py:165 sets live only when status == "live", so NOT_LIVE 660 and
+STATE_STALE 660 follow from the feed's content, not from a missing or unlinked row. Every COUNT in AMENDMENT 7 stands unchanged;
+only that one sentence of interpretation is corrected. The second reading in AMENDMENT 7 (adapter refusals dominating the served
+games) is also refined by S421 (c): the landed adapter accepts 777 / 745 / 325 of 777 / 745 / 325 snapshots on those tickers, so
+the ADAPTER_REFUSED counts are the unnamed `touch` term of forward_replay.py:232, not adapter refusals. S421 is the row that
+decomposes both.
+
+AMENDMENT 9 (2026-09-23 16:0xZ; record; corrects AMENDMENT 8's second reading by ADDING, never editing). AMENDMENT 8 said the
+ADAPTER_REFUSED counts (TORBAL 146, MILPHI 529, MIACHC 575) are the unnamed touch term. MEASURED WRONG by an Opus 5.5 real-shard
+probe with the landed functions (docs/evidence/harness/S421_real_shard_probe_2026-09-23.md): the landed to_quote_book RETURNS a
+refusal dict instead of raising (capture_book_adapter.py:186-187), the 00:41Z probe counted exceptions, and counting the
+returned refusals reproduces the three in-window counts exactly -- every one is the adapter's own reason `inconsistent_touch`
+(the raw_market price fields (the adapter's raw.* touch candidates) disagree with the ladder top and the row's own bid / ask fields by 1-20 cents; the ladder and
+the row fields agree with each other). The touch predicate never fails on an accepted row and no later `_refusal` is set.
+Every count in AMENDMENTS 7 and 8 stands; only that one interpretation sentence is superseded. S421 AMENDMENT 1 carries the
+binding restatement and the next-row question (capture-side fetch skew vs the adapter's all-sources-must-agree rule).

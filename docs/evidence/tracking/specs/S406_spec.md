@@ -74,3 +74,84 @@ other; plus the per-shard rows, unparseable lines with byte offsets, first / las
 capture_version values seen. The S398 memo attributes its 45 refusals by field from this census's null / absent counts. Before-
 condition quotes: read_rows line 213 (verbatim), decimal_value line 19, local_capture_runner_row.py:113, local_capture_writer.py:15.
 Everything else in CHANGE items 1-3 stands (streaming, strict-int counts, NOTICE, exit 3 on a missing shard, tests, memo).
+
+AMENDMENT 3 (2026-09-23 16:5xZ; binding; from the round-1 verification of the third build -- sol REJECT (three blockers) and
+astra REJECT (two blockers), every item MEASURED on constructs). (a) ATOMIC WRITE: kalshi_decimal_census.py:161 opens the
+destination with "w"; an injected serialization failure left partial JSON and the previous artifact was not preserved.
+RULING: sibling temp file + flush + fsync + os.replace; on failure the temp is removed and a pre-existing destination is
+byte-identical; tested with an injected failure. (b) CHRONOLOGICAL FIRST / LAST: input 02Z,01Z gave first 02Z / last 01Z
+(:112); reversed rows changed bytes. RULING: first and last are the chronological minimum and maximum through parse_venue_time
+(the original timestamp TEXT retained); reversed-row test pins byte identity. (c) THE NOTICE IS VERBATIM: the constant at :11
+says 'stored number'; the binding text is 'counts only; nothing here converts a stored float to text or claims its original
+precision' -- fix the constant, memo and test. (d) MISSING AND NULL IDENTITIES ARE DISTINCT GROUPS: {} and {"record_type":
+null, "capture_version": null} merged into one (None, None) group (:117); the producer identity field is capture_version.
+RULING: an absent key groups as "<absent>" and an explicit null as "<null>", per field, never merged. (e) UNPARSEABLE RECORDS
+CARRY repr: add raw_repr (repr truncated to 512 characters) and stable reasons invalid_utf8 / invalid_json / non_object,
+asserted explicitly. (f) LADDER CONTENTS ARE CENSUSED BY POSITION: orderbook yes / no arrays were counted once as 'other'
+(:124). RULING: each [price, size] level's price text and size text are classified and counted under orderbook.yes.price,
+orderbook.yes.size, orderbook.no.price, orderbook.no.size (per producer version and record type), never lumped. (g) Memo:
+the NOT VERIFIED heading gets its list (the real-shard run, independent test execution, real artifact values); the fixture
+size is the actual 1180 bytes. The landed real census record docs/evidence/harness/S406_census_real_2026-09-22.md stays as
+the BEFORE record; the fix's real re-run by the orchestrator is recorded beside it.
+
+AMENDMENT 4 (2026-09-23 17:5xZ; binding; from round 2 on fix 1b -- codex astra REJECT and codex sol REJECT on the SAME single blocker;
+sol confirmed every AMENDMENT 3 item closed on constructs). (a) ONE INVALID TIMESTAMP MUST NOT ABORT THE CENSUS: three-row constructs with a
+naive timestamp, an empty string, or the integer 123 in response_end_ts returned exit 3 'refused: invalid response_end_ts' and
+no report (kalshi_decimal_census.py:160); the spec's accounting rule ('a row the report cannot interpret is counted under a
+named reason with its raw text recorded, never dropped') applies to a field the census cannot interpret as much as to a line it
+cannot parse. RULING: a row whose response_end_ts parse_venue_time refuses is COUNTED under invalid_response_end_ts (with
+raw_repr truncated to 512) and excluded from the first / last bounds only; the census continues; exit 3 is reserved for a
+missing shard or an unwritable artifact; a construct with one bad timestamp among three rows yields a report with rows 3,
+invalid_response_end_ts 1, and bounds over the two good rows. (b) The orchestrator's real-run artifacts are committed beside
+the memo at landing as docs/evidence/harness/S406_census_real_2026-09-22_fix1b_mlb.json and _4shards.json with their SHA-256
+recorded in the memo (identifiable evidence, never 'scratch'); the memo states that its NOT VERIFIED list describes the
+builder's verification scope. NOTES: an empty ladder is counted under orderbook.empty_ladder by name (not only orderbook.other);
+a level with more than two cells counts the extra cells as orderbook.<side>.extra_cells; bare-token inputs and the
+absent / null / empty-string grouping reproduced as designed.
+
+AMENDMENT 5 (2026-09-23 18:3xZ; binding; path correction to AMENDMENT 4(b)). docs/evidence/harness/** is gitignored except
+.md (the landed BEFORE record's JSON was never tracked either), so the orchestrator's real-run artifacts are committed at
+docs/evidence/forward/census/S406_census_real_2026-09-22_fix1c_mlb.json and _4shards.json (counts of number-text classes only;
+no price values) with their SHA-256 in the memo; the memo names those paths.
+
+AMENDMENT 6 (2026-09-23 18:5xZ; binding; from round 3 on fix 1c -- Opus tier 1 REJECT and Opus tier 2 ACCEPT WITH CORRECTIONS; tier 2
+confirmed the AMENDMENT 4 closures, the artifact hashes and the 73-byte-per-shard delta versus fix 1b). Tier 1 confirmed every AMENDMENT 4 closure on constructs (naive / empty / integer / NaN / list / 900-character
+timestamps each counted invalid_response_end_ts 1 with bounds over the good rows; exit 3 only for a missing shard or an
+unwritable output; the committed artifacts' SHA-256 and row totals reconciled) and found ONE blocker FROM THE REAL ARTIFACT:
+(a) THE LADDER CENSUS NEVER RAN ON REAL ROWS: kalshi_decimal_census.py:97 reads a top-level `orderbook` key that no real Kalshi
+row carries -- the writer stores ladders under `book.orderbook_fp.yes_dollars` / `.no_dollars` as [[price_text, size_text], ...]
+(local_capture_runner_row.py:63) and the top-5 arrays under `yes_bid_top5_asc` / `no_bid_top5_asc`; the committed fix1c_mlb.json
+shows zero orderbook.* fields and `book`, `yes_bid_top5_asc`, `no_bid_top5_asc` each {'other': 24843} -- the very lumping
+AMENDMENT 3(f) forbade, on every real snapshot row. RULING: the ladder census classifies cells BY POSITION at the REAL locations,
+under book.orderbook_fp.yes_dollars.price / .size, book.orderbook_fp.no_dollars.price / .size, yes_bid_top5_asc.price / .size and
+no_bid_top5_asc.price / .size (per producer version and record type), keeping empty_ladder and extra_cells; the fixture gains a
+row in the real shape (a construct built from the real key layout, never a real row); the real census is run again and the
+AFTER artifacts committed. (b) REPO-RELATIVE PATHS IN COMMITTED ARTIFACTS: shards[].path (emitted at :136) carries absolute
+local paths, and docs/evidence/forward/ is exported publicly through the allowlist's `+ docs/`; every path an artifact under
+docs/ records is repo-relative (resolved from the repo root), and the artifacts are regenerated. (c) The memo is made
+self-consistent: line 3 cites AMENDMENTS 2-6, the fix1b passages that name docs/evidence/harness/ paths and 'SHA-256 NOT
+AVAILABLE' / 'BLOCKED' are superseded by the AMENDMENT 5 paths and hashes, the NOT VERIFIED entry about outstanding fix1b
+artifacts is removed, the gitignored _verdict file is not cited, and a null or absent response_end_ts is stated to be left out
+of the bounds and counted only in the field's null / absent class (AMENDMENT 4(a) as implemented).
+(d) Tier 2's corrections: a non-list ladder side ('no': 'abc' or a dict) is counted by name orderbook.<side>.non_list, never
+left as the top-level field's 'other'; a null or non-list LEVEL is classified by its own value (null / other), never as
+the ABSENT of a row with no ladder; an explicit null response_end_ts is stated in the memo to be counted in the field's
+null class and left out of the bounds (never invalid_response_end_ts); the memo's '238/277 lines' sentence is corrected to
+the current counts. The evidence lists (interpretation_failures, unparseable_lines) carry line numbers by design and are
+the only order-dependent part of the artifact; counts and bounds are order-independent (stated in the memo).
+
+AMENDMENT 7 (2026-09-23 20:0xZ; binding; from round 4 on fix 1d -- Opus tier 1 ACCEPT WITH CORRECTIONS; the tier 2 verdict is folded
+in below when it arrives). Tier 1 confirmed AMENDMENT 6(a) on the committed artifacts (14 ladder fields per shard; in the mlb
+snapshot group 897,542 yes-side and 903,266 no-side orderbook_fp cells classified as string text, 100,238 / 100,237 top-5 cells as
+fractional number text with at most 4 price and 2 size digits; absent plus empty-ladder rows summing to 24,843; every non-ladder
+field identical to fix 1c; the AMENDMENT 3-4 closures unregressed). ONE CORRECTION, RULED: (a) THE RELATIVE PATH MUST NEVER LEAVE THE
+ROOT: the orchestrator runs the census FROM THE WORKTREE against data under the main tree, so os.path.relpath(path, REPO_ROOT) at
+:144 wrote "../nba-ai-system/data/cache/..." into both fix1d artifacts (memo line 295 'paths are repo-relative' is untrue). RULING:
+an optional CLI flag --repo-root (default: the checkout root the module lives in); every recorded path is relpath(path, repo_root)
+with forward slashes; a result beginning with ".." is REFUSED by name (path_outside_repo_root, exit 3, no artifact); the
+orchestrator's real runs carry --repo-root C:/Users/neelj/nba-ai-system so the committed artifacts read data/cache/...; both
+fix1d artifacts are regenerated and re-hashed and the memo lines 293-295 updated. (b) test_kalshi_decimal_census_fix1d.py:95
+looks at every S406*_fix1*_*.json artifact (asserting the count) and adds the outside-root refusal and the under-root relative
+form. (c) The memo's NOT VERIFIED item saying the orchestrator must still re-run is removed (the re-run is recorded), and the memo
+is trimmed to <= 300 lines. NOTES kept as the memo's wording: ladder price / size classes count CELLS while absent counts ROWS
+(memo :88); the top-level book and top-5 fields' 'other' 24,843 is a presence count beside the per-cell classes.

@@ -229,3 +229,90 @@ cleared). (h) MEMO: AMENDMENT 8's fifth-smoke facts recorded verbatim (1368 rows
 no_code_match 208, no gaps, no fetch errors); smokes 1-4 kept as superseded history; the 'unsmoked' sentence removed; the
 1e-07 identity claim at memo line 286 corrected (exact text hashes identically across encodings). NOT VERIFIED must carry the
 bounded crash-recovery guarantees (unsynced bytes; delayed restart beyond the two-day tail can duplicate uncheckpointed trades).
+
+AMENDMENT 10 (2026-09-23 16:1xZ; binding; orchestrator ruling on the Opus 5.5 digest of the h58 candidate before round 3). The
+owned set of AMENDMENT 7(a) is extended by ONE file: tests/platformkit/ingame/test_polymarket_live_trades.py (the trade-tape
+tests fix 1f wrote to cover AMENDMENT 9; a test file for this row's own module, never a landed one). Nothing else in the owned
+set changes; capture_watchdog.py remains the single modified landed file. Two small fallbacks the digest found unreachable today
+are NOTES for the verifiers, not blockers: an unreachable branch is removed or left with a counted reason, never a silent path.
+
+AMENDMENT 11 (2026-09-23 16:5xZ; binding; from round 3 on fix 1f -- sol REJECT (three blockers) and astra REJECT (two
+blockers, two corrections); both tiers confirmed the five earlier corrections CLOSED and AMENDMENT 5's facts present).
+(a) LIVE-EVENT CLASSIFICATION PARSES VENUE TIMES ONLY THROUGH parse_venue_time: polymarket_live_sources.py:137 delegates to
+polymarket_scope.classify_event_state, which uses datetime.fromisoformat; a startDate with a 5-digit fraction classified as
+('idle', 600.0) and the market was omitted unless scheduled (n_games_live falsely zero). RULING: the cadence classification
+lives in this row's own module through parse_venue_time / local_capture_time.parse_ts; 4- and 5-digit-fraction tests; the
+landed polymarket_scope is not edited. (b) FAILED FETCHES ARE NEVER SUCCESSES: fetch_error rows were appended under source
+market_meta / trades (sources :112, trades :216, capture :180), so ArchiveWriter counted them in market_meta_written_total /
+trades_written_total and last_success. RULING: every error row is appended under source fetch_error, retained in
+rows_written_total, excluded from the successful record totals and from last_success; test with a 500 on each source.
+(c) TRADE FAILURE RECEIPTS KEEP THE DRAIN'S TICK START: trades :208-217 replaced tick_start_ts with the response end. RULING:
+trade_receipt carries tick_start passed through from the drain; a receipt's tick_start_ts equals the tick's start on every
+path. (d) PAGE-ORDER INDEPENDENCE ACROSS PAGES: pages [A,B],[C,D] vs [C,D],[A,B] gave different archive bytes (sorting was
+per page; trades :76). RULING: the drain collects every page of a tick, then orders all trades by (created_time, trade_id)
+before writing; a test reverses page order and pins byte identity. (e) RECOVERY HONOURS AS-OF: with cutoff 22:35Z a receipt
+at 23:35Z (malformed) raised ValueError, a valid future trade entered archived_ids, and a future closure advanced the
+watermark (trades :47). RULING: receipt filtering precedes validation and every state change; a row after the cutoff neither
+raises nor influences archived_ids or the watermark; counted as-of-excluded. (f) The decoded-numeric-text source label is
+'float-text' as AMENDMENT 6 names it (polymarket_live_rows.py:23), never 'float'. (g) Memo fixture byte sizes are the ACTUAL
+bytes on disk (552, 31, 712, 1249, 1243, 3241, 210, 808), never LF-normalized. (h) astra's NEW GAP (no question-based
+moneyline selection or directional outcome mapping in the capture) is OUT OF SCOPE for this capture-all row and belongs to
+S398's pairing (already ruled there); the memo says so in one sentence. Everything else in fixes 1b-1f byte-identical.
+
+AMENDMENT 12 (2026-09-23 18:3xZ; binding; from round 4 on fix 1g -- Opus tier 1 ACCEPT WITH CORRECTIONS, Opus tier 2 REJECT on
+one blocker). Both tiers reproduced every AMENDMENT 11 closure (a)-(g) as holding (4- and 5-digit fractions parsed through
+parse_venue_time; fetch_error rows never advance last_success; tick_start on every receipt; equal-receipt byte identity across
+page orders; the as-of filter before closure and validation; 'float-text'; the on-disk fixture sizes). THE BLOCKER, RULED:
+(a) LIVE CLASSIFICATION MUST NEVER READ event.startDate: that field is the MARKET CREATION instant (this row's own
+polymarket_live_link docstring, AMENDMENT 4(c); the fixture shows startDate 2026-05-17 for the 09-22 game), so fix 1g's
+parseable 5-digit fraction turned 'falsely idle' into 'falsely live' -- every not-yet-ended linked game is 'live' at
+10 s cadence and n_games_live counts them all, while a game in progress without startDate is 'idle'. RULING: the sources
+module classifies from the linked market_day's game start (gameStartTime, then eventStartTime, then the meta start -- the
+same evidence order the landed link uses) together with endDate and the venue's live flag; startDate is never a start-time
+signal anywhere in the row; polymarket_scope stays unedited; construct tests: (startDate months earlier, endDate tomorrow,
+now 22:35Z) -> pregame, never live; (no startDate, gameStartTime 22:05Z, now 22:35Z, not ended) -> live; (ended) -> idle;
+n_games_live counts only games whose start has passed and whose end has not. CORRECTIONS RULED: (b) DEDUP AFTER THE GLOBAL
+SORT: a repeated trade_key with a different body (a title or a price text '0.520' vs '0.5200') is archived with the body
+that page order happened to fetch first, so the tick's bytes differ across page orders (AMENDMENT 11(d) broken on a
+duplicate the venue can send). RULING: every parsed row is staged; the tick sorts by (created_time, trade_key, the row's
+canonical JSON body); the duplicate check runs after the sort, the first row in canonical order wins, duplicate_trade_key
+still counts the loser, and a construct test pins byte identity across page orders for exactly this case. (c) A trade whose
+created_time is later than its own receipt (response_end_ts) by ANY amount is counted created_after_receipt (archived with
+the count -- venue clock skew is provenance, the memo says so); the over-300 s future_timestamp quarantine stays; a
+quarantined future trade is remembered once so it is not re-fetched and re-counted every tick. (d) THE FIXTURE-SIZE TEST
+IS PLATFORM-DEPENDENT: the fixtures are CRLF on disk under core.autocrlf while the blobs are LF, so a Linux or autocrlf-off
+checkout gives 536 / 30 / 695 / 1217 / 1211 / 3151 / 207 / 806. RULING: the test compares against the CRLF sizes when the
+file holds CR bytes and against the LF sizes otherwise; the memo states both sets; no .gitattributes change (outside the
+owned set). (e) startDate and every venue timestamp parse through parse_ts WITH the metrics counter so refusals reach the
+heartbeat error_counters, not only the global PARSE_ERRORS; a commit() failure inside the except clause chains the original
+exception (raise ... from) and never masks it. (f) MEMO: the interpreter and version stated (Python 3.10.0 here; RunPod 3.12
+NOT VERIFIED); the last line reads 'FIX 1h (and 1f-1g) needs its own bounded live smoke'; byte identity is stated as holding
+under equal receipts only, with per-trade response_end_ts following fetch order under an advancing clock as provenance; the
+drain.json recent_ids order and its bounded eviction stated as page-order dependent; the seed_failure dead end (a bad
+checkpoint or archived row blocks that market's tape until an operator acts) recorded as NEXT-ROW, not fixed here.
+
+AMENDMENT 13 (2026-09-23 19:0xZ; binding; from round 5 on fix 1h -- Opus tier 1 ACCEPT WITH CORRECTIONS, Opus tier 2 ACCEPT WITH
+CORRECTIONS; no blocker). Both tiers reproduced AMENDMENT 12 (a)-(f) as closed: nothing reads event.startDate (docstrings only);
+the constructs give pregame / idle (24.5 h, PREGAME_WINDOW = 24 h frozen at polymarket_scope.py:60) / live / idle; dedup after the
+sort by (created_time, trade_key, canonical body) with identical bytes across page orders for a twin differing in title or
+price text; created_after_receipt 1 at 1 us .. 300 s (archived) and future_timestamp 1 at 301 s (quarantined, remembered once);
+the fixture test picks the size set by the CR bytes each file holds; the metrics counter takes every venue-time refusal and the
+global PARSE_ERRORS stays empty; raise ... from; memo interpreter and stale lines. THE BUILDER'S ADDED RULE (a market with NO
+start evidence but the venue live flag set is classed live so its meta is fetched and it can link) IS RATIFIED WITH THREE
+CORRECTIONS: (a) RECLASSIFY AFTER RELINK: select_due classes the unit BEFORE the meta fetch, relink then sets game_key, and
+_publish counts it -- for that one tick n_games_live counts a market whose meta start is hours ahead (tier 1 construct: live
+flag, meta start 3 h ahead -> game_key set while state is still 'live'; the next tick gives pregame). RULING: capture_once
+reclassifies the unit (classify_event_state) after relink and before _publish; a construct test pins n_games_live 0 on that
+tick. (b) NAMED AND COUNTED: a unit classed live by the flag alone increments a heartbeat counter live_by_flag_no_start (per
+evaluation -- the memo states the unit) so an operator can see the 10 s cadence it buys; the memo states that the rule has no
+span cap, that such a unit cannot link (link_market needs a day from the same evidence) and therefore never counts toward
+n_games_live after (a), and that it ranks below linked games under MAX_UNITS_PER_TICK. (c) END-EVIDENCE PRECEDENCE STATED: a
+begun game with no endDate and no live flag classes idle (600 s) and is therefore not polled -- stricter than 12(a)'s 'end has
+not passed'; RULING: this stays (an unknown end is not evidence the game is live) and the memo says so beside the precedence
+list: an endDate in the past wins over a live flag; begun + flag + no end is live with no maximum span; begun + endDate days
+ahead is live until that endDate. NOTES kept as memo wording: gamma_start_normalized and timestamp_parse_errors count
+EVALUATIONS (per unit per tick), not markets; a fixture with MIXED line endings fails the size test as an unnamed list mismatch
+(a named refusal is optional; the zip over fixtures asserts the fixture count so a ninth file cannot be skipped silently); an
+identical trade_key implies an identical created_time (the timestamp is inside the key); a quarantined key re-fetched counts
+duplicate_trade_key with the memo sentence (a separate quarantined_refetch name is optional); the fix-1g count 'trades 27' at
+memo :230 is history and is labelled so. Fix 1i applies (a)-(c); the memo stays <= 300 lines with NOT VERIFIED last.

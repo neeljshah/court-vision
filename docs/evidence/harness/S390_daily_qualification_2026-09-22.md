@@ -275,14 +275,21 @@ No environment_unverifiable result: temporary constructs and all cases ran.
 FIX 1e/1f/1g assertions remain, including status, cleanup, digest, append counts,
 quiet days, family rows, tails, one-read provenance, revisions, paths and game_key.
 No commit, network, live capture or real ledger operation was performed.
-## 11. NOT VERIFIED
+## 11. FIRST REAL RUN (orchestrator, 2026-09-23 00:41Z; the AMENDMENT 7 record)
+
+Landed code e25ed056d over the 2026-09-22 shards, --as-of 2026-09-23T06:00:00Z, 1 m 23 s. Six of six MLB games FAIL,
+qualified_games 0, refused 0 -- the expected honest result. Served: TORBAL 0 qualified decisions, MILPHI 117 and MIACHC
+103 against the 432 needed. Every reason count and day diagnostic is transcribed in the spec's AMENDMENT 7; the artifact
+is docs/evidence/forward/qualification/2026-09-22.json. A later probe (S421) named the two causes: the ADAPTER_REFUSED
+counts are not adapter refusals, and TORBAL's state rows exist but every one reads pre. Counts only; no frozen value moves.
+
+## 12. NOT VERIFIED
 
 - No production archive was read for qualification and no week was appended to a real
   ledger: every number above is a construct or a fixture and no week exists.
 - The `game_key` linkage (C4) is UNTESTED against the live archive; the subtree join
   is proven by fixtures, not the real root.
 - AMENDMENT 5(g): orchestrator records first-real-run copy wall clock and snapshot
-  bytes here. The copy has never run against a 186 MB shard: its cost
   is UNMEASURED and `<out>.snapshots` is assumed to have room for the day's shards. A
   prefix rewritten IN PLACE with identical bytes and size still passes the check.
 - The transitive import closure of the daily runner DOES include `tape_fill_adapters`
@@ -297,14 +304,3 @@ No commit, network, live capture or real ledger operation was performed.
   produced", because a missing artifact carries no evidence either way.
 - Nothing here is a claim about qualification quality. A FAIL day is an honest
   result of this row, not a defect of the row.
-
-## FIRST REAL RUN (orchestrator, 2026-09-23 00:41Z; AMENDMENT 7 record)
-
-Landed code e25ed056d over the 2026-09-22 shards, --as-of 2026-09-23T06:00:00Z, run_nonce s390-first-run-2026-09-22, 1 m 23 s.
-Six of six MLB games FAIL, qualified_games 0, refused 0 -- the expected honest result. Served games: TORBAL 0 qualified
-decisions (no linked state row for the whole window: NOT_LIVE 660, STATE_STALE 660); MILPHI 117 and MIACHC 103 qualified
-decisions of the 432 needed (ADAPTER_REFUSED 529 / 575, BOOK_STALE 526 / 568, LINKAGE_INVALID 746 / 785). Unserved games:
-1-4 qualified decisions each (capacity subset). Every reason count and the day diagnostics are transcribed verbatim in
-docs/evidence/tracking/specs/S390_spec.md AMENDMENT 7; the artifact is docs/evidence/forward/qualification/2026-09-22.json.
-Counts only; no frozen value moves; the next spec (S421) is the state linkage for game_key 824785 and the usable-book
-cadence versus the raw receipt cadence.

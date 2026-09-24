@@ -51,7 +51,7 @@ nothing counts until it is graded against real closing lines (first real CLV Oct
 ### Market efficiency (the honest finding)
 
 The full-season walk-forward backtest proves the system is **well-calibrated but does not beat
-the close** (season Brier 0.208 vs close Brier 0.198). Spread/total pregame CLV ≈ 0; the model
+the close** (season Brier 0.208 vs close Brier 0.198; CORRECTION 2026-09-14: that pair has no artifact and did not reproduce -- the reproducible artifact gives Brier 0.1735 model vs 0.1666 Shin-devigged close, n=743, 95% CI of the gap includes 0, TRAILS_CLOSE; see JOB_EVIDENCE_PACKET section 3). Spread/total pregame CLV ≈ 0; the model
 explains 0.13%/0.29% of the line move. Freshness (betting openers before news) reaches ~58%
 ATS but the model captures none of that — it is a speed edge, not a model edge.
 

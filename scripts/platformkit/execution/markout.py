@@ -5,10 +5,10 @@ netted a venue fee -- fees were charged into the PRE-TRADE EV gate only
 (inplay_edge_signal.py:175). This scores a fill AFTER the fact: where did the
 market go once we were filled, minus what the fill cost.
 
-UNITS ONLY. A markout here is in PROBABILITY POINTS per contract, never dollars
-and never a return. A positive markout means the mid moved our way after the
-fill; it is a microstructure diagnostic, NOT an edge or a profit claim, and a
-single fill or a single game is never evidence of either.
+UNITS ONLY. A markout here is in PROBABILITY POINTS per contract, never a
+currency amount and never a return. A positive markout means the mid moved our
+way after the fill; it is a microstructure diagnostic, never a claim of market
+advantage or of a gain, and a single fill or a single game is never evidence of either.
 
 Input is paper_maker._fill_record()'s dict: {side, price, qty, fee_units, ...}.
 *side* is the ORDER side ("yes"/"no"); *later_mid* is the YES-home mid observed
@@ -138,3 +138,37 @@ if __name__ == "__main__":
 
 
 __all__ = ["markout", "markout_summary", "UNKEYED_CLUSTER"]
+
+
+from decimal import Context, Decimal, localcontext
+from scripts.platformkit.execution.venue_fees_decimal import _decimal, _precision, _prob
+
+
+def markout_decimal(fill: Dict[str, Any], later_mid: Any,
+                    fee: Any = None) -> Decimal | None:
+    """Fee-netted probability points; price and fee are per-contract payout units.
+
+The caller converts cent prices and batch fees explicitly before calling.
+tape_fill_sim's fee_units_decimal is a whole-fill increment. This function
+reads it as per-contract: divide that fee by qty and the cent price by 100.
+Converting only price silently overstates the cost for a multi-contract fill.
+Missing or invalid evidence returns None; negative fees enter as magnitudes.
+A zero fee is scored: a cumulative cent ceiling makes a 0.00 increment legitimate.
+"""
+    if not isinstance(fill, dict):
+        return None
+    try:
+        price, mid = _prob(fill.get("price")), _prob(later_mid)
+        cost = _decimal(fill.get("fee_units_decimal", fill.get("fee_units"))
+                        if fee is None else fee).copy_abs()
+        side = str(fill.get("side") or "").strip().lower()
+        if side not in ("yes", "no"):
+            return None
+        with localcontext(Context(prec=_precision(price, mid, cost))):
+            held = mid if side == "yes" else Decimal(1) - mid
+            return held - price - cost
+    except (TypeError, ValueError, ArithmeticError):
+        return None  # Explicit unscored refusal, never a zero observation.
+
+
+__all__.append("markout_decimal")

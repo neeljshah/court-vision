@@ -4,6 +4,10 @@
 
 ### [Open the live analytics site -> neeljshah.github.io/court-vision/analytics](https://neeljshah.github.io/court-vision/analytics/)
 
+**Reading this as a trading desk or quant team?** Start with the one-page
+[desk brief](docs/QUANT_BRIEF.md): pricing quality against the devigged close and the live market,
+what exists and what it is evidence of, and what is not shown.
+
 [![Deploy analytics site](https://github.com/neeljshah/court-vision/actions/workflows/deploy-demo.yml/badge.svg)](https://github.com/neeljshah/court-vision/actions/workflows/deploy-demo.yml)
 [![Honesty gate + webapp QA](https://github.com/neeljshah/court-vision/actions/workflows/webapp-qa.yml/badge.svg)](https://github.com/neeljshah/court-vision/actions/workflows/webapp-qa.yml)
 [![Proof harness](https://github.com/neeljshah/court-vision/actions/workflows/proof.yml/badge.svg)](https://github.com/neeljshah/court-vision/actions/workflows/proof.yml)
@@ -35,7 +39,7 @@ the system also built the instruments that caught his own overclaims, and publis
 
 ## How far it goes
 
-One person directing an agentic build pipeline, 6,300+ commits since March 2026. Counts below are read
+One person directing an agentic build pipeline, 6,800+ commits since March 2026. Counts below are read
 from committed artifacts or the audited [evidence packet](docs/JOB_EVIDENCE_PACKET.md); the layer-by-layer
 map is **[docs/CAPABILITIES.md](docs/CAPABILITIES.md)**.
 
@@ -142,6 +146,10 @@ reviewers can request read access. What is public is chosen by one reviewed allo
   the private corpora behind recorded rows are not in a fresh clone.
 - Not copyleft-clean: the computer-vision lineage depends on Ultralytics YOLO (AGPL-3.0). The
   repository's own code is proprietary and published for evaluation ([LICENSE](LICENSE)).
+
+## Related public repos
+
+Single-concept repos distilled from this platform, each runnable on its own: [shin-devig](https://github.com/neeljshah/shin-devig) (four de-vig methods incl. Shin 1992), [calibration-gate](https://github.com/neeljshah/calibration-gate) (Brier decomposition, ECE, recalibration, two-corpus acceptance), [walkforward-guard](https://github.com/neeljshah/walkforward-guard) (leak-proof time-series CV; the demo plants two leaks and catches both), [prereg-cards](https://github.com/neeljshah/prereg-cards) (pre-registration workflow), [sdv-calibration-audit](https://github.com/neeljshah/sdv-calibration-audit) (a calibration audit of a published sports-model probability column).
 
 ## Contact
 

@@ -233,3 +233,50 @@ digits) and that read_rows decodes with parse_int=Decimal, so an integral number
 snapshot rows whose price fields are NULL (a null side of the book; 292 such rows shard-wide, 45 among the five paired
 tickers). The by-field table of (a) must therefore report null / absent fields per capture_version; nothing in this row
 converts a refusal, and the census of the encoding belongs to S406.
+
+AMENDMENT 10 (2026-09-23 16:5xZ; binding; from the round-1 independent verification of fix 1g -- sol REJECT (three blockers)
+and astra REJECT (one blocker, six corrections); every item MEASURED on constructs by the tiers). (a) AN UNRESOLVED KALSHI
+LABEL NEVER PAIRS: kalshi_yes_label 'Unknown Club' with canonical home BAL produced pairs 1 / kalshi_label_unresolved 1 /
+orientation_unresolved 0 / games_unmatched 0 (cross_venue_pairs.py:208), and the tracked test at
+test_cross_venue_pairs_schedule.py:239 requires that behaviour -- WRONG per AMENDMENT 5(a). RULING: when the Kalshi code is
+None the pair is excluded, orientation_unresolved and games_unmatched both increment, and the test requires zero pairs.
+(b) VENUE STATUS IS VALIDATED ON EVERY SNAPSHOT BEFORE INDEXING: an unpaired non-string status (True) between two crossings
+silently ended an episode with venue_status_invalid 0 (cross_venue_scan.py:182). RULING: every snapshot's status is validated
+and counted (venue_status_invalid) before pairing; invalid rows are excluded; the unpaired case is a regression test.
+(c) CONFLICTING SCHEDULE IDENTITIES FAIL CLOSED: two distinct event / ticker identities for one (sport, game_key) reduced to
+the first with pairs 1 / schedule_duplicate_games 1 / games_unmatched 0 (cross_venue_pairs.py:172). RULING: group by
+(sport, game_key); more than one identity -> one unmatched game counted, NO pair emitted. (d) ORDER INDEPENDENCE UNDER
+CONFLICTING METADATA: A,A,B vs B,A,A gave conflict counts 1 vs 2 (cross_venue_pairs.py:124, cross_venue_link.py:119).
+RULING: a conflict is counted per DISTINCT conflicting value set, never first-vs-rest; both orders byte-identical; test pinned.
+(e) A declared pair with both books empty carries a named per-game reason (books_absent_both_venues with the receipt counts),
+never a bare zero. (f) Both writers use the atomic pattern (sibling temp + flush + fsync + os.replace; a failure leaves the
+previous artifact byte-identical). (g) The alias-witness exception handler (cross_venue_link.py:250) counts the failure by
+name (alias_witness_errors) or re-raises; never sets disagreed False silently. (h) The retrospective +/-30 s pairing window
+of the spec STANDS (inclusive both ends, stated in the memo; the scan is retrospective by design, not a decision-time query);
+the memo says so in one sentence. (i) Moneyline selection normalizes case and internal whitespace before the exact-question
+rule; tests for uppercase and repeated spaces. (j) A settlement witness whose winner contradicts the state archive's final is
+refused by name (settlement_witness_contradicts_final), never settlement_verified. (k) Memo fixture byte sizes are the ACTUAL
+file bytes on disk (2054 / 1024 / 2488 for kalshi / refusals / state), never LF-normalized counts. Everything else in fixes
+1b-1g byte-identical in behaviour.
+
+AMENDMENT 11 (2026-09-23 17:2xZ; binding; from round 2 on fix 1h -- BOTH Opus 5.5 tiers ACCEPT WITH CORRECTIONS; every
+AMENDMENT 10 item (a)-(k) reproduced as closed by both). CORRECTIONS RULED: (1) the owned set of AMENDMENT 4(a) gains the two
+additive files fix 1h wrote -- tests/platformkit/execution/test_cross_venue_s398_1h.py and
+tests/platformkit/execution/fixtures/s398_kalshi_refusals.jsonl (s398_settlement_witness.json is already named by AMENDMENT
+5(b)); (2) cross_venue_link.py:247 `except REFUSALS: return None, False` around slug_order neither counts nor re-raises (the
+memo's (g) said the handler was removed; this one remains): it counts by name slug_order_refusals or re-raises, never a bare
+exclusion filed under polymarket_label_unresolved; (3) NON-CANONICAL DECIMAL TEXT IS REFUSED: a yes_bid of "0.53 " (and " 0.53",
+"0.53\n", "0.5_3") PARSED through the landed decimal_value because Decimal() tolerates whitespace and underscores, and
+_number / quote (cross_venue_scan.py:23, :35-37) call it unguarded; RULING: _number refuses by name (noncanonical_decimal_text)
+any text that is not the canonical form the archive writer emits (digits with at most one dot, optional leading minus, no
+whitespace, no underscore, no exponent), before decimal_value sees it; Polymarket rows are decimal text so this path is live.
+NOTES RECORDED (not blockers; each named in the memo's NOT VERIFIED or a one-line statement): a Kalshi receipt refused in
+quote() (a null side, 292 rows shard-wide per S406) does not end an open episode -- refused receipts are recorded per ticker in
+interruptions beside invalid-status receipts (a one-line change; pinned by a construct); the settlement witness 'winner' is
+passed through the alias / label_code path (a witness written as a full team name is otherwise always a contradiction; fails
+closed today); only the status text 'final' is treated as final -- the landed normalizer's terminal vocabulary
+(local_state_capture_sources.py:28-48) is the authority, and a witness under 'Game Over' or with no final row stays
+settlement_unverified (never verified); the totals stale_kalshi / stale_polymarket / ties are printed as null until AMENDMENT
+7(e)'s withdrawn classification is re-declared; when labels do not resolve, token_code maps question position onto slug order by
+the spec's own rule (:93-95, :186-187) -- a SPEC risk, recorded, unchanged; the memo's NOT VERIFIED restates paired_instants 0
+with its reason (sparse Kalshi polling). Everything else in fixes 1b-1h byte-identical in behaviour.

@@ -197,3 +197,112 @@ only the date dict's key order was reversed -- the semantic branch serialized th
 separators, default=repr for non-serializable values) so equal content gives equal identity regardless of key order or
 nesting, and different content gives different identities; a test reverses nested key orders. The memo rule of AMENDMENT 10
 stands (every earlier reproduction keeps its exact source). Everything from fixes 1j-1n byte-identical in behaviour otherwise.
+
+AMENDMENT 12 (2026-09-23 05:0xZ; binding; from the sol round-15 REJECT of fix 1o -- two blockers, MEASURED). (a) THE CAPTURE
+LOOP'S OWN DIAGNOSTIC IS STILL UNGUARDED: with [bad venue 'malformed', good] and a metrics adapter whose drop() raises
+RuntimeError('diagnostic storage') only for adapter_errors, capture_state_once produced ['good'] with one append when
+diagnostics were healthy, but RuntimeError with ZERO appends and diagnostic_write_failed 0 when they failed -- for NBA, soccer,
+NFL, NCAAF, MLB and tennis, both orders (local_state_capture.py:141). RULING: the capture loop's diagnostic call goes through the
+SAME guarded reporting path as every other diagnostic (AMENDMENTS 9(c) and 10) -- the named game error is retained, the failure
+counts diagnostic_write_failed, nothing raises, and the valid peer still reaches the writer; both-order FULL-CAPTURE tests
+(driving capture_state_once with fixture responses and an in-memory writer) assert the append and the count for every sport. No
+diagnostic call anywhere in S393 code may remain direct: a test enumerates them. (b) THE ARCHIVE MUST BE SELF-CONTAINED: six
+archived round-10 reproductions (events 37, 39, 41, 43, 48, 50) source their construct from a memo preamble that no longer exists
+-- their exact source runs Path(memo).read_text().split('BEGIN_REPRO_SOURCE\n```python\n')[1] and raises IndexError because the
+marker is absent (S393_reproductions_2026-09-22.md:215). RULING: every archived reproduction is executable against the CURRENT
+tree with no dependency on deleted text -- the archive carries the exact bytes each one needs (restored preamble with its
+delimiters, or the historical fragment inlined), the original reproduction sources stay unchanged, and a test executes three
+archived sources at random and compares their output to the archived output byte-for-byte. Everything from fixes 1j-1o
+byte-identical in behaviour otherwise.
+
+AMENDMENT 13 (2026-09-23 05:1xZ; binding; from the astra round-15 REJECT of fix 1o -- two blockers beyond AMENDMENT 12's, both
+MEASURED). (a) THE FALLBACK IDENTITY MUST NOT RAISE ON MIXED KEY TYPES: an id-null NBA event with a malformed period and
+extra={1: 'x', 'a': 'y'} alongside a valid peer produced TypeError (comparing a string key with an integer key inside the
+canonical serialization) in both orders, with no result returned and counters {} -- the identity builder raised WHILE handling
+the original failure (local_state_capture_io.py:186 through :254). RULING: the canonical serialization never compares keys of
+different types -- every key is rendered to text before ordering (sort by the rendered text, with the key's type tag included),
+and the whole identity computation is itself inside the isolation: if it cannot be computed it falls back to a positional
+surrogate under a named reason and NEVER raises. (b) DIFFERENT CONTENT, DIFFERENT IDENTITY -- MEASURED: {'x': Decimal('1.0')}
+and {'x': "Decimal('1.0')"} produced the SAME identity because default=repr renders the Decimal to the text the string already
+holds; any two classes whose repr matches collide (the datetime / ISO-string and Decimal / float pairs do differ correctly).
+RULING: every non-JSON value is rendered with its TYPE included (for example the fully qualified class name and the repr
+together) so a value and a string that merely spells it are distinct; a test asserts the Decimal / string pair, the datetime /
+ISO pair and a custom class whose repr equals another's all give distinct identities, and that equal content still gives equal
+identity under nested key reordering. AMENDMENT 12 (the guarded capture-loop diagnostic and the self-contained archive) stands;
+the archive blocker is the same one both tiers found. Everything from fixes 1j-1o byte-identical in behaviour otherwise.
+
+AMENDMENT 14 (2026-09-23 05:5xZ; binding; from the round-16 REJECT of fix 1p -- both tiers; three blockers, all MEASURED. Both
+tiers confirmed AMENDMENT 12's capture-loop guard, the archive repair and the resolver guard as CLOSED for the paths they cover).
+(a) THE DEDUPE SERIALIZATION PRECEDES THE ISOLATION: calling nba_poll with [dict(event(), id=None, extra={1: 'x', 'a': 'y'}),
+dict(event(), id='good')] and its reverse raised TypeError ("'<' not supported between instances of 'str' and 'int'") with
+counters {} and no returned peer, in both orders -- 12 of 12 direct-helper constructs (local_state_capture_sources.py:88-94).
+The receipt and semantic keys are built and sorted BEFORE the per-item isolation, so AMENDMENT 8's isolation never sees the
+failure. RULING: the receipt and semantic keys are computed INSIDE the per-item isolation with a mixed-key-safe encoding; a key
+that cannot be built counts a named failure by identity and the item is dropped from the sort only, never taking its peers; the
+sort runs over successfully prepared records alone; both orders pinned for every helper. (b) THE LANDED COMMIT HELPER'S
+DIAGNOSTICS ARE REACHABLE AND UNGUARDED: with a writer append / sync / heartbeat failure plus a failing drop() for
+state_write_errors, state_sync_errors or state_heartbeat_errors, 36 of 36 constructs (six sports, both orders) raised
+RuntimeError with diagnostic_write_failed 0, and the append and sync cases also omitted the failure heartbeat
+(local_state_capture_commit.py:20, calls at 38, 44, 46, 76); the AMENDMENT 12(a) enumeration test excludes that landed helper.
+RULING: S393 code passes the SAME guarded metrics adapter into local_state_capture_commit (that landed file is NOT edited --
+the guard is applied at the S393 call boundary), so every diagnostic it makes is best-effort: counted, never raising, and the
+failure heartbeat is still written; the enumeration test covers every diagnostic reachable FROM S393 code, including through
+landed helpers. (c) THE CANONICAL IDENTITY IS STILL NOT CANONICAL: a = {'nested': ({'b': 2, 'a': 1},)} and
+b = {'nested': ({'a': 1, 'b': 2},)} compare equal yet produced different identities (tuple contents fall through to repr,
+io.py:263), and two factory-created classes with identical qualified names -- the second subclassing the first without
+overriding repr -- produced the SAME identity, as did tuple and frozenset keys holding different-class equal-repr objects
+(io.py:255). RULING: canonicalization RECURSES through every container (dict, list, tuple, set, frozenset) and through KEYS as
+well as values, retaining each container's type tag, so nested key order never changes the identity and nested types are never
+lost; the type tag distinguishes two classes that share a qualified name and a repr (include the class's module and its
+identity-bearing attributes, or refuse to fingerprint and fall back to the positional surrogate under a named reason rather than
+return a colliding identity). A test pins the nested-tuple equality, the subclass pair and the container-key cases in both
+directions. Everything from fixes 1j-1p byte-identical in behaviour otherwise.
+
+AMENDMENT 15 (2026-09-23 16:2xZ; binding; orchestrator ruling after fix 1q). The owned set gains ONE companion test file,
+tests/platformkit/ingame/test_state_capture_fix_1q.py (the 154 regressions fix 1q wrote for AMENDMENT 14(a)-(c): dedupe keys
+inside the isolation, the guarded metrics adapter at the landed commit helper's call boundary, and the recursive canonical
+identity), admitted so the 300-line rail never forces a confirmed assertion out of an existing file. It tests this row's own
+modules only; local_state_capture_commit.py stays unedited (the guard is applied at the S393 call boundary, per 14(b)). Nothing
+else in the owned set changes.
+
+AMENDMENT 16 (2026-09-23 16:5xZ; binding; from round 17 on fix 1q -- sol ACCEPT WITH CORRECTIONS (the only correction is
+sandbox-only test execution) and astra REJECT (two blockers), both tiers confirming AMENDMENT 14(a) and 14(b) CLOSED and the
+archive seal 7b91941f42a7e228ad6f9740a4c3e4829534dd12cdc937a6c424c4ebd8ef5a65 matching). (a) CONTAINER SUBCLASSES RECURSE:
+class L(list) holding {'b': 2, 'a': 1} vs {'a': 1, 'b': 2} compared equal but produced different identities (exact-type
+checks sent the subclass through insertion-order-sensitive repr; io.py:262); a dict subclass reproduced it, including inside a
+hashable tuple key. RULING: canonicalization dispatches by isinstance for dict, list, tuple, set and frozenset (subclasses
+recurse like their base) and the container's type tag records the CONCRETE class's module and qualified name, so a subclass
+still differs from its base while its contents are canonical. (b) UNRESOLVABLE CLASSES REFUSE TO FINGERPRINT: two factory
+classes with the same qualified name, the second subclassing the first with an inherited repr, produced the SAME identity
+sha256:e1c9a6b1... with no named refusal (io.py:271; the ambiguity check looked only at one immediate base's subclasses).
+RULING: a class is fingerprinted by module + qualified name ONLY when importing that module and walking the qualified name
+resolves to that very class object (the getattr chain `is cls`); any class that cannot be resolved that way (factory-made,
+local, dynamically created) REFUSES to fingerprint under the named reason identity_unresolvable_class and falls back to the
+positional surrogate -- the refusal branch AMENDMENT 14(c) already allows -- so two distinct unresolvable classes can never
+share an identity; the counter is visible in the row's diagnostics. Tests: the factory pair (identical qualname + repr) ->
+two named refusals, never one shared identity; a module-level class and its module-level subclass -> two distinct identities;
+L(list) / D(dict) reorder -> same identity; a plain tuple containing a dict is not a dict key (Python raises first; not a
+case). (c) Everything from fixes 1j-1q byte-identical in behaviour otherwise; the archive gains no new block for this round
+unless a source changes.
+
+AMENDMENT 17 (2026-09-23 17:3xZ; binding; from round 18 on fix 1r -- BOTH Opus 5.5 tiers ACCEPT WITH CORRECTIONS; both re-tested
+AMENDMENT 16(a) and 16(b) as CLOSED, the AMENDMENT 12 guard and 14(b) adapter over 1,200 fault runs with 0 bad, the archive seal
+bb53c6f2...27a5 matching with 24 of 24 blocks and 6 of 6 record seals, and 1,048 tests). CORRECTIONS RULED: (1) THE IDENTITY
+REFUSAL COUNTERS REACH THE CAPTURE'S OWN METRICS: failure_identity calls report(None, league, reason)
+(local_state_capture_io.py:287), which counts into the process-global SOURCE_METRICS, while the production StateClient owns its
+own Metrics (local_capture_client.py:48), so identity_unresolvable_class and identity_serialization_errors never reach the
+sport's drops_by_reason / errors (and land under 'atp' / 'wta' for tennis); the refusal tests hid this by monkeypatching
+io.SOURCE_METRICS. RULING: failure_identity takes the getter (get=None) and reports through report(get, source, reason) at every
+call site in local_state_capture_sources.py (:89, :147, :216, :239, :293); one refusal test asserts on get.metrics WITHOUT the
+monkeypatch; the counter appears under the sport (tennis under 'tennis', the source under its own key as the landed convention
+dictates -- quote the convention). (2) DICT ENTRIES SORT BY KEY AND VALUE CANONICAL TEXT: io.py:271 sorts entries by the key's
+canonical JSON alone, so two distinct non-JSON keys with the same canonical form (a module-level class with repr 'k' and the
+default hash, instances k1 and k2: {k1: 1, k2: 2} == {k2: 2, k1: 1} is True) leak insertion order into the identity. RULING:
+the sort key is (canonical key text, canonical value text); one reorder test pins it. NOTES (recorded, not blockers): a module
+that raises anything other than ImportError during the resolvability import is counted identity_serialization_errors (named,
+not swallowed) -- the check may run a module's top-level code; a __main__ class resolves to '__main__.X' (two entry scripts could
+share the tag); depth 10,000 refuses by name, never a RecursionError; two instances of one resolvable class sharing a repr but
+holding different attributes share an identity under AMENDMENT 13(b)'s class-plus-repr rule (named in NOT VERIFIED). Everything
+else in fixes 1j-1r byte-identical; the archive gains the FIX 1s block and is resealed.
+
+AMENDMENT 18 (2026-09-23 17:5xZ; binding; after fix 1s applied AMENDMENT 17 -- both corrections closed, 1,080 tests, archive resealed 2e96a5115a33af641729cc06b21200881ddcc716441499f387dbcd4b5b0d9fd0). The owned set gains the companion test file tests/platformkit/ingame/test_state_capture_fix_1s.py (nine routing and sort-order regressions; test_state_capture_fix_1q.py sits at the 300-line rail). The memo was re-joined for length (layout only, stated in the memo). LANDING NOTE: the live state2 writer runs the pre-S393 landed code; adopting S393 is a supervised relaunch from the main tree (owner-visible, recorded BEFORE / AFTER) or a second writer into its own root, never a STOP file written by an agent; tonight the running writer is left as is.

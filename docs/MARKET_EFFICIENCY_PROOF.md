@@ -7,6 +7,14 @@
 > a failure: it is the expected, correct result for efficient markets, and the self-auditing
 > harness that proves it is the credential.
 >
+> **Scope note (2026-09-24).** The MATCH label on the MLB moneyline and soccer O/U rows is a
+> magnitude statement (gaps of 0.0039 and 0.0076 Brier); no interval is published for those rows,
+> and at n in the thousands a gap that small can be statistically distinguishable from zero. A
+> recomputation with `scripts/platformkit/eval_gate/dm_test.py` is queued and will be recorded
+> here either way. The NBA moneyline row carries its interval in [EVIDENCE.md](../EVIDENCE.md)
+> (n=743, CI includes 0). The reproduce commands below run in the private tree; this page is a
+> recorded scoreboard on the public clone.
+>
 > This is DECISION-SUPPORT, not a picks / profit / +EV / ROI product. Every number below is a
 > CALIBRATION / SHARPNESS measurement (Brier, RMSE, BSS) vs the devigged market close.
 > `edge_claimed = False` everywhere; no $ figure is produced. The single honesty truth-source

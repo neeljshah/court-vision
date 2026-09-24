@@ -159,3 +159,44 @@ reproduced endpoints above.
 and the runner must run there. RULING: every timestamp parse goes through the landed parse_venue_time (never fromisoformat on
 a Z-suffixed text), and the per-file tests are run and reported under the default python of the repo (3.10); a round or fix
 report states the interpreter version it used. Test: the three test files pass under python 3.10 with a Z-suffixed fixture.
+
+AMENDMENT 5 (2026-09-23 16:5xZ; binding; from round 5 on fix 1h -- sol REJECT (two blockers) and astra REJECT (two blockers,
+one correction); both tiers confirmed AMENDMENT 4(b), 4(c), 4(f) and the unzoned fallback CLOSED under Python 3.10.0).
+(a) EVERY ROW IS VALIDATED BEFORE THE CHARGE -- STILL OPEN (4(a)): signal_audit_runner.py:162 and :174-200 charge, then load
+and validate; a loader that merely declares availability_fields passes the pre-charge guard while its rows lack both fields
+(ledger 0 -> 1, then decision_time_refused), and the tracked test at test_signal_audit_runner.py:234-238 EXPECTS one ledger
+row after malformed timing evidence. RULING: load once; validate every input row (zoned timestamps through parse_venue_time,
+availability and settlement evidence present, unique ids, finite close, a STRICT BINARY outcome in {0, 1} -- a 2 or a bool
+is refused by name, never dropped_unsettled, never scored; feature-vintage alignment; strict redaction) BEFORE charged_run;
+any refusal means ZERO ledger rows and the row set marked NOT VALIDATED; the validated snapshot is what _score_family
+receives; the malformed-row tests require zero ledger rows. (b) INVALID SETTLED LABELS CANNOT SCORE: an outcome of 2 injected
+into one of 64 states produced a completed AHEAD (SINGLE-WINDOW) report over all 64 with ledger 0 -> 1
+(signal_audit_runner.py:199; :97 checks integer type only). Covered by (a); a dedicated test injects 2, -1, True and "1".
+(c) charge.json CARRIES BOTH ALLOWANCES: CHANGE 2 requires them; the receipt has charge, charge_row_id, hypothesis_hash,
+k_at_launch, ledger_path, manifest_commit, manifest_committed, prior_max_k only. RULING: immediately after the allowances are
+derived (runner :176-177) the receipt is enriched ATOMICALLY with family_allowance and member_allowance as Decimal strings,
+before any metric, retaining the crash-safe initial receipt; an exact artifact-schema assertion pins the key set. (d) The
+memo's line-count sentence is corrected to the measured lengths (modules 300 / 299 / 279 / 300; tests 299 / 300 / 300; memo
+300). (e) The identical-launch behaviour (0 -> 1 -> 1 with charge_exists on the second) is CORRECT per AMENDMENT 3(c) and
+stands. Everything else in fixes 1b-1h byte-identical in behaviour.
+
+AMENDMENT 6 (2026-09-23 18:2xZ; binding; from round 6 on fix 1i -- Opus tier 1 ACCEPT WITH CORRECTIONS, Opus tier 2 ACCEPT with
+no blocking or correction items). Both tiers reproduced AMENDMENT 5 (a)-(d) as closed: every row validated before charged_run
+(a bad last row of 64 leaves ledger_rows 0, NOT VALIDATED, no charge.json); 2 / -1 / True / '1' / None / 1.0 / np.int64(1)
+refused as outcome_not_strict_binary; the allowances written atomically into charge.json as Decimal strings with the exact
+ten-key set; lengths 300/299/289/300 and 299/300/300 and the memo 300, ASCII, LF; the identical relaunch 0 -> 1 -> 1;
+feature vintage strictly earlier than the decision time with zone conversion; crash between the receipt and the enrichment
+leaves an untorn charge.json plus failure.json; order independence over shuffles. ONE CORRECTION, RULED: (a) AN EMPTY CORPUS
+MUST NEVER BE CHARGED: a loader returning [] passed validation and wrote a ledger row (n_states 0) -- a spent FWER
+hypothesis with no possible measurement, and AMENDMENT 3(c) then blocks the identical retry with charge_exists. RULING:
+after the validation loop and inside the same try block, an empty corpus is refused by name (corpus_empty) and a corpus
+below the family's n_min is refused by name (corpus_below_n_min, naming the count and the bar) BEFORE the charge, through the
+same NOT VALIDATED path with charged 0 and no charge.json; a zero-row test and a below-n_min test assert no ledger row and no
+charge.json. (b) The memo's stale sentence at the NOT VERIFIED section ('Six verdicts were applied here (rounds 1-3 ...)')
+reads: the verdicts of rounds 1-6 were applied through fix 1j; both round-6 tiers accepted fix 1i (tier 1 with the
+corpus_empty correction); the row's independent acceptance is recorded in the register at landing. (c) NOTES kept as
+wording only: availability_declared is informational on the dry-run dict (renamed availability_declared_informational or
+dropped -- builder's choice, stated); outcome_not_strict_binary and the other row refusals name the game_id and the
+offending value; the memo's earlier-round test counts stay in their round sections and the FIX 1j section carries the
+current figures. Tier 2's NOTE that a row with outcome None (an unsettled game) refuses the whole batch is the intended
+AMENDMENT 5(a) behaviour: the real loader filters unsettled games before the runner -- the memo states this contract.

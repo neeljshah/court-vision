@@ -1,0 +1,1850 @@
+{
+  "groups": [
+    {
+      "capture_version": "local_capture_runner_v1",
+      "fields": {
+        "api_ts": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 24843,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 0
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "book": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 24843,
+            "string": 0
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "book.orderbook_fp.no_dollars.empty_ladder": {
+          "counts": {
+            "absent": 20080,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 4763,
+            "string": 0
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "book.orderbook_fp.no_dollars.price": {
+          "counts": {
+            "absent": 4763,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 903266
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "book.orderbook_fp.no_dollars.size": {
+          "counts": {
+            "absent": 4763,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 903266
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "book.orderbook_fp.yes_dollars.empty_ladder": {
+          "counts": {
+            "absent": 20079,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 4764,
+            "string": 0
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "book.orderbook_fp.yes_dollars.price": {
+          "counts": {
+            "absent": 4764,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 897542
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "book.orderbook_fp.yes_dollars.size": {
+          "counts": {
+            "absent": 4764,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 897542
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "capture_ts": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 24843
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "capture_version": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 24843
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "close_time": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 24843
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "depth_ask": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 20080,
+            "number_integral_text": 4763,
+            "other": 0,
+            "string": 0
+          },
+          "max_fractional_digits": 2,
+          "more_than_6_fractional_digits": 0
+        },
+        "depth_bid": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 20079,
+            "number_integral_text": 4764,
+            "other": 0,
+            "string": 0
+          },
+          "max_fractional_digits": 2,
+          "more_than_6_fractional_digits": 0
+        },
+        "enqueue_ts_ms": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 24843,
+            "other": 0,
+            "string": 0
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "event_ticker": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 24843
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "http_status": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 24843,
+            "other": 0,
+            "string": 0
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "market_state": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 24843
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "minutes_to_close": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 24843,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 0
+          },
+          "max_fractional_digits": 24,
+          "more_than_6_fractional_digits": 24414
+        },
+        "no_ask": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 4764,
+            "number_exponent_text": 0,
+            "number_fractional_text": 20079,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 0
+          },
+          "max_fractional_digits": 4,
+          "more_than_6_fractional_digits": 0
+        },
+        "no_bid": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 4763,
+            "number_exponent_text": 0,
+            "number_fractional_text": 20080,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 0
+          },
+          "max_fractional_digits": 4,
+          "more_than_6_fractional_digits": 0
+        },
+        "no_bid_size": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 4763,
+            "number_exponent_text": 0,
+            "number_fractional_text": 20080,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 0
+          },
+          "max_fractional_digits": 2,
+          "more_than_6_fractional_digits": 0
+        },
+        "no_bid_top5_asc": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 24843,
+            "string": 0
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "no_bid_top5_asc.empty_ladder": {
+          "counts": {
+            "absent": 20080,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 4763,
+            "string": 0
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "no_bid_top5_asc.price": {
+          "counts": {
+            "absent": 4763,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 100237,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 0
+          },
+          "max_fractional_digits": 4,
+          "more_than_6_fractional_digits": 0
+        },
+        "no_bid_top5_asc.size": {
+          "counts": {
+            "absent": 4763,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 100237,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 0
+          },
+          "max_fractional_digits": 2,
+          "more_than_6_fractional_digits": 0
+        },
+        "raw_market": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 24843,
+            "string": 0
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "record_type": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 24843
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "request_start_ts": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 24843
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "response_end_ts": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 24843
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "series": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 24843
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "sport": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 24843
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "tick_start_ts": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 24843
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "ticker": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 24843
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "ts_ms": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 24843,
+            "other": 0,
+            "string": 0
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "venue": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 24843
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "venue_status": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 24843
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "yes_ask": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 4763,
+            "number_exponent_text": 0,
+            "number_fractional_text": 20080,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 0
+          },
+          "max_fractional_digits": 4,
+          "more_than_6_fractional_digits": 0
+        },
+        "yes_bid": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 4764,
+            "number_exponent_text": 0,
+            "number_fractional_text": 20079,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 0
+          },
+          "max_fractional_digits": 4,
+          "more_than_6_fractional_digits": 0
+        },
+        "yes_bid_size": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 4764,
+            "number_exponent_text": 0,
+            "number_fractional_text": 20079,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 0
+          },
+          "max_fractional_digits": 2,
+          "more_than_6_fractional_digits": 0
+        },
+        "yes_bid_top5_asc": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 24843,
+            "string": 0
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "yes_bid_top5_asc.empty_ladder": {
+          "counts": {
+            "absent": 20079,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 4764,
+            "string": 0
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "yes_bid_top5_asc.price": {
+          "counts": {
+            "absent": 4764,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 100238,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 0
+          },
+          "max_fractional_digits": 4,
+          "more_than_6_fractional_digits": 0
+        },
+        "yes_bid_top5_asc.size": {
+          "counts": {
+            "absent": 4764,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 100238,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 0
+          },
+          "max_fractional_digits": 2,
+          "more_than_6_fractional_digits": 0
+        }
+      },
+      "record_type": "snapshot",
+      "rows": 24843
+    },
+    {
+      "capture_version": "local_capture_runner_v1",
+      "fields": {
+        "book": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 39372,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 0
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "capture_ts": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 39372
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "capture_version": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 39372
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "close_time": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 39372
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "event_ticker": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 39372
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "http_status": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 39372,
+            "other": 0,
+            "string": 0
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "last_price": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 39372,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 0
+          },
+          "max_fractional_digits": 4,
+          "more_than_6_fractional_digits": 0
+        },
+        "no_ask": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 39372,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 0
+          },
+          "max_fractional_digits": 4,
+          "more_than_6_fractional_digits": 0
+        },
+        "no_bid": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 39372,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 0
+          },
+          "max_fractional_digits": 4,
+          "more_than_6_fractional_digits": 0
+        },
+        "open_interest": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 39372,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 0
+          },
+          "max_fractional_digits": 2,
+          "more_than_6_fractional_digits": 0
+        },
+        "raw_market": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 39372,
+            "string": 0
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "record_type": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 39372
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "request_start_ts": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 39372
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "response_end_ts": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 39372
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "series": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 39372
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "sport": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 39372
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "tick_start_ts": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 39372
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "ticker": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 39372
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "venue": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 39372
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "venue_status": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 39372
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "volume": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 39372,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 0
+          },
+          "max_fractional_digits": 2,
+          "more_than_6_fractional_digits": 0
+        },
+        "volume_24h": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 39372,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 0
+          },
+          "max_fractional_digits": 2,
+          "more_than_6_fractional_digits": 0
+        },
+        "yes_ask": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 39372,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 0
+          },
+          "max_fractional_digits": 4,
+          "more_than_6_fractional_digits": 0
+        },
+        "yes_bid": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 39372,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 0
+          },
+          "max_fractional_digits": 4,
+          "more_than_6_fractional_digits": 0
+        }
+      },
+      "record_type": "snapshot_bulk",
+      "rows": 39372
+    },
+    {
+      "capture_version": "local_capture_runner_v1",
+      "fields": {
+        "backfill_id": {
+          "counts": {
+            "absent": 46326,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 74734
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "backfill_open": {
+          "counts": {
+            "absent": 46326,
+            "bool": 74734,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 0
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "capture_ts": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 121060
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "capture_version": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 121060
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "count_fp": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 121060
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "created_time": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 121060
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "event_ticker": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 121060
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "http_status": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 121060,
+            "other": 0,
+            "string": 0
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "is_block_trade": {
+          "counts": {
+            "absent": 0,
+            "bool": 121060,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 0
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "no_price_dollars": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 121060
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "raw_trade": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 121060,
+            "string": 0
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "record_type": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 121060
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "request_start_ts": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 121060
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "response_end_ts": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 121060
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "series": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 121060
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "sport": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 121060
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "taker_book_side": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 121060
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "taker_outcome_side": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 121060
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "taker_side": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 121060
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "tick_start_ts": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 121060
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "ticker": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 121060
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "trade_id": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 121060
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "venue": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 121060
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "venue_status": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 121060
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "yes_price_dollars": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 121060
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        }
+      },
+      "record_type": "trade",
+      "rows": 121060
+    },
+    {
+      "capture_version": "local_capture_runner_v1",
+      "fields": {
+        "backfill_id": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 5900
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "backfill_open": {
+          "counts": {
+            "absent": 0,
+            "bool": 5900,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 0
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "capture_ts": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 5900
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "capture_version": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 5900
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "drain_boundary_ids": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 5900,
+            "string": 0
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "drain_start_ts": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 5900
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "drain_watermark": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 379,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 5521
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "event_ticker": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 5900
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "http_status": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 5900,
+            "other": 0,
+            "string": 0
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "record_type": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 5900
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "request_start_ts": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 5900
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "response_end_ts": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 5900
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "series": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 5900
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "sport": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 5900
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "tick_start_ts": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 5900
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "ticker": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 5900
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "venue": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 5900
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "venue_status": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 5900
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        }
+      },
+      "record_type": "trade_backfill_closed",
+      "rows": 5900
+    },
+    {
+      "capture_version": "local_capture_runner_v1",
+      "fields": {
+        "capture_ts": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 241
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "capture_version": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 241
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "event_ticker": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 241
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "gap_end_ts": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 241
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "gap_kind": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 241
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "gap_start_ts": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 241,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 0
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "http_status": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 241,
+            "other": 0,
+            "string": 0
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "record_type": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 241
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "request_params": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 241,
+            "string": 0
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "request_start_ts": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 241
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "response_cursor": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 241
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "response_end_ts": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 241
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "series": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 241
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "sport": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 241
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "tick_start_ts": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 241
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "ticker": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 241
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "venue": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 241
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        },
+        "venue_status": {
+          "counts": {
+            "absent": 0,
+            "bool": 0,
+            "null": 0,
+            "number_exponent_text": 0,
+            "number_fractional_text": 0,
+            "number_integral_text": 0,
+            "other": 0,
+            "string": 241
+          },
+          "max_fractional_digits": 0,
+          "more_than_6_fractional_digits": 0
+        }
+      },
+      "record_type": "trade_gap",
+      "rows": 241
+    }
+  ],
+  "notice": "counts only; nothing here converts a stored float to text or claims its original precision",
+  "shards": [
+    {
+      "bytes": 359982871,
+      "capture_versions": [
+        "local_capture_runner_v1"
+      ],
+      "first_response_end_ts": "2026-09-22T00:00:36.237368Z",
+      "interpretation_failures": [],
+      "invalid_response_end_ts": 0,
+      "last_response_end_ts": "2026-09-22T23:59:57.121905Z",
+      "lines": 191416,
+      "path": "data/cache/ingame_books_local/kalshi/mlb/2026-09-22.jsonl",
+      "resolution": "not_applicable",
+      "rows": 191416,
+      "unparseable_count": 0,
+      "unparseable_lines": []
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "n_games": 1593,
+  "n_joined": 1430,
+  "fraction_with_prior_before_tipoff": 0.8976773383553045,
+  "refusals_per_game": {
+    "prior_absent": 89,
+    "prior_thin": 74
+  },
+  "counters": {
+    "alias_applied:PHO": 1,
+    "alias_applied:WSH": 1,
+    "checkpoint_date_disagrees": 57
+  },
+  "asof_kind": "reconstructed",
+  "source_sha256": "d54ba998aa14eed1f8d278a0b26d2dcca969ac33e274261aef32c8863af9ff91"
+}

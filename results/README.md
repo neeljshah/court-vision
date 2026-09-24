@@ -1,28 +1,15 @@
-# Results
+# results/
 
-This directory will contain reliability diagrams, CLV plots, and per-model ECE once the 80-game CV run and paper-trading gate complete.
+Committed artifacts read by the evidence pages. Nothing here is a betting-edge, ROI or dollar claim.
 
-## Status
+| File | What it is | Where it is cited |
+|---|---|---|
+| `winprob_walk_forward_results.json` | NBA win probability, 3-fold walk-forward: Brier 0.1930 (std 0.0084), n=1,473; no market baseline in the artifact | EVIDENCE.md section A |
+| `holdout_metrics.csv`, `holdout_metrics.png` | LEGACY small-sample placeholder from an early prop-model smoke run (480 holdout rows, 2,400 training rows). Superseded by the production-model chronological holdout in docs/JOB_EVIDENCE_PACKET.md section 3 (20,354 player-games: PTS MAE 4.83, REB 1.92, AST 1.39, FG3M 0.89). Do not quote the CSV's numbers; it is kept because this repository supersedes artifacts by adding the correction, not by deleting the record | superseded |
+| `STATUS.md` | the 2026-07 status note from the same smoke run; historical | historical |
 
-`scripts/generate_results.py` has been run and produced [`STATUS.md`](STATUS.md), [`holdout_metrics.csv`](holdout_metrics.csv), and [`holdout_metrics.png`](holdout_metrics.png) — see `STATUS.md` for the current holdout R²/MAE table and the list of gated artifacts still pending.
-
-The 80-game CV ingest run is stalled, not progressing: as of 2026-07-15, 9 CLEAN + 20 PARTIAL of 307 tracked games (81 processed, 26 verified, 46 REJECT), still short of the 80-CLEAN target, with 0 games processed in the last 24h.
-
-Metrics available right now: `data/models/model_registry.json` *(private repository)* — API-data holdout R² and MAE per model, walk-forward temporal CV.
-
-## Artifact schema (post-run)
-
-| File | Description |
-|------|-------------|
-| `reliability_pts.png` | Reliability diagram — points model |
-| `reliability_reb.png` | Reliability diagram — rebounds model |
-| `reliability_ast.png` | Reliability diagram — assists model |
-| `reliability_fg3m.png` | Reliability diagram — 3PM model |
-| `reliability_tov.png` | Reliability diagram — turnovers model |
-| `reliability_blk.png` | Reliability diagram — blocks model |
-| `reliability_stl.png` | Reliability diagram — steals model |
-| `clv_by_market.png` | CLV distribution by market type |
-| `clv_by_time.png` | CLV vs time-to-close scatter |
-| `clv_cumulative.png` | Cumulative CLV over bet sequence with bootstrap band |
-| `ece_by_model.csv` | ECE and MCE per model, walk-forward folds |
-| `clv_picks.csv` | Full pick-log CLV dataset (populated after paper-trading gate: ≥50 settled bets) |
+The reliability diagrams and CLV plots an earlier version of this page promised were never produced
+here: the computer-vision ingest program that would have fed them is paused, and the forward paper
+series has zero weeks collected (docs/GO_LIVE_GATES.md). Calibration curves with intervals live on the
+analytics site (https://neeljshah.github.io/court-vision/analytics/calibration/) and under
+docs/evidence/calibration/.

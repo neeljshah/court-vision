@@ -179,3 +179,34 @@ four) was ACCEPTED in both orders: lag ticks 12 -> 11 and the C-minus-B_lag Brie
 probability or loss is None (or the reverse) is refused under a named reason BEFORE any warm-up exclusion is applied, for every
 row including warm-up rows; the lag tick count and the control contrast can never move through such a row; a both-order test
 plants the warm-up contradiction. AMENDMENTS 8-9 stand whole. Everything else from fix 1j byte-identical in behaviour.
+
+AMENDMENT 11 (2026-09-23 05:2xZ; binding; from the sol round-3 REJECT of fix 1k -- one blocker, MEASURED; every other item of
+AMENDMENTS 8-10 reproduced as fixed). CARRIED VALUES ARE VALIDATED ON WARM-UP ROWS TOO: taking supported_lag_rows(), the first
+row with warmup True and a b_lag_subset dictionary, and setting both row['B_lag'] and row['b_lag_subset']['B_lag'] to
+float('inf') with the saved losses retained, stratified_cells ACCEPTED with lag ticks 12 in both orders; -0.1 and 1.1 also
+passed, and replacing either saved loss with a wrong value passed as well -- AMENDMENT 8's validation sits inside the
+warm-up / period condition (baseline_four_arm_period.py:182). RULING: validation of a CARRIED B_lag probability and its saved
+losses happens for EVERY row, outside the warm-up and period conditions and before any population exclusion or cell computation
+-- a warm-up row with a non-finite, out-of-range or loss-inconsistent B_lag refuses invalid_probability:B_lag or
+inconsistent_paired_loss arm=B_lag with n_refused 1, in both orders. Only the missing_b_lag_subset check may remain inside that
+condition (a warm-up row is not required to carry subset metadata). The same rule holds for the landed arms: an endpoint value
+with an inconsistent loss refuses on a warm-up row exactly as it does on a scored row. Everything else from fixes 1j-1k
+byte-identical in behaviour.
+
+AMENDMENT 12 (2026-09-23 05:5xZ; binding; from the round-4 REJECT of fix 1l -- BOTH tiers found this ONE blocker and both
+confirmed every other item of AMENDMENTS 8-11 as CLOSED). MISSING METADATA IS NOT AN EXPLICIT CONTRADICTION -- MEASURED: taking
+supported_lag_rows(), the first warm-up row carrying a subset, keeping its valid B_lag 0.5 and consistent losses, and popping
+b_lag_subset entirely refused invalid_absent_b_lag 1 / n_refused 1 in BOTH orders, although the same row ALONE is accepted:
+another row's metadata activates has_lag, and .get() conflates a missing field with an explicit None
+(baseline_four_arm_period.py:194-197). RULING: the two states are distinguished. A row whose b_lag_subset KEY IS ABSENT is
+exercising AMENDMENT 11's warm-up exemption -- it is accepted when its carried B_lag and losses are valid, and its treatment does
+not depend on whether any OTHER row carries metadata. A row whose b_lag_subset is PRESENT AND CONTRADICTS its B_lag value
+(either direction, including an explicit None) is refused as AMENDMENT 10 requires. A test pins the popped-key row both alone and
+beside a row that carries metadata, in both orders, and pins the explicit-None contradiction separately. CONFIRMED CLOSED by both
+tiers at round 4, do not regress: warm-up inf / -inf / NaN / -0.1 / 1.1 refuse invalid_probability:B_lag and wrong Brier or
+logloss refuse inconsistent_paired_loss arm=B_lag, each n_refused 1 in both orders before cells; all eight A-D endpoint
+combinations with consistent losses preserve the projected landed output while inconsistent losses refuse; removing every
+d_subset yields n_ticks 12 with identical lag bytes; all eight reconstructed paired intervals match; previous eligible mids,
+future-truncation invariance, three first-tick exclusions and repeat / reversal serialization pass; S405's no-lag and powered
+constructs preserve the projected landed output with edits confined to :119 / :184 / :269; S402's six-row no-lag audit matches the
+landed auditor including its existing C.means NOT_AUDITABLE; LATENCY-EXPLAINED is absent from producer source and output.

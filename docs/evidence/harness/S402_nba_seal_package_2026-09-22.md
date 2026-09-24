@@ -298,3 +298,21 @@ intersected against the EMITTED set (`FROZEN_ORDER`, `CENSUS.*`, `NBA_CENSUS`, `
   that exists only in another remote, is untested.
 - `duplicate_pinned_line` and `NBA_CENSUS` are proved only against synthetic text; no S395
   consumer pattern was run against a produced text.
+
+## Post-S417 re-audit of the landed MLB release (2026-09-23 16:5xZ, orchestrator; S417 AMENDMENT 6 requirement)
+
+S417 landed at d2ae4b4f3 (widened four_arm_output_audit_checks.py additively for B_lag). The LANDED S379 auditor was re-run over
+the ONLY real four-arm output (S347 attempt 1) from the repo root on master:
+python -m scripts.platformkit.ingame.four_arm_output_audit --out-dir data/cache/ingame_grade_joined/_trials/S347_four_arm_attempt1
+  --prereg docs/evidence/ingame/S347_PREREG_SEALED_2026-09-21.md
+  --manifest data/cache/ingame_grade_joined/_manifests/manifest_canonical_mlb_segmented_r3.json
+  --corpus-dir data/cache/ingame_grade_joined/mlb_segmented_r3 --ledger data/cache/eval_gate/backtest_fwer.jsonl
+  --audit-out data/cache/ingame_grade_joined/_trials/S347_four_arm_attempt1_AUDIT_postS417.json
+RESULT: 22 PASS / 1 NOT_AUDITABLE (C.means: saved summary has no per-arm mean fields for some cells) / 0 FAIL, verdict_release
+True -- check names and statuses IDENTICAL to the landed _AUDIT_final.json (23 checks). The ledger was read only: sha256 prefix
+0b40b55d08eba4dc and 19 rows before and after. The MLB release is unchanged by S417.
+RECORD OF A WRONG PATH: two earlier invocations with --manifest data/cache/ingame_grade_joined/_segmented_r3_manifest.json (the
+path the seal runbook draft guessed; that file has keys generated_at / root / suffix / sports, not the per-file 'files' map)
+returned 11 FAIL (A.manifest and everything downstream) on master AND on the pre-S417 checkouts 22f80c370, c2f478131 and
+32c9915f9 -- the failure was the manifest argument, not any landed commit. The sealed prereg pins the canonical per-file
+manifest at SHA-256 f3b5e3f9364f7627404cac7e8f51ffbf95fa56ffc72e20020629958aac3f72b1, which is the _manifests/ file above.

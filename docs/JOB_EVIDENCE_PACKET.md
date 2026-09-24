@@ -16,6 +16,11 @@
 
 ## 1. One-line pitch + who this is
 
+> **For a trading desk or quant team:** the one-page version of this packet, in desk vocabulary
+> (Brier against the devigged close and the live market, devig, CLV, execution controls, forward
+> record), is [QUANT_BRIEF.md](QUANT_BRIEF.md). Every number there is transcribed from this packet,
+> EVIDENCE.md, MARKET_EFFICIENCY_PROOF.md, GO_LIVE_GATES.md, or a memo linked beside it.
+
 **Pitch:** Solo builder of an end-to-end computer-vision → ML → full-stack production
 system who rigorously audits and disproves his own results — senior-grade engineering
 discipline.
@@ -25,16 +30,15 @@ efficient — the model is about break-even-minus-vig, and every candidate edge,
 my strongest (assists), was ultimately rejected or retracted by my own gates. That is a
 sophisticated and honest result, and I have the harnesses that prove it.
 
-He is a hands-on systems engineer, B.S. Data Science at the University of Iowa (expected
-May 2027), who built a complete NBA broadcast-video
+He is a hands-on systems engineer with three years of data-science coursework at the University
+of Iowa, who built a complete NBA broadcast-video
 CV pipeline, a multi-output ML prediction stack, and a multi-service FastAPI/daemon
 serving platform, mostly by architecting and directing an agentic build workflow (a
 planner model orchestrating cheaper executor models under hard ship gates). What sets him
 apart is not the surface area but the validation rigor: he built walk-forward CV with
 assertion-level leak guards, truncation-invariance leak tests, a multi-corpus calibration
 acceptance gate, and reproducible audit harnesses — and then used those harnesses to catch
-and publicly document leaks and measurement artifacts in his *own* flagship numbers. He
-is still an undergraduate, and the work is already mid-to-senior level in CV, ML engineering,
+and publicly document leaks and measurement artifacts in his *own* flagship numbers. The work is already mid-to-senior level in CV, ML engineering,
 and backend/data-platform engineering, and his honesty-first methodology is the kind a
 hiring manager actually wants.
 
