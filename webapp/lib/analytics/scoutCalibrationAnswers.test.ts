@@ -34,6 +34,8 @@ const soccerType = byType.market_types.soccer_match;
 const mlbMurphy = murphy.sports.mlb;
 const soccerMurphy = murphy.sports.soccer_intl;
 const high = stability.sports.mlb.sides.model_prob.bins.at(-1)!;
+const kernelReliabilityGap = kernel.rows[0].reliability_gap;
+if (kernelReliabilityGap === null) throw new Error("MLB moneyline reliability gap is missing");
 const answer = (q: string) => served.entries.find(entry => entry.q === q)?.a.answer || "";
 
 const cases = [
@@ -49,7 +51,7 @@ const cases = [
   ["Are single-fold results trustworthy?", "soccer_calibration_pack", [n(soccerPack.n_rows), "single-fold", "not durable"]],
   ["Which in-game market is best calibrated?", "calibration_by_market_type", [f(mlbType.market_ece), f(soccerType.market_ece), n(mlbType.n_rows), n(soccerType.n_rows)]],
   ["How big is the Brier gap between the model and the market by sport?", "calibration_by_market_type", [f(mlbType.brier_gap_model_minus_market), f(soccerType.brier_gap_model_minus_market), f(mlbType.model_brier), f(soccerType.market_brier)]],
-  ["Compare the model and the market on MLB in-game moneyline.", "kernel_transfer", [n(kernel.rows[0].n), f(kernel.rows[0].reliability_gap), mlbMurphy.model_prob.brier.toFixed(4), mlbMurphy.market_prob.brier.toFixed(4)]],
+  ["Compare the model and the market on MLB in-game moneyline.", "kernel_transfer", [n(kernel.rows[0].n), f(kernelReliabilityGap), mlbMurphy.model_prob.brier.toFixed(4), mlbMurphy.market_prob.brier.toFixed(4)]],
   ["Compare the in-game corpora by size.", "calibration_by_market_type", [n(mlbType.n_rows), String(mlbType.n_files), n(soccerType.n_rows), String(soccerType.n_files)]],
   ["How do you avoid double-counting duplicate corpora?", "calibration_by_market_type", ["mlb_clean", n(mlbType.n_rows), String(mlbType.n_files)]],
   ["Where does the model lose to the market -- calibration or information?", "murphy_decomposition", [f(soccerMurphy.model_prob.brier), f(soccerMurphy.market_prob.brier), signed(gap(soccerMurphy, "reliability")), signed(gap(soccerMurphy, "resolution"))]],
@@ -63,6 +65,7 @@ describe("revision 2 calibration Scout answers", () => {
       const copy = served.entries.find(entry => entry.q === q);
       const result = resolveQuestion(q, corpus);
       expect(result, q).toMatchObject({ kind: "direct", entry: { q } });
+      if (!result?.entry) throw new Error(`Missing Scout answer: ${q}`);
       expect(bucket, q).toBeDefined();
       expect(copy, q).toBeDefined();
       expect(copy, q).toMatchObject(bucket!);
@@ -79,7 +82,7 @@ describe("revision 2 calibration Scout answers", () => {
       } else {
         expect(answer(q)).toContain(`Published snapshot dated ${sourceDates[id]}`);
       }
-      const integrity = scoutIntegrity(bucket!.a);
+      const integrity = scoutIntegrity(result.entry.a);
       expect(integrity.moduleIds).toContain(id);
       if (id !== "kernel_transfer") {
         expect(integrity.notices, q).toEqual(expect.arrayContaining([expect.objectContaining({ status: "regenerated" })]));
