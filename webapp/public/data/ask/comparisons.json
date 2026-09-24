@@ -11,9 +11,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Measured as in-game skill over a constant base rate, MLB is the only one of the two graded sports where the model adds anything: BSS versus climatology is +0.042 over 78,986 MLB rows and -0.3134 over 9,003 soccer_intl rows. The market tells a different story -- it scores 0.167 against climatology in MLB and 0.1774 in soccer -- so 'predictable' depends entirely on who is doing the predicting.",
+    "answer": "This snapshot does not establish which sport is inherently most predictable. For the graded in-game outcomes, MLB market Brier is 0.151008 and model Brier 0.166759 on 27,351 rows; international soccer market Brier is 0.195157 and model Brier 0.332522 on 4,265 rows. Outcomes, base rates, and observation sets differ, so raw Brier is not an overall cross-sport predictability ranking. Against each published climatology, MLB model/market BSS are +0.3327/+0.3957; soccer values are -0.8569/-0.0898. This descriptive artifact was generated 2026-09-16; its observation window is not published. Counts are graded rows, not games.",
     "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "cross-sport",
@@ -30,9 +30,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Soccer, and it is not close: BSS versus market is -0.5967 across all soccer_intl rows against -0.1502 in MLB. The worst individual grain is the soccer 0-15 minute window at -1.0794 (n=627); the least bad is MLB's early innings at -0.0794 (n=19,900).",
+    "answer": "Among the two published all-row sport aggregates, international soccer is further behind on relative BSS versus market: -0.7039 across 4,265 rows, compared with MLB -0.1043 across 27,351 rows. The soccer 0-15 minute checkpoint is the most negative published relative score, -1.1707 on 566 rows. This is a comparison of published rows and checkpoints, not a ranking of all sports or games. This descriptive artifact was generated 2026-09-16; its observation window is not published. Counts are graded rows, not games.",
     "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "cross-sport",
@@ -49,9 +49,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Relative to the market, much better early. In innings 1-3 the BSS versus market is -0.0794; in the middle innings it slips to -0.1547; by innings 7 and later it collapses to -0.4635. The market's own skill rises the other way, from 0.0837 to 0.3555 against climatology, because late-game information is exactly what it prices best.",
+    "answer": "Relative to the market, MLB late innings are closest: model-versus-market BSS is -0.0918 in innings 7+ (7,442 rows), versus -0.1068 in innings 1-3 (9,489) and -0.1133 in innings 4-6 (9,752). All three are negative. Absolute model Brier also falls from 0.230077 early to 0.094548 late, but these checkpoints contain different observations; this does not show causal improvement or learning within games. This descriptive artifact was generated 2026-09-16; its observation window is not published. Counts are graded rows, not games.",
     "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "mlb",
@@ -867,9 +867,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Soccer, at a 0.6055 base rate against MLB's 0.4563. That difference matters for interpretation: a lopsided base rate makes the climatology baseline harder to beat, which is part of why the soccer model's BSS versus climatology is negative (-0.3134) while MLB's is positive (+0.042).",
+    "answer": "International soccer has the higher published sport-level graded-outcome base rate, 0.6911 versus MLB 0.4897. The constant sport base-rate climatology has Brier 0.179077 for soccer and 0.249895 for MLB on their respective all-row aggregates. The outcome definitions and row sets differ; these rates are descriptive, not a cross-sport model ranking. This descriptive artifact was generated 2026-09-16; its observation window is not published. Counts are graded rows, not games.",
     "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "cross-sport",
@@ -886,9 +886,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "In MLB yes, modestly: BSS of +0.042 against a constant base rate over 78,986 rows, peaking at +0.1431 in the middle innings. In soccer no: -0.3134 overall, meaning the state-only model is worse than simply quoting the league base rate. This is a comparison with climatology.",
+    "answer": "A constant 0.5 probability forecast has Brier 0.25 for a binary outcome regardless of its observed base rate. The MLB model scores 0.166759 and market 0.151008 across 27,351 rows, both below 0.25. The international soccer model scores 0.332522, above 0.25, while its market scores 0.195157, below 0.25, across 4,265 rows. This fixed-0.5 comparison differs from the published sport-base-rate climatology. This descriptive artifact was generated 2026-09-16; its observation window is not published. Counts are graded rows, not games.",
     "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "cross-sport",
@@ -905,9 +905,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Against climatology, the market scores 0.167 in MLB and 0.1774 in soccer while the model scores 0.042 and -0.3134. The MLB gap is roughly four to one in the market's favor; in soccer the model is on the wrong side of the baseline entirely.",
+    "answer": "Against the published constant sport base-rate climatology, MLB market BSS is +0.3957 versus model +0.3327; international soccer market BSS is -0.0898 versus model -0.8569. Directly versus market Brier, model BSS is -0.1043 in MLB and -0.7039 in soccer. Each sport uses its own outcome and row set (27,351 MLB rows; 4,265 soccer rows), so these values describe those published comparisons only. This descriptive artifact was generated 2026-09-16; its observation window is not published. Counts are graded rows, not games.",
     "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "cross-sport",
@@ -924,9 +924,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "The opening 15 minutes, where BSS versus market is -1.0794 over 627 rows and the market's Brier is 0.117831 against the model's 0.245017. The market is more than twice as sharp before much has happened on the pitch, which points at pre-match information the state-only model never sees.",
+    "answer": "By relative model-versus-market Brier skill score, international soccer's 0-15 minute window is most negative: -1.1707 on 566 rows (model Brier 0.267653; market 0.123304). By absolute Brier difference, 75-90+ minutes is largest: 0.409424 minus 0.245001 = 0.164423 on 390 rows. These windows grade different observations, so neither difference establishes a cause or an advantage outside this snapshot. This descriptive artifact was generated 2026-09-16; its observation window is not published. Counts are graded rows, not games.",
     "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "soccer",
@@ -1134,9 +1134,9 @@
    ],
    "a": {
     "status": "refused",
-    "answer": "Nothing in the committed evidence supports naming one. Every pregame candidate across six corpora and four sports was rejected under the conjunction gate, and in-game the model's Brier trails the market's at every grain measured -- BSS versus market -0.1502 in MLB and -0.5967 in soccer. Three MLB late-inning distributional rows read provisionally sharper on samples of about twenty, which is not a basis for any claim.",
+    "answer": "The published in-game snapshot does not support naming a beatable market. Model-versus-market Brier skill is negative in every reported MLB and international soccer checkpoint, including the all-row scores -0.1043 across 27,351 MLB rows and -0.7039 across 4,265 soccer rows. These descriptive comparisons do not establish what another model or future period could achieve. This descriptive artifact was generated 2026-09-16; its observation window is not published. Counts are graded rows, not games.",
     "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "cross-sport",

@@ -181,9 +181,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "It does not beat the market's Brier. The in-game Brier skill score of model versus market is at or below zero everywhere: for MLB all-innings the model Brier is 0.237684 against the market's 0.206653 (skill score -0.1502), and for international soccer all-minutes it is 0.227887 against 0.142726 (skill score -0.5967). Both model and market improve on the base-rate baseline, as expected.",
+    "answer": "In the published in-game comparison, the model has higher Brier probability error than the market in both sports: MLB 0.166759 versus 0.151008 across 27,351 rows (model-versus-market BSS -0.1043), and international soccer 0.332522 versus 0.195157 across 4,265 rows (-0.7039). Every published checkpoint is negative. MLB model and market both improve on their published sport-base-rate climatology; in soccer neither does. This descriptive artifact was generated 2026-09-16; its observation window is not published. Counts are graded rows, not games.",
     "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "brier",

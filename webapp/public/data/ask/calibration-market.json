@@ -68,9 +68,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "No. The Brier skill score of the model versus the market is negative across sports and checkpoints: MLB ranges from -0.079 to -0.464, soccer from -0.470 to -1.079. The model does not beat the market's Brier at any in-game grain. Both improve on a base-rate baseline, as expected for in-game win probability.",
+    "answer": "No. Across 27,351 MLB rows, model Brier is 0.166759 versus market 0.151008 (BSS versus market -0.1043). Across 4,265 international soccer rows, it is 0.332522 versus 0.195157 (-0.7039). Lower Brier means less probability error. Every published checkpoint also has negative model-versus-market BSS. These are in-game comparisons, not evidence of a market advantage. This descriptive artifact was generated 2026-09-16; its observation window is not published. Counts are graded rows, not games.",
     "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "model-vs-market",
@@ -277,9 +277,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "The Brier score is the mean squared error of a probability forecast (lower is better, 0.25 is a coin flip on a balanced outcome). On the MLB in-game win-prob corpus the model scores 0.237684 and the market 0.206653; on soccer the model is 0.227887 and the market 0.142726. The market is lower (better) in both.",
+    "answer": "A Brier score is the mean squared error of forecast probabilities against binary outcomes; lower means less probability error, but does not by itself isolate calibration. In this in-game snapshot, MLB model Brier is 0.166759 versus market 0.151008 across 27,351 rows. International soccer model Brier is 0.332522 versus market 0.195157 across 4,265 rows. A constant 0.5 forecast scores 0.25 for any binary outcome balance. This descriptive artifact was generated 2026-09-16; its observation window is not published. Counts are graded rows, not games.",
     "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "calibration",
@@ -372,9 +372,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "In MLB, yes: the Brier skill score of the model versus a constant base-rate (climatology) baseline is positive, +0.042 overall and up to +0.143 mid-game. In soccer it is negative overall (-0.3134), so the soccer model does not even clear the base rate there. This compares in-game win probability with climatology, not with the market.",
+    "answer": "For MLB, yes: versus the published constant sport base-rate climatology, model BSS is +0.3327 and market BSS is +0.3957 across 27,351 rows. For international soccer, no: model BSS is -0.8569 and market BSS is -0.0898 across 4,265 rows; neither improves that published climatology reference. BSS above zero means lower Brier than the named reference, not superiority to a different reference. This descriptive artifact was generated 2026-09-16; its observation window is not published. Counts are graded rows, not games.",
     "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "calibration",
@@ -486,9 +486,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "By raw in-game market Brier, soccer is lowest at 0.142726 and MLB is 0.206653, but the two are not directly comparable because base rates differ (soccer home-win base rate 0.6055, MLB 0.4563). The takeaway is that in both sports the market's Brier is lower than the model's, so the market is the sharper forecaster.",
+    "answer": "This snapshot cannot rank calibration alone across sports: Brier measures total probability error and the outcomes, base rates, and row sets differ. MLB market Brier is 0.151008 on 27,351 rows; international soccer market Brier is 0.195157 on 4,265 rows. The MLB value is lower for these graded outcomes, but that does not establish better calibration. Market Brier is lower than model Brier in each sport. This descriptive artifact was generated 2026-09-16; its observation window is not published. Counts are graded rows, not games.",
     "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "predictability",

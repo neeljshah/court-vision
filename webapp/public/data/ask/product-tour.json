@@ -161,9 +161,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "/analytics/m/soccer_calibration_pack and /analytics/m/soccer_form_stability are the two dedicated modules, and soccer teams have an atlas pack at /analytics/players/soccer. Be aware of the sample: the graded in-game soccer corpus is 9,003 rows against MLB's 78,986, and the model's Brier skill versus the market there is -0.5967.",
+    "answer": "The public soccer modules include /analytics/m/soccer_calibration_pack and /analytics/m/soccer_form_stability; team profiles are at /analytics/players/soccer. The graded international soccer in-game Brier exhibit has 4,265 rows: model 0.332522 versus market 0.195157, with model-versus-market BSS -0.7039. It describes this published corpus, not a live forecast. This descriptive artifact was generated 2026-09-16; its observation window is not published. Counts are graded rows, not games.",
     "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
