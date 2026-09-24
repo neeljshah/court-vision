@@ -35,6 +35,15 @@ function rows(source: MlbCatcherOozSource): ResearchRow[] {
 
 export function buildMlbCatcherOozResearch(source: MlbCatcherOozSource): ResearchAnalysis[] {
   const analysisRows = rows(source || {});
+  const nameCounts = new Map<string, number>();
+  for (const row of analysisRows) {
+    const name = row.label.trim().toLowerCase();
+    nameCounts.set(name, (nameCounts.get(name) || 0) + 1);
+  }
+  const repeatedNames = [...nameCounts.values()].some(count => count > 1);
+  const annotatedRows = analysisRows.map(row => nameCounts.get(row.label.trim().toLowerCase())! > 1
+    ? { ...row, note: `${row.note} This name appears more than once in the published catcher selections; the source has no player IDs, so identity cannot be resolved.` }
+    : row);
   return [{
     id: "mlb-catcher-out-of-zone-strike-rate",
     title: "MLB catcher out-of-zone strike rate selections",
@@ -45,10 +54,10 @@ export function buildMlbCatcherOozResearch(source: MlbCatcherOozSource): Researc
     method: "Restate the source's published upper and lower catcher selections with out-of-zone strike rate and out-of-zone pitch support (Statcast type S/B).",
     description: "Published catcher selections retain their out-of-zone strike rate and type-S/B pitch support from the fixed Statcast corpus slice.",
     scope: `${analysisRows.length} published catcher selections from the source's fixed 2022-2023 corpus slice.`,
-    caveat: "The source defines support as out-of-zone pitches with Statcast type S or B; its strike numerator includes called, swung, or fouled strikes and does not separate them. This is not a framing measure. It is a fixed historical slice and does not adjust for pitcher, batter, count, or location mix.",
+    caveat: `The source defines support as out-of-zone pitches with Statcast type S or B; its strike numerator includes called, swung, or fouled strikes and does not separate them. This is not a framing measure. It is a fixed historical slice and does not adjust for pitcher, batter, count, or location mix.${repeatedNames ? " Repeated published names have no player IDs, so those rows cannot be assigned to distinct or identical people from this source." : ""}`,
     status: "Descriptive MLB subset",
     fields: [f("out_of_zone_strike_rate", "Out-of-zone strike rate", "percent", 2), f("out_of_zone_called_pitches", "Out-of-zone pitch support (type S/B)", "number", 0)],
-    rows: analysisRows,
+    rows: annotatedRows,
     formula: "Out-of-zone strike rate is copied from the published ooz_strike_rate field. Out-of-zone pitch support (type S/B) is copied from the published n_ooz_called field.",
     interpretation: "Read out-of-zone strike rate with its type-S/B pitch support; this selection is descriptive and is not a player-quality ranking.",
     references: REFERENCES,

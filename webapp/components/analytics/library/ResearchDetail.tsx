@@ -24,7 +24,7 @@ export default function ResearchDetail({ analysis: a, related }: { analysis: Res
   const { state, change, reset } = useResearchView(a);
   const { metric, second, group, query, ascending, view } = state;
   const [copyStatus, setCopyStatus] = useState("");
-  const inspector = useRef<HTMLElement>(null), trigger = useRef<Element | null>(null);
+  const inspector = useRef<HTMLElement>(null), trigger = useRef<Element | null>(null), search = useRef<HTMLInputElement>(null);
   const field = a.fields.find(f => f.key === metric) || a.fields[0], y = a.fields.find(f => f.key === second) || a.fields[1] || field;
   const comparison = researchComparisonPolicy(a.rows, a);
   const activePopulation = comparison.populations.find(item => item.key === state.population) || comparison.populations.find(item => item.compatibility === "compatible");
@@ -45,7 +45,13 @@ export default function ResearchDetail({ analysis: a, related }: { analysis: Res
   const rows = suppressPooledSummaries ? filtered : [...ranked, ...filtered.filter(r => r.values[metric] === null || !Number.isFinite(r.values[metric]))];
   const selected = publishedPopulation.find(r => r.id === state.row && (aggregateIds.has(r.id) || terms.every(t => `${r.label} ${r.group} ${r.note || ""}`.toLowerCase().includes(t))));
   const inspect = (r: LabRow) => { trigger.current = document.activeElement; change({ row: r.id }); };
-  const close = () => { change({ row: "" }); if (trigger.current instanceof HTMLElement || trigger.current instanceof SVGElement) trigger.current.focus(); };
+  const close = () => {
+    const target = trigger.current;
+    change({ row: "" });
+    if (target?.isConnected && target !== document.body && (target instanceof HTMLElement || target instanceof SVGElement)) target.focus();
+    else search.current?.focus();
+    trigger.current = null;
+  };
   useEffect(() => { if (selected) inspector.current?.focus(); }, [selected]);
   useEffect(() => setCopyStatus(""), [state]);
   const copyView = async () => {
@@ -64,7 +70,7 @@ export default function ResearchDetail({ analysis: a, related }: { analysis: Res
       {!comparison.compatible && <section className="lab-cohort-notice" aria-label="Population comparison notice"><p>{comparison.reason} {showAllRows ? "All rows are shown without a pooled ranking, median, or percentile." : selectedCompatibility === "unknown" ? "The selected population has no complete published definition, so rankings and summaries are unavailable." : `Showing ${activePopulation?.label || "one population"} by default.`}</p></section>}
       <BrierPhaseCoveragePanel coverage={a.phaseCoverage} sport={showAllRows ? undefined : activePopulation?.sport} asOf={a.asOf} />
       <TennisSurfaceFoldPanel groups={a.surfaceFolds} />
-      <div className="research-chart-toolbar"><div className="cv-segment">{[["rank", "Ranked bars"], ["scatter", "Scatter plot"], ["table", "Data table"], ["distribution", "Distribution"]].map(([id, label]) => <button key={id} aria-pressed={view === id} onClick={() => change({ view: id })}>{label}</button>)}</div><label className="research-search"><Search size={14} /><span className="sr-only">Search analysis rows</span><input value={query} placeholder={a.id.includes("matchup") ? "Find a team or pairing" : "Find a row"} onChange={e => change({ query: e.target.value, row: "" })} /></label></div>
+      <div className="research-chart-toolbar"><div className="cv-segment">{[["rank", "Ranked bars"], ["scatter", "Scatter plot"], ["table", "Data table"], ["distribution", "Distribution"]].map(([id, label]) => <button key={id} aria-pressed={view === id} onClick={() => change({ view: id })}>{label}</button>)}</div><label className="research-search"><Search size={14} /><span className="sr-only">Search analysis rows</span><input ref={search} value={query} placeholder={a.id.includes("matchup") ? "Find a team or pairing" : "Find a row"} onChange={e => change({ query: e.target.value, row: "" })} /></label></div>
       <p className="cv-muted" role="status">{filtered.length} matching {filtered.length === 1 ? "row" : "rows"}; {ranked.length} {ranked.length === 1 ? "contains" : "contain"} {field.label.toLowerCase()}.</p>
       <div className="research-view-actions"><button className="lab-export" onClick={copyView}><Link2 size={14} /> Copy view link</button><button className="lab-export" onClick={reset}><RotateCcw size={14} /> Reset view</button><span aria-live="polite">{copyStatus}</span></div>
       <p className="cv-footnote">CSV includes {rows.length} matching {rows.length === 1 ? "row" : "rows"}, all fields, and source context; missing measurements stay blank. Published source dates and row provenance are included when available; structured provenance uses JSON cells.</p>
