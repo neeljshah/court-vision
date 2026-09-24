@@ -29,7 +29,7 @@ const MULTI_POPULATION = [
   "observed-cohort-shift", "cluster-interval-width", "calibration-support-concentration", "verdict-mix-entropy", "verdict-friction-share",
 ];
 // No population identity is published, so nothing may be pooled at all.
-const UNIDENTIFIED = ["answer-evidence-coverage", "soccer-trailing-attack-defense", "soccer-home-away-trailing-form-gap", "soccer-team-atlas-measurements"];
+const UNIDENTIFIED = ["answer-evidence-coverage", "soccer-trailing-attack-defense", "soccer-home-away-trailing-form-gap", "soccer-team-atlas-measurements", "mlb-platoon-support-balance"];
 // Rates whose own published explanation says they answer different questions.
 const QA_RATE_ANALYSES = ["answer-evidence-coverage", "verdict-mix-entropy", "verdict-friction-share"];
 
