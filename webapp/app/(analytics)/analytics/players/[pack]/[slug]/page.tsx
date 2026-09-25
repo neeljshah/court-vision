@@ -158,6 +158,12 @@ export default function EntityPage({ params }: { params: { pack: string; slug: s
   const observationContext = entityObservationContext(params.pack, entry);
   const pctPack = packPercentiles(params.pack) as unknown as EntityPercentilePack | null;
   const measurements = entityMeasurements(params.pack, entry, params.slug, pctPack, manifest.entries);
+  const rankContext = params.pack === "mlb_pitch"
+    ? `Percentiles are calculated within the ${measurements.cohort} group using each field's measured values; higher is only higher, not a quality judgement.`
+    : params.pack === "soccer"
+      ? "Stored percentiles rank measured rows in the published soccer pack. The pack spans six divisions without team league or match dates, so like-for-like comparisons are unverified. Higher is only higher, not a quality judgement."
+      : "Stored percentiles rank measured rows in this published pack; higher is only higher, not a quality judgement.";
+  const rankSource = params.pack === "mlb_pitch" ? pack.manifest : "entity_percentiles.json";
   // entity_joins.json: only nba_teams/nba_players carry any; 137 of 482 player cards legitimately have none.
   const joinPack = packJoins(params.pack);
   const joinItems = joinPack?.entities[params.slug]?.items || [];
@@ -213,7 +219,7 @@ export default function EntityPage({ params }: { params: { pack: string; slug: s
         <div style={{ flex: "3 1 440px", minWidth: 0 }}>
           <EntityMeasurements measurements={measurements} sourceArtifact={`${REPO}/${pack.manifest}`} asOf={asOf || undefined} />
           {measurements.scalars.some((item) => typeof item.percentile === "number") ? <div style={{ marginTop: 10, fontSize: 13, color: "var(--ink-3)" }}>
-            Percentiles are ranks within the compatible published cohort; higher is only higher, not a quality judgement. <Receipt sourceArtifact={`${REPO}/entity_percentiles.json`} asOf={asOf || undefined} verdict="descriptive_only" label="descriptive_only" />
+            {rankContext} <Receipt sourceArtifact={`${REPO}/${rankSource}`} asOf={params.pack === "mlb_pitch" ? asOf || undefined : undefined} verdict="descriptive_only" label="descriptive_only" />
           </div> : null}
           <ScoutNote envelope={envelope} />
           {insight?.three_things?.length ? (

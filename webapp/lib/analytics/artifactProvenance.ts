@@ -22,6 +22,7 @@ const publishedArtifacts = new Set([
   "atlas_soccer_manifest.json",
   "atlas_tennis_manifest.json",
   "atlas_calibration_manifest.json",
+  "entity_percentiles.json",
 ]);
 
 function fileName(path: string): string {
