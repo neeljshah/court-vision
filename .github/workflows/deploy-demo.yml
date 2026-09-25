@@ -137,6 +137,7 @@ jobs:
           npx vitest run components/analytics/count-context/CountContext.test.tsx
           npx vitest run components/analytics/count-context/ExactCountExplorer.test.tsx
           npx vitest run components/analytics/library/ResearchDetail.test.tsx
+          npx vitest run components/analytics/library/ResearchDefaultView.test.tsx
           npx vitest run components/analytics/library/ResearchDetailFocus.test.tsx
           npx vitest run lib/analytics/researchMlbCatcherOoz.test.ts
           npx vitest run lib/analytics/researchMlbPlatoonSupport.test.ts

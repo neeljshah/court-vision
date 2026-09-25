@@ -33,6 +33,10 @@ const unidentified: ResearchAnalysis = {
     { id: "regression", label: "Regression-bank checks", group: "Fail-closed QA", values: { score: 2, rate: 0.25 } },
   ],
 };
+const mixedWithUnknown: ResearchAnalysis = {
+  ...multisport, sport: "all",
+  rows: [...multisport.rows, { id: "unclear", label: "Unclassified", group: "Other", values: { score: 3, rate: 0.1 } }],
+};
 
 function State({ a, intent }: { a: ResearchAnalysis; intent?: "query" | "reset" | "multiple" }) {
   const { state, change, reset } = useResearchView(a);
@@ -50,12 +54,92 @@ function State({ a, intent }: { a: ResearchAnalysis; intent?: "query" | "reset" 
   return <output data-testid="state">{JSON.stringify(state)}</output>;
 }
 
+function ControlledState({ a = multisport }: { a?: ResearchAnalysis }) {
+  const { state, change, reset } = useResearchView(a);
+  return <>
+    <output data-testid="state">{JSON.stringify(state)}</output>
+    <button onClick={() => change({ row: "mlb" })}>Inspect MLB</button>
+    <button onClick={() => change({ population: "all", row: "" })}>All rows</button>
+    <button onClick={() => change({ population: "sport=mlb", row: "" })}>MLB rows</button>
+    <button onClick={() => change({ population: "missing-definition", row: "" })}>Unknown rows</button>
+    <button onClick={() => change({ population: "all", view: "scatter", row: "" })}>All scatter</button>
+    <button onClick={reset}>Reset</button>
+  </>;
+}
+
 const view = () => JSON.parse(screen.getByTestId("state").textContent || "{}") as ReturnType<typeof useResearchView>["state"];
 
 beforeEach(() => window.history.replaceState(null, "", "/analytics/research/first/"));
 afterEach(() => window.history.replaceState(null, "", "/analytics/research/first/"));
 
 describe("useResearchView hydration intent", () => {
+  it("opens unidentified rows in the table and resets to that safe default", () => {
+    window.history.replaceState(null, "", "?view=rank&utm_source=shared");
+    render(<State a={unidentified} intent="reset" />);
+    expect(view()).toMatchObject({ population: "all", view: "table" });
+    expect(new URLSearchParams(window.location.search).get("view")).toBeNull();
+    expect(new URLSearchParams(window.location.search).get("utm_source")).toBe("shared");
+  });
+
+  it("defaults a compatible partition to ranks but an explicit all-rows population to the table", () => {
+    const rendered = render(<State a={multisport} />);
+    expect(view()).toMatchObject({ population: "sport=mlb", view: "rank" });
+    rendered.unmount();
+    window.history.replaceState(null, "", "?population=all");
+    render(<State a={multisport} />);
+    expect(view()).toMatchObject({ population: "all", view: "table" });
+  });
+
+  it("resets a mixed all-rows table to its compatible partition and ranked default", () => {
+    window.history.replaceState(null, "", "?population=all&view=table");
+    render(<State a={multisport} intent="reset" />);
+    expect(view()).toMatchObject({ population: "sport=mlb", view: "rank" });
+    expect(window.location.search).toBe("");
+  });
+
+  it("moves a selected row into the unrankable all-rows table and keeps that table on return", () => {
+    const rendered = render(<ControlledState />);
+    act(() => screen.getByRole("button", { name: "Inspect MLB" }).click());
+    expect(view()).toMatchObject({ population: "sport=mlb", view: "rank", row: "mlb" });
+    act(() => screen.getByRole("button", { name: "All rows" }).click());
+    expect(view()).toMatchObject({ population: "all", view: "table", row: "" });
+    expect(new URLSearchParams(window.location.search).get("view")).toBeNull();
+    rendered.unmount();
+    render(<ControlledState />);
+    expect(view()).toMatchObject({ population: "all", view: "table", row: "" });
+    act(() => screen.getByRole("button", { name: "MLB rows" }).click());
+    expect(view()).toMatchObject({ population: "sport=mlb", view: "table", row: "" });
+    act(() => screen.getByRole("button", { name: "Reset" }).click());
+    expect(view()).toMatchObject({ population: "sport=mlb", view: "rank", row: "" });
+  });
+
+  it("keeps an explicitly selected chart on the same population transition", () => {
+    render(<ControlledState />);
+    act(() => screen.getByRole("button", { name: "All scatter" }).click());
+    expect(view()).toMatchObject({ population: "all", view: "scatter", row: "" });
+    expect(new URLSearchParams(window.location.search).get("view")).toBe("scatter");
+  });
+
+  it("opens the table when switching from a compatible partition to unknown rows", () => {
+    render(<ControlledState a={mixedWithUnknown} />);
+    expect(view()).toMatchObject({ population: "sport=mlb", view: "rank" });
+    act(() => screen.getByRole("button", { name: "Unknown rows" }).click());
+    expect(view()).toMatchObject({ population: "missing-definition", view: "table", row: "" });
+  });
+
+  it.each(["rank", "scatter", "distribution"])("preserves an explicit %s view on all rows", requested => {
+    window.history.replaceState(null, "", `?population=all&view=${requested}`);
+    render(<State a={multisport} />);
+    expect(view()).toMatchObject({ population: "all", view: requested });
+    expect(new URLSearchParams(window.location.search).get("view")).toBe(requested);
+  });
+
+  it("restores an unknown selected population without a view in the table", () => {
+    window.history.replaceState(null, "", "?population=missing-definition");
+    render(<State a={unidentified} />);
+    expect(view()).toMatchObject({ population: "missing-definition", view: "table" });
+  });
+
   it("restores a visible aggregate despite phase search but rejects another sport's aggregate", () => {
     const aggregates: ResearchAnalysis = { ...multisport, rows: [
       ...multisport.rows.map(row => ({ ...row, sourcePaths: [`sports.${row.id === "mlb" ? "mlb" : "soccer_intl"}.grains.early.brier_model`] })),
