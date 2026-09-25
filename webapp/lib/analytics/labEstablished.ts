@@ -4,12 +4,11 @@ import { getSoccerVenueLabDataset } from "./labSoccerVenue";
 import { getPitchProfilesLabDataset } from "./labPitchProfiles";
 import { getLineupSynergyLabDataset } from "./labLineupSynergy";
 import { getRimProfileLabDataset } from "./labRimProfile";
+import { getNbaConsistencyLabDataset } from "./labNbaConsistency";
 export function establishedDatasets(): LabDataset[] {
   const output: LabDataset[] = [];
   output.push(getPitchProfilesLabDataset());
-  const consistent = snapshot<{ most_consistent_top15: SourceRow[]; least_consistent_top15: SourceRow[] }>("nba_consistency_profiles");
-  const consistencyFields = [f("composite_cv_shrunk", "Composite variability", "number", 4), f("pts_per36_mean", "Points / 36"), f("pts_cv_shrunk", "Points variability", "number", 4), f("reb_cv_shrunk", "Rebound variability", "number", 4), f("ast_cv_shrunk", "Assist variability", "number", 4), f("games", "Games", "number", 0)];
-  output.push({ id: "nba-consistency", title: "Player consistency", sport: "nba", category: "Player & team", source: "nba_consistency_profiles", description: "Explore how much a player's per-36 production varies from game to game.", scope: "Published extremes from 579 eligible players; 2023-24 through 2025-26.", caveat: "These are the 15 lowest and 15 highest published variability profiles, not the complete player population. Lower variability is not higher skill. Small means can inflate CV.", status: "Descriptive", fields: consistencyFields, rows: [...labRows(consistent.most_consistent_top15, consistencyFields, "player_name", "Most consistent"), ...labRows(consistent.least_consistent_top15, consistencyFields, "player_name", "Least consistent")] });
+  output.push(getNbaConsistencyLabDataset());
   output.push(getLineupSynergyLabDataset());
   output.push(getRimProfileLabDataset());
   output.push(getSoccerVenueLabDataset());
