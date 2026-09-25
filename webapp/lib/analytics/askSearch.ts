@@ -260,9 +260,9 @@ export function resolveQuestion(query: string, entries: AskEntry[]): ResolvedQue
   };
   const offer = intent.isComparison ? comparisonOffer(intent.entities) : undefined;
 
-  // The site has no current-data feed. Prefer the curated scope refusal before a
-  // static player card can be mistaken for an answer about a live or latest event.
-  const staticExact = entries.find((entry) => entry.a.status === "ok" &&
+  // Exact published answers include missing coverage for named metrics such as
+  // Live-Clock Fraction. Other live/latest requests still use the scope refusal.
+  const staticExact = entries.find((entry) => entry.a.status !== "refused" &&
     supportsEntities(entry, intent.entities) && matchesStaticQuestion(queryTerms, entry));
   if (staticExact) return {
     entry: staticExact,

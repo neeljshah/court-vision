@@ -125,8 +125,10 @@ jobs:
           npx vitest run lib/analytics/scoutCorpus.test.ts
           npx vitest run lib/analytics/scoutBrierAnswers.test.ts
           npx vitest run lib/analytics/scoutCalibrationAnswers.test.ts
+          npx vitest run lib/analytics/scoutTimingAnswers.test.ts
           npx vitest run components/analytics/AskBox.test.tsx
           npx vitest run components/analytics/AskBox.integrity.test.tsx
+          npx vitest run components/analytics/AskBox.timing.test.tsx
           npx vitest run components/analytics/compare/CompareExperience.test.tsx
           npx vitest run components/analytics/compare/MlbAtlasCompareExperience.test.tsx
           npx vitest run components/analytics/compare/TennisSurfaceComparison.test.tsx

@@ -163,9 +163,10 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "MLB, with a Live-Clock Fraction of 0.8333 against soccer_intl's 0.7475. The comparison is indicative rather than metric: 3 runs and 1 goal are not equated margins, and innings and minutes are not the same clock.",
+    "answer": "In these observed score paths, MLB LCF is 0.7368 at 3 runs (97/174 usable games) and international-soccer LCF is 0.5994 at 1 goal (12/26). Each is the median fraction of the observed clock at the first tick after which the absolute score gap stays at least the threshold through the final observed tick, among qualifying games. Runs and goals, and innings and minutes, are not equated, so this is no universal ranking or live point-of-no-return forecast. Published snapshot dated 2026-09-17; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/novel_live_clock_fraction.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown",
+    "explore_path": "/analytics/m/novel_live_clock_fraction"
    },
    "tags": [
     "cross-sport",
@@ -182,9 +183,10 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Soccer, on the Market Foresight Premium: mean 0.9211 across 19 checkpoints versus 0.2461 across 10 in MLB, ending at 1.7056 versus 0.2365. In both sports the premium grows through the game -- delta of +1.0663 in soccer and +0.1735 in MLB -- but soccer starts higher and climbs further.",
+    "answer": "MFP cannot answer where a live in-game market knows the most. It compares a closing reference forecast with one scoreboard-only model at retrospective checkpoints. The unweighted mean MFP is 0.9225 across 19 international-soccer checkpoints versus 0.1487 across 10 MLB checkpoints; the final rows are 1.4861 (n=33) and 0.411 (n=46). Counts are checkpoint observations, not games, and different clocks, populations and model misspecification prevent a causal sport ranking. Published snapshot dated 2026-09-17; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/novel_market_foresight_premium.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown",
+    "explore_path": "/analytics/m/novel_market_foresight_premium"
    },
    "tags": [
     "cross-sport",
@@ -1001,9 +1003,10 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "MLB resolves slowly and steadily: market entropy falls from 0.9669 bits at the first checkpoint to 0.6979 by inning 8. Soccer starts lower and drops further, from 0.8209 bits at kickoff to 0.4394 by minute 90. Soccer therefore ends far more decided, which is consistent with its lower Live-Clock Fraction.",
+    "answer": "The MFP exhibit records closing reference forecast entropy at retrospective checkpoints, not a path of contemporaneous live prices. In MLB it is 0.9553 bits at inning 1, 0.4589 at inning 9, then 0.8488 in the thin checkpoint-10 extra-innings tail (n=46). International soccer records 0.8152 bits at kickoff and 0.3970 at minute 90 (n=33). Each n counts checkpoint observations, not games. The rows are different populations and clocks, so this does not establish a smooth within-game convergence rate or a cross-sport decisiveness ranking. Published snapshot dated 2026-09-17; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/novel_market_foresight_premium.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown",
+    "explore_path": "/analytics/m/novel_market_foresight_premium"
    },
    "tags": [
     "cross-sport",
@@ -1020,9 +1023,10 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "It degrades in both sports. MLB model skill starts at -0.0479 and ends at -0.1926; soccer starts at -0.0599 and ends at -1.1476. The market moves the opposite way in MLB, from 0.013 up to 0.3254 by inning 9. Late-game state is where the model's blind spots cost the most.",
+    "answer": "For the specific scoreboard-only model, MLB skill relative to a naive Brier baseline is -0.0154 at checkpoint 1 (n=3,589), +0.5474 at checkpoint 9 (n=1,110), and -0.0631 in the extra-innings checkpoint 10 (n=46). International soccer is -0.0643 at kickoff (n=150) and -0.8324 at minute 90 (n=33). Each n counts checkpoint observations, not games. These are different checkpoint populations, not a monotonic within-game degradation; the comparison uses a closing reference forecast and cannot diagnose a live information loss. Published snapshot dated 2026-09-17; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/novel_market_foresight_premium.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown",
+    "explore_path": "/analytics/m/novel_market_foresight_premium"
    },
    "tags": [
     "cross-sport",
@@ -1077,9 +1081,10 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "The price, consistently. The Market Foresight Premium is positive at every measured checkpoint in both sports -- 0.063 to 0.5208 across MLB innings, 0.6393 to 1.7056 across soccer minutes -- meaning the market resolves more per bit of remaining uncertainty than a scoreboard-only forecaster does. The measurement cannot separate genuine market news from model misspecification.",
+    "answer": "In this retrospective paired instrument, the closing reference forecast has higher normalized Brier skill than one scoreboard-only model at every reported MLB and international-soccer checkpoint: MFP stays positive (MLB 0.0159-0.4110; soccer 0.6779-1.7802). That does not compare the score with a contemporaneous in-game price, isolate causal information, or establish a tradable advantage. Checkpoint observations are not game counts. Published snapshot dated 2026-09-17; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/novel_market_foresight_premium.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown",
+    "explore_path": "/analytics/m/novel_market_foresight_premium"
    },
    "tags": [
     "cross-sport",

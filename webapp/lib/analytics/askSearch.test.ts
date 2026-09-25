@@ -27,6 +27,23 @@ const entries: AskEntry[] = [
 ];
 
 describe("resolveQuestion", () => {
+  it("respects exact missing-coverage questions while retaining the current-data guard", () => {
+    const missing: AskEntry = {
+      q: "Why is there no NBA Live-Clock Fraction?", alt_phrasings: ["nba lcf missing"],
+      tags: ["lcf", "nba"], bucket: "novel-stats",
+      a: { status: "no_data", answer: "NBA is not_buildable.", source_artifact: "lcf.json" },
+    };
+    const scope: AskEntry = {
+      q: "Is Scout live?", alt_phrasings: [], tags: ["live", "scope"], bucket: "scope",
+      a: { status: "no_data", answer: "No current feed.", source_artifact: "scope.json" },
+    };
+    for (const q of [missing.q, missing.alt_phrasings[0]]) {
+      expect(resolveQuestion(q, [scope, missing])).toMatchObject({ kind: "direct", entry: missing });
+    }
+    expect(resolveQuestion("What is the NBA Live-Clock Fraction tonight?", [scope, missing]))
+      .toMatchObject({ kind: "direct", entry: scope });
+  });
+
   it("resolves multiword paraphrases to the cited answer", () => {
     const result = resolveQuestion("what is Jokic's assist rate?", entries);
     expect(result).toMatchObject({ kind: "direct", entry: { q: entries[0].q } });

@@ -616,9 +616,10 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "/analytics/m/info_arrival_curve pairs model, market and naive Brier by game time, and /analytics/m/market_convergence tracks how the price tightens. Together they are the input to the Market Foresight Premium, which finds the market's per-bit advantage rising through the game in both sports measured.",
+    "answer": "Explore /analytics/m/info_arrival_curve for paired model, closing reference and naive Brier at game-time checkpoints, /analytics/m/market_convergence for reference entropy, and /analytics/m/novel_market_foresight_premium for their per-bit comparison. MFP compares a closing reference forecast with one scoreboard-only model retrospectively; it does not trace information reaching a live in-game price. MLB's current MFP path is non-monotonic. Published snapshot dated 2026-09-17; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/novel_market_foresight_premium.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown",
+    "explore_path": "/analytics/m/novel_market_foresight_premium"
    },
    "tags": [
     "tour",

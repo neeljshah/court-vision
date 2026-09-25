@@ -1369,9 +1369,10 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "MLB, with a Live-Clock Fraction of 0.8333 against soccer_intl's 0.7475. The comparison is indicative rather than metric: 3 runs and 1 goal are not equated margins, and innings and minutes are not the same clock.",
+    "answer": "In these observed score paths, MLB LCF is 0.7368 at 3 runs (97/174 usable games) and international-soccer LCF is 0.5994 at 1 goal (12/26). Each is the median fraction of the observed clock at the first tick after which the absolute score gap stays at least the threshold through the final observed tick, among qualifying games. Runs and goals, and innings and minutes, are not equated, so this is no universal ranking or live point-of-no-return forecast. Published snapshot dated 2026-09-17; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/novel_live_clock_fraction.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown",
+    "explore_path": "/analytics/m/novel_live_clock_fraction"
    },
    "tags": [
     "cross-sport",
@@ -1389,9 +1390,10 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Soccer, on the Market Foresight Premium: mean 0.9211 across 19 checkpoints versus 0.2461 across 10 in MLB, ending at 1.7056 versus 0.2365. In both sports the premium grows through the game -- delta of +1.0663 in soccer and +0.1735 in MLB -- but soccer starts higher and climbs further.",
+    "answer": "MFP cannot answer where a live in-game market knows the most. It compares a closing reference forecast with one scoreboard-only model at retrospective checkpoints. The unweighted mean MFP is 0.9225 across 19 international-soccer checkpoints versus 0.1487 across 10 MLB checkpoints; the final rows are 1.4861 (n=33) and 0.411 (n=46). Counts are checkpoint observations, not games, and different clocks, populations and model misspecification prevent a causal sport ranking. Published snapshot dated 2026-09-17; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/novel_market_foresight_premium.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown",
+    "explore_path": "/analytics/m/novel_market_foresight_premium"
    },
    "tags": [
     "cross-sport",
@@ -2231,9 +2233,10 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "MLB resolves slowly and steadily: market entropy falls from 0.9669 bits at the first checkpoint to 0.6979 by inning 8. Soccer starts lower and drops further, from 0.8209 bits at kickoff to 0.4394 by minute 90. Soccer therefore ends far more decided, which is consistent with its lower Live-Clock Fraction.",
+    "answer": "The MFP exhibit records closing reference forecast entropy at retrospective checkpoints, not a path of contemporaneous live prices. In MLB it is 0.9553 bits at inning 1, 0.4589 at inning 9, then 0.8488 in the thin checkpoint-10 extra-innings tail (n=46). International soccer records 0.8152 bits at kickoff and 0.3970 at minute 90 (n=33). Each n counts checkpoint observations, not games. The rows are different populations and clocks, so this does not establish a smooth within-game convergence rate or a cross-sport decisiveness ranking. Published snapshot dated 2026-09-17; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/novel_market_foresight_premium.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown",
+    "explore_path": "/analytics/m/novel_market_foresight_premium"
    },
    "tags": [
     "cross-sport",
@@ -2251,9 +2254,10 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "It degrades in both sports. MLB model skill starts at -0.0479 and ends at -0.1926; soccer starts at -0.0599 and ends at -1.1476. The market moves the opposite way in MLB, from 0.013 up to 0.3254 by inning 9. Late-game state is where the model's blind spots cost the most.",
+    "answer": "For the specific scoreboard-only model, MLB skill relative to a naive Brier baseline is -0.0154 at checkpoint 1 (n=3,589), +0.5474 at checkpoint 9 (n=1,110), and -0.0631 in the extra-innings checkpoint 10 (n=46). International soccer is -0.0643 at kickoff (n=150) and -0.8324 at minute 90 (n=33). Each n counts checkpoint observations, not games. These are different checkpoint populations, not a monotonic within-game degradation; the comparison uses a closing reference forecast and cannot diagnose a live information loss. Published snapshot dated 2026-09-17; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/novel_market_foresight_premium.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown",
+    "explore_path": "/analytics/m/novel_market_foresight_premium"
    },
    "tags": [
     "cross-sport",
@@ -2311,9 +2315,10 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "The price, consistently. The Market Foresight Premium is positive at every measured checkpoint in both sports -- 0.063 to 0.5208 across MLB innings, 0.6393 to 1.7056 across soccer minutes -- meaning the market resolves more per bit of remaining uncertainty than a scoreboard-only forecaster does. The measurement cannot separate genuine market news from model misspecification.",
+    "answer": "In this retrospective paired instrument, the closing reference forecast has higher normalized Brier skill than one scoreboard-only model at every reported MLB and international-soccer checkpoint: MFP stays positive (MLB 0.0159-0.4110; soccer 0.6779-1.7802). That does not compare the score with a contemporaneous in-game price, isolate causal information, or establish a tradable advantage. Checkpoint observations are not game counts. Published snapshot dated 2026-09-17; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/novel_market_foresight_premium.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown",
+    "explore_path": "/analytics/m/novel_market_foresight_premium"
    },
    "tags": [
     "cross-sport",
@@ -5023,9 +5028,10 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "The 0-to-1 share of a sport's game clock that stays genuinely contested before the score gap crosses a point of no return, taken at a near-median margin threshold. Higher means the sport stays live later.",
+    "answer": "Live-Clock Fraction (LCF) is the median fraction of each qualifying game's observed clock at the first tick after which the absolute score gap stays at least the chosen threshold through the final observed tick. It is conditional on reaching that threshold and uses 3 runs for MLB and 1 goal for international soccer. This is retrospective, not a live point-of-no-return forecast. Published snapshot dated 2026-09-17; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/novel_live_clock_fraction.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown",
+    "explore_path": "/analytics/m/novel_live_clock_fraction"
    },
    "tags": [
     "novel-stats",
@@ -5043,9 +5049,10 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Of the two sports that could be built, MLB stays contested later: LCF 0.8333 versus soccer_intl 0.7475. The ranking is indicative rather than metric -- a 3-run threshold in baseball and a 1-goal threshold in soccer are not equated quantities, and innings and minutes are different clock units.",
+    "answer": "In these observed score paths, MLB LCF is 0.7368 at 3 runs (97 of 174 usable games) and international-soccer LCF is 0.5994 at 1 goal (12 of 26). Among qualifying games, the absolute gap remains at least the threshold from a later fraction of the observed clock in MLB. Runs and goals, and innings and minutes, are not equated, so this is no universal ranking or live prediction. Published snapshot dated 2026-09-17; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/novel_live_clock_fraction.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown",
+    "explore_path": "/analytics/m/novel_live_clock_fraction"
    },
    "tags": [
     "novel-stats",
@@ -5063,9 +5070,10 @@
    ],
    "a": {
     "status": "no_data",
-    "answer": "NBA and tennis have no blowout corpus, so LCF is not buildable for them and the card records that as an explicit not_buildable rather than filling a number. NBA does get an independent decisiveness cross-check from a different module: a comeback rate of 0.0146 and a favorite hold rate of 0.9854.",
+    "answer": "NBA and tennis have no blowout corpus in this exhibit, so LCF is explicitly not_buildable for them; no LCF value is inferred. The published LCF results cover only MLB and international soccer. Published snapshot dated 2026-09-17; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/novel_live_clock_fraction.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown",
+    "explore_path": "/analytics/m/novel_live_clock_fraction"
    },
    "tags": [
     "novel-stats",
@@ -5105,9 +5113,10 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "LCF is the decided_clockfrac_median at the non-masked threshold whose decided_frac_of_games is closest to 0.50. In MLB that lands on a 3-run threshold (decided_frac 0.5337, 95 of 178 games); soccer_intl has only one non-masked threshold, 1 goal (decided_frac 0.4828, 14 of 29 games), so no choice is actually exercised there.",
+    "answer": "Select the non-masked score-gap threshold whose decided_frac_of_games is closest to 0.50, then report its decided_clockfrac_median among games where the absolute score gap remains at least the threshold through the final observed tick; each fraction uses that game's final observed clock. MLB selects 3 runs: 0.5575, or 97 of 174 games, with LCF 0.7368. International soccer has only one non-masked choice, 1 goal: 0.4615, or 12 of 26 games, with LCF 0.5994. The clock fraction is retrospective and conditional on permanence. Published snapshot dated 2026-09-17; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/novel_live_clock_fraction.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown",
+    "explore_path": "/analytics/m/novel_live_clock_fraction"
    },
    "tags": [
     "novel-stats",
@@ -5125,9 +5134,10 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Partly, and the card says so: it is labeled INCREMENTAL_NOVEL, citing Bill James safe-lead heuristics and win-probability clinch points as existing within-sport method. Only the normalized cross-sport live-clock axis is claimed as the contribution.",
+    "answer": "The exhibit grades LCF INCREMENTAL_NOVEL. Bill James safe-lead heuristics and win-probability clinch points precede its within-sport method; the claimed contribution is the normalized cross-sport live-clock axis. The current result covers only MLB and international soccer, whose score thresholds and clock units are not equated, so novelty does not establish a general ranking. Published snapshot dated 2026-09-17; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/novel_live_clock_fraction.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown",
+    "explore_path": "/analytics/m/novel_live_clock_fraction"
    },
    "tags": [
     "novel-stats",
@@ -5145,9 +5155,10 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Small enough to read carefully: MLB is 178 total games with 95 decided at the near-median threshold, and soccer_intl is 29 total games with 14 decided. The cross-sport ranking should be treated as indicative on those counts.",
+    "answer": "The current LCF denominators are 174 MLB games with usable score paths, 97 decided at the selected 3-run gap, and 26 international-soccer games, 12 decided at the 1-goal gap. The integrity receipt also reports 178 MLB and 27 soccer stored segmented games, but those are not the LCF denominators after the score-path floor. These small, conditional samples and unmatched thresholds limit cross-sport comparisons. Published snapshot dated 2026-09-17; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/novel_live_clock_fraction.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown",
+    "explore_path": "/analytics/m/novel_live_clock_fraction"
    },
    "tags": [
     "novel-stats",
@@ -5348,9 +5359,10 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "The market's excess resolving power over a scoreboard-only model, per bit of uncertainty still left in the game, measured checkpoint by checkpoint. It is a way of asking how much the market knows that the score alone does not, normalized so late-game checkpoints do not automatically dominate.",
+    "answer": "Market Foresight Premium (MFP) compares the closing reference forecast's excess Brier skill with one scoreboard-only model's skill relative to a naive baseline, per bit of reference uncertainty, at retrospective game-time checkpoints. A positive value describes this specific paired comparison; it does not show what a live in-game price knew at that time, isolate a causal information advantage, or establish a trading benefit. Published snapshot dated 2026-09-17; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/novel_market_foresight_premium.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown",
+    "explore_path": "/analytics/m/novel_market_foresight_premium"
    },
    "tags": [
     "novel-stats",
@@ -5368,9 +5380,10 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "MFP(t) = ((naive - market)/naive - (naive - model)/naive) / max(entropy_market_bits, 0.15). The 0.15-bit entropy floor exists because entropy heading to zero late in a game would otherwise explode the ratio.",
+    "answer": "At each retrospective checkpoint, market_skill = (naive Brier - closing reference Brier) / naive Brier and model_skill = (naive Brier - scoreboard-only-model Brier) / naive Brier. MFP = (market_skill - model_skill) / max(reference entropy in bits, 0.15). The 0.15-bit floor prevents a near-zero denominator. A checkpoint n counts observations, not games, and the comparison cannot separate reference information from model misspecification. Published snapshot dated 2026-09-17; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/novel_market_foresight_premium.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown",
+    "explore_path": "/analytics/m/novel_market_foresight_premium"
    },
    "tags": [
     "novel-stats",
@@ -5388,9 +5401,10 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "It rises steadily through the game: 0.063 at the first inning checkpoint (n=7,646), 0.2513 by inning 6, 0.4182 at inning 7 and peaking at 0.5208 at inning 9 (n=2,282), with a mean of 0.2461 across 10 checkpoints. The last checkpoint drops back to 0.2365 on only 94 rows.",
+    "answer": "The closing reference forecast's MFP against the specific scoreboard-only model is non-monotonic across MLB checkpoints: 0.051 at inning 1 (n=3,589), 0.0159 at inning 9 (n=1,110), then 0.411 at checkpoint 10 (n=46, the thin extra-innings tail). The unweighted mean across 10 checkpoints is 0.1487. These n values count checkpoint observations, not games; the last value does not establish a rising trend or a live-price advantage. Published snapshot dated 2026-09-17; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/novel_market_foresight_premium.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown",
+    "explore_path": "/analytics/m/novel_market_foresight_premium"
    },
    "tags": [
     "novel-stats",
@@ -5408,9 +5422,10 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Much higher throughout and still rising: 0.6393 at kickoff, 0.7877 by minute 30, and 1.7056 at the minute-90 checkpoint, with a mean of 0.9211 over 19 checkpoints and a first-to-last delta of 1.0663. Soccer checkpoint samples are thin -- the 90-minute row is n=37.",
+    "answer": "For international soccer, the closing reference forecast's MFP against the scoreboard-only model is 0.6779 at kickoff (n=150) and 1.4861 at minute 90 (n=33), with an unweighted mean of 0.9225 over 19 checkpoints. The series is non-monotonic (1.7802 at minute 85, n=98). Counts are checkpoint observations, not games; the thin final row and retrospective closing reference do not establish a live-market trend. Published snapshot dated 2026-09-17; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/novel_market_foresight_premium.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown",
+    "explore_path": "/analytics/m/novel_market_foresight_premium"
    },
    "tags": [
     "novel-stats",
@@ -5428,9 +5443,10 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Soccer, by a wide margin: mean MFP 0.9211 versus 0.2461 in MLB, and a final-checkpoint value of 1.7056 versus 0.2365. The two are not strictly equated -- MLB is measured per inning and soccer per 5-minute bucket -- so read the gap as large but not a precise multiple.",
+    "answer": "This exhibit cannot identify a sport with the biggest causal in-game information advantage. Its closing reference forecast has a larger unweighted mean MFP against one scoreboard-only model in international soccer (0.9225 across 19 checkpoints) than MLB (0.1487 across 10), but the sports use 5-minute and inning checkpoints, different populations and one model per comparison. The reference is a closing forecast, not a contemporaneous in-game price; model misspecification also contributes. Published snapshot dated 2026-09-17; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/novel_market_foresight_premium.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown",
+    "explore_path": "/analytics/m/novel_market_foresight_premium"
    },
    "tags": [
     "novel-stats",
@@ -5448,9 +5464,10 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "It cannot separate the two, and the card says so. The 'model' side is one specific state-only forecaster, so MFP conflates genuine news the market prices -- lineups, momentum, injuries -- with plain model misspecification. The honest reading is that the market resolves more per bit than a scoreboard-only view, not that any particular cause has been isolated.",
+    "answer": "It may reflect model misspecification, information embedded in the closing reference forecast, or both. The comparison uses one specific scoreboard-only model, and MFP cannot isolate a cause. A high retrospective checkpoint value is not proof that a contemporaneous market knew more, that the model worsened during play, or that a trade had a trading benefit. Published snapshot dated 2026-09-17; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/novel_market_foresight_premium.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown",
+    "explore_path": "/analytics/m/novel_market_foresight_premium"
    },
    "tags": [
     "novel-stats",
@@ -5468,9 +5485,10 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Two established literatures. The absorption instrument -- paired model/market/naive Brier by game-time -- is arXiv 2606.07811 on when markets fully process public information, which the source module already flags INCREMENTAL, and entropy decay is textbook Shannon. Only the skill-gap-per-bit normalization crossing the two is claimed.",
+    "answer": "The source grades MFP INCREMENTAL and cites a Kalshi/NBA paired model/reference/naive Brier instrument and Shannon entropy as prior components; the citation is the source's attribution, not an independent literature verification. Only the skill-gap-per-bit combination is claimed as the contribution. This retrospective closing reference comparison is not a first-ever in-game market discovery. Published snapshot dated 2026-09-17; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/novel_market_foresight_premium.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown",
+    "explore_path": "/analytics/m/novel_market_foresight_premium"
    },
    "tags": [
     "novel-stats",
@@ -5488,9 +5506,10 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Negative at every one of the 10 MLB checkpoints in this module, ranging from -0.0184 at inning 5 to -0.1926 at the final checkpoint, while market skill runs from 0.013 up to 0.3254. Against a naive baseline the market resolves the game and this state-only model does not.",
+    "answer": "Against the naive Brier baseline, the specific scoreboard-only model's MLB skill by checkpoint 1-10 is -0.0154, -0.0805, -0.0406, -0.0951, +0.0350, +0.0648, +0.1612, +0.3574, +0.5474, -0.0631. It is positive at checkpoints 5-9; checkpoint 10 has only 46 observations, not 46 games. These retrospective rows pair the model with a closing reference forecast and do not show a steadily degrading live model. Published snapshot dated 2026-09-17; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/novel_market_foresight_premium.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown",
+    "explore_path": "/analytics/m/novel_market_foresight_premium"
    },
    "tags": [
     "novel-stats",
@@ -5948,9 +5967,14 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Partly, and the disagreements are informative. Soccer_intl prices earliest (LHL 2.75h), carries the largest in-game market advantage (MFP mean 0.9211) and the largest unharvestable overshoot (OHG 0.0813), while MLB is slower to price (3.67h), has a much smaller market premium (MFP mean 0.2461) and stays contested later (LCF 0.8333). These are separate corpora and different units, so treat the pattern as directional.",
-    "source_artifact": "webapp/public/data/showcase/novel_stats_index.json",
-    "as_of": "2026-07-24"
+    "answer": "They do not support one hardest-to-read ranking. LCF measures when a selected score gap became permanent in the measured games: MLB 0.7368 at 3 runs (97/174) and international soccer 0.5994 at 1 goal (12/26). MFP instead compares a closing reference forecast with one scoreboard-only model at retrospective checkpoints; their unweighted means are 0.1487 for MLB and 0.9225 for soccer. Different outcomes, populations, thresholds and clocks prevent a shared ranking, and neither statistic establishes a live information advantage. Published snapshot dated 2026-09-17; the observation window is not published.",
+    "source_artifact": "webapp/public/data/showcase/novel_live_clock_fraction.json",
+    "as_of": "unknown",
+    "explore_path": "/analytics/m/novel_live_clock_fraction",
+    "source_module_ids": [
+     "novel_live_clock_fraction",
+     "novel_market_foresight_premium"
+    ]
    },
    "tags": [
     "novel-stats",
@@ -5968,9 +5992,10 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Live-Clock Fraction, on coverage grounds: it is buildable for only two sports, rests on 178 MLB and 29 soccer_intl games, and its thresholds are not equated across sports, so the ranking is indicative rather than metric. Load-Bearing Index is a close second, since its two estimators agree on only 1 of 30 teams and cover different seasons.",
+    "answer": "On coverage and comparability, Live-Clock Fraction needs the most caution: it is buildable only for MLB (174 usable games, 97 decided at 3 runs) and international soccer (26 usable games, 12 decided at 1 goal). Its thresholds and clock units are not equated, so the two values are conditional descriptions, not a universal sport ranking. This is a limitation of this exhibit, not a measured quality ranking of every novel stat. Published snapshot dated 2026-09-17; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/novel_live_clock_fraction.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown",
+    "explore_path": "/analytics/m/novel_live_clock_fraction"
    },
    "tags": [
     "novel-stats",
@@ -5987,9 +6012,14 @@
    ],
    "a": {
     "status": "no_data",
-    "answer": "Only partially. Tennis appears in Line Half-Life -- where its crossing falls inside the open 6h+ bucket, so it is reported as '>6.0' with a null half-life over 809,986 move pairs -- and is recorded as not_buildable for Live-Clock Fraction because there is no tennis blowout corpus. The other four novel stats do not cover tennis at all.",
+    "answer": "Yes, Line Half-Life includes tennis, but its half-life is null because the 50% crossing lies in the open 6h+ bucket; '>6.0' is a bound, not a precise hour estimate. Its 809,986 move pairs are dense snapshots within the published 2026-07-03 to 2026-07-17 line-history window, not games. Tennis LCF is explicitly not_buildable because this exhibit has no tennis blowout corpus. These modules do not establish how hard tennis is to read overall. LCF published snapshot dated 2026-09-17; its observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/novel_live_clock_fraction.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown",
+    "explore_path": "/analytics/m/novel_live_clock_fraction",
+    "source_module_ids": [
+     "novel_live_clock_fraction",
+     "novel_line_half_life"
+    ]
    },
    "tags": [
     "novel-stats",
@@ -7986,9 +8016,10 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "/analytics/m/info_arrival_curve pairs model, market and naive Brier by game time, and /analytics/m/market_convergence tracks how the price tightens. Together they are the input to the Market Foresight Premium, which finds the market's per-bit advantage rising through the game in both sports measured.",
+    "answer": "Explore /analytics/m/info_arrival_curve for paired model, closing reference and naive Brier at game-time checkpoints, /analytics/m/market_convergence for reference entropy, and /analytics/m/novel_market_foresight_premium for their per-bit comparison. MFP compares a closing reference forecast with one scoreboard-only model retrospectively; it does not trace information reaching a live in-game price. MLB's current MFP path is non-monotonic. Published snapshot dated 2026-09-17; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/novel_market_foresight_premium.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown",
+    "explore_path": "/analytics/m/novel_market_foresight_premium"
    },
    "tags": [
     "tour",
