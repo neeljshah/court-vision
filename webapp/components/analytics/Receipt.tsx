@@ -51,7 +51,7 @@ const stamp: CSSProperties = {
 const pop: CSSProperties = {
   position: "absolute",
   left: 0,
-  top: "calc(100% + 6px)",
+  top: "100%",
   zIndex: 40,
   minWidth: 220,
   maxWidth: "min(300px, calc(100vw - 24px))",
@@ -78,7 +78,8 @@ const path: CSSProperties = {
 };
 
 export function Receipt(r: ReceiptData) {
-  const [open, setOpen] = useState(false);
+  const [mode, setMode] = useState<"closed" | "preview" | "pinned">("closed");
+  const open = mode !== "closed";
   // Offset from the wrapper so the complete popover stays in the viewport.
   const [popLeft, setPopLeft] = useState(0);
   const [popWidth, setPopWidth] = useState(300);
@@ -95,7 +96,7 @@ export function Receipt(r: ReceiptData) {
   useEffect(() => {
     if (!open) return;
     const onDown = (e: PointerEvent) => {
-      if (!wrapRef.current?.contains(e.target as Node)) setOpen(false);
+      if (!wrapRef.current?.contains(e.target as Node)) setMode("closed");
     };
     document.addEventListener("pointerdown", onDown);
     return () => document.removeEventListener("pointerdown", onDown);
@@ -110,7 +111,7 @@ export function Receipt(r: ReceiptData) {
   // Decide placement from the trigger's viewport rect on open. The popup has a
   // fixed maximum width, so clamping its viewport left edge keeps every trigger
   // position inside the same 12px gutters without measuring after render.
-  function openPop() {
+  function openPop(nextMode: "preview" | "pinned") {
     const trigger = btnRef.current?.getBoundingClientRect();
     const wrapper = wrapRef.current?.getBoundingClientRect();
     const viewportWidth = document.documentElement.clientWidth || window.innerWidth;
@@ -121,25 +122,27 @@ export function Receipt(r: ReceiptData) {
     // flip up only when it would overflow the bottom AND there is room above, so a
     // receipt near the top of the page never opens off the top.
     setUp(!!trigger && trigger.bottom + 200 > window.innerHeight && trigger.top > 200);
-    setOpen(true);
+    setMode(nextMode);
   }
 
   return (
     <span
       ref={wrapRef}
       style={{ position: "relative", display: "inline-block" }}
-      // Handlers live on the wrapper (owns both trigger and popover) so keyboard
-      // focus can move INTO the popover's link without the blur closing it first.
-      // No onFocus opener: a pointer tap focuses the button (Android), which an
-      // onFocus-open would then have the button's onClick toggle straight shut
-      // (first-tap-dead). Keyboard opens via Enter/Space -> the button's onClick.
-      onMouseEnter={openPop}
-      onMouseLeave={() => setOpen(false)}
+      // Keep a preview while its trigger or popover has focus. Clicking pins it
+      // so pointer exit cannot remove a source link being inspected.
+      onMouseEnter={() => { if (mode === "closed") openPop("preview"); }}
+      onMouseLeave={() => {
+        if (mode === "preview" && !wrapRef.current?.contains(document.activeElement)) setMode("closed");
+      }}
       onBlur={(e) => {
-        if (!e.currentTarget.contains(e.relatedTarget as Node)) setOpen(false);
+        if (!e.currentTarget.contains(e.relatedTarget as Node)) setMode("closed");
       }}
       onKeyDown={(e) => {
-        if (e.key === "Escape") setOpen(false);
+        if (e.key === "Escape" && open) {
+          if (e.target !== btnRef.current) btnRef.current?.focus();
+          setMode("closed");
+        }
       }}
     >
       <button
@@ -159,7 +162,7 @@ export function Receipt(r: ReceiptData) {
         }}
         aria-expanded={open}
         aria-label={`Receipt: ${r.label || r.verdict} for ${resting}`}
-        onClick={() => (open ? setOpen(false) : openPop())}
+        onClick={() => (mode === "pinned" ? setMode("closed") : openPop("pinned"))}
       >
         <VerdictDot verdict={r.verdict} />
         {resting}
@@ -173,7 +176,7 @@ export function Receipt(r: ReceiptData) {
             ...pop,
             left: popLeft,
             width: popWidth,
-            ...(up ? { top: "auto", bottom: "calc(100% + 6px)" } : null),
+            ...(up ? { top: "auto", bottom: "100%" } : null),
           }}
         >
           {r.label ? (

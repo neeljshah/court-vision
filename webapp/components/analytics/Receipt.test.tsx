@@ -118,4 +118,74 @@ describe("Receipt", () => {
     const heading = screen.getByText(label);
     expect(heading).toHaveStyle({ display: "block", overflowWrap: "anywhere" });
   });
+
+  it("keeps the first click open after hover preview, then explicitly toggles closed", () => {
+    render(<Receipt sourceArtifact="blowout_dynamics.json" verdict="descriptive_only" />);
+    const button = screen.getByRole("button", { name: /receipt/i });
+    const wrapper = button.parentElement as HTMLSpanElement;
+    fireEvent.mouseEnter(wrapper);
+    expect(button).toHaveAttribute("aria-expanded", "true");
+    fireEvent.click(button);
+    fireEvent.mouseLeave(wrapper);
+    expect(button).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByRole("link", { name: "blowout_dynamics.json" })).toBeInTheDocument();
+    fireEvent.click(button);
+    expect(button).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("keeps a focused source link mounted when the pointer leaves", () => {
+    render(<Receipt sourceArtifact="blowout_dynamics.json" verdict="descriptive_only" />);
+    const button = screen.getByRole("button", { name: /receipt/i });
+    const wrapper = button.parentElement as HTMLSpanElement;
+    fireEvent.mouseEnter(wrapper);
+    const source = screen.getByRole("link", { name: "blowout_dynamics.json" });
+    source.focus();
+    fireEvent.mouseLeave(wrapper);
+    expect(source).toBeInTheDocument();
+    expect(source).toHaveFocus();
+    fireEvent.keyDown(source, { key: "Escape" });
+    expect(button).toHaveFocus();
+    expect(source).not.toBeInTheDocument();
+  });
+
+  it("dismisses on an outside pointer and reopens on click", () => {
+    render(<Receipt sourceArtifact="blowout_dynamics.json" verdict="descriptive_only" />);
+    const button = screen.getByRole("button", { name: /receipt/i });
+    fireEvent.click(button);
+    fireEvent.pointerDown(document.body);
+    expect(button).toHaveAttribute("aria-expanded", "false");
+    fireEvent.click(button);
+    expect(button).toHaveAttribute("aria-expanded", "true");
+  });
+
+  it("closes hover-only preview when the pointer leaves", () => {
+    render(<Receipt sourceArtifact="blowout_dynamics.json" verdict="descriptive_only" />);
+    const button = screen.getByRole("button", { name: /receipt/i });
+    const wrapper = button.parentElement as HTMLSpanElement;
+    fireEvent.mouseEnter(wrapper);
+    expect(button).toHaveAttribute("aria-expanded", "true");
+    fireEvent.mouseLeave(wrapper);
+    expect(button).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("supports repeated keyboard activation and an adjacent popup in both directions", () => {
+    render(<Receipt sourceArtifact="blowout_dynamics.json" verdict="descriptive_only" />);
+    const button = screen.getByRole("button", { name: /receipt/i });
+    button.focus();
+    fireEvent.click(button);
+    const popup = screen.getByRole("link", { name: "blowout_dynamics.json" }).parentElement as HTMLSpanElement;
+    expect(popup).toHaveStyle({ top: "100%" });
+    fireEvent.click(button);
+    expect(button).toHaveAttribute("aria-expanded", "false");
+    fireEvent.click(button);
+    expect(button).toHaveAttribute("aria-expanded", "true");
+    fireEvent.keyDown(button, { key: "Escape" });
+    expect(button).toHaveAttribute("aria-expanded", "false");
+
+    vi.spyOn(window, "innerHeight", "get").mockReturnValue(600);
+    vi.spyOn(button, "getBoundingClientRect").mockReturnValue({ left: 50, top: 500, bottom: 530 } as DOMRect);
+    fireEvent.click(button);
+    const upward = screen.getByRole("link", { name: "blowout_dynamics.json" }).parentElement as HTMLSpanElement;
+    expect(upward).toHaveStyle({ bottom: "100%" });
+  });
 });

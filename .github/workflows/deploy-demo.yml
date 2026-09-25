@@ -140,7 +140,9 @@ jobs:
           npx vitest run components/analytics/library/ResearchDetailFocus.test.tsx
           npx vitest run lib/analytics/researchMlbCatcherOoz.test.ts
           npx vitest run lib/analytics/researchMlbPlatoonSupport.test.ts
+          npx vitest run lib/analytics/researchTennisMatchSupport.test.ts
           npx vitest run components/analytics/library/MlbPlatoonSupport.test.tsx
+          npx vitest run components/analytics/library/TennisMatchSupport.test.tsx
           npx vitest run components/analytics/library/BrierPhaseCoveragePanel.test.tsx
           npx vitest run components/analytics/library/TennisSurfaceFoldPanel.test.tsx
           npx vitest run components/analytics/library/MeasurementCoverage.test.tsx
