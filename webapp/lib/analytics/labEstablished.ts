@@ -1,12 +1,10 @@
 import type { LabDataset } from "./labTypes";
 import { field as f, labRows, snapshot, type SourceRow } from "./labHelpers";
 import { getSoccerVenueLabDataset } from "./labSoccerVenue";
+import { getPitchProfilesLabDataset } from "./labPitchProfiles";
 export function establishedDatasets(): LabDataset[] {
   const output: LabDataset[] = [];
-  const pitches = snapshot<{ pitch_type_distribution: SourceRow[]; velo_percentiles_by_pitch_type: SourceRow[] }>("statcast_showcase");
-  const pitchFields = [f("p50", "Median velocity", "mph"), f("p10", "10th-percentile velocity", "mph"), f("p90", "90th-percentile velocity", "mph"), f("pct", "Pitch share (%)"), f("mix_n", "Pitch-mix observations", "number", 0), f("velocity_n", "Velocity observations", "number", 0)];
-  const pitchRows = pitches.pitch_type_distribution.map(p => { const v = pitches.velo_percentiles_by_pitch_type.find(r => r.pitch_type === p.pitch_type); return { ...p, ...(v || {}), mix_n: p.n, velocity_n: v?.n ?? null }; });
-  output.push({ id: "pitch-profiles", title: "Pitch mix and velocity profiles", sport: "mlb", category: "Pitch analysis", source: "statcast_showcase", description: "Compare pitch usage with the center and spread of measured velocity.", scope: "693,037 pitches from the published 2025 Statcast pull.", caveat: "Velocity and pitch-mix denominators differ when velocity is missing. Pitch-type rates are descriptive; they do not establish pitcher quality or prediction accuracy.", status: "Descriptive", fields: pitchFields, rows: labRows(pitchRows, pitchFields, "pitch_type") });
+  output.push(getPitchProfilesLabDataset());
   const consistent = snapshot<{ most_consistent_top15: SourceRow[]; least_consistent_top15: SourceRow[] }>("nba_consistency_profiles");
   const consistencyFields = [f("composite_cv_shrunk", "Composite variability", "number", 4), f("pts_per36_mean", "Points / 36"), f("pts_cv_shrunk", "Points variability", "number", 4), f("reb_cv_shrunk", "Rebound variability", "number", 4), f("ast_cv_shrunk", "Assist variability", "number", 4), f("games", "Games", "number", 0)];
   output.push({ id: "nba-consistency", title: "Player consistency", sport: "nba", category: "Player & team", source: "nba_consistency_profiles", description: "Explore how much a player's per-36 production varies from game to game.", scope: "Published extremes from 579 eligible players; 2023-24 through 2025-26.", caveat: "These are the 15 lowest and 15 highest published variability profiles, not the complete player population. Lower variability is not higher skill. Small means can inflate CV.", status: "Descriptive", fields: consistencyFields, rows: [...labRows(consistent.most_consistent_top15, consistencyFields, "player_name", "Most consistent"), ...labRows(consistent.least_consistent_top15, consistencyFields, "player_name", "Least consistent")] });
