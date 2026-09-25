@@ -45,14 +45,16 @@ describe("measurement lab source contracts", () => {
     const rim = data.datasets.find(d => d.id === "rim-deterrence")!;
     expect(new Set(rim.rows.map(row => row.definition?.season))).toEqual(new Set(["2024-25", "2025-26"]));
   });
-  it("keeps market-foresight checkpoint rows within their published sport windows", () => {
+  it("keeps market-foresight clocks separate from unavailable calendar windows", () => {
     const foresight = data.datasets.find(dataset => dataset.id === "market-foresight")!;
     const mlbRows = foresight.rows.filter(row => row.definition?.sport === "MLB");
     const soccerRows = foresight.rows.filter(row => row.definition?.sport === "INTERNATIONAL SOCCER");
     expect(mlbRows).toHaveLength(10);
     expect(soccerRows).toHaveLength(19);
-    expect(new Set(mlbRows.map(row => row.definition?.observationWindow))).toEqual(new Set(["Checkpoints 1 to 10"]));
-    expect(new Set(soccerRows.map(row => row.definition?.observationWindow))).toEqual(new Set(["Checkpoints 0 to 90"]));
+    expect(new Set(mlbRows.map(row => row.definition?.clockField))).toEqual(new Set(["inning"]));
+    expect(new Set(soccerRows.map(row => row.definition?.clockField))).toEqual(new Set(["minute (5-minute bucket)"]));
+    expect(foresight.rows.every(row => row.definition?.observationWindow === undefined)).toBe(true);
+    expect(foresight.scope).toContain("observation window unavailable");
   });
   it("keeps both pitch denominators and selected-subset disclosure", () => {
     const ff = data.datasets.find(d => d.id === "pitch-profiles")!.rows.find(r => r.label === "FF")!;
