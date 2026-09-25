@@ -22,6 +22,12 @@ const sportGroup = (sport: Sport) => sport === "soccer" ? "INTERNATIONAL SOCCER"
 const rowsForSport = (dataset: LabData["datasets"][number], sport: Sport) =>
   dataset.sport === "all" && sport !== "all" ? dataset.rows.filter(row => row.group === sportGroup(sport)) : dataset.rows;
 
+export function defaultLabMode(comparison: ReturnType<typeof labComparisonPolicy>, cohortKey: string | null, allCohorts: boolean): LabViewState["mode"] {
+  if (comparison.compatibility === "compatible") return "rank";
+  const cohort = comparison.cohorts.find(item => item.key === cohortKey) || comparison.cohorts[0];
+  return allCohorts || cohort?.compatibility !== "compatible" ? "table" : "rank";
+}
+
 export function readLabViewState(search: string, data: LabData): LabViewState {
   const params = new URLSearchParams(search);
   const sport = sports.has(params.get("sport") as Sport) ? params.get("sport") as Sport : "all";
@@ -30,13 +36,13 @@ export function readLabViewState(search: string, data: LabData): LabViewState {
   const dataset = requested && eligible.includes(requested) ? requested : eligible[0] || data.datasets[0];
   const fieldKey = dataset.fields.some(field => field.key === params.get("field")) ? params.get("field")! : dataset.fields[0].key;
   const otherKey = dataset.fields.some(field => field.key === params.get("other")) ? params.get("other")! : dataset.fields[1]?.key || fieldKey;
-  const mode = modes.has(params.get("view") as LabViewState["mode"]) ? params.get("view") as LabViewState["mode"] : "rank";
   const query = params.get("q") || "";
   const rows = rowsForSport(dataset, sport);
   const comparison = labComparisonPolicy(rows);
   const requestedCohort = comparison.cohorts.find(cohort => cohort.key === params.get("cohort"));
   const cohort = comparison.compatibility === "compatible" ? null : (requestedCohort || comparison.cohorts[0])?.key || null;
   const allCohorts = comparison.compatibility !== "compatible" && ["true", "1"].includes(params.get("allCohorts") || "");
+  const mode = modes.has(params.get("view") as LabViewState["mode"]) ? params.get("view") as LabViewState["mode"] : defaultLabMode(comparison, cohort, allCohorts);
   const group = params.get("group");
   const safeGroup = group === "all" || rows.some(row => row.group === group) ? group || "all" : "all";
   const cohortRows = cohort ? rows.filter(row => matchesLabCohort(row, comparison.cohorts.find(item => item.key === cohort)!)) : rows;

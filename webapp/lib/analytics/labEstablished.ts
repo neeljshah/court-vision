@@ -1,5 +1,6 @@
 import type { LabDataset } from "./labTypes";
 import { field as f, labRows, snapshot, type SourceRow } from "./labHelpers";
+import { getSoccerVenueLabDataset } from "./labSoccerVenue";
 export function establishedDatasets(): LabDataset[] {
   const output: LabDataset[] = [];
   const pitches = snapshot<{ pitch_type_distribution: SourceRow[]; velo_percentiles_by_pitch_type: SourceRow[] }>("statcast_showcase");
@@ -16,9 +17,7 @@ export function establishedDatasets(): LabDataset[] {
   const rim = snapshot<{ seasons: { season: string; leaders: SourceRow[]; n_qualified: number }[] }>("rim_deterrence");
   const rimFields = [f("delta", "On-minus-off rim share", "pp"), f("rim_share_allowed_on", "Opponent rim share: on", "percent"), f("rim_share_allowed_off", "Opponent rim share: off", "percent"), f("rim_efg_delta", "Rim eFG difference", "pp"), f("min_on", "On-court minutes")];
   output.push({ id: "rim-deterrence", title: "Who changes the shot profile?", sport: "nba", category: "Player & team", source: "rim_deterrence", description: "Inspect opponent rim-attempt shares with a defender on and off the floor.", scope: "Published season leaderboards; 500-minute on-court floor.", caveat: "Negative on-minus-off means fewer rim attempts. This is a selected leaderboard, with teammate, opponent and roster confounds; not an isolated defensive impact estimate.", status: "Descriptive", fields: rimFields, rows: rim.seasons.flatMap(s => labRows(s.leaders, rimFields, "player_name", s.season).map(row => ({ ...row, definition: { sport: "NBA", season: s.season } }))) });
-  const home = snapshot<{ by_era: SourceRow[]; venue: Record<string, SourceRow> }>("soccer_home_advantage");
-  const homeFields = [f("true_home_goal_diff", "True-home goal difference"), f("neutral_goal_diff", "Neutral-site goal difference"), f("effect_goal_diff", "Home-minus-neutral gap"), f("n_true_home", "True-home matches", "number", 0), f("n_neutral", "Neutral matches", "number", 0)];
-  output.push({ id: "soccer-home-advantage", title: "Home advantage across eras", sport: "soccer", category: "Game context", source: "soccer_home_advantage", description: "Separate true-home matches from neutral-site matches before comparing eras.", scope: "49,425 international matches, 1872-11-30 to 2026-06-16.", caveat: "Neutral venues are not randomly assigned; team strength and tournament mix are uncontrolled. Travel effects are not testable from this source.", status: "Descriptive", fields: homeFields, rows: labRows(home.by_era, homeFields, "era") });
+  output.push(getSoccerVenueLabDataset());
   const tennis = snapshot<{ combos: Record<string, { n_players_in_snapshot?: number; clay_hard_gap: { most_clay_favoring?: SourceRow[]; most_hard_favoring?: SourceRow[]; n_qualifying?: number; floor?: string; note?: string }; grass_adaptability: { most_adaptive?: SourceRow[]; least_adaptive?: SourceRow[]; n_qualifying?: number; floor?: string; note?: string } }> }>("tennis_surface_transfer");
   const clayFields = [f("clay_minus_hard", "Clay-minus-hard win rate", "pp"), f("clay_wr", "Clay win rate", "percent"), f("hard_wr", "Hard win rate", "percent"), f("clay_n", "Clay matches", "number", 0), f("hard_n", "Hard matches", "number", 0)];
   const grassFields = [f("grass_adapt", "Grass-minus-overall win rate", "pp"), f("grass_wr", "Grass win rate", "percent"), f("ov_wr", "Overall win rate", "percent"), f("grass_n", "Grass matches", "number", 0)];
