@@ -78,7 +78,7 @@ const timingRegeneratedNotice: DataIntegrityNotice = {
   id: "ingame-timing-regenerated",
   title: "In-game timing artifacts regenerated",
   measuredOn: timingRegeneration.measured_on,
-  summary: "This timing measurement is revision 2, rebuilt on the segment-clean corpus (2026-09-17). It now describes 178 MLB and 27 international soccer stored games; the revision 1 values are withdrawn and kept in the timing regeneration receipt.",
+  summary: `This timing measurement is revision ${timingRegeneration.revision_published}, rebuilt on the segment-clean corpus (${timingRegeneration.measured_on}). The stored corpus contains ${count(timingRegeneration.checker.segmented.mlb_segmented.games)} MLB and ${count(timingRegeneration.checker.segmented.soccer_intl_segmented.games)} international soccer games. Individual measurements can use fewer games after eligibility checks; read their own denominators. Revision 1 values are withdrawn and kept in the timing regeneration receipt.`,
   affectedModules: timingRegeneratedArtifacts,
   status: "regenerated",
   detailRoute: "/analytics/findings/ingame-join-integrity/",

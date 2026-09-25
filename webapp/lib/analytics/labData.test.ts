@@ -1,8 +1,26 @@
 import { describe, expect, it } from "vitest";
 import { getLabData } from "./labData";
 import { displayMeasurement, rankedRows } from "./labTypes";
+import { snapshot } from "./labHelpers";
 const data = getLabData();
 describe("measurement lab source contracts", () => {
+  it("reads experimental headlines from each artifact instead of the older index copy", () => {
+    for (const card of data.novel.filter(card => !["novel_live_clock_fraction", "novel_market_foresight_premium"].includes(card.module))) {
+      expect(card.headline).toBe(snapshot<{ headline: string }>(card.module).headline);
+    }
+    const liveClock = data.novel.find(card => card.module === "novel_live_clock_fraction")!.headline;
+    expect(liveClock).toContain("LCF 0.7368 at 3 runs (inning clock; 174 usable score paths)");
+    expect(liveClock).toContain("LCF 0.5994 at 1 goals (minute clock; 26 usable score paths)");
+    expect(liveClock).toContain("these values do not rank sports");
+    expect(liveClock).not.toMatch(/0\.833|stays contested later|than soccer/);
+    const foresight = data.novel.find(card => card.module === "novel_market_foresight_premium")!.headline;
+    expect(foresight).toContain("MLB / 1: MFP 0.051 (3589 checkpoint observations)");
+    expect(foresight).toContain("MLB / 10: MFP 0.411 (46 checkpoint observations)");
+    expect(foresight).toContain("INTERNATIONAL SOCCER / 0: MFP 0.6779 (150 checkpoint observations)");
+    expect(foresight).toContain("INTERNATIONAL SOCCER / 90: MFP 1.4861 (33 checkpoint observations)");
+    expect(foresight).toContain("do not establish an in-game trend");
+    expect(foresight).not.toMatch(/rises|over the game/);
+  });
   it("preserves literal source values and their units", () => {
     const fatigue = data.datasets.find(d => d.id === "schedule-fatigue")!;
     expect(fatigue.rows).toHaveLength(90);

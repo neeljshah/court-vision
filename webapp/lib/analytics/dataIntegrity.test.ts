@@ -65,6 +65,17 @@ describe("dataIntegrity", () => {
     expect(timing.artifacts.every(row => row.n_after <= row.n_before)).toBe(true);
   });
 
+  it("distinguishes the timing corpus from each measurement's eligible denominator", () => {
+    const timing = loadIngameTimingRegenerationReceipt();
+    const notice = noticesForModules(["novel_live_clock_fraction"])[0];
+    expect(notice.status).toBe("regenerated");
+    expect(notice.summary).toContain(`revision ${timing.revision_published}`);
+    expect(notice.summary).toContain(timing.measured_on);
+    expect(notice.summary).toContain("stored corpus contains 178 MLB and 27 international soccer games");
+    expect(notice.summary).toContain("fewer games after eligibility checks");
+    expect(notice.summary).toContain("read their own denominators");
+  });
+
   it("surfaces a regeneration notice for every rebuilt artifact and keeps the review notice unmatched", () => {
     expect(dataIntegrityNotices.map(notice => notice.status)).toEqual(["regenerated", "regenerated", "under-review", "under-review", "under-review"]);
     expect(noticesForModules(["state_conditioned_calibration"])).toMatchObject([{ status: "regenerated" }]);
