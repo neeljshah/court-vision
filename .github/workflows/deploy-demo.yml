@@ -58,6 +58,8 @@ jobs:
           npx vitest run components/analytics/compare/ComparisonResults.test.tsx
           npx vitest run components/analytics/charts/Figure.test.tsx
           npx vitest run components/analytics/modules/ModuleDetail.test.tsx
+          npx vitest run lib/analytics/timingModuleEvidence.test.ts
+          npx vitest run components/analytics/modules/TimingModulePanel.test.tsx
           npx vitest run lib/analytics/papers.test.ts
           npx vitest run components/analytics/papers/PaperBlocks.test.tsx
           npx vitest run lib/analytics/dashboardData.test.ts
