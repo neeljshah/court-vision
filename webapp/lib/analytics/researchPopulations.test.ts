@@ -15,7 +15,7 @@ const SINGLE_POPULATION = [
   "lineup-proxy-active-missed-record", "comeback-rates-deficit-time", "nba-venue-shooting-gap", "nba-venue-box-profile",
   "nba-player-venue-dispersion", "nba-pra-role-composition", "nba-context-ts-dominant-gap", "mlb-velocity-band-concentration",
   "mlb-shrinkage-displacement", "soccer-minute-calibration-support", "tennis-surface-prior-brier-delta", "nba-on-off-net-rating-by-player",
-  "mlb-catcher-out-of-zone-strike-rate", "nba-team-profile-pace-fragility-fatigue-halftime", "nba-player-context-consistency-q4-venue-onoff",
+  "nba-team-profile-pace-fragility-fatigue-halftime", "nba-player-context-consistency-q4-venue-onoff",
   "nba-variability-imbalance", "nba-lineup-expectation-reversals", "nba-rim-two-axis-pressure", "nba-q4-role-redistribution",
   "nba-form-endpoint-elasticity", "nba-schedule-compression-profile", "nba-matchup-profile-contrast", "mlb-velocity-shape",
   "mlb-pitch-mix-concentration", "mlb-count-contrast", "tennis-surface-support", "tennis-surface-spread", "tennis-surface-balance",
@@ -29,7 +29,7 @@ const MULTI_POPULATION = [
   "observed-cohort-shift", "cluster-interval-width", "calibration-support-concentration", "verdict-mix-entropy", "verdict-friction-share",
 ];
 // No population identity is published, so nothing may be pooled at all.
-const UNIDENTIFIED = ["answer-evidence-coverage", "soccer-trailing-attack-defense", "soccer-home-away-trailing-form-gap", "soccer-team-atlas-measurements", "mlb-platoon-support-balance", "tennis-clay-hard-match-support"];
+const UNIDENTIFIED = ["answer-evidence-coverage", "soccer-trailing-attack-defense", "soccer-home-away-trailing-form-gap", "soccer-team-atlas-measurements", "mlb-platoon-support-balance", "tennis-clay-hard-match-support", "mlb-catcher-out-of-zone-strike-rate"];
 // Rates whose own published explanation says they answer different questions.
 const QA_RATE_ANALYSES = ["answer-evidence-coverage", "verdict-mix-entropy", "verdict-friction-share"];
 

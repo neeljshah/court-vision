@@ -170,6 +170,7 @@ jobs:
           npx vitest run components/analytics/library/SoccerFormGap.test.tsx
           npx vitest run components/analytics/library/SoccerAtlas.test.tsx
           npx vitest run components/analytics/library/SoccerScoring.test.tsx
+          npx vitest run components/analytics/library/MlbCatcherSelections.test.tsx
           npx vitest run components/analytics/library/NbaPlayerContext.test.tsx
           npx vitest run components/analytics/library/PitchMixContext.test.tsx
           npx vitest run components/analytics/library/ResearchProvenance.test.tsx
