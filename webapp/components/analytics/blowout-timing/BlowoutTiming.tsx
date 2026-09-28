@@ -38,13 +38,13 @@ function Eligibility({ sport }: { sport: BlowoutTimingSport }) {
 function IncidencePanel({ sport }: { sport: BlowoutTimingSport }) {
   return <section className="bt-panel" aria-labelledby={`bt-incidence-${sport.sport}`}>
     <h3 id={`bt-incidence-${sport.sport}`}>Incidence</h3>
-    <p className="bt-panel-copy">Games in which this margin became permanent, out of all published games for the sport.</p>
+    <p className="bt-panel-copy">Games in which this margin became permanent, out of the eligible games for each threshold.</p>
     <p className="bt-unit-line">Margin unit: <span className="mono">{sport.unit}</span> | Clock field: <span className="mono">{sport.clockField}</span></p>
     <div className="bt-rows" role="list" aria-label={`${sportLabel(sport.sport)} incidence by threshold`}>
       {sport.thresholds.map(row => <div className={`bt-row${row.masked ? " bt-is-masked" : ""}`} key={row.threshold} role="listitem" data-masked={row.masked || undefined}>
         <ThresholdLabel row={row} unit={sport.unit} />
-        <div className="bt-bar-track" aria-hidden="true"><span className="bt-incidence-bar" style={{ width: `${(row.incidence ?? 0) * 100}%` }} /></div>
-        <span className="bt-value mono">{row.nGamesDecided.toLocaleString()} / {row.nGamesTotal.toLocaleString()} ({percent(row.incidence)})</span>
+        {!row.masked && <div className="bt-bar-track" aria-hidden="true"><span className="bt-incidence-bar" style={{ width: `${(row.incidence ?? 0) * 100}%` }} /></div>}
+        <span className={`bt-value mono${row.masked ? " bt-count-only" : ""}`}>{row.nGamesDecided.toLocaleString()} / {row.nGamesTotal.toLocaleString()}{!row.masked && ` (${percent(row.incidence)})`}</span>
         {row.masked && <span className="bt-mask-reason">{row.maskReason}</span>}
       </div>)}
     </div>

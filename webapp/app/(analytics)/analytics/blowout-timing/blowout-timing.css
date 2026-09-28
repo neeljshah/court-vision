@@ -18,6 +18,7 @@
 .bt-row:first-child { border-top: 0; }
 .bt-threshold, .bt-value { color: var(--ink); font-size: 12px; font-variant-numeric: tabular-nums; }
 .bt-value { text-align: right; color: var(--ink-2); white-space: nowrap; }
+.bt-range-track + .bt-value { white-space: normal; overflow-wrap: anywhere; }
 .bt-bar-track { position: relative; height: 9px; overflow: hidden; border: 1px solid var(--rule); border-radius: var(--radius-pill); background: var(--paper-tint); }
 .bt-incidence-bar { display: block; height: 100%; border-radius: inherit; background: var(--accent); }
 .bt-range-track { overflow: visible; }
@@ -25,7 +26,7 @@
 .bt-median-dot { position: absolute; top: -3px; width: 15px; height: 15px; margin-left: -7px; border: 2px solid var(--paper-raised); border-radius: 50%; background: var(--ink); outline: 1px solid var(--rule-strong); }
 .bt-is-masked { color: var(--ink-3); opacity: .62; }
 .bt-is-masked .bt-threshold, .bt-is-masked .bt-value { color: var(--ink-3); }
-.bt-is-masked .bt-incidence-bar { background: var(--null); }
+.bt-count-only { grid-column: 3; }
 .bt-mask-reason { grid-column: 2 / -1; color: var(--ink-3); font-size: 12px; line-height: 1.45; }
 .bt-source-fields { max-width: 900px; margin-top: 30px; color: var(--ink-3); font-size: 12px; line-height: 1.65; }
 .bt-receipt { margin-top: 18px; }

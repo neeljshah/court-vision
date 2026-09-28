@@ -2,6 +2,8 @@ import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { BlowoutTiming } from "./BlowoutTiming";
 import type { BlowoutTimingSport } from "@/lib/analytics/blowoutTiming";
+import { buildBlowoutTiming } from "@/lib/analytics/blowoutTiming";
+import published from "@/public/data/showcase/blowout_dynamics.json";
 
 const sports: BlowoutTimingSport[] = [
   { sport: "mlb", unit: "runs", clockField: "inning", nGamesRaw: 178, nGamesUsable: 178, minTicksFloor: 10, minGamesPerThreshold: 10, thresholds: [{ threshold: 2, nGamesTotal: 20, nGamesDecided: 10, incidence: 0.5, publishedIncidence: 0.5, masked: false, maskReason: null, p25: 4, median: 6, p75: 8 }] },
@@ -73,5 +75,28 @@ describe("BlowoutTiming", () => {
     expect(Array.from(panels).every(item => item.classList.contains("bt-mobile-hidden"))).toBe(true);
     expect(Array.from(compactRows).every(item => item.classList.contains("bt-mobile-visible"))).toBe(true);
     expect(container.querySelectorAll(".bt-panels.bt-mobile-visible")).toHaveLength(0);
+  });
+
+  it("withholds source-masked incidence bars and percentages while retaining both counts", () => {
+    render(<BlowoutTiming sports={buildBlowoutTiming(published)} />);
+    const incidence = screen.getByRole("list", { name: "International soccer incidence by threshold" });
+    const rows = within(incidence).getAllByRole("listitem");
+    expect(rows[0]).toHaveTextContent("12 / 26 (46.2%)");
+    expect(rows[0].querySelector(".bt-incidence-bar")).not.toBeNull();
+    for (const [index, count] of [[1, 3], [2, 0]]) {
+      expect(rows[index]).toHaveTextContent(`${count} / 26`);
+      expect(rows[index]).toHaveTextContent("Below the published minimum of 10 decided games.");
+      expect(rows[index]).not.toHaveTextContent("%");
+      expect(rows[index].querySelector(".bt-bar-track")).toBeNull();
+    }
+    const compact = screen.getByRole("list", { name: "International soccer compact threshold details" });
+    const cards = within(compact).getAllByRole("listitem");
+    expect(cards[1]).toHaveTextContent("3 / 26");
+    expect(cards[2]).toHaveTextContent("0 / 26");
+    for (const card of cards.slice(1)) {
+      expect(card).not.toHaveTextContent("%");
+      expect(card).toHaveTextContent("Below the published minimum of 10 decided games.");
+      expect(within(card).getAllByText("Not published")).toHaveLength(3);
+    }
   });
 });

@@ -24,7 +24,7 @@ export default function BlowoutTimingPage() {
     <p className="bt-lede">A threshold becomes permanent at the first recorded score tick from which the margin stays at or above that threshold through the last recorded score tick. This retrospective label is not predictable at the time. The artifact does not record whether that final tick is a complete final score.</p>
     <section className="bt-explanation" aria-labelledby="bt-reading">
       <h2 id="bt-reading">How to read the panels</h2>
-      <p>Incidence reports the count and fraction of published games in which each threshold became permanent. Conditional timing reports the published P25, median, and P75 clock values only for those games. A usable game has at least the published parseable-tick floor, not a verified complete score. The source's decided_clockfrac_* fields divide the decided clock by the final observed clock, not verified regulation time. Masked rows retain their counts and the published mask state, but do not supply clock quartiles.</p>
+      <p>Incidence reports the count and fraction of eligible games in which each threshold became permanent. Conditional timing reports the published P25, median, and P75 clock values only for those games. A usable game has at least the published parseable-tick floor, not a verified complete score. The source's decided_clockfrac_* fields divide the decided clock by the final observed clock, not verified regulation time. Rows below the published sample floor retain their counts and mask reason; incidence bars, percentages, and clock quartiles are withheld.</p>
     </section>
     <InspectorReadingTrail id="blowout-timing" />
     <BlowoutTiming sports={sports} />
