@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { buildBlowoutTiming, incidenceFraction } from "./blowoutTiming";
 import { loadBlowoutTiming } from "./blowoutTiming.server";
+import published from "@/public/data/showcase/blowout_dynamics.json";
 
 describe("blowout timing data", () => {
   it("parses all seven published thresholds", () => {
@@ -32,5 +33,29 @@ describe("blowout timing data", () => {
     expect(parsed[0].thresholds[0].incidence).toBe(0.333333);
     expect(parsed[0].thresholds[0].publishedIncidence).toBe(0.9);
     expect(incidenceFraction(1, 3)).toBe(0.333333);
+  });
+
+  it("carries the source as-of date without inventing an observation window", () => {
+    expect(loadBlowoutTiming().map(sport => sport.asOf)).toEqual([published.as_of, published.as_of]);
+    const { as_of: omitted, ...undated } = published;
+    expect(omitted).toBe("2026-09-17");
+    expect(buildBlowoutTiming(undated).every(sport => sport.asOf === null)).toBe(true);
+    expect(buildBlowoutTiming({ ...published, as_of: 20260917 }).every(sport => sport.asOf === null)).toBe(true);
+  });
+
+  it("keeps absent or invalid eligibility counts missing instead of fabricating zero", () => {
+    for (const value of [undefined, null, "174", -1, 1.5, NaN, Infinity, Number.MAX_SAFE_INTEGER + 1]) {
+      const source = { ...published, sports: { mlb: { ...published.sports.mlb, n_games_raw: value, n_games_usable: value } } };
+      const [sport] = buildBlowoutTiming(source);
+      expect(sport).toMatchObject({ nGamesRaw: null, nGamesUsable: null });
+      expect(sport.thresholds[0]).toMatchObject({ nGamesTotal: 174, nGamesDecided: 130 });
+    }
+  });
+
+  it("preserves explicit zero eligibility counts without replacing threshold denominators", () => {
+    const source = { ...published, sports: { mlb: { ...published.sports.mlb, n_games_raw: 0, n_games_usable: 0 } } };
+    const [sport] = buildBlowoutTiming(source);
+    expect(sport).toMatchObject({ nGamesRaw: 0, nGamesUsable: 0 });
+    expect(sport.thresholds[0].nGamesTotal).toBe(174);
   });
 });

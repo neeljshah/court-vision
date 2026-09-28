@@ -59,6 +59,7 @@ jobs:
           npx vitest run components/analytics/charts/Figure.test.tsx
           npx vitest run components/analytics/modules/ModuleDetail.test.tsx
           npx vitest run lib/analytics/timingModuleEvidence.test.ts
+          npx vitest run lib/analytics/blowoutTiming.test.ts
           npx vitest run components/analytics/modules/TimingModulePanel.test.tsx
           npx vitest run lib/analytics/papers.test.ts
           npx vitest run components/analytics/papers/PaperBlocks.test.tsx
@@ -189,6 +190,7 @@ jobs:
           npx vitest run components/analytics/pitch-sequencing/PitchSequencing.test.tsx
           npx vitest run components/analytics/residual-anatomy/ResidualAnatomy.test.tsx
           npx vitest run components/analytics/blowout-timing/BlowoutTiming.test.tsx
+          npx vitest run 'app/(analytics)/analytics/blowout-timing/page.test.tsx'
           npx vitest run components/analytics/lab/LabTable.test.ts
           npx vitest run components/analytics/lab/TablePagination.test.tsx
           npx vitest run components/analytics/evidence/EvidenceGallery.test.tsx

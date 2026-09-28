@@ -15,10 +15,11 @@ export type BlowoutTimingThreshold = {
 
 export type BlowoutTimingSport = {
   sport: string;
+  asOf: string | null;
   unit: string;
   clockField: string;
-  nGamesRaw: number;
-  nGamesUsable: number;
+  nGamesRaw: number | null;
+  nGamesUsable: number | null;
   minTicksFloor: number;
   minGamesPerThreshold: number | null;
   thresholds: BlowoutTimingThreshold[];
@@ -35,6 +36,11 @@ function number(value: unknown): number | null {
 function count(value: unknown): number {
   const parsed = number(value);
   return parsed !== null && parsed >= 0 ? Math.trunc(parsed) : 0;
+}
+
+function publishedGameCount(value: unknown): number | null {
+  const parsed = number(value);
+  return parsed !== null && Number.isSafeInteger(parsed) && parsed >= 0 ? parsed : null;
 }
 
 export function incidenceFraction(decided: number, total: number): number | null {
@@ -70,6 +76,7 @@ function thresholdFrom(value: unknown, minimum: number | null): BlowoutTimingThr
 /** Parses the committed blowout dynamics artifact without pooling sport clocks. */
 export function buildBlowoutTiming(value: unknown): BlowoutTimingSport[] {
   const root = record(value);
+  const asOf = typeof root?.as_of === "string" ? root.as_of : null;
   const sports = record(root?.sports);
   const floors = record(root?.floors);
   const minimum = number(floors?.min_games_per_threshold);
@@ -78,15 +85,15 @@ export function buildBlowoutTiming(value: unknown): BlowoutTimingSport[] {
     const source = record(entry);
     const unit = typeof source?.unit === "string" ? source.unit : null;
     const clockField = typeof source?.clock_field === "string" ? source.clock_field : null;
-    const nGamesRaw = count(source?.n_games_raw);
-    const nGamesUsable = count(source?.n_games_usable);
+    const nGamesRaw = publishedGameCount(source?.n_games_raw);
+    const nGamesUsable = publishedGameCount(source?.n_games_usable);
     const minTicksFloor = count(source?.min_ticks_floor);
     const rows = Array.isArray(source?.thresholds) ? source.thresholds.flatMap(row => {
       const parsed = thresholdFrom(row, minimum);
       return parsed ? [parsed] : [];
     }) : [];
     return unit && clockField && rows.length
-      ? [{ sport, unit, clockField, nGamesRaw, nGamesUsable, minTicksFloor, minGamesPerThreshold: minimum, thresholds: rows }]
+      ? [{ sport, asOf, unit, clockField, nGamesRaw, nGamesUsable, minTicksFloor, minGamesPerThreshold: minimum, thresholds: rows }]
       : [];
   });
 }

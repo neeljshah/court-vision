@@ -27,8 +27,8 @@ function ThresholdLabel({ row, unit }: { row: BlowoutTimingThreshold; unit: stri
 
 function Eligibility({ sport }: { sport: BlowoutTimingSport }) {
   return <p className="bt-eligibility">
-    Published eligibility: <span className="mono">{sport.nGamesRaw.toLocaleString()} raw games</span>,
-    {" "}<span className="mono">{sport.nGamesUsable.toLocaleString()} usable games</span> with at least
+    Published eligibility: <span className="mono">{sport.nGamesRaw === null ? "raw game count not published" : `${sport.nGamesRaw.toLocaleString("en-US")} raw games`}</span>,
+    {" "}<span className="mono">{sport.nGamesUsable === null ? "usable game count not published" : `${sport.nGamesUsable.toLocaleString("en-US")} usable games`}</span> with at least
     {" "}<span className="mono">{sport.minTicksFloor.toLocaleString()} parseable score ticks</span>; each threshold
     needs <span className="mono">{sport.minGamesPerThreshold?.toLocaleString() || "the published floor"} decided games</span>{" "}
     for clock quartiles.
@@ -91,7 +91,10 @@ export function BlowoutTiming({ sports }: { sports: BlowoutTimingSport[] }) {
   return <div className="bt-sports">
     {sports.map(sport => <section className="bt-sport" key={sport.sport} aria-labelledby={`bt-${sport.sport}`}>
       <h2 id={`bt-${sport.sport}`}>{sportLabel(sport.sport)}</h2>
-      <Figure source={SOURCE} asOf="published snapshot" title={`${sportLabel(sport.sport)} lasting-lead frequency and timing`} subtitle={`Thresholds are expressed in ${sport.unit}; the reported clock is ${sport.clockField}.`} verdict="descriptive_only">
+      <Figure source={SOURCE} asOf={sport.asOf} dateKind="source"
+        denominator={sport.nGamesUsable === null ? undefined : `n usable games=${sport.nGamesUsable.toLocaleString("en-US")}`}
+        meta="Observation window not published."
+        title={`${sportLabel(sport.sport)} lasting-lead frequency and timing`} subtitle={`Thresholds are expressed in ${sport.unit}; the reported clock is ${sport.clockField}.`} verdict="descriptive_only">
         <Eligibility sport={sport} />
         <div className="bt-panels bt-mobile-hidden"><IncidencePanel sport={sport} /><TimingPanel sport={sport} /></div>
         <CompactRows sport={sport} />

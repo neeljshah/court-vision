@@ -6,8 +6,8 @@ import { buildBlowoutTiming } from "@/lib/analytics/blowoutTiming";
 import published from "@/public/data/showcase/blowout_dynamics.json";
 
 const sports: BlowoutTimingSport[] = [
-  { sport: "mlb", unit: "runs", clockField: "inning", nGamesRaw: 178, nGamesUsable: 178, minTicksFloor: 10, minGamesPerThreshold: 10, thresholds: [{ threshold: 2, nGamesTotal: 20, nGamesDecided: 10, incidence: 0.5, publishedIncidence: 0.5, masked: false, maskReason: null, p25: 4, median: 6, p75: 8 }] },
-  { sport: "soccer_intl", unit: "goals", clockField: "minute", nGamesRaw: 29, nGamesUsable: 29, minTicksFloor: 10, minGamesPerThreshold: 10, thresholds: [{ threshold: 1, nGamesTotal: 29, nGamesDecided: 14, incidence: 0.482759, publishedIncidence: 0.4828, masked: false, maskReason: null, p25: 22.75, median: 39.5, p75: 56.25 }, { threshold: 2, nGamesTotal: 29, nGamesDecided: 3, incidence: 0.103448, publishedIncidence: 0.1034, masked: true, maskReason: "Below the published minimum of 10 decided games.", p25: null, median: null, p75: null }] },
+  { sport: "mlb", asOf: null, unit: "runs", clockField: "inning", nGamesRaw: 178, nGamesUsable: 178, minTicksFloor: 10, minGamesPerThreshold: 10, thresholds: [{ threshold: 2, nGamesTotal: 20, nGamesDecided: 10, incidence: 0.5, publishedIncidence: 0.5, masked: false, maskReason: null, p25: 4, median: 6, p75: 8 }] },
+  { sport: "soccer_intl", asOf: null, unit: "goals", clockField: "minute", nGamesRaw: 29, nGamesUsable: 29, minTicksFloor: 10, minGamesPerThreshold: 10, thresholds: [{ threshold: 1, nGamesTotal: 29, nGamesDecided: 14, incidence: 0.482759, publishedIncidence: 0.4828, masked: false, maskReason: null, p25: 22.75, median: 39.5, p75: 56.25 }, { threshold: 2, nGamesTotal: 29, nGamesDecided: 3, incidence: 0.103448, publishedIncidence: 0.1034, masked: true, maskReason: "Below the published minimum of 10 decided games.", p25: null, median: null, p75: null }] },
 ];
 
 describe("BlowoutTiming", () => {
@@ -98,5 +98,34 @@ describe("BlowoutTiming", () => {
       expect(card).toHaveTextContent("Below the published minimum of 10 decided games.");
       expect(within(card).getAllByText("Not published")).toHaveLength(3);
     }
+  });
+
+  it("shows source date and usable-game populations while keeping the observation window unknown", () => {
+    render(<BlowoutTiming sports={buildBlowoutTiming(published)} />);
+    expect(screen.getAllByText("Source as of 2026-09-17")).toHaveLength(2);
+    expect(screen.getAllByText("Observation window not published.")).toHaveLength(2);
+    expect(screen.getByText("n usable games=174")).toBeInTheDocument();
+    expect(screen.getByText("n usable games=26")).toBeInTheDocument();
+    expect(screen.queryByText("n not published")).not.toBeInTheDocument();
+    expect(screen.getByRole("list", { name: "MLB incidence by threshold" })).toHaveTextContent("130 / 174 (74.7%)");
+  });
+
+  it.each([null, "published snapshot", "2026-02-30"])("retains the missing-date fallback for %s", asOf => {
+    render(<BlowoutTiming sports={[{ ...sports[0], asOf }]} />);
+    expect(screen.getByText("Date not published.")).toBeInTheDocument();
+    expect(screen.getByText("Observation window not published.")).toBeInTheDocument();
+  });
+
+  it("distinguishes missing eligibility counts from a published zero", () => {
+    const { rerender } = render(<BlowoutTiming sports={[{ ...sports[0], nGamesRaw: null, nGamesUsable: null }]} />);
+    expect(screen.getByText("raw game count not published")).toBeInTheDocument();
+    expect(screen.getByText("usable game count not published")).toBeInTheDocument();
+    expect(screen.getByText("n not published")).toBeInTheDocument();
+    expect(screen.queryByText("0 usable games")).not.toBeInTheDocument();
+    rerender(<BlowoutTiming sports={[{ ...sports[0], nGamesRaw: 0, nGamesUsable: 0 }]} />);
+    expect(screen.getByText("0 raw games")).toBeInTheDocument();
+    expect(screen.getByText("0 usable games")).toBeInTheDocument();
+    expect(screen.getByText("n usable games=0")).toBeInTheDocument();
+    expect(screen.getByRole("list", { name: "MLB incidence by threshold" })).toHaveTextContent("10 / 20 (50.0%)");
   });
 });
