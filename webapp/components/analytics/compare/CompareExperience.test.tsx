@@ -131,6 +131,9 @@ describe("CompareExperience controls", () => {
   it("commits a datalist keyboard selection on Enter", async () => {
     render(<CompareExperience />);
     const a = await screen.findByLabelText("Profile A");
+    await waitFor(() => expect(a).toHaveValue("Alpha"));
+    expect(screen.getByLabelText("Profile B")).toHaveValue("Beta");
+    expect(datalistValues("compare-entities-a")).toContain("Beta");
     fireEvent.keyDown(a, { key: "ArrowDown", target: { value: "Beta" } });
     fireEvent.keyDown(a, { key: "Enter", target: { value: "Beta" } });
     await waitFor(() => expect(a).toHaveValue("Beta"));
