@@ -21,24 +21,40 @@ describe("Soccer attack and defense investigation", () => {
     expect(sourceContext).toHaveTextContent("Row window: Goal difference per game: exactly 10 strictly prior all-venue matches");
     expect(sourceContext).toHaveTextContent("Goals scored per game: exactly 10 strictly prior all-venue matches");
     expect(sourceContext).toHaveTextContent("Goals conceded per game: exactly 10 strictly prior all-venue matches");
+    expect(sourceContext).toHaveTextContent("Clean-sheet rate: exactly 10 strictly prior all-venue matches");
+    fireEvent.change(screen.getByRole("combobox", { name: "Measurement" }), { target: { value: "clean_sheet_rate_l10" } });
+    expect(new URLSearchParams(window.location.search).get("metric")).toBe("clean_sheet_rate_l10");
     fireEvent.change(screen.getByRole("textbox", { name: "Search analysis rows" }), { target: { value: "Bayern Munich" } });
     expect(screen.getByRole("status")).toHaveTextContent("1 matching row");
     fireEvent.click(screen.getByRole("button", { name: "Inspect Bayern Munich" }));
     const selected = screen.getByRole("region", { name: "Selected measurement" });
     expect(within(selected).queryByRole("region", { name: "Measurement context" })).not.toBeInTheDocument();
-    for (const [label, value] of [["Goal difference per game", "1.8"], ["Goals scored per game", "3.2"], ["Goals conceded per game", "1.4"]]) {
+    for (const [label, value] of [["Goal difference per game", "1.8"], ["Goals scored per game", "3.2"], ["Goals conceded per game", "1.4"], ["Clean-sheet rate", "30%"]]) {
       expect(within(within(selected).getByText(label).parentElement!).getByText(value)).toBeVisible();
     }
     const provenance = within(selected).getByRole("region", { name: "Calculation inputs" });
     expect(provenance).toHaveTextContent("3.2");
     expect(provenance).toHaveTextContent("1.4");
+    expect(provenance).toHaveTextContent("Published clean-sheet rate over 10 prior matches");
+    expect(provenance).toHaveTextContent("key_numbers.clean_sheet_rate_l10");
     expect(provenance).not.toHaveTextContent("not published for this row");
     fireEvent.click(screen.getByRole("button", { name: "Export CSV" }));
     const [dataset, rows] = exportCSV.mock.calls[0];
     expect(rows).toHaveLength(1);
-    expect(rows[0].values).toEqual({ gd_l10: 1.8, gf_l10: 3.2, ga_l10: 1.4 });
+    expect(rows[0].values).toEqual({ gd_l10: 1.8, gf_l10: 3.2, ga_l10: 1.4, clean_sheet_rate_l10: 0.3 });
     const csv = table.buildLabCSV(dataset, rows);
-    for (const text of ["Bayern Munich", "atlas_soccer_manifest", "2026-07-18T17:21:08.108324+00:00", "Row windows (JSON)", analysis.caveat]) expect(csv).toContain(text);
+    for (const text of ["Bayern Munich", "atlas_soccer_manifest", "2026-07-18T17:21:08.108324+00:00", "Row windows (JSON)", "Clean-sheet rate (percent; raw value)", "clean_sheet_rate_l10", analysis.caveat]) expect(csv).toContain(text);
+  });
+
+  it("restores the clean-sheet measurement without creating a pooled ranking", () => {
+    window.history.replaceState(null, "", "?q=Arsenal&view=table&metric=clean_sheet_rate_l10&row=soccer-scoring-arsenal");
+    render(<ResearchDetail analysis={analysis} related={[]} />);
+    expect(screen.getByRole("combobox", { name: "Measurement" })).toHaveValue("clean_sheet_rate_l10");
+    expect(screen.getByRole("combobox", { name: "Order" })).toBeDisabled();
+    const selected = screen.getByRole("region", { name: "Selected measurement" });
+    expect(within(within(selected).getByText("Clean-sheet rate").parentElement!).getByText("60%")).toBeVisible();
+    expect(within(selected).queryByRole("region", { name: "Measurement context" })).not.toBeInTheDocument();
+    expect(screen.getByText(analysis.formula)).toHaveTextContent("share of matches with zero goals conceded");
   });
 
   it("restores a shared negative-balance table and its selected measurement", () => {

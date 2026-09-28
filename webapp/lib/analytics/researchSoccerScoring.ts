@@ -14,7 +14,7 @@ export type SoccerScoringAtlas = {
 };
 
 const WINDOW = /(?:^|[;( ])window=trailing10_asof_corpus_end(?=;|\)|$)/;
-const METRICS = ["gd_l10", "gf_l10", "ga_l10"] as const;
+const METRICS = ["gd_l10", "gf_l10", "ga_l10", "clean_sheet_rate_l10"] as const;
 const SOURCE = "atlas_soccer_manifest";
 const REFERENCES: ResearchReference[] = [{
   title: "IFAB Laws of the Game, Law 10: Determining the Outcome of a Match",
@@ -54,6 +54,10 @@ function finite(value: unknown): number | null {
   return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
 
+function fraction(value: unknown): number | null {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= 1 ? value : null;
+}
+
 function round4(value: number): number {
   return Math.round((value + Number.EPSILON) * 10_000) / 10_000;
 }
@@ -70,11 +74,12 @@ function rows(entries: SoccerScoringEntry[]): ResearchRow[] {
     const numbers = record(entry.key_numbers);
     const gf = clears(entry.floors, "gf_l10") ? nonnegative(numbers.gf_l10) : null;
     const ga = clears(entry.floors, "ga_l10") ? nonnegative(numbers.ga_l10) : null;
+    const cleanSheets = clears(entry.floors, "clean_sheet_rate_l10") ? fraction(numbers.clean_sheet_rate_l10) : null;
     const publishedGd = clears(entry.floors, "gd_l10") ? finite(numbers.gd_l10) : null;
     const coherent = publishedGd !== null && gf !== null && ga !== null && round4(publishedGd) === round4(gf - ga);
     const gd = coherent ? publishedGd : null;
     const claimTime = timestamp(entry.as_of);
-    const unavailable = METRICS.filter(metric => ({ gd_l10: gd, gf_l10: gf, ga_l10: ga })[metric] === null);
+    const unavailable = METRICS.filter(metric => ({ gd_l10: gd, gf_l10: gf, ga_l10: ga, clean_sheet_rate_l10: cleanSheets })[metric] === null);
     const windows = Object.fromEntries(METRICS.map(metric => [metric, clears(entry.floors, metric)
       ? "exactly 10 strictly prior all-venue matches; latest per-team match dropped"
       : "unavailable: exact n_prior>=10 floor and trailing10_asof_corpus_end window not verified"]));
@@ -82,7 +87,7 @@ function rows(entries: SoccerScoringEntry[]): ResearchRow[] {
       id: `soccer-scoring-${suffix}`,
       label,
       group: "Trailing scoring form",
-      values: { gd_l10: gd, gf_l10: gf, ga_l10: ga },
+      values: { gd_l10: gd, gf_l10: gf, ga_l10: ga, clean_sheet_rate_l10: cleanSheets },
       note: `Team: ${label}. Each available field clears n_prior>=10 and uses exactly 10 strictly prior all-venue matches after the team's latest match was dropped.${unavailable.length ? ` Unavailable: ${unavailable.join(", ")}.${publishedGd !== null && !coherent ? " Published goal difference could not be verified as goals scored minus goals conceded at four decimals." : ""}` : ""} Per-team match dates are not published; source claim timestamp: ${claimTime ?? "unavailable"}.`,
       sourcePaths: METRICS.map(metric => `entries[${index}].key_numbers.${metric}`),
       bindingValues: { source_claim_timestamp: claimTime },
@@ -117,15 +122,16 @@ export function buildSoccerScoringResearch(atlas: SoccerScoringAtlas): ResearchA
       f("gd_l10", "Goal difference per game", "number", 2),
       f("gf_l10", "Goals scored per game", "number", 2),
       f("ga_l10", "Goals conceded per game", "number", 2),
+      f("clean_sheet_rate_l10", "Clean-sheet rate", "percent", 1),
     ],
     rows: resultRows,
-    description: "Compares published team attack and defense scoring rates over each team's trailing 10 strictly prior all-venue matches.",
-    question: "How do published recent goals scored, goals conceded, and goal difference compare across teams?",
+    description: "Compares published goals scored, goals conceded, goal difference, and clean-sheet share over each team's trailing 10 strictly prior all-venue matches.",
+    question: "How do published recent goals scored, goals conceded, goal difference, and the share of matches with zero goals conceded compare across teams?",
     scope: `${resultRows.length} valid unique team rows from ${published === null ? "the published soccer atlas" : `${published} published rows`}. Source claim timestamp: ${claimAsOf}. Public artifact generation timestamp: ${generated ?? "not published"}.`,
     caveat: "This descriptive source pools six divisions and seasons 2015-2026 without a league partition or opponent-strength adjustment. Team schedules overlap, so rows are not independent. Each team has its own latest-match cutoff; the claim timestamp and artifact generation timestamp are not per-team match dates and do not imply synchronized windows. The public artifact omits those match dates. These rates do not measure expected goals, forecast outcomes, or establish causes.",
-    method: "For each field, require its exact published n_prior>=10 floor and window=trailing10_asof_corpus_end. Accept finite goals scored and conceded only when nonnegative. Keep missing or invalid fields null. Publish goal difference only when its source value equals source goals scored minus goals conceded at four-decimal precision.",
-    formula: "gd_l10 = gf_l10 - ga_l10 at the producer's four-decimal source precision; all three fields are published per-game means over exactly 10 strictly prior matches.",
-    interpretation: "Higher goals scored means more recorded recent scoring; lower goals conceded means fewer recorded recent goals allowed. Goal difference combines those descriptive rates. Compare them with league, opponent and schedule limits in view.",
+    method: "For each field, require its exact published n_prior>=10 floor and window=trailing10_asof_corpus_end. Accept finite goals scored and conceded only when nonnegative, and the published clean-sheet fraction only within [0, 1]. Keep missing or invalid fields null. Publish goal difference only when its source value equals source goals scored minus goals conceded at four-decimal precision.",
+    formula: "gd_l10 = gf_l10 - ga_l10 at the producer's four-decimal source precision. The three goal fields are published per-game means; clean_sheet_rate_l10 is the published share of matches with zero goals conceded. Each uses the same exactly 10 strictly prior all-venue matches after the team's latest match was dropped.",
+    interpretation: "Higher goals scored means more recorded recent scoring; lower goals conceded means fewer recorded recent goals allowed. Goal difference combines those means. Clean-sheet rate is the share of matches without a goal conceded, not the average number conceded. Compare them with league, opponent and schedule limits in view.",
     sources: [{
       id: SOURCE,
       asOf: claimAsOf,
@@ -139,6 +145,7 @@ export function buildSoccerScoringResearch(atlas: SoccerScoringAtlas): ResearchA
       { operand: "gd_l10", sourcePath: "entries[i].key_numbers.gd_l10", valueKey: "gd_l10", label: "Published goal difference per game" },
       { operand: "gf_l10", sourcePath: "entries[i].key_numbers.gf_l10", valueKey: "gf_l10", label: "Published goals scored per game" },
       { operand: "ga_l10", sourcePath: "entries[i].key_numbers.ga_l10", valueKey: "ga_l10", label: "Published goals conceded per game" },
+      { operand: "clean_sheet_rate_l10", sourcePath: "entries[i].key_numbers.clean_sheet_rate_l10", valueKey: "clean_sheet_rate_l10", label: "Published clean-sheet rate over 10 prior matches" },
       { operand: "source_claim_timestamp", sourcePath: "entries[i].as_of", valueKey: "source_claim_timestamp", label: "Published source claim timestamp" },
     ],
     references: REFERENCES,
