@@ -79,6 +79,18 @@ describe("basketballResearch", () => {
     expect(datasets.filter(d => d.formCoverage)).toHaveLength(1);
   });
 
+  it("makes endpoint time and source precision available without changing the selected population", () => {
+    const form = datasets.find(d => d.id === "nba-form-endpoint-elasticity")!;
+    expect(form.fields).toHaveLength(9);
+    expect(form.fields[0].key).toBe("relative_change");
+    const victor = form.rows.find(r => r.label === "Victor Wembanyama")!;
+    expect(victor.values.endpoint_days).toBe(880);
+    expect(victor.bindingValues?.first_window_end).toBe("2023-11-12");
+    expect(victor.sourcePaths).toContain("top_movers_risers[0].first_date");
+    expect(form.formula).toContain("rounded separately");
+    expect(form.caveat).toContain("Endpoint windows can overlap");
+  });
+
   it("deduplicates matchup directions and centers contrasts by meeting weight", () => {
     const raw = source("nba_matchup_grid");
     const dataset = datasets.find(d => d.id === "nba-matchup-profile-contrast")!;
