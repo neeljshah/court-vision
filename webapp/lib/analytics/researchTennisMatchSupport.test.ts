@@ -22,8 +22,8 @@ describe("tennis clay-hard match support", () => {
     const analysis = getTennisMatchSupportResearch()[0];
     expect(analysis.id).toBe("tennis-clay-hard-match-support");
     expect(analysis.rows).toHaveLength(20);
-    expect(analysis.scope).toContain("ATP career: 10 published extremes from 184 qualifiers; dated matches in the pooled 2015-2025 corpus");
-    expect(analysis.scope).toContain("ATP recent form: 10 published extremes from 69 qualifiers; matches on or after 2023-01-01");
+    expect(analysis.scope).toContain("ATP career: 10 published extremes from 184 qualifiers among 1,261 snapshot player rows; dated matches in the pooled 2015-2025 corpus");
+    expect(analysis.scope).toContain("ATP recent form: 10 published extremes from 69 qualifiers among 663 snapshot player rows; matches on or after 2023-01-01");
     expect(analysis.populationDefinition?.status).toBe("unpublished");
     expect(analysis.asOf).toBeUndefined();
     expect(analysis.rows[0].label).toBe("Luciano Darderi (career)");
@@ -79,5 +79,36 @@ describe("tennis clay-hard match support", () => {
     const windowAnalysis = buildTennisMatchSupportResearch(badWindow)[0];
     expect(windowAnalysis.rows).toEqual([]);
     expect(windowAnalysis.scope).toContain("source window unverified");
+  });
+
+  it("keeps qualifier and window scope when snapshot row metadata cannot support a denominator", () => {
+    for (const snapshotPlayers of [undefined, null, -1, 1.5, "100", Number.MAX_SAFE_INTEGER + 1, 99]) {
+      const fixture = source([entry("Example", 25, 25)]);
+      fixture.combos!.atp_career.n_players_in_snapshot = snapshotPlayers;
+      const scope = buildTennisMatchSupportResearch(fixture)[0].scope;
+      expect(scope).toContain("ATP career: 1 published extremes from 100 qualifiers; dated matches in the pooled 2015-2025 corpus");
+      expect(scope).not.toContain("snapshot player rows");
+    }
+    const missingQualifiers = source([entry("Example", 25, 25)]);
+    missingQualifiers.combos!.atp_career.n_players_in_snapshot = 100;
+    missingQualifiers.combos!.atp_career.clay_hard_gap!.n_qualifying = null;
+    expect(buildTennisMatchSupportResearch(missingQualifiers)[0].scope).toContain("ATP career: 1 published extremes (qualifier count unavailable); dated matches in the pooled 2015-2025 corpus");
+    expect(buildTennisMatchSupportResearch(missingQualifiers)[0].scope).not.toContain("snapshot player rows");
+  });
+
+  it("withholds snapshot rows from an unverified source and accepts a real zero boundary", () => {
+    const unverified = source([entry("Example", 25, 25)]);
+    unverified.combos!.atp_career.n_players_in_snapshot = 100;
+    unverified.combos!.atp_career.source = "another-source";
+    const unverifiedScope = buildTennisMatchSupportResearch(unverified)[0].scope;
+    expect(unverifiedScope).toContain("ATP career: 1 published extremes from 100 qualifiers; source window unverified");
+    expect(unverifiedScope).not.toContain("snapshot player rows");
+
+    const empty = source([]);
+    empty.combos!.atp_career.n_players_in_snapshot = 0;
+    empty.combos!.atp_career.clay_hard_gap!.n_qualifying = 0;
+    const emptyAnalysis = buildTennisMatchSupportResearch(empty)[0];
+    expect(emptyAnalysis.scope).toContain("ATP career: 0 published extremes from 0 qualifiers among 0 snapshot player rows; dated matches in the pooled 2015-2025 corpus");
+    expect(emptyAnalysis.rows).toEqual([]);
   });
 });

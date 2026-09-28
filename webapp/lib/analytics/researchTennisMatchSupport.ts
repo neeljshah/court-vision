@@ -10,7 +10,7 @@ type Entry = {
   hard_n?: unknown;
 };
 type Gap = { floor?: unknown; n_qualifying?: unknown; most_clay_favoring?: unknown; most_hard_favoring?: unknown };
-type Combo = { status?: unknown; source?: unknown; clay_hard_gap?: Gap };
+type Combo = { status?: unknown; source?: unknown; n_players_in_snapshot?: unknown; clay_hard_gap?: Gap };
 export type TennisMatchSupportSource = { floors?: { clay_hard_gap?: unknown }; combos?: Record<string, Combo> };
 
 const SOURCE = "tennis_surface_transfer";
@@ -76,7 +76,10 @@ export function buildTennisMatchSupportResearch(source: TennisMatchSupportSource
     const arrays = SELECTIONS.map(selection => gapSource?.[selection]);
     const published = arrays.reduce<number>((sum, values) => sum + (Array.isArray(values) ? values.length : 0), 0);
     const qualified = metadataCount(gapSource?.n_qualifying);
-    summaries.push(`${label}: ${published} published extremes${qualified === null ? " (qualifier count unavailable)" : ` from ${qualified} qualifiers`}${verifiedWindow ? `; ${window}` : "; source window unverified"}`);
+    const snapshotPlayers = metadataCount(combo?.n_players_in_snapshot);
+    const denominator = verifiedWindow && qualified !== null && snapshotPlayers !== null && snapshotPlayers >= qualified
+      ? ` among ${snapshotPlayers.toLocaleString("en-US")} snapshot player rows` : "";
+    summaries.push(`${label}: ${published} published extremes${qualified === null ? " (qualifier count unavailable)" : ` from ${qualified} qualifiers${denominator}`}${verifiedWindow ? `; ${window}` : "; source window unverified"}`);
     if (!verifiedWindow || !gapSource) return [];
     const floorVerified = source?.floors?.clay_hard_gap === FLOOR && gapSource.floor === FLOOR;
     return selectionRows(key, label, suffix, window, gapSource, floorVerified);

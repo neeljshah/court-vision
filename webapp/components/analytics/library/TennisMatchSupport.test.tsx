@@ -15,6 +15,8 @@ describe("tennis match support reader", () => {
     expect(screen.getByRole("status")).toHaveTextContent("20 matching rows");
     expect(screen.queryByRole("region", { name: "Measurement summary" })).not.toBeInTheDocument();
     fireEvent.change(screen.getByRole("textbox", { name: "Search analysis rows" }), { target: { value: "Adrian Mannarino" } });
+    expect(screen.getByText(/ATP career: 10 published extremes from 184 qualifiers among 1,261 snapshot player rows/)).toBeInTheDocument();
+    expect(screen.getByText(/ATP recent form: 10 published extremes from 69 qualifiers among 663 snapshot player rows/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Inspect Adrian Mannarino (career)" }));
     const details = screen.getByRole("region", { name: "Selected measurement" });
     expect(within(details).getByText("13.26%")).toBeInTheDocument();
@@ -38,6 +40,8 @@ describe("tennis match support reader", () => {
     expect(csv).toContain("combos.atp_recent_form.clay_hard_gap.most_clay_favoring[1].hard_n");
     expect(csv).toContain("2015-2025");
     expect(csv).toContain("2023-01-01");
+    expect(csv).toContain("184 qualifiers among 1,261 snapshot player rows");
+    expect(csv).toContain("69 qualifiers among 663 snapshot player rows");
     expect(analysis.asOf).toBeUndefined();
   });
 });
