@@ -17,9 +17,9 @@ export interface AskEntry {
   bucket: string;
   a: AskAnswer;
   entity?: AtlasEntity;
+  exactOnly?: boolean;
 }
 type MatchKind = "direct" | "related" | "none" | "unavailable";
-
 export interface ResolvedQuestion {
   entry: AskEntry | null;
   kind: MatchKind;
@@ -195,14 +195,14 @@ function isDirect(queryTerms: string[], candidate: Candidate, frequencies: Map<s
   return candidate.matchedTerms.size >= 2 && coverage >= 0.6;
 }
 
-function matchesStaticQuestion(queryTerms: string[], entry: AskEntry): boolean {
+function matchesStaticQuestion(queryTerms: string[], entry: AskEntry, queryText: string): boolean {
+  if (entry.exactOnly) return !TEMPORAL_QUERY.test(queryText) && [entry.q, ...entry.alt_phrasings].some(phrase => norm(phrase) === norm(queryText));
   const query = new Set(queryTerms);
   return [entry.q, ...(entry.alt_phrasings || [])].some((phrase) => {
     const terms = tokens(phrase);
     return terms.length === query.size && terms.every((term) => query.has(term));
   });
 }
-
 function followUps(entries: AskEntry[], selected: AskEntry, queryTerms: string[], entities: AtlasEntity[]): string[] {
   const publishedEntities = entries.flatMap((entry) => entry.entity ? [entry.entity] : []);
   const selectedEntities = entities.length ? entities : resolveEntityIntent(selected.q, publishedEntities).entities;
@@ -212,7 +212,7 @@ function followUps(entries: AskEntry[], selected: AskEntry, queryTerms: string[]
   const selectedSpecific = Array.from(selectedTerms).filter((term) => !FOLLOWUP_GENERIC.has(term) && !SPORT_TERMS.has(term));
   const selectedSports = new Set(tokens(selected.tags.join(" ")).filter((term) => SPORT_TERMS.has(term)));
   const ranked = entries
-    .filter((entry) => entry.q !== selected.q && entry.a.status === "ok" &&
+    .filter((entry) => !entry.exactOnly && entry.q !== selected.q && entry.a.status === "ok" &&
       (!selected.a.explore_path || entry.a.source_artifact === selected.a.source_artifact) &&
       (!entry.entity || supportsEntities(entry, entities)))
     .map((entry) => {
@@ -263,7 +263,7 @@ export function resolveQuestion(query: string, entries: AskEntry[]): ResolvedQue
   // Exact published answers include missing coverage for named metrics such as
   // Live-Clock Fraction. Other live/latest requests still use the scope refusal.
   const staticExact = entries.find((entry) => entry.a.status !== "refused" &&
-    supportsEntities(entry, intent.entities) && matchesStaticQuestion(queryTerms, entry));
+    supportsEntities(entry, intent.entities) && matchesStaticQuestion(queryTerms, entry, query));
   if (staticExact) return {
     entry: staticExact,
     kind: offer ? "related" : "direct",
@@ -277,7 +277,7 @@ export function resolveQuestion(query: string, entries: AskEntry[]): ResolvedQue
     if (scope) return { entry: scope, kind: "direct", followUps: [] };
   }
 
-  const indexed = indexEntries(entries);
+  const indexed = indexEntries(entries.filter(entry => !entry.exactOnly));
   const frequencies = new Map<string, number>();
   indexed.forEach((item) => {
     new Set([...item.question, ...item.alternate, ...item.tags, ...item.answer]).forEach((term) => {

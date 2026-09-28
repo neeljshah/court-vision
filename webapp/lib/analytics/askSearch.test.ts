@@ -155,6 +155,21 @@ describe("resolveQuestion", () => {
     });
   });
 
+  it("admits exact-only answers without widening ordinary retrieval", () => {
+    const answer: AskEntry = {
+      q: "How often does Arsenal keep clean sheets?", alt_phrasings: ["Arsenal clean-sheet rate"],
+      tags: ["soccer"], bucket: "scoped-metric", exactOnly: true,
+      a: { status: "ok", answer: "Published rate: 60% across home and away matches.", source_artifact: "soccer.json" },
+    };
+    expect(resolveQuestion("HOW OFTEN DOES ARSENAL KEEP CLEAN SHEETS!", [answer]))
+      .toMatchObject({ kind: "direct", entry: answer });
+    for (const query of ["Arsenal clean sheet rate at home", "How often does Arsenal not keep clean sheets?", "Arsenal clean sheet rate this season", "How often does Arsenal keep clean sheets today?"]) {
+      expect(resolveQuestion(query, [answer])).toMatchObject({ entry: null, kind: "none" });
+    }
+    expect(resolveQuestion("how is Jokic passing", [...entries, answer]))
+      .toEqual(resolveQuestion("how is Jokic passing", entries));
+  });
+
   it("keeps inspector aliases ahead of unrelated entity notes and accepts paper routes", () => {
     const corpus = loadScoutCorpus();
     for (const query of ["observation dependence", "count context"]) {

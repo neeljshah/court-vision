@@ -3,6 +3,7 @@ import type { AskEntry } from "./askSearch";
 import { entrySlugs } from "./comparisonData";
 import { getResearchAnalyses } from "./researchData";
 import { buildReadingRoomAnswers, type ExplainerEssay, type PaperRecord, type SourceArtifact } from "./scoutInspectorAnswers";
+import { buildSoccerCleanSheetAnswers } from "./scoutSoccerAnswers";
 
 type RawEntry = { entity: string; card_path: string; key_numbers: Record<string, unknown>; as_of?: string | null; floors?: string };
 type Manifest = { entries: RawEntry[] };
@@ -66,7 +67,7 @@ function moduleEntries(manifest: ModuleManifest): AskEntry[] {
 export function buildScoutCorpus(sources: ScoutSources): AskEntry[] {
   if (!Array.isArray(sources.curated.entries)) throw new Error("Missing entries in Scout source: ask/corpus.json");
   const research = getResearchAnalyses().map(analysis => ({ q: `Explain the analysis: ${analysis.title}`, alt_phrasings: [analysis.title, `${analysis.title} formula`, analysis.id.replace(/-/g, " ")], tags: [analysis.sport, "derived-analysis", ...words(analysis.title)], bucket: "public-derived-analysis", a: { status: "ok" as const, answer: `${analysis.description} Formula: ${analysis.formula} ${analysis.interpretation} Scope: ${analysis.scope} Limitations: ${analysis.caveat} This is derived from a published snapshot, not a live forecast.`, source_artifact: `webapp/public/data/showcase/${analysis.source}.json`, source_module_ids: Array.from(new Set([analysis.source, ...(analysis.sources || []).map(source => source.id)])), as_of: analysis.asOf || "unknown", explore_path: `/analytics/research/${analysis.id}/` } }));
-  return [...sources.curated.entries, ...buildReadingRoomAnswers(sources.inspectorArtifacts, sources.explainers, sources.papers), ...entityEntries(sources.manifests), ...moduleEntries(sources.siteManifest), ...research];
+  return [...sources.curated.entries, ...buildReadingRoomAnswers(sources.inspectorArtifacts, sources.explainers, sources.papers), ...entityEntries(sources.manifests), ...moduleEntries(sources.siteManifest), ...research, ...buildSoccerCleanSheetAnswers(sources.manifests.atlas_soccer_manifest)];
 }
 
-export function scoutCorpusExpectedCount(sources: ScoutSources): number { return sources.curated.entries.length + Object.values(sources.manifests).reduce((total, manifest) => total + manifest.entries.length, 0) + sources.siteManifest.modules.length + getResearchAnalyses().length + sources.inspectorArtifacts.length + sources.explainers.length + sources.papers.length; }
+export function scoutCorpusExpectedCount(sources: ScoutSources): number { return sources.curated.entries.length + Object.values(sources.manifests).reduce((total, manifest) => total + manifest.entries.length, 0) + sources.siteManifest.modules.length + getResearchAnalyses().length + sources.inspectorArtifacts.length + sources.explainers.length + sources.papers.length + buildSoccerCleanSheetAnswers(sources.manifests.atlas_soccer_manifest).length; }

@@ -129,7 +129,8 @@ function AnswerEnvelope({ result, query, onAsk, excludedQuestions, entries }: {
   const sourceHref = publicArtifact ? entry.a.source_artifact.slice("webapp/public".length) : "/data/ask/corpus.json";
   const path = entry.a.explore_path || "";
   const standardPath = /^\/analytics\/(?:research\/[a-z0-9-]+\/|players\/[a-z0-9_]+\/[a-z0-9_]+|m\/[a-z0-9_]+)$/i.test(path);
-  const explorePath = standardPath || isReadingRoomPath(path, entries) ? path : null;
+  const researchViewPath = /^\/analytics\/research\/[a-z0-9-]+\/\?(?:q|metric|row)=[^#\s&]*(?:&(?:q|metric|row)=[^#\s&]*)*$/i.test(path);
+  const explorePath = standardPath || researchViewPath || isReadingRoomPath(path, entries) ? path : null;
   const destinationLabel = entry.bucket === "public-entity-profile" ? "Open profile" : entry.bucket === "public-analytics-module" ? "Open module" : entry.bucket === "public-inspector" ? "Open inspector" : entry.bucket === "public-explainer" ? "Read explainer" : entry.bucket === "public-paper" ? "Read paper" : "Read analysis";
   const followUps = result.followUps.filter(question => question !== query && !excludedQuestions.has(question));
   return (
