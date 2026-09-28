@@ -76,7 +76,7 @@ function RegressorTable({ rows, label }: { rows: RegressorRow[]; label: string }
             <th style={th}>n</th>
             <th style={th}>Raw rate</th>
             <th style={th}>Shrunk rate</th>
-            <th style={th}>Moved by</th>
+            <th style={th}>Raw minus shrunk</th>
           </tr>
         </thead>
         <tbody>
@@ -133,22 +133,22 @@ export default function ShrinkagePage() {
     );
   }
 
-  const { headline, observation_window, groups, confounds, generated_at } = data;
+  const { observation_window, groups, confounds, generated_at } = data;
   const sourceArtifact = (data.source_artifact as string | undefined) || "scripts/platformkit/analytics_showcase/out/mlb_shrinkage.json";
 
   return (
     <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }}>
       <p className="overline">Findings / Shrinkage</p>
       <h1 style={h1}>When the leaderboard regresses to the mean</h1>
-      {headline ? <p style={lede}>{headline}</p> : null}
+      <p style={lede}>Published rates before and after empirical-Bayes shrinkage in a fixed 2022-2023 slice. Rates on either side of the pooled mean move toward it under the fitted prior.</p>
 
       <div style={noteBox}>
         <p style={noteBody}>
           How to read this: every rate below is pulled toward its group&apos;s pooled mean by an amount
           that depends on how few trials back it. Fit a beta-binomial prior per group (pooled mean m,
           concentration kappa = alpha + beta), then replace each raw rate with the posterior mean
-          (k+alpha)/(n+alpha+beta). A player with tens of thousands of trials barely moves; a player with
-          a few hundred can move a lot. This is a modeling choice &mdash; that the entities are exchangeable
+          (k+alpha)/(n+alpha+beta). A row with tens of thousands of trials barely moves; a row with
+          a few hundred can move a lot. This is a modeling choice &mdash; that the underlying rates are exchangeable
           draws from one shared prior &mdash; not a newly discovered truth about any one name.
         </p>
       </div>
@@ -164,16 +164,17 @@ export default function ShrinkagePage() {
           <p style={sectionLabel}>{g.key.replace(/_/g, " ")}</p>
           <h2 style={h2}>{g.label}</h2>
           <p style={statRow}>
-            pooled_mean {g.pooled_mean} &middot; kappa {g.kappa} &middot; alpha {g.alpha} &middot; beta {g.beta} &middot; n_entities {g.n_entities.toLocaleString()}
+            pooled_mean {g.pooled_mean} &middot; kappa {g.kappa} &middot; alpha {g.alpha} &middot; beta {g.beta} &middot; {g.key === "catcher_ooz" ? `${g.n_entities.toLocaleString()} source rows; distinct catcher identities unavailable` : `n_entities ${g.n_entities.toLocaleString()}`}
           </p>
           {g.floor ? <p style={floorNote}>floor: {g.floor}</p> : null}
+          {g.key === "catcher_ooz" ? <p style={caption}>The source publishes names without catcher IDs. Repeated display names remain separate rows with their own support and rates; they cannot establish how many distinct people are represented.</p> : null}
 
           <p style={boardHead}>Biggest regressors</p>
-          <p style={caption}>The small-n rows the raw leaderboard overstated most.</p>
+          <p style={caption}>Published rows with the largest absolute gaps. Raw minus shrunk is the source-reported difference in rate units: negative means shrinkage raised the rate; positive means it lowered it. A gap of 0.01 equals one percentage point.</p>
           <RegressorTable rows={g.biggest_regressors} label={g.label} />
 
           <p style={boardHead}>Leaderboard after shrinkage</p>
-          <p style={caption}>Ranked by shrunk rate &mdash; the honest ranking.</p>
+          <p style={caption}>Published selection ordered by shrunk rate under this fitted prior. This is not a validated ranking of skill.</p>
           <ShrunkTable rows={g.top_by_shrunk} label={g.label} />
         </div>
       ))}
