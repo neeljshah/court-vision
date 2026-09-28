@@ -115,7 +115,7 @@ describe("soccer trailing attack and defense", () => {
     expect(analysis.caveat).toContain("not independent");
     expect(`${analysis.title} ${analysis.description} ${analysis.interpretation}`.toLowerCase()).not.toMatch(/expected goals|forecast|causal/);
     expect(analysis.formula).toContain("share of matches with zero goals conceded");
-    expect(analysis.formula).toContain("same exactly 10 strictly prior all-venue matches");
+    expect(analysis.formula).toContain("same 10 strictly prior matches across home and away");
     expect(analysis.interpretation).toContain("not the average number conceded");
   });
 
