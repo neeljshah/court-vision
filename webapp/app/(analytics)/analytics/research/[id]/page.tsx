@@ -8,6 +8,7 @@ import "../../lab/lab.css";
 import "../research.css";
 import "../measurement-coverage.css";
 import "../brier-phase-coverage.css";
+import "../nba-form-coverage.css";
 export function generateStaticParams() { return getResearchAnalyses().map(a => ({ id: a.id })); }
 export function generateMetadata({ params }: { params: { id: string } }): Metadata {
   const a = getResearchAnalyses().find(a => a.id === params.id);

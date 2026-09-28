@@ -15,6 +15,7 @@ import { TennisGapContext } from "./TennisGapContext";
 import { ResearchSourceContext } from "./ResearchSourceContext";
 import { MeasurementCoverage } from "./MeasurementCoverage";
 import { BrierPhaseCoveragePanel } from "./BrierPhaseCoveragePanel";
+import { NbaFormCoveragePanel } from "./NbaFormCoveragePanel";
 import { TennisSurfaceFoldPanel } from "./TennisSurfaceFoldPanel";
 import { matchesResearchPopulation, researchComparisonPolicy } from "@/lib/analytics/researchComparisonPolicy";
 import { noticesForModules } from "@/lib/analytics/dataIntegrity";
@@ -70,6 +71,7 @@ export default function ResearchDetail({ analysis: a, related }: { analysis: Res
       {!comparison.compatible && <section className="lab-cohort-notice" aria-label="Population comparison notice"><p>{comparison.reason} {showAllRows ? "All rows are shown without a pooled ranking, median, or percentile." : selectedCompatibility === "unknown" ? "The selected population has no complete published definition, so rankings and summaries are unavailable." : `Showing ${activePopulation?.label || "one population"} by default.`}</p></section>}
       <BrierPhaseCoveragePanel coverage={a.phaseCoverage} sport={showAllRows ? undefined : activePopulation?.sport} asOf={a.asOf} />
       <TennisSurfaceFoldPanel groups={a.surfaceFolds} />
+      <NbaFormCoveragePanel coverage={a.formCoverage} />
       <div className="research-chart-toolbar"><div className="cv-segment">{[["rank", "Ranked bars"], ["scatter", "Scatter plot"], ["table", "Data table"], ["distribution", "Distribution"]].map(([id, label]) => <button key={id} aria-pressed={view === id} onClick={() => change({ view: id })}>{label}</button>)}</div><label className="research-search"><Search size={14} /><span className="sr-only">Search analysis rows</span><input ref={search} value={query} placeholder={a.id.includes("matchup") ? "Find a team or pairing" : "Find a row"} onChange={e => change({ query: e.target.value, row: "" })} /></label></div>
       <p className="cv-muted" role="status">{filtered.length} matching {filtered.length === 1 ? "row" : "rows"}; {ranked.length} {ranked.length === 1 ? "contains" : "contain"} {field.label.toLowerCase()}.</p>
       <div className="research-view-actions"><button className="lab-export" onClick={copyView}><Link2 size={14} /> Copy view link</button><button className="lab-export" onClick={reset}><RotateCcw size={14} /> Reset view</button><span aria-live="polite">{copyStatus}</span></div>

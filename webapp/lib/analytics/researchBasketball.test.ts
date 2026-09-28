@@ -72,6 +72,13 @@ describe("basketballResearch", () => {
     expect(dataset.caveat).toContain("presentation choice");
   });
 
+  it("attaches full-source form support without adding cohort stages to the rankable rows", () => {
+    const form = datasets.find(d => d.id === "nba-form-endpoint-elasticity")!;
+    expect(form.formCoverage).toMatchObject({ sourcePlayers: 807, retainedPlayers: 619, eligibleMovers: 562, publishedMoverRows: 30 });
+    expect(form.rows).toHaveLength(30);
+    expect(datasets.filter(d => d.formCoverage)).toHaveLength(1);
+  });
+
   it("deduplicates matchup directions and centers contrasts by meeting weight", () => {
     const raw = source("nba_matchup_grid");
     const dataset = datasets.find(d => d.id === "nba-matchup-profile-contrast")!;
