@@ -52,5 +52,6 @@ export function TennisGapContext({ analysis }: { analysis: ResearchAnalysis }) {
     </div>
     <p className={styles.caveat}>These recorded differences do not establish a change in skill or its cause.</p>
     <Link className={styles.link} href={`/analytics/research/${context.sibling}/`}>{context.siblingLabel}</Link>
+    {analysis.id === IDS.grass && <p className={styles.note}>For a separate selection with published counts, <Link className={styles.link} href="/analytics/research/tennis-grass-overall-match-support/">inspect grass match support</Link>.</p>}
   </section>;
 }

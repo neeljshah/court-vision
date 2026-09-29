@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { buildComebackAtlasResearch } from "@/lib/analytics/researchComebackAtlas";
 import type { ResearchAnalysis } from "@/lib/analytics/researchTypes";
@@ -19,6 +19,14 @@ const boundAnalysis: ResearchAnalysis = {
 };
 
 describe("ResearchProvenance", () => {
+  it("exposes exact row paths alongside general formula bindings", () => {
+    render(<ResearchProvenance analysis={boundAnalysis} fields={fields} resultField={fields[0]} row={{ id: "row", label: "Row", group: "Test", values: { result: 2, numerator: 8, denominator: 4 }, sourcePaths: ["cells[3].numerator", "cells[3].denominator"] }} />);
+    fireEvent.click(screen.getByText("Published row fields"));
+    expect(screen.getByText("cells[3].numerator")).toBeVisible();
+    expect(screen.getByText("cells[3].denominator")).toBeVisible();
+    expect(screen.getByText("Result (2) = numerator (8) / denominator (4)")).toBeVisible();
+  });
+
   it("renders exact binding paths and substitutes only their published values", () => {
     render(<ResearchProvenance analysis={boundAnalysis} fields={fields} resultField={fields[0]} row={{ id: "row", label: "Row", group: "Test", values: { result: 2, numerator: 8, denominator: 4 }, sourcePaths: ["cells[].numerator", "cells[].denominator"] }} />);
     expect(screen.getByLabelText("Calculation inputs")).toHaveTextContent("Numerator8");

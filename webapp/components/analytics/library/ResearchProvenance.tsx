@@ -34,12 +34,14 @@ function substitutedFormula(formula: string, operands: ResolvedResearchOperand[]
 export function ResearchProvenance({ analysis, row, fields, resultField }: { analysis: ResearchAnalysis; row: ResearchRow; fields: LabField[]; resultField: LabField }) {
   if (!row.sourcePaths?.length) return null;
   const operands = resolveResearchOperands(analysis, row);
+  const extraPaths = row.sourcePaths.filter(path => !operands.some(operand => operand.sourcePath === path));
   const allResolved = operands.length > 0 && operands.every(operand => operand.resolved);
   const result = displayMeasurement(row.values[resultField.key], resultField);
   return <section className="research-provenance" aria-label="Calculation inputs">
     <p className="cv-eyebrow">Calculation inputs</p>
     <p>Calculation inputs show the source values used for the selected row.</p>
     {operands.length > 0 ? <dl>{operands.map(operand => <div key={operand.sourcePath}><dt>{operand.label}</dt><dd>{operand.resolved ? operandValue(operand, fields, analysis) : "not published for this row"}<details><summary>Source path</summary><code>{operand.sourcePath}</code></details></dd></div>)}</dl> : <dl>{row.sourcePaths.map(path => <div key={path}><dt>{readable(path)}</dt><dd><details open><summary>Source path</summary><code>{path}</code></details></dd></div>)}</dl>}
+    {operands.length > 0 && extraPaths.length > 0 && <details><summary>Published row fields</summary><ul>{extraPaths.map(path => <li key={path}><code>{path}</code></li>)}</ul></details>}
     <p className="research-provenance-result"><strong>{resultField.label}: {result}</strong><span>{allResolved ? substitutedFormula(analysis.formula, operands, fields, analysis) : analysis.formula}</span></p>
   </section>;
 }

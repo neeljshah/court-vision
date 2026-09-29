@@ -19,6 +19,7 @@ describe("TennisGapContext", () => {
     expect(screen.getByLabelText("Gap definition")).toHaveTextContent("Grass win rate minus pooled overall win rate");
     expect(screen.getByLabelText("Gap definition")).toHaveTextContent("includes grass matches");
     expect(screen.getByRole("link", { name: "View clay versus hard-court gap" })).toHaveAttribute("href", "/analytics/research/tennis-clay-gap-window-shift");
+    expect(screen.getByRole("link", { name: "inspect grass match support" })).toHaveAttribute("href", "/analytics/research/tennis-grass-overall-match-support");
   });
 
   it("does not render for other analyses", () => {
