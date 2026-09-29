@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { buildComebackAtlasResearch } from "@/lib/analytics/researchComebackAtlas";
 import type { ResearchAnalysis } from "@/lib/analytics/researchTypes";
@@ -19,12 +19,31 @@ const boundAnalysis: ResearchAnalysis = {
 };
 
 describe("ResearchProvenance", () => {
-  it("exposes exact row paths alongside general formula bindings", () => {
+  it("puts exact row paths beside the corresponding input without duplicating them", () => {
     render(<ResearchProvenance analysis={boundAnalysis} fields={fields} resultField={fields[0]} row={{ id: "row", label: "Row", group: "Test", values: { result: 2, numerator: 8, denominator: 4 }, sourcePaths: ["cells[3].numerator", "cells[3].denominator"] }} />);
-    fireEvent.click(screen.getByText("Published row fields"));
+    for (const label of ["Numerator", "Denominator"]) {
+      fireEvent.click(within(screen.getByText(label, { exact: true }).parentElement!).getByText("Source path"));
+    }
     expect(screen.getByText("cells[3].numerator")).toBeVisible();
     expect(screen.getByText("cells[3].denominator")).toBeVisible();
+    expect(screen.queryByText("Published row fields")).not.toBeInTheDocument();
     expect(screen.getByText("Result (2) = numerator (8) / denominator (4)")).toBeVisible();
+  });
+
+  it("preserves field-aware percentages and formula substitution when paths become exact", () => {
+    const percentFields = [{ key: "rate", label: "Rate", unit: "percent" as const, digits: 1 }];
+    const analysis = { ...boundAnalysis, fields: percentFields, formula: "Result = rate", bindings: [
+      { operand: "rate", sourcePath: "cells[].share", valueKey: "rate", label: "Published rate" },
+    ] };
+    render(<ResearchProvenance analysis={analysis} fields={percentFields} resultField={percentFields[0]} row={{ id: "r", label: "R", group: "Test", values: { rate: 0.125 }, sourcePaths: ["cells[4].share", "cells[4].date"] }} />);
+    const input = screen.getByText("Published rate", { exact: true }).parentElement!;
+    expect(input).toHaveTextContent("12.5%");
+    fireEvent.click(within(input).getByText("Source path"));
+    expect(within(input).getByText("cells[4].share")).toBeVisible();
+    expect(screen.getByText("Result = rate (12.5%)")).toBeVisible();
+    fireEvent.click(screen.getByText("Published row fields"));
+    expect(screen.getByText("cells[4].date")).toBeVisible();
+    expect(screen.getAllByText("cells[4].share")).toHaveLength(1);
   });
 
   it("renders exact binding paths and substitutes only their published values", () => {

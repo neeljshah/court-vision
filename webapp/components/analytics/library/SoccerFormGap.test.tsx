@@ -42,8 +42,9 @@ describe("Published soccer home-away form investigation", () => {
     expect(provenance).toHaveTextContent("1.9");
     expect(provenance).toHaveTextContent("0.6");
     expect(provenance).not.toHaveTextContent("Unavailable");
-    expect(within(provenance).getByText("entries[].key_numbers.ppg_home_l10")).toBeInTheDocument();
-    expect(within(provenance).getByText("entries[].key_numbers.ppg_away_l10")).toBeInTheDocument();
+    for (const disclosure of within(provenance).getAllByText("Source path")) fireEvent.click(disclosure);
+    expect(within(provenance).getByText("entries[30].key_numbers.ppg_home_l10")).toBeVisible();
+    expect(within(provenance).getByText("entries[30].key_numbers.ppg_away_l10")).toBeVisible();
     fireEvent.click(within(provenance).getByText("Published row fields"));
     for (const path of analysis.rows.find(row => row.label === "Brest")!.sourcePaths!) {
       expect(within(provenance).getByText(path)).toBeVisible();

@@ -179,6 +179,7 @@ jobs:
           npx vitest run components/analytics/library/NbaPlayerContext.test.tsx
           npx vitest run components/analytics/library/PitchMixContext.test.tsx
           npx vitest run components/analytics/library/ResearchProvenance.test.tsx
+          npx vitest run lib/analytics/researchOperandBindings.test.ts
           npx vitest run components/analytics/library/ResearchSourceContext.test.tsx
           npx vitest run components/analytics/library/TennisWindowResearch.test.tsx
           npx vitest run components/analytics/library/TennisGapContext.test.tsx
