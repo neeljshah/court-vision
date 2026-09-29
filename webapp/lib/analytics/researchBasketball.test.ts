@@ -16,7 +16,12 @@ describe("basketballResearch", () => {
       expect(dataset.rows.length).toBeGreaterThan(0);
       expect(dataset.formula).toBeTruthy();
       expect(dataset.interpretation).toBeTruthy();
-      expect(dataset.references.every(r => r.url.startsWith("https://www.nba.com/"))).toBe(true);
+      if (dataset.id === "nba-variability-imbalance") {
+        expect(dataset.references.map(r => r.url)).toEqual([
+          "https://www.itl.nist.gov/div898/software/dataplot/refman2/auxillar/coefvari.htm",
+          "https://github.com/neeljshah/court-vision/blob/master/scripts/platformkit/analytics_showcase/nba_consistency_profiles.py",
+        ]);
+      } else expect(dataset.references.every(r => r.url.startsWith("https://www.nba.com/"))).toBe(true);
       expect(() => source(dataset.source)).not.toThrow();
       for (const item of dataset.rows) for (const value of Object.values(item.values)) expect(value === null || Number.isFinite(value)).toBe(true);
     }

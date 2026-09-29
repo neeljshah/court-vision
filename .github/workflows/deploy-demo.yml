@@ -89,6 +89,8 @@ jobs:
           npx vitest run lib/analytics/pitchResultComparison.test.ts
           npx vitest run lib/analytics/mlbAtlasFamily.test.ts
           npx vitest run lib/analytics/researchBasketball.test.ts
+          npx vitest run lib/analytics/researchNbaVariability.test.ts
+          npx vitest run components/analytics/library/NbaVariability.test.tsx
           npx vitest run lib/analytics/nbaFormCoverage.test.ts
           npx vitest run lib/analytics/nbaFormEndpoints.test.ts
           npx vitest run components/analytics/library/NbaFormCoveragePanel.test.tsx
