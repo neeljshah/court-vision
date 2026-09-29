@@ -549,7 +549,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Yes, calibration transfers cross-corpus. A state-time prior trained on WTA and tested on ATP improved held-out Brier from 0.1698 (base) to 0.1597, and the reverse direction from 0.155 to 0.1432, both with Diebold-Mariano p=0.0, verdict REPLICATED. It compares calibration with a state-time baseline; no in-play odds join exists.",
+    "answer": "The published receipt reports lower held-out Brier in both cross-tour tests: 0.1698 (state-time base) to 0.1597 (prior), and 0.1550 (state-time base) to 0.1432 (prior); lower is better. Its verdict is REPLICATED. However, its pregame direction labels and in-game tour counts conflict, so these pairs cannot be confidently assigned to ATP-trained versus WTA-trained transfer. The observation window and snapshot date are not published. These are Brier comparisons with a fitted state-time baseline; no in-play odds join exists.",
     "source_artifact": "webapp/public/data/showcase/tennis_showcase.json",
     "as_of": "unknown"
    },

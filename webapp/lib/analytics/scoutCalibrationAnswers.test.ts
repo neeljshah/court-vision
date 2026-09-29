@@ -5,6 +5,7 @@ import byType from "../../public/data/showcase/calibration_by_market_type.json";
 import overTime from "../../public/data/showcase/calibration_over_time.json";
 import soccerPack from "../../public/data/showcase/soccer_calibration_pack.json";
 import kernel from "../../public/data/showcase/kernel_transfer.json";
+import tennis from "../../public/data/showcase/tennis_showcase.json";
 import calibration from "../../public/data/ask/calibration-market.json";
 import comparisons from "../../public/data/ask/comparisons.json";
 import methodology from "../../public/data/ask/methodology.json";
@@ -37,6 +38,39 @@ const high = stability.sports.mlb.sides.model_prob.bins.at(-1)!;
 const kernelReliabilityGap = kernel.rows[0].reliability_gap;
 if (kernelReliabilityGap === null) throw new Error("MLB moneyline reliability gap is missing");
 const answer = (q: string) => served.entries.find(entry => entry.q === q)?.a.answer || "";
+
+describe("tennis cross-tour Scout answer", () => {
+  const q = "Does a tennis prior trained on one tour transfer to the other?";
+  const bucket = calibration.entries.find(entry => entry.q === q)!;
+
+  it("retrieves the same source-backed answer for the question and its aliases", () => {
+    expect(served.entries.find(entry => entry.q === q)?.a).toEqual(bucket.a);
+    for (const query of [q, ...bucket.alt_phrasings]) {
+      const result = resolveQuestion(query, corpus);
+      expect(result, query).toMatchObject({ kind: "direct", entry: { q, a: {
+        source_artifact: path("tennis_showcase"), as_of: "unknown",
+      } } });
+      expect(result?.entry?.a, query).toEqual(bucket.a);
+      for (const direction of Object.values(tennis.pregame_prior_cross_corpus.directions)) {
+        expect(result?.entry?.a.answer).toContain(
+          `${direction.brier_base.toFixed(4)} (state-time base) to ${direction.brier_prior.toFixed(4)} (prior)`,
+        );
+      }
+    }
+  });
+
+  it("preserves the unresolved tour attribution and missing observation dates", () => {
+    const receipt = tennis.pregame_prior_cross_corpus;
+    expect(receipt.directions.atp_train_wta_test.n_test_states).toBe(tennis.ingame_surface_context.tours.atp.n_states_joined);
+    expect(receipt.directions.wta_train_atp_test.n_test_states).toBe(tennis.ingame_surface_context.tours.wta.n_states_joined);
+    expect(bucket.a.answer).toContain("pregame direction labels and in-game tour counts conflict");
+    expect(bucket.a.answer).toContain("cannot be confidently assigned");
+    expect(bucket.a.answer).toContain("observation window and snapshot date are not published");
+    expect(bucket.a.answer).toContain("no in-play odds join exists");
+    expect(bucket.a.answer).not.toContain("p=0.0");
+    expect(bucket.a.answer).not.toContain("Yes, calibration transfers");
+  });
+});
 
 const cases = [
   ["Why doesn't being accurate mean beating the market?", "murphy_decomposition", [f(mlbMurphy.model_prob.brier), f(mlbMurphy.market_prob.brier), signed(gap(mlbMurphy, "reliability")), signed(gap(mlbMurphy, "resolution"))]],
