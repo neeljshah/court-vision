@@ -7,6 +7,7 @@ import { resolveResearchSourceDestination } from "@/lib/analytics/researchSource
 import type { ResearchField, ResearchSource } from "@/lib/analytics/researchTypes";
 
 type SourceDocument = Record<string, unknown>;
+type SourceMetadata = { period: string | null; asOfDetails: [string, string][] };
 
 function record(value: unknown): SourceDocument {
   return value && typeof value === "object" && !Array.isArray(value) ? value as SourceDocument : {};
@@ -29,9 +30,6 @@ export function observationPeriod(document: SourceDocument): string | null {
   const seasons = record(document.seasons);
   const seasonKeys = Object.keys(seasons);
   if (seasonKeys.length) return seasonKeys.map(seasonLabel).join(", ");
-  const asOf = record(document.as_of);
-  const datedPeriods = Object.values(asOf).filter((value): value is string => typeof value === "string" && value.length > 0);
-  if (datedPeriods.length) return datedPeriods.join("; ");
   for (const key of ["results", "per_team_season_frequencies"]) {
     const period = seasonsFromRows(document[key]);
     if (period) return period;
@@ -66,16 +64,19 @@ function rowWindow(source: ResearchSource, fields: ResearchField[]): string {
 }
 
 export function ResearchSourceContext({ sources, fields }: { sources?: ResearchSource[]; fields: ResearchField[] }) {
-  const [periods, setPeriods] = useState<Record<string, string | null>>({});
+  const [metadata, setMetadata] = useState<Record<string, SourceMetadata>>({});
   useEffect(() => {
     if (!sources?.length || typeof fetch === "undefined") return;
     let active = true;
     Promise.all(sources.map(async source => {
       try {
         const response = await fetch(sourceUrl(source.id));
-        return [source.id, response.ok ? observationPeriod(await response.json() as SourceDocument) : null] as const;
-      } catch { return [source.id, null] as const; }
-    })).then(items => { if (active) setPeriods(Object.fromEntries(items)); });
+        const document = response.ok ? record(await response.json()) : {};
+        const asOfDetails = Object.entries(record(document.as_of)).filter((entry): entry is [string, string] =>
+          entry[0].trim().length > 0 && typeof entry[1] === "string" && entry[1].trim().length > 0);
+        return [source.id, { period: observationPeriod(document), asOfDetails }] as const;
+      } catch { return [source.id, { period: null, asOfDetails: [] }] as const; }
+    })).then(items => { if (active) setMetadata(Object.fromEntries(items)); });
     return () => { active = false; };
   }, [sources]);
   if (!sources?.length) return null;
@@ -91,7 +92,10 @@ export function ResearchSourceContext({ sources, fields }: { sources?: ResearchS
         return <li key={source.id} style={{ display: "grid", gap: 2 }}>
         {link}
         <span className="cv-muted" style={{ fontSize: 13 }}>Snapshot date: {source.asOf || "not recorded"}</span>
-        <span className="cv-muted" style={{ fontSize: 13 }}>Source coverage: {periods[source.id] || "not recorded"}</span>
+        <span className="cv-muted" style={{ fontSize: 13 }}>Source coverage: {metadata[source.id]?.period || "not recorded"}</span>
+        {metadata[source.id]?.asOfDetails.map(([key, value]) => <span key={key} className="cv-muted" style={{ fontSize: 13 }}>
+          Source as of, {key.replace(/^estimator_([a-z])$/, (_, letter: string) => `Estimator ${letter.toUpperCase()}`)}: {value}
+        </span>)}
         <span className="cv-muted" style={{ fontSize: 13 }}>Row window: {rowWindow(source, fields)}</span>
         <span className="cv-muted" style={{ fontSize: 13 }}>Feeds: {sourceFields(source, fields).join(", ") || "no measurements recorded"}</span>
       </li>;
