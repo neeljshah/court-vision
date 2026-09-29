@@ -44,8 +44,17 @@ describe("DataIntegrityNotice", () => {
     expect(screen.queryByRole("complementary", { name: "Data integrity" })).not.toBeInTheDocument();
   });
 
-  it("exposes both regeneration notices and the unmatched review notice", () => {
-    expect(dataIntegrityNotices.map((notice) => notice.status)).toEqual(["regenerated", "regenerated", "under-review", "under-review", "under-review"]);
+  it("renders the schedule-unit correction with its own paper route", () => {
+    const moduleIds = ["novel_schedule_fatigue_tax"];
+    render(<DataIntegrityNotice notices={noticesForModules(moduleIds)} moduleIds={moduleIds} />);
+    const notice = screen.getByRole("complementary", { name: "Data integrity" });
+    expect(notice).toHaveAttribute("data-status", "under-review");
+    expect(within(notice).getByText(/scoring margin \(no-rest minus rested\)/)).toBeInTheDocument();
+    expect(within(notice).getByRole("link", { name: "Read the full finding" })).toHaveAttribute("href", expect.stringMatching(/^\/analytics\/papers\/rest-load-and-outcomes-nba\/?$/));
+  });
+
+  it("exposes both regeneration notices and all four review notices", () => {
+    expect(dataIntegrityNotices.map((notice) => notice.status)).toEqual(["regenerated", "regenerated", "under-review", "under-review", "under-review", "under-review"]);
     expect(dataIntegrityNotices.find((notice) => notice.id === "ingame-timing-review")?.affectedModules).toEqual([]);
   });
 });
