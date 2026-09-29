@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { snapshot } from "./labHelpers";
 import {
   buildSoccerFormGapResearch,
   getSoccerFormGapResearch,
@@ -9,6 +10,10 @@ const FLOOR = "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_
 const entry = (entity: unknown, home: unknown, away: unknown, floors: unknown = FLOOR): SoccerFormGapEntry => ({
   entity, key_numbers: { ppg_home_l10: home, ppg_away_l10: away }, floors, as_of: "2026-07-18T17:21:08.108324+00:00",
 });
+const paths = (index: number) => [
+  `entries[${index}].entity`, `entries[${index}].key_numbers.ppg_home_l10`,
+  `entries[${index}].key_numbers.ppg_away_l10`, `entries[${index}].floors`, `entries[${index}].as_of`,
+];
 
 describe("soccer home-versus-away trailing form", () => {
   it("covers the public atlas and preserves example operands", () => {
@@ -28,9 +33,17 @@ describe("soccer home-versus-away trailing form", () => {
 
   it("provides operand provenance and honest window semantics", () => {
     const analysis = getSoccerFormGapResearch()[0];
-    expect(analysis.rows.every(row => JSON.stringify(row.sourcePaths) === JSON.stringify([
-      "entries[].key_numbers.ppg_home_l10", "entries[].key_numbers.ppg_away_l10",
-    ]))).toBe(true);
+    const source = snapshot<{ entries: SoccerFormGapEntry[] }>("atlas_soccer_manifest");
+    for (const row of analysis.rows) {
+      const index = source.entries.findIndex(item => item.entity === row.label);
+      expect(index).toBeGreaterThanOrEqual(0);
+      expect(row.sourcePaths).toEqual(paths(index));
+      expect(source.entries[index].key_numbers).toMatchObject({
+        ppg_home_l10: row.values.ppg_home_l10, ppg_away_l10: row.values.ppg_away_l10,
+      });
+      expect(source.entries[index].floors).toContain("window=trailing10_asof_corpus_end");
+      expect(source.entries[index].as_of).toBe("2026-07-18T17:21:08.108324+00:00");
+    }
     expect(analysis.rows.every(row => row.note?.includes(`Team: ${row.label}. Source floors:`))).toBe(true);
     expect(analysis.scope).toContain("independently clears its 10-match venue floor");
     expect(analysis.scope).toContain("Claim computation timestamp:");
@@ -58,9 +71,17 @@ describe("soccer home-versus-away trailing form", () => {
     expect(rows.map(row => [row.label, row.values.home_minus_away_ppg])).toEqual([
       ["Low", -2], ["High", 2], ["Even", 0],
     ]);
-    expect(rows.map(row => row.sourcePaths)).toEqual(Array(3).fill([
-      "entries[].key_numbers.ppg_home_l10", "entries[].key_numbers.ppg_away_l10",
-    ]));
+    expect(rows.map(row => row.sourcePaths)).toEqual([paths(0), paths(2), paths(3)]);
+  });
+
+  it("retains original source positions after malformed entries and ambiguous names", () => {
+    const rows = buildSoccerFormGapResearch({ entries: [
+      null, entry("Duplicate", 2, 1), "bad", entry("Duplicate", 1, 2), [],
+      entry("Unqualified", null, 1), entry("Valid", 2, 1),
+    ] })[0].rows;
+    expect(rows).toHaveLength(1);
+    expect(rows[0].label).toBe("Valid");
+    expect(rows[0].sourcePaths).toEqual(paths(6));
   });
 
   it("fails closed on missing, nonfinite, out-of-range, or unfloored inputs", () => {

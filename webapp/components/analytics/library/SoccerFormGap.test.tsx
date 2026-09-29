@@ -17,7 +17,8 @@ describe("Published soccer home-away form investigation", () => {
     expect(analysis.rows.find(row => row.label === "Bologna")?.values).toMatchObject({ home_minus_away_ppg: -1.5, ppg_home_l10: 0.7, ppg_away_l10: 2.2 });
     expect(analysis.rows.find(row => row.label === "Chelsea")?.values.home_minus_away_ppg).toBe(0);
     expect(analysis.rows.find(row => row.label === "Brest")?.sourcePaths).toEqual([
-      "entries[].key_numbers.ppg_home_l10", "entries[].key_numbers.ppg_away_l10",
+      "entries[30].entity", "entries[30].key_numbers.ppg_home_l10", "entries[30].key_numbers.ppg_away_l10",
+      "entries[30].floors", "entries[30].as_of",
     ]);
 
     const exportCSV = vi.spyOn(table, "exportLabCSV").mockImplementation(() => undefined);
@@ -43,6 +44,10 @@ describe("Published soccer home-away form investigation", () => {
     expect(provenance).not.toHaveTextContent("Unavailable");
     expect(within(provenance).getByText("entries[].key_numbers.ppg_home_l10")).toBeInTheDocument();
     expect(within(provenance).getByText("entries[].key_numbers.ppg_away_l10")).toBeInTheDocument();
+    fireEvent.click(within(provenance).getByText("Published row fields"));
+    for (const path of analysis.rows.find(row => row.label === "Brest")!.sourcePaths!) {
+      expect(within(provenance).getByText(path)).toBeVisible();
+    }
 
     fireEvent.click(screen.getByRole("button", { name: "Export CSV" }));
     const [dataset, rows] = exportCSV.mock.calls[0];
@@ -50,6 +55,7 @@ describe("Published soccer home-away form investigation", () => {
     expect(rows[0].values).toMatchObject({ home_minus_away_ppg: 1.3, ppg_home_l10: 1.9, ppg_away_l10: 0.6 });
     const csv = table.buildLabCSV(dataset, rows);
     for (const text of ["Brest", "atlas_soccer_manifest", analysis.scope, analysis.caveat, analysis.formula]) expect(csv).toContain(text);
+    for (const path of rows[0].sourcePaths!) expect(csv).toContain(path);
   });
 
   it("restores a shared Bologna table investigation with its selected operand", () => {

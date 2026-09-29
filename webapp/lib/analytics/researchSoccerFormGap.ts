@@ -16,10 +16,6 @@ export type SoccerFormGapAtlas = {
 const WINDOW = /(?:^|[;( ])window=trailing10_asof_corpus_end(?=;|\)|$)/;
 const HOME_FLOOR = /(?:^| \| )ppg_home_l10: n_prior_home>=10(?= \| | \()/;
 const AWAY_FLOOR = /(?:^| \| )ppg_away_l10: n_prior_away>=10(?= \| | \()/;
-const SOURCE_PATHS = [
-  "entries[].key_numbers.ppg_home_l10",
-  "entries[].key_numbers.ppg_away_l10",
-];
 const REFERENCES: ResearchReference[] = [{
   title: "Published soccer team-form producer",
   url: "https://github.com/neeljshah/court-vision/blob/master/scripts/platformkit/intel_validation/soccer_team_form_asof_claims.py",
@@ -75,14 +71,20 @@ function analysisRows(entries: SoccerFormGapEntry[]): ResearchRow[] {
       group: "Trailing venue form",
       values: { home_minus_away_ppg: gap, ppg_home_l10: home, ppg_away_l10: away },
       note: `Team: ${label}. Source floors: n_prior_home>=10 and n_prior_away>=10. Each operand uses exactly 10 strictly prior matches at its venue; the match sets can cover different dates.`,
-      sourcePaths: SOURCE_PATHS,
+      sourcePaths: [
+        `entries[${index}].entity`,
+        `entries[${index}].key_numbers.ppg_home_l10`,
+        `entries[${index}].key_numbers.ppg_away_l10`,
+        `entries[${index}].floors`,
+        `entries[${index}].as_of`,
+      ],
     }];
   });
 }
 
 export function buildSoccerFormGapResearch(atlas: SoccerFormGapAtlas): ResearchAnalysis[] {
   const entries = Array.isArray(atlas?.entries)
-    ? atlas.entries.filter((entry): entry is SoccerFormGapEntry => typeof entry === "object" && entry !== null)
+    ? atlas.entries.map((entry): SoccerFormGapEntry => typeof entry === "object" && entry !== null && !Array.isArray(entry) ? entry : {})
     : [];
   const rows = analysisRows(entries);
   const published = typeof atlas?.n_entries === "number" && Number.isInteger(atlas.n_entries) && atlas.n_entries >= 0 ? atlas.n_entries : null;
