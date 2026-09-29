@@ -2,6 +2,7 @@ import { analysisDestinations } from "./analysisDestinations";
 import receipt from "../../public/data/audits/mlb-ingame-integrity.json";
 import regeneration from "../../public/data/audits/mlb-ingame-regeneration.json";
 import timingRegeneration from "../../public/data/audits/mlb-ingame-timing-regeneration.json";
+import fatigueUnits from "../../public/data/audits/nba-schedule-fatigue-units.json";
 
 export type IntegritySport = "nba" | "mlb" | "soccer_intl" | "tennis";
 export type IntegrityStatus = "clear" | "regenerated" | "under-review";
@@ -104,10 +105,21 @@ const derivedReviewNotices: DataIntegrityNotice[] = derivedArtifactsUnderReview.
   detailRoute: "/analytics/findings/ingame-join-integrity/",
 }));
 
-export const dataIntegrityNotices: readonly DataIntegrityNotice[] = [regeneratedNotice, timingRegeneratedNotice, reviewNotice, ...derivedReviewNotices];
+export const scheduleFatigueNotice: DataIntegrityNotice = {
+  id: fatigueUnits.id,
+  title: "Schedule Fatigue Tax unit review",
+  measuredOn: fatigueUnits.reviewed_on,
+  summary: fatigueUnits.summary,
+  affectedModules: fatigueUnits.affected_artifacts,
+  status: "under-review",
+  detailRoute: "/analytics/papers/rest-load-and-outcomes-nba/",
+};
+
+export const dataIntegrityNotices: readonly DataIntegrityNotice[] = [regeneratedNotice, timingRegeneratedNotice, reviewNotice, ...derivedReviewNotices, scheduleFatigueNotice];
 
 /** Returns the published integrity state for one artifact and corpus sport. */
 export function status(moduleId: string, sport: IntegritySport): IntegrityStatus {
+  if (scheduleFatigueNotice.affectedModules.includes(moduleId) && sport === "nba") return "under-review";
   if (sport !== "mlb" && sport !== "soccer_intl") return "clear";
   if (exposedArtifacts.includes(moduleId)) return "regenerated";
   if (timingRegeneratedArtifacts.includes(moduleId)) return "regenerated";

@@ -58,6 +58,33 @@ describe("validatePaper", () => {
 });
 
 describe("loadPapers", () => {
+  it("withholds the unsupported offensive-rating tax from the rest paper", () => {
+    const paper = loadPapers().find(entry => entry.slug === "rest-load-and-outcomes-nba");
+    const ledger = JSON.parse(readFileSync(join(process.cwd(), "public", "data", "showcase", "mechanism_ledger_export.json"), "utf8")) as { by_sport: { basketball_nba: { mechanisms: Array<{ mechanism: string; effect: number; evidence: string }> } } };
+    const receipt = ledger.by_sport.basketball_nba.mechanisms.find(row => row.mechanism === "b2b_rest_penalty" && row.effect === -1.73);
+    expect(receipt?.evidence).toContain("avg margin on 0-rest (-1.41, n=856) vs >=1-day rest (0.32, n=3876)");
+    expect(paper?.abstract).toContain("Correction, 2026-09-29");
+    const blocks = paper?.sections.flatMap(section => section.blocks) || [];
+    const exposure = blocks.find(block => block.type === "table" && block.caption.startsWith("Back-to-back exposure"));
+    expect(exposure?.type).toBe("table");
+    if (exposure?.type !== "table") throw new Error("Missing corrected exposure table");
+    expect(exposure.columns).toEqual(["Team-season", "Back-to-back games", "Back-to-back frequency", "Frequency-weighted composite / 36"]);
+    expect(exposure.rows[0]).toEqual(["DEN 2025-26", "17", "0.218", "-0.0687"]);
+    expect(blocks.some(block => block.type === "figure" && block.module === "novel_schedule_fatigue_tax")).toBe(false);
+    expect(JSON.stringify(blocks)).toContain("/data/audits/nba-schedule-fatigue-units.json");
+  });
+
+  it("labels the momentum paper's back-to-back row as scoring margin", () => {
+    const paper = loadPapers().find(entry => entry.slug === "pace-star-removal-and-momentum-nba");
+    const blocks = paper?.sections.flatMap(section => section.blocks) || [];
+    const table = blocks.find(block => block.type === "table" && block.caption.startsWith("Preregistered NBA momentum"));
+    expect(table?.type).toBe("table");
+    if (table?.type !== "table") throw new Error("Missing momentum table");
+    expect(table.rows.find(row => row[0] === "b2b_rest_penalty")).toEqual(["b2b_rest_penalty", "CONFIRMED_LOCAL", "7192", "-1.955", "Zero-rest minus at-least-one-day-rest average team scoring margin"]);
+    expect(table.note).toContain("mechanism_ledger_export.json");
+    expect(JSON.stringify(blocks)).toContain("offensive-rating tax that reuses that margin receipt is under review");
+  });
+
   it("returns only valid papers, sorted by date then title", () => {
     const papers = loadPapers();
     const artifacts = publishedArtifacts();

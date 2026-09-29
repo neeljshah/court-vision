@@ -7,6 +7,20 @@ import { moduleIdsForCitations } from "./sourceIntegrity.server";
 const corpus = loadScoutCorpus();
 
 describe("Scout server integrity lineage", () => {
+  it("carries the fatigue warning through module, paper, and multi-source analysis answers", () => {
+    const paths = [
+      "/analytics/m/novel_schedule_fatigue_tax",
+      "/analytics/papers/rest-load-and-outcomes-nba/",
+      "/analytics/research/nba-team-profile-pace-fragility-fatigue-halftime/",
+    ];
+    for (const path of paths) {
+      const entry = corpus.find(item => item.a.explore_path === path);
+      expect(entry, path).toBeDefined();
+      expect(scoutIntegrity(entry!.a).notices, path).toEqual(expect.arrayContaining([
+        expect.objectContaining({ id: "nba-schedule-fatigue-units", status: "under-review" }),
+      ]));
+    }
+  });
   it("expands a cited Ask JSON file through its structured answer sources", () => {
     const ids = moduleIdsForCitations([
       "webapp/public/data/ask/calibration-market.json",

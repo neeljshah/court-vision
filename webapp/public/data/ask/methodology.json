@@ -845,9 +845,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Different bars entirely. A confirmed mechanism, like b2b_rest_penalty at -1.73 pts/100 ORtg (n=4,732, p=0.0056), is a described effect in one corpus, labeled CONFIRMED_LOCAL. A shipped signal has to clear the leak-free gate on two corpora against the devigged close. 130 mechanisms are confirmed; nothing has shipped as a market-beating pregame signal.",
+    "answer": "Different bars entirely. The b2b_rest_penalty ledger row is labeled CONFIRMED_LOCAL: zero-rest teams averaged -1.41 scoring-margin points (n=856) versus +0.32 after at least one rest day (n=3,876), a zero-rest-minus-rested difference of -1.73 (n=4,732, p=0.0056). That is an association in one corpus, not a points-per-100 offensive-rating measure or a causal fatigue tax. A shipped signal has to clear the leak-free gate on two corpora against the devigged close. 130 mechanisms are confirmed; nothing has shipped as a market-beating pregame signal.",
     "source_artifact": "webapp/public/data/showcase/mechanism_ledger_export.json",
-    "as_of": "2026-07-22"
+    "as_of": "unknown"
    },
    "tags": [
     "mechanisms",
@@ -864,9 +864,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "The effect held in the specific corpus it was tested on, and nowhere else has been checked. The back-to-back rest penalty carries it twice at different sample cuts -- -1.73 pts/100 at n=4,732, p=0.0056 and -1.955 at n=7,192, p=0.000117 -- both on the same 2024-25/2025-26 boxscore corpus. Anything derived from a CONFIRMED_LOCAL effect inherits its single-corpus limit.",
+    "answer": "The association passed the local ledger check in its tested corpus; it has not been independently replicated. The back-to-back rest row compares average team scoring margin on zero rest with at least one rest day: -1.41 versus +0.32, zero-rest-minus-rested -1.73 (n=4,732, p=0.0056); a second run reports -1.61 versus +0.35 and effect -1.955 (n=7,192, p=0.000117). Both runs share the same 2024-25/2025-26 boxscore corpus, with overlap unrecorded. Neither is a points-per-100 offensive-rating effect or causal proof. Anything derived from a CONFIRMED_LOCAL effect inherits its single-corpus limit.",
     "source_artifact": "webapp/public/data/showcase/mechanism_ledger_export.json",
-    "as_of": "2026-07-22"
+    "as_of": "unknown"
    },
    "tags": [
     "mechanisms",

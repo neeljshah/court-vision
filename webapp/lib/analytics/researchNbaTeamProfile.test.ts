@@ -8,7 +8,7 @@ function source() {
       { entity: "BKN", card_path: "cards/brooklyn.png", key_numbers: { team_full_name: "Brooklyn Nets", pace_proxy_latest_season: 99, ppg_latest_season: 108, games_total: 238, seasons_covered: 3 }, as_of: "2026-04-12" },
     ] },
     loadBearing: { as_of: { estimator_a: "2024-25", estimator_b: "2025-26" }, results: [{ team: "BRK", estimator_a_elo_onoff: { player_name: "Alpha A", delta_winprob: 0.2 }, estimator_b_raw_withwithout: { player_name: "Bravo B", delta_win_rate: 0.1, n_active: 36, n_missed: 44 }, agreement_same_player: false }] },
-    fatigue: { results: [{ team: "BKN", season: "2024-25", sft_credible_pts_per100_ortg: -0.3 }] },
+    fatigue: { results: [{ team: "BKN", season: "2024-25", b2b_freq: 0.2, b2b_games: 13, sft_credible_pts_per100_ortg: -0.3 }] },
     density: { per_team_season_frequencies: [{ team: "BKN", season: "2023-24", b2b_freq: 0.2 }] },
     states: { as_of: "2026-05-21", min_games_per_split: 2, teams: [{ team: "BKN", n_games: 2, n_led_at_half: 1, n_trailed_at_half: 1, front_runner_2h_margin: 1, comeback_2h_margin: -2, masked_below_floor: true }] },
   };
@@ -17,7 +17,8 @@ function source() {
 describe("NBA team profile research", () => {
   it("joins normalized team aliases and keeps source paths", () => {
     const row = buildNbaTeamProfileResearch(source())[0].rows.find(item => item.label === "Brooklyn Nets")!;
-    expect(row.values).toMatchObject({ pace_proxy: 99, atlas_games_total: 238, atlas_seasons_covered: 3, fragility_delta_estimator_a: 0.2, fragility_estimator_b_active_games: 36, fragility_estimator_b_missed_games: 44, fatigue_tax_pts_per100: -0.3, back_to_back_share: 0.2 });
+    expect(row.values).toMatchObject({ pace_proxy: 99, atlas_games_total: 238, atlas_seasons_covered: 3, fragility_delta_estimator_a: 0.2, fragility_estimator_b_active_games: 36, fragility_estimator_b_missed_games: 44, fatigue_tax_pts_per100: null, back_to_back_share: 0.2 });
+    expect(buildNbaTeamProfileResearch(source())[0].rows.every(item => item.values.fatigue_tax_pts_per100 === null)).toBe(true);
     expect(row.windows).toMatchObject({ fatigue_tax_pts_per100: "2024-25", back_to_back_share: "2023-24" });
     expect(row.sourcePaths).toContain("novel_load_bearing_index.results[].estimator_a_elo_onoff.delta_winprob");
     expect(row.href).toBe("/analytics/players/nba_teams/brooklyn");

@@ -3,7 +3,7 @@
 // access and can be checked with small fixtures.
 
 type Row = Record<string, unknown>;
-export type CardVerdict = "confirmed" | "null" | "contradicted" | "descriptive";
+export type CardVerdict = "confirmed" | "null" | "contradicted" | "descriptive" | "under-review";
 
 export interface NovelMeasurement {
   lead: string;
@@ -73,8 +73,7 @@ export function selectNovelMeasurement(id: string, artifact: Row): NovelMeasurem
     return { lead: number(item.ohg), leadLabel: "harvest gap", denominator: `${count(item.max_disagreement_n)} max-disagreement observations`, verdict: artifactVerdict(artifact), result: sentence(headline), limitation: fallback };
   }
   if (id === "novel_schedule_fatigue_tax") {
-    const item = results.reduce((best, entry) => Number(entry.sft_credible_pts_per100_ortg) < Number(best.sft_credible_pts_per100_ortg) ? entry : best, results[0] || {});
-    return { lead: number(item.sft_credible_pts_per100_ortg), leadLabel: "pts per 100 ORtg, season-averaged", denominator: `${count(results.length)} team-seasons`, verdict: artifactVerdict(artifact), result: sentence(headline), limitation: fallback };
+    return { lead: "Under review", leadLabel: "ORtg effect withheld", denominator: `${count(results.length)} team-seasons with published schedule counts`, verdict: "under-review", result: "The claimed ORtg tax uses a scoring-margin contrast as its anchor. The ORtg effect requires recomputation before it can be reported.", limitation: "Historical source artifact is available for inspection. Its separate per-36 composite remains raw descriptive data." };
   }
   if (id === "novel_rest_asymmetry") {
     const panels = record(artifact.panels);

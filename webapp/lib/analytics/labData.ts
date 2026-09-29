@@ -7,6 +7,7 @@ export function getLabData(): LabData {
   const liveClock = datasets.find(dataset => dataset.id === "live-clock")!;
   const foresight = datasets.find(dataset => dataset.id === "market-foresight")!;
   const novel = snapshot<{ stats: NovelCard[] }>("novel_stats_index").stats.map(card => {
+    if (card.module === "novel_schedule_fatigue_tax") return { ...card, headline: "Under review: the claimed ORtg fatigue tax used a scoring-margin contrast as its anchor. Published team-season back-to-back counts, frequencies, and the separate raw descriptive composite remain available; the ORtg effect is withheld." };
     if (card.module === "novel_live_clock_fraction") return { ...card, headline: liveClock.rows.map(row =>
       `${row.label}: LCF ${row.values.live_clock_fraction ?? "unavailable"} at ${row.definition?.threshold ?? "unavailable"} ${row.definition?.unit ?? "score units unavailable"} (${row.definition?.clockField ?? "unavailable"} clock; ${row.values.n_games_total ?? "unavailable"} usable score paths).`
     ).join(" ") + " Thresholds and clock units differ; these values do not rank sports." };

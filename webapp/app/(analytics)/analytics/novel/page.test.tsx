@@ -8,6 +8,12 @@ const showcase = join(process.cwd(), "public", "data", "showcase");
 const readJson = <T,>(file: string): T => JSON.parse(readFileSync(join(showcase, file), "utf8")) as T;
 
 describe("NovelStatsPage", () => {
+  it("labels the fatigue card under review and withholds its derived ORtg lead", () => {
+    render(<NovelStatsPage />);
+    const card = screen.getByTestId("novel-card-novel_schedule_fatigue_tax");
+    expect(card).toHaveTextContent("Under review");
+    expect(card).not.toHaveTextContent(/-1\.73|-0\.38|-0\.3771/);
+  });
   it("renders one card per published measurement", () => {
     const index = readJson<{ stats: unknown[] }>("novel_stats_index.json");
     render(<NovelStatsPage />);

@@ -7,6 +7,21 @@ const mod: Mod = { id: "blowout_dynamics", title: "Blowout dynamics", one_line: 
 const out: Out = { descriptive_only: true };
 
 describe("ModuleDetail", () => {
+  it("replaces the fatigue chart and copied effect receipts with schedule frequencies", () => {
+    const fatigue = { ...mod, id: "novel_schedule_fatigue_tax", title: "Schedule Fatigue Tax", one_line: "DEN -0.38 ORtg", chart_path: "novel_schedule_fatigue_tax.png", out_path: "novel_schedule_fatigue_tax.json" };
+    const artifact = { results: [{ team: "DEN", season: "2025-26", b2b_games: 17, b2b_freq: .218, sft_credible_pts_per100_ortg: -.3771 }] };
+    const insight = { title: "Fatigue -0.38 ORtg", headline_insight: "Anchor -1.73 ORtg", how_to_read: "Tax -0.38", what_it_means: "Effect -0.38", caveat: "Raw -1.73", cited: [{ field: "sft_credible_pts_per100_ortg", value: -.3771, path: "novel_schedule_fatigue_tax.json" }] };
+    render(<ModuleDetail mod={fatigue} out={artifact} subtitle="Tax -0.38" insight={insight} />);
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Back-to-back schedule frequency");
+    expect(screen.queryByRole("img", { name: /fatigue.*chart/i })).not.toBeInTheDocument();
+    const table = screen.getByTestId("published-data-figure");
+    expect(table).toHaveTextContent("DEN");
+    expect(table).toHaveTextContent("0.218");
+    expect(table).not.toHaveTextContent(/-0\.3771|-1\.73/);
+    expect(screen.queryByRole("table", { name: "Published module receipts" })).not.toBeInTheDocument();
+    expect(screen.getByText(/Historical source artifact:/)).toContainHTML("download");
+    expect(screen.queryByText(/Anchor -1\.73|Effect -0\.38|Raw -1\.73/)).not.toBeInTheDocument();
+  });
   it("places authored guidance directly below the chart figure", () => {
     render(<ModuleDetail mod={mod} out={out} subtitle="When a lead becomes permanent." insight={{ how_to_read: "For each (sport, threshold), decided_frac_of_games is how often that gap ever became permanent and decided_clock_median is the typical clinch time; cells below the game floor are masked." }} />);
     const figure = screen.getByRole("img", { name: "Blowout dynamics chart" }).closest("figure");

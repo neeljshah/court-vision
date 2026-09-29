@@ -21,7 +21,11 @@ const text = (value: unknown) => value == null ? "" : String(value);
 const name = (path?: string) => path?.split(/[\\/]/).pop() || "";
 type FigureData = { headers: string[]; rows: Array<Record<string, unknown>> };
 
-function fallbackData(out: Out): FigureData {
+function fallbackData(out: Out, moduleId: string): FigureData {
+  if (moduleId === "novel_schedule_fatigue_tax") {
+    const results = Array.isArray(out.results) ? out.results : [];
+    return { headers: ["team", "season", "b2b_games", "b2b_freq"], rows: results.filter(row => row && typeof row === "object" && !Array.isArray(row)).slice(0, 6) as Array<Record<string, unknown>> };
+  }
   const teams = out.teams;
   if (Array.isArray(teams) && teams.every(team => team && typeof team === "object" && !Array.isArray(team))) {
     return { headers: ["team", "n_games", "front_runner_2h_margin", "comeback_2h_margin"], rows: teams.slice(0, 6) as Array<Record<string, unknown>> };
@@ -38,42 +42,44 @@ function value(value: unknown): string {
 }
 
 export function ModuleDetail({ mod, out, insight, subtitle }: { mod: Mod; out: Out; insight: Insight | null; subtitle: string }) {
+  const fatigueReview = mod.id === "novel_schedule_fatigue_tax";
   const timing = getTimingModuleEvidence(mod.id, out);
+  const safeTitle = fatigueReview ? "Back-to-back schedule frequency" : timing?.title || insight?.title || mod.title;
   const date = timing ? { asOf: timing.snapshotDate, dateKind: "published" as const } : artifactDate(out, mod.as_of);
   const asOf = provenanceDate(date.asOf, date.dateKind);
-  const cited = (insight?.cited || []).filter(cite => fact(cite.value));
+  const cited = fatigueReview ? [] : (insight?.cited || []).filter(cite => fact(cite.value));
   const descriptive = out.descriptive_only === true || /descriptive/i.test(insight?.caveat || "");
   const chart = mod.chart_path ? `${base}/img/showcase/${name(mod.chart_path)}` : null;
   const presentation = getPublishedChartPresentation(mod.id);
   const useChartImage = !timing && !!chart && presentation.approved;
-  const replacement = fallbackData(out);
+  const replacement = fallbackData(out, mod.id);
   const evidence = classifyModuleEvidence(mod.id, mod.status, out);
   const integrityNotices = noticesForModules([mod.id]);
-  const source = cited[0]?.path || mod.out_path;
+  const source = fatigueReview ? mod.out_path : cited[0]?.path || mod.out_path;
   const sourceHref = artifactUrl(source);
-  const envelope: ScoutEnvelope = insight
+  const envelope: ScoutEnvelope = insight && !fatigueReview
     ? { status: descriptive ? "descriptive_only" : "ok", prose: insight.headline_insight || "", chips: cited.slice(0, 4).map(cite => ({ value: text(cite.value), label: cite.field, sourceArtifact: cite.path || mod.out_path, ...date, verdict: "descriptive_only" })) }
     : { status: "no_data", prose: "" };
 
   return <div className="wrap" style={{ paddingTop: 8 }}>
-    <div className="mv-crumbs"><Link href="/analytics/browse">Browse</Link> &rsaquo; {mod.title}</div>
+    <div className="mv-crumbs"><Link href="/analytics/browse">Browse</Link> &rsaquo; {safeTitle}</div>
     {descriptive && <div className="mv-banner">Descriptive only - a measured pattern, not a forecast.</div>}
-    <div className="mv-head"><div><div className="overline">Analytics module &middot; {asOf}</div><h1 className="serif">{timing?.title || insight?.title || mod.title}</h1>{(timing?.summary || subtitle) && <p className="mv-sub">{timing?.summary || subtitle}</p>}</div>{useChartImage && <a className="mv-dl" href={chart} target="_blank" rel="noopener">View full size</a>}</div>
+    <div className="mv-head"><div><div className="overline">Analytics module &middot; {asOf}</div><h1 className="serif">{safeTitle}</h1>{fatigueReview ? <p className="mv-sub">Published back-to-back counts and frequencies by team-season. The derived ORtg effect is under review.</p> : (timing?.summary || subtitle) && <p className="mv-sub">{timing?.summary || subtitle}</p>}</div>{useChartImage && <a className="mv-dl" href={chart} target="_blank" rel="noopener">View full size</a>}</div>
     <DataIntegrityNotice notices={integrityNotices} moduleIds={[mod.id]} />
     <VerdictLegend style={{ margin: "0 0 24px" }} />
     <div className="mv-grid"><div>
       {timing && <TimingModulePanel evidence={timing} source={mod.out_path} moduleId={mod.id} />}
       {useChartImage && <Figure source={mod.out_path} {...date} title={mod.title} verdict="descriptive_only"><img src={chart} alt={`${mod.title} chart`} style={{ width: "100%", height: "auto", display: "block" }} /></Figure>}
-      {!timing && chart && !useChartImage && <Figure source={mod.out_path} {...date} title={mod.title} note={presentation.reason} verdict="descriptive_only"><div className="mv-data-figure" data-testid="published-data-figure" role="region" tabIndex={0} aria-label="Published replacement measurements (scrollable table)" data-scroll-region><table><thead><tr>{replacement.headers.map(header => <th key={header}>{header.replaceAll("_", " ")}</th>)}</tr></thead><tbody>{replacement.rows.map((row, index) => <tr key={index}>{replacement.headers.map(header => <td key={header}>{value(row[header])}</td>)}</tr>)}</tbody></table></div></Figure>}
-      <ModuleReadingGuide howToRead={insight?.how_to_read} />
+      {!timing && chart && !useChartImage && <Figure source={mod.out_path} {...date} title={safeTitle} note={presentation.reason} verdict="descriptive_only"><div className="mv-data-figure" data-testid="published-data-figure" role="region" tabIndex={0} aria-label="Published replacement measurements (scrollable table)" data-scroll-region><table><thead><tr>{replacement.headers.map(header => <th key={header}>{header.replaceAll("_", " ")}</th>)}</tr></thead><tbody>{replacement.rows.map((row, index) => <tr key={index}>{replacement.headers.map(header => <td key={header}>{value(row[header])}</td>)}</tr>)}</tbody></table></div></Figure>}
+      {!fatigueReview && <ModuleReadingGuide howToRead={insight?.how_to_read} />}
       <ModuleEvidence evidence={evidence} moduleId={mod.id} />
       {!timing && !chart && evidence.availability === "published" && <div className="mv-nochart mono">This source has no chart. Its cited measurements appear below.</div>}
-      {!timing && evidence.availability !== "unavailable" && <ScoutNote envelope={envelope} />}
-      {insight?.what_it_means && <section className="mv-prose"><h2 className="overline">What it means</h2><p>{insight.what_it_means}</p></section>}
-      {insight?.caveat && <section className="mv-caveat"><h2 className="overline">Caveats and confounds</h2><p>{insight.caveat}</p></section>}
+      {!fatigueReview && !timing && evidence.availability !== "unavailable" && <ScoutNote envelope={envelope} />}
+      {!fatigueReview && insight?.what_it_means && <section className="mv-prose"><h2 className="overline">What it means</h2><p>{insight.what_it_means}</p></section>}
+      {!fatigueReview && insight?.caveat && <section className="mv-caveat"><h2 className="overline">Caveats and confounds</h2><p>{insight.caveat}</p></section>}
     </div><aside className="mv-side"><section className="mv-box"><h2 className="serif">Receipts</h2>
-      {timing ? <TimingModuleReceipts evidence={timing} /> : cited.length ? <div className="mv-table-scroll" role="region" tabIndex={0} aria-label="Published module receipts (scrollable table)" data-scroll-region><table><caption className="sr-only">Published module receipts</caption><tbody>{cited.map((cite: Cite, index) => <tr key={index}><th scope="row">{cite.field || "value"}</th><td className="tnum">{text(cite.value)}</td></tr>)}</tbody></table></div> : <p className="mono">No cited measurements are published for this module.</p>}
-      <p className="mono mv-source">{sourceHref ? <a href={sourceHref} download>{source}</a> : <>{source} (not published)</>}</p>
+      {fatigueReview ? <p className="mono">Derived effect receipts are under review; the schedule counts above remain available.</p> : timing ? <TimingModuleReceipts evidence={timing} /> : cited.length ? <div className="mv-table-scroll" role="region" tabIndex={0} aria-label="Published module receipts (scrollable table)" data-scroll-region><table><caption className="sr-only">Published module receipts</caption><tbody>{cited.map((cite: Cite, index) => <tr key={index}><th scope="row">{cite.field || "value"}</th><td className="tnum">{text(cite.value)}</td></tr>)}</tbody></table></div> : <p className="mono">No cited measurements are published for this module.</p>}
+      <p className="mono mv-source">{fatigueReview && "Historical source artifact: "}{sourceHref ? <a href={sourceHref} download>{source}</a> : <>{source} (not published)</>}</p>
     </section><section className="mv-box"><h2 className="serif">Continue reading</h2><Link href="/analytics/browse">Back to the catalog</Link><Link href="/analytics/the-loop">Mechanism ledger</Link><Link href={`/analytics/ask/?q=${encodeURIComponent(timing?.askQuestion || mod.title)}`}>Ask Scout about this module</Link></section></aside></div>
     <RelatedReading kind="module" id={mod.id} />
     <style>{`.mv-crumbs{font-size:13px;color:var(--ink-3);padding:22px 0 6px}.mv-crumbs a{text-decoration:underline;text-underline-offset:3px}.mv-banner{display:inline-block;margin:8px 0 24px;padding:8px 14px;border:1px solid var(--rule-strong);border-radius:8px;background:var(--paper-tint);font-size:13px}.mv-head{display:flex;justify-content:space-between;align-items:end;gap:20px;border-bottom:1px solid var(--rule-strong);padding-bottom:22px;margin-bottom:30px}.mv-head h1{font-size:clamp(2.2rem,4.6vw,3.2rem);margin:4px 0;font-weight:500}.mv-sub,.mv-prose p,.mv-caveat p,.mv-reading p{color:var(--ink-2);line-height:1.6}.mv-dl,.mv-box a{color:var(--accent)}.mv-grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:40px}.mv-nochart,.mv-caveat,.mv-reading,.mv-data-figure{margin:20px 0;padding:18px;border:1px solid var(--rule);border-radius:var(--radius-card);background:var(--paper-tint)}.mv-reading h2{margin-bottom:6px}.mv-prose{margin:24px 0}.mv-box{padding:18px;margin-bottom:20px;border:1px solid var(--rule);border-radius:var(--radius-card);background:var(--paper-raised)}.mv-box h2{font-size:19px;font-weight:500;margin-bottom:12px}.mv-box table,.mv-data-figure table{width:100%;min-width:560px;border-collapse:collapse}.mv-data-figure,.mv-table-scroll{overflow-x:auto}.mv-box td,.mv-box th,.mv-data-figure td,.mv-data-figure th{padding:7px 0;border-bottom:1px solid var(--rule);font-size:13px;text-align:left}.mv-box th,.mv-data-figure th{color:var(--ink-3);font-weight:500}.mv-box td:last-child{text-align:right;overflow-wrap:anywhere}.mv-source{overflow-wrap:anywhere}.mv-box a{display:block;margin-top:9px;font-size:14px}@media(max-width:820px){.mv-grid{grid-template-columns:1fr}.mv-head{align-items:start;flex-direction:column}}`}</style>

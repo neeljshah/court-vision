@@ -1,0 +1,30 @@
+{
+  "id": "nba-schedule-fatigue-units",
+  "reviewed_on": "2026-09-29",
+  "status": "under-review",
+  "affected_artifacts": ["novel_schedule_fatigue_tax"],
+  "summary": "The Schedule Fatigue Tax ORtg estimate is withheld. Its cited -1.73 result measures scoring margin (no-rest minus rested), not offensive rating per 100 possessions. The historical artifact misstates both the unit and subtraction order; its ORtg-derived values cannot be interpreted as validated measurements. Schedule counts and frequencies remain descriptive. The review date is not an observation date.",
+  "source_artifact": "webapp/public/data/showcase/mechanism_ledger_export.json",
+  "source_path": "by_sport.basketball_nba.mechanisms[0]",
+  "mechanism": "b2b_rest_penalty",
+  "reported_effect": -1.73,
+  "reported_verdict": "CONFIRMED_LOCAL",
+  "evidence": "corpus=player_boxscores_2024_25_2025_26; n=4732; avg margin on 0-rest (-1.41, n=856) vs >=1-day rest (0.32, n=3876)",
+  "observation_window": null,
+  "source_as_of": null,
+  "corrected_metadata": {
+    "artifact": "webapp/public/data/showcase/schedule_density.json",
+    "paths": ["mechanism_receipt.effect_cited_from_receipt", "mechanism_receipt.relation"],
+    "previous_effect_label": "-1.73 pts/100 team ORtg (rested minus b2b), n=4732, p=0.0056",
+    "previous_relation": "DESCRIPTIVE COMPANION -- this module independently derives b2b/3-in-4/4-in-6 classes from the boxscore date column and reports raw pooled per-36 means per class. It does NOT re-run or re-test the mechanism; the significance-tested team-ORtg effect (and the -1.73/n/p above) belong to the receipt, not to this module.",
+    "note": "Only the two copied mechanism metadata strings were corrected. All schedule-density measurement rows and counts are unchanged."
+  },
+  "unsupported_fields": ["b2b_ortg_effect_pts_per100", "results[].sft_credible_pts_per100_ortg", "schedule_inequality.sft_credible_min", "schedule_inequality.sft_credible_max", "schedule_inequality.sft_credible_range", "schedule_inequality.sft_credible_std"],
+  "reading": [
+    "The source reports two runs; this audit identifies the 4732-observation run cited by the fatigue artifact. Their observations must not be added or treated as independent replication.",
+    "The difference of the published group means is -1.41 minus 0.32 = -1.73 scoring-margin points. No possession denominator or ORtg comparison is published in this receipt.",
+    "Neither the raw margin association nor a constant multiplied by schedule frequency establishes a causal fatigue effect or a team-specific forecast.",
+    "The historical source JSON and original image remain available as archival evidence. Their ORtg interpretation is under review; no replacement ORtg or margin tax is invented."
+  ],
+  "references": ["https://www.nba.com/stats/help/glossary", "https://www.w3.org/TR/dwbp/#DataQuality"]
+}

@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 const baseName = (path: string) => path.split(/[\\/]/).pop() || path;
 const verdictClass = (verdict: CardVerdict) => ({
-  confirmed: "d-conf", null: "d-null", contradicted: "d-reject", descriptive: "d-desc",
+  confirmed: "d-conf", null: "d-null", contradicted: "d-reject", descriptive: "d-desc", "under-review": "d-reject",
 }[verdict]);
 
 const GATE = [

@@ -222,9 +222,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Denver in 2025-26, with 17 back-to-backs (b2b_freq 0.218) and a season-averaged Schedule Fatigue Tax of -0.3771 pts/100 ORtg. Atlanta and Houston in 2024-25 tie for second at -0.3633, both also on 17 back-to-backs.",
+    "answer": "Denver in 2025-26 has the highest published back-to-back frequency among 90 team-seasons: 17 games, share 0.218. Atlanta and Houston in 2024-25 also have 17, share 0.210. This ranks schedule exposure; the published points-per-100 offensive-rating tax is under review.",
     "source_artifact": "webapp/public/data/showcase/novel_schedule_fatigue_tax.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "nba",
@@ -241,9 +241,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Memphis 2025-26 at -0.2699 pts/100 ORtg on 12 back-to-backs (b2b_freq 0.156), with Atlanta and Chicago in the same season just behind at -0.2733 each, also on 12. All three sit at the bottom of the 90 team-seasons measured.",
+    "answer": "By published back-to-back frequency, Memphis in 2025-26 is lowest among 90 team-seasons: 12 games, share 0.156. Atlanta and Chicago in 2025-26 each have 12 games, share 0.158. These are exposure counts, not validated performance penalties; the published offensive-rating tax is under review.",
     "source_artifact": "webapp/public/data/showcase/novel_schedule_fatigue_tax.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "nba",
@@ -260,9 +260,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Less than the complaints imply. Across 90 team-seasons the full range of the credible fatigue tax is 0.1072 pts/100 ORtg, from -0.3771 to -0.2699, with a standard deviation of 0.0252. The gap between the most and least taxed schedule is roughly a tenth of a point per hundred possessions.",
+    "answer": "Back-to-back frequency in the 90 published team-seasons runs from 0.156 to 0.218, a difference of 0.062 in game share. This is schedule exposure, not a measured difference in team performance; the published offensive-rating tax and its derived 0.1072 spread are under review.",
     "source_artifact": "webapp/public/data/showcase/novel_schedule_fatigue_tax.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "nba",
@@ -279,9 +279,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "In 2025-26 Denver played 17 back-to-backs to Memphis's 12 -- b2b_freq 0.218 against 0.156 -- giving fatigue taxes of -0.3771 and -0.2699 pts/100 ORtg respectively. They are the extremes of the entire 90 team-season set, and the whole distance between them is 0.1072 pts/100.",
+    "answer": "In 2025-26 Denver had 17 back-to-back games (share 0.218) and Memphis had 12 (share 0.156). They are the high and low frequency rows among the 90 published team-seasons. Their difference is schedule exposure only; the published offensive-rating tax is under review.",
     "source_artifact": "webapp/public/data/showcase/novel_schedule_fatigue_tax.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "nba",

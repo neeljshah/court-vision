@@ -7,6 +7,8 @@ import { Receipt } from "./Receipt";
 import Link from "next/link";
 import { joinedFindingTarget } from "@/lib/analytics/related";
 import type { JoinItem } from "@/lib/analytics/showcaseData";
+import { scheduleFatigueNotice } from "@/lib/analytics/dataIntegrity";
+import { DataIntegrityNotice } from "./DataIntegrityNotice";
 
 export interface JoinedFindingsProps {
   pack: string;
@@ -47,6 +49,8 @@ export function JoinedFindings({ pack, items, coverage }: JoinedFindingsProps) {
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
         {items.map((item) => {
           const target = joinedFindingTarget(item.source_artifact);
+          const withheld = item.key === "schedule_fatigue_tax";
+          const displayedValue = withheld ? "ORtg estimate withheld" : item.value;
           return (
           <div
             key={item.key}
@@ -56,17 +60,18 @@ export function JoinedFindings({ pack, items, coverage }: JoinedFindingsProps) {
               {item.label}
             </div>
             <div style={{ fontWeight: 600, fontSize: "1.05rem", lineHeight: 1.3, margin: "8px 0 6px", color: "var(--ink)" }}>
-              {item.value}
+              {displayedValue}
             </div>
-            {item.detail ? (
+            {item.detail && !withheld ? (
               <div style={{ fontSize: 12.5, color: "var(--ink-3)", marginBottom: 8 }}>{item.detail}</div>
             ) : null}
             {/* The confound is the whole point of this section: always visible, never
                 behind a hover, and never truncated. */}
             <div style={{ fontSize: 12.5, color: "var(--ink-3)", lineHeight: 1.5, marginBottom: 8 }}>
-              {item.confound}
+              {withheld ? "The historical value is under review. Read the analysis for the published schedule counts and frequencies." : item.confound}
             </div>
-            <Receipt sourceArtifact={item.source_artifact} verdict="descriptive_only" label="descriptive_only" value={item.value} />
+            {withheld && <DataIntegrityNotice notices={[scheduleFatigueNotice]} />}
+            <Receipt sourceArtifact={item.source_artifact} verdict="descriptive_only" label={withheld ? "historical source" : "descriptive_only"} value={displayedValue} />
             {target ? <Link href={target.href} prefetch={false} style={{ display: "inline-block", marginLeft: 12, fontSize: 12, fontWeight: 600 }}>Read {target.kind === "analysis" ? "analysis" : "source module"}</Link> : null}
           </div>
           );

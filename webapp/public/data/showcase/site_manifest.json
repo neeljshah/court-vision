@@ -584,10 +584,10 @@
   {
    "id": "novel_schedule_fatigue_tax",
    "title": "Novel Schedule Fatigue Tax",
-   "one_line": "Most-taxed schedule: DEN 2025-26 (-0.38 pts/100 ORtg season-averaged); least: MEM 2025-26 (-0.27). League schedule-inequality range 0.11 pts/100 across 90 team-seasons.",
+   "one_line": "Under review: the published points-per-100 offensive-rating tax uses a scoring-margin receipt. Back-to-back counts and frequencies remain descriptive across 90 team-seasons.",
    "out_path": "scripts/platformkit/analytics_showcase/out/novel_schedule_fatigue_tax.json",
    "chart_path": "docs/img/novel_schedule_fatigue_tax.png",
-   "status": "ok",
+   "status": "under-review",
    "edge_claimed": false,
    "as_of": null,
    "evidence_page": null

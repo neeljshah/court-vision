@@ -7,10 +7,14 @@ import soccerPack from "../../public/data/showcase/soccer_calibration_pack.json"
 import kernel from "../../public/data/showcase/kernel_transfer.json";
 import tennis from "../../public/data/showcase/tennis_showcase.json";
 import calibration from "../../public/data/ask/calibration-market.json";
+import novelStats from "../../public/data/ask/novel-stats.json";
+import playerTeams from "../../public/data/ask/players-teams.json";
+import productTour from "../../public/data/ask/product-tour.json";
 import comparisons from "../../public/data/ask/comparisons.json";
 import methodology from "../../public/data/ask/methodology.json";
 import honesty from "../../public/data/ask/system-honesty.json";
 import served from "../../public/data/ask/corpus.json";
+import mechanismLedger from "../../public/data/showcase/mechanism_ledger_export.json";
 import { resolveQuestion } from "./askSearch";
 import { loadScoutCorpus } from "./scoutCorpus.server";
 import { scoutIntegrity } from "./scoutIntegrity";
@@ -38,6 +42,33 @@ const high = stability.sports.mlb.sides.model_prob.bins.at(-1)!;
 const kernelReliabilityGap = kernel.rows[0].reliability_gap;
 if (kernelReliabilityGap === null) throw new Error("MLB moneyline reliability gap is missing");
 const answer = (q: string) => served.entries.find(entry => entry.q === q)?.a.answer || "";
+
+it("keeps Scout rest claims on the public scoring-margin grain", () => {
+  const receipt = mechanismLedger.by_sport.basketball_nba.mechanisms.find(row => row.mechanism === "b2b_rest_penalty" && row.effect === -1.73);
+  expect(receipt?.evidence).toContain("avg margin on 0-rest (-1.41, n=856) vs >=1-day rest (0.32, n=3876)");
+  expect(receipt?.p).toBeCloseTo(0.005645490426098632);
+  const buckets = [...novelStats.entries, ...comparisons.entries, ...productTour.entries];
+  const affected = buckets.filter(entry => entry.a.source_artifact?.endsWith("novel_schedule_fatigue_tax.json") || ["What evidence backs the back-to-back penalty?", "What can you show me about schedule and rest?"].includes(entry.q));
+  expect(affected).toHaveLength(17);
+  for (const entry of affected) {
+    const direct = resolveQuestion(entry.q, corpus);
+    expect(direct, entry.q).toMatchObject({ kind: "direct", entry: { q: entry.q, a: entry.a } });
+    expect(direct?.entry?.a.answer, entry.q).toMatch(/under review/i);
+    expect(direct?.entry?.a.answer, entry.q).not.toMatch(/-0\.3771 pts\/100|-0\.2699 pts\/100|credible pts\/100 ORtg/);
+  }
+  const rest = playerTeams.entries.find(entry => entry.q === "Does playing on the second night of a back-to-back hurt production?");
+  expect(resolveQuestion(rest?.q || "", corpus)?.entry?.a).toEqual(rest?.a);
+  expect(rest?.a.answer).toContain("average scoring margin, not offensive rating");
+  expect(rest?.a.answer).toContain("zero-rest-minus-rested difference of -1.73");
+  for (const q of ["What is the difference between a confirmed mechanism and a shipped signal?", "What does CONFIRMED_LOCAL mean?"]) {
+    const entry = methodology.entries.find(row => row.q === q);
+    expect(entry, q).toBeDefined();
+    expect(resolveQuestion(q, corpus)?.entry?.a, q).toEqual(entry?.a);
+    expect(entry?.a.as_of, q).toBe("unknown");
+    expect(entry?.a.answer, q).toMatch(/scoring[- ]margin/);
+    expect(entry?.a.answer, q).not.toMatch(/-1\.73 pts\/100|-1\.955 pts\/100/);
+  }
+});
 
 describe("tennis cross-tour Scout answer", () => {
   const q = "Does a tennis prior trained on one tour transfer to the other?";

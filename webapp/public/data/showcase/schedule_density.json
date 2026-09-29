@@ -49,10 +49,10 @@
  "mechanism_receipt": {
   "claim": "b2b_rest_penalty",
   "verdict": "CONFIRMED_LOCAL",
-  "effect_cited_from_receipt": "-1.73 pts/100 team ORtg (rested minus b2b), n=4732, p=0.0056",
+  "effect_cited_from_receipt": "-1.73 average scoring-margin points (zero-rest minus at least one rest day), n=4732, p=0.0056; not offensive rating or points per 100 possessions",
   "ledger": "domains/basketball_nba/knowledge/validation_ledger.jsonl",
   "computing_script": "scripts/team_system/effects_rest_b2b.py",
-  "relation": "DESCRIPTIVE COMPANION -- this module independently derives b2b/3-in-4/4-in-6 classes from the boxscore date column and reports raw pooled per-36 means per class. It does NOT re-run or re-test the mechanism; the significance-tested team-ORtg effect (and the -1.73/n/p above) belong to the receipt, not to this module."
+  "relation": "DESCRIPTIVE COMPANION -- this module independently derives b2b/3-in-4/4-in-6 classes from the boxscore date column and reports raw pooled per-36 means per class. It does not re-run or re-test the separate scoring-margin association. That receipt compares zero rest with at least one rest day; this module's rested baseline requires at least two days and no compression. The populations and outcomes differ. Receipt-unit metadata corrected 2026-09-29; measurement rows unchanged."
  },
  "rested_baseline_per36": {
   "composite_per36": 13.905,

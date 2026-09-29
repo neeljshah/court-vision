@@ -2,6 +2,15 @@ import { describe, expect, it } from "vitest";
 import { selectNovelMeasurement } from "./novelCards";
 
 describe("selectNovelMeasurement", () => {
+  it("marks the historical fatigue effect under review without echoing its numeric headline", () => {
+    const card = selectNovelMeasurement("novel_schedule_fatigue_tax", {
+      headline: "DEN -0.38 pts/100 ORtg; anchor -1.73",
+      results: [{ team: "DEN", b2b_games: 17, b2b_freq: .218, sft_credible_pts_per100_ortg: -.3771 }],
+    });
+    expect(card).toMatchObject({ lead: "Under review", verdict: "under-review" });
+    expect(card.denominator).toContain("1 team-seasons");
+    expect(`${card.lead} ${card.result} ${card.limitation}`).not.toMatch(/-1\.73|-0\.38|-0\.3771/);
+  });
   it("selects the rest-asymmetry contrast panel", () => {
     const contrast = "0.0892";
     const artifact = {

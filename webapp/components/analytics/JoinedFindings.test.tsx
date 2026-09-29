@@ -6,6 +6,22 @@ import { JoinedFindings } from "./JoinedFindings";
 import { joinedFindingTarget } from "@/lib/analytics/related";
 
 describe("JoinedFindings", () => {
+  it("withholds the historical ORtg claim on every published NBA team join", () => {
+    const joins = JSON.parse(readFileSync(join(process.cwd(), "public", "data", "showcase", "entity_joins.json"), "utf8"));
+    const teams = Object.values(joins.packs.nba_teams.entities) as Array<{ items: Parameters<typeof JoinedFindings>[0]["items"] }>;
+    expect(teams).toHaveLength(30);
+    for (const team of teams) {
+      const item = team.items.find(row => row.key === "schedule_fatigue_tax")!;
+      const { container, unmount } = render(<JoinedFindings pack="nba_teams" coverage={{ n_in_pack: 30 }} items={[item]} />);
+      expect(container).not.toHaveTextContent(item.value);
+      expect(container).not.toHaveTextContent("pts/100 ORtg");
+      expect(container).toHaveTextContent("ORtg estimate withheld");
+      expect(container).toHaveTextContent("scoring margin");
+      expect(screen.getByRole("link", { name: "Read the full finding" })).toHaveAttribute("href", expect.stringMatching(/^\/analytics\/papers\/rest-load-and-outcomes-nba\/?$/));
+      expect(screen.getByRole("link", { name: "Read analysis" })).toBeInTheDocument();
+      unmount();
+    }
+  });
   it("sends a joined artifact to the analysis that uses its source", () => {
     render(<JoinedFindings pack="nba_teams" coverage={{ n_in_pack: 30, schedule_fatigue_tax: 30 }} items={[{
       key: "schedule_fatigue_tax", label: "Schedule Fatigue Tax", value: "Observed value", source_artifact: "scripts/platformkit/analytics_showcase/out/novel_schedule_fatigue_tax.json", confound: "Raw descriptive rows.",

@@ -446,9 +446,10 @@
       "alt_phrasings": ["Back-to-back fatigue effect", "Do players slump on no rest?", "How much does a back-to-back cost?"],
       "a": {
         "status": "ok",
-        "answer": "Fatigue shows up modestly at the player level: on the second night of a back-to-back, per-36 box-composite production dips about 0.315 versus rested games (13.591 vs 13.905), with smaller dips for 3-games-in-4 and 4-in-6. A significance-tested team version puts it at -1.73 points per 100 possessions of offensive rating (rested minus back-to-back, n=4732, p=0.0056). The player-level figure is descriptive and not opponent- or minutes-adjusted.",
-        "source_artifact": "webapp/public/data/insights/schedule_density.json",
-        "as_of": "2023-24 to 2025-26"
+        "answer": "In the descriptive box-score pool, the back-to-back group averaged 13.591 box-composite units per 36 versus 13.905 for the rested group, a published difference of -0.315; these are raw, unadjusted player-game means. A separate validation receipt measures average scoring margin, not offensive rating: zero-rest games averaged -1.41 (n=856) versus +0.32 after at least one rest day (n=3,876), a zero-rest-minus-rested difference of -1.73 across 4,732 rows (p=0.0056). This is an association, not a causal fatigue estimate.",
+        "source_artifact": "webapp/public/data/showcase/mechanism_ledger_export.json",
+        "source_module_ids": ["mechanism_ledger_export", "novel_schedule_fatigue_tax", "schedule_density"],
+        "as_of": "unknown"
       },
       "tags": ["nba", "context", "rest", "back-to-back", "fatigue"]
     },

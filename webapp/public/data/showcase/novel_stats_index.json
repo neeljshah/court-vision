@@ -185,9 +185,9 @@
    "stat_name": "Schedule Fatigue Tax",
    "abbrev": "SFT",
    "module": "novel_schedule_fatigue_tax",
-   "formula": "SFT_credible = b2b_freq * (-1.73 pts/100 ORtg); SFT_descriptive = b2b_freq * (-0.315 composite/36).",
+   "formula": "ORtg-derived SFT is under review: the cited -1.73 is a scoring-margin contrast (no-rest minus rested), not an offensive-rating effect. The separate descriptive composite is b2b_freq * (-0.315 composite/36).",
    "prior_art_verdict": "INCREMENTAL",
-   "headline": "Most-taxed schedule: DEN 2025-26 (-0.38 pts/100 ORtg season-averaged); least: MEM 2025-26 (-0.27). League schedule-inequality range 0.11 pts/100 across 90 team-seasons.",
+   "headline": "ORtg estimate withheld after a source-unit mismatch. Published back-to-back frequencies span 15.6 to 21.8 percent across 90 historical team-seasons; these counts do not establish a causal fatigue effect.",
    "edge_claimed": false,
    "source_artifacts": [
     "scripts/platformkit/analytics_showcase/out/schedule_density.json"

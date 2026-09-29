@@ -11,6 +11,7 @@ const MODULE_IDS = [
 const DISAPPROVED: Record<string, string> = {
   ctx_team_states: "The image contains prohibited vocabulary and clips its subtitle.",
   micro_absorption: "The image contains prohibited vocabulary in its provenance line.",
+  novel_schedule_fatigue_tax: "The image presents an ORtg tax whose cited anchor is a scoring-margin contrast. Derived effects are under review; the replacement table shows schedule frequency only.",
 };
 
 export const publishedChartPresentation: Record<string, PublishedChartPresentation> = Object.fromEntries(

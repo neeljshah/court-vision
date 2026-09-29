@@ -128,6 +128,9 @@ jobs:
           npx vitest run lib/analytics/matchupInsights.test.ts
           npx vitest run lib/analytics/askSearch.test.ts
           npx vitest run lib/analytics/dataIntegrity.test.ts
+          npx vitest run components/analytics/JoinedFindings.test.tsx
+          npx vitest run lib/analytics/publishedChartPresentation.test.ts
+          npx vitest run 'app/(analytics)/analytics/novel/page.test.tsx'
           npx vitest run lib/analytics/scoutIntegrity.test.ts
           npx vitest run lib/analytics/scoutInspectorAnswers.test.ts
           npx vitest run lib/analytics/sourceIntegrity.server.test.ts

@@ -275,9 +275,10 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "/analytics/m/schedule_density holds the back-to-back, 3-in-4 and 4-in-6 congestion counts across 90 team-seasons, and it is the sole input to the Schedule Fatigue Tax. The underlying effect is a recorded CONFIRMED_LOCAL mechanism: -1.73 pts/100 team ORtg, n=4,732, p=0.0056.",
-    "source_artifact": "webapp/public/data/showcase/novel_schedule_fatigue_tax.json",
-    "as_of": "2026-07-24"
+    "answer": "The schedule-density module reports back-to-back, 3-in-4, and 4-in-6 counts across 90 team-seasons, plus raw pooled per-36 box-composite differences. A separate public ledger reports a zero-rest-minus-rested average scoring-margin contrast of -1.73 across 4,732 rows (p=0.0056). The published Schedule Fatigue Tax reuses that number as a points-per-100 offensive-rating anchor, which the receipt does not support; that tax is under review.",
+    "source_artifact": "webapp/public/data/showcase/mechanism_ledger_export.json",
+    "source_module_ids": ["mechanism_ledger_export", "novel_schedule_fatigue_tax", "schedule_density"],
+    "as_of": "unknown"
    },
    "tags": [
     "tour",

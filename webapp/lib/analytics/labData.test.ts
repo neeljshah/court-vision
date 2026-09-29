@@ -5,9 +5,12 @@ import { snapshot } from "./labHelpers";
 const data = getLabData();
 describe("measurement lab source contracts", () => {
   it("reads experimental headlines from each artifact instead of the older index copy", () => {
-    for (const card of data.novel.filter(card => !["novel_live_clock_fraction", "novel_market_foresight_premium"].includes(card.module))) {
+    for (const card of data.novel.filter(card => !["novel_live_clock_fraction", "novel_market_foresight_premium", "novel_schedule_fatigue_tax"].includes(card.module))) {
       expect(card.headline).toBe(snapshot<{ headline: string }>(card.module).headline);
     }
+    const fatigueHeadline = data.novel.find(card => card.module === "novel_schedule_fatigue_tax")!.headline;
+    expect(fatigueHeadline).toContain("Under review");
+    expect(fatigueHeadline).not.toMatch(/-1\.73|-0\.38|ORtg season-averaged/);
     const liveClock = data.novel.find(card => card.module === "novel_live_clock_fraction")!.headline;
     expect(liveClock).toContain("LCF 0.7368 at 3 runs (inning clock; 174 usable score paths)");
     expect(liveClock).toContain("LCF 0.5994 at 1 goals (minute clock; 26 usable score paths)");
@@ -21,11 +24,16 @@ describe("measurement lab source contracts", () => {
     expect(foresight).toContain("do not establish an in-game trend");
     expect(foresight).not.toMatch(/rises|over the game/);
   });
-  it("preserves literal source values and their units", () => {
+  it("withholds the ORtg effect while retaining schedule counts, composite, and units", () => {
     const fatigue = data.datasets.find(d => d.id === "schedule-fatigue")!;
+    expect(fatigue.fields[0].key).toBe("b2b_freq");
     expect(fatigue.rows).toHaveLength(90);
     const denver = fatigue.rows.find(r => r.label === "DEN" && r.group === "2025-26")!;
-    expect(denver.values.sft_credible_pts_per100_ortg).toBe(-.3771);
+    expect(denver.values.sft_credible_pts_per100_ortg).toBeNull();
+    expect(denver.values.sft_descriptive_composite_per36).toBe(-.0687);
+    expect(denver.values.b2b_freq).toBe(.218);
+    expect(denver.values.b2b_games).toBe(17);
+    expect(fatigue.status).toBe("Under review");
     expect(displayMeasurement(.218, { key: "b2b", label: "B2B", unit: "percent" })).toBe("21.8%");
     expect(displayMeasurement(-.0618, { key: "delta", label: "Difference", unit: "pp" })).toBe("-6.18 pp");
   });

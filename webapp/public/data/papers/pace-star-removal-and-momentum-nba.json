@@ -70,7 +70,7 @@
         {"type": "p", "text": "Across all 30 teams the gap ranges from Denver's 0.5822 down to 0.1371 for Philadelphia (Guerschon Yabusele); minutes among the ten shown range from 777.0 (Chicago, Lonzo Ball) to 2,624.4 (LA Clippers, Ivica Zubac), so the largest gaps are not simply the players who played the most."},
         {"type": "p", "text": "The momentum scoreboard's own preregistered verdicts split cleanly: structural, schedule- and role-shaped effects hold up, and the individual game-to-game carryover shapes do not."},
         {"type": "table", "caption": "Preregistered NBA momentum, fatigue and clutch-window test verdicts", "columns": ["Claim", "Verdict", "n", "Effect (artifact units)", "What the effect describes"], "rows": [
-          ["b2b_rest_penalty", "CONFIRMED_LOCAL", "7192", "-1.955", "Back-to-back drag on scoring output"],
+          ["b2b_rest_penalty", "CONFIRMED_LOCAL", "7192", "-1.955", "Zero-rest minus at-least-one-day-rest average team scoring margin"],
           ["three_in_four_fatigue", "CONFIRMED_LOCAL", "7222", "-1.213", "Added fatigue drag on 3-in-4 nights"],
           ["clutch_lineup_shortening", "CONFIRMED_LOCAL", "1052", "-6.3384", "Rotation shortens in clutch minutes"],
           ["clutch_usage_compression", "CONFIRMED_LOCAL", "8164", "0.5031", "Usage concentrates onto fewer players"],
@@ -82,7 +82,8 @@
           ["foul_trouble_efficiency_shift__h1", "NULL_LOCAL", "5972", "-0.09861", "Foul trouble scoring-efficiency shift"],
           ["foul_trouble_usage_shift__h1", "NULL_LOCAL", "5972", "0.00712", "Foul trouble usage-rate shift"],
           ["b2b_x_margin_starter_minutes__h1", "NULL_LOCAL", "3596", "-0.0372", "Back-to-back times margin effect on starter minutes"]
-        ], "note": "Source: nba_momentum_tested.json, groups[].claims[]. No unit is published per effect; the description column paraphrases each claim's own reading field. The replication claim's effect is not published (null in the source)."},
+        ], "note": "Source: nba_momentum_tested.json, groups[].claims[]. The b2b row is cross-checked against mechanism_ledger_export.json, where zero-rest margin is -1.61 versus +0.35 after at least one rest day; the effect -1.955 reflects unrounded means. That ledger row has no as_of date. Other effects have no published units here; their descriptions paraphrase the claim reading fields. The replication claim's effect is not published (null in the source)."},
+        {"type": "p", "text": "The back-to-back row is a single-corpus scoring-margin association, not offensive rating, points per 100 possessions, or a causal fatigue effect. Its sample overlaps the other published b2b_rest_penalty run by an unrecorded amount. The separate published schedule-fatigue offensive-rating tax that reuses that margin receipt is under review; see rest-load-and-outcomes-nba for the audit trail."},
         {"type": "p", "text": "The single replicated claim, that a timeout interrupts an opponent's scoring run, is the only one of the seven confirmed claims checked against a second, independently named corpus (2,544 games, replication_wave1_second_corpus); the other six stand on one corpus tag each. All five null claims are individual-player or individual-game carryover shapes tested on samples from 1,798 to 65,103."},
         {"type": "p", "text": "The Q4-versus-Q1-Q3 per-36 shift, published because clutch_context.json's refusal ruled out a real clutch number, moves both directions: among 409 qualified of 626 considered players, Sandro Mamukelashvili rises from 15.74 to 29.26 points per 36 in Q4 (a shift of 13.52 over 52 Q4 games), while Domantas Sabonis falls from 21.93 to 14.39 (-7.54 over 57 Q4 games). The source is explicit this is a lineup- and blowout-dependent split, not a ranking of clutch ability."}
       ]
@@ -177,6 +178,17 @@
         "groups[].claims[].hypothesis", "groups[].claims[].verdict", "groups[].claims[].n",
         "groups[].claims[].effect", "groups[].claims[].corpus", "groups[].claims[].reading",
         "confounds[]"
+      ]
+    },
+    {
+      "artifact": "mechanism_ledger_export.json",
+      "module": "mechanism_ledger_export",
+      "asOf": "unknown",
+      "fields": [
+        "by_sport.basketball_nba.mechanisms[mechanism=b2b_rest_penalty,effect=-1.955].effect",
+        "by_sport.basketball_nba.mechanisms[mechanism=b2b_rest_penalty,effect=-1.955].evidence",
+        "by_sport.basketball_nba.mechanisms[mechanism=b2b_rest_penalty,effect=-1.955].corpus",
+        "by_sport.basketball_nba.mechanisms[mechanism=b2b_rest_penalty,effect=-1.955].as_of"
       ]
     },
     {

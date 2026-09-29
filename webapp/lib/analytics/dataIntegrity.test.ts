@@ -1,8 +1,34 @@
 import { describe, expect, it } from "vitest";
 import { dataIntegrityNotices, integrityRegistrySummary, mlbTickShares, noticesForInspector, noticesForModules, noticesForPaper, status } from "./dataIntegrity";
 import { loadIngameIntegrityReceipt, loadIngameRegenerationReceipt, loadIngameTimingRegenerationReceipt } from "@/app/(analytics)/analytics/findings/ingame-join-integrity/ingameJoinIntegrity.server";
+import fatigueAudit from "../../public/data/audits/nba-schedule-fatigue-units.json";
+import mechanisms from "../../public/data/showcase/mechanism_ledger_export.json";
+import densityInsight from "../../public/data/insights/schedule_density.json";
+import density from "../../public/data/showcase/schedule_density.json";
 
 describe("dataIntegrity", () => {
+  it("grounds the fatigue review in the exact published margin receipt", () => {
+    const record = mechanisms.by_sport.basketball_nba.mechanisms[0];
+    expect(record).toMatchObject({ mechanism: fatigueAudit.mechanism, effect: fatigueAudit.reported_effect, evidence: fatigueAudit.evidence, as_of: fatigueAudit.source_as_of });
+    expect(fatigueAudit.source_path).toBe("by_sport.basketball_nba.mechanisms[0]");
+    expect(record.evidence).toContain("avg margin on 0-rest (-1.41, n=856) vs >=1-day rest (0.32, n=3876)");
+    expect(fatigueAudit.reported_effect).toBeCloseTo(-1.41 - 0.32, 10);
+    expect(fatigueAudit.observation_window).toBeNull();
+    expect(densityInsight.cited[3]).toEqual({ path: fatigueAudit.source_artifact, field: `${fatigueAudit.source_path}.evidence`, value: record.evidence });
+    expect(density.mechanism_receipt.effect_cited_from_receipt).toContain("average scoring-margin points");
+    expect(density.mechanism_receipt.relation).toContain("populations and outcomes differ");
+    expect(densityInsight.why_it_matters).toContain("not a significance test of these per-36 differences");
+  });
+  it("flags the NBA fatigue unit mismatch without flagging its valid schedule inputs", () => {
+    expect(status("novel_schedule_fatigue_tax", "nba")).toBe("under-review");
+    expect(status("schedule_density", "nba")).toBe("clear");
+    const notices = noticesForModules(["novel_schedule_fatigue_tax"]);
+    expect(notices).toMatchObject([{ status: "under-review", detailRoute: "/analytics/papers/rest-load-and-outcomes-nba/" }]);
+    expect(notices[0].summary).toContain("scoring margin");
+    expect(notices[0].summary).toContain("no-rest minus rested");
+    expect(notices[0].summary).toContain("not offensive rating");
+    expect(noticesForPaper([{ module: "novel_schedule_fatigue_tax" }])).toEqual(notices);
+  });
   it("resolves each artifact and sport status", () => {
     expect(status("state_conditioned_calibration", "mlb")).toBe("regenerated");
     expect(status("state_conditioned_calibration", "soccer_intl")).toBe("regenerated");
@@ -77,7 +103,7 @@ describe("dataIntegrity", () => {
   });
 
   it("surfaces a regeneration notice for every rebuilt artifact and keeps the review notice unmatched", () => {
-    expect(dataIntegrityNotices.map(notice => notice.status)).toEqual(["regenerated", "regenerated", "under-review", "under-review", "under-review"]);
+    expect(dataIntegrityNotices.map(notice => notice.status)).toEqual(["regenerated", "regenerated", "under-review", "under-review", "under-review", "under-review"]);
     expect(noticesForModules(["state_conditioned_calibration"])).toMatchObject([{ status: "regenerated" }]);
     expect(noticesForPaper([{ module: "state_conditioned_calibration" }])).toMatchObject([{ status: "regenerated" }]);
     expect(noticesForModules(["blowout_dynamics"])).toMatchObject([{ id: "ingame-timing-regenerated", status: "regenerated" }]);

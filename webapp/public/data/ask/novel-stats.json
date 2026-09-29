@@ -11,7 +11,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Six, each composed only from committed module output and each gated against prior art before publication: Line Half-Life (LHL), Live-Clock Fraction (LCF), Load-Bearing Index (LBI), Market Foresight Premium (MFP), Overreaction Harvest Gap (OHG) and Schedule Fatigue Tax (SFT). All six carry the descriptive-only flag. One, OHG, is flagged is_honest_null -- it measures a failure, not a finding.",
+    "answer": "Six descriptive modules were published: Line Half-Life (LHL), Live-Clock Fraction (LCF), Load-Bearing Index (LBI), Market Foresight Premium (MFP), Overreaction Harvest Gap (OHG), and Schedule Fatigue Tax (SFT). SFT is under review because its claimed points-per-100 offensive-rating unit is not supported by the cited rest receipt. OHG is an honest null.",
     "source_artifact": "webapp/public/data/showcase/novel_stats_index.json",
     "as_of": "2026-07-24"
    },
@@ -29,7 +29,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Each stat is labeled by how much of it is genuinely fresh, and the label is deliberately conservative: LHL is NOVEL_PACKAGING, LCF is INCREMENTAL_NOVEL, LBI / MFP / SFT are INCREMENTAL, and OHG is NOVEL_SELF_CRITICAL_CROSS. Every card names the existing literature it sits on top of and instructs the reader not to claim first-ever on the components.",
+    "answer": "The prior-art labels describe how much of each module's packaging is new, not whether every measurement is valid. LHL is NOVEL_PACKAGING, LCF is INCREMENTAL_NOVEL, LBI / MFP / SFT are INCREMENTAL, and OHG is NOVEL_SELF_CRITICAL_CROSS. The SFT measurement is under review because its claimed offensive-rating unit is unsupported by the cited rest receipt.",
     "source_artifact": "webapp/public/data/showcase/novel_stats_index.json",
     "as_of": "2026-07-24"
    },
@@ -884,9 +884,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Per team-season, the points tax from back-to-back congestion: the team's back-to-back frequency multiplied by the tested back-to-back performance penalty. It converts a schedule quirk into a season-averaged points figure so teams can be compared on the same axis.",
+    "answer": "The published Schedule Fatigue Tax multiplied each team-season's back-to-back frequency by a leaguewide rest contrast. Its points-per-100 offensive-rating interpretation is under review: the cited validation receipt measured average scoring margin, not offensive rating. The source still records 90 team-season schedules and a separate raw per-36 box-composite comparison; neither establishes a causal points tax.",
     "source_artifact": "webapp/public/data/showcase/novel_schedule_fatigue_tax.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -903,9 +903,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "SFT_credible = b2b_freq * (-1.73 pts/100 ORtg), with a descriptive companion SFT_descriptive = b2b_freq * (-0.315 composite per 36). The -1.73 anchor is not invented here; it is copied from the repo's own tested b2b_rest_penalty mechanism receipt.",
+    "answer": "The historical source calculated b2b_freq times -1.73 and labeled the result a credible points-per-100 offensive-rating tax. That unit is unsupported: the -1.73 receipt measures average scoring margin for zero rest minus at least one day of rest. A separate descriptive calculation multiplies b2b_freq by -0.315 raw box-composite units per 36. The published offensive-rating tax is under review, not a validated team effect.",
     "source_artifact": "webapp/public/data/showcase/novel_schedule_fatigue_tax.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -922,9 +922,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Denver in 2025-26: 17 back-to-backs, a b2b_freq of 0.218, and a season-averaged SFT of -0.3771 pts/100 ORtg -- the largest of 90 team-seasons. Atlanta and Houston in 2024-25 follow at -0.3633 each.",
+    "answer": "Among the 90 published team-seasons, Denver in 2025-26 has the highest back-to-back frequency: 17 back-to-back games, a share of 0.218. Atlanta and Houston in 2024-25 also have 17, with shares of 0.210. These are schedule-exposure counts, not proof of the largest performance penalty; the published offensive-rating tax is under review.",
     "source_artifact": "webapp/public/data/showcase/novel_schedule_fatigue_tax.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -942,9 +942,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Memphis in 2025-26: 12 back-to-backs, b2b_freq 0.156, SFT -0.2699 pts/100 ORtg -- the smallest tax in the 90 team-seasons measured. Atlanta and Chicago in 2025-26 sit just above it at -0.2733.",
+    "answer": "Memphis in 2025-26 has the lowest published back-to-back frequency among 90 team-seasons: 12 back-to-back games, a share of 0.156. Atlanta and Chicago in 2025-26 each have a share of 0.158. This ranks schedule exposure only; the published offensive-rating tax is under review.",
     "source_artifact": "webapp/public/data/showcase/novel_schedule_fatigue_tax.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -962,9 +962,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Less than the discourse suggests. Across 90 team-seasons the credible tax spans only 0.1072 pts/100 ORtg end to end (-0.3771 to -0.2699), with a standard deviation of 0.0252. Back-to-back frequency itself ranges from 0.156 to 0.218.",
+    "answer": "Across the 90 published team-seasons, back-to-back frequency ranges from 0.156 to 0.218. The within-season spreads are 0.048 in 2023-24, 0.051 in 2024-25, and 0.062 in 2025-26. These describe scheduling variation; the published points-per-100 offensive-rating tax and its derived spread are under review.",
     "source_artifact": "webapp/public/data/showcase/novel_schedule_fatigue_tax.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -981,9 +981,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "The within-season spread in back-to-back frequency has widened across the three seasons in the corpus: 0.048 in 2023-24, 0.051 in 2024-25, 0.062 in 2025-26. That is a dispersion figure -- teams differing more from each other -- not a league-wide level increase.",
+    "answer": "The source reports only within-season spread in team back-to-back frequency: 0.048 in 2023-24, 0.051 in 2024-25, and 0.062 in 2025-26. That does not measure a leaguewide increase in back-to-backs. The frequency fields are descriptive; the separate offensive-rating tax is under review.",
     "source_artifact": "webapp/public/data/showcase/novel_schedule_fatigue_tax.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -1000,9 +1000,10 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "A recorded mechanism verdict of CONFIRMED_LOCAL on the claim b2b_rest_penalty: -1.73 pts/100 team ORtg (rested minus back-to-back), n=4,732, p=0.0056. It is a single-corpus local confirmation, which is why the derived tax is labeled descriptive rather than predictive.",
-    "source_artifact": "webapp/public/data/showcase/novel_schedule_fatigue_tax.json",
-    "as_of": "2026-07-24"
+    "answer": "The public validation ledger records a CONFIRMED_LOCAL association in average scoring margin: zero-rest games averaged -1.41 (n=856) versus +0.32 with at least one day of rest (n=3,876), a zero-rest-minus-rested difference of -1.73 across 4,732 rows (p=0.0056). The receipt does not measure offensive rating or points per 100 possessions, and its timing is unstamped. The published offensive-rating tax that reuses this number is under review.",
+    "source_artifact": "webapp/public/data/showcase/mechanism_ledger_export.json",
+    "source_module_ids": ["mechanism_ledger_export", "novel_schedule_fatigue_tax", "schedule_density"],
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -1019,9 +1020,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "No, and the card is emphatic about it. The back-to-back fatigue effect is heavily documented -- scoring drops, win-rate drops, standard spread adjustments, and academic work on schedule congestion (ResearchGate 339933590) -- and the instruction is to cite that as prior art. Only the per-team-season aggregation into a points tax plus a league inequality spread is fresh packaging.",
+    "answer": "No. Back-to-back schedule effects are prior art. The published module packages team-season back-to-back frequency and a raw per-36 box-composite comparison, but its claimed offensive-rating tax is under review because the cited rest receipt measures scoring margin. The packaging does not establish a new causal or predictive effect.",
     "source_artifact": "webapp/public/data/showcase/novel_schedule_fatigue_tax.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -1038,9 +1039,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "No. The three density classes overlap and are explicitly non-additive, which is why the formula deliberately uses back-to-backs alone -- summing them would double-count the same congested stretches. The card lists this as a declared confound rather than leaving it to the reader.",
+    "answer": "No. Those schedule-density classes overlap, so summing their game counts would double-count congested stretches. The published index used back-to-back frequency alone; its offensive-rating tax is under review because the cited rest receipt measured scoring margin.",
     "source_artifact": "webapp/public/data/showcase/novel_schedule_fatigue_tax.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -1057,9 +1058,9 @@
    ],
    "a": {
     "status": "refused",
-    "answer": "No. SFT is marked descriptive_only as descriptive-only, and its own confound list calls the -1.73 anchor a single-corpus CONFIRMED_LOCAL effect that is 'a descriptive tax, not a forecast, and not re-tested here'. It describes seasons already played; nothing about it has been gated as a forward-looking signal.",
+    "answer": "No. The published module is descriptive and has no validated forward-looking test. Its points-per-100 offensive-rating tax is also under review because the cited validation receipt measures scoring margin, not offensive rating. Back-to-back counts and the separate raw per-36 comparison describe already observed games.",
     "source_artifact": "webapp/public/data/showcase/novel_schedule_fatigue_tax.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -1076,9 +1077,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "The descriptive companion uses a -0.315 composite-per-36 delta versus rested games, giving team-season values such as -0.0687 for Denver 2025-26 and -0.0491 for Memphis 2025-26. Those per-36 deltas are raw pooled means, not adjusted for roster, opponent, minutes or home-away.",
+    "answer": "The separate descriptive source reports a raw box-composite mean of 13.591 per 36 in 12,000 back-to-back player-games versus 13.905 in 40,157 rested player-games, a published difference of -0.315. A historical team-season rescaling gives -0.0687 for Denver 2025-26 and -0.0491 for Memphis 2025-26. These pooled values are not adjusted for roster, opponents, minutes, or venue; the separate offensive-rating tax is under review.",
     "source_artifact": "webapp/public/data/showcase/novel_schedule_fatigue_tax.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -1095,9 +1096,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "90 team-seasons, covering 30 teams across three seasons. Every one gets both a credible pts/100 ORtg tax and a descriptive per-36 companion.",
+    "answer": "The published source has 90 team-seasons across 30 teams and three seasons, each with back-to-back counts and frequency plus a raw per-36 companion value. Its points-per-100 offensive-rating tax is under review because the cited rest receipt measured scoring margin.",
     "source_artifact": "webapp/public/data/showcase/novel_schedule_fatigue_tax.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
