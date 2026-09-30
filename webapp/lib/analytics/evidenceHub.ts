@@ -21,7 +21,7 @@ export type EvidenceChart = {
   id: string;
   title: string;
   description: string;
-  status: "published" | "partial";
+  status: "published" | "partial" | "under-review";
   asOf: string | null;
   imageSrc: string;
   sourceUrl: string;
@@ -59,7 +59,7 @@ export function getEvidenceCharts(): EvidenceChart[] {
       id: item.id,
       title: item.title,
       description: item.one_line || "Published chart; see the linked source module for its recorded method.",
-      status: item.status === "partial" ? "partial" : "published",
+      status: item.status === "under-review" ? "under-review" : item.status === "partial" ? "partial" : "published",
       asOf: item.as_of || null,
       imageSrc: `${BASE_PATH}/img/showcase/${imageName}`,
       sourceUrl: publicUrl(sourcePath),

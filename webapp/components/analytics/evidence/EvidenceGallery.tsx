@@ -11,7 +11,9 @@ export interface EvidenceGalleryProps {
 }
 
 function statusLabel(status: EvidenceChart["status"]): string {
-  return status === "partial" ? "Partial documentation" : "Published";
+  if (status === "partial") return "Partial documentation";
+  if (status === "under-review") return "Under review";
+  return "Published";
 }
 
 function asOfLabel(asOf: string | null): string {
@@ -35,7 +37,7 @@ function ChartDialog({ chart }: ChartDialogProps) {
     <Dialog.Root>
       <Dialog.Trigger asChild>
         <button ref={triggerRef} className="evidence-preview" type="button" aria-label={`Open larger view of ${chart.title}`}>
-          {presentation.approved ? <img src={chart.imageSrc} alt="" loading="lazy" /> : <span className="evidence-data-preview" data-testid="published-data-figure"><strong>Published data figure</strong><span>{chart.description}</span></span>}
+          {presentation.approved ? <img src={chart.imageSrc} alt="" loading="lazy" /> : <span className="evidence-data-preview" data-testid="published-data-figure"><strong>{chart.status === "under-review" ? "Under-review data preview" : "Published data figure"}</strong><span>{chart.description}</span></span>}
           <span>View chart</span>
         </button>
       </Dialog.Trigger>
@@ -46,7 +48,7 @@ function ChartDialog({ chart }: ChartDialogProps) {
           triggerRef.current?.focus();
         }}>
           <div className="evidence-dialog-head">
-            <div><Dialog.Title>{chart.title}</Dialog.Title><p id={`chart-description-${chart.id}`}>{asOfLabel(chart.asOf)}</p></div>
+            <div><Dialog.Title>{chart.title}</Dialog.Title><span className={`evidence-status-chip ${chart.status}`}>{statusLabel(chart.status)}</span><p id={`chart-description-${chart.id}`}>{asOfLabel(chart.asOf)}</p></div>
             <Dialog.Close className="evidence-dialog-close" aria-label="Close chart"><X size={19} /></Dialog.Close>
           </div>
           {presentation.approved ? <img src={chart.imageSrc} alt={`${chart.title} chart`} /> : <figure className="evidence-data-dialog" data-testid="published-data-figure"><figcaption>{chart.description}</figcaption><p>{presentation.reason}</p><a href={chart.sourceUrl} target="_blank" rel="noreferrer">Source module</a></figure>}
@@ -65,15 +67,15 @@ export function EvidenceGallery({ charts }: EvidenceGalleryProps) {
   }), [charts, query, status]);
 
   return <section id="published-gallery" className="evidence-gallery-section" aria-labelledby="evidence-gallery-title">
-    <div className="evidence-section-heading"><div><p className="cv-eyebrow"><span className="cv-square" />Evidence gallery</p><h2 id="evidence-gallery-title">Published charts, linked to their source</h2></div><p>Static artifacts from the public manifest. This page does not report a live backend state.</p></div>
+    <div className="evidence-section-heading"><div><p className="cv-eyebrow"><span className="cv-square" />Evidence gallery</p><h2 id="evidence-gallery-title">Evidence charts, linked to their source</h2></div><p>Static artifacts from the public manifest. This page does not report a live backend state.</p></div>
     <div className="evidence-controls">
-      <label className="evidence-search"><Search size={17} aria-hidden="true" /><span className="sr-only">Search published charts</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search charts and methods" /></label>
-      <label className="evidence-status">Documentation status<select value={status} onChange={(event) => setStatus(event.target.value as "all" | EvidenceChart["status"])}><option value="all">All charts</option><option value="published">Published</option><option value="partial">Partial documentation</option></select></label>
+      <label className="evidence-search"><Search size={17} aria-hidden="true" /><span className="sr-only">Search charts</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search charts and methods" /></label>
+      <label className="evidence-status">Documentation status<select value={status} onChange={(event) => setStatus(event.target.value as "all" | EvidenceChart["status"])}><option value="all">All charts</option><option value="published">Published</option><option value="partial">Partial documentation</option><option value="under-review">Under review</option></select></label>
     </div>
-    <p className="evidence-result-count" role="status">{results.length} published chart{results.length === 1 ? "" : "s"} shown</p>
+    <p className="evidence-result-count" role="status">{results.length} chart{results.length === 1 ? "" : "s"} shown</p>
     {results.length ? <div className="evidence-grid">{results.map((chart) => <article className="evidence-card" key={chart.id}>
       <ChartDialog chart={chart} />
       <div className="evidence-card-body"><div className="evidence-card-top"><span className={`evidence-status-chip ${chart.status}`}>{statusLabel(chart.status)}</span><span>{asOfLabel(chart.asOf)}</span></div><h3>{chart.title}</h3><p>{chart.description}</p><div className="evidence-links"><a href={chart.sourceUrl} target="_blank" rel="noreferrer">Source module</a>{chart.evidenceUrl ? <a href={chart.evidenceUrl} target="_blank" rel="noreferrer">Evidence note</a> : null}</div></div>
-    </article>)}</div> : <p className="evidence-empty">No published charts match that search. Try a different term or clear the status filter.</p>}
+    </article>)}</div> : <p className="evidence-empty">No charts match that search. Try a different term or clear the status filter.</p>}
   </section>;
 }
