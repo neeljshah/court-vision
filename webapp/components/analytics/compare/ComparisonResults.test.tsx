@@ -2,6 +2,8 @@
 import { render, screen, within } from "@testing-library/react";
 import { expect, it, vi } from "vitest";
 import type { ComparisonEntity, ComparisonPack } from "@/lib/analytics/comparisonData";
+import { normalizeComparisonPack } from "@/lib/analytics/comparisonData";
+import calibrationManifest from "../../../public/data/showcase/atlas_calibration_manifest.json";
 import { ComparisonResults } from "./ComparisonResults";
 
 vi.mock("next/link", () => ({ default: ({ children, ...props }: React.ComponentProps<"a">) => <a {...props}>{children}</a> }));
@@ -54,4 +56,17 @@ it("uses plain language when profiles do not share a measurement", () => {
   };
   render(<ComparisonResults pack={pack} a={a} b={b} manifest="atlas_nba_manifest.json" surface="hard" onSurfaceChange={() => undefined} />);
   expect(screen.getByText("These profiles have no numerical measurements in common.")).toBeInTheDocument();
+});
+
+it("routes calibration cards to raw values without generic ranks or comparable sections", () => {
+  const pack = normalizeComparisonPack("calibration", calibrationManifest, {}, {});
+  const a = pack.entities.find((entity) => entity.sourceEntity === "mlb inning 1")!;
+  const b = pack.entities.find((entity) => entity.sourceEntity === "mlb band 0-.2")!;
+  render(<ComparisonResults pack={pack} a={a} b={b} manifest="atlas_calibration_manifest.json" surface="hard" onSurfaceChange={() => undefined} />);
+  expect(screen.getByRole("table", { name: "Published calibration values" })).toBeInTheDocument();
+  expect(screen.queryByRole("heading", { name: "Largest measured differences" })).not.toBeInTheDocument();
+  expect(screen.queryByRole("heading", { name: "Percentile ladder" })).not.toBeInTheDocument();
+  expect(screen.queryByText("Closest comparables")).not.toBeInTheDocument();
+  expect(screen.queryByText(/Ranked among/)).not.toBeInTheDocument();
+  expect(screen.queryByText(/games represented/)).not.toBeInTheDocument();
 });

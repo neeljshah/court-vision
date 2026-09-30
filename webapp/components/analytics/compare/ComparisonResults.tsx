@@ -7,6 +7,7 @@ import { TennisSurfaceComparison } from "./TennisSurfaceComparison";
 import { PitchCountComparison } from "./PitchCountComparison";
 import { PitchResultComparison } from "./PitchResultComparison";
 import { SoccerVenueComparison } from "./SoccerVenueComparison";
+import { CalibrationComparison } from "./CalibrationComparison";
 import { MetricRow, ProfileHeading } from "./CompareResultParts";
 import { ComparableContext } from "./ComparableContext";
 import { sharedPercentileLadder } from "@/lib/analytics/percentileLadder";
@@ -16,6 +17,7 @@ function publicPath(path: string): string { return `${process.env.NEXT_PUBLIC_BA
 function rankedCount(pack: ComparisonPack, field: string): number | undefined { const value = pack.nRankedByMetric?.[field]; return typeof value === "number" && Number.isInteger(value) && value > 0 ? value : undefined; }
 
 export function ComparisonResults({ pack, a, b, manifest, sport, surface, onSurfaceChange }: { pack: ComparisonPack; a: ComparisonEntity; b: ComparisonEntity; manifest: string; sport?: string; surface: TennisSurface; onSurfaceChange: (surface: TennisSurface) => void }) {
+  if (pack.key === "calibration") return <CalibrationComparison a={a} b={b} sourceHref={publicPath(manifest)} />;
   const aFamily = pack.key === "mlb_pitch" ? mlbAtlasFamily(a.sourceEntity) : undefined;
   const bFamily = pack.key === "mlb_pitch" ? mlbAtlasFamily(b.sourceEntity) : undefined;
   const mixedMlbAtlas = pack.key === "mlb_pitch" && (!aFamily || aFamily !== bFamily);

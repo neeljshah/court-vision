@@ -8,6 +8,8 @@ export type RawEntry = {
   as_of?: string;
   floors?: string;
   status?: string;
+  sport?: string;
+  card_type?: string;
 };
 
 export type RawManifest = { entries?: RawEntry[] };
@@ -55,6 +57,8 @@ export type ComparisonEntity = {
   asOf?: string;
   floors?: string;
   status?: string;
+  sport?: string;
+  cardType?: string;
 };
 
 export type ComparisonPack = {
@@ -122,8 +126,14 @@ export function normalizeComparisonPack(
     asOf: entry.as_of,
     floors: entry.floors,
     status: entry.status,
+    sport: entry.sport,
+    cardType: entry.card_type,
   }));
-  const metricKeys = Object.keys(percentilePack?.fields || {})
+  const scalarKeys = key === "calibration" ? Array.from(new Set(entries.flatMap(entry =>
+    Object.entries(entry.values).flatMap(([field, value]) =>
+      value === null || typeof value === "string" || typeof value === "number" && Number.isFinite(value) ? [field] : []),
+  ))) : Object.keys(percentilePack?.fields || {});
+  const metricKeys = scalarKeys
     .filter((field) => !/_id$/.test(field));
   const nRankedByMetric = Object.fromEntries(metricKeys.flatMap((field) => {
     const value = percentilePack?.fields?.[field]?.n_ranked;
