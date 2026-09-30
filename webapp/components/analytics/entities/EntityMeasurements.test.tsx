@@ -1,7 +1,8 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { expect, it } from "vitest";
 import { EntityMeasurements } from "./EntityMeasurements";
 import { entityMeasurements } from "@/lib/analytics/entityMeasurements";
+import pitchManifest from "../../../public/data/showcase/atlas_mlb_pitch_manifest.json";
 
 const props = { sourceArtifact: "webapp/public/data/showcase/atlas_mlb_pitch_manifest.json", measurements: {
   scalars: [{ key: "n_pitches", label: "n pitches", value: "71,270", percentile: 82, nRanked: 69 }],
@@ -19,6 +20,47 @@ it("renders every published distribution row", () => {
   expect(screen.getByLabelText("outcome mix % distribution")).toBeInTheDocument();
   expect(screen.getByLabelText("outcome mix % distribution")).toHaveAttribute("role", "img");
   expect(document.querySelectorAll("dl > div > dt")).toHaveLength(1);
+});
+
+it("names all three published CH distributions and gives each a local source receipt", () => {
+  const entry = pitchManifest.entries.find((item) => item.entity === "pitch_type:CH")!;
+  const sourceArtifact = "webapp/public/data/showcase/atlas_mlb_pitch_manifest.json";
+  render(<EntityMeasurements measurements={entityMeasurements("mlb_pitch", entry, "ch")} sourceArtifact={sourceArtifact} asOf={entry.as_of} />);
+  for (const label of ["Pitch share by count leverage", "Pitch share by count state", "Pitch outcome mix"]) {
+    const table = screen.getByRole("table", { name: `${label} distribution` });
+    const section = table.closest("section")!;
+    const receipt = within(section).getByRole("button", { name: new RegExp(`Receipt: ${label} distribution`) });
+    fireEvent.click(receipt);
+    expect(section).toHaveTextContent(sourceArtifact);
+    expect(section).toHaveTextContent("2025-09-28");
+  }
+  expect(screen.getAllByRole("table")).toHaveLength(3);
+});
+
+it("names velocity and calibration bucket tables and keeps their receipts scoped", () => {
+  const sourceArtifact = "webapp/public/data/showcase/atlas_calibration_manifest.json";
+  const measurements = { ...props.measurements, tables: [
+    props.measurements.tables[0],
+    { key: "by_time_bucket" as const, label: "Calibration by time bucket", rows: [{ bucket: "5", n: 3, meanY: 0.25 }] },
+  ] };
+  render(<EntityMeasurements measurements={measurements} sourceArtifact={sourceArtifact} asOf="2026-09-16" />);
+  for (const label of ["velocity percentiles by pitch type", "Calibration by time bucket"]) {
+    const table = screen.getByRole("table", { name: label });
+    const section = table.closest("section")!;
+    const receipt = within(section).getByRole("button", { name: new RegExp(`Receipt: ${label} table`) });
+    fireEvent.click(receipt);
+    expect(section).toHaveTextContent(sourceArtifact);
+    expect(section).toHaveTextContent("2026-09-16");
+  }
+  expect(screen.getByRole("cell", { name: "3" })).toBeInTheDocument();
+  expect(screen.getByRole("cell", { name: "0.2500" })).toBeInTheDocument();
+});
+
+it("keeps the published-date fallback when a section has no as-of value", () => {
+  render(<EntityMeasurements {...props} />);
+  const section = screen.getByRole("table", { name: "velocity percentiles by pitch type" }).closest("section")!;
+  fireEvent.click(within(section).getByRole("button", { name: /Receipt: velocity percentiles by pitch type table/ }));
+  expect(section).toHaveTextContent("Date not published.");
 });
 
 it("distinguishes unpublished and inapplicable measurements", () => {
