@@ -1,16 +1,16 @@
 // slate-and-card.test.tsx -- RTL render guards for the /games hub: SlateCards
 // (per-sport slate that degrades INDEPENDENTLY to honest empty) and GameCard
-// (one coherent prediction + key markets + best-bet chip in UNITS or honest
-// NO BET). Complements the pure card-utils unit tests by rendering the DOM.
+// (one coherent prediction + key markets + best-bet chip in UNITS or an honest
+// decision status). Complements the pure card-utils tests by rendering the DOM.
 //
 // Covered:
 //   * a sport with live games renders GameCards; tennis (offseason) renders an
 //     honest empty line, NEVER a fabricated slate
 //   * an Unavailable predict envelope renders an honest Unavailable, not a slate
 //   * GameCard shows the coherent pick (prob), key market rows, and a best-bet
-//     chip in UNITS+tier -- or an honest "no bet (below floor)"
+//     chip in UNITS+tier, no bet reported, or decision unavailable
 //   * COHERENCE: the displayed pick prob == the max pregame_probs value
-//   * missing pick prob -> "--"; below-floor edge -> NO BET; NO $ rendered
+//   * missing pick prob -> "--"; missing decisions stay unavailable; NO $ rendered
 //
 // api is mocked so no network is hit. This lane does NOT edit source/shared
 // components; shared-component bugs are REPORTED.
@@ -155,17 +155,18 @@ describe("GameCard -- one coherent prediction + units chip", () => {
     assertNoDollar(container);
   });
 
-  it("renders an honest NO BET chip when no edge clears the floor", () => {
+  it("renders no bet reported for an explicit empty decision list", () => {
     const edge: GameEdge = {
       game_id: "0042600401",
       status: "ok",
       best_bets: [],
     };
     render(<GameCard sport="nba" rec={predRec()} edge={edge} />);
-    expect(screen.getByText(/no bet \(below floor\)/i)).toBeInTheDocument();
+    expect(screen.getByText("no bet reported", { exact: true })).toBeInTheDocument();
+    expect(screen.queryByText(/decision unavailable|below floor/i)).toBeNull();
   });
 
-  it("renders NO BET for an unavailable edge (no fabricated tier)", () => {
+  it("keeps an unavailable decision distinct from a reported no bet", () => {
     render(
       <GameCard
         sport="nba"
@@ -173,7 +174,8 @@ describe("GameCard -- one coherent prediction + units chip", () => {
         edge={{ game_id: "0042600401", status: "unavailable", reason: "x" }}
       />,
     );
-    expect(screen.getByText(/no bet \(below floor\)/i)).toBeInTheDocument();
+    expect(screen.getByText("decision unavailable", { exact: true })).toBeInTheDocument();
+    expect(screen.queryByText(/no bet reported|below floor/i)).toBeNull();
     expect(screen.queryByText(/tier [A-D]/i)).toBeNull();
   });
 
