@@ -39,6 +39,7 @@ import { LiveInGamePanel } from "@/components/live/LiveInGamePanel";
 import { humanizeMatchup } from "@/lib/betdesc";
 import { useSearchParams } from "next/navigation";
 import type { Unavailable as UnavailableT } from "@/lib/types";
+import { isSnapshotMode } from "@/lib/fetchHonest";
 
 export function GameView({
   sport,
@@ -81,8 +82,9 @@ export function GameView({
     staleAfterSec: 60,
     cacheKey: `game:${sport}:${gameId}:bestbets`,
   });
-  const edgeAsOf =
-    edgeAgeSec != null ? new Date(Date.now() - edgeAgeSec * 1000).toLocaleTimeString() : null;
+  const edgeAsOf = isSnapshotMode
+    ? "published snapshot"
+    : edgeAgeSec != null ? new Date(Date.now() - edgeAgeSec * 1000).toLocaleTimeString() : null;
 
   // Derive the edge/clv props from the live-data result, identical to before.
   let edge: GameEdge | null = null;

@@ -37,6 +37,7 @@ export function GameCard({
   rec,
   edge,
   slateGame,
+  detailPublished = true,
 }: {
   sport: string;
   rec: PredictRecord;
@@ -45,6 +46,8 @@ export function GameCard({
    * an unmatched/unavailable board feed degrades to an honest "no board
    * price" line, never a fabricated one. */
   slateGame?: SlateGame | null;
+  /** Snapshot exports list only pre-rendered game-detail routes. */
+  detailPublished?: boolean;
 }) {
   const pick = coherentPick(rec);
   const markets = keyMarkets(rec, 3);
@@ -57,17 +60,8 @@ export function GameCard({
   // Descriptive label for the card link -- matchup + tipoff for screen readers.
   const linkAriaLabel = `${rec.away} at ${rec.home}${rec.tipoff ? `, ${rec.tipoff}` : ""} -- open game detail`;
 
-  return (
-    <Link
-      href={`/games/${sport}/${rec.game_id}`}
-      aria-label={linkAriaLabel}
-      className={cn(
-        "group flex flex-col gap-0 border border-border bg-card",
-        "transition-colors hover:border-muted-foreground",
-        // Focus-visible ring so keyboard users can see focus on the card.
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background",
-      )}
-    >
+  const content = (
+    <>
       {/* ------------------------------------------------------------------ */}
       {/* Matchup header: team names + tipoff + leak-guard badge             */}
       {/* ------------------------------------------------------------------ */}
@@ -248,9 +242,34 @@ export function GameCard({
           className="font-data text-[10px] text-faint transition-colors group-hover:text-muted-foreground"
           aria-hidden
         >
-          {ships > 0 ? `${ships} calib signal - ` : ""}open game &rarr;
+          {detailPublished
+            ? `${ships > 0 ? `${ships} calib signal - ` : ""}open game \u2192`
+            : "detail not published"}
         </span>
       </div>
-    </Link>
+    </>
+  );
+
+  const className = cn(
+    "group flex flex-col gap-0 border border-border bg-card",
+    "transition-colors hover:border-muted-foreground",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background",
+  );
+
+  if (detailPublished) {
+    return (
+      <Link href={`/games/${sport}/${rec.game_id}`} aria-label={linkAriaLabel} className={className}>
+        {content}
+      </Link>
+    );
+  }
+
+  return (
+    <article aria-label={`${rec.away} at ${rec.home}`} className={className}>
+      {content}
+      <p className="border-t border-border px-4 py-2 font-data text-[10px] text-faint">
+        Detail not published in this snapshot
+      </p>
+    </article>
   );
 }

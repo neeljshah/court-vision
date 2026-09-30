@@ -14,10 +14,22 @@
 import { useCallback } from "react";
 import { useLiveData } from "@/lib/useLiveData";
 import { api, isUnavailable, type InGameServed } from "@/lib/api";
-import { LiveBadge } from "@/components/live/LiveBadge";
+import { LiveBadge, type LiveBadgeProps } from "@/components/live/LiveBadge";
+import { isSnapshotMode } from "@/lib/fetchHonest";
 import { fmtPct } from "@/lib/utils";
 import type { Unavailable } from "@/lib/types";
 import { Panel, PanelHead, Num } from "@/components/ui/terminal";
+
+function FreshnessBadge(props: LiveBadgeProps) {
+  if (isSnapshotMode) {
+    return (
+      <span className="border border-border px-2 py-0.5 font-data text-[11px] text-faint">
+        published snapshot
+      </span>
+    );
+  }
+  return <LiveBadge {...props} />;
+}
 
 export function InGameNumber({
   sport,
@@ -54,7 +66,7 @@ export function InGameNumber({
         <PanelHead title="In-game number (calibration)" />
         <div className="flex items-center justify-between p-3">
           <p className="font-data text-xs text-faint">checking...</p>
-          <LiveBadge ageSec={null} isStale={false} error={null} isLoading />
+          <FreshnessBadge ageSec={null} isStale={false} error={null} isLoading />
         </div>
       </Panel>
     );
@@ -68,7 +80,7 @@ export function InGameNumber({
         <PanelHead title="In-game number (calibration)" />
         <div className="flex items-center justify-between p-3">
           <p className="text-xs text-stale">{error}</p>
-          <LiveBadge ageSec={null} isStale={false} error={error} isLoading={false} />
+          <FreshnessBadge ageSec={null} isStale={false} error={error} isLoading={false} />
         </div>
       </Panel>
     );
@@ -85,7 +97,7 @@ export function InGameNumber({
         <PanelHead title="In-game number (calibration)" />
         <div className="flex items-center justify-between p-3">
           <p className="text-xs text-stale">{reason}</p>
-          <LiveBadge ageSec={ageSec} isStale={isStale} error={error} isLoading={false} />
+          <FreshnessBadge ageSec={ageSec} isStale={isStale} error={error} isLoading={false} />
         </div>
       </Panel>
     );
@@ -116,7 +128,7 @@ export function InGameNumber({
       <div className="p-3">
         {/* Freshness badge: stale-never-green; shows "updated Ns ago" when fresh */}
         <div className="mb-2 flex justify-end">
-          <LiveBadge
+          <FreshnessBadge
             ageSec={ageSec}
             isStale={isStale}
             error={error}
@@ -126,7 +138,7 @@ export function InGameNumber({
 
         <div className="flex items-baseline justify-between">
           <span className="microlabel">
-            {isLive ? "live P(home win)" : done ? "final number" : "pregame prior p0"}
+            {isSnapshotMode ? "snapshot P(home win)" : isLive ? "live P(home win)" : done ? "final number" : "pregame prior p0"}
           </span>
           <span data-testid="ingame-pwin">
             <Num className="text-lg text-foreground">

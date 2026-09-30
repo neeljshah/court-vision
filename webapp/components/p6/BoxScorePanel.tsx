@@ -3,6 +3,7 @@
 import { useCallback } from "react";
 import { api, isUnavailable, type Boxscore } from "@/lib/api";
 import { useLiveData } from "@/lib/useLiveData";
+import { isSnapshotMode } from "@/lib/fetchHonest";
 import { Panel, Unavailable } from "./Primitives";
 import { Num } from "@/components/ui/terminal";
 
@@ -26,8 +27,9 @@ export function BoxScorePanel({ sport, gameId }: { sport: string; gameId: string
     cacheKey: `game:${sport}:${gameId}:boxscore`,
   });
 
-  const asOf =
-    ageSec != null ? new Date(Date.now() - ageSec * 1000).toLocaleTimeString() : null;
+  const asOf = isSnapshotMode
+    ? "published snapshot"
+    : ageSec != null ? new Date(Date.now() - ageSec * 1000).toLocaleTimeString() : null;
 
   if (data === null || isUnavailable(data) || (data.players ?? []).length === 0) {
     const reason =

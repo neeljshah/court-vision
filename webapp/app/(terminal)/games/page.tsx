@@ -11,19 +11,23 @@
 import Link from "next/link";
 import { SlateCards } from "./SlateCards";
 import { HONEST_DISCLAIMER } from "@/lib/api";
+import { isSnapshotMode } from "@/lib/fetchHonest";
+import { readManifest } from "@/lib/manifest.server";
 
 export const metadata = {
   title: "Games",
 };
 
-export default function GamesPage() {
+export default async function GamesPage() {
+  const publishedGames = isSnapshotMode ? (await readManifest())?.games ?? [] : undefined;
+
   return (
     <main className="mx-auto flex max-w-7xl flex-col gap-4 p-6">
       <header className="flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-xl font-semibold tracking-tight">
           Games{" "}
           <span className="font-data text-sm text-muted-foreground">
-            today&apos;s slate
+            {isSnapshotMode ? "published snapshot" : "today's slate"}
           </span>
         </h1>
         <Link
@@ -34,7 +38,7 @@ export default function GamesPage() {
         </Link>
       </header>
 
-      <SlateCards />
+      <SlateCards publishedGames={publishedGames} />
 
       <footer className="mt-4 text-center font-data text-[11px] text-faint">
         {HONEST_DISCLAIMER}

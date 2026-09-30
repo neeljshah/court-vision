@@ -3,6 +3,7 @@
 import type { Report } from "@/lib/p5api";
 import { Panel, Unavailable, Badge, timeAgoIso } from "./Primitives";
 import { fmtPct } from "@/lib/utils";
+import { isSnapshotMode } from "@/lib/fetchHonest";
 
 // STALE_MS -- a live feed older than this (by its own as_of) reads stale->RED.
 const STALE_MS = 15 * 60_000;
@@ -96,7 +97,7 @@ export function GameReport({ report }: { report: Report | null }) {
       {/* In-game */}
       <div className="mb-4">
         <div className="mb-1 text-[10px] uppercase tracking-wide text-muted-foreground">
-          In-game (live)
+          {isSnapshotMode ? "In-game (snapshot)" : "In-game (live)"}
         </div>
         {live && live.status !== "unavailable" ? (
           <div className="flex flex-wrap items-center gap-3 text-sm">

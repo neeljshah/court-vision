@@ -1,14 +1,6 @@
 "use client";
 
-// LiveExample.tsx -- a CONCRETE live example wired into the funnel walkthrough.
-//
-// Pulls a REAL soccer prediction from the live snapshot (api.getPredict) and
-// shows what the funnel actually produces: ONE anchored win probability with its
-// held-out uncertainty band, plus the full coherent market surface read off the
-// SAME engine matrix (moneyline / handicap / totals all spined by one anchor).
-// This turns the abstract "ONE PREDICTION" stage into something the reader can
-// see. Nothing here is invented -- every number is the live API's, and when no
-// snapshot exists we render an HONEST empty state (never a fabricated game).
+// A source forecast beside its market references, with snapshot provenance.
 //
 // HONESTY RAILS: UNITS / probability only, NO $ field; the surface has no price
 // column; provenance is shown, not an edge; vs_close is never claimed here.
@@ -19,16 +11,18 @@ import type { PredictRecord, PredictMarket } from "@/lib/api";
 import {
   MarketSurfaceTable,
   UncertaintyBar,
-  ProvenanceBadge,
   InfoTip,
 } from "@/components/depth";
 import { Panel, PanelHead } from "@/components/ui/terminal";
+import { isSnapshotMode } from "@/lib/fetchHonest";
+
+const exampleTitle = isSnapshotMode ? "a published example" : "a concrete live example";
 
 // The home-win probability lives on the record's pregame_probs map; key names
 // vary by engine, so we look it up defensively and fall back to honest empty.
 function homeWinProb(rec: PredictRecord): number | null {
   const p = rec.pregame_probs ?? {};
-  const keys = ["home", "home_win", "p_home", "H", "1"];
+  const keys = ["home_ml", "home", "home_win", "p_home", "H", "1"];
   for (const k of keys) {
     const v = p[k];
     if (typeof v === "number" && Number.isFinite(v) && v >= 0 && v <= 1) return v;
@@ -49,12 +43,13 @@ function pickExample(
 function EmptyExample({ note }: { note?: string }) {
   return (
     <Panel>
-      <PanelHead title="a concrete live example" />
+      <PanelHead title={exampleTitle} />
       <div className="p-4 text-xs leading-relaxed text-muted-foreground">
-        <span className="font-semibold text-foreground">No live soccer snapshot right now.</span>{" "}
+        <span className="font-semibold text-foreground">
+          {isSnapshotMode ? "No published soccer example." : "No live soccer snapshot right now."}
+        </span>{" "}
         {note ??
-          "There is no fabricated game to show -- this panel only renders a real " +
-            "prediction off the live engine. Check the Games page when a match is on the board."}
+          "This panel requires a source prediction. The Games page lists available matchups."}
       </div>
     </Panel>
   );
@@ -64,6 +59,7 @@ export function LiveExample() {
   const [rec, setRec] = useState<PredictRecord | null>(null);
   const [state, setState] = useState<"loading" | "empty" | "ready">("loading");
   const [note, setNote] = useState<string | undefined>();
+  const [generatedAt, setGeneratedAt] = useState<string | null>(null);
 
   useEffect(() => {
     const ctrl = new AbortController();
@@ -82,6 +78,7 @@ export function LiveExample() {
           return;
         }
         setRec(picked);
+        setGeneratedAt(env.generated_at ?? null);
         setState("ready");
       })
       .catch(() => setState("empty"));
@@ -91,8 +88,8 @@ export function LiveExample() {
   if (state === "loading") {
     return (
       <Panel>
-        <PanelHead title="a concrete live example" />
-        <div className="p-4 text-xs text-muted-foreground">Loading a live soccer example...</div>
+        <PanelHead title={exampleTitle} />
+        <div className="p-4 text-xs text-muted-foreground">Loading a soccer example...</div>
       </Panel>
     );
   }
@@ -105,7 +102,7 @@ export function LiveExample() {
   return (
     <Panel>
       <PanelHead
-        title="a concrete live example"
+        title={exampleTitle}
         right={
           <span className="text-xs font-semibold tracking-tight text-foreground">
             {rec.home} vs {rec.away}
@@ -113,27 +110,25 @@ export function LiveExample() {
         }
       />
       <div className="flex flex-col gap-3 p-4">
-        <ProvenanceBadge model="Dixon-Coles" phase="pregame" />
+        <p className="font-data text-[11px] text-faint">
+          {isSnapshotMode ? "Published snapshot" : "Source generated"}: {generatedAt || "timestamp unavailable"}
+        </p>
         <p className="text-xs leading-relaxed text-muted-foreground">
-          This is the real output of the funnel for a live soccer match: one anchored{" "}
+          The source forecast provides a home{" "}
           <span className="inline-flex items-center gap-1">
             win probability
             <InfoTip term="probability" />
           </span>{" "}
-          with its held-out band, then the FULL coherent market surface below -- every
-          row read off the SAME engine matrix, so the marginals cannot disagree.
+          followed by separate market references, each with its own source and capture time.
         </p>
         <UncertaintyBar prob={prob} label="P(home win)" />
         <MarketSurfaceTable
           markets={markets}
-          model="Dixon-Coles"
-          phase="pregame"
-          caption="The coherent surface for this match -- probability only, no price."
+          caption="Market reference probabilities for this match, separate from the source forecast."
         />
         <p className="text-[11px] leading-relaxed text-muted-foreground">
-          Every number above is the live engine's own output. No dollar figure, no
-          price, and no edge is shown -- only the calibrated probability and where it
-          came from.
+          Forecasts and market references come from separate source fields. No dollar figure, no
+          price, and no edge is shown.
         </p>
       </div>
     </Panel>

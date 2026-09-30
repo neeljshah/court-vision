@@ -23,6 +23,7 @@ import { CoherentPrediction } from "../CoherentPrediction";
 import { GameMarketSurface } from "../GameMarketSurface";
 import { ValidatedSignalsStrip } from "../ValidatedSignalsStrip";
 import type { Report } from "@/lib/api";
+import mlbReport from "@/public/demo-data/api_report_mlb_401816143.json";
 
 // --- fixtures ---------------------------------------------------------------
 
@@ -138,25 +139,36 @@ describe("CoherentPrediction -- the one coherent pick", () => {
 // --- GameMarketSurface ------------------------------------------------------
 
 describe("GameMarketSurface -- full surface, NO price/$ column", () => {
-  it("renders a row per market with the model probability (no price)", () => {
+  it("renders a row per market with the reference probability (no price)", () => {
     const { container } = render(
       <GameMarketSurface report={report()} sport="nba" />,
     );
     // both markets rendered
     expect(screen.getByText("moneyline")).toBeInTheDocument();
     expect(screen.getByText("total")).toBeInTheDocument();
-    // model probabilities (devigged) are shown, coherent with the surface
+    // Market reference probabilities (devigged) are shown as source values.
     expect(screen.getByText(pct(0.6123))).toBeInTheDocument();
     expect(screen.getByText(pct(0.51))).toBeInTheDocument();
     assertNoDollar(container);
   });
 
-  it("has a 'model prob' header but NO price/payout/odds column header", () => {
+  it("has a 'market prob' header but NO price/payout/odds column header", () => {
     render(<GameMarketSurface report={report()} sport="nba" />);
     const headers = screen.getAllByRole("columnheader").map((h) => h.textContent || "");
     const joined = headers.join(" ").toLowerCase();
-    expect(joined).toMatch(/model prob/);
+    expect(joined).toMatch(/market prob/);
+    expect(joined).not.toMatch(/model prob/);
     expect(joined).not.toMatch(/price|payout|\bodds\b|\$/);
+  });
+
+  it("keeps real published market probabilities distinct from the model forecast", () => {
+    render(<GameMarketSurface report={mlbReport as unknown as Report} sport="mlb" />);
+    expect(mlbReport.pregame.model_probs.home_ml).toBe(0.6433);
+    expect(screen.getByText("55.1%")).toBeInTheDocument();
+    expect(screen.queryByText("64.3%")).not.toBeInTheDocument();
+    expect(screen.getAllByText("espn:DraftKings | proxy reference")).toHaveLength(2);
+    expect(screen.getAllByText("2026-07-16T01:27:23+00:00")).toHaveLength(6);
+    expect(screen.queryByText(/MOV-Elo/)).not.toBeInTheDocument();
   });
 
   it("renders the market count in the heading", () => {

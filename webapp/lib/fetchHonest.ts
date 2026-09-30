@@ -32,12 +32,15 @@ export const isSnapshotMode = process.env.NEXT_PUBLIC_DATA_MODE === "snapshot";
 // Mirror it here via a public env var so a GitHub Pages project-site build
 // resolves /demo-data/*.json correctly instead of 404ing at the site root.
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
+const P5_BASE = process.env.NEXT_PUBLIC_P5_BASE || "/p5";
 
 export function snapshotPath(url: string): string {
   // Keep the query string in the slug -- several endpoints (board/slate,
   // produce/status) differ ONLY by ?sport=, so dropping it would collide
   // different sports onto one file. The exporter must slug identically.
-  const slug = url.replace(/^\/+/, "").replace(/[^a-zA-Z0-9]+/g, "_");
+  // P5 is a live proxy prefix; published files use the canonical /api/ path.
+  const path = url.startsWith(`${P5_BASE}/api/`) ? url.slice(P5_BASE.length) : url;
+  const slug = path.replace(/^\/+/, "").replace(/[^a-zA-Z0-9]+/g, "_");
   return `${BASE_PATH}/demo-data/${slug}.json`;
 }
 

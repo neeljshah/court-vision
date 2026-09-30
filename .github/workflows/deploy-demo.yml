@@ -57,6 +57,11 @@ jobs:
           npx vitest run components/analytics/entities/EntityMeasurements.test.tsx
           npx vitest run components/atlas/EntityCard.test.tsx
           npx vitest run components/onboarding/OnboardingOverlay.test.tsx
+          npx vitest run lib/__tests__/snapshotMode.test.ts
+          npx vitest run 'app/(terminal)/games/__tests__/snapshot-labels.test.tsx'
+          npx vitest run components/depth/__tests__/depth.test.tsx
+          npx vitest run components/games_depth/__tests__/games_depth_render.test.tsx
+          npx vitest run components/games_depth/__tests__/snapshot-provenance.test.tsx
           npx vitest run 'app/(analytics)/analytics/players/[pack]/[slug]/rankContext.test.tsx'
           npx vitest run components/analytics/compare/ComparisonResults.test.tsx
           npx vitest run components/analytics/compare/CalibrationComparison.test.tsx

@@ -130,18 +130,21 @@ describe("UncertaintyBar -- probability + band", () => {
   });
 });
 
-describe("MarketSurfaceTable -- coherent surface, no $", () => {
+describe("MarketSurfaceTable -- source market references, no $", () => {
   const markets = [
-    { market_type: "moneyline", side: "home", line: null, devigged_prob: 0.58 },
+    { market_type: "moneyline", side: "home", line: null, devigged_prob: 0.58, book: "pinnacle", clv_is_proxy: true, captured_at: "2026-07-15T20:27:23-05:00" },
     { market_type: "total", side: "over", line: 220.5, devigged_prob: 0.51 },
   ];
 
-  it("renders each market row with model prob and provenance", () => {
-    render(<MarketSurfaceTable markets={markets} model="possession MC" />);
+  it("renders market probabilities with row-specific source and missing provenance", () => {
+    render(<MarketSurfaceTable markets={markets} />);
     expect(screen.getByText("moneyline")).toBeTruthy();
     expect(screen.getByText("58.0%")).toBeTruthy();
     expect(screen.getByText("220.5")).toBeTruthy();
-    expect(screen.getAllByText("possession MC | pregame").length).toBe(2);
+    expect(screen.getByText("pinnacle | proxy reference")).toBeTruthy();
+    expect(screen.getByText("2026-07-15T20:27:23-05:00")).toBeTruthy();
+    expect(screen.getByText("source unavailable | market reference")).toBeTruthy();
+    expect(screen.getByText("capture time unavailable")).toBeTruthy();
   });
 
   it("has NO price/$ column header", () => {
@@ -152,7 +155,8 @@ describe("MarketSurfaceTable -- coherent surface, no $", () => {
     for (const h of headers) {
       expect(/price|odds|payout|\$/i.test(h), `banned header: ${h}`).toBe(false);
     }
-    expect(headers.some((h) => /model prob/i.test(h))).toBe(true);
+    expect(headers.some((h) => /market prob/i.test(h))).toBe(true);
+    expect(headers.some((h) => /model prob/i.test(h))).toBe(false);
   });
 
   it("renders an honest empty state for no markets", () => {

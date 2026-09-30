@@ -16,6 +16,7 @@ import { SlateAgeBar } from "./SlateAgeBar";
 import { Panel, PanelHead } from "@/components/ui/terminal";
 import { cn } from "@/lib/utils";
 import { fetchSlate, type BoardSport, type Slate } from "@/lib/board";
+import { isSnapshotMode } from "@/lib/fetchHonest";
 
 type SportState = {
   sport: string;
@@ -25,13 +26,19 @@ type SportState = {
   err?: string;
 };
 
+type PublishedGame = { sport: string; game_id: string };
+
+function isPredictEnvelope(value: unknown): value is PredictEnvelope {
+  return !!value && typeof value === "object" && Array.isArray((value as PredictEnvelope).predictions);
+}
+
 // SlateCards -- the /games hub body. For every sport it pulls the latest
 // predict envelope (/api/predict/{sport}) for the matchups + coherent
 // prediction, and the best-bets envelope (/api/v1/bestbets/{sport}) for the
 // per-game best-bet chip. Each sport degrades INDEPENDENTLY to an honest empty
 // state: an offseason / unavailable sport shows a clear message, NEVER a fake
 // slate. UNITS / probability only -- NO $.
-export function SlateCards() {
+export function SlateCards({ publishedGames }: { publishedGames?: PublishedGame[] }) {
   const [states, setStates] = useState<SportState[]>(
     GAME_SPORTS.map((s) => ({ sport: s, env: null, edges: {}, slate: null })),
   );
@@ -56,7 +63,9 @@ export function SlateCards() {
           setStates((prev) =>
             prev.map((row) =>
               row.sport === sport
-                ? isUnavailable(d)
+                ? isPredictEnvelope(d)
+                  ? { ...row, env: d, err: undefined }
+                  : isUnavailable(d)
                   ? { ...row, err: d.reason }
                   : { ...row, env: d as PredictEnvelope, err: undefined }
                 : row,
@@ -99,7 +108,7 @@ export function SlateCards() {
     };
   }, []);
 
-  const totalLive = states.reduce(
+  const totalGames = states.reduce(
     (n, s) =>
       n + (s.env && s.env.status === "ok" ? s.env.predictions?.length ?? 0 : 0),
     0,
@@ -113,7 +122,7 @@ export function SlateCards() {
           UNPROVEN
         </p>
         <span className="border border-border px-1.5 py-px font-data text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-          {totalLive} live games
+          {totalGames} {isSnapshotMode ? "snapshot" : "live"} games
         </span>
       </div>
 
@@ -134,14 +143,20 @@ export function SlateCards() {
 
       {states.map((s) => (
         <div id={`slate-${s.sport}`} key={s.sport}>
-          <SportSlate state={s} />
+          <SportSlate state={s} publishedGames={publishedGames} />
         </div>
       ))}
     </div>
   );
 }
 
-function SportSlate({ state }: { state: SportState }) {
+function SportSlate({
+  state,
+  publishedGames,
+}: {
+  state: SportState;
+  publishedGames?: PublishedGame[];
+}) {
   const { sport, env, edges, slate, err } = state;
   const label = sportLabel(sport);
 
@@ -155,8 +170,11 @@ function SportSlate({ state }: { state: SportState }) {
     body = (
       <p className="p-3 font-data text-xs text-muted-foreground">
         {env.reason ||
+          env.note ||
           env.honest_note ||
-          `no games available for ${label.toLowerCase()} right now (offseason / no live slate)`}
+          (isSnapshotMode
+            ? `no games in published snapshot (${label.toLowerCase()})`
+            : `no games available for ${label.toLowerCase()} right now (offseason / no live slate)`)}
       </p>
     );
   } else {
@@ -164,7 +182,9 @@ function SportSlate({ state }: { state: SportState }) {
     if (preds.length === 0) {
       body = (
         <p className="p-3 font-data text-xs text-muted-foreground">
-          no games live now ({label.toLowerCase()})
+          {isSnapshotMode
+            ? `no games in published snapshot (${label.toLowerCase()})`
+            : `no games live now (${label.toLowerCase()})`}
         </p>
       );
     } else {
@@ -177,6 +197,12 @@ function SportSlate({ state }: { state: SportState }) {
               rec={rec}
               edge={edges[rec.game_id] ?? null}
               slateGame={matchSlateGame(slate, rec)}
+              detailPublished={
+                !isSnapshotMode ||
+                Boolean(publishedGames?.some(
+                  (game) => game.sport === sport && game.game_id === rec.game_id,
+                ))
+              }
             />
           ))}
         </div>

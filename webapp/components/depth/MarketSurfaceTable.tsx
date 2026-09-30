@@ -1,12 +1,8 @@
 "use client";
 
-// MarketSurfaceTable.tsx -- the full coherent market surface for one game.
-//
-// Renders every market | side | line | model probability | provenance read off
-// ONE engine matrix (the markets array of a PredictRecord / Report). The whole
-// surface is spined by a single anchor, so the marginals are coherent. We show
-// the MODEL probability (devigged_prob is the engine's implied prob) -- there is
-// NO $/price/payout column anywhere. Missing prob -> honest "--", never a fake 0.
+// Market reference probabilities from the source's devigged_prob field.
+// Book, capture time and proxy status belong to each row; these are not model
+// outputs. Missing probability or provenance remains explicitly unavailable.
 //
 // Accessible: a real <table> with a caption and scoped headers.
 
@@ -26,19 +22,15 @@ import { Panel, PanelHead, Num } from "@/components/ui/terminal";
 import { ProvenanceBadge } from "./ProvenanceBadge";
 import { InfoTip } from "./InfoTip";
 
-/** Minimal coherent-surface row shape (accepts PredictMarket or Market). */
+/** Minimal market-reference row shape (accepts PredictMarket or Market). */
 export type SurfaceRow = Pick<
   PredictMarket | Market,
   "market_type" | "side" | "line" | "devigged_prob"
->;
+> & Partial<Pick<PredictMarket | Market, "book" | "captured_at" | "clv_is_proxy" | "is_close">>;
 
 export interface MarketSurfaceTableProps {
-  /** The coherent market surface, read off ONE engine matrix. */
+  /** Published market references, including per-row provenance when present. */
   markets: SurfaceRow[];
-  /** Engine/model that produced the surface (e.g. "possession MC", "Dixon-Coles"). */
-  model?: string;
-  /** Phase the surface was produced at (e.g. "pregame"). */
-  phase?: string;
   /** Optional caption override. */
   caption?: string;
   className?: string;
@@ -52,11 +44,9 @@ const fmtProb = (p: number | null | undefined): string =>
 const fmtLine = (l: number | null | undefined): string =>
   typeof l === "number" && Number.isFinite(l) ? String(l) : EMPTY_CELL;
 
-/** Full coherent market surface for a game (no $ -- probability only). */
+/** Market reference probabilities for a game. */
 export function MarketSurfaceTable({
   markets,
-  model = "possession MC",
-  phase = "pregame",
   caption,
   className,
 }: MarketSurfaceTableProps) {
@@ -78,7 +68,7 @@ export function MarketSurfaceTable({
         <Table>
           <TableCaption className="px-3 text-left text-faint">
             {caption ??
-              "One coherent market surface, spined by a single anchor. Probability only -- no price."}
+              "Devigged market references from the named sources. These are not model probabilities."}
           </TableCaption>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
@@ -93,8 +83,8 @@ export function MarketSurfaceTable({
               </TableHead>
               <TableHead scope="col" className="microlabel h-auto px-3 py-1.5 text-right">
                 <span className="inline-flex items-center justify-end gap-1">
-                  model prob
-                  <InfoTip term="probability" />
+                  market prob
+                  <InfoTip term="devig" />
                 </span>
               </TableHead>
               <TableHead scope="col" className="microlabel h-auto px-3 py-1.5">
@@ -117,7 +107,16 @@ export function MarketSurfaceTable({
                   <Num>{fmtProb(m.devigged_prob)}</Num>
                 </TableCell>
                 <TableCell className="p-0 px-3 py-1.5">
-                  <ProvenanceBadge model={model} phase={phase} showTip={false} />
+                  <ProvenanceBadge
+                    trail={[
+                      m.book || "source unavailable",
+                      m.clv_is_proxy ? "proxy reference" : m.is_close ? "closing reference" : "market reference",
+                    ]}
+                    showTip={false}
+                  />
+                  <div className="font-data text-[10px] text-faint">
+                    {m.captured_at || "capture time unavailable"}
+                  </div>
                 </TableCell>
               </TableRow>
             ))}

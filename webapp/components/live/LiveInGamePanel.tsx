@@ -19,6 +19,7 @@ import { Panel, PanelHead, Num } from "@/components/ui/terminal";
 import { cn } from "@/lib/utils";
 import type { InGameFull } from "@/lib/types";
 import { P5_BASE } from "@/lib/p5api";
+import { isSnapshotMode } from "@/lib/fetchHonest";
 
 // ---------------------------------------------------------------------------
 // Public interface
@@ -232,8 +233,9 @@ export function LiveInGamePanel({
   const isFirstLoad = isLoading && data === null;
 
   // Real as-of stamp from the last successful poll; "--:--:--" before any data.
-  const asOf =
-    ageSec != null ? new Date(Date.now() - ageSec * 1000).toLocaleTimeString() : "--:--:--";
+  const asOf = isSnapshotMode
+    ? "published snapshot"
+    : ageSec != null ? new Date(Date.now() - ageSec * 1000).toLocaleTimeString() : "--:--:--";
   const stale = isStale || Boolean(error);
 
   return (
