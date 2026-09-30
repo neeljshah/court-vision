@@ -81,7 +81,7 @@ export function GameCard({
           </div>
         </div>
         <div className="mt-0.5 flex shrink-0 flex-col items-end gap-1">
-          <GameStatusChip tipoff={rec.tipoff} liveState={edge?.live?.status ?? edge?.status} />
+          <GameStatusChip state={edge?.live?.status === "ok" ? edge.live.state : undefined} />
           {edge?.live?.home_score != null && edge?.live?.away_score != null ? (
             <span className="font-data text-xs tabular text-foreground">
               {edge.live.away_score} <span className="text-faint">-</span> {edge.live.home_score}
