@@ -1,6 +1,7 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CompareExperience } from "./CompareExperience";
+import atlasPitchManifest from "../../../public/data/showcase/atlas_mlb_pitch_manifest.json";
 
 const comparables = { packs: {} };
 const pitchManifest = { entries: [
@@ -22,6 +23,8 @@ const familyPitchManifest = { entries: [
 const familyPitchPercentiles = { packs: { mlb_pitch: { n_in_pack: 6, fields: { n_pitches: { n_ranked: 6 } }, entities: { ff: { n_pitches: 90 }, sc: { n_pitches: 10 }, nyy: { n_pitches: 80 }, bos: { n_pitches: 60 }, count00: { n_pitches: 50 }, count12: { n_pitches: 40 } } } } };
 const datalistValues = (id: string) => Array.from(document.querySelectorAll(`#${id} option`)).map((option) => option.getAttribute("value"));
 const mockFamilyFetch = () => vi.mocked(fetch).mockImplementation((input: RequestInfo | URL, _init?: RequestInit) => { const url = String(input); return Promise.resolve({ ok: true, json: async () => url.includes("atlas_mlb_pitch_manifest") ? familyPitchManifest : url.includes("percentiles") ? familyPitchPercentiles : comparables } as Response); });
+const ffSlManifest = { entries: atlasPitchManifest.entries.filter((entry) => entry.entity === "pitch_type:FF" || entry.entity === "pitch_type:SL") };
+const mockPitchFetch = (manifest: unknown, percentiles: unknown = pitchPercentiles) => vi.mocked(fetch).mockImplementation((input: RequestInfo | URL) => { const url = String(input); return Promise.resolve({ ok: true, json: async () => url.includes("atlas_mlb_pitch_manifest") ? manifest : url.includes("percentiles") ? percentiles : comparables } as Response); });
 
 describe("MLB atlas comparison controls", () => {
   beforeEach(() => { window.history.replaceState(null, "", "/analytics/compare"); vi.stubGlobal("fetch", vi.fn()); });
@@ -37,6 +40,61 @@ describe("MLB atlas comparison controls", () => {
     expect(screen.getByText(/Source percentiles mix pitch types, teams, and count states/)).toBeInTheDocument();
     expect(screen.getByRole("option", { name: "MLB pitch atlas" })).toBeInTheDocument();
     expect(window.location.search).not.toContain("family=");
+  });
+
+  it("shows published FF and SL release-speed quantiles as unranked mph values", async () => {
+    window.history.replaceState(null, "", "/analytics/compare?pack=mlb_pitch&a=ff&b=sl");
+    mockPitchFetch(ffSlManifest, { packs: { mlb_pitch: { fields: { n_pitches: { n_ranked: 2 }, velo_p50: { n_ranked: 2 } } } } });
+    render(<CompareExperience />);
+    const table = await screen.findByRole("table", { name: "Published raw values" });
+    for (const [label, ff, sl] of [
+      ["Release speed P10", "91.3", "82.7"],
+      ["Release speed median (P50)", "94.5", "86.4"],
+      ["Release speed P90", "97.7", "89.7"],
+    ]) {
+      const row = within(table).getByRole("row", { name: new RegExp(label.replace(/[()]/g, "\\$&")) });
+      expect(row).toHaveTextContent("mph");
+      expect(within(row).getByText(ff)).toBeInTheDocument();
+      expect(within(row).getByText(sl)).toBeInTheDocument();
+      expect(row).not.toHaveTextContent(/ranked|percentile gap/i);
+    }
+    expect(within(table).getAllByRole("rowheader", { name: /Release speed median \(P50\)/ })).toHaveLength(1);
+    expect(screen.getByText(/recorded release speeds, excluding missing values/)).toBeInTheDocument();
+    expect(screen.getByText(/number of recorded speeds is not published separately/)).toBeInTheDocument();
+    expect(screen.getByText(/latest game date in the pull/)).toBeInTheDocument();
+    expect(screen.getAllByText("As of 2025-09-28")).toHaveLength(2);
+    fireEvent.click(screen.getByRole("button", { name: "Swap profile A and profile B" }));
+    const swapped = within(screen.getByRole("table", { name: "Published raw values" })).getByRole("row", { name: /Release speed P10/ });
+    expect(within(swapped).getAllByRole("cell").map((cell) => cell.textContent)).toEqual(["82.7", "91.3"]);
+  });
+
+  it("shows missing and nonfinite release-speed values without inventing ranks or a velocity count", async () => {
+    window.history.replaceState(null, "", "/analytics/compare?pack=mlb_pitch&a=ff&b=sc");
+    mockPitchFetch({ entries: [
+      { entity: "pitch_type:FF", card_path: "atlas/ff.png", key_numbers: { n_pitches: 100, velo_p10: 0, velo_p50: 94.5, velo_p90: Infinity } },
+      { entity: "pitch_type:SC", card_path: "atlas/sc.png", key_numbers: { n_pitches: 7, velo_p10: null, velo_p90: 86.5 } },
+    ] }, { packs: {} });
+    render(<CompareExperience />);
+    const table = await screen.findByRole("table", { name: "Published raw values" });
+    expect(within(table).getByRole("row", { name: /Release speed P10 mph 0 Not reported/ })).toBeInTheDocument();
+    expect(within(table).getByRole("row", { name: /Release speed median \(P50\) mph 94\.5 Not reported/ })).toBeInTheDocument();
+    expect(within(table).getByRole("row", { name: /Release speed P90 mph Not reported 86\.5/ })).toBeInTheDocument();
+    expect(within(table).queryByText(/Ranked among/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/velocity observations|speed observations/i)).not.toBeInTheDocument();
+  });
+
+  it.each([
+    ["team", "nyy", "bos"],
+    ["count", "count00", "count12"],
+    ["mixed", "ff", "nyy"],
+  ])("withholds release-speed rows for %s MLB atlas pairs", async (_family, a, b) => {
+    window.history.replaceState(null, "", `/analytics/compare?pack=mlb_pitch&a=${a}&b=${b}`);
+    mockPitchFetch({ entries: familyPitchManifest.entries.map((entry) => ({ ...entry, key_numbers: { ...entry.key_numbers, velo_p10: 60, velo_p50: 80, velo_p90: 100 } })) }, familyPitchPercentiles);
+    render(<CompareExperience />);
+    if (_family === "mixed") await screen.findByText(/Choose two pitch types, two teams, or two count states/);
+    else await screen.findByRole("table", { name: "Published raw values" });
+    expect(screen.queryByRole("rowheader", { name: /Release speed/ })).not.toBeInTheDocument();
+    expect(screen.queryByText(/recorded release speeds, excluding missing values/)).not.toBeInTheDocument();
   });
 
   it("restores incomplete family links and filters sharable record selections", async () => {

@@ -181,6 +181,9 @@ export function normalizeComparisonPack(
 }
 
 export function metricLabel(key: string): string {
+  if (key === "velo_p10") return "Release speed P10";
+  if (key === "velo_p50") return "Release speed median (P50)";
+  if (key === "velo_p90") return "Release speed P90";
   return key.replace(/^career_/, "Corpus ").replace(/_career$/, " (corpus)").replace(/_/g, " ")
     .replace(/^seasons played$/, "Seasons in corpus")
     .replace(/\bper36\b/gi, "/ 36").replace(/\bpct\b/gi, "%")

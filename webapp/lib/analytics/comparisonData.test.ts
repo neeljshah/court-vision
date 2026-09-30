@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { entrySlugs, formatMetric, formatPercentile, metricUnit, normalizeComparisonPack } from "./comparisonData";
+import { entrySlugs, formatMetric, formatPercentile, metricLabel, metricUnit, normalizeComparisonPack } from "./comparisonData";
 import calibrationManifest from "../../public/data/showcase/atlas_calibration_manifest.json";
 
 describe("comparison data normalization", () => {
@@ -87,6 +87,10 @@ describe("comparison data normalization", () => {
     expect(metricUnit("clay_minus_hard_career")).toBe("percentage points");
     expect(metricUnit("grass_adapt_recent")).toBe("percentage points");
     expect(metricUnit("career_pts_per36")).toBe("per 36");
+    expect(["velo_p10", "velo_p50", "velo_p90"].map(metricLabel)).toEqual([
+      "Release speed P10", "Release speed median (P50)", "Release speed P90",
+    ]);
+    expect(metricUnit("velo_p50")).toBe("mph");
     expect(formatPercentile(undefined)).toBe("Not ranked");
     expect(formatPercentile(32)).toBe("32nd percentile");
     expect(formatPercentile(11)).toBe("11th percentile");
