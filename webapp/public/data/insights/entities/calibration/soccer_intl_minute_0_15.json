@@ -2,28 +2,28 @@
  "slug": "soccer_intl_minute_0_15",
  "pack": "calibration",
  "display_name": "Soccer (intl) in-game win prob -- minute 0-15",
- "one_liner": "In the first 15 minutes of international soccer the model trails the market on calibration: model_ece 0.3065 vs market_ece 0.2204 over n=627 checkpoints.",
+ "one_liner": "The published international soccer minute 0-15 checkpoint records model ECE 0.3369 and market ECE 0.2573 across 566 rows.",
  "three_things": [
-  "The earliest window is the weakest for both sides -- model_ece 0.3065 and market_ece 0.2204 are both high.",
-  "The model's calibration error runs above the market's here, consistent with an early-game information gap.",
-  "Modest but valid sample: n=627, above the n>=30 render floor."
+  "The model ECE reported for this checkpoint is 0.3369 on the source's 0-1 probability scale.",
+  "The market ECE reported for this checkpoint is 0.2573 on the same published scale.",
+  "The card reports 566 rows, above its declared n>=30 render floor; rows are not a count of unique games."
  ],
- "context_note": "Descriptive expected-calibration-error on one in-game segment, not a prediction, not an advantage or return measurement claim. Early minutes carry little score signal, so both model and market are poorly calibrated; the model trailing the market here reflects an information gap, not a measured advantage in either direction. ECE on a single corpus is noisy at this sample size.",
+ "context_note": "These are descriptive ECE values for one published checkpoint. The as-of timestamp is a source snapshot, not an observation window. The manifest does not establish the ECE bin definitions or a count of unique games, and these values alone do not support a superiority, causal, or time-trend claim.",
  "cited": [
   {
    "path": "webapp/public/data/showcase/atlas_calibration_manifest.json",
    "field": "entries[entity=soccer_intl minute 0-15].key_numbers.model_ece",
-   "value": 0.3065
+   "value": 0.3369
   },
   {
    "path": "webapp/public/data/showcase/atlas_calibration_manifest.json",
    "field": "entries[entity=soccer_intl minute 0-15].key_numbers.market_ece",
-   "value": 0.2204
+   "value": 0.2573
   },
   {
    "path": "webapp/public/data/showcase/atlas_calibration_manifest.json",
    "field": "entries[entity=soccer_intl minute 0-15].key_numbers.n",
-   "value": 627
+   "value": 566
   },
   {
    "path": "webapp/public/data/showcase/atlas_calibration_manifest.json",
@@ -31,5 +31,5 @@
    "value": "time_checkpoint"
   }
  ],
- "as_of": "2026-07-23T01:39:22.086535+00:00"
+ "as_of": "2026-09-16T22:17:04.659068+00:00"
 }

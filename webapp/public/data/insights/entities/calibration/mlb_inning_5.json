@@ -2,28 +2,28 @@
  "slug": "mlb_inning_5",
  "pack": "calibration",
  "display_name": "MLB in-game win prob -- inning 5",
- "one_liner": "At MLB inning 5 the model's calibration error is lower than the market's: model_ece 0.0363 vs market_ece 0.0486 over n=6021 checkpoints.",
+ "one_liner": "The published MLB inning-5 checkpoint records model ECE 0.0891 and market ECE 0.0355 across 3,139 rows.",
  "three_things": [
-  "This is the clean mid-game window: model_ece 0.0363 sits below market_ece 0.0486 on the same checkpoints.",
-  "Sample is substantial for a single inning bucket (n=6021), well above the n>=30 render floor.",
-  "A calibration (reliability) comparison only -- ECE measures how well probabilities match outcomes, not return."
+  "The model ECE reported for this checkpoint is 0.0891 on the source's 0-1 probability scale.",
+  "The market ECE reported for this checkpoint is 0.0355 on the same published scale.",
+  "The card reports 3,139 rows, above its declared n>=30 render floor; rows are not a count of unique games."
  ],
- "context_note": "Descriptive expected-calibration-error on one in-game segment, not a prediction, not an advantage or return measurement claim. ECE on a single corpus is noisy and this is one inning bucket; a lower model ECE here does not generalize to other innings (see inning 9) or to currency. Market ECE is computed on the same rows for comparison, not as a benchmark the model is claimed to beat overall.",
+ "context_note": "These are descriptive ECE values for one published checkpoint. The as-of timestamp is a source snapshot, not an observation window. The manifest does not establish the ECE bin definitions or a count of unique games, and these values alone do not support a superiority, causal, or time-trend claim.",
  "cited": [
   {
    "path": "webapp/public/data/showcase/atlas_calibration_manifest.json",
    "field": "entries[entity=mlb inning 5].key_numbers.model_ece",
-   "value": 0.0363
+   "value": 0.0891
   },
   {
    "path": "webapp/public/data/showcase/atlas_calibration_manifest.json",
    "field": "entries[entity=mlb inning 5].key_numbers.market_ece",
-   "value": 0.0486
+   "value": 0.0355
   },
   {
    "path": "webapp/public/data/showcase/atlas_calibration_manifest.json",
    "field": "entries[entity=mlb inning 5].key_numbers.n",
-   "value": 6021
+   "value": 3139
   },
   {
    "path": "webapp/public/data/showcase/atlas_calibration_manifest.json",
@@ -31,5 +31,5 @@
    "value": "time_checkpoint"
   }
  ],
- "as_of": "2026-07-23T01:39:22.086535+00:00"
+ "as_of": "2026-09-16T22:17:04.659068+00:00"
 }

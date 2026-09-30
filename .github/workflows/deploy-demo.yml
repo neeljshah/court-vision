@@ -83,6 +83,7 @@ jobs:
           npx vitest run lib/analytics/labComparisonPolicy.test.ts
           npx vitest run lib/analytics/pitchSequencing.test.ts
           npx vitest run lib/analytics/comparisonData.test.ts
+          npx vitest run lib/analytics/calibrationInsightIntegrity.test.ts
           npx vitest run lib/analytics/tennisSurfaceComparison.test.ts
           npx vitest run lib/analytics/tennisSurfaceIntegration.test.ts
           npx vitest run lib/analytics/soccerVenueComparison.test.ts
