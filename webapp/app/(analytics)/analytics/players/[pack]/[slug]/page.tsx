@@ -18,7 +18,7 @@ import { Receipt, type ReceiptData } from "@/components/analytics/Receipt";
 import { ScoutNote, type ScoutEnvelope } from "@/components/analytics/ScoutNote";
 import { ScoutQuestions } from "@/components/analytics/ScoutQuestions";
 import { asOfDate } from "@/lib/analytics/format";
-import { entityMeasurements, type EntityPercentilePack } from "@/lib/analytics/entityMeasurements";
+import { entityMeasurements, summarizeAvailableMeasurements, type EntityPercentilePack } from "@/lib/analytics/entityMeasurements";
 import { entityObservationContext } from "@/lib/analytics/entityObservationContext";
 import { packComparables, packJoins, packPercentiles } from "@/lib/analytics/showcaseData";
 
@@ -182,9 +182,8 @@ export default function EntityPage({ params }: { params: { pack: string; slug: s
   // this card DOES have (its own measured cells, its receipts, the pack's sample
   // floors) instead of the bare "no verified read" negative. Status stays no_data
   // -- the neutral glyph is the honest signal that no note was written here.
-  const uncovered =
-    `${measurements.scalars.length} measurements are available. ` +
-    (entry.floors ? "Sample requirements appear below." : "");
+  const uncovered = summarizeAvailableMeasurements(measurements) +
+    (entry.floors ? " Sample notes appear below." : "");
   const envelope: ScoutEnvelope = insight
     ? { status: "descriptive_only", prose: insight.one_liner, chips }
     : { status: "no_data", prose: uncovered };

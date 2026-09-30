@@ -12,6 +12,19 @@ export type MeasurementTable =
   | { key: "by_time_bucket"; label: string; rows: Array<{ bucket: string; n: number; meanY: number }> };
 export type EntityMeasurements = { scalars: ScalarMeasurement[]; distributions: Distribution[]; tables: MeasurementTable[]; unavailable: UnavailableMeasurement[]; notApplicable: UnavailableMeasurement[]; cohort: string };
 
+export function summarizeAvailableMeasurements(measurements: Pick<EntityMeasurements, "scalars" | "distributions" | "tables">): string {
+  const counts = [
+    [measurements.scalars.length, "individual value"],
+    [measurements.distributions.length, "distribution"],
+    [measurements.tables.length, "table"],
+  ] as const;
+  const parts = counts.filter(([count]) => count > 0).map(([count, name]) => `${count} ${name}${count === 1 ? "" : "s"}`);
+  if (!parts.length) return "No measurements are available.";
+  const list = parts.length === 1 ? parts[0] : parts.length === 2
+    ? parts.join(" and ") : `${parts[0]}, ${parts[1]}, and ${parts[2]}`;
+  return `${list} ${counts.reduce((sum, [count]) => sum + count, 0) === 1 ? "is" : "are"} available.`;
+}
+
 export function measurementLabel(key: string): string { return atlasFieldDefinition("", key).label; }
 
 function formatted(field: AtlasFieldDefinition, value: string | number | boolean): { value: string; unit?: string } {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { entityMeasurements } from "./entityMeasurements";
+import { entityMeasurements, summarizeAvailableMeasurements } from "./entityMeasurements";
 
 const pct = { n_in_pack: 69, fields: { n_pitches: { n_ranked: 61 } }, entities: { ch: { n_pitches: 82 } } };
 
@@ -59,5 +59,22 @@ describe("entityMeasurements", () => {
     expect(result.scalars.find((item) => item.key === "n_pitches")).toMatchObject({ percentile: 100, nRanked: 2 });
     expect(result.unavailable.map((item) => item.key)).not.toContain("n_pitch_types_used");
     expect(result.notApplicable.map((item) => item.key)).toContain("n_pitch_types_used");
+  });
+
+  it("counts a measured zero but excludes unavailable fields from the fallback summary", () => {
+    const measurements = {
+      scalars: [{ key: "zero", label: "Zero", value: "0" }], distributions: [], tables: [],
+      unavailable: [{ key: "missing", label: "Missing" }],
+    };
+    expect(summarizeAvailableMeasurements(measurements)).toBe("1 individual value is available.");
+  });
+
+  it("uses singular section names and describes an empty card honestly", () => {
+    const distribution = { key: "mix", label: "Mix", rows: [{ key: "a", share: 1 }] };
+    const table = { key: "by_time_bucket" as const, label: "By time bucket", rows: [{ bucket: "early", n: 1, meanY: 0 }] };
+    expect(summarizeAvailableMeasurements({ scalars: [], distributions: [distribution], tables: [table] }))
+      .toBe("1 distribution and 1 table are available.");
+    expect(summarizeAvailableMeasurements({ scalars: [], distributions: [], tables: [] }))
+      .toBe("No measurements are available.");
   });
 });

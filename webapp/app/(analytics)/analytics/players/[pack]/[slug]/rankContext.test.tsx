@@ -55,4 +55,20 @@ describe("entity rank context", () => {
     expect(screen.queryByRole("img", { name: /Percentile rank/ })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /entity_percentiles\.json/ })).not.toBeInTheDocument();
   });
+
+  it.each([
+    ["mlb_pitch", "ch", "5 individual values and 3 distributions are available. Sample notes appear below."],
+    ["mlb_pitch", "ath", "4 individual values, 1 distribution, and 1 table are available. Sample notes appear below."],
+    ["calibration", "mlb_band_0_2", "4 individual values and 1 table are available. Sample notes appear below."],
+  ])("summarizes all published measurement sections for %s/%s", (pack, slug, expected) => {
+    render(<EntityPage params={{ pack, slug }} />);
+    expect(screen.getByRole("complementary", { name: "Scout note" })).toHaveTextContent(expected);
+  });
+
+  it("retains an authored Scout summary when one is published", () => {
+    render(<EntityPage params={{ pack: "calibration", slug: "mlb_inning_5" }} />);
+    const scout = screen.getByRole("complementary", { name: "Scout note" });
+    expect(scout).toHaveTextContent("The published MLB inning-5 checkpoint records model ECE 0.0891 and market ECE 0.0355 across 3,139 rows.");
+    expect(scout).not.toHaveTextContent(/individual values.*available/);
+  });
 });
