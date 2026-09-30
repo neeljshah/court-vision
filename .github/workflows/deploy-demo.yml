@@ -56,6 +56,7 @@ jobs:
           npx vitest run components/analytics/PercentileBar.test.tsx
           npx vitest run components/analytics/entities/EntityMeasurements.test.tsx
           npx vitest run components/atlas/EntityCard.test.tsx
+          npx vitest run components/onboarding/OnboardingOverlay.test.tsx
           npx vitest run 'app/(analytics)/analytics/players/[pack]/[slug]/rankContext.test.tsx'
           npx vitest run components/analytics/compare/ComparisonResults.test.tsx
           npx vitest run components/analytics/compare/CalibrationComparison.test.tsx

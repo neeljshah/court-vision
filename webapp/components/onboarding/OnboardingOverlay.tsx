@@ -16,6 +16,7 @@
 // ASCII only. <= 300 LOC.
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import {
   Dialog,
   DialogContent,
@@ -183,7 +184,7 @@ export function OnboardingOverlay() {
             <ul className="flex flex-col gap-1.5">
               {PAGE_GUIDE.map((p) => (
                 <li key={p.href}>
-                  <a
+                  <Link
                     href={p.href}
                     onClick={() => handleOpenChange(false)}
                     className={cn(
@@ -193,7 +194,7 @@ export function OnboardingOverlay() {
                   >
                     <span className="font-data font-medium text-foreground">{p.label}</span>
                     <span className="ml-2 text-faint">{p.purpose}</span>
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
