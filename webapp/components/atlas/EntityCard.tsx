@@ -45,6 +45,60 @@ function formatValue(v: unknown): string {
   return String(v);
 }
 
+function record(value: unknown): Record<string, unknown> | null {
+  return value != null && typeof value === "object" && !Array.isArray(value)
+    ? value as Record<string, unknown> : null;
+}
+
+function published(value: unknown, decimals?: number): string {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return decimals === undefined ? String(value) : value.toFixed(decimals);
+  }
+  return typeof value === "string" && value ? value : "Not published";
+}
+
+function TimeBucketTable({ value, chip }: { value: unknown; chip: ReceiptChipProps }) {
+  const rows = Array.isArray(value) ? value : [];
+  return <section className="min-w-0 border-t border-border px-3.5 py-3">
+    <div role="region" aria-label="Calibration by time bucket table scroll" tabIndex={0} className="overflow-x-auto">
+      <table className="w-full min-w-[360px] text-left font-data text-sm">
+        <caption className="mb-2 text-left font-semibold">Calibration by time bucket</caption>
+        <thead><tr className="border-b border-border"><th scope="col">Time bucket</th><th scope="col" className="text-right">N rows</th><th scope="col" className="text-right">Observed outcome mean</th></tr></thead>
+        <tbody>{rows.length ? rows.map((raw, index) => {
+          const row = record(raw);
+          return <tr key={index} className="border-b border-border/50">
+            <th scope="row" className="py-1 text-left font-normal">{published(row?.bucket)}</th>
+            <td className="text-right">{published(row?.n)}</td><td className="text-right">{published(row?.mean_y)}</td>
+          </tr>;
+        }) : <tr><td colSpan={3}>Not published</td></tr>}</tbody>
+      </table>
+    </div>
+    <ReceiptChip {...chip} />
+  </section>;
+}
+
+function VelocityTable({ value, chip }: { value: unknown; chip: ReceiptChipProps }) {
+  const rows = record(value);
+  const entries = rows ? Object.entries(rows) : [];
+  return <section className="min-w-0 border-t border-border px-3.5 py-3">
+    <div role="region" aria-label="Velocity percentiles by pitch type table scroll" tabIndex={0} className="overflow-x-auto">
+      <table className="w-full min-w-[420px] text-left font-data text-sm">
+        <caption className="mb-2 text-left font-semibold">Velocity percentiles by pitch type</caption>
+        <thead><tr className="border-b border-border"><th scope="col">Pitch type</th><th scope="col" className="text-right">N pitches</th><th scope="col" className="text-right">P10 mph</th><th scope="col" className="text-right">P50 mph</th><th scope="col" className="text-right">P90 mph</th></tr></thead>
+        <tbody>{entries.length ? entries.map(([type, raw]) => {
+          const row = record(raw);
+          return <tr key={type} className="border-b border-border/50">
+            <th scope="row" className="py-1 text-left font-normal">{type}</th>
+            <td className="text-right">{published(row?.n)}</td><td className="text-right">{published(row?.p10, 1)}</td>
+            <td className="text-right">{published(row?.p50, 1)}</td><td className="text-right">{published(row?.p90, 1)}</td>
+          </tr>;
+        }) : <tr><td colSpan={5}>Not published</td></tr>}</tbody>
+      </table>
+    </div>
+    <ReceiptChip {...chip} />
+  </section>;
+}
+
 export function EntityCard({
   entity,
   label,
@@ -55,7 +109,7 @@ export function EntityCard({
   chip,
 }: EntityCardProps) {
   const idEntry = Object.entries(keyNumbers).find(([k]) => isIdKey(k));
-  const stats = Object.entries(keyNumbers).filter(([k]) => !isIdKey(k));
+  const stats = Object.entries(keyNumbers).filter(([k]) => !isIdKey(k) && k !== "by_time_bucket" && k !== "velo_percentiles_by_type");
   const statChip: ReceiptChipProps = { ...chip };
 
   return (
@@ -82,6 +136,9 @@ export function EntityCard({
           </div>
         ))}
       </div>
+
+      {Object.hasOwn(keyNumbers, "by_time_bucket") && <TimeBucketTable value={keyNumbers.by_time_bucket} chip={statChip} />}
+      {Object.hasOwn(keyNumbers, "velo_percentiles_by_type") && <VelocityTable value={keyNumbers.velo_percentiles_by_type} chip={statChip} />}
 
       <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border px-3.5 py-3">
         {floors && <span className="microlabel">sample floor -- {floors}</span>}

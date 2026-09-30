@@ -75,7 +75,7 @@ export type EntityCardProps = {
   entity: string;
   label: string;
   sport: string;
-  keyNumbers: Record<string, number | string | Record<string, number>>;
+  keyNumbers: Record<string, unknown>;
   floors: string | null;
   asOf: string | null;
   pngHref: string | null;
