@@ -73,12 +73,15 @@ export function SlateCards({ publishedGames }: { publishedGames?: PublishedGame[
           );
         });
         // Best-bets envelope (per-game best-bet chip). Failures are non-fatal:
-        // the card just shows an honest NO BET rather than a fabricated tier.
+        // clear prior decisions so unavailable data cannot imply a fresh decision.
         api.bestbets(sport, signal).then((d) => {
-          if (cancelled || isUnavailable(d)) return;
+          if (cancelled || signal.aborted) return;
           const env = d as BestBetsEnvelope;
+          const games = env?.status === "ok" && Array.isArray(env.games)
+            && env.games.every((g) => g && typeof g.game_id === "string" && g.game_id.trim())
+            ? env.games : [];
           const byId: Record<string, GameEdge> = {};
-          for (const g of env.games || []) if (g.game_id) byId[g.game_id] = g;
+          for (const g of games) if (g.game_id) byId[g.game_id] = g;
           setStates((prev) =>
             prev.map((row) =>
               row.sport === sport ? { ...row, edges: byId } : row,
@@ -125,6 +128,11 @@ export function SlateCards({ publishedGames }: { publishedGames?: PublishedGame[
           {totalGames} {isSnapshotMode ? "snapshot" : "live"} games
         </span>
       </div>
+
+      <p className="text-xs leading-relaxed text-muted-foreground">
+        Decision unavailable means no usable decision was received. No bet reported means
+        no selection was reported; the reason is unknown.
+      </p>
 
       {/* Sport quick-nav: scrolls to the section below -- every sport stays
           in the DOM at once (independent honest-empty states per sport), this

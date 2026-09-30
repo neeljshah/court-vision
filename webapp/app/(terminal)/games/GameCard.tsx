@@ -23,10 +23,10 @@ function fmtProb(p: number | null | undefined): string {
 
 // GameCard -- ONE matchup as a clickable card. Shows the single coherent
 // prediction (anchor probability), a few key markets, and a best-bet chip in
-// UNITS + tier (or an honest NO BET). Clicking opens the full /games view.
+// UNITS + tier (or a reported no selection / unavailable state).
 //
 // HONESTY RAILS: UNITS / probability only -- NO $ anywhere. A best-bet chip is
-// a real 'bet' decision or an honest NO BET; never a fabricated edge. vs_close
+// a reported decision or unavailable data; never a fabricated edge. vs_close
 // is UNPROVEN (we never label a market beat). Proxy closes are flagged.
 //
 // A11Y: the card <Link> carries a descriptive aria-label and a focus-visible
@@ -52,6 +52,11 @@ export function GameCard({
   const pick = coherentPick(rec);
   const markets = keyMarkets(rec, 3);
   const chip = bestBetChip(edge);
+  const decisionUnavailable = chip.decision === "unavailable";
+  const decisionLabel = decisionUnavailable ? "decision unavailable" : "no bet reported";
+  const decisionNote = decisionUnavailable
+    ? "Decision data is unavailable. This does not establish a no-bet decision."
+    : "The decision feed reports no selected bets. A rejection reason is not inferred.";
   const cap = newestCapture(slateGame?.markets);
   const boardStale = cap !== null && Date.now() - cap.getTime() > STALE_AFTER_MS;
   // How many gate-tested signals SHIP for this sport (calibration priors only).
@@ -226,16 +231,13 @@ export function GameCard({
         ) : (
           <span
             className="inline-flex items-center gap-1.5"
-            aria-label="no bet: no candidate cleared the tier floor"
+            aria-label={decisionLabel}
+            title={decisionNote}
           >
             {/* Muted chip -- visually distinct from a live-bet tier chip */}
             <span className="inline-flex items-center border border-border bg-surface-2 px-2 py-1 font-data text-[10px] uppercase tracking-wide text-faint">
-              no bet (below floor)
+              {decisionLabel}
             </span>
-            <InfoTip
-              text="No candidate cleared the tier floor for this game, so the honest decision is NO BET. We never fabricate a bet to fill the slot."
-              ariaLabel="why no bet?"
-            />
           </span>
         )}
         <span

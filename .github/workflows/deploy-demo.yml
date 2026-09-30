@@ -60,6 +60,9 @@ jobs:
           npx vitest run lib/__tests__/snapshotMode.test.ts
           npx vitest run 'app/(terminal)/games/__tests__/snapshot-labels.test.tsx'
           npx vitest run 'app/(terminal)/games/__tests__/GameStatusChip.test.tsx'
+          npx vitest run 'app/(terminal)/games/__tests__/card-utils.test.ts'
+          npx vitest run 'app/(terminal)/games/__tests__/gamecard-polish.test.tsx'
+          npx vitest run 'app/(terminal)/games/__tests__/decision-availability.test.tsx'
           npx vitest run components/depth/__tests__/depth.test.tsx
           npx vitest run components/games_depth/__tests__/games_depth_render.test.tsx
           npx vitest run components/games_depth/__tests__/snapshot-provenance.test.tsx

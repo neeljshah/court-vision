@@ -5,10 +5,9 @@
 // HONESTY RAILS: UNITS / probability only -- NO $ field is ever produced here.
 // edge_claimed is always false (we never derive a dollar/ROI number). A missing
 // price/prob is null (rendered as a dash), NEVER a fabricated number. When no
-// candidate clears the tier floor the chip is an honest NO BET, not invented.
+// decision is reported, the chip stays unavailable rather than inventing one.
 
 import type { PredictRecord, BestBet, GameEdge } from "@/lib/p5api";
-import { isUnavailable } from "@/lib/p5api";
 import type { Slate, SlateGame } from "@/lib/board";
 
 // The single coherent headline pick for a card: the highest-probability side of
@@ -19,9 +18,9 @@ export interface CoherentPick {
   prob: number | null; // P(side) in [0,1], or null if not present
 }
 
-// The best-bet chip: a tier + units stake, or an honest NO_BET. Never a $.
+// A reported tier + units stake, reported no selection, or unavailable data.
 export interface BestBetChip {
-  decision: "bet" | "no_bet"; // never anything else
+  decision: "bet" | "no_bet" | "unavailable";
   tier: string | null;
   stakeUnits: number | null; // units only; null when no_bet
   market: string | null; // e.g. "moneyline home"
@@ -62,22 +61,23 @@ export function keyMarkets(rec: PredictRecord, limit = 3) {
 
 /**
  * Pick the single best-bet chip for a card from the per-game GameEdge.
- * - If the edge is unavailable -> honest no_bet (we do not fabricate a tier).
- * - Prefer a real 'bet' decision (highest units); else honest no_bet.
+ * - Missing decision data stays unavailable, distinct from reported no_bet.
+ * - Prefer a reported 'bet' decision (highest units); do not infer rejection reasons.
  * Never returns a $ figure -- stakeUnits is units, or null.
  */
 export function bestBetChip(edge: GameEdge | null | undefined): BestBetChip {
   const NONE: BestBetChip = {
-    decision: "no_bet",
+    decision: "unavailable",
     tier: null,
     stakeUnits: null,
     market: null,
   };
-  if (!edge || isUnavailable(edge) || edge.status === "unavailable") return NONE;
-  const bets: BestBet[] = (edge.best_bets || []).filter(
+  if (edge?.status !== "ok" || !Array.isArray(edge.best_bets)) return NONE;
+  if (!edge.best_bets.every((b) => b && (b.decision === "bet" || b.decision === "no_bet"))) return NONE;
+  const bets: BestBet[] = edge.best_bets.filter(
     (b) => b.decision === "bet",
   );
-  if (bets.length === 0) return NONE;
+  if (bets.length === 0) return { ...NONE, decision: "no_bet" };
   let top = bets[0];
   for (const b of bets) if ((b.stake_units || 0) > (top.stake_units || 0)) top = b;
   return {

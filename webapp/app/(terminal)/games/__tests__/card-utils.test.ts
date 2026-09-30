@@ -116,21 +116,23 @@ describe("bestBetChip -- units or honest no_bet, never a fabricated tier", () =>
     expect(chip.stakeUnits).toBe(2);
   });
 
-  it("returns honest no_bet for an unavailable edge", () => {
+  it("keeps an unavailable edge distinct from a reported no_bet", () => {
     const chip = bestBetChip({
       game_id: "g1",
       status: "unavailable",
       reason: "x",
     });
-    expect(chip.decision).toBe("no_bet");
+    expect(chip.decision).toBe("unavailable");
     expect(chip.tier).toBeNull();
     expect(chip.stakeUnits).toBeNull();
   });
 
-  it("returns honest no_bet when no candidate clears the floor", () => {
+  it("distinguishes an empty reported selection from missing decision data", () => {
     const edge: GameEdge = { game_id: "g1", status: "ok", best_bets: [] };
     expect(bestBetChip(edge).decision).toBe("no_bet");
-    expect(bestBetChip(null).decision).toBe("no_bet");
+    expect(bestBetChip(null).decision).toBe("unavailable");
+    expect(bestBetChip({ game_id: "g1", status: "ok" }).decision).toBe("unavailable");
+    expect(bestBetChip({ ...edge, status: "error" }).decision).toBe("unavailable");
   });
 });
 

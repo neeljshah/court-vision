@@ -3,7 +3,7 @@
 // Verifies:
 //   * card <Link> carries a descriptive aria-label
 //   * card <Link> has the focus-visible ring Tailwind classes
-//   * 'no bet (below floor)' honest state renders when chip.decision !== 'bet'
+//   * 'no bet reported' honest state renders when chip.decision !== 'bet'
 //   * tier + units render correctly for a real bet
 //   * no $<digit> string appears anywhere in the rendered DOM
 //   * proxy flag renders in markets (amber marker, no $ fabrication)
@@ -162,7 +162,7 @@ describe("GameCard -- tier + units chip for a real bet", () => {
 
   it("does NOT show 'no bet' text when a real bet is present", () => {
     render(<GameCard sport="nba" rec={predRec()} edge={betEdge("A", 2.25)} />);
-    expect(screen.queryByText(/no bet \(below floor\)/i)).toBeNull();
+    expect(screen.queryByText(/no bet reported/i)).toBeNull();
   });
 });
 
@@ -170,25 +170,28 @@ describe("GameCard -- tier + units chip for a real bet", () => {
 // Honest no-bet state: chip.decision !== 'bet'
 // ---------------------------------------------------------------------------
 
-describe("GameCard -- honest 'no bet (below floor)' state", () => {
-  it("renders 'no bet (below floor)' when edge has no qualifying bets", () => {
+describe("GameCard -- honest 'no bet reported' state", () => {
+  it("renders 'no bet reported' when edge has no qualifying bets", () => {
     render(<GameCard sport="nba" rec={predRec()} edge={noBetEdge()} />);
-    expect(screen.getByText(/no bet \(below floor\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/no bet reported/i)).toBeInTheDocument();
   });
 
-  it("renders 'no bet (below floor)' when edge is null (no edge data)", () => {
+  it("renders unavailable when edge data is missing", () => {
     render(<GameCard sport="nba" rec={predRec()} edge={null} />);
-    expect(screen.getByText(/no bet \(below floor\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/decision unavailable/i)).toBeInTheDocument();
+    expect(screen.getByLabelText("decision unavailable")).toHaveAttribute(
+      "title", "Decision data is unavailable. This does not establish a no-bet decision.",
+    );
   });
 
-  it("renders 'no bet (below floor)' for an unavailable edge", () => {
+  it("renders unavailable for an unavailable edge", () => {
     const unavailEdge: GameEdge = {
       game_id: "0042600401",
       status: "unavailable",
       reason: "edge service down",
     };
     render(<GameCard sport="nba" rec={predRec()} edge={unavailEdge} />);
-    expect(screen.getByText(/no bet \(below floor\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/decision unavailable/i)).toBeInTheDocument();
   });
 
   it("does NOT show a tier chip when the bet state is no-bet", () => {
