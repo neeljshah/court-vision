@@ -22,6 +22,30 @@ it("renders every published distribution row", () => {
   expect(document.querySelectorAll("dl > div > dt")).toHaveLength(1);
 });
 
+it.each([
+  ["pitch_type:CU", "0.04%"],
+  ["pitch_type:KC", "0.03%"],
+])("preserves the published small 3-0 share for %s in the table and tooltip", (entity, share) => {
+  const entry = pitchManifest.entries.find((item) => item.entity === entity)!;
+  render(<EntityMeasurements measurements={entityMeasurements("mlb_pitch", entry, entity)} sourceArtifact={props.sourceArtifact} />);
+  const section = screen.getByRole("table", { name: "Pitch share by count state distribution" }).closest("section")!;
+  const row = within(section).getByRole("row", { name: /3-0/ });
+  expect(within(row).getByRole("cell", { name: share })).toBeInTheDocument();
+  expect(within(section).getByTitle(`3-0: ${share}`)).toBeInTheDocument();
+});
+
+it("keeps a true zero and ordinary one-decimal shares unchanged", () => {
+  const measurements = { ...props.measurements, distributions: [{
+    key: "count_state_pct", label: "Pitch share by count state", rows: [{ key: "3-0", share: 0 }, { key: "0-0", share: 40.7 }],
+  }] };
+  render(<EntityMeasurements measurements={measurements} sourceArtifact={props.sourceArtifact} />);
+  const section = screen.getByRole("table", { name: "Pitch share by count state distribution" }).closest("section")!;
+  expect(within(within(section).getByRole("row", { name: /3-0/ })).getByRole("cell", { name: "0.0%" })).toBeInTheDocument();
+  expect(within(section).getByTitle("3-0: 0.0%")).toBeInTheDocument();
+  expect(within(within(section).getByRole("row", { name: /0-0/ })).getByRole("cell", { name: "40.7%" })).toBeInTheDocument();
+  expect(within(section).getByTitle("0-0: 40.7%")).toBeInTheDocument();
+});
+
 it("names all three published CH distributions and gives each a local source receipt", () => {
   const entry = pitchManifest.entries.find((item) => item.entity === "pitch_type:CH")!;
   const sourceArtifact = "webapp/public/data/showcase/atlas_mlb_pitch_manifest.json";

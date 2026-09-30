@@ -5,15 +5,19 @@ import type { EntityMeasurements as Measurements, MeasurementTable } from "@/lib
 
 type Props = { measurements: Measurements; sourceArtifact: string; asOf?: string };
 
+function distributionShare(share: number): string {
+  return `${share > 0 && share < 0.1 ? String(share) : share.toFixed(1)}%`;
+}
+
 function Distribution({ label, rows, sourceArtifact, asOf }: Measurements["distributions"][number] & Pick<Props, "sourceArtifact" | "asOf">) {
   const total = rows.reduce((sum, row) => sum + row.share, 0) || 1;
   return <section style={{ marginTop: 22 }}>
     <h2 className="serif" style={{ fontWeight: 500, fontSize: 20, marginBottom: 9 }}>{label}</h2>
     <div role="img" aria-label={`${label} distribution`} style={{ display: "flex", height: 12, overflow: "hidden", borderRadius: 6, background: "var(--rule)" }}>
-      {rows.map((row, index) => <span key={row.key} title={`${row.key}: ${row.share.toFixed(1)}%`} style={{ width: `${row.share / total * 100}%`, background: index % 2 ? "var(--signal)" : "var(--accent)" }} />)}
+      {rows.map((row, index) => <span key={row.key} title={`${row.key}: ${distributionShare(row.share)}`} style={{ width: `${row.share / total * 100}%`, background: index % 2 ? "var(--signal)" : "var(--accent)" }} />)}
     </div>
     <table style={{ width: "100%", borderCollapse: "collapse", marginTop: 10, fontSize: 13 }}><caption className="sr-only">{label} distribution</caption><tbody>
-      {rows.map((row) => <tr key={row.key}><th scope="row" style={{ color: "var(--ink-2)", fontWeight: 400, textAlign: "left", padding: "3px 0" }}>{row.key}</th><td className="mono" style={{ textAlign: "right", padding: "3px 0" }}>{row.share.toFixed(1)}%</td></tr>)}
+      {rows.map((row) => <tr key={row.key}><th scope="row" style={{ color: "var(--ink-2)", fontWeight: 400, textAlign: "left", padding: "3px 0" }}>{row.key}</th><td className="mono" style={{ textAlign: "right", padding: "3px 0" }}>{distributionShare(row.share)}</td></tr>)}
     </tbody></table>
     <Receipt sourceArtifact={sourceArtifact} asOf={asOf} verdict="descriptive_only" label={`${label} distribution`} />
   </section>;
