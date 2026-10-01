@@ -140,26 +140,36 @@ export function GameView({
               {sportLabel(sport)}
             </span>
           </div>
-          <ModeDot mode={mode} />
+          {isSnapshotMode ? (
+            <span className="font-data text-xs uppercase text-muted-foreground">
+              published snapshot
+            </span>
+          ) : <ModeDot mode={mode} />}
         </div>
         <h1 className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-lg font-semibold tracking-tight">
           <span>{headerMatchup}</span>
           {live && live.home_score != null && live.away_score != null ? (
             <span className="font-data text-base tabular text-foreground">
+              {isSnapshotMode ? <span className="text-xs text-muted-foreground">snapshot score </span> : null}
               {live.away_score} <span className="text-faint">-</span> {live.home_score}
             </span>
           ) : null}
-          {isLiveNow ? (
+          {!isSnapshotMode && isLiveNow ? (
             <span className="border border-warning px-1.5 py-px font-data text-[10px] font-bold uppercase tracking-wider text-warning">
               {live?.period ? `Q${live.period}` : "live"}
               {live?.clock ? ` ${live.clock}` : ""}
             </span>
-          ) : live?.status && /final|post|complete/i.test(live.status) ? (
+          ) : !isSnapshotMode && live?.status && /final|post|complete/i.test(live.status) ? (
             <span className="border border-border px-1.5 py-px font-data text-[10px] font-bold uppercase tracking-wider text-faint">
               final
             </span>
           ) : null}
         </h1>
+        {isSnapshotMode ? (
+          <p className="text-xs text-muted-foreground">
+            Scores reflect the published snapshot. Current game status is unavailable.
+          </p>
+        ) : null}
       </header>
 
       {/* Honest connection state: the live feed is down AND we have no last-good
