@@ -60,13 +60,12 @@ describe("OpsPanel -- cross-feed reconciliation (QA #9)", () => {
     // Wait for both feeds to resolve and reconciliation to appear
     await waitFor(() => {
       const overall = screen.getByTestId("ops-panel-overall");
-      // Panel overall must NOT be green 'ok' -- must reflect the conservative 'down'
-      expect(overall.textContent).not.toMatch(/\bok\b/i);
+      expect(overall.textContent?.trim().toLowerCase()).toBe("down");
     });
 
     // The conservative badge should read 'down' (worst of ok vs down)
     const overall = screen.getByTestId("ops-panel-overall");
-    expect(overall.textContent?.toLowerCase()).toContain("down");
+    expect(overall.textContent).not.toMatch(/\bok\b/i);
 
     // Reconciliation note must be visible when feeds disagree
     const note = await screen.findByRole("note", {
@@ -86,11 +85,11 @@ describe("OpsPanel -- cross-feed reconciliation (QA #9)", () => {
 
     await waitFor(() => {
       const overall = screen.getByTestId("ops-panel-overall");
-      expect(overall.textContent?.toLowerCase()).not.toContain("ok");
+      expect(overall.textContent?.trim().toLowerCase()).toBe("degraded");
     });
 
     const overall = screen.getByTestId("ops-panel-overall");
-    expect(overall.textContent?.toLowerCase()).toContain("degraded");
+    expect(overall.textContent?.toLowerCase()).not.toContain("ok");
 
     const note = await screen.findByRole("note", {
       name: "ops-reconciliation-note",
@@ -142,10 +141,11 @@ describe("OpsPanel -- cross-feed reconciliation (QA #9)", () => {
     // Panel-level badge should never be green while autonomy is unavailable
     await waitFor(() => {
       const overall = screen.getByTestId("ops-panel-overall");
-      // Either it shows 'checking' (conservative hold) or 'down'/'degraded'
-      // It MUST NOT show 'ok'
-      expect(overall.textContent?.toLowerCase()).not.toContain("ok");
+      expect(overall.textContent?.trim().toLowerCase()).toBe("down");
     });
+
+    const overall = screen.getByTestId("ops-panel-overall");
+    expect(overall.textContent?.toLowerCase()).not.toContain("ok");
 
     // The autonomy Unavailable block should not have a green badge on it
     // (the Unavailable sentinel shows amber text, not tier-a/green)

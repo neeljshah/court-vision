@@ -21,7 +21,7 @@
 //   8. No $ value anywhere (units-not-$ rail).
 
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import type { ProductStatus, ParityHeadline } from "@/lib/api";
 import type { LiveDataState } from "@/lib/useLiveData";
 import * as apiMod from "@/lib/api";
@@ -428,10 +428,10 @@ describe("HomeStatusRow -- null values stay grey (spec 4)", () => {
 
     render(<HomeStatusRow />);
     await waitFor(() => {
-      // After settle: parity cell should show "unknown", not "FULLY GREEN"
-      expect(screen.queryByText("FULLY GREEN")).toBeNull();
+      // Require the resolved value; loading also has no FULLY GREEN text.
+      expect(screen.getAllByText("unknown").length).toBeGreaterThan(0);
     });
-    expect(screen.getAllByText("unknown").length).toBeGreaterThan(0);
+    expect(screen.queryByText("FULLY GREEN")).toBeNull();
   });
 
   it("empty liveSports -> 'no games live now' with grey dot (not green)", async () => {
@@ -469,18 +469,26 @@ describe("HomeStatusRow -- polling lifecycle (spec 5)", () => {
     // Spy before rendering so we capture the setInterval calls from the hook.
     const setIntervalSpy = vi.spyOn(global, "setInterval");
     render(<HomeStatusRow />);
-    // useLiveData registers: (a) the poll interval + (b) the age ticker.
+    // The hook's age ticker uses setInterval; polling uses a timeout.
     expect(setIntervalSpy).toHaveBeenCalled();
   });
 
-  it("clearInterval called on unmount (no timer leak)", () => {
+  it("clears scheduled timers on unmount and stops polling", async () => {
     mockEndpoints(makeStatus({}), makeParity({}));
-    const clearIntervalSpy = vi.spyOn(global, "clearInterval");
-    const { unmount } = render(<HomeStatusRow />);
-    unmount();
-    // Both the poll interval and the clock interval must be cleared.
-    expect(clearIntervalSpy).toHaveBeenCalled();
-    expect(clearIntervalSpy.mock.calls.length).toBeGreaterThanOrEqual(2);
+    vi.useFakeTimers();
+    try {
+      const { unmount } = render(<HomeStatusRow />);
+      await act(async () => { await Promise.resolve(); });
+      expect(screen.getByText("TRUE")).toBeTruthy();
+      expect(vi.getTimerCount()).toBeGreaterThan(0);
+      const calls = vi.mocked(apiMod.getProductStatus).mock.calls.length;
+      unmount();
+      expect(vi.getTimerCount()).toBe(0);
+      await vi.advanceTimersByTimeAsync(20_000);
+      expect(apiMod.getProductStatus).toHaveBeenCalledTimes(calls);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("re-fetches after POLL_INTERVAL_MS (20s) using fake timers", async () => {
