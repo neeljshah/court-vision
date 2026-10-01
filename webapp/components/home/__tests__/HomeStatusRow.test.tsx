@@ -475,20 +475,25 @@ describe("HomeStatusRow -- polling lifecycle (spec 5)", () => {
 
   it("clears scheduled timers on unmount and stops polling", async () => {
     mockEndpoints(makeStatus({}), makeParity({}));
-    vi.useFakeTimers();
-    try {
-      const { unmount } = render(<HomeStatusRow />);
-      await act(async () => { await Promise.resolve(); });
-      expect(screen.getByText("TRUE")).toBeTruthy();
-      expect(vi.getTimerCount()).toBeGreaterThan(0);
-      const calls = vi.mocked(apiMod.getProductStatus).mock.calls.length;
-      unmount();
-      expect(vi.getTimerCount()).toBe(0);
-      await vi.advanceTimersByTimeAsync(20_000);
-      expect(apiMod.getProductStatus).toHaveBeenCalledTimes(calls);
-    } finally {
-      vi.useRealTimers();
-    }
+    const scheduledPoll = vi.spyOn(global, "setTimeout");
+    const scheduledAge = vi.spyOn(global, "setInterval");
+    const clearedPoll = vi.spyOn(global, "clearTimeout");
+    const clearedAge = vi.spyOn(global, "clearInterval");
+    const { unmount } = render(<HomeStatusRow />);
+    await screen.findByText("TRUE");
+    const pollIndex = scheduledPoll.mock.calls.findIndex((call) => call[1] === 20_000);
+    const ageIndex = scheduledAge.mock.calls.findIndex((call) => call[1] === 1_000);
+    expect(pollIndex).toBeGreaterThanOrEqual(0);
+    expect(ageIndex).toBeGreaterThanOrEqual(0);
+    const calls = vi.mocked(apiMod.getProductStatus).mock.calls.length;
+    unmount();
+    expect(clearedPoll).toHaveBeenCalledWith(scheduledPoll.mock.results[pollIndex].value);
+    expect(clearedAge).toHaveBeenCalledWith(scheduledAge.mock.results[ageIndex].value);
+    // Even a poll callback already queued at unmount must not fetch again.
+    const queuedPoll = scheduledPoll.mock.calls[pollIndex][0];
+    expect(typeof queuedPoll).toBe("function");
+    await act(async () => { (queuedPoll as () => void)(); });
+    expect(apiMod.getProductStatus).toHaveBeenCalledTimes(calls);
   });
 
   it("re-fetches after POLL_INTERVAL_MS (20s) using fake timers", async () => {
