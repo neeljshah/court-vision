@@ -99,7 +99,7 @@ const MOCK_TRADES: PmTrailRow[] = [TRADE_WIN, TRADE_LOSS, TRADE_OPEN_NO_CLOSE];
 const CLV_PRESENT: ClvScoreboard = {
   n_bets: 2,
   pct_beat_close: 0.5,
-  mean_clv_pct: 0.005,
+  mean_clv_pct: 0.5,
   by_sport: null,
   clv_is_proxy: false,
 };
