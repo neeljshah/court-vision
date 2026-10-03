@@ -56,7 +56,7 @@ export function HomeTodayCard() {
   const boardFetcher = useCallback((signal: AbortSignal) => api.bestbetsBoard({}, signal), []);
   const improveFetcher = useCallback((signal: AbortSignal) => api.improve(signal), []);
 
-  const { data: today, ageSec, isStale, isLoading } =
+  const { data: today, ageSec, isStale, isLoading, error } =
     useLiveData<PaperToday>(todayFetcher, { intervalMs: POLL_MS, staleAfterSec: STALE_SEC, cacheKey: "home:today" });
   const { data: pnlRaw } =
     useLiveData<PnlSeries>(pnlFetcher, { intervalMs: POLL_MS, staleAfterSec: STALE_SEC });
@@ -84,7 +84,7 @@ export function HomeTodayCard() {
 
   const improveDecision = resolveImproveDecision(improve);
 
-  if (isLoading && today === null) {
+  if (isLoading && today === null && !error) {
     return (
       <section className="mx-auto max-w-5xl px-4 pt-6 sm:px-6" aria-label="today digest loading" data-testid="today-card-loading">
         <Panel className="p-5">
@@ -98,12 +98,15 @@ export function HomeTodayCard() {
     placed: [], pending: [], settled_today: [], day_units: null,
     cumulative_units: null, bankroll: null, start_units: null,
     source: "fallback", edge_claimed: false,
+    reason: error ?? "Today digest unavailable",
   };
+  const placedAvailable = t.source === "today_route" && t.placed_available !== false;
+  const settledAvailable = t.source === "today_route" && t.settled_available !== false;
   const tally = settledTally(t.settled_today);
   const net =
     t.bankroll != null && t.start_units != null ? t.bankroll - t.start_units : t.cumulative_units;
   const placedFallbackNote =
-    t.source === "fallback" ? (t.reason ?? "placed-bet feed unavailable") : null;
+    !placedAvailable ? (t.reason ?? "Placed history unavailable") : null;
 
   return (
     <section className="mx-auto max-w-5xl px-4 pt-6 sm:px-6" aria-label="today digest" data-testid="today-card">
@@ -119,7 +122,7 @@ export function HomeTodayCard() {
                   ? `${Math.floor(ageSec)}s ago`
                   : `${Math.floor(ageSec / 60)}m ago`
           }
-          stale={isStale}
+          stale={isStale || Boolean(error)}
           right={
             <span className="flex items-center gap-2">
               <span className="font-data text-[11px] text-faint" data-testid="today-date">
@@ -144,15 +147,15 @@ export function HomeTodayCard() {
             <StatTile
               label="Placed (staked)"
               testId="today-placed-count"
-              value={String(t.placed.length)}
-              valueCls={t.placed.length > 0 ? "text-primary" : "text-muted-foreground"}
-              sub="money-makers bet"
+              value={placedAvailable ? String(t.placed.length) : "--"}
+              valueCls={placedAvailable && t.placed.length > 0 ? "text-primary" : "text-muted-foreground"}
+              sub={placedAvailable ? "paper bets placed" : "placed history unavailable"}
             />
             <StatTile
               label="Settled W-L"
               testId="today-settled-wl"
-              value={`${tally.nWin} - ${tally.nLoss}`}
-              sub={tally.nPush > 0 ? `${tally.nPush} push` : "graded today"}
+              value={settledAvailable ? `${tally.nWin} - ${tally.nLoss}` : "--"}
+              sub={!settledAvailable ? "settled history unavailable" : tally.nPush > 0 ? `${tally.nPush} push` : "graded today"}
             />
             <StatTile
               label="Day P&L"
@@ -190,7 +193,7 @@ export function HomeTodayCard() {
                   )}
                 </>
               ) : (
-                <span className="font-data text-xs text-faint">bankroll unavailable -- no paper book yet</span>
+                <span className="font-data text-xs text-faint">bankroll unavailable</span>
               )}
             </div>
             <div className="flex flex-col items-end gap-0.5">

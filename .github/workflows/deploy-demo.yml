@@ -66,6 +66,7 @@ jobs:
           npx vitest run 'app/(terminal)/games/__tests__/slate-and-card.test.tsx'
           npx vitest run 'app/(terminal)/games/__tests__/game-view-snapshot.test.tsx'
           npx vitest run components/home/__tests__/HomeStatusRow.test.tsx
+          npx vitest run components/home/__tests__/HomeTodayCard-availability.test.tsx
           npx vitest run components/p6/__tests__/ops-faces.test.tsx
           npx vitest run components/p6/__tests__/clv-percent-contract.test.tsx
           npx vitest run components/p6/__tests__/clv-summary-consumers.test.tsx

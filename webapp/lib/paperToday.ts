@@ -7,7 +7,7 @@
 //
 // FALLBACK (when /api/paper/today is 404/503/unavailable): we DEGRADE HONESTLY by
 //   composing the digest from the existing live endpoints --
-//     /api/paper/pnl/series  -> cumulative_units / day_units / settled tally
+//     /api/paper/pnl/series  -> cumulative_units / day_units
 //     /api/paper/bankroll     -> bankroll / start_units
 //   PLACED bets are NOT derivable from those endpoints, so in fallback mode
 //   placed/pending stay empty and the UI shows an explicit "placed-bet feed
@@ -112,6 +112,8 @@ export type PaperToday = {
   placed: TodayBet[];              // bets the system actually STAKED today
   pending: TodayBet[];             // staked + not yet graded
   settled_today: TodayBet[];       // graded today (W/L)
+  placed_available?: boolean;      // false when a route response omits the array
+  settled_available?: boolean;     // false when a route response omits the array
   day_units: number | null;        // today's net P&L in UNITS
   cumulative_units: number | null; // all-time net P&L vs start (UNITS)
   bankroll: number | null;         // current bankroll (UNITS)
@@ -148,7 +150,7 @@ function composeFallback(
     (startUnits != null && currentUnits != null ? currentUnits - startUnits : null);
 
   // settled_today rows from the last day's settled bets are not enumerated by the
-  // series endpoint, so we leave settled_today empty (counts come from day P&L).
+  // series endpoint. Empty fallback arrays are placeholders, not zero counts.
   return {
     status: "ok",
     date: lastDay?.day ?? null,
@@ -161,8 +163,8 @@ function composeFallback(
     start_units: startUnits,
     source: "fallback",
     reason:
-      "placed-bet feed unavailable (/api/paper/today absent) -- showing bankroll " +
-      "and P&L from the live series; placed bets cannot be listed honestly here.",
+      "Daily trade history unavailable. Showing available bankroll and paper-unit " +
+      "summaries; placed and settled counts are unknown.",
     edge_claimed: false,
   };
 }
@@ -175,6 +177,8 @@ function normalizeTodayDoc(doc: Record<string, unknown>): PaperToday {
     placed: asArray(doc.placed),
     pending: asArray(doc.pending),
     settled_today: asArray(doc.settled_today),
+    placed_available: Array.isArray(doc.placed),
+    settled_available: Array.isArray(doc.settled_today),
     day_units: asNum(doc.day_units),
     cumulative_units: asNum(doc.cumulative_units),
     // Bankroll is served as flat *_units keys (the bare 'bankroll' token is banned
