@@ -200,7 +200,7 @@ export function BestBetsBoard() {
         <div id="bets-board-panel" role="tabpanel" aria-label={`${tab} best bets`}
           aria-labelledby={`status-tab-${tab}`}>
           {isLoading && !anyFetched ? (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {[1, 2, 3].map((i) => <div key={i} className="skeleton-shimmer h-64" />)}
             </div>
           ) : showError ? (
@@ -234,7 +234,7 @@ export function BestBetsBoard() {
                     {sorted.length === 0 ? (
                       <SportSectionEmpty sport={sport} reason={reason} />
                     ) : (
-                      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" role="list"
+                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3" role="list"
                         aria-label={`${sport.toUpperCase()} ${tab} best bets`}>
                         {sorted.map((card, i) => (
                           <div key={`${card.game_id}-${card.market_type}-${card.side}-${i}`}
