@@ -20,11 +20,11 @@ import type { CardFraming } from "./cardDepth";
 
 export interface ModelVsMarketBarProps {
   /** [0,1] calibrated model probability for this side. */
-  model_prob: number;
+  model_prob: number | null;
   /** [0,1] devigged market probability for this side. */
-  market_prob: number;
+  market_prob: number | null;
   /** Signed divergence: model_prob - market_prob (pre-computed for display). */
-  divergence: number;
+  divergence: number | null;
   /** Formatted divergence label, e.g. "+5.3pp". Never says 'edge'/'profit'. */
   divergence_label: string;
   /** Whether divergence crosses the signal threshold (>= 5pp abs). */
@@ -43,13 +43,12 @@ export interface ModelVsMarketBarProps {
 
 const BAR_HEIGHT = "h-2.5";
 
-// Clamp a probability to [0.02, 0.98] so bars are always visible.
-function clampProb(p: number): number {
-  return Math.max(0.02, Math.min(0.98, isFinite(p) ? p : 0.5));
+function isProbability(p: unknown): p is number {
+  return typeof p === "number" && Number.isFinite(p) && p >= 0 && p <= 1;
 }
 
 function pctStr(p: number): string {
-  return `${(clampProb(p) * 100).toFixed(0)}%`;
+  return `${p * 100}%`;
 }
 
 function fmtProb(p: number): string {
@@ -57,7 +56,7 @@ function fmtProb(p: number): string {
 }
 
 // Divergence magnitude tag: classifies the signal for the label chip.
-function divergenceToneClass(divergence: number, is_signal: boolean): string {
+function divergenceToneClass(is_signal: boolean): string {
   if (!is_signal) return "text-muted-foreground bg-surface-3 border-border";
   // Both directions of signal use the same slate-200 tone (honest: not green for over, not red for under)
   return "text-foreground bg-surface-3 border-muted-foreground";
@@ -86,14 +85,19 @@ export function ModelVsMarketBar({
   confidence,
   aria_suffix,
 }: ModelVsMarketBarProps) {
-  const modelPct = pctStr(model_prob);
-  const marketPct = pctStr(market_prob);
+  const modelAvailable = isProbability(model_prob);
+  const marketAvailable = isProbability(market_prob);
+  const divergenceAvailable = modelAvailable && marketAvailable &&
+    typeof divergence === "number" && Number.isFinite(divergence) && Math.abs(divergence) <= 1;
+  const divergenceText = divergenceAvailable ? divergence_label : "Unavailable";
+  const modelText = modelAvailable ? fmtProb(model_prob) : "unavailable";
+  const marketText = marketAvailable ? fmtProb(market_prob) : "unavailable";
 
   const ariaBase = aria_suffix ? ` -- ${aria_suffix}` : "";
   const ariaLabel =
     framing === "descriptive"
       ? `Model vs market probabilities${ariaBase}: calibration context only, no active bet recommendation`
-      : `Model vs market probabilities${ariaBase}: model ${fmtProb(model_prob)}, market ${fmtProb(market_prob)}, calibrated divergence ${divergence_label}, not an edge or profit claim`;
+      : `Model vs market probabilities${ariaBase}: model ${modelText}, market ${marketText}, calibrated divergence ${divergenceText}, not an edge or profit claim`;
 
   return (
     <div
@@ -115,7 +119,9 @@ export function ModelVsMarketBar({
       ) : null}
 
       {/* Model row */}
-      <div className="flex items-center gap-2" data-testid="model-bar-row">
+      <div className="flex items-center gap-2" data-testid="model-bar-row"
+        role={modelAvailable ? undefined : "group"}
+        aria-label={modelAvailable ? undefined : "Model probability unavailable"}>
         <span
           className="w-16 shrink-0 text-right font-mono text-[9px] uppercase tracking-widest text-muted-foreground"
           aria-hidden="true"
@@ -123,13 +129,14 @@ export function ModelVsMarketBar({
           Model p
         </span>
         <div className="relative flex-1 overflow-hidden rounded-full bg-surface-3" style={{ height: "10px" }}>
+          {modelAvailable && (
           <div
             className={cn(
               "absolute inset-y-0 left-0 rounded-full transition-all duration-300",
               BAR_HEIGHT,
               "bg-s-model",
             )}
-            style={{ width: modelPct }}
+            style={{ width: pctStr(model_prob) }}
             role="meter"
             aria-label={`model probability ${fmtProb(model_prob)}`}
             aria-valuenow={Math.round(model_prob * 100)}
@@ -137,17 +144,20 @@ export function ModelVsMarketBar({
             aria-valuemax={100}
             data-testid="model-bar"
           />
+          )}
         </div>
         <span
           className="w-12 shrink-0 font-mono text-[11px] tabular-nums text-foreground"
           aria-hidden="true"
         >
-          {fmtProb(model_prob)}
+          {modelAvailable ? modelText : "--"}
         </span>
       </div>
 
       {/* Market row (devigged) */}
-      <div className="flex items-center gap-2" data-testid="market-bar-row">
+      <div className="flex items-center gap-2" data-testid="market-bar-row"
+        role={marketAvailable ? undefined : "group"}
+        aria-label={marketAvailable ? undefined : "Market probability unavailable"}>
         <span
           className="w-16 shrink-0 text-right font-mono text-[9px] uppercase tracking-widest text-muted-foreground"
           aria-hidden="true"
@@ -155,13 +165,14 @@ export function ModelVsMarketBar({
           Market p
         </span>
         <div className="relative flex-1 overflow-hidden rounded-full bg-surface-3" style={{ height: "10px" }}>
+          {marketAvailable && (
           <div
             className={cn(
               "absolute inset-y-0 left-0 rounded-full transition-all duration-300",
               BAR_HEIGHT,
               "bg-s-market",
             )}
-            style={{ width: marketPct }}
+            style={{ width: pctStr(market_prob) }}
             role="meter"
             aria-label={`devigged market probability ${fmtProb(market_prob)}`}
             aria-valuenow={Math.round(market_prob * 100)}
@@ -169,18 +180,19 @@ export function ModelVsMarketBar({
             aria-valuemax={100}
             data-testid="market-bar"
           />
+          )}
         </div>
         <span
           className="w-12 shrink-0 font-mono text-[11px] tabular-nums text-muted-foreground"
           aria-hidden="true"
         >
-          {fmtProb(market_prob)}
+          {marketAvailable ? marketText : "--"}
         </span>
       </div>
 
       {/* Divergence chip */}
       {framing !== "descriptive" ? (
-        <div className="flex items-center justify-end gap-1.5">
+        <div className="flex flex-wrap items-center justify-end gap-1.5">
           <span
             className="font-mono text-[9px] uppercase tracking-widest text-faint"
             aria-hidden="true"
@@ -191,19 +203,19 @@ export function ModelVsMarketBar({
             className={cn(
               "inline-flex items-center rounded border px-2 py-0.5",
               "font-mono text-[10px] font-semibold tabular-nums",
-              divergenceToneClass(divergence, divergence_is_signal),
+              divergenceToneClass(divergenceAvailable && divergence_is_signal),
             )}
-            title={DIVERGENCE_TIP}
-            aria-label={`calibrated divergence ${divergence_label} -- not an edge or profit claim`}
+            title={divergenceAvailable ? DIVERGENCE_TIP : "Requires valid model and market probabilities and a reported divergence."}
+            aria-label={`calibrated divergence ${divergenceText} -- not an edge or profit claim`}
             data-testid="divergence-chip"
           >
-            {divergence_label}
+            {divergenceText}
           </span>
         </div>
       ) : null}
 
       {/* Confidence strip (optional) */}
-      {confidence != null && confidence > 0 && framing !== "descriptive" ? (
+      {divergenceAvailable && isProbability(confidence) && confidence > 0 && framing !== "descriptive" ? (
         <div
           className="flex items-center gap-2"
           aria-label={`signal strength proxy ${(confidence * 100).toFixed(0)}% -- derived from EV magnitude, not a profit claim`}

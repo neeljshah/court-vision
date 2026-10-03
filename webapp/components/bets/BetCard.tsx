@@ -39,7 +39,7 @@ export interface BetCardData {
   matchup: string;           // e.g. "NYK @ SAS"
   market_type: string;       // "moneyline" | "total" | "spread" | "prop"
   side: string;              // e.g. "home", "over", "NYK +3.5"
-  model_prob: number;        // [0,1] calibrated model probability
+  model_prob: number | null; // [0,1] calibrated probability; null when unavailable
   market_prob: number | null; // [0,1] devigged market prob; null for model-only props
   best_book: string;
   best_odds: number;         // decimal odds
@@ -84,11 +84,9 @@ export function BetCard({ card }: BetCardProps) {
     return <PropCard card={card} books={card.books} />;
   }
 
-  // Game markets: edge_vs_market may be null (rare); fall back to a 0 divergence.
-  const divergence = card.edge_vs_market ?? 0; // signed: model_prob - market_prob
-  const marketProb = card.market_prob ?? 0;
-  const divergenceLabel = formatDivergence(divergence);
-  const divergenceIsSignal = card.edge_vs_market != null && isDivergenceSignal(divergence);
+  const divergence = card.edge_vs_market;
+  const divergenceLabel = divergence == null ? "Unavailable" : formatDivergence(divergence);
+  const divergenceIsSignal = divergence != null && isDivergenceSignal(divergence);
 
   // Card-link guard: only link to a detail route when game_id is real. An empty
   // / missing game_id would build /bets/<sport>/ which 308-redirects back to the
@@ -156,7 +154,7 @@ export function BetCard({ card }: BetCardProps) {
         <div className="mt-3">
           <ModelVsMarketBar
             model_prob={card.model_prob}
-            market_prob={marketProb}
+            market_prob={card.market_prob}
             divergence={divergence}
             divergence_label={divergenceLabel}
             divergence_is_signal={divergenceIsSignal}

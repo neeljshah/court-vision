@@ -117,7 +117,7 @@ export function buildArticleLabel(card: BetCardData): string {
       : "";
   return (
     `${card.matchup} -- ${card.market_type}${lineStr} ${card.side}, ${tierStr}, ` +
-    `calibrated divergence signal, not a profit or edge claim`
+    `calibrated divergence context, not a profit or edge claim`
   );
 }
 

@@ -74,7 +74,7 @@ export type BestBetsCard = {
   // market_type in {moneyline, total, spread, prop}
   market_type: string;
   side: string;
-  model_prob: number;
+  model_prob: number | null;
   market_prob: number | null;
   best_book: string;
   best_odds: number;

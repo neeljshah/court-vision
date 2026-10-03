@@ -68,6 +68,7 @@ jobs:
           npx vitest run components/home/__tests__/HomeStatusRow.test.tsx
           npx vitest run components/home/__tests__/HomeTodayCard-availability.test.tsx
           npx vitest run components/bets/__tests__/TodayPlacedBets-availability.test.tsx
+          npx vitest run components/bets/__tests__/BetCard-probability-availability.test.tsx
           npx vitest run components/p6/__tests__/ops-faces.test.tsx
           npx vitest run components/p6/__tests__/clv-percent-contract.test.tsx
           npx vitest run components/p6/__tests__/clv-summary-consumers.test.tsx
