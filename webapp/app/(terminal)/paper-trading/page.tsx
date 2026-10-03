@@ -4,7 +4,7 @@
 // PRIMARY: /api/paper/trail (all rows: settled+open). Settled book shows
 //   outcome / model_prob / model_ev / taken_book / CLV / units columns.
 // OPEN: trail rows filtered client-side (status=open||!graded).
-// SECONDARY PM: /api/paper/pm/trail -- genuinely 0, honest-empty + LiveBadge.
+// SECONDARY PM: /api/paper/pm/trail -- unavailable and empty are distinct.
 // Per-venue VenueSummary: only renders rows that exist.
 // UNITS/prob only. NO '$'. Real-money DENY. stale-never-green LiveBadge.
 
@@ -21,8 +21,9 @@ import { VenueSummary } from "@/components/paper_pm/VenueSummary";
 import { PanelErrorBoundary } from "@/components/p6/PanelErrorBoundary";
 import { cn } from "@/lib/utils";
 import { PaperTradingTally } from "./PaperTradingTally";
+import { PaperTradingDoneSummary } from "./PaperTradingDoneSummary";
 import {
-  StatTile, deriveTally, deriveDoneSummary, toPaperTrailRows, mergeVenueRows,
+  deriveTally, deriveDoneSummary, toPaperTrailRows, mergeVenueRows,
   EMPTY_CELL, fetchPaperCombined, type CombinedPayload,
 } from "./paperTradingHelpers";
 
@@ -40,6 +41,10 @@ export default function PaperTradingPage() {
   const clv = data?.clv ?? null;
   const pnl = data?.pnl ?? null;
   const bankroll = data?.bankroll ?? null;
+  const feedErrors = data?.errors ?? {};
+  const partialError = Object.keys(feedErrors).length ? "Some paper data is unavailable" : null;
+  const trailError = feedErrors.trail ?? error;
+  const pmError = feedErrors.pmTrail ?? error;
 
   // All trail rows from /api/paper/trail (open + settled, newest-first within bucket).
   const trailRows: PaperTrailRow[] = trail?.trail ?? [];
@@ -60,7 +65,7 @@ export default function PaperTradingPage() {
   }), [trailRows]);
   const pmTrades = pmTrail?.trades ?? [];
   const totalPm = pmTrail?.count ?? pmTrades.length;
-  const tally = deriveTally(pmTrades);
+  const tally = pmTrail ? deriveTally(pmTrades) : null;
   const pmRows = toPaperTrailRows(pmTrades);
 
   // venueRows: rows the per-venue execution breakdown aggregates -- the scope-filtered
@@ -68,7 +73,7 @@ export default function PaperTradingPage() {
   // books + Kalshi/Polymarket + in-game, not just the PM trail.
   const venueRows = useMemo(() => mergeVenueRows(viewRows, pmRows), [viewRows, pmRows]);
   const isPmEmpty = !loading && pmTrail !== null && totalPm === 0;
-  const doneSummary = deriveDoneSummary(trailRows);
+  const doneSummary = trail ? deriveDoneSummary(trailRows) : null;
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
@@ -79,7 +84,7 @@ export default function PaperTradingPage() {
           <p className="mt-0.5 text-[12px] text-muted-foreground">
             Real settled book (primary) + Kalshi / Polymarket trail (secondary).
             Units and probability only. No dollars.
-            {!loading && (
+            {!loading && pmTrail !== null && (
               <span
                 data-testid="pm-total-count"
                 aria-label={`PM trail total: ${totalPm} trade${totalPm !== 1 ? "s" : ""}`}
@@ -94,7 +99,8 @@ export default function PaperTradingPage() {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <span data-testid="live-badge-placeholder">
-            <LiveBadge ageSec={ageSec} isStale={isStale} error={error} isLoading={loading} />
+            <LiveBadge ageSec={partialError ? null : ageSec} isStale={isStale}
+              error={error ?? partialError} isLoading={loading} />
           </span>
           <Badge tone="amber">paper mode</Badge>
         </div>
@@ -124,6 +130,17 @@ export default function PaperTradingPage() {
       </div>
 
       {/* BANKROLL + EQUITY CURVE -- "how much I would have made" in UNITS */}
+      {partialError && (
+        <div role="status" aria-label="Unavailable paper data" className="mb-4 text-xs text-amber-400">
+          Available summaries remain visible. Unavailable data:
+          <ul>{([
+            ["trail", "Trade history"], ["pmTrail", "PM trade history"],
+            ["clv", "CLV summary"], ["pnl", "Equity history"], ["bankroll", "Bankroll"],
+          ] as const).filter(([key]) => feedErrors[key]).map(([key, label]) => (
+            <li key={key}>{label}: {feedErrors[key]}</li>
+          ))}</ul>
+        </div>
+      )}
       <PanelErrorBoundary label="bankroll and equity curve">
         <PaperEquityPanel series={pnl} bankroll={bankroll} loading={loading && !data} />
       </PanelErrorBoundary>
@@ -146,6 +163,7 @@ export default function PaperTradingPage() {
             key={key}
             type="button"
             data-testid={`scope-${key}`}
+            disabled={!trail}
             onClick={() => setScope(key)}
             className={cn(
               "rounded-full border px-3 py-1 text-[11px] font-mono transition-colors",
@@ -154,7 +172,7 @@ export default function PaperTradingPage() {
                 : "border-border text-muted-foreground hover:bg-surface-2"
             )}
           >
-            {label} ({n})
+            {label} ({trail ? n : EMPTY_CELL})
           </button>
         ))}
       </div>
@@ -168,11 +186,11 @@ export default function PaperTradingPage() {
           aria-label="Open paper positions"
           className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground"
         >
-          Open positions ({doneSummary.nOpen})
+          Open positions ({doneSummary?.nOpen ?? EMPTY_CELL})
           {scope !== "all" ? ` -- ${scope === "wc" ? "World Cup" : "in-game"}` : ""}
         </h2>
         <PanelErrorBoundary label="open positions">
-          <OpenPositions rows={viewRows} loading={loading && !trail} error={error} />
+          <OpenPositions rows={viewRows} loading={loading && !trail} error={trailError} />
         </PanelErrorBoundary>
       </section>
 
@@ -183,47 +201,22 @@ export default function PaperTradingPage() {
           <span className="font-mono text-[10px] text-muted-foreground">
             {loading
               ? "loading"
+              : !trail ? "unavailable"
               : `${trailRows.filter((r) => r.graded && r.status !== "open").length} settled / ${trailRows.length} total`}
           </span>
         }
       >
         <PanelErrorBoundary label="settled book">
-          {error && !trail ? (
-            <Unavailable reason={error} />
+          {trailError && !trail ? (
+            <Unavailable reason={trailError} />
           ) : (
-            <PaperTrailSettled rows={viewRows} loading={loading && !trail} error={error} settledOnly />
+            <PaperTrailSettled rows={viewRows} loading={loading && !trail} error={trailError} settledOnly />
           )}
         </PanelErrorBoundary>
       </Panel>
 
       {/* DONE / SETTLED summary strip */}
-      <section
-        data-testid="done-settled-summary"
-        aria-label="Done and settled summary"
-        className="mb-5 mt-6"
-      >
-        <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-          Done / settled summary
-        </h2>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
-          <StatTile label="Total bets" testId="done-total" loading={loading}
-            value={loading ? EMPTY_CELL : String(doneSummary.nTotal)} />
-          <StatTile label="Settled" testId="done-settled" loading={loading}
-            value={loading ? EMPTY_CELL : String(doneSummary.nSettled)} />
-          <StatTile label="Win" testId="done-win" loading={loading}
-            value={loading ? EMPTY_CELL : String(doneSummary.nWin)}
-            valueClass={doneSummary.nWin > 0 ? "text-success" : "text-foreground"} />
-          <StatTile label="Loss" testId="done-loss" loading={loading}
-            value={loading ? EMPTY_CELL : String(doneSummary.nLoss)}
-            valueClass={doneSummary.nLoss > 0 ? "text-danger" : "text-foreground"} />
-          <StatTile label="Push" testId="done-push" loading={loading}
-            value={loading ? EMPTY_CELL : String(doneSummary.nPush)} />
-          <StatTile label="Void" testId="done-void" loading={loading}
-            value={loading ? EMPTY_CELL : String(doneSummary.nVoid)} />
-          <StatTile label="Units staked" testId="done-units-staked" loading={loading}
-            value={loading ? EMPTY_CELL : doneSummary.totalUnitsStaked.toFixed(2)} />
-        </div>
-      </section>
+      <PaperTradingDoneSummary summary={doneSummary} loading={loading} error={trailError} />
 
       {/* Per-venue execution breakdown -- real trail across every venue (sportsbooks +
           DFS prop books + Kalshi/Polymarket + live in-game). venueRows = mergeVenueRows. */}
@@ -240,7 +233,7 @@ export default function PaperTradingPage() {
           sportsbooks, DFS prop books, Kalshi / Polymarket, and live in-game. Units only.
         </p>
         <PanelErrorBoundary label="venue summary">
-          <VenueSummary rows={venueRows} loading={loading && !trail} error={error ?? null} />
+          <VenueSummary rows={venueRows} loading={loading && !data} error={trailError ?? pmError ?? null} />
         </PanelErrorBoundary>
       </section>
 
@@ -279,13 +272,13 @@ export default function PaperTradingPage() {
           </button>
         }
       >
-        {error && !pmTrail ? (
+        {pmError && !pmTrail ? (
           <PanelErrorBoundary label="PM trail table">
-            <Unavailable reason={error} />
+            <Unavailable reason={pmError} />
           </PanelErrorBoundary>
         ) : (
           <PanelErrorBoundary label="PM trail table">
-            <PmTrailTable rows={pmRows} loading={loading} error={error} rankMode={rankMode} />
+            <PmTrailTable rows={pmRows} loading={loading} error={pmError} rankMode={rankMode} />
           </PanelErrorBoundary>
         )}
       </Panel>

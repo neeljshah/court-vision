@@ -17,8 +17,7 @@ import { EMPTY_CELL } from "@/lib/tokens";
 // ---------------------------------------------------------------------------
 // Combined fetcher for the paper-trading page -- one useLiveData fetch pulls the
 // trail + PM trail + CLV scoreboard + P&L equity series + bankroll in parallel.
-// Trail is the PRIMARY feed: if it is unavailable the whole payload degrades to
-// the Unavailable sentinel. Every secondary feed degrades to null independently.
+// Each feed degrades independently; a missing history must not discard summaries.
 // ---------------------------------------------------------------------------
 
 export interface CombinedPayload {
@@ -27,11 +26,12 @@ export interface CombinedPayload {
   clv: ClvScoreboard | null;
   pnl: PnlSeries | null;
   bankroll: PaperBankroll | null;
+  errors?: Partial<Record<"trail" | "pmTrail" | "clv" | "pnl" | "bankroll", string>>;
 }
 
 export async function fetchPaperCombined(
   signal: AbortSignal,
-): Promise<CombinedPayload | UnavailableSentinel> {
+): Promise<CombinedPayload> {
   const [t, pt, c, pnl, bank] = await Promise.all([
     // ponytail: 400 rows paints the page fast; raise if a view ever pages past it
     api.getPaperTrail({ limit: 400 }, signal),
@@ -40,18 +40,19 @@ export async function fetchPaperCombined(
     api.getPaperPnlSeries(signal),
     api.getPaperBankroll(signal),
   ]);
-  if (isUnavailable(t)) {
-    return {
-      status: "unavailable",
-      reason: (t as { reason?: string }).reason ?? "unavailable",
-    } as UnavailableSentinel;
+  const errors: NonNullable<CombinedPayload["errors"]> = {};
+  function available<T>(key: keyof typeof errors, value: T | UnavailableSentinel): T | null {
+    if (!isUnavailable(value)) return value;
+    errors[key] = value.reason || "unavailable";
+    return null;
   }
   return {
-    trail: t as PaperTrail,
-    pmTrail: isUnavailable(pt) ? null : (pt as PmTrail),
-    clv: isUnavailable(c) ? null : (c as ClvScoreboard),
-    pnl: isUnavailable(pnl) ? null : (pnl as PnlSeries),
-    bankroll: isUnavailable(bank) ? null : (bank as PaperBankroll),
+    trail: available("trail", t),
+    pmTrail: available("pmTrail", pt),
+    clv: available("clv", c),
+    pnl: available("pnl", pnl),
+    bankroll: available("bankroll", bank),
+    errors,
   };
 }
 

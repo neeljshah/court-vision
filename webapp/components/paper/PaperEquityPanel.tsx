@@ -19,6 +19,7 @@
 
 import type { PnlSeries, PaperBankroll } from "@/lib/types";
 import { PaperEquityChart, fmtUnits, fmtSignedUnits } from "./PaperEquityChart";
+import { Unavailable } from "@/components/p6/Primitives";
 
 // ---------------------------------------------------------------------------
 // CLV arrives in percent units; "INSUFFICIENT_DATA" is surfaced verbatim.
@@ -195,19 +196,19 @@ export function PaperEquityPanel({ series, bankroll, loading }: PaperEquityPanel
             </>
           ) : (
             <span className="font-mono text-sm text-muted-foreground">
-              bankroll unavailable -- no paper book yet
+              bankroll unavailable
             </span>
           )}
         </div>
 
         {/* Equity curve */}
         <div className="mb-4">
-          <PaperEquityChart
+          {isUnavail && !loading ? <Unavailable reason="Equity history unavailable" /> : <PaperEquityChart
             points={isUnavail ? null : series!.points}
             startUnits={startUnits}
             honestNote={isUnavail ? series?.reason : series?.honest_note}
             loading={loading}
-          />
+          />}
         </div>
 
         {/* Tally tiles */}
@@ -246,7 +247,8 @@ export function PaperEquityPanel({ series, bankroll, loading }: PaperEquityPanel
           <span className="mb-2 block font-mono text-[9px] uppercase tracking-widest text-muted-foreground">
             Day units (last 14 days)
           </span>
-          <DailyStrip daily={isUnavail ? [] : series!.daily ?? []} />
+          {isUnavail ? <p className="font-mono text-[10px] text-faint">{loading ? "Loading daily units" : "Daily units unavailable"}</p>
+            : <DailyStrip daily={series!.daily ?? []} />}
         </div>
 
         {/* Honest footer */}
