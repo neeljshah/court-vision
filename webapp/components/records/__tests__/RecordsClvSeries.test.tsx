@@ -126,12 +126,12 @@ describe("RecordsClvSeries -- sparkline when series has >= 1 point", () => {
       <RecordsClvSeries
         clvSeries={makeSeries({
           count:  1,
-          series: [makePoint({ cumulative_mean_clv_pct: 0.03 })],
+          series: [makePoint({ cumulative_mean_clv_pct: 3 })],
         })}
       />,
     );
     const lastVal = screen.getByTestId("clv-series-last-val");
-    // 0.03 * 100 = 3.00%
+    // The API value 3 is already percent units: 3.00%.
     expect(lastVal.textContent).toContain("3.00%");
   });
 
@@ -140,7 +140,7 @@ describe("RecordsClvSeries -- sparkline when series has >= 1 point", () => {
       <RecordsClvSeries
         clvSeries={makeSeries({
           count:  1,
-          series: [makePoint({ cumulative_mean_clv_pct: -0.025 })],
+          series: [makePoint({ cumulative_mean_clv_pct: -2.5 })],
         })}
       />,
     );

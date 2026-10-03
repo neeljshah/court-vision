@@ -54,7 +54,7 @@ function SeriesChartTooltip({
       className="border border-border bg-card px-3 py-2 text-[11px] font-data text-foreground"
     >
       <div className="text-faint text-[10px] mb-1">{pt.matchup ?? "unknown"}</div>
-      <div>cum. CLV: <span className={pct >= 0 ? "text-up" : "text-down"}>{sign}{(pct * 100).toFixed(2)}%</span></div>
+      <div>cum. CLV: <span className={pct >= 0 ? "text-up" : "text-down"}>{sign}{pct.toFixed(2)}%</span></div>
       <div>this bet: <span className={pt.beat_close ? "text-up" : "text-faint"}>{beatLabel}{pt.clv_is_proxy ? " (proxy)" : ""}</span></div>
       {pt.sport && <div className="text-faint text-[9px] mt-0.5">{pt.sport}</div>}
     </div>
@@ -130,8 +130,8 @@ function SparklineChart({ series }: { series: ClvSeriesPoint[] }) {
       series.map((pt, i) => ({
         ...pt,
         index: i + 1,
-        // cumulative_mean_clv_pct is already a fraction; display as percent
-        cumPct: pt.cumulative_mean_clv_pct * 100,
+        // The series API already supplies percent units; preserve them.
+        cumPct: pt.cumulative_mean_clv_pct,
         label: pt.matchup ? pt.matchup.slice(0, 12) : `#${i + 1}`,
       })),
     [series],
