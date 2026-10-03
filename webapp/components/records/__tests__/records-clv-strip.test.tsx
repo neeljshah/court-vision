@@ -56,7 +56,7 @@ describe("RecordsClvStrip -- real data when n_bets>0", () => {
   it("renders mean_clv_pct as +X.X% when n_bets>0 and positive", () => {
     render(
       <RecordsClvStrip
-        clv={makeClv({ n_bets: 12, mean_clv_pct: 0.025, pct_beat_close: 0.6 })}
+        clv={makeClv({ n_bets: 12, mean_clv_pct: 2.5, pct_beat_close: 60 })}
       />,
     );
     const meanCell = screen.getByTestId("clv-strip-mean-clv");
@@ -68,7 +68,7 @@ describe("RecordsClvStrip -- real data when n_bets>0", () => {
   it("renders mean_clv_pct as -X.X% when negative", () => {
     render(
       <RecordsClvStrip
-        clv={makeClv({ n_bets: 5, mean_clv_pct: -0.015, pct_beat_close: 0.4 })}
+        clv={makeClv({ n_bets: 5, mean_clv_pct: -1.5, pct_beat_close: 40 })}
       />,
     );
     const meanCell = screen.getByTestId("clv-strip-mean-clv");
@@ -78,7 +78,7 @@ describe("RecordsClvStrip -- real data when n_bets>0", () => {
   it("renders pct_beat_close as a percentage", () => {
     render(
       <RecordsClvStrip
-        clv={makeClv({ n_bets: 10, mean_clv_pct: 0.01, pct_beat_close: 0.6 })}
+        clv={makeClv({ n_bets: 10, mean_clv_pct: 1, pct_beat_close: 60 })}
       />,
     );
     const beatCell = screen.getByTestId("clv-strip-beat-close");
@@ -88,7 +88,7 @@ describe("RecordsClvStrip -- real data when n_bets>0", () => {
   it("shows n_bets count in graded-bets cell", () => {
     render(
       <RecordsClvStrip
-        clv={makeClv({ n_bets: 97, mean_clv_pct: 0.02, pct_beat_close: 0.55 })}
+        clv={makeClv({ n_bets: 97, mean_clv_pct: 2, pct_beat_close: 55 })}
       />,
     );
     const nCell = screen.getByTestId("clv-strip-graded-bets");
@@ -100,8 +100,8 @@ describe("RecordsClvStrip -- real data when n_bets>0", () => {
       <RecordsClvStrip
         clv={makeClv({
           n_bets: 5,
-          mean_clv_pct: 0.01,
-          pct_beat_close: 0.5,
+          mean_clv_pct: 1,
+          pct_beat_close: 50,
           clv_is_proxy: true,
         })}
       />,
@@ -120,7 +120,7 @@ describe("RecordsClvStrip -- no $ token anywhere", () => {
   it("renders no $ token when n_bets>0 with real CLV", () => {
     const { container } = render(
       <RecordsClvStrip
-        clv={makeClv({ n_bets: 20, mean_clv_pct: 0.03, pct_beat_close: 0.65 })}
+        clv={makeClv({ n_bets: 20, mean_clv_pct: 3, pct_beat_close: 65 })}
       />,
     );
     expect(/\$\s*\d/.test(container.textContent ?? "")).toBe(false);

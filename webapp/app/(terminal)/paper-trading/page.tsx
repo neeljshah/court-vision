@@ -19,15 +19,12 @@ import { PaperTrailSettled } from "@/components/paper_pm/PaperTrailSettled";
 import { OpenPositions } from "@/components/paper_pm/OpenPositions";
 import { VenueSummary } from "@/components/paper_pm/VenueSummary";
 import { PanelErrorBoundary } from "@/components/p6/PanelErrorBoundary";
-import { fmtPct, cn } from "@/lib/utils";
+import { cn } from "@/lib/utils";
+import { PaperTradingTally } from "./PaperTradingTally";
 import {
   StatTile, deriveTally, deriveDoneSummary, toPaperTrailRows, mergeVenueRows,
-  meanClvClass, EMPTY_CELL, fetchPaperCombined, type CombinedPayload,
+  EMPTY_CELL, fetchPaperCombined, type CombinedPayload,
 } from "./paperTradingHelpers";
-
-// ---------------------------------------------------------------------------
-// Page component
-// ---------------------------------------------------------------------------
 
 export default function PaperTradingPage() {
   const fetcher = useCallback(fetchPaperCombined, []);
@@ -131,41 +128,7 @@ export default function PaperTradingPage() {
         <PaperEquityPanel series={pnl} bankroll={bankroll} loading={loading && !data} />
       </PanelErrorBoundary>
 
-      {/* PM tally strip (running paper tally from PM trades) */}
-      <div
-        aria-label="Running paper tally"
-        data-testid="running-tally"
-        className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7"
-      >
-        <StatTile label="Open" testId="tally-open" loading={loading}
-          value={loading ? EMPTY_CELL : String(tally.nOpen)} />
-        <StatTile label="Settled" testId="tally-settled" loading={loading}
-          value={loading ? EMPTY_CELL : String(tally.nSettled)} />
-        <StatTile label="Win" testId="tally-win" loading={loading}
-          value={loading ? EMPTY_CELL : String(tally.nWin)}
-          valueClass={tally.nWin > 0 ? "text-success" : "text-foreground"} />
-        <StatTile label="Loss" testId="tally-loss" loading={loading}
-          value={loading ? EMPTY_CELL : String(tally.nLoss)}
-          valueClass={tally.nLoss > 0 ? "text-danger" : "text-foreground"} />
-        <StatTile label="Push" testId="tally-push" loading={loading}
-          value={loading ? EMPTY_CELL : String(tally.nPush)} />
-        <StatTile label="Units staked" testId="tally-units-staked" loading={loading}
-          value={loading ? EMPTY_CELL : tally.unitsStaked.toFixed(2)} />
-        <StatTile
-          label="Mean CLV" testId="clv-mean-clv" loading={loading}
-          valueClass={meanClvClass(clv)}
-          value={
-            loading ? EMPTY_CELL
-            : clv?.mean_clv_pct != null ? fmtPct(clv.mean_clv_pct)
-            : EMPTY_CELL
-          }
-          note={
-            !loading && clv?.clv_is_proxy
-              ? `(proxy close${clv.n_proxy ? `, n=${clv.n_proxy}` : ""})`
-              : undefined
-          }
-        />
-      </div>
+      <PaperTradingTally tally={tally} clv={clv} loading={loading} />
 
       {/* SCOPE FILTER: All / World Cup / In-game -- de-noise the trail firehose */}
       <div

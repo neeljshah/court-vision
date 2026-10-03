@@ -137,29 +137,29 @@ export function SelfImprovePanel() {
               <div className="text-[10px] uppercase tracking-wide text-muted-foreground">
                 Recent cycles
               </div>
-              <ul className="mt-2 space-y-1">
+              <ul className="mt-2 space-y-3">
                 {data.cycles
                   .slice(-6)
                   .reverse()
                   .map((c) => (
                     <li
                       key={c.cycle}
-                      className="flex items-center justify-between gap-2 font-mono text-[11px]"
+                      className="min-w-0 font-mono text-[11px]"
                     >
-                      <span className="flex items-center gap-2">
+                      <span className="flex flex-wrap items-center gap-2">
                         <Num className="text-faint">#{c.cycle}</Num>
                         <Badge tone={decisionTone(c.decision)}>
                           {c.decision || "?"}
                         </Badge>
-                        {c.reason ? (
-                          <span className="truncate text-muted-foreground">
-                            {c.reason}
+                        {cycleTime(c.at) ? (
+                          <span className="ml-auto shrink-0 text-faint">
+                            {cycleTime(c.at)}
                           </span>
                         ) : null}
                       </span>
-                      {cycleTime(c.at) ? (
-                        <span className="shrink-0 text-faint">
-                          {cycleTime(c.at)}
+                      {c.reason ? (
+                        <span className="mt-1 block whitespace-normal text-muted-foreground [overflow-wrap:anywhere]">
+                          {c.reason}
                         </span>
                       ) : null}
                     </li>

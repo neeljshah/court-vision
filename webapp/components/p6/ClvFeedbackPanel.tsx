@@ -13,6 +13,8 @@ import { Panel, PanelHead, Num } from "@/components/ui/terminal";
 import { cn } from "@/lib/utils";
 import type { Unavailable as UnavailableType } from "@/lib/types";
 
+// CLV summary percentages arrive scaled (36.3 means 36.3%).
+
 // ClvFeedbackPanel -- the execution-in-the-loop state, shown HONESTLY.
 // Reads GET /api/quant/clv (the sign-audited beat-the-close CLV scoreboard,
 // probability space) and GET /api/improve/timeline (the self-improve loop, which
@@ -173,7 +175,7 @@ export function ClvFeedbackPanel() {
                 value={
                   summary.pct_beat_close === null
                     ? "--"
-                    : `${(summary.pct_beat_close * 100).toFixed(0)}%`
+                    : `${summary.pct_beat_close.toFixed(0)}%`
                 }
               />
               <Stat label="graded bets" value={String(summary.n_bets)} />
@@ -268,7 +270,7 @@ function SportBreakdown({
                   <Num className="text-[10px] text-faint">
                     {v.pct_beat_close === null
                       ? "--"
-                      : `${(v.pct_beat_close * 100).toFixed(0)}%`}
+                      : `${v.pct_beat_close.toFixed(0)}%`}
                   </Num>
                 </td>
               </tr>

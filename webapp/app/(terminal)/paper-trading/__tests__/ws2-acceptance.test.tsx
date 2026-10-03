@@ -204,8 +204,8 @@ const CLV_EMPTY: ClvScoreboard = {
 
 const CLV_PRESENT: ClvScoreboard = {
   n_bets: 5,
-  pct_beat_close: 0.6,
-  mean_clv_pct: 0.015,
+  pct_beat_close: 60,
+  mean_clv_pct: 1.5,
   by_sport: null,
   clv_is_proxy: false,
 };

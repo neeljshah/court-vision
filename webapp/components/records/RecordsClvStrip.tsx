@@ -97,20 +97,17 @@ export function RecordsClvStrip({ clv, loading = false, asOf = null }: RecordsCl
     ? `(proxy close${nProxy ? `, n=${nProxy}` : ""})`
     : undefined;
 
-  // Format mean_clv_pct with sign
+  // CLV summary fields arrive in percent units; preserve their scale.
   function fmtClv(v: number | null): string {
     if (v == null) return EMPTY_CELL;
-    const s = (v * 100).toFixed(1);
+    const s = v.toFixed(1);
     return v >= 0 ? `+${s}%` : `${s}%`;
   }
 
-  // Format pct_beat_close (already a 0-1 fraction or 0-100?)
-  // API returns a fraction (0.0-1.0); render as percentage.
+  // Format pct_beat_close without inferring units from its magnitude.
   function fmtPctBeat(v: number | null): string {
     if (v == null) return EMPTY_CELL;
-    // If value looks like it is already a percentage (>1), show as-is; else scale.
-    const pct = v > 1 ? v : v * 100;
-    return `${pct.toFixed(1)}%`;
+    return `${v.toFixed(1)}%`;
   }
 
   // Tone for mean CLV
@@ -122,8 +119,7 @@ export function RecordsClvStrip({ clv, loading = false, asOf = null }: RecordsCl
   // Tone for beat-close
   const beatTone: "up" | "down" | "slate" | "muted" = (() => {
     if (insufficient || pctBeatClose == null) return "muted";
-    const pct = pctBeatClose > 1 ? pctBeatClose : pctBeatClose * 100;
-    return pct >= 55 ? "up" : pct < 45 ? "down" : "slate";
+    return pctBeatClose >= 55 ? "up" : pctBeatClose < 45 ? "down" : "slate";
   })();
 
   return (

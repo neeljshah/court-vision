@@ -7,6 +7,8 @@ import { Unavailable, Badge } from "./Primitives";
 import { Panel, PanelHead, Num } from "@/components/ui/terminal";
 import { fmtPct } from "@/lib/utils";
 
+// CLV summary percentages arrive scaled; fmtPct accepts fractions.
+
 // ClvScoreboard -- the beat-the-close yardstick. CLV (better-number-than-close)
 // is the only honest edge metric surfaced. No $ / ROI. Proxy closes flagged.
 // asOf/stale are optional -- callers that poll (ClvScoreboardLive) wire a real
@@ -58,12 +60,12 @@ export function ClvScoreboard({
           <Stat
             label="% beat close"
             value={
-              clv.pct_beat_close != null ? fmtPct(clv.pct_beat_close, false) : "--"
+              clv.pct_beat_close != null ? fmtPct(clv.pct_beat_close / 100, false) : "--"
             }
           />
           <Stat
             label="Mean CLV"
-            value={clv.mean_clv_pct != null ? fmtPct(clv.mean_clv_pct) : "--"}
+            value={clv.mean_clv_pct != null ? fmtPct(clv.mean_clv_pct / 100) : "--"}
           />
         </div>
         {/* Mean CLV above is ALL-rows (may include proxy closes). When any proxy
@@ -72,7 +74,7 @@ export function ClvScoreboard({
         {clv.n_proxy != null && clv.n_proxy > 0 && clv.median_clv_pct != null ? (
           <p className="mt-2 text-xs text-faint">
             median CLV ({clv.basis === "true_close" ? "true-close" : "incl. proxy"}
-            ): {fmtPct(clv.median_clv_pct)} -- excludes {clv.n_proxy} proxy close
+            ): {fmtPct(clv.median_clv_pct / 100)} -- excludes {clv.n_proxy} proxy close
             {clv.n_proxy === 1 ? "" : "s"} when true-close rows exist
           </p>
         ) : null}
@@ -126,13 +128,13 @@ function BySportBreakdown({
                 <td className="px-3 py-1.5 text-right">
                   <Num>
                     {v.pct_beat_close != null
-                      ? fmtPct(v.pct_beat_close, false)
+                      ? fmtPct(v.pct_beat_close / 100, false)
                       : "--"}
                   </Num>
                 </td>
                 <td className="px-3 py-1.5 text-right">
                   <Num className={neg ? "text-down" : ""}>
-                    {v.mean_clv_pct != null ? fmtPct(v.mean_clv_pct) : "--"}
+                    {v.mean_clv_pct != null ? fmtPct(v.mean_clv_pct / 100) : "--"}
                   </Num>
                 </td>
               </tr>

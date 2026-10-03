@@ -67,6 +67,10 @@ jobs:
           npx vitest run 'app/(terminal)/games/__tests__/game-view-snapshot.test.tsx'
           npx vitest run components/home/__tests__/HomeStatusRow.test.tsx
           npx vitest run components/p6/__tests__/ops-faces.test.tsx
+          npx vitest run components/p6/__tests__/clv-percent-contract.test.tsx
+          npx vitest run components/p6/__tests__/clv-summary-consumers.test.tsx
+          npx vitest run components/p6/__tests__/clv-overview-consumers.test.tsx
+          npx vitest run components/p6/__tests__/pnl-clv-percent-contract.test.tsx
           npx vitest run components/depth/__tests__/depth.test.tsx
           npx vitest run components/games_depth/__tests__/games_depth_render.test.tsx
           npx vitest run components/games_depth/__tests__/snapshot-provenance.test.tsx

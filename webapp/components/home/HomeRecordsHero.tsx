@@ -143,7 +143,7 @@ function ClvStrip({ clv }: { clv: ClvScoreboard | null }) {
         <span className="text-[11px] text-muted-foreground" data-testid="clv-value">
           n={nBets} graded bets
           {clv.pct_beat_close != null
-            ? ` -- beat close: ${(clv.pct_beat_close * 100).toFixed(1)}%`
+            ? ` -- beat close: ${clv.pct_beat_close.toFixed(1)}%`
             : " -- beat-close: pending"}
           {clv.clv_is_proxy && (
             <span className="ml-1.5 text-faint">(proxy close)</span>

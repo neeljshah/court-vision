@@ -21,7 +21,7 @@ import type { PnlSeries, PaperBankroll } from "@/lib/types";
 import { PaperEquityChart, fmtUnits, fmtSignedUnits } from "./PaperEquityChart";
 
 // ---------------------------------------------------------------------------
-// CLV display -- number -> "+1.23%"; "INSUFFICIENT_DATA" surfaced verbatim.
+// CLV arrives in percent units; "INSUFFICIENT_DATA" is surfaced verbatim.
 // ---------------------------------------------------------------------------
 
 function clvDisplay(v: number | string | null | undefined): {
@@ -37,7 +37,7 @@ function clvDisplay(v: number | string | null | undefined): {
   }
   const sign = v >= 0 ? "+" : "";
   const cls = v > 0 ? "text-emerald-400" : v < 0 ? "text-rose-400" : "text-foreground";
-  return { text: `${sign}${(v * 100).toFixed(2)}%`, cls };
+  return { text: `${sign}${v.toFixed(2)}%`, cls };
 }
 
 // ---------------------------------------------------------------------------

@@ -230,7 +230,7 @@ describe("HomeRecordsHero -- W6-3 CLV strip INSUFFICIENT_DATA when n_bets=0", ()
   it("CLV strip shows n= count when n_bets > 0", () => {
     spyBothCalls(
       { data: makePayload() },
-      { data: makeClv({ n_bets: 42, pct_beat_close: 0.6, clv_is_proxy: false }) },
+      { data: makeClv({ n_bets: 42, pct_beat_close: 60, clv_is_proxy: false }) },
     );
     render(<HomeRecordsHero />);
     const el = screen.getByTestId("clv-value");
@@ -240,7 +240,7 @@ describe("HomeRecordsHero -- W6-3 CLV strip INSUFFICIENT_DATA when n_bets=0", ()
   it("CLV strip shows pct_beat_close % when n_bets > 0 and value is available", () => {
     spyBothCalls(
       { data: makePayload() },
-      { data: makeClv({ n_bets: 42, pct_beat_close: 0.619, clv_is_proxy: false }) },
+      { data: makeClv({ n_bets: 42, pct_beat_close: 61.9, clv_is_proxy: false }) },
     );
     render(<HomeRecordsHero />);
     const el = screen.getByTestId("clv-value");

@@ -152,7 +152,7 @@ export function PaperHistory() {
             isLoading && !clv
               ? null
               : clv?.pct_beat_close != null
-                ? fmtPct(clv.pct_beat_close, false)
+                ? fmtPct(clv.pct_beat_close / 100, false)
                 : EMPTY_CELL
           }
         />
@@ -162,7 +162,7 @@ export function PaperHistory() {
             isLoading && !clv
               ? null
               : clv?.mean_clv_pct != null
-                ? fmtPct(clv.mean_clv_pct)
+                ? fmtPct(clv.mean_clv_pct / 100)
                 : EMPTY_CELL
           }
           valueClass={clvCellClass(clv?.mean_clv_pct ?? null)}

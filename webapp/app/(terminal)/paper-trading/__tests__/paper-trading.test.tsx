@@ -52,7 +52,7 @@ const MOCK_TRADES = [
 ];
 
 const MOCK_CLV: p5api.ClvScoreboard = {
-  n_bets: 2, pct_beat_close: 0.5, mean_clv_pct: 0.005, by_sport: null, clv_is_proxy: false,
+  n_bets: 2, pct_beat_close: 50, mean_clv_pct: 0.5, by_sport: null, clv_is_proxy: false,
 };
 const EMPTY_CLV: p5api.ClvScoreboard = {
   n_bets: 0, pct_beat_close: null, mean_clv_pct: null, by_sport: null, clv_is_proxy: false,

@@ -134,7 +134,7 @@ describe("BetsMoneyHeadline", () => {
     daily: [],
     summary: {
       total_units: 4.5, n_bets: 12, n_win: 7, n_loss: 5, n_push: 0,
-      win_rate: 0.583, mean_clv_pct_or_INSUFFICIENT: 0.008, current_units: 104.5,
+      win_rate: 0.583, mean_clv_pct_or_INSUFFICIENT: 0.8, current_units: 104.5,
     },
     edge_claimed: false, executed: false, status: "ok",
   };

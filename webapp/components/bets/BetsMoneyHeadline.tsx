@@ -33,7 +33,7 @@ function fmtUnitsSigned(v: number | null | undefined): string {
   return `${sign}${v.toFixed(2)}u`;
 }
 
-// mean CLV: number -> "+x.x%"; "INSUFFICIENT_DATA" string -> honest passthrough.
+// Mean CLV arrives in percent units; sentinel strings pass through unchanged.
 function fmtMeanClv(v: number | string | null | undefined): {
   text: string;
   insufficient: boolean;
@@ -44,7 +44,7 @@ function fmtMeanClv(v: number | string | null | undefined): {
   }
   if (!Number.isFinite(v)) return { text: "INSUFFICIENT_DATA", insufficient: true };
   const sign = v >= 0 ? "+" : "";
-  return { text: `${sign}${(v * 100).toFixed(1)}%`, insufficient: false };
+  return { text: `${sign}${v.toFixed(1)}%`, insufficient: false };
 }
 
 function Stat({
@@ -213,7 +213,7 @@ export function BetsMoneyHeadline() {
         {clv != null && clv.n_bets > 0
           ? `${clv.n_bets} graded vs close; beat-close ${
               clv.pct_beat_close != null
-                ? `${(clv.pct_beat_close * 100).toFixed(0)}%`
+                ? `${clv.pct_beat_close.toFixed(0)}%`
                 : "pending"
             }.`
           : "CLV vs-close INSUFFICIENT_DATA until bets grade against a real close."}{" "}
