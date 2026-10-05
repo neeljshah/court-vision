@@ -30,6 +30,7 @@ import { SortControls, type SortKey } from "./SortControls";
 import { BetCard } from "./BetCard";
 import { PanelErrorBoundary } from "@/components/p6/PanelErrorBoundary";
 import { AgeBadge, RefreshAffordance } from "./RefreshAffordance";
+import { BoardObservation, getBoardObservation } from "./BoardObservation";
 import { UnavailableReasonBanner, EmptySection } from "./BestBetsStates";
 import {
   fetchAllSports,
@@ -61,23 +62,9 @@ export function BestBetsBoard() {
     result as FetchResult | Record<string, unknown> | null,
   );
 
-  const asOf = useMemo(() => {
-    if (!boards) return null;
-    const dates = Object.values(boards)
-      .map((sr) => sr?.board?.generated_at)
-      .filter((d): d is string => Boolean(d));
-    return dates.length > 0 ? (dates.sort().at(-1) ?? null) : null;
-  }, [boards]);
-
-  // asOfStamp: HH:MM:SS for PanelHead. Falls back to fetch time when no feed
-  // timestamp is present so the stamp is never fabricated.
-  const asOfStamp = useMemo(() => {
-    const src = asOf ?? (lastUpdatedAt != null ? new Date(lastUpdatedAt).toISOString() : null);
-    if (!src) return null;
-    const t = Date.parse(src);
-    if (Number.isNaN(t)) return null;
-    return new Date(t).toLocaleTimeString("en-US", { hour12: false });
-  }, [asOf, lastUpdatedAt]);
+  const observation = useMemo(() => getBoardObservation(
+    Object.values(boards ?? {}).flatMap((sr) => sr?.board ? [sr.board.generated_at] : []),
+  ), [boards]);
 
   // perSportCards: per-sport eligible cards (post/final excluded; degenerate kept with label).
   // UI-side guard: shouldSuppressBet is applied as a second layer against backend leaks.
@@ -152,7 +139,7 @@ export function BestBetsBoard() {
   return (
     <PanelErrorBoundary label="best bets board">
       <Panel>
-        <PanelHead title="Best bets board" asOf={asOfStamp} stale={isStale} />
+        <PanelHead title="Best bets board" />
         <section aria-label="Best bets board" className="flex flex-col gap-4 p-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <StatusTabs value={tab} onChange={setTab} counts={counts} panelId="bets-board-panel" />
@@ -171,8 +158,9 @@ export function BestBetsBoard() {
             </span>
           )}
         </div>
+        <BoardObservation observation={observation} loading={isLoading && !anyFetched} />
         <RefreshAffordance onRefresh={refresh} loading={isLoading} lastFetchedAt={lastUpdatedAt}
-          asOf={asOf} ageSec={ageSec} isStale={isStale} intervalMs={AUTO_REFRESH_MS} />
+          asOf={observation.missing ? null : observation.oldest} ageSec={ageSec} isStale={isStale} intervalMs={AUTO_REFRESH_MS} />
         {isStale && anyFetched && error && (
           <div role="status" data-testid="stale-banner"
             className="border border-border bg-surface-2 px-3 py-2">

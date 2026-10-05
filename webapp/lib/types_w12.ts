@@ -113,7 +113,7 @@ export type BestBetsCard = {
 
 export type BestBetsBoard = {
   status: string;
-  generated_at?: string | null;  // may be absent from board endpoint
+  generated_at?: string | number | null;  // zoned ISO or Unix seconds; may be absent
   cards: BestBetsCard[];
   count: number;
   sports?: string[] | null;      // board endpoint returns sports[] not sport

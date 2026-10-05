@@ -10,11 +10,12 @@ import { useState, useEffect } from "react";
 import { Badge, timeAgoIso } from "@/components/p6/Primitives";
 import { freshnessStatus } from "@/components/p6/LiveLinesPanel";
 import { cn } from "@/lib/utils";
+import { isSnapshotMode } from "@/lib/fetchHonest";
 
 // AgeBadge -- data age from envelope.generated_at. NEVER green (stale-never-green).
 // Amber when stale (>15m); slate otherwise. title exposes raw ISO asOf.
 export function AgeBadge({ asOf }: { asOf: string | null }) {
-  if (!asOf) return <Badge tone="slate"><span className="font-data text-[10px]">data age: checking</span></Badge>;
+  if (!asOf || !Number.isFinite(Date.parse(asOf))) return <Badge tone="slate"><span className="font-data text-[10px]">data age unavailable</span></Badge>;
   const stale = freshnessStatus(asOf) === "stale";
   const age = timeAgoIso(asOf);
   return (
@@ -33,13 +34,14 @@ export function LivePulse({ ageSec, isStale }: { ageSec: number | null; isStale:
     : ageSec < 60 ? `updated ${ageSec}s ago`
     : `updated ${Math.floor(ageSec / 60)}m ${String(ageSec % 60).padStart(2, "0")}s ago`;
   return (
-    <span className="inline-flex items-center gap-1.5" data-testid="live-pulse">
+    <span className="inline-flex items-center gap-1.5" data-testid="live-pulse"
+      title="Time since last successful fetch; not data age">
       <span
         className={cn("inline-block h-1.5 w-1.5 rounded-full",
           isStale ? "bg-warning" : "bg-muted-foreground animate-pulse")}
         aria-hidden="true"
       />
-      <span className="font-data text-[10px] text-faint">{label}</span>
+      <span className="font-data text-[10px] text-faint">page fetch: {label}</span>
     </span>
   );
 }
@@ -113,18 +115,24 @@ export function RefreshAffordance({
   return (
     <div className="flex flex-wrap items-center gap-2.5" aria-label="refresh controls" data-testid="refresh-affordance">
       <AgeBadge asOf={asOf} />
-      <LivePulse ageSec={ageSec} isStale={isStale} />
-      <span className="font-data text-[10px] text-faint" data-testid="auto-refresh-label">
-        auto-refreshing every {intervalLabel}
-      </span>
-      <NextRefreshCountdown loading={loading} lastFetchedAt={lastFetchedAt} intervalMs={intervalMs} />
-      <button type="button" aria-label="Refresh best bets now" disabled={loading} onClick={onRefresh}
+      {isSnapshotMode ? (
+        <span className="font-data text-[10px] text-faint">Snapshot data; no scheduled refresh</span>
+      ) : (
+        <>
+          <LivePulse ageSec={ageSec} isStale={isStale} />
+          <span className="font-data text-[10px] text-faint" data-testid="auto-refresh-label">
+            auto-refreshing every {intervalLabel}
+          </span>
+          <NextRefreshCountdown loading={loading} lastFetchedAt={lastFetchedAt} intervalMs={intervalMs} />
+        </>
+      )}
+      <button type="button" aria-label={isSnapshotMode ? "Reload published snapshot" : "Refresh best bets now"} disabled={loading} onClick={onRefresh}
         className={cn("inline-flex items-center gap-1 border px-2 py-0.5",
           "font-data text-[10px] uppercase tracking-wide transition-colors",
           "border-border bg-transparent text-muted-foreground",
           "hover:border-primary hover:text-foreground focus-visible:outline-none",
           "focus-visible:ring-1 focus-visible:ring-ring disabled:opacity-40")}>
-        {loading ? "refreshing..." : "refresh now"}
+        {loading ? "loading..." : isSnapshotMode ? "reload snapshot" : "refresh now"}
       </button>
     </div>
   );

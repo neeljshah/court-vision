@@ -20,6 +20,7 @@ import { Badge, timeAgoIso } from "@/components/p6/Primitives";
 import { freshnessStatus } from "@/components/p6/LiveLinesPanel";
 import { BetCard, type BetCardData } from "@/components/bets/BetCard";
 import { Panel, PanelHead } from "@/components/ui/terminal";
+import { BoardObservation, getBoardObservation } from "@/components/bets/BoardObservation";
 
 const AUTO_REFRESH_MS = 120_000;
 
@@ -66,7 +67,7 @@ function AgeBadge({ asOf }: { asOf: string | null }) {
   if (!asOf) {
     return (
       <Badge tone="slate">
-        <span className="font-mono text-[10px]">data age: checking</span>
+        <span className="font-mono text-[10px]">data age unavailable</span>
       </Badge>
     );
   }
@@ -165,7 +166,9 @@ function SportBetsBoard({ sport }: { sport: string }) {
     BestBetsBoard
   >(fetcher, { intervalMs: AUTO_REFRESH_MS, staleAfterSec: 15 * 60, cacheKey: `bets:${sport}` });
 
-  const asOf = data && !isUnavailable(data) ? (data as BestBetsBoard).generated_at : null;
+  const observation = getBoardObservation(
+    data && !isUnavailable(data) ? [(data as BestBetsBoard).generated_at] : [],
+  );
 
   // Sort: tier (S=0,A=1,B=2,C=3) then confidence desc.
   const cards: BetCardData[] = useMemo(() => {
@@ -190,22 +193,14 @@ function SportBetsBoard({ sport }: { sport: string }) {
   const board = data && !isUnavailable(data) ? (data as BestBetsBoard) : null;
   const emptyReason = deriveEmptyReason(board, error);
 
-  const asOfStamp = useMemo(() => {
-    if (!asOf) return null;
-    const t = Date.parse(asOf);
-    if (Number.isNaN(t)) return null;
-    return new Date(t).toLocaleTimeString("en-US", { hour12: false });
-  }, [asOf]);
-
   return (
     <Panel>
       <PanelHead
         title={`${sport.toUpperCase()} best bets board`}
-        asOf={asOfStamp}
-        stale={isStale}
-        right={<AgeBadge asOf={asOf ?? null} />}
+        right={<AgeBadge asOf={observation.oldest} />}
       />
       <section aria-label={`${sport.toUpperCase()} best bets board`} className="flex flex-col gap-4 p-4">
+      <BoardObservation observation={observation} loading={isLoading && !anyFetched} />
       {isStale && anyFetched && error && (
         <span className="font-data text-[10px] text-stale">
           poll failed -- showing last-good data
@@ -215,7 +210,7 @@ function SportBetsBoard({ sport }: { sport: string }) {
       {/* Board content */}
       {isLoading && !anyFetched ? (
         <div
-          className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+          className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
           data-testid="sport-board-loading"
         >
           {[1, 2, 3].map((i) => (
@@ -237,7 +232,7 @@ function SportBetsBoard({ sport }: { sport: string }) {
         />
       ) : (
         <div
-          className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+          className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
           role="list"
           aria-label={`${sport.toUpperCase()} best bets -- ranked calibrated divergence cards`}
           data-testid="sport-cards-grid"
