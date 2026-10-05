@@ -22,7 +22,10 @@ import { api, isUnavailable } from "@/lib/p5api";
 import { useLiveData } from "@/lib/useLiveData";
 import { EquitySparkline } from "@/components/home/EquitySparkline";
 import { PanelHead } from "@/components/ui/terminal";
+import { PaperSourceTime } from "./PaperSummaryProvenance";
 import type { PnlSeries, PaperBankroll, ClvScoreboard } from "@/lib/types";
+
+type DatedPnlSeries = PnlSeries & { generated_at?: string | null };
 
 const POLL_MS = 30_000;
 const STALE_SEC = 90;
@@ -95,7 +98,7 @@ export function BetsMoneyHeadline() {
     [],
   );
 
-  const { data: pnlData, isStale, lastUpdatedAt } = useLiveData<PnlSeries>(pnlFetcher, {
+  const { data: pnlData, isStale } = useLiveData<DatedPnlSeries>(pnlFetcher, {
     intervalMs: POLL_MS,
     staleAfterSec: STALE_SEC,
   });
@@ -140,8 +143,6 @@ export function BetsMoneyHeadline() {
       : "--";
 
   const meanClv = fmtMeanClv(summary?.mean_clv_pct_or_INSUFFICIENT);
-  const asOfStamp =
-    lastUpdatedAt != null ? new Date(lastUpdatedAt).toLocaleTimeString("en-US", { hour12: false }) : null;
 
   return (
     <section
@@ -151,8 +152,6 @@ export function BetsMoneyHeadline() {
     >
       <PanelHead
         title="Money-makers -- paper equity (units)"
-        asOf={asOfStamp}
-        stale={isStale}
         right={
           isStale && pnl != null ? (
             <span
@@ -165,6 +164,11 @@ export function BetsMoneyHeadline() {
         }
       />
       <div className="p-4">
+      <div className="mb-3 flex flex-wrap gap-x-5 gap-y-1 font-data text-[11px] text-muted-foreground">
+        <span>P&amp;L snapshot generated: <PaperSourceTime value={pnl?.generated_at} /></span>
+        <span>Bankroll updated: <PaperSourceTime value={bank?.updated_at} /></span>
+        <span>CLV scoreboard time: unavailable</span>
+      </div>
       <p className="text-[11px] text-muted-foreground">
         How much you <strong className="text-foreground">would have made</strong>{" "}
         staking the best bets below. PAPER simulation, units only -- no $.
