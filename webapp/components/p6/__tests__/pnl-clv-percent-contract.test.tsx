@@ -39,7 +39,7 @@ const CASES = [
   { mean: 0.4, bets: "+0.4%", equity: "+0.40%" },
   { mean: 0.008, bets: "+0.0%", equity: "+0.01%" },
   { mean: 0, bets: "+0.0%", equity: "+0.00%" },
-  { mean: null, bets: "INSUFFICIENT_DATA", equity: "INSUFFICIENT_DATA" },
+  { mean: null, bets: "--", equity: "INSUFFICIENT_DATA" },
   { mean: "INSUFFICIENT_DATA", bets: "INSUFFICIENT_DATA", equity: "INSUFFICIENT_DATA" },
   { mean: "UNPROVEN", bets: "UNPROVEN", equity: "UNPROVEN" },
 ];

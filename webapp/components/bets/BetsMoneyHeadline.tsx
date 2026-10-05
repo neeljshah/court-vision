@@ -30,6 +30,15 @@ type DatedPnlSeries = PnlSeries & { generated_at?: string | null };
 const POLL_MS = 30_000;
 const STALE_SEC = 90;
 
+function finiteValue(value: unknown): number | null {
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+function countValue(value: unknown): number | null {
+  const count = finiteValue(value);
+  return count != null && Number.isSafeInteger(count) && count >= 0 ? count : null;
+}
+
 function fmtUnitsSigned(v: number | null | undefined): string {
   if (v == null || !Number.isFinite(v)) return "--";
   const sign = v >= 0 ? "+" : "";
@@ -41,11 +50,11 @@ function fmtMeanClv(v: number | string | null | undefined): {
   text: string;
   insufficient: boolean;
 } {
-  if (v == null) return { text: "INSUFFICIENT_DATA", insufficient: true };
+  if (v == null) return { text: "--", insufficient: true };
   if (typeof v === "string") {
     return { text: v, insufficient: v === "INSUFFICIENT_DATA" };
   }
-  if (!Number.isFinite(v)) return { text: "INSUFFICIENT_DATA", insufficient: true };
+  if (!Number.isFinite(v)) return { text: "--", insufficient: true };
   const sign = v >= 0 ? "+" : "";
   return { text: `${sign}${v.toFixed(1)}%`, insufficient: false };
 }
@@ -98,15 +107,15 @@ export function BetsMoneyHeadline() {
     [],
   );
 
-  const { data: pnlData, isStale } = useLiveData<DatedPnlSeries>(pnlFetcher, {
+  const { data: pnlData, isStale: pnlStale } = useLiveData<DatedPnlSeries>(pnlFetcher, {
     intervalMs: POLL_MS,
     staleAfterSec: STALE_SEC,
   });
-  const { data: bankData } = useLiveData<PaperBankroll>(bankFetcher, {
+  const { data: bankData, isStale: bankStale } = useLiveData<PaperBankroll>(bankFetcher, {
     intervalMs: POLL_MS,
     staleAfterSec: STALE_SEC,
   });
-  const { data: clvData } = useLiveData<ClvScoreboard>(clvFetcher, {
+  const { data: clvData, isStale: clvStale } = useLiveData<ClvScoreboard>(clvFetcher, {
     intervalMs: POLL_MS,
     staleAfterSec: STALE_SEC,
   });
@@ -115,34 +124,41 @@ export function BetsMoneyHeadline() {
   const bank = bankData && !isUnavailable(bankData) ? bankData : null;
   const clv = clvData && !isUnavailable(clvData) ? clvData : null;
 
-  const startUnits = bank?.start_units ?? pnl?.start_units ?? null;
+  const bankStart = finiteValue(bank?.start_units);
+  const bankCurrent = finiteValue(bank?.current_units);
+  const startUnits = bankStart ?? finiteValue(pnl?.start_units);
+  const retainedStale = (pnl != null && pnlStale) || (bank != null && bankStale) ||
+    (clv != null && clvStale);
   const curveValues =
     pnl && pnl.points && pnl.points.length > 0
       ? pnl.points.map((p) => p.balance_units)
       : null;
 
-  // net P&L: prefer bankroll delta, else the summary total.
-  const netUnits =
-    bank != null && startUnits != null
-      ? bank.current_units - startUnits
-      : pnl?.summary?.total_units ?? null;
+  // A bankroll delta requires both operands from the same feed.
+  const bankDelta = bankCurrent != null && bankStart != null
+    ? finiteValue(bankCurrent - bankStart) : null;
+  const netUnits = bankDelta ?? finiteValue(pnl?.summary?.total_units);
   const netTone = netUnits == null ? "slate" : netUnits >= 0 ? "up" : "down";
 
   const summary = pnl?.summary;
-  const nBets = summary?.n_bets ?? 0;
+  const nBets = countValue(summary?.n_bets);
+  const wins = countValue(summary?.n_win);
+  const losses = countValue(summary?.n_loss);
+  const pushes = countValue(summary?.n_push);
   const winRate = summary?.win_rate;
   const winRateStr =
     winRate != null && Number.isFinite(winRate)
       ? `${(winRate * 100).toFixed(0)}%`
       : "--";
   const recordStr =
-    summary != null
-      ? `${summary.n_win ?? 0}-${summary.n_loss ?? 0}${
-          (summary.n_push ?? 0) > 0 ? `-${summary.n_push}` : ""
-        }`
+    wins != null && losses != null
+      ? `${wins}-${losses}${pushes != null && pushes > 0 ? `-${pushes}` : ""}`
       : "--";
 
-  const meanClv = fmtMeanClv(summary?.mean_clv_pct_or_INSUFFICIENT);
+  const meanClv = summary != null ? fmtMeanClv(summary.mean_clv_pct_or_INSUFFICIENT)
+    : { text: "--", insufficient: true };
+  const closeCount = countValue(clv?.n_bets);
+  const closeRate = finiteValue(clv?.pct_beat_close);
 
   return (
     <section
@@ -153,7 +169,7 @@ export function BetsMoneyHeadline() {
       <PanelHead
         title="Money-makers -- paper equity (units)"
         right={
-          isStale && pnl != null ? (
+          retainedStale ? (
             <span
               className="font-data text-[9px] uppercase tracking-wider text-stale"
               data-testid="money-headline-stale"
@@ -186,17 +202,11 @@ export function BetsMoneyHeadline() {
         />
         <Stat
           label="bankroll (u)"
-          value={
-            bank != null
-              ? `${bank.current_units.toFixed(2)}u`
-              : startUnits != null
-              ? `${startUnits.toFixed(2)}u`
-              : "--"
-          }
+          value={bankCurrent != null ? `${bankCurrent.toFixed(2)}u` : "--"}
           testid="money-bankroll"
         />
-        <Stat label="graded" value={String(nBets)} testid="money-nbets" />
-        <Stat label="record (W-L)" value={recordStr} testid="money-record" />
+        <Stat label="graded" value={nBets != null ? String(nBets) : "--"} testid="money-nbets" />
+        <Stat label={pushes != null && pushes > 0 ? "record (W-L-P)" : "record (W-L)"} value={recordStr} testid="money-record" />
         <Stat label="win rate" value={winRateStr} testid="money-winrate" />
         <Stat
           label="mean CLV"
@@ -214,10 +224,10 @@ export function BetsMoneyHeadline() {
       </div>
 
       <p className="mt-3 border-t border-border pt-2 font-data text-[9px] leading-relaxed text-faint">
-        {clv != null && clv.n_bets > 0
-          ? `${clv.n_bets} graded vs close; beat-close ${
-              clv.pct_beat_close != null
-                ? `${clv.pct_beat_close.toFixed(0)}%`
+        {closeCount == null ? "CLV scoreboard unavailable." : closeCount > 0
+          ? `${closeCount} graded vs close; beat-close ${
+              closeRate != null
+                ? `${closeRate.toFixed(0)}%`
                 : "pending"
             }.`
           : "CLV vs-close INSUFFICIENT_DATA until bets grade against a real close."}{" "}
