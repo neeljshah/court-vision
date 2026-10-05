@@ -65,6 +65,42 @@ describe("getLibraryEntries", () => {
     expect(selected.length).toBeGreaterThan(0);
   });
 
+  it("finds source cards by visible scope, measurements, and first preview fields", () => {
+    const statcast = sources.find(entry => entry.id === "statcast_showcase")!;
+    const comeback = sources.find(entry => entry.id === "comeback_atlas")!;
+    for (const query of ["19 PITCH TYPES", "693,037", "pitch TYPE ff", "220,235", "PCT 32"]) {
+      expect(filterLibrary(entries, "mlb", "source", query).map(entry => entry.id), query)
+        .toContain(statcast.id);
+    }
+    expect(filterLibrary(entries, "nba", "source", "bUcKeTs masked n lt 30").map(entry => entry.id))
+      .toContain(comeback.id);
+    expect(filterLibrary(entries, "nba", "source", "pitch type ff").map(entry => entry.id))
+      .not.toContain(statcast.id);
+    expect(filterLibrary(entries, "mlb", "derived", "pitch type ff").map(entry => entry.id))
+      .not.toContain(statcast.id);
+    expect(filterLibrary(entries, "mlb", "source", "pitch type ff", collectionMemberIds("forecast-calibration")).map(entry => entry.id))
+      .not.toContain(statcast.id);
+  });
+
+  it("does not index hidden measurement extras or the second source preview row", () => {
+    const statcast = sources.find(entry => entry.id === "statcast_showcase")!;
+    expect(statcast.sourceSummary?.previewRows[1][0].value).toBe("SI");
+    expect(filterLibrary(entries, "mlb", "source", "107,136").map(entry => entry.id))
+      .not.toContain(statcast.id);
+    const withFourth = sources.find(entry => {
+      const summary = entry.sourceSummary;
+      if (!summary || summary.measurements.length < 4) return false;
+      const visible = [entry.title, entry.description, entry.category, entry.id, summary.scope,
+        ...summary.measurements.slice(0, 3).flatMap(item => [item.label, item.value]),
+        ...(summary.previewRows[0] || []).slice(0, 3).flatMap(item => [item.label, item.value])].join(" ").toLowerCase();
+      return !visible.includes(summary.measurements[3].label.toLowerCase());
+    });
+    expect(withFourth).toBeDefined();
+    const hidden = withFourth!.sourceSummary!.measurements[3].label;
+    expect(filterLibrary(entries, withFourth!.sport, "source", hidden).map(entry => entry.id))
+      .not.toContain(withFourth!.id);
+  });
+
   it("assigns a distinct card label to every reading kind", () => {
     expect(entries.find((entry) => entry.kind === "source")?.kindLabel).toBe("Source module");
     expect(entries.find((entry) => entry.kind === "derived")?.kindLabel).toBe("Derived analysis");

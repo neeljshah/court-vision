@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
 import LibraryExplorer from "./LibraryExplorer";
 import type { LibraryEntry } from "@/lib/analytics/libraryTypes";
+import { getLibraryEntries } from "@/lib/analytics/libraryData";
 
 const kindLabels: Record<LibraryEntry["kind"], string> = { source: "Source module", derived: "Derived analysis", finding: "Finding", inspector: "Inspector", explainer: "Explainer", paper: "Paper" };
 const entry = (id: string, title: string, sport: LibraryEntry["sport"], kind: LibraryEntry["kind"], keywords: string): LibraryEntry => ({ id, title, sport, kind, kindLabel: kindLabels[kind], keywords, description: `${title} description`, category: "Methods", status: "published", href: `/analytics/research/${id}/`, asOf: kind === "source" ? "2026-07-25" : null, rows: 4, fields: 2, preview: [1, 2], previewLabel: "Published values", sourceSummary: kind === "source" ? { asOf: "2026-07-25", scope: "42 observed games", measurements: [{ label: "Games", value: "42" }], availability: "partial", previewRows: [[{ label: "Team", value: "A" }]] } : undefined });
@@ -46,6 +47,18 @@ describe("LibraryExplorer", () => {
     expect(screen.getAllByText("42 observed games")).not.toHaveLength(0);
     expect(screen.getAllByText("partial")).not.toHaveLength(0);
     expect(screen.getAllByText("Team")).not.toHaveLength(0);
+  });
+
+  it("counts a published source when search matches its visible preview metric", async () => {
+    const statcast = getLibraryEntries().find(item => item.id === "statcast_showcase")!;
+    window.history.replaceState(null, "", "/analytics/browse/?kind=source");
+    render(<LibraryExplorer entries={[statcast, entries[0]]} />);
+    fireEvent.change(screen.getByRole("textbox", { name: "Search analytics library" }),
+      { target: { value: "PiTcH TyPe FF" } });
+    await waitFor(() => expect(screen.getByRole("status"))
+      .toHaveTextContent('1 entry matching "PiTcH TyPe FF"'));
+    expect(screen.getByRole("heading", { name: "Statcast Showcase" })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "NBA Pace Formula" })).not.toBeInTheDocument();
   });
 
   it("shows a derived analysis snapshot using the source-card date treatment", () => {

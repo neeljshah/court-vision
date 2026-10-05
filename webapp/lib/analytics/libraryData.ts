@@ -88,7 +88,11 @@ export function getLibraryEntries(): LibraryEntry[] {
     id: m.id, title: m.title, description: sourceDescription(m.one_line),
     category: moduleCategory(m.id), sport: sourceSport(m.id),
     kind: "source", kindLabel: kindLabel.source, status: m.status, href: `/analytics/m/${m.id}/`, asOf: m.as_of || sourceSummary.asOf,
-    keywords: m.id.replace(/_/g, " "), rows: null, fields: null, preview: [], previewLabel: "", sourceSummary,
+    // Match the evidence rendered by SourceEvidence, including its preview limits.
+    keywords: [m.id.replace(/_/g, " "), sourceSummary.scope,
+      ...sourceSummary.measurements.slice(0, 3).map(item => `${item.label} ${item.value}`),
+      ...(sourceSummary.previewRows[0] || []).slice(0, 3).map(item => `${item.label} ${item.value}`),
+    ].join(" "), rows: null, fields: null, preview: [], previewLabel: "", sourceSummary,
     integrityNotice: integrityNotice([m.id]),
     });
   });
