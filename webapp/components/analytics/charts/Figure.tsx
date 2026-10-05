@@ -38,6 +38,7 @@ const cap: CSSProperties = {
   gap: 6,
   marginTop: 12,
   flexWrap: "wrap",
+  overflowWrap: "anywhere",
 };
 
 function denominatorText(nRows: number | null | undefined, nGames: number | null | undefined, published: string | undefined): string {

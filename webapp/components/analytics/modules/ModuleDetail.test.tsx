@@ -2,9 +2,12 @@ import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { ModuleDetail } from "./ModuleDetail";
 import type { Mod, Out } from "@/app/(analytics)/analytics/m/[id]/page";
+import statcast from "@/public/data/showcase/statcast_showcase.json";
 
 const mod: Mod = { id: "blowout_dynamics", title: "Blowout dynamics", one_line: "When a lead becomes permanent.", out_path: "blowout_dynamics.json", chart_path: "blowout_dynamics.png", status: "published", as_of: "2026-09-01" };
 const out: Out = { descriptive_only: true };
+const statcastMod: Mod = { id: "statcast_showcase", title: "Statcast Showcase", out_path: "scripts/platformkit/analytics_showcase/out/statcast_showcase.json", chart_path: "docs/img/statcast_showcase.png", status: "ok", as_of: null as unknown as string };
+function caption() { return document.querySelector("figure figcaption"); }
 
 describe("ModuleDetail", () => {
   it("replaces the fatigue chart and copied effect receipts with schedule frequencies", () => {
@@ -94,5 +97,32 @@ describe("ModuleDetail", () => {
     expect(within(receipts).getByRole("rowheader", { name: "teams.0.team" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Continue reading" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Ask Scout about this module" }).getAttribute("href")).toMatch(/^\/analytics\/ask\/?\?q=Team%20states$/);
+  });
+
+  it("labels the published Statcast figure with its actual pitch corpus count and unknown date", () => {
+    render(<ModuleDetail mod={statcastMod} out={statcast} subtitle="Published pitch measurements." insight={null} />);
+    expect(caption()).toHaveTextContent("Source corpus: 693,037 pitches (pitch-type mix base; panel samples may differ)");
+    expect(caption()).toHaveTextContent("Date not published.");
+    expect(caption()).not.toHaveTextContent("n not published");
+  });
+
+  it.each([0, 7])("uses the supplied valid Statcast count %s, including zero", (n) => {
+    render(<ModuleDetail mod={statcastMod} out={{ ...statcast, n_pitches: n }} subtitle="Published pitch measurements." insight={null} />);
+    expect(caption()).toHaveTextContent(`Source corpus: ${n} pitches (pitch-type mix base; panel samples may differ)`);
+    expect(caption()).not.toHaveTextContent("693,037 pitches");
+  });
+
+  it.each([undefined, null, "693037", NaN, Infinity, -1, 1.5, Number.MAX_SAFE_INTEGER + 1])(
+    "does not invent a Statcast denominator for invalid n_pitches %s", (n) => {
+      render(<ModuleDetail mod={statcastMod} out={{ ...statcast, n_pitches: n }} subtitle="Published pitch measurements." insight={null} />);
+      expect(caption()).toHaveTextContent("n not published");
+      expect(caption()).not.toHaveTextContent("Source corpus:");
+    },
+  );
+
+  it("does not infer a pitch denominator for another module", () => {
+    render(<ModuleDetail mod={mod} out={{ n_pitches: 693037 }} subtitle="Published measurements." insight={null} />);
+    expect(caption()).toHaveTextContent("n not published");
+    expect(caption()).not.toHaveTextContent("Source corpus:");
   });
 });

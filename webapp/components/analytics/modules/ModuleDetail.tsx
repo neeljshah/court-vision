@@ -52,6 +52,11 @@ export function ModuleDetail({ mod, out, insight, subtitle }: { mod: Mod; out: O
   const chart = mod.chart_path ? `${base}/img/showcase/${name(mod.chart_path)}` : null;
   const presentation = getPublishedChartPresentation(mod.id);
   const useChartImage = !timing && !!chart && presentation.approved;
+  const pitchCount = out.n_pitches;
+  const denominator = mod.id === "statcast_showcase" && typeof pitchCount === "number"
+    && Number.isSafeInteger(pitchCount) && pitchCount >= 0
+    ? `Source corpus: ${pitchCount.toLocaleString("en-US")} pitches (pitch-type mix base; panel samples may differ)`
+    : undefined;
   const replacement = fallbackData(out, mod.id);
   const evidence = classifyModuleEvidence(mod.id, mod.status, out);
   const integrityNotices = noticesForModules([mod.id]);
@@ -69,8 +74,8 @@ export function ModuleDetail({ mod, out, insight, subtitle }: { mod: Mod; out: O
     <VerdictLegend style={{ margin: "0 0 24px" }} />
     <div className="mv-grid"><div>
       {timing && <TimingModulePanel evidence={timing} source={mod.out_path} moduleId={mod.id} />}
-      {useChartImage && <Figure source={mod.out_path} {...date} title={mod.title} verdict="descriptive_only"><img src={chart} alt={`${mod.title} chart`} style={{ width: "100%", height: "auto", display: "block" }} /></Figure>}
-      {!timing && chart && !useChartImage && <Figure source={mod.out_path} {...date} title={safeTitle} note={presentation.reason} verdict="descriptive_only"><div className="mv-data-figure" data-testid="published-data-figure" role="region" tabIndex={0} aria-label="Published replacement measurements (scrollable table)" data-scroll-region><table><thead><tr>{replacement.headers.map(header => <th key={header}>{header.replaceAll("_", " ")}</th>)}</tr></thead><tbody>{replacement.rows.map((row, index) => <tr key={index}>{replacement.headers.map(header => <td key={header}>{value(row[header])}</td>)}</tr>)}</tbody></table></div></Figure>}
+      {useChartImage && <Figure source={mod.out_path} {...date} title={mod.title} denominator={denominator} verdict="descriptive_only"><img src={chart} alt={`${mod.title} chart`} style={{ width: "100%", height: "auto", display: "block" }} /></Figure>}
+      {!timing && chart && !useChartImage && <Figure source={mod.out_path} {...date} title={safeTitle} denominator={denominator} note={presentation.reason} verdict="descriptive_only"><div className="mv-data-figure" data-testid="published-data-figure" role="region" tabIndex={0} aria-label="Published replacement measurements (scrollable table)" data-scroll-region><table><thead><tr>{replacement.headers.map(header => <th key={header}>{header.replaceAll("_", " ")}</th>)}</tr></thead><tbody>{replacement.rows.map((row, index) => <tr key={index}>{replacement.headers.map(header => <td key={header}>{value(row[header])}</td>)}</tr>)}</tbody></table></div></Figure>}
       {!fatigueReview && <ModuleReadingGuide howToRead={insight?.how_to_read} />}
       <ModuleEvidence evidence={evidence} moduleId={mod.id} />
       {!timing && !chart && evidence.availability === "published" && <div className="mv-nochart mono">This source has no chart. Its cited measurements appear below.</div>}
