@@ -66,7 +66,7 @@ function VerdictPill({ v }: { v: string }) {
       : "text-faint border-border";
   return (
     <span className={`inline-block whitespace-nowrap border px-1.5 py-px font-data text-[10px] tracking-wide ${cls}`}>
-      {v.replace(/_PROVISIONAL$/, "").replace(/_/g, " ")}
+      {v.replace(/_/g, " ")}
     </span>
   );
 }
