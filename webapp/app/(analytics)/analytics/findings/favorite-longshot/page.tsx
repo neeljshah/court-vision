@@ -1,10 +1,5 @@
-// Is the betting market calibrated? A favorite-longshot bias audit, pregame,
-// cross-sport. This grades THE MARKET's own calibration -- not our model. We
-// do not claim to beat the market anywhere on this page. Tennis shows a
-// mild, monotone favorite-longshot bias; MLB moneyline is essentially
-// efficient. Server component, static export, no client JS -- reads the
-// staged exhibit via the shared loadArtifact() reader and renders every
-// number verbatim, never recomputed, never re-rounded.
+// Descriptive market calibration from the dated public exhibit. Preserve the
+// published measurements; its row-independence assumption is not validated.
 import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -19,20 +14,22 @@ import { FindingUnavailable } from "@/components/analytics/findings/FindingUnava
 export const metadata: Metadata = {
   title: "Is the Market Calibrated?",
   description:
-    "Descriptive-only exhibit: a favorite-longshot calibration audit, pregame and cross-sport, for tennis match winner and MLB moneyline with Wilson intervals.",
+    "Descriptive favorite-longshot calibration for tennis and MLB, with published row-count Wilson intervals and explicit unverified independence assumptions.",
   ...findingMeta("favorite-longshot"),
 };
 
 type Bucket = { lo: number; hi: number; n: number; impl: number; real: number; gap: number; wilson_lo: number; wilson_hi: number };
 type SportBlock = { book: string; market: string; n_total: number; buckets: Bucket[]; verdict: string };
 type FlbArtifact = Artifact & {
-  headline?: string;
   method?: string;
   grades?: string;
   sports?: { tennis: SportBlock; mlb: SportBlock };
   observation_window?: { note: string };
   confounds?: string[];
 };
+
+// The historical artifact is unchanged; do not present its assumption as proof.
+const independenceClaim = "each row is one independent match/game";
 
 const h1: CSSProperties = {
   fontFamily: "var(--font-display)",
@@ -109,7 +106,7 @@ function BucketTable({ sport, block }: { sport: string; block: SportBlock }) {
               <th style={th}>Mean implied</th>
               <th style={th}>Realized fav win</th>
               <th style={th}>Gap</th>
-              <th style={th}>95% Wilson</th>
+              <th style={th}>Nominal 95% Wilson</th>
             </tr>
           </thead>
           <tbody>
@@ -126,7 +123,7 @@ function BucketTable({ sport, block }: { sport: string; block: SportBlock }) {
           </tbody>
         </table></FindingTableRegion>
       <p style={{ ...noteBox, marginTop: 16 }}>
-        <strong style={{ color: "var(--ink)" }}>Verdict &mdash; </strong>
+        <strong style={{ color: "var(--ink)" }}>Published interpretation &mdash; </strong>
         {block.verdict}.
       </p>
     </section>
@@ -153,11 +150,22 @@ export default function FavoriteLongshotPage() {
       <p className="overline">Findings / Market calibration</p>
       <h1 style={h1}>Is the published market calibration consistent? A favorite-longshot audit</h1>
       <p style={lede}>
-        {data.method} This exhibit grades {data.grades || "the market, not our model"} -- we do not claim to beat the
-        market anywhere here. The result reinforces that the market is efficient and well-calibrated.
+        {data.method?.replace(` -- ${independenceClaim}`, "")} This exhibit grades {data.grades || "the market, not our model"}.
+        These historical comparisons do not establish market efficiency or future calibration.
       </p>
 
-      <p style={headline}>{data.headline}</p>
+      <div style={headline} role="note" aria-label="Interval assumptions">
+        <strong>How to read the intervals</strong>
+        <p style={{ marginTop: 8, fontWeight: 400 }}>
+          The published bounds are row-count Wilson calculations using z=1.96. Distinct match or game identity
+          and independence of retained records have not been verified, so 95% coverage is not established.
+          This is a limitation of the available evidence, not a finding of duplicate or dependent records.
+          No adjustment for possible dependence is included; the original rates and bounds are preserved.
+        </p>
+        <a href="https://www.itl.nist.gov/div898/handbook/prc/section2/prc241.htm" style={{ color: "var(--accent)" }}>
+          Wilson interval method (NIST)
+        </a>
+      </div>
 
       <BucketTable sport="Tennis -- match winner" block={tennis} />
       <BucketTable sport="MLB -- moneyline" block={mlb} />
@@ -177,7 +185,7 @@ export default function FavoriteLongshotPage() {
             Confounds / notes
           </p>
           <ul style={{ ...lede, marginTop: 0, paddingLeft: 20, fontSize: 14, color: "var(--ink-2)" }}>
-            {data.confounds.map((c) => (
+            {data.confounds.filter((c) => !c.startsWith(independenceClaim)).map((c) => (
               <li key={c}>{c}</li>
             ))}
           </ul>
