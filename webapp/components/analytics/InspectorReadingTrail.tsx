@@ -18,7 +18,7 @@ export function InspectorReadingTrail({ id }: { id: string }) {
     <style>{`
       @media (max-width: 680px) {
         .inspector-reading-trail { margin: 16px 0 22px !important; padding-top: 12px !important; }
-        .inspector-reading-trail a { display: inline-block; min-height: 44px; padding: 10px 0; }
+        .inspector-reading-trail > p a { display: inline-block; min-height: 44px; padding: 10px 0; }
       }
     `}</style>
     <DataIntegrityNotice notices={integrityNotices} moduleIds={inspector.sourceModuleIds} />
