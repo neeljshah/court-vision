@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { expect, it } from "vitest";
 import EffectiveSampleSizePage from "./page";
 
@@ -19,4 +19,22 @@ it("stops instructing readers to widen every interval", () => {
   expect(screen.getByText(/not an instruction to scale a published interval/i)).toBeInTheDocument();
   expect(screen.getByText(/re-estimated by cluster bootstrap/i)).toBeInTheDocument();
   expect(screen.queryByText(/must therefore be widened/i)).not.toBeInTheDocument();
+});
+
+it("keeps historical counts labeled as proxies and links their ledger receipt", () => {
+  render(<EffectiveSampleSizePage />);
+  const table = screen.getByRole("table");
+  expect(within(table).getByRole("columnheader", { name: "Stored series" })).toBeInTheDocument();
+  expect(within(table).getByRole("columnheader", { name: "Published anchor (proxy)" })).toBeInTheDocument();
+  expect(within(table).queryByRole("columnheader", { name: "Distinct games" })).not.toBeInTheDocument();
+  expect(within(table).getByRole("cell", { name: "78,986" })).toBeInTheDocument();
+  expect(within(table).getAllByRole("cell", { name: "227" })).toHaveLength(2);
+  expect(within(table).getByRole("cell", { name: "9,003" })).toBeInTheDocument();
+  expect(within(table).getAllByRole("cell", { name: "51" })).toHaveLength(2);
+  expect(screen.getByText(/this count cannot establish how many distinct games/i)).toBeInTheDocument();
+  expect(screen.queryByText(/independent information of at most/i)).not.toBeInTheDocument();
+
+  fireEvent.click(screen.getByRole("button", { name: /Receipt: descriptive_only/ }));
+  expect(screen.getByRole("link", { name: "webapp/public/data/showcase/ess_ledger.json" }))
+    .toHaveAttribute("href", expect.stringMatching(/\/data\/showcase\/ess_ledger\.json$/));
 });

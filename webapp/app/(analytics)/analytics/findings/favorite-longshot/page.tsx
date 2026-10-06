@@ -88,11 +88,17 @@ const td: CSSProperties = {
 };
 
 function BucketTable({ sport, block }: { sport: string; block: SportBlock }) {
+  const bucketedRecords = block.buckets.reduce((total, bucket) => total + bucket.n, 0);
+  const outsideBins = block.n_total - bucketedRecords;
   return (
     <section style={{ marginTop: 40 }}>
       <p style={sectionH}>{sport}</p>
       <p style={{ ...lede, fontSize: 14.5, marginTop: 6, color: "var(--ink-3)" }}>
-        {block.book} &mdash; {block.market} &mdash; n={block.n_total.toLocaleString()}
+        {block.book} &mdash; {block.market} &mdash; source records n={block.n_total.toLocaleString()}
+      </p>
+      <p style={{ ...lede, fontSize: 14, marginTop: 8 }}>
+        Published bins cover {bucketedRecords.toLocaleString()} of {block.n_total.toLocaleString()} source records.
+        {outsideBins > 0 ? <> {outsideBins.toLocaleString()} source records are outside the published bins. No bucket-level rates or intervals are published for those records.</> : null}
       </p>
       <FindingTableRegion label="Published measurements" style={{ marginTop: 16, overflowX: "auto", maxWidth: 760 }}>
         <table className="tnum" style={{ borderCollapse: "collapse", width: "100%", minWidth: 620 }}>

@@ -1,12 +1,6 @@
-// Effective Sample Size -- a flagship honesty exhibit, sibling to
-// findings/retraction (DESIGN Sec. 1 + 4 + 11). Where retraction/page.tsx takes
-// apart six PUBLISHED numbers, this page takes apart our OWN row counts: it
-// shows that within-game rows are near-duplicates (the outcome is fixed, the
-// win-probability path is smooth) and states, per corpus, how few INDEPENDENT
-// games those rows are actually worth. Server component, static export, no
-// client JS -- reads the staged exhibit at build time via the shared
-// loadArtifact() reader (same missing-file-safe try/catch every showcase page
-// uses) and renders every number verbatim, never recomputed, never re-rounded.
+// Historical joined-corpus ESS ledger. Its stored-series count was published
+// as n_games but does not verify distinct games; all numerical values below
+// remain the original snapshot and are interpreted as proxies.
 import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import { loadArtifact, type Artifact } from "@/lib/showcase.server";
@@ -22,7 +16,7 @@ import { noticesForModules } from "@/lib/analytics/dataIntegrity";
 export const metadata: Metadata = {
   title: "Effective Sample Size",
   description:
-    "Descriptive-only exhibit: within-game rows are near-duplicates, so this table deflates our own sample sizes down to the honest, independent-game count.",
+    "Descriptive-only historical AR(1) proxy and stored-series anchor for joined-corpus rows; distinct games and intervals await recomposition.",
   ...findingMeta("effective-sample-size"),
 };
 
@@ -39,10 +33,7 @@ type Corpus = {
 };
 
 type EssLedger = Artifact & {
-  headline?: string;
-  method?: string;
   formula?: string;
-  confound?: string;
   corpora?: Corpus[];
 };
 
@@ -128,13 +119,16 @@ export default function EffectiveSampleSizePage() {
     );
   }
 
-  const { headline, method, formula, confound, source_artifact, generated_at, corpora } = data;
+  const { formula, generated_at, corpora } = data;
 
   return (
     <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }}>
       <p className="overline">Findings / Effective Sample Size</p>
       <h1 style={h1}>How independent is our data, really?</h1>
-      <p style={lede}>{headline}</p>
+      <p style={lede}>
+        This historical ledger estimates row dependence with lag-1 residual autocorrelation.
+        Its published anchor is a proxy, not a verified count of distinct games.
+      </p>
       <DataIntegrityNotice notices={noticesForModules([LEDGER_ID])} moduleIds={[LEDGER_ID]} />
       <p style={{ ...lede, fontSize: 15, marginTop: 12 }}>
         Support label: this ledger is the joined-corpus measurement, revision 1. It was taken
@@ -143,7 +137,12 @@ export default function EffectiveSampleSizePage() {
         pending, so every row below describes the joined corpus rather than the published
         revision 2 population.
       </p>
-      {method ? <p style={{ ...lede, fontSize: 15, marginTop: 12 }}>{method}</p> : null}
+      <p style={{ ...lede, fontSize: 15, marginTop: 12 }}>
+        The AR(1) estimate approximates effective rows from the recorded residual rho.
+        The published anchor takes min(AR(1) estimate, stored series count). The
+        stored series field counts (game_id, side) pairs. Multiple sides and mixed-game
+        input paths mean this count cannot establish how many distinct games were observed.
+      </p>
 
       <FindingTableRegion label="Published measurements" style={{ marginTop: 24, overflowX: "auto", maxWidth: 700 }}>
         <table className="tnum" style={{ borderCollapse: "collapse", width: "100%", minWidth: 620 }}>
@@ -151,10 +150,10 @@ export default function EffectiveSampleSizePage() {
             <tr>
               <th style={th}>Corpus</th>
               <th style={th}>Rows</th>
-              <th style={th}>Distinct games</th>
+              <th style={th}>Stored series</th>
               <th style={th}>Residual autocorr (rho)</th>
-              <th style={th}>Effective sample (AR1)</th>
-              <th style={th}>Honest anchor</th>
+              <th style={th}>Effective sample (AR1 proxy)</th>
+              <th style={th}>Published anchor (proxy)</th>
               <th style={th}>Implied interval-width factor</th>
             </tr>
           </thead>
@@ -179,20 +178,16 @@ export default function EffectiveSampleSizePage() {
           </tbody>
         </table></FindingTableRegion>
 
-      {/* The lead example is templated off corpora[0], never hardcoded: on a page
-          whose entire point is number integrity, a prose "78,986 -> 227" that could
-          drift from the table it explains would be exactly the failure this exhibit
-          exists to prevent. */}
+      {/* Keep the historical example tied to the displayed snapshot values. */}
       <p style={{ ...noteBox, marginTop: 24 }}>
         <strong style={{ color: "var(--ink)" }}>How to read this &mdash; </strong>
-        rows within one game are near-duplicates because the outcome is fixed and the
-        win-probability path is smooth, so {corpora[0].n_rows.toLocaleString()}{" "}
-        {sportLabel(corpora[0].sport)} rows carry the independent information of at
-        most ~{corpora[0].ess_anchor.toLocaleString()} games. The last column is the
-        interval-width factor that dependence implies for an estimate taken on these
-        rows; it is not an instruction to scale a published interval. Intervals on the
-        regenerated corpus are re-estimated by cluster bootstrap, never widened from an
-        earlier number.
+        the historical {sportLabel(corpora[0].sport)} snapshot has{" "}
+        {corpora[0].n_rows.toLocaleString()} rows and a published anchor proxy of{" "}
+        {corpora[0].ess_anchor.toLocaleString()}, capped by the stored series count.
+        The last column is an implied interval-width factor under that proxy; it is
+        not an instruction to scale a published interval. Intervals on the
+        regenerated corpus are re-estimated by cluster bootstrap, never widened from
+        an earlier number.
       </p>
 
       {formula ? (
@@ -204,11 +199,14 @@ export default function EffectiveSampleSizePage() {
         </>
       ) : null}
 
-      {confound ? <p style={{ ...lede, fontSize: 14, color: "var(--ink-3)", marginTop: 20 }}>{confound}</p> : null}
+      <p style={{ ...lede, fontSize: 14, color: "var(--ink-3)", marginTop: 20 }}>
+        AR(1) is a first-order approximation of a smooth residual path, not a full
+        independence model. This descriptive-only snapshot makes no advantage or return claim.
+      </p>
 
       <div style={{ marginTop: 16 }}>
         <Receipt
-          sourceArtifact={source_artifact || ""}
+          sourceArtifact="webapp/public/data/showcase/ess_ledger.json"
           asOf={generated_at || undefined}
           dateKind="snapshot"
           label="descriptive_only"
@@ -217,9 +215,8 @@ export default function EffectiveSampleSizePage() {
       </div>
 
       <p style={{ ...lede, marginTop: 32 }}>
-        This exhibit deflates our own numbers on purpose &mdash; it reports only the
-        independent-game count implied by the stated within-game dependence and what was actually
-        measured.
+        These historical proxy values describe the joined corpus only. Distinct-game
+        counts and replacement intervals require the pending segment-clean recomposition.
       </p>
     </div>
   );
