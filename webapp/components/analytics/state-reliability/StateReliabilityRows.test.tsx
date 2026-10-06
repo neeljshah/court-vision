@@ -33,7 +33,7 @@ it("sorts gaps and support numerically, marks the sorted column, and retains zer
   expect(screen.getByRole("columnheader", { name: "Absolute gap (pp)" })).toHaveAttribute("aria-sort", "descending");
   choose("Row order", "support-asc");
   expect(supports()).toEqual(["10", "50", "100", "500"]);
-  expect(screen.getByRole("columnheader", { name: "n", exact: true })).toHaveAttribute("aria-sort", "ascending");
+  expect(screen.getByRole("columnheader", { name: /^n$/ })).toHaveAttribute("aria-sort", "ascending");
   expect(screen.getByRole("columnheader", { name: "Absolute gap (pp)" })).not.toHaveAttribute("aria-sort");
   expect(within(tableRows()[0]).getAllByText("0.00 pp")).toHaveLength(2);
   expect(JSON.stringify(sport.rows)).toBe(original);
