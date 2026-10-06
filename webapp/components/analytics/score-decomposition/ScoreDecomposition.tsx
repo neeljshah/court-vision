@@ -49,11 +49,11 @@ function ComponentChart({ sports }: { sports: DecompositionSport[] }) {
   </svg>;
 }
 
-export function ScoreDecomposition({ sports }: { sports: DecompositionSport[] }) {
+export function ScoreDecomposition({ sports, asOf = null }: { sports: DecompositionSport[]; asOf?: string | null }) {
   if (!sports.length) return <p className="sd-empty">No published score-decomposition rows are available in this snapshot.</p>;
   return <section className="sd-shell" aria-label="Brier score decomposition">
     <div className="sd-legend">{COMPONENTS.map(component => <span key={component.key}><i style={{ background: component.color }} />{component.label}</span>)}</div>
-    <Figure source="public/data/showcase/murphy_decomposition.json" asOf={null} title="Binned Murphy components" subtitle="Each group preserves a separate published model or market population. Resolution is shown as a component; the audit table keeps its subtraction explicit." denominator={sports.map(item => `${sportLabel(item.sport)} ${sample(item.nRows, "n rows")}`).join("; ")}>
+    <Figure source="public/data/showcase/murphy_decomposition.json" asOf={asOf} title="Binned Murphy components" subtitle="Each group preserves a separate published model or market population. Resolution is shown as a component; the audit table keeps its subtraction explicit." denominator={sports.map(item => `${sportLabel(item.sport)} ${sample(item.nRows, "n rows")}`).join("; ")}>
       <ComponentChart sports={sports} />
     </Figure>
     <div className="sd-table-wrap" role="region" aria-label="Brier reconstruction audit" data-scroll-region>

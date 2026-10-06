@@ -10,6 +10,6 @@ export const metadata: Metadata = {
 };
 
 export default function ScoreDecompositionPage() {
-  const sports = loadScoreDecomposition();
-  return <div className="sd-page"><p className="sd-kicker">Calibration / Brier audit</p><h1>Inspect the Brier reconstruction remainder.</h1><p className="sd-intro">This view separates the published reliability, resolution, and uncertainty components for each population, then shows the difference between each binned reconstruction and the published Brier score.</p><InspectorReadingTrail id="score-decomposition" /><ScoreDecomposition sports={sports} /></div>;
+  const { sports, asOf } = loadScoreDecomposition();
+  return <div className="sd-page"><p className="sd-kicker">Calibration / Brier audit</p><h1>Inspect the Brier reconstruction remainder.</h1><p className="sd-intro">This view separates the published reliability, resolution, and uncertainty components for each population, then shows the difference between each binned reconstruction and the published Brier score.</p><InspectorReadingTrail id="score-decomposition" /><ScoreDecomposition sports={sports} asOf={asOf} /></div>;
 }

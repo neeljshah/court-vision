@@ -69,6 +69,11 @@ export function formatDecompositionValue(value: number | null): string {
 }
 
 /** Reads the build-time JSON snapshot; no browser fetch is used. */
-export function loadScoreDecomposition(): DecompositionSport[] {
-  return buildScoreDecomposition(snapshot<unknown>("murphy_decomposition"));
+export function loadScoreDecomposition(): { sports: DecompositionSport[]; asOf: string | null } {
+  const source = snapshot<unknown>("murphy_decomposition");
+  const asOf = record(source)?.as_of;
+  return {
+    sports: buildScoreDecomposition(source),
+    asOf: typeof asOf === "string" && asOf.trim() ? asOf : null,
+  };
 }
