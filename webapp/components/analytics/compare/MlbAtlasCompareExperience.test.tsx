@@ -1,6 +1,8 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CompareExperience } from "./CompareExperience";
+import { ComparisonResults } from "./ComparisonResults";
+import { normalizeComparisonPack } from "@/lib/analytics/comparisonData";
 import atlasPitchManifest from "../../../public/data/showcase/atlas_mlb_pitch_manifest.json";
 
 const comparables = { packs: {} };
@@ -81,6 +83,71 @@ describe("MLB atlas comparison controls", () => {
     expect(within(table).getByRole("row", { name: /Release speed P90 mph Not reported 86\.5/ })).toBeInTheDocument();
     expect(within(table).queryByText(/Ranked among/)).not.toBeInTheDocument();
     expect(screen.queryByText(/velocity observations|speed observations/i)).not.toBeInTheDocument();
+  });
+
+  it.each([
+    ["team:NYY", "team:BOS", "nyy", "bos", "28.4", "28.7"],
+    ["count:0-0", "count:0-1", "0_0", "0_1", "32.6", "28.2"],
+  ])("shows published pitch codes beside their shares for %s and %s", async (sourceA, sourceB, a, b, shareA, shareB) => {
+    const entries = [sourceA, sourceB].map((entity) => atlasPitchManifest.entries.find((entry) => entry.entity === entity)!);
+    expect(entries.map((entry) => entry.key_numbers.top_pitch_type)).toEqual(["FF", "FF"]);
+    expect(entries.map((entry) => String(entry.key_numbers.top_pitch_type_pct))).toEqual([shareA, shareB]);
+    window.history.replaceState(null, "", `/analytics/compare?pack=mlb_pitch&a=${a}&b=${b}`);
+    mockPitchFetch({ entries }, sourceA.startsWith("count:") ? { packs: {} } : { packs: { mlb_pitch: { fields: { top_pitch_type_pct: { n_ranked: 42 } } } } });
+    render(<CompareExperience />);
+    const table = await screen.findByRole("table", { name: "Published raw values" });
+    const code = within(table).getByRole("row", { name: "Most common pitch type FF FF" });
+    const share = code.nextElementSibling!;
+    expect(within(share as HTMLElement).getAllByRole("cell").map((cell) => cell.textContent)).toEqual([`${shareA}%`, `${shareB}%`]);
+    expect(within(table).getAllByRole("rowheader", { name: /top pitch type/ })).toHaveLength(1);
+    expect(table).not.toHaveTextContent(/ranked|percentile gap/i);
+    expect(screen.getByText(sourceA.startsWith("team:") ? /within each pitching team/ : /within each count subset/)).toBeInTheDocument();
+    expect(screen.getAllByText("As of 2025-09-28")).toHaveLength(2);
+    for (const entry of entries) expect(screen.getAllByText(entry.floors).length).toBeGreaterThan(0);
+    expect(screen.getByRole("link", { name: "raw manifest" })).toHaveAttribute("href", "/data/showcase/atlas_mlb_pitch_manifest.json");
+    expect(screen.getByRole("link", { name: "raw percentiles" })).toHaveAttribute("href", "/data/showcase/entity_percentiles.json");
+    expect(screen.getByRole("link", { name: "raw comparables" })).toHaveAttribute("href", "/data/showcase/entity_comparables.json");
+  });
+
+  it("keeps different codes and zero shares paired on swap without percentile metadata", async () => {
+    window.history.replaceState(null, "", "/analytics/compare?pack=mlb_pitch&a=nyy&b=bos");
+    mockPitchFetch({ entries: familyPitchManifest.entries.slice(2, 4).map((entry, index) => ({ ...entry, key_numbers: { top_pitch_type: index ? "FF" : " SL ", top_pitch_type_pct: index ? 100 : 0 } })) }, { packs: {} });
+    render(<CompareExperience />);
+    const table = await screen.findByRole("table", { name: "Published raw values" });
+    expect(within(table).getByRole("row", { name: "Most common pitch type SL FF" })).toBeInTheDocument();
+    expect(within(table).getByRole("row", { name: /top pitch type % % 0\.0% 100\.0%/ })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Swap profile A and profile B" }));
+    expect(within(table).getByRole("row", { name: "Most common pitch type FF SL" })).toBeInTheDocument();
+    expect(within(table).getByRole("row", { name: /top pitch type % % 100\.0% 0\.0%/ })).toBeInTheDocument();
+    expect(table).not.toHaveTextContent(/ranked|percentile gap/i);
+    expect(screen.getByText(/within each pitching team/)).toBeInTheDocument();
+  });
+
+  it.each([undefined, null, 42, {}, [], true, "", "   ", " UNK "])("reports missing or malformed codes honestly and retains UNK (%j)", async (value) => {
+    window.history.replaceState(null, "", "/analytics/compare?pack=mlb_pitch&a=nyy&b=bos");
+    mockPitchFetch({ entries: familyPitchManifest.entries.slice(2, 4).map((entry) => ({ ...entry, key_numbers: { top_pitch_type: value } })) }, { packs: { mlb_pitch: { fields: { top_pitch_type: {}, top_pitch_type_pct: {} } } } });
+    render(<CompareExperience />);
+    const table = await screen.findByRole("table", { name: "Published raw values" });
+    const code = within(table).getByRole("row", { name: /Most common pitch type/ });
+    expect(within(code).getAllByRole("cell").map((cell) => cell.textContent)).toEqual(Array(2).fill(value === " UNK " ? "UNK" : "Not reported"));
+    expect(within(table).getAllByRole("rowheader", { name: "Most common pitch type" })).toHaveLength(1);
+    expect(within(table).getByRole("row", { name: /top pitch type % % Not reported Not reported/ })).toBeInTheDocument();
+  });
+
+  it.each([["ff", "sc"], ["ff", "nyy"]])("withholds pitch-code context for %s and %s", async (a, b) => {
+    window.history.replaceState(null, "", `/analytics/compare?pack=mlb_pitch&a=${a}&b=${b}`);
+    mockPitchFetch({ entries: familyPitchManifest.entries.map((entry) => ({ ...entry, key_numbers: { ...entry.key_numbers, top_pitch_type: "FF", top_pitch_type_pct: 50 } })) }, familyPitchPercentiles);
+    render(<CompareExperience />);
+    await screen.findByRole("heading", { name: "pitch type FF" });
+    expect(screen.queryByRole("rowheader", { name: "Most common pitch type" })).not.toBeInTheDocument();
+    expect(screen.queryByText(/within each pitching team|within each count subset/)).not.toBeInTheDocument();
+  });
+
+  it("withholds MLB pitch-code context in other packs", () => {
+    const manifest = { entries: familyPitchManifest.entries.map((entry) => ({ ...entry, key_numbers: { ...entry.key_numbers, top_pitch_type: "FF", top_pitch_type_pct: 50 } })) };
+    const pack = normalizeComparisonPack("nba_players", manifest, { packs: { nba_players: { fields: { n_pitches: {} } } } }, comparables);
+    render(<ComparisonResults pack={pack} a={pack.entities[2]} b={pack.entities[3]} manifest="nba.json" surface="hard" onSurfaceChange={() => {}} />);
+    expect(screen.queryByRole("rowheader", { name: "Most common pitch type" })).not.toBeInTheDocument();
   });
 
   it.each([
