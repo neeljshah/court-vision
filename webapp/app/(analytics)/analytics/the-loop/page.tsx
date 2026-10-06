@@ -60,7 +60,7 @@ function verdictOf(s: string): Verdict {
   return "null";
 }
 function shortVerdict(s: string): string {
-  return s.replace(/_LOCAL$/i, "").replace(/_/g, " ");
+  return s.replace(/_/g, " ");
 }
 const day = (iso?: string) => (iso ? iso.slice(0, 10) : undefined);
 

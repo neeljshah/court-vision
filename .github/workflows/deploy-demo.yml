@@ -155,6 +155,7 @@ jobs:
           npx vitest run lib/analytics/paperViewState.test.ts
           npx vitest run lib/analytics/paperEvidence.server.test.ts
           npx vitest run lib/analytics/claimHistory.test.ts
+          npx vitest run 'app/(analytics)/analytics/the-loop/page.qualifiers.test.tsx'
           npx vitest run lib/analytics/countContext.test.ts
           npx vitest run lib/analytics/analysisDestinations.test.ts
           npx vitest run lib/analytics/exactCountContext.test.ts
