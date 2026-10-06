@@ -15,6 +15,20 @@ function ask(query: string) {
 beforeEach(() => window.history.replaceState(null, "", "/analytics/ask/"));
 
 describe("Scout soccer clean-sheet answers", () => {
+  it("opens the published overlapping team profile without an unintended comparison", () => {
+    expect(entries.some(entry => entry.entity?.name === "Ajaccio")).toBe(true);
+    expect(entries.some(entry => entry.entity?.name === "Ajaccio GFCO")).toBe(true);
+    render(<AskBox entries={entries} tours={[]} />);
+    for (const query of ["Ajaccio GFCO", "Ajaccio GFCO profile"]) {
+      const result = ask(query);
+      expect(result.queryByRole("link", { name: /^Compare / })).not.toBeInTheDocument();
+      expect(result.getByRole("link", { name: "Open profile" }))
+        .toHaveAttribute("href", "/analytics/players/soccer/ajaccio_gfco");
+    }
+    expect(ask("Ajaccio GFCO vs Ajaccio").getByRole("link", { name: "Compare Ajaccio GFCO and Ajaccio" }))
+      .toHaveAttribute("href", "/analytics/compare?pack=soccer&a=ajaccio_gfco&b=ajaccio");
+  });
+
   it("shows the source, observation window, and a filtered measurement link", () => {
     render(<AskBox entries={entries} tours={[]} />);
     const result = ask(question);

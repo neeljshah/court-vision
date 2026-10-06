@@ -51,6 +51,16 @@ function matchPosition(query: string, form: string): number {
   return ` ${query} `.indexOf(` ${form} `);
 }
 
+function matchPositions(query: string, form: string): number[] {
+  const text = ` ${query} `;
+  const needle = ` ${form} `;
+  const positions: number[] = [];
+  for (let position = text.indexOf(needle); position >= 0; position = text.indexOf(needle, position + 1)) {
+    positions.push(position);
+  }
+  return positions;
+}
+
 function entityKey(entity: AtlasEntity): string {
   return `${entity.pack}:${entity.slug}`;
 }
@@ -85,15 +95,18 @@ export function resolveEntityIntent(query: string, atlasEntities: AtlasEntity[])
   const possibleFullMatches = atlasEntities.flatMap((entity) => {
     const forms = fullEntityForms(entity);
     return forms.flatMap((fullName, formIndex) => {
-      const position = matchPosition(normalizedQuery, fullName);
-      return position >= 0 ? [{ entity, position, fullName, isPublished: formIndex === 0 }] : [];
+      return matchPositions(normalizedQuery, fullName)
+        .map(position => ({ entity, position, fullName, isPublished: formIndex === 0 }));
     });
   });
   const exactQualifiedNames = new Set(possibleFullMatches
     .filter(({ entity, isPublished }) => isPublished && fullEntityForms(entity).length > 1)
     .map(({ entity }) => fullEntityForms(entity)[1]));
-  const fullMatches = possibleFullMatches.filter(({ entity, fullName, isPublished }) =>
+  const qualifiedMatches = possibleFullMatches.filter(({ entity, fullName, isPublished }) =>
     !exactQualifiedNames.has(fullName) || (isPublished && fullEntityForms(entity).length > 1));
+  const fullMatches = qualifiedMatches.filter(match => !qualifiedMatches.some(longer =>
+    longer.fullName.length > match.fullName.length && longer.position <= match.position &&
+    longer.position + longer.fullName.length >= match.position + match.fullName.length));
   const consumedAliases = new Set(fullMatches.flatMap(({ entity }) => {
     const forms = entityForms(entity);
     return forms.slice(fullEntityForms(entity).length);
@@ -102,9 +115,11 @@ export function resolveEntityIntent(query: string, atlasEntities: AtlasEntity[])
   const ambiguous = new Map<string, { entity: AtlasEntity; position: number }>();
 
   fullMatches.forEach(({ entity, position, fullName }) => {
-    const sameName = fullMatches.filter((match) => match.fullName === fullName);
-    const target = sameName.length === 1 ? resolved : ambiguous;
-    target.set(entityKey(entity), { entity, position });
+    const sameName = new Set(fullMatches.filter(match => match.fullName === fullName)
+      .map(match => entityKey(match.entity)));
+    const target = sameName.size === 1 ? resolved : ambiguous;
+    const key = entityKey(entity);
+    if (!target.has(key) || position < target.get(key)!.position) target.set(key, { entity, position });
   });
 
   const aliases = new Map<string, { entity: AtlasEntity; position: number; isGivenName: boolean }[]>();

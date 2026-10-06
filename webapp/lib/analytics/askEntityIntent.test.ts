@@ -15,6 +15,36 @@ const atlasEntities: AtlasEntity[] = [
 ];
 
 describe("resolveEntityIntent", () => {
+  it.each(["Ajaccio GFCO", "Ajaccio GFCO profile", "Ajaccio GFCO and Ajaccio GFCO"])("resolves one overlapping identity: %s", query => {
+    const teams = [
+      { name: "Ajaccio", pack: "soccer", slug: "ajaccio" },
+      { name: "Ajaccio GFCO", pack: "soccer", slug: "ajaccio_gfco" },
+    ];
+    expect(resolveEntityIntent(query, teams)).toEqual({ entities: [teams[1]], candidates: [], isComparison: false });
+  });
+
+  it.each([
+    ["Ajaccio vs Ajaccio GFCO", [0, 1]],
+    ["Compare Ajaccio and Ajaccio GFCO", [0, 1]],
+    ["Ajaccio GFCO vs Ajaccio", [1, 0]],
+    ["Compare Ajaccio GFCO and Ajaccio", [1, 0]],
+    ["Ajaccio GFCO vs Ajaccio GFCO and Ajaccio", [1, 0]],
+  ] as const)("retains separate overlapping mentions in order: %s", (query, order) => {
+    const teams = [
+      { name: "Ajaccio", pack: "soccer", slug: "ajaccio" },
+      { name: "Ajaccio GFCO", pack: "soccer", slug: "ajaccio_gfco" },
+    ];
+    expect(resolveEntityIntent(query, teams)).toEqual({
+      entities: order.map(index => teams[index]), candidates: [], isComparison: true,
+    });
+  });
+
+  it("counts distinct identities when a genuinely ambiguous name repeats", () => {
+    expect(resolveEntityIntent("Alex Smith and Alex Smith", atlasEntities)).toEqual({
+      entities: [], candidates: [atlasEntities[4], atlasEntities[5]], isComparison: false,
+    });
+  });
+
   it("does not treat numeric count suffixes as ambiguous name aliases", () => {
     const counts = ["count:0-0", "count:3-0", "count:0-2"].map(name => ({
       name, pack: "mlb_pitch_types", slug: name.replace(/:/g, "_"),
