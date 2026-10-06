@@ -104,7 +104,8 @@ def build():
         "skipped": SKIP_NOTES,
         "honest_note": ("Model beats market only where verdict starts MODEL_SHARPER "
                          "(still PROVISIONAL pending more data). Most rows are UNDERPOWERED "
-                         "(CI spans zero) or MARKET_SHARPER -- reported as-is."),
+                         "or MARKET_SHARPER -- reported as-is. "
+                         "Some underpowered rows have confidence intervals that exclude zero."),
     }
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     OUT_JSON.write_text(json.dumps(payload, indent=2), encoding="utf-8")

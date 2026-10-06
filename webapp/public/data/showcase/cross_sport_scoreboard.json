@@ -236,5 +236,5 @@
    "reason": "walk-forward accuracy/Brier of the model alone, no market-paired delta or CI -- not comparable to the scoreboard rows."
   }
  ],
- "honest_note": "Model beats market only where verdict starts MODEL_SHARPER (still PROVISIONAL pending more data). Most rows are UNDERPOWERED (CI spans zero) or MARKET_SHARPER -- reported as-is."
+ "honest_note": "Model beats market only where verdict starts MODEL_SHARPER (still PROVISIONAL pending more data). Most rows are UNDERPOWERED or MARKET_SHARPER -- reported as-is. Some underpowered rows have confidence intervals that exclude zero."
 }

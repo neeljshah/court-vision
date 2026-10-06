@@ -3,6 +3,8 @@ import { derivedAsOf, getLibraryEntries } from "./libraryData";
 import { collectionMemberIds } from "./readingCollections";
 import { getResearchAnalyses } from "./researchData";
 import { filterLibrary } from "./libraryTypes";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 
 describe("getLibraryEntries", () => {
   const entries = getLibraryEntries();
@@ -63,6 +65,22 @@ describe("getLibraryEntries", () => {
     const selected = filterLibrary(entries, "all", "all", "", collectionMemberIds("forecast-calibration"));
     expect(selected.map((entry) => entry.id).every((id) => collectionMemberIds("forecast-calibration").includes(id))).toBe(true);
     expect(selected.length).toBeGreaterThan(0);
+  });
+
+  it.each([
+    ["novel_rest_asymmetry", "mlb", "rest asymmetry"],
+    ["novel_starter_rest_absorption", "nba", "starter rest absorption"],
+  ] as const)("keeps %s in its published sport's source browse results", (id, otherSport, query) => {
+    const artifact = JSON.parse(readFileSync(join(process.cwd(), "public", "data", "showcase", `${id}.json`), "utf8"));
+    expect(sources.find(entry => entry.id === id)?.sport).toBe(artifact.sport);
+    expect(filterLibrary(entries, artifact.sport, "source", query).map(entry => entry.id)).toContain(id);
+    expect(filterLibrary(entries, otherSport, "source", query).map(entry => entry.id)).not.toContain(id);
+  });
+
+  it.each(["nba", "mlb"] as const)("preserves shared source entries when browsing %s", sport => {
+    const selected = filterLibrary(entries, sport, "source", "").map(entry => entry.id);
+    expect(selected).toContain("cross_sport_scoreboard");
+    expect(selected).toContain("calibration_stability");
   });
 
   it("finds source cards by visible scope, measurements, and first preview fields", () => {

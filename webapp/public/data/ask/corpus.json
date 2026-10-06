@@ -9040,7 +9040,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Mostly no. Across 17 cross-sport rows, most are underpowered (confidence interval spans zero) or market-sharper -- for example NBA end-of-first-quarter win-probability has a paired delta of -0.0084, flagged market-sharper and still provisional. The only model-sharper rows are late-inning MLB total-runs, and even those are labeled provisional pending more data. Every row is reported as-is.",
+    "answer": "Mostly no. Across 17 cross-sport rows, most are underpowered or market-sharper -- for example NBA end-of-first-quarter win-probability has a paired delta of -0.0084, flagged market-sharper and still provisional. The only model-sharper rows are late-inning MLB total-runs, and even those are labeled provisional pending more data. Every row is reported as-is. Some underpowered rows have confidence intervals that exclude zero.",
     "source_artifact": "webapp/public/data/showcase/cross_sport_scoreboard.json",
     "as_of": "2026-07-22"
    },

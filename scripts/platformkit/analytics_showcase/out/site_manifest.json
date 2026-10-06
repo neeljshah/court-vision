@@ -155,7 +155,7 @@
     {
       "id": "cross_sport_scoreboard",
       "title": "Cross Sport Scoreboard",
-      "one_line": "Model beats market only where verdict starts MODEL_SHARPER (still PROVISIONAL pending more data). Most rows are UNDERPOWERED (CI spans zero) or MARKET_SHARPER -- reported as-is.",
+      "one_line": "Model beats market only where verdict starts MODEL_SHARPER (still PROVISIONAL pending more data). Most rows are UNDERPOWERED or MARKET_SHARPER -- reported as-is. Some underpowered rows have confidence intervals that exclude zero.",
       "out_path": "scripts/platformkit/analytics_showcase/out/cross_sport_scoreboard.json",
       "chart_path": "docs/img/cross_sport_scoreboard.png",
       "status": "partial",
