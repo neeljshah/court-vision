@@ -96,7 +96,7 @@ export function CompareExperience() {
     setAQuery("");
     setBQuery("");
     const family = pack === "mlb_pitch" ? parseMlbAtlasFamily(params.get("family")) : undefined;
-    setRequested({ pack, a: params.get("a") || undefined, b: params.get("b") || undefined, family });
+    setRequested({ pack, a: pack === "mlb_pitch" ? params.get("a") || undefined : params.get("a") ?? undefined, b: pack === "mlb_pitch" ? params.get("b") || undefined : params.get("b") ?? undefined, family });
     setExplicitMlbFamily(family);
     setSurface(pack === "tennis" ? urlSurface(params.get("surface")) : "hard");
     setPackKey(pack);
@@ -136,9 +136,9 @@ export function CompareExperience() {
       return;
     }
     const defaults = marqueePair(packKey, data.entities);
-    const a = requested.pack === packKey && requested.a && valid.has(requested.a) ? requested.a : defaults?.[0] || data.entities[0].slug;
-    const candidate = requested.pack === packKey && requested.b && valid.has(requested.b) && requested.b !== a ? requested.b : defaults?.[1];
-    const b = candidate && candidate !== a ? candidate : data.entities.find((entity) => entity.slug !== a)?.slug || a;
+    const a = packKey !== "mlb_pitch" && requested.a === "" ? "" : requested.pack === packKey && requested.a && valid.has(requested.a) ? requested.a : defaults?.[0] || data.entities[0].slug;
+    const candidate = packKey !== "mlb_pitch" && requested.b === "" ? "" : requested.pack === packKey && requested.b && valid.has(requested.b) && requested.b !== a ? requested.b : defaults?.[1];
+    const b = candidate === "" ? "" : candidate && candidate !== a ? candidate : data.entities.find((entity) => entity.slug !== a)?.slug || a;
     const requestedPairFamily = packKey === "mlb_pitch" ? mlbAtlasFamily(data.entities.find((entity) => entity.slug === a)?.sourceEntity) : undefined;
     const linkedFamily = parseMlbAtlasFamily(new URL(window.location.href).searchParams.get("family"));
     if (requestedPairFamily && requestedPairFamily === mlbAtlasFamily(data.entities.find((entity) => entity.slug === b)?.sourceEntity) && linkedFamily && linkedFamily !== requestedPairFamily) { setExplicitMlbFamily(undefined); setRequested({ ...requested, family: undefined }); const url = new URL(window.location.href); url.searchParams.delete("family"); window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}${url.hash}`); }
@@ -146,7 +146,7 @@ export function CompareExperience() {
     setBSlug(b);
     setAQuery(data.entities.find((entity) => entity.slug === a)?.name || "");
     setBQuery(data.entities.find((entity) => entity.slug === b)?.name || "");
-    setPairReady(true);
+    setPairReady(Boolean(a && b));
   }, [data, packKey, requested, urlReady, activeRevision]);
 
   useEffect(() => {
@@ -196,12 +196,23 @@ export function CompareExperience() {
   const singleFamily = packKey === "mlb_pitch" && Boolean(a) !== Boolean(b) ? mlbAtlasFamily(a?.sourceEntity || b?.sourceEntity) : undefined;
   const activeMlbFamily = packKey === "mlb_pitch" ? pairFamily || explicitMlbFamily || singleFamily : undefined;
   const selectableEntities = activeMlbFamily ? (data?.entities || []).filter((entity) => mlbAtlasFamily(entity.sourceEntity) === activeMlbFamily) : data?.entities || [];
-  const writeMlbUrl = (family: MlbAtlasFamily | undefined, nextA?: string, nextB?: string) => {
+  const writeSelectionUrl = (family: MlbAtlasFamily | undefined, nextA?: string, nextB?: string) => {
     const url = new URL(window.location.href);
-    if (family) url.searchParams.set("family", family); else url.searchParams.delete("family");
-    if (nextA) url.searchParams.set("a", nextA); else url.searchParams.delete("a");
-    if (nextB) url.searchParams.set("b", nextB); else url.searchParams.delete("b");
+    if (packKey === "mlb_pitch") { if (family) url.searchParams.set("family", family); else url.searchParams.delete("family"); }
+    if (nextA !== undefined) url.searchParams.set("a", nextA); else url.searchParams.delete("a");
+    if (nextB !== undefined) url.searchParams.set("b", nextB); else url.searchParams.delete("b");
     window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}${url.hash}`);
+  };
+  const clearSlot = (slot: "a" | "b") => {
+    const family = packKey === "mlb_pitch" ? activeMlbFamily : undefined;
+    const nextA = slot === "a" ? packKey === "mlb_pitch" ? undefined : "" : aSlug || (data?.key !== packKey && requested.pack === packKey ? requested.a : packKey === "mlb_pitch" ? undefined : "");
+    const nextB = slot === "b" ? packKey === "mlb_pitch" ? undefined : "" : bSlug || (data?.key !== packKey && requested.pack === packKey ? requested.b : packKey === "mlb_pitch" ? undefined : "");
+    beginNavigation(packKey);
+    if (packKey === "mlb_pitch") setExplicitMlbFamily(family);
+    setRequested({ pack: packKey, family, a: nextA, b: nextB });
+    if (slot === "a") setASlug(""); else setBSlug("");
+    setPairReady(false);
+    writeSelectionUrl(family, nextA, nextB);
   };
   const chooseMlbFamily = (value: string) => {
     const family = parseMlbAtlasFamily(value);
@@ -211,25 +222,17 @@ export function CompareExperience() {
     setRequested({ pack: "mlb_pitch", family });
     setASlug(""); setBSlug(""); setAQuery(""); setBQuery("");
     setPairReady(false);
-    writeMlbUrl(family);
+    writeSelectionUrl(family);
   };
   const findByName = (value: string) => selectableEntities.find((entity) => entity.name.toLocaleLowerCase() === value.trim().toLocaleLowerCase());
   const chooseA = (value: string) => {
     setAQuery(value);
-    if (packKey === "mlb_pitch" && !value.trim()) {
-      const family = activeMlbFamily;
-      beginNavigation("mlb_pitch");
-      setExplicitMlbFamily(family);
-      setRequested({ pack: "mlb_pitch", family, b: bSlug || undefined });
-      setASlug(""); setPairReady(false);
-      writeMlbUrl(family, undefined, bSlug || undefined);
-      return;
-    }
+    if (!value.trim()) { clearSlot("a"); return; }
     const hit = findByName(value);
     if (!hit) return;
     if (packKey === "mlb_pitch") {
       if (hit.slug === bSlug) return;
-      setASlug(hit.slug); setPairReady(Boolean(bSlug)); writeMlbUrl(explicitMlbFamily, hit.slug, bSlug || undefined);
+      setASlug(hit.slug); setPairReady(Boolean(bSlug)); writeSelectionUrl(explicitMlbFamily, hit.slug, bSlug || undefined);
       return;
     }
     if (hit.slug === bSlug) {
@@ -237,29 +240,25 @@ export function CompareExperience() {
       setBSlug(aSlug);
       setAQuery(hit.name);
       setBQuery(a?.name || "");
+      if (!aSlug) writeSelectionUrl(undefined, hit.slug, "");
       return;
     }
     setASlug(hit.slug);
+    setPairReady(Boolean(bSlug)); if (!bSlug) writeSelectionUrl(undefined, hit.slug, "");
   };
   const chooseB = (value: string) => {
     setBQuery(value);
-    if (packKey === "mlb_pitch" && !value.trim()) {
-      const family = activeMlbFamily;
-      beginNavigation("mlb_pitch");
-      setExplicitMlbFamily(family);
-      setRequested({ pack: "mlb_pitch", family, a: aSlug || undefined });
-      setBSlug(""); setPairReady(false);
-      writeMlbUrl(family, aSlug || undefined);
-      return;
-    }
+    if (!value.trim()) { clearSlot("b"); return; }
     const hit = findByName(value);
     if (packKey !== "mlb_pitch" && hit?.slug === aSlug) {
       setBSlug(hit.slug); setASlug(bSlug); setBQuery(hit.name); setAQuery(b?.name || "");
+      if (!bSlug) writeSelectionUrl(undefined, "", hit.slug);
       return;
     }
     if (hit && hit.slug !== aSlug) {
       setBSlug(hit.slug);
-      if (packKey === "mlb_pitch") { setPairReady(Boolean(aSlug)); writeMlbUrl(explicitMlbFamily, aSlug || undefined, hit.slug); }
+      if (packKey === "mlb_pitch") { setPairReady(Boolean(aSlug)); writeSelectionUrl(explicitMlbFamily, aSlug || undefined, hit.slug); }
+      else { setPairReady(Boolean(aSlug)); if (!aSlug) writeSelectionUrl(undefined, "", hit.slug); }
     }
   };
   const commitA = (event: KeyboardEvent<HTMLInputElement>) => {

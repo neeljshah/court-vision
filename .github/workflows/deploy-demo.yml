@@ -181,6 +181,7 @@ jobs:
           npx vitest run components/analytics/AskBox.timing.test.tsx
           npx vitest run components/analytics/AskBox.soccer.test.tsx
           npx vitest run components/analytics/compare/CompareExperience.test.tsx
+          npx vitest run components/analytics/compare/CompareClearSelection.test.tsx
           npx vitest run components/analytics/compare/MlbAtlasCompareExperience.test.tsx
           npx vitest run components/analytics/compare/TennisSurfaceComparison.test.tsx
           npx vitest run components/analytics/compare/SoccerVenueComparison.test.tsx
