@@ -231,6 +231,7 @@ jobs:
           npx vitest run components/analytics/lab/LineupSupport.test.tsx
           npx vitest run components/analytics/lab/RimProfileContext.test.tsx
           npx vitest run components/analytics/lab/ConsistencyContext.test.tsx
+          npx vitest run components/analytics/lab/LoadBearingContext.test.tsx
           npx vitest run components/analytics/lab/LiveClockContext.test.tsx
           npx vitest run components/analytics/lab/MarketForesightContext.test.tsx
           npx vitest run components/analytics/lab/MeasurementLabIntegrity.test.tsx
