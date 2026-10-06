@@ -46,4 +46,17 @@ describe("StateReliability", () => {
     expect(screen.getByText((_, element) => element?.tagName === "P" && (element.textContent || "").startsWith("Showing Signed gap (pp) for International soccer."))).toBeInTheDocument();
     expect(screen.getByRole("table", { name: /all published state-conditioned rows for international soccer/i })).toBeInTheDocument();
   });
+
+  it("keeps the grids complete and resets row filters when changing sport", () => {
+    render(<StateReliability sports={sports} />);
+    fireEvent.change(screen.getByLabelText("Minimum row support"), { target: { value: "1000" } });
+    fireEvent.change(screen.getByLabelText("Row source"), { target: { value: "model" } });
+    expect(screen.getByRole("status")).toHaveTextContent("Showing 1 of 2 published rows for MLB.");
+    expect(screen.getByTestId("market-early-.8-1")).toHaveTextContent("n 2,771");
+    fireEvent.change(screen.getByLabelText("State reliability sport"), { target: { value: "soccer_intl" } });
+    expect(screen.getByLabelText("Minimum row support")).toHaveValue("0");
+    expect(screen.getByLabelText("Row source")).toHaveValue("all");
+    expect(screen.getByRole("status")).toHaveTextContent("Showing 2 of 2 published rows for International soccer.");
+    expect(screen.getByTestId("model-0-15-0-.2")).toHaveTextContent("not published");
+  });
 });

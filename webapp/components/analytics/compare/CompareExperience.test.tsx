@@ -82,8 +82,12 @@ describe("CompareExperience controls", () => {
     const a = screen.getByLabelText("Profile A");
     const b = screen.getByLabelText("Profile B");
     await waitFor(() => expect(a).toHaveValue("Alpha"));
-    fireEvent.change(b, { target: { value: "Al" } });
-    expect(screen.getByRole("status")).toHaveTextContent("No published profile named Al in this pack.");
+    fireEvent.change(b, { target: { value: " aL " } });
+    expect(screen.getByRole("status")).toHaveTextContent("Matching profile is selected in the other slot. Enter its full name to swap, or choose a different profile.");
+    fireEvent.change(b, { target: { value: " bE " } });
+    expect(screen.getByRole("status")).toHaveTextContent("Select a matching profile from the list.");
+    fireEvent.change(b, { target: { value: "Unknown" } });
+    expect(screen.getByRole("status")).toHaveTextContent("No published profile named Unknown in this pack.");
     expect(screen.queryByRole("heading", { name: "Largest measured differences" })).not.toBeInTheDocument();
     expect(window.location.search).toBe("?pack=nba_players&a=alpha&b=beta");
     if (event === "change") fireEvent.change(b, { target: { value: " alpha " } });

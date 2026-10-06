@@ -272,7 +272,8 @@ export function CompareExperience() {
   const unmatchedQuery = !aMatchesInput ? aQuery.trim() : !bMatchesInput ? bQuery.trim() : "";
   const noMatch = Boolean(data && unmatchedQuery);
   const duplicate = noMatch && Boolean(findByName(unmatchedQuery)) && aQuery.trim().toLocaleLowerCase() === bQuery.trim().toLocaleLowerCase();
-
+  const hasCandidate = noMatch && selectableEntities.some((entity) => entity.name.toLocaleLowerCase().includes(unmatchedQuery.toLocaleLowerCase()) && (aQuery.trim() && !aMatchesInput ? packKey !== "mlb_pitch" || entity.slug !== bSlug : entity.slug !== aSlug));
+  const hiddenMatch = noMatch && selectableEntities.some((entity) => entity.slug === (aQuery.trim() && !aMatchesInput ? bSlug : aSlug) && entity.name.toLocaleLowerCase().includes(unmatchedQuery.toLocaleLowerCase()));
   return (
     <section className="compare-experience" aria-label="Entity comparison controls and results">
       <div className="compare-sport-switcher" aria-label="Choose a sport">
@@ -292,7 +293,7 @@ export function CompareExperience() {
       </div>
       <p className="compare-status">{data ? `${data.nInPack} profiles in ${info.label}.` : "Loading published pack data..."}</p>
       {error ? <p className="compare-error" role="alert">{error} <button type="button" onClick={() => setRetry((value) => value + 1)}>Retry</button></p> : null}
-      {noMatch ? <p className="compare-empty" role="status">{duplicate ? `${unmatchedQuery} is already selected. Choose a different profile for A or B.` : `No published profile named ${unmatchedQuery} in this pack.`}</p> : null}
+      {noMatch ? <p className="compare-empty" role="status">{duplicate ? `${unmatchedQuery} is already selected. Choose a different profile for A or B.` : hasCandidate ? "Select a matching profile from the list." : hiddenMatch ? packKey === "mlb_pitch" ? "Matching profile is selected in the other slot. Choose a different profile." : "Matching profile is selected in the other slot. Enter its full name to swap, or choose a different profile." : `No published profile named ${unmatchedQuery} in this pack.`}</p> : null}
       {pairReady && data?.key === packKey && a && b && aMatchesInput && bMatchesInput ? <ComparisonResults pack={data} a={a} b={b} manifest={info.manifest} sport={activeSport?.key} surface={surface} onSurfaceChange={setSurface} /> : null}
     </section>
   );
