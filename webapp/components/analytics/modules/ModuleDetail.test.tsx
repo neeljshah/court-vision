@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest";
 import { ModuleDetail } from "./ModuleDetail";
 import type { Mod, Out } from "@/app/(analytics)/analytics/m/[id]/page";
 import statcast from "@/public/data/showcase/statcast_showcase.json";
+import teamStates from "@/public/data/showcase/ctx_team_states.json";
+import siteManifest from "@/public/data/showcase/site_manifest.json";
 
 const mod: Mod = { id: "blowout_dynamics", title: "Blowout dynamics", one_line: "When a lead becomes permanent.", out_path: "blowout_dynamics.json", chart_path: "blowout_dynamics.png", status: "published", as_of: "2026-09-01" };
 const out: Out = { descriptive_only: true };
@@ -73,6 +75,17 @@ describe("ModuleDetail", () => {
     expect(screen.getByTestId("published-data-figure")).toHaveTextContent("ATL");
     expect(screen.queryByRole("img", { name: "Team states chart" })).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "View full size" })).not.toBeInTheDocument();
+  });
+
+  it("shows the published team states timestamp as a source date", () => {
+    const published = siteManifest.modules.find(item => item.id === "ctx_team_states");
+    expect(published?.as_of).toBe(teamStates.as_of);
+    const insight = { cited: [{ field: "n_games", value: teamStates.n_games, path: "ctx_team_states.json" }] };
+    render(<ModuleDetail mod={published as Mod} out={teamStates} subtitle="Published team measurements." insight={insight} />);
+    expect(screen.getByText(/Source as of 2026-05-21/, { selector: ".mv-head .overline" })).toBeInTheDocument();
+    expect(screen.getByText("Source as of 2026-05-21", { selector: "figcaption span" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Source as of 2026-05-21/ })).toBeInTheDocument();
+    expect(screen.queryByText(/Observation window 2026-05-21 16:05:11/)).not.toBeInTheDocument();
   });
 
   it("mounts the integrity notice only for affected artifacts", () => {

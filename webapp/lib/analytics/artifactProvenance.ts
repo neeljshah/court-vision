@@ -34,7 +34,7 @@ function basePath(): string {
 }
 
 function isoDate(value: string): string | null {
-  const match = /^(\d{4})-(\d{2})-(\d{2})(?:T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:\d{2})?)?$/.exec(value);
+  const match = /^(\d{4})-(\d{2})-(\d{2})(?:[T ]\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:\d{2})?)?$/.exec(value);
   if (!match) return null;
   const [year, month, day] = match.slice(1, 4).map(Number);
   const parsed = new Date(Date.UTC(year, month - 1, day));

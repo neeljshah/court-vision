@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import siteManifest from "@/public/data/showcase/site_manifest.json";
+import teamStates from "@/public/data/showcase/ctx_team_states.json";
 import { listPacks } from "@/lib/atlas.server";
 import { artifactDate, artifactUrl, describeDate, provenanceDate } from "./artifactProvenance";
 
@@ -75,6 +76,16 @@ describe("artifact provenance", () => {
   it("never turns a manifest as_of stamp into an observation window", () => {
     const artifact = siteManifest.modules.find(item => item.id === "bookmaker_accuracy");
     expect(describeDate(artifact?.as_of, "window")).toBe("Date not published.");
+  });
+
+  it("classifies the published team states timestamp as a source date", () => {
+    const publishedModule = siteManifest.modules.find(item => item.id === "ctx_team_states");
+    expect(publishedModule?.as_of).toBe(teamStates.as_of);
+    expect(teamStates.as_of).toBe("2026-05-21 16:05:11");
+    expect(artifactDate(teamStates, publishedModule?.as_of)).toEqual({ asOf: teamStates.as_of, dateKind: "source" });
+    expect(describeDate(teamStates.as_of, "source")).toBe("Source as of 2026-05-21");
+    expect(describeDate(teamStates.as_of, "window")).toBe("Date not published.");
+    expect(describeDate("2026-02-30 16:05:11", "source")).toBe("Date not published.");
   });
 });
 
