@@ -1,7 +1,10 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
-import { expect, it } from "vitest";
+import { expect, it, vi } from "vitest";
 import { StateReliabilityRows } from "./StateReliabilityRows";
 import type { StateReliabilityRow, StateReliabilitySport } from "@/lib/analytics/stateReliability";
+import { exportStateReliabilityCSV } from "@/lib/analytics/stateReliabilityCsv";
+
+vi.mock("@/lib/analytics/stateReliabilityCsv", () => ({ exportStateReliabilityCSV: vi.fn() }));
 
 function row(source: "model" | "market", timeBucket: string, n: number, error: number): StateReliabilityRow {
   return { sport: "mlb", source, timeBucket, probabilityBucket: ".4-.6", n, meanP: .5, meanY: .5 - error, calibrationError: error };
@@ -45,8 +48,18 @@ it("explains an empty filtered cohort and restores original order and all rows",
   expect(screen.queryByRole("table")).not.toBeInTheDocument();
   expect(screen.getByRole("status")).toHaveTextContent("Showing 0 of 4");
   expect(screen.getByText(/No published rows match these filters/)).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Download visible rows (CSV)" })).toBeDisabled();
   fireEvent.click(screen.getByRole("button", { name: "Reset table" }));
   expect(supports()).toEqual(["10", "100", "500", "50"]);
   expect(screen.getByRole("table", { name: "All published state-conditioned rows for MLB" })).toBeInTheDocument();
   expect(screen.getByRole("button", { name: "Reset table" })).toBeDisabled();
+  expect(screen.getByRole("button", { name: "Download visible rows (CSV)" })).toBeEnabled();
+});
+
+it("downloads the visible filtered rows in the selected order with their source context", () => {
+  render(<StateReliabilityRows sport={sport} label="MLB" />);
+  choose("Row source", "market"); choose("Minimum row support", "50"); choose("Row order", "support-asc");
+  fireEvent.click(screen.getByRole("button", { name: "Download visible rows (CSV)" }));
+  expect(exportStateReliabilityCSV).toHaveBeenLastCalledWith(sport, [sport.rows[3], sport.rows[2]]);
+  expect(screen.getByText(/observation dates are not published/)).toBeInTheDocument();
 });

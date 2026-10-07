@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { stateReliabilityMetricValue, type StateReliabilityRow, type StateReliabilitySport } from "@/lib/analytics/stateReliability";
+import { exportStateReliabilityCSV } from "@/lib/analytics/stateReliabilityCsv";
 
 const orders = [
   { value: "published", label: "Published order" },
@@ -47,8 +48,10 @@ export function StateReliabilityRows({ sport, label }: { sport: StateReliability
         {orders.map(item => <option key={item.value} value={item.value}>{item.label}</option>)}
       </select></label>
       <button className="sr-reset" type="button" onClick={reset} disabled={!filtered && order === "published"}>Reset table</button>
+      <button className="sr-reset" type="button" onClick={() => exportStateReliabilityCSV(sport, rows)} disabled={!rows.length}>Download visible rows (CSV)</button>
     </div>
     <p className="sr-metric" role="status">Showing {rows.length} of {sport.rows.length} published rows for {label}.</p>
+    <p className="sr-pairing">CSV keeps this row order, raw probabilities, percentage-point gaps, and source context. The artifact date is included; observation dates are not published. Missing cells are omitted, not exported as zero.</p>
     {rows.length ? <div className="sr-table-wrap" role="region" aria-label={`${label} state-conditioned rows`} tabIndex={0} data-scroll-region>
       <table className="sr-table">
         <caption>{filtered ? "Filtered published" : "All published"} state-conditioned rows for {label}</caption>
