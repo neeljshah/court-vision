@@ -34,4 +34,14 @@ describe("ObservationDependence", () => {
     expect(market?.querySelectorAll("circle")).toHaveLength(3);
     expect(within(screen.getAllByRole("figure")[0]).getByText(/dots are not paired/i)).toBeInTheDocument();
   });
+
+  it("reports each present side's eligible-series count in the figure caption", () => {
+    render(<ObservationDependence sports={sports} asOf="2026-09-16" />);
+    const [mlb, soccer] = screen.getAllByRole("figure").map(figure => figure.querySelector("figcaption")!);
+    expect(within(mlb).getByText("Model: 2 eligible series; Market: 3 eligible series")).toBeInTheDocument();
+    expect(within(soccer).getByText("Model: 1 eligible series")).toBeInTheDocument();
+    expect(soccer).not.toHaveTextContent("Market:");
+    expect(mlb).not.toHaveTextContent("n not published");
+    expect(soccer).not.toHaveTextContent("n not published");
+  });
 });

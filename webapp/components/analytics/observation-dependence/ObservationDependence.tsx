@@ -39,7 +39,7 @@ export function ObservationDependence({ sports, asOf, dateKind = "source" }: { s
     {sports.map((sport) => <section className="od-sport" key={sport.sport} aria-labelledby={`od-${sport.sport}`}>
       <h2 id={`od-${sport.sport}`}>{sportLabel(sport.sport)}</h2>
       <p className="od-sport-meta">Published corpus: {sport.nRecords?.toLocaleString() ?? "Not published"} ticks across {sport.nSeries?.toLocaleString() ?? "Not published"} candidate series.</p>
-      <Figure source={SOURCE} asOf={asOf || "published snapshot"} dateKind={dateKind} title={`${sportLabel(sport.sport)} within-game distributions`} subtitle="Each dot is one eligible game-side series. Model and market are separate populations; dots are not paired." verdict="descriptive_only">
+      <Figure source={SOURCE} asOf={asOf || "published snapshot"} dateKind={dateKind} title={`${sportLabel(sport.sport)} within-game distributions`} subtitle="Each dot is one eligible game-side series. Model and market are separate populations; dots are not paired." verdict="descriptive_only" denominator={sport.sides.map((side) => `${side.side === "model" ? "Model" : "Market"}: ${side.nGames.toLocaleString("en-US")} eligible series`).join("; ")}>
         <div className="od-strips">{sport.sides.map((side) => <DotStrip key={side.side} sport={sport.sport} side={side} />)}</div>
       </Figure>
     </section>)}
