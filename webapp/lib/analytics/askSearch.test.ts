@@ -44,6 +44,19 @@ describe("resolveQuestion", () => {
       .toMatchObject({ kind: "direct", entry: scope });
   });
 
+  it("returns exact published advice refusals before the live-data scope answer", () => {
+    const corpus = loadScoutCorpus();
+    const refused = corpus.find(entry => entry.q === "What should I selection on tonight?");
+    const scope = corpus.find(entry => entry.q === "Is any of this a live system?");
+    expect(refused?.a.status).toBe("refused");
+    expect(scope?.a.status).toBe("no_data");
+    for (const query of [refused!.q, "what's the play tonight", "  WHAT'S THE PLAY TONIGHT!  "]) {
+      expect(resolveQuestion(query, corpus)).toMatchObject({ kind: "direct", entry: refused });
+    }
+    expect(resolveQuestion(scope!.q, corpus)).toMatchObject({ kind: "direct", entry: scope });
+    expect(resolveQuestion("What's the play tonight for this game?", corpus)).toMatchObject({ kind: "direct", entry: scope });
+  });
+
   it("resolves multiword paraphrases to the cited answer", () => {
     const result = resolveQuestion("what is Jokic's assist rate?", entries);
     expect(result).toMatchObject({ kind: "direct", entry: { q: entries[0].q } });

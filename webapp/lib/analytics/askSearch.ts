@@ -260,9 +260,9 @@ export function resolveQuestion(query: string, entries: AskEntry[]): ResolvedQue
   };
   const offer = intent.isComparison ? comparisonOffer(intent.entities) : undefined;
 
-  // Exact published answers include missing coverage for named metrics such as
-  // Live-Clock Fraction. Other live/latest requests still use the scope refusal.
-  const staticExact = entries.find((entry) => entry.a.status !== "refused" &&
+  const exactRefusal = entries.find((entry) => entry.a.status === "refused" && supportsEntities(entry, intent.entities) &&
+    [entry.q, ...entry.alt_phrasings].some((phrase) => norm(phrase) === norm(query)));
+  const staticExact = exactRefusal || entries.find((entry) => entry.a.status !== "refused" &&
     supportsEntities(entry, intent.entities) && matchesStaticQuestion(queryTerms, entry, query));
   if (staticExact) return {
     entry: staticExact,
