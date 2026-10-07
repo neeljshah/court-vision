@@ -174,9 +174,13 @@ describe("CompareExperience controls", () => {
     fetchMock.mockImplementationOnce(() => Promise.reject(new Error("offline")));
     render(<CompareExperience />);
     expect(await screen.findByRole("alert")).toHaveTextContent("could not be loaded");
+    expect(screen.getByText("Comparison data unavailable.")).toHaveAttribute("aria-live", "polite");
+    expect(screen.queryByText("Loading published pack data...")).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Retry" }));
     const a = await screen.findByLabelText("Profile A");
     await waitFor(() => expect(a).toHaveValue("Alpha"));
+    expect(screen.getByText("2 profiles in NBA players.")).toBeInTheDocument();
+    expect(screen.queryByText("Comparison data unavailable.")).not.toBeInTheDocument();
     fireEvent.change(a, { target: { value: "No Such Profile" } });
     expect(screen.getByRole("status")).toHaveTextContent("No published profile named No Such Profile in this pack.");
     expect(screen.queryByText("25th percentile")).not.toBeInTheDocument();

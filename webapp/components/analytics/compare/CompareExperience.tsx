@@ -291,7 +291,7 @@ export function CompareExperience() {
         <label><span>Profile B</span><input list="compare-entities-b" value={bQuery} onChange={(event) => chooseB(event.target.value)} onKeyDown={commitB} placeholder="Search a profile" aria-label="Profile B" />
           <datalist id="compare-entities-b">{selectableEntities.filter((entity) => entity.slug !== aSlug).map((entity) => <option key={entity.slug} value={entity.name} />)}</datalist></label>
       </div>
-      <p className="compare-status">{data ? `${data.nInPack} profiles in ${info.label}.` : "Loading published pack data..."}</p>
+      <p className="compare-status" aria-live="polite">{error ? "Comparison data unavailable." : data ? `${data.nInPack} profiles in ${info.label}.` : "Loading published pack data..."}</p>
       {error ? <p className="compare-error" role="alert">{error} <button type="button" onClick={() => setRetry((value) => value + 1)}>Retry</button></p> : null}
       {noMatch ? <p className="compare-empty" role="status">{duplicate ? `${unmatchedQuery} is already selected. Choose a different profile for A or B.` : hasCandidate ? "Select a matching profile from the list." : hiddenMatch ? packKey === "mlb_pitch" ? "Matching profile is selected in the other slot. Choose a different profile." : "Matching profile is selected in the other slot. Enter its full name to swap, or choose a different profile." : `No published profile named ${unmatchedQuery} in this pack.`}</p> : null}
       {pairReady && data?.key === packKey && a && b && aMatchesInput && bMatchesInput ? <ComparisonResults pack={data} a={a} b={b} manifest={info.manifest} sport={activeSport?.key} surface={surface} onSurfaceChange={setSurface} /> : null}
