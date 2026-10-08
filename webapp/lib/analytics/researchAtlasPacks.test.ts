@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { buildAtlasResearch, getAtlasPackResearch, type AtlasManifest, type AtlasPack } from "./researchAtlasPacks";
+import { entrySlugs } from "./comparisonData";
 import soccerAtlas from "../../public/data/showcase/atlas_soccer_manifest.json";
+import mlbPitchAtlas from "../../public/data/showcase/atlas_mlb_pitch_manifest.json";
 import { researchComparisonPolicy } from "./researchComparisonPolicy";
 
 const pack: AtlasPack = {
@@ -103,5 +105,28 @@ describe("atlas pack research", () => {
     expect(analyses[1].rows.every((row) => row.label.startsWith("team "))).toBe(true);
     expect(analyses[2].rows.every((row) => row.label.startsWith("count:"))).toBe(true);
     expect(new Set(analyses.flatMap((analysis) => analysis.rows.map((row) => row.id))).size).toBe(61);
+  });
+
+  it("keeps full-manifest entity routes and source measurements in all MLB pitch cohorts", () => {
+    const analyses = getAtlasPackResearch().filter((analysis) => analysis.source === "atlas_mlb_pitch_manifest");
+    const fullRoutes = entrySlugs(mlbPitchAtlas.entries);
+    expect(analyses.flatMap((analysis) => analysis.rows)).toHaveLength(mlbPitchAtlas.entries.length);
+
+    for (const analysis of analyses) {
+      expect(analysis.asOf).toBe("2025-09-28");
+      for (const row of analysis.rows) {
+        const sourceIndex = Number(row.sourcePaths?.[0]?.match(/^entries\[(\d+)\]/)?.[1]);
+        const source = mlbPitchAtlas.entries[sourceIndex];
+        expect(row.href).toBe(`/analytics/players/mlb_pitch/${fullRoutes[sourceIndex].slug}`);
+        expect(row.values.n_pitches).toBe(source.key_numbers.n_pitches);
+        expect(row.sourcePaths).toEqual(analysis.fields.map((field) => `entries[${sourceIndex}].key_numbers.${field.key}`));
+      }
+    }
+
+    const pitch = analyses[0].rows.find((row) => row.label === "pitch type KC");
+    const team = analyses[1].rows.find((row) => row.label === "team KC");
+    expect(pitch?.href).toBe("/analytics/players/mlb_pitch/kc");
+    expect(team).toMatchObject({ id: "mlb-team-pitch-atlas-measurements-kc", href: "/analytics/players/mlb_pitch/team_kc", values: { n_pitches: 22717 } });
+    expect(team?.sourcePaths).toContain("entries[31].key_numbers.n_pitches");
   });
 });

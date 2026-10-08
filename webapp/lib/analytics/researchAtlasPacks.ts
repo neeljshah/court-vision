@@ -5,7 +5,7 @@ import { entrySlugs, entityName, type RawEntry } from "./comparisonData";
 import type { LabField } from "./labTypes";
 import type { ResearchAnalysis, ResearchReference, ResearchRow } from "./researchTypes";
 
-export type AtlasManifest = { entries?: RawEntry[]; generated_at?: unknown; sourceIndexes?: number[] };
+export type AtlasManifest = { entries?: RawEntry[]; generated_at?: unknown; sourceIndexes?: number[]; routeSlugs?: string[] };
 export type AtlasPack = { key: string; source: string; id: string; title: string; sport: ResearchAnalysis["sport"]; noun: string; defaultMeasurement?: string };
 
 const PACKS: AtlasPack[] = [
@@ -62,7 +62,7 @@ export function buildAtlasResearch(pack: AtlasPack, manifest: AtlasManifest): Re
     group: pack.noun,
     values: Object.fromEntries(keys.map((key) => [key, displayedValue(pack.key, entry.key_numbers?.[key], key)])),
     note: typeof entry.floors === "string" ? entry.floors : undefined,
-    href: `/analytics/players/${pack.key}/${slug}`,
+    href: `/analytics/players/${pack.key}/${manifest.routeSlugs?.[index] ?? slug}`,
     sourcePaths: keys.map((key) => `entries[${manifest.sourceIndexes?.[index] ?? index}].key_numbers.${key}`),
   }));
   const publishedFloors = floors(entries);
@@ -97,9 +97,10 @@ export function buildAtlasResearch(pack: AtlasPack, manifest: AtlasManifest): Re
 export function getAtlasPackResearch(): ResearchAnalysis[] {
   const standard = PACKS.map((pack) => buildAtlasResearch(pack, snapshot<AtlasManifest>(pack.source)));
   const mlbPitch = snapshot<AtlasManifest>("atlas_mlb_pitch_manifest");
+  const mlbSlugs = entrySlugs(mlbPitch.entries || []).map(({ slug }) => slug);
   const cohorts = getMlbPitchAtlasCohorts(mlbPitch.entries || []).map((cohort) => buildAtlasResearch({
     key: "mlb_pitch", source: "atlas_mlb_pitch_manifest", id: cohort.id, title: cohort.title,
     sport: "mlb", noun: cohort.noun, defaultMeasurement: cohort.defaultMeasurement,
-  }, { ...mlbPitch, entries: cohort.entries, sourceIndexes: cohort.sourceIndexes }));
+  }, { ...mlbPitch, entries: cohort.entries, sourceIndexes: cohort.sourceIndexes, routeSlugs: cohort.sourceIndexes.map((index) => mlbSlugs[index]) }));
   return [...standard, ...cohorts];
 }
