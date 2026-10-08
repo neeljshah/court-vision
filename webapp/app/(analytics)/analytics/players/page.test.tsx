@@ -66,6 +66,17 @@ describe("EntitiesIndexPage", () => {
     }
   });
 
+  it("keeps full-manifest routes for the two published KC cards after splitting cohorts", () => {
+    render(<EntitiesIndexPage />);
+    const [pitchTypes, teams] = getMlbPitchAtlasCohorts(mlbPitchEntries());
+    const pitchSection = screen.getByRole("heading", { name: pitchTypes.title }).closest("section") as HTMLElement;
+    const teamSection = screen.getByRole("heading", { name: teams.title }).closest("section") as HTMLElement;
+    expect(within(pitchSection).getByRole("link", { name: "pitch type KC" }))
+      .toHaveAttribute("href", "/analytics/players/mlb_pitch/kc");
+    expect(within(teamSection).getByRole("link", { name: "team KC" }))
+      .toHaveAttribute("href", "/analytics/players/mlb_pitch/team_kc");
+  });
+
   it("separates calibration checkpoints and probability bands with data-derived counts", () => {
     render(<EntitiesIndexPage />);
     const entries = calibrationEntries();

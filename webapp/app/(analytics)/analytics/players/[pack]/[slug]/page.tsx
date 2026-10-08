@@ -18,6 +18,7 @@ import { Receipt, type ReceiptData } from "@/components/analytics/Receipt";
 import { ScoutNote, type ScoutEnvelope } from "@/components/analytics/ScoutNote";
 import { ScoutQuestions } from "@/components/analytics/ScoutQuestions";
 import { asOfDate } from "@/lib/analytics/format";
+import { getMlbPitchAtlasCohorts } from "@/lib/analytics/atlasResearchCohorts";
 import { entityMeasurements, summarizeAvailableMeasurements, type EntityPercentilePack } from "@/lib/analytics/entityMeasurements";
 import { entityObservationContext } from "@/lib/analytics/entityObservationContext";
 import { packComparables, packJoins, packPercentiles } from "@/lib/analytics/showcaseData";
@@ -119,9 +120,14 @@ function nameFor(entry: Entry): string {
   return entry.entity.replace(/^(pitch_type|team):/, "$1 ").replace(/_/g, " ");
 }
 function displayFor(pack: Pack, entry?: Entry) {
-  return pack.slug === "calibration" && entry?.card_type === "prob_band"
-    ? { label: "Probability-band calibration", noun: "measured probability-band outcomes", anchor: "calibration-probability-bands" }
-    : { label: pack.label, noun: pack.noun, anchor: pack.slug };
+  if (pack.slug === "calibration" && entry?.card_type === "prob_band")
+    return { label: "Probability-band calibration", noun: "measured probability-band outcomes", anchor: "calibration-probability-bands" };
+  if (pack.slug === "mlb_pitch" && entry) {
+    const cohort = getMlbPitchAtlasCohorts([entry]).find((item) => item.entries.length);
+    if (cohort && cohort.id !== "mlb-pitch-type-atlas-measurements")
+      return { label: cohort.title, noun: `measured pitch data for ${cohort.noun}`, anchor: cohort.id };
+  }
+  return { label: pack.label, noun: pack.noun, anchor: pack.slug };
 }
 
 export function generateStaticParams() {

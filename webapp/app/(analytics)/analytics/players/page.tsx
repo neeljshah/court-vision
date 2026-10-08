@@ -179,8 +179,8 @@ const STYLES = `
 @media(max-width:720px){.pl-anchor{scroll-margin-top:16px}}
 `;
 
-function AtlasTableSection({ pack, entries, heading, id }: { pack: Pack; entries: Entry[]; heading: string; id: string }) {
-  const rows = withSlugs(entries);
+function AtlasTableSection({ pack, entries, heading, id, routeEntries = entries }: { pack: Pack; entries: Entry[]; heading: string; id: string; routeEntries?: Entry[] }) {
+  const rows = withSlugs(routeEntries).filter(({ entry }) => entries.includes(entry));
   const fields = getEntityMeasurementSchema(pack.slug, entries[0]).fields;
   const fieldDefinitions = fields.map((key) => atlasFieldDefinition(pack.slug, key).label).join("; ");
   const asOf = asOfDate(entries[0]?.as_of);
@@ -276,7 +276,7 @@ export default function EntitiesIndexPage() {
         });
         if (pack.slug !== "mlb_pitch") return <AtlasTableSection key={pack.slug} pack={pack} entries={manifest.entries} heading={pack.label} id={pack.slug} />;
         return getMlbPitchAtlasCohorts(manifest.entries).map((cohort, index) => (
-          <AtlasTableSection key={cohort.id} pack={pack} entries={cohort.entries} heading={cohort.title} id={index === 0 ? pack.slug : cohort.id} />
+          <AtlasTableSection key={cohort.id} pack={pack} entries={cohort.entries} routeEntries={manifest.entries} heading={cohort.title} id={index === 0 ? pack.slug : cohort.id} />
         ));
       })}
     </div>
