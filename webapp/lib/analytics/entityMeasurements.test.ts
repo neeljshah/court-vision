@@ -27,6 +27,19 @@ describe("entityMeasurements", () => {
     expect(result.scalars.find((item) => item.key === "pct_of_all_pitches")?.value).toBe("0.06%");
   });
 
+  it("keeps calibration band references on their published probability scale", () => {
+    const lower = entityMeasurements("calibration", { card_type: "prob_band", key_numbers: { n: 3935, mean_y_overall: 0.1804, band_reference: 0.3, n_time_buckets_with_data: 8, by_time_bucket: [] } }, "mlb_band_2_4");
+    const middle = entityMeasurements("calibration", { card_type: "prob_band", key_numbers: { n: 9042, mean_y_overall: 0.493, band_reference: 0.5, n_time_buckets_with_data: 10, by_time_bucket: [] } }, "mlb_band_4_6");
+    const zero = entityMeasurements("calibration", { card_type: "prob_band", key_numbers: { band_reference: 0 } }, "zero");
+    const missing = entityMeasurements("calibration", { card_type: "prob_band", key_numbers: { band_reference: null } }, "missing");
+    const sourceText = entityMeasurements("calibration", { card_type: "prob_band", key_numbers: { band_reference: "source band" } }, "text");
+    expect(lower.scalars.find((item) => item.key === "band_reference")?.value).toBe("0.3");
+    expect(middle.scalars.find((item) => item.key === "band_reference")?.value).toBe("0.5");
+    expect(zero.scalars.find((item) => item.key === "band_reference")?.value).toBe("0");
+    expect(missing.unavailable.map((item) => item.key)).toContain("band_reference");
+    expect(sourceText.scalars.find((item) => item.key === "band_reference")?.value).toBe("source band");
+  });
+
   it("excludes identifiers and keeps unknown numeric keys as plain numbers", () => {
     const known = entityMeasurements("nba_players", { key_numbers: { player_id: 7, team_id: 8, career_games: 50 } }, "player");
     const unknown = entityMeasurements("unlisted_pack", { key_numbers: { new_rate: 0.612 } }, "player");

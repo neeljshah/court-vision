@@ -14,7 +14,6 @@ on:
       - "webapp/**"
       - ".github/workflows/deploy-demo.yml"
   workflow_dispatch:
-
 permissions:
   contents: read
   pages: write
@@ -55,6 +54,7 @@ jobs:
           npx vitest run lib/analytics/novelCards.server.test.ts
           npx vitest run lib/analytics/novelCards.test.ts
           npx vitest run 'app/(analytics)/analytics/players/page.test.tsx'
+          npx vitest run lib/analytics/entityMeasurements.test.ts
           npx vitest run components/analytics/Receipt.test.tsx
           npx vitest run 'app/(analytics)/analytics/findings/shrinkage/page.test.tsx'
           npx vitest run components/analytics/PercentileBar.test.tsx

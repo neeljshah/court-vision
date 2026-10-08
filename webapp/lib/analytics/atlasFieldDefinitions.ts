@@ -17,7 +17,7 @@ const humanize = (key: string) => key.replace(/_/g, " ").replace(/\b\w/g, letter
 
 export const ATLAS_FIELD_DEFINITIONS: Record<string, Record<string, AtlasFieldDefinition>> = {
   calibration: {
-    band_reference: definition("band_reference", "Calibration band reference", "text", 0),
+    band_reference: definition("band_reference", "Calibration band reference", "number", 1),
     by_time_bucket: definition("by_time_bucket", "Calibration by time bucket", "text", 0),
     market_ece: definition("market_ece", "Market expected calibration error", "index", 4),
     mean_y_overall: definition("mean_y_overall", "Observed outcome mean, overall", "rate", 4),

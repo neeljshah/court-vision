@@ -94,5 +94,9 @@ describe("EntitiesIndexPage", () => {
       expect(within(row).queryByText("--")).not.toBeInTheDocument();
       expect(within(row).getByRole("link")).toHaveAttribute("href", expect.stringContaining("/analytics/players/calibration/"));
     }
+    for (const [entity, value] of [["mlb band .2-.4", "0.3"], ["mlb band .4-.6", "0.5"]]) {
+      const row = within(bandSection).getByRole("row", { name: new RegExp(entity.replace(/\./g, "\\."), "i") });
+      expect(within(row).getByText(value)).toBeInTheDocument();
+    }
   });
 });
