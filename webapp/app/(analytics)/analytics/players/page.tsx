@@ -13,6 +13,7 @@ import { getMlbPitchAtlasCohorts } from "@/lib/analytics/atlasResearchCohorts";
 import { getEntityMeasurementSchema } from "@/lib/analytics/entityMeasurementSchemas";
 import { asOfDate } from "@/lib/analytics/format";
 import { CalibrationTableSection, type CalibrationEntry } from "@/components/analytics/entities/CalibrationTableSection";
+import { EntityFilter } from "@/components/analytics/EntityFilter";
 
 type KN = Record<string, unknown>;
 type Entry = CalibrationEntry;
@@ -135,13 +136,6 @@ export const metadata = {
   description: "1,549 descriptive cards across basketball, baseball, soccer, and tennis. Measured historical rates held to conservative sample floors.",
 };
 
-// Client-side name filter (progressive enhancement, same vanilla-JS pattern as
-// browse/page.tsx FILTER_JS): the page stays a server component -- no client file,
-// no fetch. Show/hide any [data-name] (marquee cards + table rows) by substring,
-// then hide a whole .pl-fsec section when none of its entities match so no empty
-// pack header is left stranded. Inert if JS is off (everything renders visible).
-const FILTER_JS = `(function(){var inp=document.getElementById('plsearch');if(!inp)return;var items=document.querySelectorAll('[data-name]');var secs=document.querySelectorAll('.pl-fsec');function apply(){var q=inp.value.toLowerCase().trim();for(var i=0;i<items.length;i++){var m=!q||items[i].getAttribute('data-name').indexOf(q)!==-1;items[i].style.display=m?'':'none';}for(var j=0;j<secs.length;j++){var d=secs[j].querySelectorAll('[data-name]'),any=false;for(var k=0;k<d.length;k++){if(d[k].style.display!=='none'){any=true;break;}}secs[j].style.display=any?'':'none';}}inp.addEventListener('input',apply);})();`;
-
 const STYLES = `
 .pl-search{width:100%;max-width:440px;font-family:var(--font-sans);font-size:15px;color:var(--ink);background:var(--paper-raised);border:1px solid var(--rule-strong);border-radius:var(--radius-pill,999px);padding:11px 18px;min-height:44px;margin:22px 0 6px}
 .pl-search::placeholder{color:var(--ink-3)}
@@ -225,14 +219,7 @@ export default function EntitiesIndexPage() {
         </div>
       </header>
 
-      <input
-        id="plsearch"
-        type="search"
-        className="pl-search"
-        placeholder="Filter entities by name..."
-        aria-label="Filter entities by name"
-        autoComplete="off"
-      />
+      <EntityFilter />
 
       <nav aria-label="Jump to a pack" className="pl-jump">
         {packs.filter((x) => x.manifest && x.manifest.entries.length).map(({ pack, manifest }) => (
@@ -292,9 +279,6 @@ export default function EntitiesIndexPage() {
           <AtlasTableSection key={cohort.id} pack={pack} entries={cohort.entries} heading={cohort.title} id={index === 0 ? pack.slug : cohort.id} />
         ));
       })}
-
-      {/* eslint-disable-next-line react/no-danger */}
-      <script dangerouslySetInnerHTML={{ __html: FILTER_JS }} />
     </div>
   );
 }

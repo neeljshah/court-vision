@@ -18,11 +18,10 @@ function calibrationEntries() {
 }
 
 describe("EntitiesIndexPage", () => {
-  it("hides empty calibration groups when filtering and restores them when cleared", () => {
+  it("filters naturally after remount and restores calibration groups when cleared", () => {
+    const first = render(<EntitiesIndexPage />);
+    first.unmount();
     render(<EntitiesIndexPage />);
-    const filterScript = document.querySelector("script")?.textContent;
-    expect(filterScript).toContain("plsearch");
-    new Function(filterScript || "")();
 
     const search = screen.getByRole("searchbox", { name: "Filter entities by name" });
     const checkpoints = screen.getByRole("heading", { name: "Calibration checkpoints" }).closest("section") as HTMLElement;
@@ -35,6 +34,12 @@ describe("EntitiesIndexPage", () => {
     expect(checkpoints).not.toBeVisible();
     expect(bands).not.toBeVisible();
 
+    fireEvent.input(search, { target: { value: "" } });
+    expect(checkpoints).toBeVisible();
+    expect(bands).toBeVisible();
+    expect(jokicRow).toBeVisible();
+    expect(bandRow).toBeVisible();
+
     fireEvent.input(search, { target: { value: "mlb inning 1" } });
     expect(checkpoints).toBeVisible();
     expect(bands).not.toBeVisible();
@@ -43,8 +48,6 @@ describe("EntitiesIndexPage", () => {
     fireEvent.input(search, { target: { value: "" } });
     expect(checkpoints).toBeVisible();
     expect(bands).toBeVisible();
-    expect(jokicRow).toBeVisible();
-    expect(bandRow).toBeVisible();
   });
 
   it("labels the data-derived pitch atlas total without calling every card a pitch type", () => {
