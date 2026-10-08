@@ -63,6 +63,32 @@ describe("ClaimHistory", () => {
     expect(screen.getByRole("button", { name: /family 25/i })).toBeInTheDocument();
   });
 
+  it("finds a canonical family id beyond the first window, ignoring case and surrounding whitespace", () => {
+    render(<ClaimHistory ledger={ledger()} />);
+    expect(screen.queryByRole("button", { name: /family 25/i })).not.toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("Search families"), { target: { value: "  CLAIM-FAMILY-MLB-FAMILY_25  " } });
+    expect(screen.getByText("1 of 26 families")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /family 25/i })).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("Search families"), { target: { value: "claim-family-mlb-absent" } });
+    expect(screen.getByText("0 of 26 families")).toBeInTheDocument();
+  });
+
+  it("intersects canonical id search with sport, status, and changed-verdict filters", () => {
+    render(<ClaimHistory ledger={ledger()} />);
+    fireEvent.change(screen.getByLabelText("Search families"), { target: { value: "claim-family-mlb-family_3" } });
+    expect(screen.getByText("1 of 26 families")).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("Sport filter"), { target: { value: "basketball_nba" } });
+    expect(screen.getByText("0 of 26 families")).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("Sport filter"), { target: { value: "mlb" } });
+    fireEvent.change(screen.getByLabelText("Current status filter"), { target: { value: "null" } });
+    expect(screen.getByText("0 of 26 families")).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("Current status filter"), { target: { value: "verified" } });
+    fireEvent.click(screen.getByLabelText("Changed verdict only"));
+    expect(screen.getByText("1 of 26 families")).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("Search families"), { target: { value: "claim-family-mlb-family_25" } });
+    expect(screen.getByText("0 of 26 families")).toBeInTheDocument();
+  });
+
   it("materializes, scrolls to, and focuses a deep-linked family beyond the first page", async () => {
     const scrollIntoView = mockScrollIntoView();
     window.history.replaceState(null, "", "#claim-family-mlb-family_25");

@@ -64,7 +64,7 @@ export function ClaimHistory({ ledger }: { ledger: ClaimHistoryLedger }) {
       (sport === "all" || family.sport === sport) &&
       (status === "all" || family.currentStatus === status) &&
       (!changedOnly || family.flipped) &&
-      (!needle || `${family.hypothesis} ${claimFamilyLabel(family)} ${family.sport}`.toLowerCase().includes(needle)),
+      (!needle || `${claimFamilyId(family)} ${family.hypothesis} ${claimFamilyLabel(family)} ${family.sport}`.toLowerCase().includes(needle)),
     );
   }, [changedOnly, ledger.families, query, sport, status]);
   const visibleFamilies = filtered.slice(0, visibleCount);
