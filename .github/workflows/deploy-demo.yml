@@ -7,7 +7,6 @@
 # running stack. This workflow only rebuilds + redeploys the static site from
 # whatever webapp/public/demo-data/*.json is currently checked in.
 name: Deploy demo
-
 on:
   push:
     branches: [master]
@@ -55,6 +54,7 @@ jobs:
           npx vitest run lib/analytics/artifactProvenance.test.ts
           npx vitest run lib/analytics/novelCards.server.test.ts
           npx vitest run lib/analytics/novelCards.test.ts
+          npx vitest run 'app/(analytics)/analytics/players/page.test.tsx'
           npx vitest run components/analytics/Receipt.test.tsx
           npx vitest run 'app/(analytics)/analytics/findings/shrinkage/page.test.tsx'
           npx vitest run components/analytics/PercentileBar.test.tsx

@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { getMlbPitchAtlasCohorts } from "@/lib/analytics/atlasResearchCohorts";
 import EntitiesIndexPage from "./page";
@@ -18,6 +18,35 @@ function calibrationEntries() {
 }
 
 describe("EntitiesIndexPage", () => {
+  it("hides empty calibration groups when filtering and restores them when cleared", () => {
+    render(<EntitiesIndexPage />);
+    const filterScript = document.querySelector("script")?.textContent;
+    expect(filterScript).toContain("plsearch");
+    new Function(filterScript || "")();
+
+    const search = screen.getByRole("searchbox", { name: "Filter entities by name" });
+    const checkpoints = screen.getByRole("heading", { name: "Calibration checkpoints" }).closest("section") as HTMLElement;
+    const bands = screen.getByRole("heading", { name: "Probability-band calibration" }).closest("section") as HTMLElement;
+    const jokicRow = screen.getByRole("link", { name: /^Nikola Jokic$/i }).closest("tr") as HTMLElement;
+    const bandRow = bands.querySelector("tr[data-name]") as HTMLElement;
+
+    fireEvent.input(search, { target: { value: "jokic" } });
+    expect(jokicRow).toBeVisible();
+    expect(checkpoints).not.toBeVisible();
+    expect(bands).not.toBeVisible();
+
+    fireEvent.input(search, { target: { value: "mlb inning 1" } });
+    expect(checkpoints).toBeVisible();
+    expect(bands).not.toBeVisible();
+    expect(screen.getByRole("row", { name: /^mlb inning 1\s/i })).toBeVisible();
+
+    fireEvent.input(search, { target: { value: "" } });
+    expect(checkpoints).toBeVisible();
+    expect(bands).toBeVisible();
+    expect(jokicRow).toBeVisible();
+    expect(bandRow).toBeVisible();
+  });
+
   it("labels the data-derived pitch atlas total without calling every card a pitch type", () => {
     render(<EntitiesIndexPage />);
     const count = mlbPitchEntries().length.toLocaleString();

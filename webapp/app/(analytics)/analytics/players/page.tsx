@@ -278,7 +278,7 @@ export default function EntitiesIndexPage() {
             bySport.set(sport, [...(bySport.get(sport) || []), entry]);
           }
           const count = Array.from(bySport.values()).reduce((total, entries) => total + entries.length, 0);
-          return <section key={cardType} aria-labelledby={`${id}-heading`} style={{ marginTop: 44 }}>
+          return <section key={cardType} className="pl-fsec" aria-labelledby={`${id}-heading`} style={{ marginTop: 44 }}>
             <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 6, flexWrap: "wrap" }}>
               <span aria-hidden style={{ width: 9, height: 9, borderRadius: "50%", background: SPORT_COLOR[pack.sport] }} />
               <h2 id={`${id}-heading`} className="serif" style={{ fontWeight: 500, fontSize: 26 }}>{title}</h2>
