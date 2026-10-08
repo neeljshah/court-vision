@@ -11,8 +11,9 @@ export const metadata: Metadata = {
 
 const baseName = (path: string) => path.split(/[\\/]/).pop() || path;
 const verdictClass = (verdict: CardVerdict) => ({
-  confirmed: "d-conf", null: "d-null", contradicted: "d-reject", descriptive: "d-desc", "under-review": "d-reject",
+  confirmed: "d-conf", null: "d-null", contradicted: "d-reject", descriptive: "d-desc", mixed: "d-desc", "under-review": "d-reject",
 }[verdict]);
+const verdictLabel = (verdict: CardVerdict) => verdict === "mixed" ? "mixed results" : verdict;
 
 const GATE = [
   ["Prior-art search", "The definition is searched against published literature and the public analytics canon before it is built. The verdict remains visible when someone reached most of the way there first."],
@@ -40,7 +41,7 @@ export default function NovelStatsPage() {
           <article key={card.id} className={`nv-card is-${card.verdict}`} data-testid={`novel-card-${card.id}`}>
             <div className="nv-top">
               <span className="mono nv-n">{String(index + 1).padStart(2, "0")}</span>
-              <span className="mono nv-verdict"><span className={`dot ${verdictClass(card.verdict)}`} />{card.verdict}</span>
+              <span className="mono nv-verdict"><span className={`dot ${verdictClass(card.verdict)}`} />{verdictLabel(card.verdict)}</span>
             </div>
             <h2 className="serif nv-name">{card.title} <span className="mono nv-abbrev">{card.abbrev}</span></h2>
             <div className="nv-figure">

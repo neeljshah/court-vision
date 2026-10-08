@@ -1,7 +1,6 @@
 # Static recruiter demo -- builds the webapp in NEXT_PUBLIC_DATA_MODE=snapshot
 # (baked /demo-data/*.json, no backend) and deploys the `out/` export to GitHub
 # Pages as a project site (neeljshah/court-vision -> /court-vision/).
-#
 # The snapshot JSON itself is NOT regenerated here (the exporter needs the live
 # P5/boards services, which don't run in CI) -- it is committed ahead of time by
 # scripts/platformkit/publish_demo/refresh_and_stage.py, run locally against the
@@ -55,6 +54,7 @@ jobs:
           npx vitest run 'app/(terminal)/__tests__/home.scoreboard.test.tsx'
           npx vitest run lib/analytics/artifactProvenance.test.ts
           npx vitest run lib/analytics/novelCards.server.test.ts
+          npx vitest run lib/analytics/novelCards.test.ts
           npx vitest run components/analytics/Receipt.test.tsx
           npx vitest run 'app/(analytics)/analytics/findings/shrinkage/page.test.tsx'
           npx vitest run components/analytics/PercentileBar.test.tsx

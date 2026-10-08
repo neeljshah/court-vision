@@ -36,4 +36,12 @@ describe("NovelStatsPage", () => {
     expect(within(card).queryByText(/market overshoot/i)).not.toBeInTheDocument();
     expect(card).toHaveTextContent(starter.verdict.split(". ")[0]);
   });
+
+  it("labels Repeat-Pitch Excess as mixed and shows its confirmed and contradicted claims", () => {
+    render(<NovelStatsPage />);
+    const card = screen.getByTestId("novel-card-novel_pitch_repeat_excess");
+
+    expect(card).toHaveTextContent("mixed results");
+    expect(card).toHaveTextContent("Published preregistered claims: 1 confirmed; 2 contradicted");
+  });
 });

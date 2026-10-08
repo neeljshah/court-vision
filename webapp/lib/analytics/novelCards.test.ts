@@ -43,7 +43,7 @@ describe("selectNovelMeasurement", () => {
     expect(card.verdict).toBe("null");
   });
 
-  it("selects the repeat-pitch overall panel and its contradicted claims", () => {
+  it("marks mixed repeat-pitch claims as mixed and prints both outcomes", () => {
     const overall = { n_pairs: "511807", excess: "0.0367", ci95: ["0.0348", "0.0385"] };
     const claims = [{ claim: "Claim one.", verdict: "CONFIRMED" }, { claim: "Claim two.", verdict: "CONTRADICTED" }];
     const artifact = { headline: "pitch headline", caveat: "pitch caveat", panels: { overall: { cells: [overall] } }, preregistered_claims: claims };
@@ -51,7 +51,36 @@ describe("selectNovelMeasurement", () => {
 
     expect(card.lead).toBe(overall.excess);
     expect(card.interval).toContain(String(overall.ci95[0]));
+    expect(card.result).toContain(claims[0].claim.replace(/[.!?]+$/, ""));
     expect(card.result).toContain(claims[1].claim.replace(/[.!?]+$/, ""));
-    expect(card.verdict).toBe("contradicted");
+    expect(card.result).toContain("Published preregistered claims: 1 confirmed; 1 contradicted");
+    expect(card.verdict).toBe("mixed");
+  });
+
+  it.each([
+    ["confirmed", { preregistered_claims: [{ claim: "Claim one.", verdict: "CONFIRMED" }] }],
+    ["contradicted", { preregistered_claims: [{ claim: "Claim one.", verdict: "CONTRADICTED" }] }],
+    ["descriptive", { preregistered_claims: [] }],
+    ["descriptive", { preregistered_claims: [{ claim: "Claim one.", verdict: "UNDECIDED" }] }],
+    ["descriptive", { preregistered_claims: [{ claim: "Claim one.", verdict: "CONFIRMED" }, { claim: "Claim two.", verdict: "UNDECIDED" }] }],
+    ["descriptive", { preregistered_claims: [{ claim: "Claim one.", verdict: "CONTRADICTED" }, { claim: "Claim two." }] }],
+    ["descriptive", { preregistered_claims: [{ claim: "", verdict: "CONFIRMED" }] }],
+    ["descriptive", { preregistered_claims: [{ claim: "   ", verdict: "CONFIRMED" }] }],
+    ["descriptive", { preregistered_claims: [{ claim: "!!!", verdict: "CONTRADICTED" }] }],
+    ["descriptive", { preregistered_claims: [{ verdict: "CONTRADICTED" }] }],
+    ["descriptive", { preregistered_claims: [null, { claim: "Claim two.", verdict: "CONFIRMED" }] }],
+    ["descriptive", {}],
+  ] as const)("uses %s only when every repeat-pitch claim has a recognized outcome", (verdict, artifact) => {
+    const card = selectNovelMeasurement("novel_pitch_repeat_excess", { panels: { overall: { cells: [{}] } }, ...artifact });
+    expect(card.verdict).toBe(verdict);
+  });
+
+  it("classifies the published repeat-pitch artifact as mixed", async () => {
+    const { readFile } = await import("node:fs/promises");
+    const artifact = JSON.parse(await readFile("public/data/showcase/novel_pitch_repeat_excess.json", "utf8"));
+    const card = selectNovelMeasurement("novel_pitch_repeat_excess", artifact);
+
+    expect(card).toMatchObject({ lead: "0.0367", denominator: "511,807 adjacent pitch pairs", interval: "[0.0348, 0.0385]", verdict: "mixed" });
+    expect(card.result).toContain("Published preregistered claims: 1 confirmed; 2 contradicted");
   });
 });

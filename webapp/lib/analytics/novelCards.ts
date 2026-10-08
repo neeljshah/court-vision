@@ -3,7 +3,7 @@
 // access and can be checked with small fixtures.
 
 type Row = Record<string, unknown>;
-export type CardVerdict = "confirmed" | "null" | "contradicted" | "descriptive" | "under-review";
+export type CardVerdict = "confirmed" | "null" | "contradicted" | "descriptive" | "mixed" | "under-review";
 
 export interface NovelMeasurement {
   lead: string;
@@ -36,6 +36,11 @@ const artifactVerdict = (artifact: Row): CardVerdict => {
   const confounds = Array.isArray(artifact.declared_confounds) ? artifact.declared_confounds.join(" ").toLowerCase() : "";
   return verdict.startsWith("recorded as a null") || confounds.includes("honest null") ? "null" : "descriptive";
 };
+const normalizedClaim = (claim: Row): string => typeof claim.claim === "string" ? claim.claim.trim().replace(/[.!?]+$/, "").trim() : "";
+const claimText = (claims: Row[]): string => claims.map(normalizedClaim).filter(Boolean).join("; ");
+const claimSummary = (label: "confirmed" | "contradicted", claims: Row[]): string =>
+  `${label === "confirmed" ? "Confirmed" : "Contradicted"} ${claims.length === 1 ? "claim" : "claims"}: ${claimText(claims)}.`;
+const hasClaimText = (claim: Row): boolean => Boolean(normalizedClaim(claim));
 
 export function countWord(value: number): string {
   const words = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"];
@@ -89,9 +94,15 @@ export function selectNovelMeasurement(id: string, artifact: Row): NovelMeasurem
   if (id === "novel_pitch_repeat_excess") {
     const panels = record(artifact.panels);
     const overall = rows(record(panels.overall).cells)[0] || {};
-    const claims = rows(artifact.preregistered_claims).filter((item) => item.verdict === "CONTRADICTED");
-    const result = claims.length ? `Two preregistered claims were contradicted: ${claims.map((item) => text(item.claim).replace(/[.!?]+$/, "")).join("; ")}.` : sentence(first(artifact.verdict, headline));
-    return { lead: number(overall.excess), leadLabel: "repeat-pitch excess", denominator: `${count(overall.n_pairs)} adjacent pitch pairs`, interval: interval(overall.ci95), verdict: claims.length ? "contradicted" : "confirmed", result, limitation: fallback };
+    const claims = rows(artifact.preregistered_claims);
+    const confirmed = claims.filter((item) => text(item.verdict).toUpperCase() === "CONFIRMED");
+    const contradicted = claims.filter((item) => text(item.verdict).toUpperCase() === "CONTRADICTED");
+    const recognized = claims.length > 0 && claims.every(hasClaimText) && confirmed.length + contradicted.length === claims.length;
+    const verdict: CardVerdict = !recognized ? "descriptive" : confirmed.length && contradicted.length ? "mixed" : confirmed.length ? "confirmed" : "contradicted";
+    const result = recognized
+      ? `Published preregistered claims: ${[confirmed.length ? `${confirmed.length} confirmed` : "", contradicted.length ? `${contradicted.length} contradicted` : ""].filter(Boolean).join("; ")}. ${[confirmed.length ? claimSummary("confirmed", confirmed) : "", contradicted.length ? claimSummary("contradicted", contradicted) : ""].filter(Boolean).join(" ")}`
+      : sentence(first(artifact.verdict, headline));
+    return { lead: number(overall.excess), leadLabel: "repeat-pitch excess", denominator: `${count(overall.n_pairs)} adjacent pitch pairs`, interval: interval(overall.ci95), verdict, result, limitation: fallback };
   }
   return { lead: "", leadLabel: "", denominator: "", verdict: artifactVerdict(artifact), result: sentence(headline), limitation: fallback };
 }
