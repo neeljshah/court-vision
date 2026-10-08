@@ -118,6 +118,11 @@ function nameFor(entry: Entry): string {
   if (typeof full === "string" && full) return full;
   return entry.entity.replace(/^(pitch_type|team):/, "$1 ").replace(/_/g, " ");
 }
+function displayFor(pack: Pack, entry?: Entry) {
+  return pack.slug === "calibration" && entry?.card_type === "prob_band"
+    ? { label: "Probability-band calibration", noun: "measured probability-band outcomes", anchor: "calibration-probability-bands" }
+    : { label: pack.label, noun: pack.noun, anchor: pack.slug };
+}
 
 export function generateStaticParams() {
   const out: Array<{ pack: string; slug: string }> = [];
@@ -135,7 +140,7 @@ export function generateMetadata({ params }: { params: { pack: string; slug: str
   const hit = m && withSlugs(m.entries).find((x) => x.slug === params.slug);
   const name = readInsight(params.pack, params.slug)?.display_name || (hit && nameFor(hit.entry)) || "Entity";
   return {
-    title: pack ? `${name} -- ${pack.label}` : "Entity",
+    title: pack ? `${name} -- ${displayFor(pack, hit?.entry).label}` : "Entity",
     description: `Descriptive reference card for ${name}: measured historical rates, not a prediction.`,
   };
 }
@@ -150,6 +155,7 @@ export default function EntityPage({ params }: { params: { pack: string; slug: s
   const hit = manifest && withSlugs(manifest.entries).find((x) => x.slug === params.slug);
   if (!manifest || !hit) notFound();
   const entry = hit.entry;
+  const display = displayFor(pack, entry);
   const insight = readInsight(params.pack, params.slug);
   const name = insight?.display_name || nameFor(entry);
   // Machine timestamps (tennis cards carry ISO "2026-07-19T03:41:37...+00:00")
@@ -198,17 +204,17 @@ export default function EntityPage({ params }: { params: { pack: string; slug: s
       <nav aria-label="Breadcrumb" style={{ fontSize: 13, color: "var(--ink-3)", padding: "22px 0 6px" }}>
         <Link href="/analytics/players" style={{ color: "var(--ink-3)" }}>Entities</Link>
         {" \u203A "}
-        <Link href={`/analytics/players#${pack.slug}`} style={{ color: "var(--ink-3)" }}>{pack.label}</Link>
+        <Link href={`/analytics/players#${display.anchor}`} style={{ color: "var(--ink-3)" }}>{display.label}</Link>
         {" \u203A "}<span style={{ color: "var(--ink-2)" }}>{name}</span>
       </nav>
 
       <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "var(--paper-tint)", border: "1px solid var(--rule-strong)", borderRadius: 8, padding: "8px 14px", fontSize: 13, color: "var(--ink-2)", margin: "8px 0 26px" }}>
         <span className="dot d-desc" style={{ width: 8, height: 8 }} />
-        Descriptive only &mdash; these are {pack.noun}, not projections.
+        Descriptive only &mdash; these are {display.noun}, not projections.
       </div>
 
       <header style={{ borderBottom: "1px solid var(--rule-strong)", paddingBottom: 22, marginBottom: 30 }}>
-        <div className="overline">{pack.label} &middot; {pack.sport}{asOf ? ` \u00B7 as of ${asOf}` : ""}</div>
+        <div className="overline">{display.label} &middot; {pack.sport}{asOf ? ` \u00B7 as of ${asOf}` : ""}</div>
         <h1 className="serif" style={{ fontWeight: 500, fontSize: "clamp(2.4rem,5vw,3.4rem)", lineHeight: 1.05, letterSpacing: "-.02em", marginTop: 4 }}>{name}</h1>
         <div style={{ color: "var(--ink-2)", marginTop: 6, fontSize: 15 }}>Historical measurements from this snapshot.</div>
         {observationContext ? <p className="mono" style={{ color: "var(--ink-3)", marginTop: 8, fontSize: 12 }}>{observationContext}</p> : null}
@@ -257,8 +263,8 @@ export default function EntityPage({ params }: { params: { pack: string; slug: s
                 {moduleTitle(id)}
               </Link>
             ))}
-            <Link href={`/analytics/players#${pack.slug}`} style={{ display: "block", padding: "9px 0", fontSize: 14 }}>
-              All {pack.label} &rarr;
+            <Link href={`/analytics/players#${display.anchor}`} style={{ display: "block", padding: "9px 0", fontSize: 14 }}>
+              All {display.label} &rarr;
             </Link>
           </div>
         </aside>
