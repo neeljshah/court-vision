@@ -10,6 +10,8 @@ import { summarizeLibrarySource } from "./librarySourceSummaries";
 import { loadPapers } from "./papers.server";
 import { noticesForModules } from "./dataIntegrity";
 import { moduleIdsForCitations } from "./sourceIntegrity.server";
+import { artifactDate, describeDate } from "./artifactProvenance";
+import { getTimingModuleEvidence } from "./timingModuleEvidence";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
@@ -85,11 +87,17 @@ export function getLibraryEntries(): LibraryEntry[] {
   }));
   const manifest = snapshot<{ modules: { id: string; title: string; one_line: string; status: string; as_of: string | null }[] }>("site_manifest");
   const sources: LibraryEntry[] = manifest.modules.map(m => {
-    const sourceSummary = summarizeLibrarySource(m.id, snapshot<Record<string, unknown>>(m.id), m.status);
+    const artifact = snapshot<Record<string, unknown>>(m.id);
+    const sourceSummary = summarizeLibrarySource(m.id, artifact, m.status);
+    const timing = getTimingModuleEvidence(m.id, artifact);
+    const date = timing ? { asOf: timing.snapshotDate, dateKind: "published" as const }
+      : artifactDate(artifact, m.as_of || sourceSummary.asOf);
+    const asOf = typeof date.asOf === "string" && describeDate(date.asOf, date.dateKind) !== "Date not published."
+      ? date.asOf : null;
     return ({
     id: m.id, title: m.title, description: sourceDescription(m.one_line),
     category: moduleCategory(m.id), sport: sourceSport(m.id),
-    kind: "source", kindLabel: kindLabel.source, status: m.status, href: `/analytics/m/${m.id}/`, asOf: m.as_of || sourceSummary.asOf,
+    kind: "source", kindLabel: kindLabel.source, status: m.status, href: `/analytics/m/${m.id}/`, asOf, dateKind: date.dateKind,
     // Match the evidence rendered by SourceEvidence, including its preview limits.
     keywords: [m.id.replace(/_/g, " "), sourceSummary.scope,
       ...sourceSummary.measurements.slice(0, 3).map(item => `${item.label} ${item.value}`),

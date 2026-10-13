@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
 import LibraryExplorer from "./LibraryExplorer";
 import type { LibraryEntry } from "@/lib/analytics/libraryTypes";
@@ -47,6 +47,25 @@ describe("LibraryExplorer", () => {
     expect(screen.getAllByText("42 observed games")).not.toHaveLength(0);
     expect(screen.getAllByText("partial")).not.toHaveLength(0);
     expect(screen.getAllByText("Team")).not.toHaveLength(0);
+  });
+
+  it("labels real source windows, source dates, generated stamps and missing dates separately", () => {
+    const expected = [
+      ["ctx_lineup_proxy", "Observation window", "2025-26 regular season (through 2026-04-12)"],
+      ["ctx_team_states", "Source as of", "2026-05-21 16:05:11"],
+      ["novel_stats_index", "Snapshot generated", "2026-09-16T21:29:55.878078+00:00"],
+      ["novel_live_clock_fraction", "Published date", "2026-09-17"],
+      ["nba_form_curves", "Published date", "Date not published"],
+    ];
+    const sourceEntries = getLibraryEntries().filter(item => item.kind === "source" && expected.some(([id]) => id === item.id));
+    render(<LibraryExplorer entries={sourceEntries} />);
+    for (const [id, label, date] of expected) {
+      const sourceEntry = sourceEntries.find(item => item.id === id)!;
+      const card = screen.getByRole("heading", { name: sourceEntry.title }).closest("a")!;
+      expect(within(card).getByText(label)).toBeInTheDocument();
+      expect(within(card).getByText(date)).toBeInTheDocument();
+      expect(within(card).queryByText("Snapshot", { exact: true })).not.toBeInTheDocument();
+    }
   });
 
   it("counts a published source when search matches its visible preview metric", async () => {

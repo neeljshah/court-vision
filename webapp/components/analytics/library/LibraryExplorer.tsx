@@ -19,8 +19,9 @@ function MeasurementPreview({ values, label }: { values: number[]; label: string
 function SourceEvidence({ entry }: { entry: LibraryEntry }) {
   const summary = entry.sourceSummary;
   if (!summary) return null;
+  const dateLabel = { source: "Source as of", snapshot: "Snapshot generated", window: "Observation window", published: "Published date" }[entry.dateKind || "published"];
   return <div className="library-source-evidence">
-    <div className="library-source-date"><span>Snapshot</span><time>{entry.asOf || "Date not published"}</time>{summary.availability !== "published" && <b>{summary.availability}</b>}</div>
+    <div className="library-source-date"><span>{dateLabel}</span><time>{entry.asOf || "Date not published"}</time>{summary.availability !== "published" && <b>{summary.availability}</b>}</div>
     <p className="library-source-scope">{summary.scope}</p>
     {summary.measurements.length > 0 && <dl className="library-measurements">{summary.measurements.slice(0, 3).map(item => <div key={item.label}><dt>{item.label}</dt><dd>{item.value}</dd></div>)}</dl>}
     {summary.previewRows[0] && <dl className="library-labelled-preview">{summary.previewRows[0].slice(0, 3).map(item => <div key={item.label}><dt>{item.label}</dt><dd>{item.value}</dd></div>)}</dl>}

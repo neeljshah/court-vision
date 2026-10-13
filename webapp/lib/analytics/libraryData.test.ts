@@ -33,6 +33,21 @@ describe("getLibraryEntries", () => {
     expect(derivedAsOf({ asOf: "2026-07-26", sources: [{ id: "source", asOf: "2026-07-25" }] })).toBe("2026-07-26");
   });
 
+  it("preserves source-card date provenance from the original public artifacts", () => {
+    const expected = [
+      ["ctx_lineup_proxy", "window", "2025-26 regular season (through 2026-04-12)"],
+      ["ctx_team_states", "source", "2026-05-21 16:05:11"],
+      ["novel_stats_index", "snapshot", "2026-09-16T21:29:55.878078+00:00"],
+      ["novel_live_clock_fraction", "published", "2026-09-17"],
+      ["novel_market_foresight_premium", "published", "2026-09-17"],
+      ["nba_form_curves", "published", null],
+      ["novel_load_bearing_index", "published", null],
+    ] as const;
+    for (const [id, dateKind, asOf] of expected) {
+      expect(sources.find(entry => entry.id === id), id).toMatchObject({ dateKind, asOf });
+    }
+  });
+
   it("carries source integrity labels into discovery without flagging unrelated MLB data", () => {
     expect(sources.find(entry => entry.id === "calibration_stability")?.integrityNotice).toContain("revision 1 values withdrawn");
     expect(derived.find(entry => entry.id === "brier-skill-score-by-game-phase")?.integrityNotice).toContain("revision 1 values withdrawn");

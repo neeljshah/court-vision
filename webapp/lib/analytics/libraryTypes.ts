@@ -1,5 +1,6 @@
 import type { Sport } from "./dashboardTypes";
 import type { LibrarySourceSummary } from "./librarySourceSummaries";
+import type { DateKind } from "./artifactProvenance";
 export type LibraryAvailability = "published" | "partial" | "unavailable";
 export type LibraryEntryKind = "derived" | "source" | "finding" | "inspector" | "explainer" | "paper";
 export type LibraryEntry = {
@@ -8,6 +9,7 @@ export type LibraryEntry = {
   keywords: string; rows: number | null; fields: number | null;
   preview: number[]; previewLabel: string;
   sourceSummary?: LibrarySourceSummary;
+  dateKind?: DateKind;
   integrityNotice?: string;
 };
 export function filterLibrary(entries: LibraryEntry[], sport: Sport, kind: string, query: string, collectionIds: string[] = []) {
