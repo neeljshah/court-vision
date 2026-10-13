@@ -1,7 +1,8 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { basketballResearch } from "./researchBasketball";
+import * as labHelpers from "./labHelpers";
 
 const source = (id: string) => JSON.parse(readFileSync(join(process.cwd(), "public/data/showcase", `${id}.json`), "utf8"));
 
@@ -35,12 +36,41 @@ describe("basketballResearch", () => {
     expect(item.values.games).toBe(raw.games);
   });
 
-  it("finds lineup sign reversals and reproduces residual math", () => {
+  it("finds lineup sign reversals and retains separately rounded source residuals", () => {
     const dataset = datasets.find(d => d.id === "nba-lineup-expectation-reversals")!;
     const reversal = dataset.rows.find(r => r.values.reversal === 1)!;
     expect(reversal).toBeDefined();
     expect(Math.sign(reversal.values.observed!)).not.toBe(Math.sign(reversal.values.expected!));
-    expect(reversal.values.residual).toBeCloseTo(reversal.values.observed! - reversal.values.expected!, 12);
+    const raw = source("lineup_synergy");
+    const selected = [...raw.top, ...raw.bottom];
+    expect(dataset.rows.map(item => item.values.residual)).toEqual(selected.map(item => item.synergy_residual));
+    expect(dataset.rows[1].values).toMatchObject({ observed: 27.3, expected: 6.62, residual: 20.67 });
+    expect(dataset.formula).toContain("rounded separately");
+  });
+
+  it("keeps all five source names including suffixes and preserves saved row IDs", () => {
+    const dataset = datasets.find(d => d.id === "nba-lineup-expectation-reversals")!;
+    const raw = source("lineup_synergy");
+    for (const [index, item] of [...raw.top, ...raw.bottom].entries()) {
+      expect(dataset.rows[index].id).toBe(`lineup-${index}`);
+      expect(dataset.rows[index].label).toBe(item.members.join(" / "));
+    }
+    expect(dataset.rows[1].label).toContain("Michael Porter Jr.");
+    expect(dataset.rows[3].label).toContain("Dereck Lively II");
+  });
+
+  it("does not synthesize an unpublished lineup residual from rounded operands", () => {
+    const raw = source("lineup_synergy");
+    const originalSnapshot = labHelpers.snapshot;
+    const published = [null, undefined, NaN, Infinity, "3", 0, -1];
+    const fixture = { ...raw, top: published.map(synergy_residual => ({ ...raw.top[0], synergy_residual })), bottom: [] };
+    const spy = vi.spyOn(labHelpers, "snapshot").mockImplementation(<T>(id: string): T =>
+      id === "lineup_synergy" ? fixture as T : originalSnapshot<T>(id));
+    try {
+      const dataset = basketballResearch().find(d => d.id === "nba-lineup-expectation-reversals")!;
+      expect(dataset.rows.map(item => item.values.residual)).toEqual([null, null, null, null, null, 0, -1]);
+      expect(dataset.rows.every(item => item.values.observed === 29.87 && item.values.expected === 5.55)).toBe(true);
+    } finally { spy.mockRestore(); }
   });
 
   it("keeps both rim components visible and averages their reductions", () => {
