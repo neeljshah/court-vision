@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { buildStarRemovalResearch } from "./researchStarRemoval";
+import published from "../../public/data/showcase/cf_star_removal.json";
+import { buildLabCSV } from "../../components/analytics/lab/LabTable";
 
 const team = (team_abbr: string, player_name: string, delta_winprob: number) => ({ team_abbr, player_name, p_win_with: 0.7, p_win_without: 0.4, delta_winprob, on_off_net_rating_delta: 12.5, min_on: 1000 });
 
@@ -15,6 +17,20 @@ describe("star removal research", () => {
   it("orders rows deterministically by player and team label", () => {
     const rows = buildStarRemovalResearch({ teams: [team("BOS", "Zed Player", 0.2), team("ATL", "Ada Player", 0.1)] })[0].rows;
     expect(rows.map(row => row.label)).toEqual(["Ada Player (ATL)", "Zed Player (BOS)"]);
+  });
+
+  it("preserves the published season label in analysis scope and CSV without inventing a date", () => {
+    const analysis = buildStarRemovalResearch(published)[0];
+    expect(analysis.asOf).toBeUndefined();
+    expect(analysis.scope).toContain(`Published source window: ${published.as_of}.`);
+    expect(analysis.rows).toHaveLength(published.n_teams);
+    expect(buildLabCSV(analysis, analysis.rows)).toContain(`Published source window: ${published.as_of}.`);
+  });
+
+  it.each([undefined, null, "", "   "])("keeps an absent source window explicit (%s)", as_of => {
+    const analysis = buildStarRemovalResearch({ as_of, teams: [team("DEN", "Nikola Jokic", 0.3)] })[0];
+    expect(analysis.scope).toContain("Source window not published.");
+    expect(analysis.asOf).toBeUndefined();
   });
 
   it("keeps the analysis shape while rejecting malformed rows", () => {

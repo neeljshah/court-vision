@@ -31,6 +31,7 @@ function rows(source: StarRemovalSource): ResearchRow[] {
 
 export function buildStarRemovalResearch(source: StarRemovalSource): ResearchAnalysis[] {
   const analysisRows = rows(source || {});
+  const sourceWindow = typeof source?.as_of === "string" ? source.as_of.trim() : "";
   return [{
     id: "star-removal-team-win-probability",
     title: "Team win probability with and without a lead player",
@@ -38,7 +39,7 @@ export function buildStarRemovalResearch(source: StarRemovalSource): ResearchAna
     category: "Counterfactual context",
     source: "cf_star_removal",
     description: "For each team, the published scenario compares its listed win probability with and without the designated player.",
-    scope: `${analysisRows.length} published team-player scenarios. Player-on minutes are retained as the available support measure.`,
+    scope: `${analysisRows.length} published team-player scenarios. ${sourceWindow ? `Published source window: ${sourceWindow}.` : "Source window not published."} Player-on minutes are retained as the available support measure.`,
     caveat: "The published scenario carries roster confounding. This scenario does not isolate the player's causal contribution.",
     status: "Descriptive scenario",
     fields: [f("win_probability_difference", "With minus without", "pp", 2), f("win_probability_with", "Win probability with player", "percent", 2), f("win_probability_without", "Win probability without player", "percent", 2), f("on_off_net_rating_delta", "Published on-off net-rating delta"), f("minutes_active", "Player-on minutes", "number", 1)],
