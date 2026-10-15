@@ -34,6 +34,12 @@ export function observationPeriod(document: SourceDocument): string | null {
     const period = seasonsFromRows(document[key]);
     if (period) return period;
   }
+  for (const key of ["coverage", "input_coverage"]) {
+    const published = record(document[key]).seasons;
+    if (Array.isArray(published) && published.length && published.every((season): season is string => typeof season === "string" && season.trim().length > 0)) {
+      return [...new Set(published.map(season => seasonLabel(season.trim())))].join(", ");
+    }
+  }
   const entries = Array.isArray(document.entries) ? document.entries : [];
   const covered = [...new Set(entries.map(entry => record(record(entry).key_numbers).seasons_covered).filter((value): value is number => typeof value === "number" && Number.isFinite(value)))];
   if (covered.length === 1) return `${covered[0]} seasons in the published atlas`;

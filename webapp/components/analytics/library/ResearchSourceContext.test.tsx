@@ -2,6 +2,8 @@ import { render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { observationPeriod, ResearchSourceContext, sourceHref } from "./ResearchSourceContext";
 import loadBearingSource from "@/public/data/showcase/novel_load_bearing_index.json";
+import consistencySource from "@/public/data/showcase/nba_consistency_profiles.json";
+import playerContextSource from "@/public/data/showcase/ctx_player_splits.json";
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -30,6 +32,33 @@ describe("ResearchSourceContext", () => {
 
   it("reports an unrecorded period when the published module has no window", () => {
     expect(observationPeriod({ label: "No window" })).toBeNull();
+  });
+
+  it("shows declared source seasons without assigning them to individual rows or snapshot dates", async () => {
+    vi.stubGlobal("fetch", vi.fn((url: string) => Promise.resolve({ ok: true, json: async () =>
+      url.includes("nba_consistency_profiles") ? consistencySource : playerContextSource })));
+    render(<ResearchSourceContext fields={[]} sources={[
+      { id: "nba_consistency_profiles", asOf: consistencySource.as_of },
+      { id: "ctx_player_splits", asOf: "not published" },
+    ]} />);
+    const context = screen.getByLabelText("Source context");
+    await waitFor(() => expect(within(context).getAllByText("Source coverage: 2023-24, 2024-25, 2025-26")).toHaveLength(2));
+    expect(within(context).getAllByText("Row window: not recorded")).toHaveLength(2);
+    expect(within(context).getByText("Snapshot date: 2026-04-12")).toBeVisible();
+    expect(within(context).getByText("Snapshot date: not published")).toBeVisible();
+  });
+
+  it("keeps existing explicit and row-based coverage ahead of nested season metadata", () => {
+    const coverage = { seasons: ["2023-24", "2024-25", "2025-26"] };
+    expect(observationPeriod({ coverage, observation_window: { seasons: "2025-26 partial" } })).toBe("2025-26 partial");
+    expect(observationPeriod({ coverage, observation_window: { start: "2025-01-01", end: "2025-02-01" } })).toBe("2025-01-01 to 2025-02-01");
+    expect(observationPeriod({ coverage, seasons: { "2024_25": {} } })).toBe("2024-25");
+    expect(observationPeriod({ coverage, results: [{ season: "2025_26" }] })).toBe("2025-26");
+    expect(observationPeriod({ input_coverage: { seasons: [" 2023_24 ", "2024-25", "2024-25"] } })).toBe("2023-24, 2024-25");
+  });
+
+  it.each([null, "2024-25", [], [2024], [" "], [{ season: "2024-25" }], ["2024-25", null]])("does not infer coverage from malformed season lists (%j)", seasons => {
+    expect(observationPeriod({ coverage: { seasons }, input_coverage: { seasons } })).toBeNull();
   });
 
   it("preserves the published estimator windows separately without inventing shared coverage", async () => {
