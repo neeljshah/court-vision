@@ -1,8 +1,9 @@
 import { field as f, snapshot } from "./labHelpers";
+import { describeDate } from "./artifactProvenance";
 import type { ResearchAnalysis, ResearchReference, ResearchRow } from "./researchTypes";
 
 type Bucket = { bucket?: unknown; n?: unknown; model_brier?: unknown; market_brier?: unknown; model_closer_rate?: unknown };
-export type MarketDisagreementSource = { sports?: unknown };
+export type MarketDisagreementSource = { sports?: unknown; as_of?: unknown };
 
 const REFERENCES: ResearchReference[] = [{
   title: "Published market-disagreement method",
@@ -34,6 +35,7 @@ function rows(source: MarketDisagreementSource): ResearchRow[] {
 
 export function buildMarketDisagreementResearch(source: MarketDisagreementSource): ResearchAnalysis[] {
   const analysisRows = rows(source || {});
+  const sourceDate = typeof source?.as_of === "string" && describeDate(source.as_of, "source") !== "Date not published." ? source.as_of : undefined;
   return [{
     id: "market-disagreement-brier-by-bucket",
     title: "Model and market Brier by disagreement bucket",
@@ -43,7 +45,7 @@ export function buildMarketDisagreementResearch(source: MarketDisagreementSource
     question: "How do model and market Brier scores vary when their published probabilities are farther apart?",
     method: "Bucket rows by the published absolute model-probability-minus-market-probability range, preserving the two Brier scores, model-closer rate, and support.",
     description: "Published rows group model-market probability gaps and retain each side's Brier score, model-closer rate, and scored-row support.",
-    scope: `${analysisRows.length} published sport-by-disagreement buckets. The source does not publish an as-of timestamp.`,
+    scope: `${analysisRows.length} published sport-by-disagreement buckets. ${sourceDate ? `Published source as of ${sourceDate}. This date does not identify the observation window.` : "Source as-of date not published."}`,
     caveat: "Buckets describe the published joined corpora rather than independent games. The model-closer rate records the source's row-level comparison and is not a forecast or causal estimate.",
     status: "Descriptive calibration subset",
     fields: [f("model_brier", "Model Brier", "number", 4), f("market_brier", "Market Brier", "number", 4), f("model_closer_rate", "Model closer rate", "percent", 2), f("scored_rows", "Scored rows", "number", 0)],
@@ -58,6 +60,7 @@ export function buildMarketDisagreementResearch(source: MarketDisagreementSource
     interpretation: "Compare Model Brier and Market Brier within the same sport and disagreement bucket, with the scored-row count alongside both measurements.",
     references: REFERENCES,
     novelty: "Derived analysis",
+    asOf: sourceDate,
   }];
 }
 

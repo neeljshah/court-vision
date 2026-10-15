@@ -1,8 +1,9 @@
 import { field as f, snapshot } from "./labHelpers";
+import { describeDate } from "./artifactProvenance";
 import type { ResearchAnalysis, ResearchReference, ResearchRow } from "./researchTypes";
 
 type Checkpoint = { n?: unknown; model_brier?: unknown; market_brier?: unknown; naive_brier?: unknown; market_minus_model_brier?: unknown };
-export type InformationArrivalSource = { checkpoints?: unknown };
+export type InformationArrivalSource = { checkpoints?: unknown; as_of?: unknown };
 
 const REFERENCES: ResearchReference[] = [{
   title: "Published information-arrival method",
@@ -34,6 +35,7 @@ function rows(source: InformationArrivalSource): ResearchRow[] {
 
 export function buildInformationArrivalResearch(source: InformationArrivalSource): ResearchAnalysis[] {
   const analysisRows = rows(source || {});
+  const sourceDate = typeof source?.as_of === "string" && describeDate(source.as_of, "source") !== "Date not published." ? source.as_of : undefined;
   return [{
     id: "information-arrival-brier-by-checkpoint",
     title: "Model and market Brier by game checkpoint",
@@ -43,7 +45,7 @@ export function buildInformationArrivalResearch(source: InformationArrivalSource
     question: "How do the published model, market, and naive Brier scores change across game checkpoints?",
     method: "Restate every published sport-checkpoint row with its model, market, naive, and market-minus-model Brier measurements.",
     description: "Published checkpoint rows compare model, market, and naive Brier scores with the market-minus-model Brier difference.",
-    scope: `${analysisRows.length} published MLB-inning and international-soccer-minute checkpoints. The source does not publish an as-of timestamp.`,
+    scope: `${analysisRows.length} published MLB-inning and international-soccer-minute checkpoints. ${sourceDate ? `Published source as of ${sourceDate}. This date does not identify the observation window.` : "Source as-of date not published."}`,
     caveat: "Checkpoint rows are repeated observations within games, so scored rows are not an independent-game count. Rows with fewer than 30 scored observations remain visible and are flagged for review.",
     status: "Descriptive calibration subset",
     fields: [f("market_minus_model_brier", "Market Brier minus Model Brier", "number", 4), f("model_brier", "Model Brier", "number", 4), f("market_brier", "Market Brier", "number", 4), f("naive_brier", "Naive Brier", "number", 4), f("scored_rows", "Scored rows", "number", 0)],
@@ -52,6 +54,7 @@ export function buildInformationArrivalResearch(source: InformationArrivalSource
     interpretation: "Compare all Brier measurements at the same sport and game checkpoint before comparing a different phase of play.",
     references: REFERENCES,
     novelty: "Derived analysis",
+    asOf: sourceDate,
   }];
 }
 

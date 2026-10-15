@@ -1,8 +1,9 @@
 import { field as f, snapshot } from "./labHelpers";
+import { describeDate } from "./artifactProvenance";
 import type { ResearchAnalysis, ResearchReference, ResearchRow } from "./researchTypes";
 
 type Checkpoint = { n?: unknown; mean_gap?: unknown; median_gap?: unknown; mean_entropy_market_bits?: unknown; mean_entropy_model_bits?: unknown; mean_market_prob?: unknown; mean_model_prob?: unknown };
-export type MarketConvergenceSource = { checkpoints?: unknown; min_n?: unknown };
+export type MarketConvergenceSource = { checkpoints?: unknown; min_n?: unknown; as_of?: unknown };
 
 const REFERENCES: ResearchReference[] = [{
   title: "Published market-convergence method",
@@ -34,6 +35,7 @@ function rows(source: MarketConvergenceSource): ResearchRow[] {
 
 export function buildMarketConvergenceResearch(source: MarketConvergenceSource): ResearchAnalysis[] {
   const analysisRows = rows(source || {});
+  const sourceDate = typeof source?.as_of === "string" && describeDate(source.as_of, "source") !== "Date not published." ? source.as_of : undefined;
   const minimum = finite(source?.min_n) && source.min_n >= 0 ? source.min_n : null;
   return [{
     id: "market-convergence-by-checkpoint",
@@ -44,7 +46,7 @@ export function buildMarketConvergenceResearch(source: MarketConvergenceSource):
     question: "How do published model-market probability gaps and uncertainty change across game checkpoints?",
     method: "Restate every published sport-checkpoint row with absolute probability gaps, entropy measurements, mean probabilities, and support.",
     description: "Published checkpoints retain model-market probability gaps, uncertainty in bits, mean probabilities, and scored-row support.",
-    scope: `${analysisRows.length} published MLB-inning and international-soccer-minute checkpoints${minimum === null ? "." : ` with a source minimum of ${minimum} rows.`}`,
+    scope: `${analysisRows.length} published MLB-inning and international-soccer-minute checkpoints${minimum === null ? "." : ` with a source minimum of ${minimum} rows.`} ${sourceDate ? `Published source as of ${sourceDate}. This date does not identify the observation window.` : "Source as-of date not published."}`,
     caveat: "The source describes agreement and uncertainty at repeated in-game checkpoints, not independent forecasts. Entropy declines as outcomes resolve and does not by itself establish model quality.",
     status: "Descriptive checkpoint subset",
     fields: [f("mean_gap", "Mean absolute probability gap", "percent", 2), f("median_gap", "Median absolute probability gap", "percent", 2), f("market_entropy_bits", "Market entropy", "number", 3), f("model_entropy_bits", "Model entropy", "number", 3), f("mean_market_probability", "Mean market probability", "percent", 2), f("mean_model_probability", "Mean model probability", "percent", 2), f("scored_rows", "Scored rows", "number", 0)],
@@ -53,6 +55,7 @@ export function buildMarketConvergenceResearch(source: MarketConvergenceSource):
     interpretation: "Read the gap with both entropy measurements at the same checkpoint; later game time can change agreement and uncertainty together.",
     references: REFERENCES,
     novelty: "Derived analysis",
+    asOf: sourceDate,
   }];
 }
 
