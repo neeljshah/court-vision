@@ -1,9 +1,10 @@
 import { field as f, snapshot } from "./labHelpers";
+import { describeDate } from "./artifactProvenance";
 import type { ResearchAnalysis, ResearchReference, ResearchRow } from "./researchTypes";
 
 type Bucket = { n?: unknown; mean_abs_move?: unknown };
-type Sport = { status?: unknown; n_series_used?: unknown; move_by_bucket?: unknown };
-export type MicroAbsorptionSource = { as_of?: unknown; sports?: unknown; buckets_minutes?: unknown };
+type Sport = { status?: unknown; n_series_used?: unknown; move_by_bucket?: unknown; observation_window?: unknown };
+export type MicroAbsorptionSource = { as_of?: unknown; sports?: unknown; buckets_minutes?: unknown; observation_window?: unknown };
 
 const REFERENCES: ResearchReference[] = [{
   title: "Published time-to-close movement method",
@@ -13,6 +14,13 @@ const finite = (value: unknown): value is number => typeof value === "number" &&
 const sportLabel = (sport: string) => sport === "soccer_intl" ? "International soccer" : sport.toUpperCase();
 const asOf = (value: unknown) => typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : undefined;
 
+function fileWindow(value: unknown): string | undefined {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
+  const { start, end } = value as { start?: unknown; end?: unknown };
+  if (typeof start !== "string" || typeof end !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(start) || !/^\d{4}-\d{2}-\d{2}$/.test(end) || start > end) return undefined;
+  return describeDate({ start, end }, "window") === "Date not published." ? undefined : `${start} to ${end}`;
+}
+
 function rows(source: MicroAbsorptionSource): ResearchRow[] {
   if (!source.sports || typeof source.sports !== "object" || Array.isArray(source.sports) || !Array.isArray(source.buckets_minutes)) return [];
   const buckets = source.buckets_minutes.flatMap((bucket, index) => typeof bucket === "object" && bucket && typeof (bucket as { label?: unknown }).label === "string" ? [{ label: (bucket as { label: string }).label, index }] : []);
@@ -20,6 +28,7 @@ function rows(source: MicroAbsorptionSource): ResearchRow[] {
     const entry = value as Sport;
     const seriesUsed = entry.n_series_used;
     if (entry.status !== "ok" || !finite(seriesUsed) || seriesUsed < 0 || !entry.move_by_bucket || typeof entry.move_by_bucket !== "object" || Array.isArray(entry.move_by_bucket)) return [];
+    const sportWindow = fileWindow(entry.observation_window);
     return buckets.flatMap(({ label, index }) => {
       const bucket = (entry.move_by_bucket as Record<string, unknown>)[label] as Bucket;
       if (!bucket || !finite(bucket.n) || bucket.n < 0 || !finite(bucket.mean_abs_move) || bucket.mean_abs_move < 0) return [];
@@ -28,8 +37,13 @@ function rows(source: MicroAbsorptionSource): ResearchRow[] {
         label: `${sportLabel(sport)} | ${label}`,
         group: sportLabel(sport),
         values: { mean_absolute_devigged_probability_movement: bucket.mean_abs_move, move_pairs: bucket.n, series_used: seriesUsed },
-        note: `${bucket.n} published consecutive-snapshot move pairs across ${seriesUsed} series.`,
-        sourcePaths: [`sports.${sport}.move_by_bucket.${label}.mean_abs_move`, `sports.${sport}.move_by_bucket.${label}.n`, `sports.${sport}.n_series_used`],
+        note: `${bucket.n} published consecutive-snapshot move pairs. ${seriesUsed} sport-wide series across all time buckets; distinct series per bucket are not published. ${sportWindow ? `Sport file window: ${sportWindow}.` : "Sport file window not published."}`,
+        windows: sportWindow ? {
+          mean_absolute_devigged_probability_movement: `${sportWindow} (consumed daily files)`,
+          move_pairs: `${sportWindow} (consumed daily files)`,
+          series_used: `${sportWindow} (consumed daily files)`,
+        } : undefined,
+        sourcePaths: [`sports.${sport}.move_by_bucket.${label}.mean_abs_move`, `sports.${sport}.move_by_bucket.${label}.n`, `sports.${sport}.n_series_used`, ...(sportWindow ? [`sports.${sport}.observation_window.start`, `sports.${sport}.observation_window.end`] : [])],
       }];
     });
   }).sort((left, right) => left.group.localeCompare(right.group) || left.label.localeCompare(right.label));
@@ -37,6 +51,7 @@ function rows(source: MicroAbsorptionSource): ResearchRow[] {
 
 export function buildMicroAbsorptionResearch(source: MicroAbsorptionSource): ResearchAnalysis[] {
   const analysisRows = rows(source || {});
+  const sourceWindow = fileWindow(source?.observation_window);
   return [{
     id: "devigged-movement-by-time-to-close",
     title: "Devigged probability movement by time to close",
@@ -46,8 +61,8 @@ export function buildMicroAbsorptionResearch(source: MicroAbsorptionSource): Res
     question: "How much did published devigged probability move between consecutive snapshots in each time-to-close bucket?",
     method: "Restate each valid sport and minutes-to-close bucket with its mean absolute devigged probability movement, move-pair count, and series count.",
     description: "Published pre-event snapshot comparisons retain mean absolute movement and the underlying move-pair support.",
-    scope: `${analysisRows.length} published valid sport-time buckets from the source observation window.`,
-    caveat: "This is a short, source-specific capture window. Dense snapshots increase move-pair counts without creating independent events, and unavailable buckets remain omitted rather than imputed.",
+    scope: `${analysisRows.length} published valid sport-time buckets. ${sourceWindow ? `Source file window: ${sourceWindow}.` : "Source file window not published."}`,
+    caveat: "Windows describe consumed daily files, not event-date coverage or a complete season. This is a short, source-specific capture window. Dense snapshots increase move-pair counts without creating independent events, and unavailable buckets remain omitted rather than imputed.",
     status: "Descriptive market-measurement subset",
     fields: [f("mean_absolute_devigged_probability_movement", "Mean absolute devigged probability movement", "percent", 4), f("move_pairs", "Move pairs", "number", 0), f("series_used", "Series used", "number", 0)],
     rows: analysisRows,
