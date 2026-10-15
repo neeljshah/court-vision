@@ -18,6 +18,11 @@ const replacement: ResearchAnalysis = {
 };
 
 const sameIdReplacement: ResearchAnalysis = { ...replacement, id: analysis.id };
+const comeback: ResearchAnalysis = { ...analysis, id: "comeback-rates-deficit-time", rows: [
+    { id: "positive", label: "Home leads 1-5 | 0-2 remaining", group: "Home leads 1-5", values: { score: 1 } },
+    { id: "negative", label: "Home trails 1-5 | 0-2 remaining", group: "Home trails 1-5", values: { score: 2 } },
+    { id: "tied", label: "Tied score | 0-2 remaining", group: "Tied score", values: { score: 3 } },
+] };
 const multisport: ResearchAnalysis = {
   ...analysis, id: "multisport",
   rows: [
@@ -73,6 +78,27 @@ beforeEach(() => window.history.replaceState(null, "", "/analytics/research/firs
 afterEach(() => window.history.replaceState(null, "", "/analytics/research/first/"));
 
 describe("useResearchView hydration intent", () => {
+  it.each([["Deficit 1-5", "Home leads 1-5", "positive"], ["lead_-01_05", "Home trails 1-5", "negative"], ["lead_00", "Tied score", "tied"]])("restores legacy comeback group %s and its selected row", (legacy, current, row) => {
+    window.history.replaceState(null, "", `?group=${encodeURIComponent(legacy)}&row=${row}&utm_source=shared`);
+    render(<State a={comeback} />);
+    expect(view()).toMatchObject({ group: current, row });
+    const params = new URLSearchParams(window.location.search);
+    expect([params.get("group"), params.get("row"), params.get("utm_source")]).toEqual([current, row, "shared"]);
+  });
+  it("keeps a current comeback group unchanged", () => {
+    window.history.replaceState(null, "", "?group=Home+trails+1-5&row=negative");
+    render(<State a={comeback} />);
+    expect([view().group, view().row, new URLSearchParams(window.location.search).get("group")]).toEqual(["Home trails 1-5", "negative", "Home trails 1-5"]);
+  });
+  it("does not map an invalid comeback group or legacy group on another analysis", () => {
+    window.history.replaceState(null, "", "?group=lead_-99_99");
+    const rendered = render(<State a={comeback} />);
+    expect([view().group, new URLSearchParams(window.location.search).has("group")]).toEqual(["all", false]);
+    rendered.unmount();
+    window.history.replaceState(null, "", "?group=Deficit+1-5");
+    render(<State a={{ ...comeback, id: "other-analysis" }} />);
+    expect([view().group, new URLSearchParams(window.location.search).has("group")]).toEqual(["all", false]);
+  });
   it("opens unidentified rows in the table and resets to that safe default", () => {
     window.history.replaceState(null, "", "?view=rank&utm_source=shared");
     render(<State a={unidentified} intent="reset" />);

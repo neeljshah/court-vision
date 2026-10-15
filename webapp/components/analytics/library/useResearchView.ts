@@ -14,6 +14,14 @@ const defaults = (a: ResearchAnalysis): View => {
 };
 const parameters = { metric: "metric", second: "y", group: "group", population: "population", query: "q", ascending: "order", view: "view", row: "row" } as const;
 
+function legacyComebackGroup(group: string): string | null {
+  if (group === "lead_00") return "Tied score";
+  const positive = /^Deficit (\d+)-(\d+)$/.exec(group);
+  if (positive) return `Home leads ${Number(positive[1])}-${Number(positive[2])}`;
+  const negative = /^lead_-(\d+)_(\d+)$/.exec(group);
+  return negative ? `Home trails ${Number(negative[1])}-${Number(negative[2])}` : null;
+}
+
 function visibleRows(a: ResearchAnalysis, view: View) {
   const comparison = researchComparisonPolicy(a.rows, a);
   if (comparison.compatible) return a.rows.filter(row => view.group === "all" || row.group === view.group);
@@ -35,7 +43,12 @@ function readView(a: ResearchAnalysis): View {
   const p = new URLSearchParams(window.location.search), next = defaults(a);
   if (a.fields.some(f => f.key === p.get("metric"))) next.metric = p.get("metric")!;
   if (a.fields.some(f => f.key === p.get("y"))) next.second = p.get("y")!;
-  if (a.rows.some(r => r.group === p.get("group"))) next.group = p.get("group")!;
+  const requestedGroup = p.get("group");
+  if (requestedGroup && a.rows.some(r => r.group === requestedGroup)) next.group = requestedGroup;
+  else if (requestedGroup && a.id === "comeback-rates-deficit-time") {
+    const mappedGroup = legacyComebackGroup(requestedGroup);
+    if (mappedGroup && a.rows.some(r => r.group === mappedGroup)) next.group = mappedGroup;
+  }
   if (p.get("population")) next.population = p.get("population")!;
   next.query = p.get("q") || "";
   next.ascending = p.get("order") === "asc";

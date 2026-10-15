@@ -66,12 +66,17 @@ describe("ResearchProvenance", () => {
     expect(screen.getByText("Result = numerator / denominator")).toBeInTheDocument();
   });
 
-  it("uses the comeback row's own time and deficit bands with the exact published operands", () => {
-    const analysis = buildComebackAtlasResearch({ cells: [{ lead_band: "lead_+01_05", time_band: "rem_00_02", outcome_rate: 0.8, n_games: 40, n_ticks: 200, masked_n_lt_30: false }] })[0];
+  it.each([
+    ["lead_+01_05", "Home leads 1-5", 0.8],
+    ["lead_-01_05", "Home trails 1-5", 0.2],
+  ])("uses the exact home-win operand for comeback cell %s", (lead, label, homeWin) => {
+    const analysis = buildComebackAtlasResearch({ cells: [{ lead_band: lead, time_band: "rem_00_02", outcome_rate: homeWin, n_games: 40, n_ticks: 200, masked_n_lt_30: false }] })[0];
     render(<ResearchProvenance analysis={analysis} fields={analysis.fields} resultField={analysis.fields[0]} row={analysis.rows[0]} />);
     expect(screen.getByText("Time band").parentElement).toHaveTextContent("0-2 remaining");
-    expect(screen.getByText("Deficit band").parentElement).toHaveTextContent("Deficit 1-5");
-    expect(screen.getByText("Displayed comeback share = 1 - outcome_rate (80%). lead_band (Deficit 1-5) and time_band (0-2 remaining) identify the published source cell; n_games (40) and n_ticks (200) report its support.")).toBeInTheDocument();
+    expect(screen.getByText("Home margin band").parentElement).toHaveTextContent(label);
+    expect(screen.getByText("Published home-win rate (fraction)").parentElement).toHaveTextContent(String(homeWin));
+    expect(screen.getByText(/is the published home-win fraction/)).toHaveTextContent(`outcome_rate (${homeWin})`);
+    expect(screen.getByText("Observed comeback share: 20%")).toBeInTheDocument();
   });
 
   it("renders nothing when the analysis did not record provenance", () => {
