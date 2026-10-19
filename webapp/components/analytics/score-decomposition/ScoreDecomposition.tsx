@@ -31,7 +31,7 @@ function ComponentChart({ sports }: { sports: DecompositionSport[] }) {
   const width = Math.max(620, 120 + rows.length * 150);
   const height = 316;
   const sy = linear(0, maximum, 242, 38);
-  return <svg className="sd-chart" viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Murphy decomposition components by sport and population" data-testid="score-decomposition-chart">
+  return <svg className="sd-chart" viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Murphy decomposition components by sport and population. Exact values are in the Published Brier reconstruction audit table below." data-testid="score-decomposition-chart">
     {[0, maximum / 2, maximum].map(value => <g key={value}><line x1="58" x2={width - 24} y1={sy(value)} y2={sy(value)} className="sd-grid" /><text x="48" y={sy(value) + 4} textAnchor="end">{value.toFixed(3)}</text></g>)}
     {rows.map(({ sport, row }, index) => {
       const start = 76 + index * 150;
@@ -57,9 +57,20 @@ export function ScoreDecomposition({ sports, asOf = null }: { sports: Decomposit
       <ComponentChart sports={sports} />
     </Figure>
     <div className="sd-table-wrap" role="region" aria-label="Brier reconstruction audit" data-scroll-region>
-      <table className="sd-table"><caption>Published Brier reconstruction audit</caption><thead><tr><th>Sport</th><th>Sport n rows</th><th>Population</th><th>Population n</th><th>Brier</th><th>Reconstructed Brier (derived)</th><th>Signed remainder (derived)</th></tr></thead><tbody>{sports.flatMap(item => item.rows.map(row => <tr key={rowId(item.sport, row)}><td>{sportLabel(item.sport)}</td><td>{sample(item.nRows, "n rows")}</td><td>{sideLabel(row.side)}</td><td>{sample(row.n)}</td><td>{formatDecompositionValue(row.brier)}</td><td>{formatDecompositionValue(row.reconstructedBrier)}</td><td>{formatDecompositionValue(row.reconstructedBrier)} - {formatDecompositionValue(row.brier)} = <strong>{formatDecompositionValue(row.remainder)}</strong></td></tr>))}</tbody></table>
+      <table className="sd-table">
+        <caption>Published Brier reconstruction audit</caption>
+        <thead><tr>
+          {["Sport", "Sport n rows", "Population", "Population n", ...COMPONENTS.map(component => component.label), "Brier", "Reconstructed Brier (derived)", "Signed remainder (derived)"].map(label => <th scope="col" key={label}>{label}</th>)}
+        </tr></thead>
+        <tbody>{sports.flatMap(item => item.rows.map(row => <tr key={rowId(item.sport, row)}>
+          <td>{sportLabel(item.sport)}</td><td>{sample(item.nRows, "n rows")}</td><td>{sideLabel(row.side)}</td><td>{sample(row.n)}</td>
+          {COMPONENTS.map(component => <td key={component.key}>{formatDecompositionValue(row[component.key])}</td>)}
+          <td>{formatDecompositionValue(row.brier)}</td><td>{formatDecompositionValue(row.reconstructedBrier)}</td>
+          <td>{formatDecompositionValue(row.reconstructedBrier)} - {formatDecompositionValue(row.brier)} = <strong>{formatDecompositionValue(row.remainder)}</strong></td>
+        </tr>))}</tbody>
+      </table>
     </div>
-    <p className="sd-note">The reconstruction is computed from ten probability bins. A binned reconstruction can differ from the published Brier; this table reports that signed remainder without assigning a cause to it.</p>
+    <p className="sd-note">Reconstructed Brier = reliability - resolution + uncertainty. The reconstruction is computed from ten probability bins. A binned reconstruction can differ from the published Brier; this table reports that signed remainder without assigning a cause to it.</p>
     <p className="sd-source-fields">Source fields: murphy_decomposition.json -&gt; sports[sport].n_rows; model_prob and market_prob: n, brier, reliability, resolution, uncertainty, reconstructed_brier. Reconstructed Brier and signed remainder are shown as derived values; remainder = reconstructed_brier - brier.</p>
   </section>;
 }

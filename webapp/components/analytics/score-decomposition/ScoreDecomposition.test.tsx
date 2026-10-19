@@ -50,4 +50,31 @@ describe("ScoreDecomposition", () => {
     expect(screen.getByTestId("score-decomposition-chart")).toBeInTheDocument();
     expect(screen.getByText(/can differ from the published Brier/i)).toBeInTheDocument();
   });
+
+  it("exposes every published component in the corresponding sport and population table row", () => {
+    render(<ScoreDecompositionPage />);
+    const table = screen.getByRole("table", { name: /published brier reconstruction audit/i });
+    const headings = within(table).getAllByRole("columnheader").map(cell => cell.textContent);
+    const rows = within(table).getAllByRole("row").slice(1);
+    const publishedRows = Object.entries(publishedDecomposition.sports).flatMap(([sport, source]) =>
+      (["model", "market"] as const).map(side => ({ sport, side, source: source[`${side}_prob`] })));
+    expect(rows).toHaveLength(publishedRows.length);
+    publishedRows.forEach(({ sport, side, source }, index) => {
+      const cells = within(rows[index]).getAllByRole("cell");
+      expect(cells[0]).toHaveTextContent(sport === "mlb" ? "MLB" : "International soccer");
+      expect(cells[2]).toHaveTextContent(side === "model" ? "Model" : "Market");
+      for (const [key, label] of [["reliability", "Reliability"], ["resolution", "Resolution"], ["uncertainty", "Uncertainty"]] as const) {
+        expect(cells[headings.indexOf(label)]).toHaveTextContent(source[key].toFixed(6));
+      }
+    });
+    expect(screen.getByTestId("score-decomposition-chart")).toHaveAccessibleName(/Exact values are in the Published Brier reconstruction audit table below/);
+  });
+
+  it("distinguishes missing component values from published zeros in the table", () => {
+    const row = { ...sports[0].rows[0], reliability: null, resolution: 0, uncertainty: null };
+    render(<ScoreDecomposition sports={[{ ...sports[0], rows: [row] }]} />);
+    const table = screen.getByRole("table", { name: /published brier reconstruction audit/i });
+    const cells = within(within(table).getAllByRole("row")[1]).getAllByRole("cell");
+    expect(cells.slice(4, 7).map(cell => cell.textContent)).toEqual(["Not published", "0.000000", "Not published"]);
+  });
 });
