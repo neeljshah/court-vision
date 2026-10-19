@@ -6,7 +6,7 @@ no capture relaunched. The one write was the 10-20 D1 schedule (see row 1).
 
 ## Verdict
 
-The 10-20 schedule, state capture and scoring of the nba cell are READY. Books polling is READY only while the runner stays up (see the addendum: since 15:59Z the 10-20 rows are carried in memory only). The live shadow
+The 10-20 schedule, books polling, state capture and scoring of the nba cell are READY (books restart-safety: see the CORRECTION section; S741 covers it). The live shadow
 recorder is DEGRADED (see row 5), and the 10-19 recovery (row 2) depends on the next tick. The real risks for
 10-20 are free RAM and the box going to sleep in the evening. The code paths are fine.
 
@@ -72,3 +72,28 @@ None allocated or invented. Every gap found is either tick-owned or an owner act
   The watcher is a background loop of this session and may stop when this session ends. The dispatcher should
   re-arm it, or launch with the recipe after the night ends, when free RAM is at least 2,000 MB and the time is
   outside 18:55Z-20:05Z / 22:55Z-00:35Z 10-20.
+
+## CORRECTION 16:2xZ (supersedes the "POINTER MOVED BACK" restart claim above)
+
+The claim above, that the 10-20 rows "would be dropped" after a books restart, is WRONG. S741 (LANDED 22ac12090
+10-05; schedule_siblings.open_siblings, wired at schedule_pointer.py:242-244) unions every dated sibling
+schedule in the pointer target's directory whose rows are still open. Each sibling is verified against its
+<day>_run.json receipt, on every pointer read, including the first read after a restart. Live evidence:
+kalshi/nba/_heartbeat.json shows schedule_sibling_files_loaded 1, schedule_sibling_files
+{"2026-10-20_maker_forward.json": "f321510a..."}, schedule_sibling_refusals_total 0, so the running books
+process already loads the 10-20 file as a sibling. 2026-10-20_run.json is present. A restart before or after
+the 10-21 D1 moves the pointer keeps BOS-DET and PHI-NYK, provided the receipt stays byte-consistent.
+
+- Pointer: the dispatcher still directed a republish at 2026-10-20 after 20:05Z 10-19 as a stopgap. It is
+  armed through the sanctioned writer (python -m scripts.platformkit.execution.schedule_pointer_writer
+  --day 2026-10-20 --sha256 f321510a...), gated on every 10-19 row's start + 65 min having passed and no
+  schedule_d1 / schedule_revise / schedule_recovery process running. It is harmless but no longer
+  load-bearing.
+- S826 ("a restarted books runner loads every still-open schedule on disk"): already delivered by S741.
+  Recommendation: close S826 as a duplicate of S741, with no build. Also, scripts/platformkit/ingame/
+  local_capture_runner.py is byte-pinned by tests/platformkit/ingame/fixtures/s542_seal.json and is already
+  300 LOC, so any edit there would stop at a PROPOSED diff anyway. No worktree was created.
+- Recorder watcher v1 had a flaw: it did not check today's served focus windows. It was stopped at 16:2xZ
+  (it never launched). v2 is armed until 2026-10-20T18:50Z. It gates on free RAM >= 2,000 MB, no
+  paper_night / live_shadow process, and no open start-5 min..start+65 min window in any
+  2026-10-*_maker_forward.json, and it stays out of 05:20Z-08:45Z.

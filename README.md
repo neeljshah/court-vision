@@ -52,7 +52,7 @@ map is **[docs/CAPABILITIES.md](docs/CAPABILITIES.md)**.
 | Fact-claims corpus | 103,048 generated claims, 101,864 re-verified from their declared source and formula |
 | Simulation | possession-level Monte Carlo where the negative teammate correlation emerges from a shared scoring pie instead of a hand-tuned matrix |
 | Engine (private repository) | about 99 API endpoints across 12 routers, 9 long-running daemons under a watchdog, a 430-module codebase, about 7,400 tests |
-| Execution | paper only, behind [six pre-registered go-live gates](docs/GO_LIVE_GATES.md); the order lifecycle has no reachable live path |
+| Execution | paper only, behind [six pre-registered go-live gates](docs/GO_LIVE_GATES.md); the order lifecycle has no reachable live path; a daily forward paper desk has run since 2026-10-06 (113 games served on in-game markets through 10-16, night receipts under `docs/evidence/forward/`, every scored cell still below its 30-game floor -- [forward record](docs/JOB_EVIDENCE_PACKET.md), section 5) |
 
 ## What is on the site
 
