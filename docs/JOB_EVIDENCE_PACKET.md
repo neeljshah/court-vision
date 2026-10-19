@@ -280,7 +280,7 @@ the repo will catch each one — which is disqualifying for a no-degree candidat
 | **"85 trained signals" / "0/85 candidate signals" / "80-artifact intelligence layer"** | **CORRECTED 2026-09-03 (S56).** No artifact holds 85 signals: 85 is the per-row `n_trials` multiplicity constant, while `scripts/platformkit/eval_gate/spa_catalog_report.txt` and `retro_correction_report.txt` both enumerate **60** catalog classes (NBA 16 / soccer 15 / tennis 15 / MLB 14), 0 surviving. The disjoint `data/registry/signal_registry.parquet` holds **86** rows (72 folded / 14 deferred, `coverage_pct` null 86/86, no market-relative verdict). `data/intelligence/` holds **151** files on disk and the 80-subset is not enumerable by any script. Memo: `docs/evidence/harness/SIGNAL_INVENTORY_REDTEAM_2026-09-03.md`. | "0 of 60 candidate signal classes survived the multiplicity correction; 86 registry signals carry no market-relative test; the intelligence layer is 151 files on disk." |
 | **"A forward track record" / "N weeks of forward paper trading" / any forward-series Brier as a model verdict** (added 2026-10-19) | Through 2026-10-18 every scoreboard cell is INSUFFICIENT (1 to 6 games against the 30-game floor), 0 of 31 judged games passed qualification, 7 of 8 night receipts are PARTIAL, and the fitted arms scored ticks on two nights only. Arm A is the venue mid's own Brier, not the model's. Section 5. | "A prospective, receipt-backed paper series has run since 2026-10-06. It has no calibration verdict yet, and the receipts say why: scorer wall time, laptop sleeps and recorder uptime." |
 | **"Simulated fills" as execution quality or P&L** (added 2026-10-19) | fill_realism is `COUNTS ONLY` on unqualified tape with zero assumed latency. It reports no markout, no fee netting and no money figure. | "The fill-realism step counts which paper quotes would have been touched (106 at a 5 s quote life, 452 at 30 s, 10-08 to 10-14). It is a count, not a result." |
-| **"The NBA season is pre-registered forward"** (added 2026-10-19) | NBA is not in `model_optional_sports` of `PREREG_2026-10-07.json`, and no NBA forward pre-registration was sealed at 2026-10-19. | "NBA is served and scored against the mid from the opener. A fitted NBA arm needs a new dated seal." |
+| **"The NBA season is pre-registered forward"** (added 2026-10-19) | No NBA-specific pre-registration document exists. NBA cells are scored under the general `PREREG_2026-10-07.json` seal (arm A and B_lag only so far, every cell INSUFFICIENT) and the fitted NBA arms are in warmup until about 20 regular-season games settle. Say "scored under the 2026-10-07 seal, fitted arms warmup", never "a pre-registered NBA season" or any NBA forward verdict. | "NBA is served and scored against the mid from the opener. A fitted NBA arm needs a new dated seal." |
 
 **Pre-outreach housekeeping (status as of 2026-06-11):**
 
@@ -403,12 +403,17 @@ fills. They are not markouts, and no fee-netted markout or P&L is computed from 
 was 17.0 to 19.5 s on the nights 10-06 to 10-14 that carry an MLB row (none on 10-10).
 
 **NBA forward test from 2026-10-20.** The NBA regular season opens 2026-10-20. NBA games have been
-served on every scheduled day since 10-07. Arm A (the mid) was scored for NBA where games settled (3, 6 and 1 games on 10-07, 10-08 and 10-09). NBA is **not** in the
-sealed scoreboard's `model_optional_sports` list (`mlb`, `nfl`, `soccer` in
-`PREREG_2026-10-07.json`), so no fitted NBA arm is scored under the current seal. No NBA forward
-pre-registration file existed at this writing (`docs/evidence/harness/PREREG_NBA_PROPOSED_2026-10-19.*`
-was absent). The NBA forward series is therefore **served, not pre-registered**, until a dated seal
-adds it.
+served on every scheduled day since 10-07, and NBA is scored under the current seal: `PREREG_2026-10-07.json`
+(effective 2026-10-07, before the regular season) covers every served sport, and the night-10-12 scoreboard
+holds NBA arm A (the mid) and B_lag cells over 3 games / 3,431 ticks, all INSUFFICIENT
+(`docs/evidence/forward/scoreboard/2026-10-12.json`; readiness audit
+`docs/evidence/forward/daily/NBA_READINESS_2026-10-19.md`). The fitted arms B / C / D are in warmup for NBA:
+their training uses regular-season games only, so every NBA fit on disk is `fit_warmup` and the 10-20 quotes
+are arm A plus the mid (`fit_missing`); roughly 20 settled regular-season games are needed before a fitted
+NBA arm scores. NBA is not in `model_optional_sports` (`mlb`, `nfl`, `soccer`), which governs arm D's
+model requirement, not whether NBA is scored. No NBA-specific pre-registration document exists: the NBA
+forward series runs under the sealed 2026-10-07 pre-registration, fitted arms warmup until the
+regular-season history exists.
 
 **Reading.** The desk wrote a prospective schedule on 10 of 13 calendar days and a night receipt on 8 of them. The receipts also record its operational limits: scorer wall time, laptop sleeps and recorder
 uptime. In the same period no cell reached its floor and no game qualified. As of

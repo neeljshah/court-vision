@@ -126,8 +126,10 @@ lines stay as the 2026-10-05 record. All numbers come from
   tape and state gaps, laptop sleeps and a live shadow recorder down since 10-13.
 - **Fill realism:** counts only, unqualified tape: 106 fills credited at a 5 s quote life and 452 at
   30 s (10-08 to 10-14). There is no markout and no fee netting.
-- **NBA from 2026-10-20:** NBA is served and scored against the mid. It is not in the sealed
-  model-arm list, and no NBA forward pre-registration had been sealed at this writing.
+- **NBA from 2026-10-20:** NBA is served and scored under the sealed 2026-10-07 pre-registration (arm A
+  and B_lag cells so far, every cell INSUFFICIENT); the fitted arms B / C / D are in warmup until about 20
+  regular-season games settle, so opening-week quotes are the mid and arm A only. No NBA-specific
+  pre-registration document exists.
 - **Gate G6** (eight weeks of fee-netted shadow markout) has still not started. Qualified decisions
   are 0 on every sport.
 
