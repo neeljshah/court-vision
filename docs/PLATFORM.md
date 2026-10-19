@@ -243,7 +243,7 @@ The same validation discipline that caught a leaky +18.38% ROI over-claim in NBA
 
 The hard-won lessons compound too:
 
-- **Calibration is the goal, not a fabricated edge:** "match the devigged close within noise" is the honest, achievable win
+- **Calibration is the goal, not a fabricated edge:** "match the devigged close within noise" is the honest, achievable win (measured: NBA moneyline indistinguishable at an underpowered n=372; MLB moneyline and soccer O/U 2.5 TRAIL the close with 95% CIs above zero; corrected 2026-10-06 from DM_RECOMPUTE_2026-09-24)
 - **Single-fold lifts are artifacts:** the gate requires >=2 independent corpora
 - **Accuracy != edge:** minimizing MAE pulls toward the line in any sport
 - **Freshness beats retraining:** the pregame totals gap is data we cannot see, not a modeling miss

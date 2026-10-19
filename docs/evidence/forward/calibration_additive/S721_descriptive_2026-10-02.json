@@ -1,0 +1,110 @@
+{
+  "duplicate_receipts": 0,
+  "groups": [
+    {
+      "C_minus_A": {
+        "brier": "-0.0648418343842772774408917543",
+        "logloss": "-0.1665357567226679763508075106"
+      },
+      "corpus": "mlb",
+      "eligibility": "outcome_A_C_regulation_v1",
+      "games": [
+        {
+          "A": {
+            "brier": "0.3089596702755905511811023622",
+            "logloss": "0.8376742217480125081190990833"
+          },
+          "C": {
+            "brier": "0.09061597789119259307858525062",
+            "logloss": "0.3452890019160118627544043726"
+          },
+          "C_minus_A": {
+            "brier": "-0.2183436923843979581025171116",
+            "logloss": "-0.4923852198320006453646947107"
+          },
+          "first_ts": "2026-09-30T17:46:08.665810+00:00",
+          "game_key": "849841",
+          "n_ticks": 1016
+        },
+        {
+          "A": {
+            "brier": "0.1392691431670281995661605206",
+            "logloss": "0.4288331294334216075787309866"
+          },
+          "C": {
+            "brier": "0.01500464724126885700550674617",
+            "logloss": "0.09260112292581045268890014101"
+          },
+          "C_minus_A": {
+            "brier": "-0.1242644959257593425606537744",
+            "logloss": "-0.3362320065076111548898308456"
+          },
+          "first_ts": "2026-09-30T20:46:27.405240+00:00",
+          "game_key": "849846",
+          "n_ticks": 922
+        },
+        {
+          "A": {
+            "brier": "0.07544378378378378378378378378",
+            "logloss": "0.2838361529985085968451011305"
+          },
+          "C": {
+            "brier": "0.2235264689411092521242794069",
+            "logloss": "0.6128461091701164680472041549"
+          },
+          "C_minus_A": {
+            "brier": "0.1480826851573254683404956231",
+            "logloss": "0.3290099561716078712021030244"
+          },
+          "first_ts": "2026-09-30T00:08:45.018603+00:00",
+          "game_key": "849851",
+          "n_ticks": 925
+        }
+      ],
+      "n_games": 3,
+      "n_ticks": 2863,
+      "seal_sha256": "801af61b2755a99f9d5e238acd59bb1b6cf88212d1cb81b11a576ac32877b7aa",
+      "sport": "mlb",
+      "support": "INSUFFICIENT",
+      "venue": "kalshi",
+      "venue_provenance": "operator_declared"
+    }
+  ],
+  "population": "development",
+  "refusals": {},
+  "schema": "s721.descriptive.v1",
+  "sources": [
+    {
+      "bytes": 3443097,
+      "cells_reconciled": 48,
+      "eligible_games": 0,
+      "eligible_pairs": 0,
+      "paired_rows": 3982,
+      "path": "C:\\Users\\neelj\\nba-ai-system\\docs\\evidence\\forward\\scoreboard\\2026-09-24.json",
+      "resolution": "JSON text",
+      "seal_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\evidence\\forward\\scoreboard\\PREREG_2026-09-24.json",
+      "seal_paths": [
+        "C:\\Users\\neelj\\nba-ai-system\\docs\\evidence\\forward\\scoreboard\\PREREG_2026-09-24.json"
+      ],
+      "seal_sha256": "6976e78aa68124fc8ca8663f215fc59a5bf6aab42c8ce54e477bbe3bf717c08b",
+      "sha256_lf": "2f8a2a7d6b4c2d80466520ccce4e3442fe22cbff57039450acf94e82d959ef06"
+    },
+    {
+      "bytes": 9942028,
+      "cells_reconciled": 48,
+      "eligible_games": 3,
+      "eligible_pairs": 2863,
+      "paired_rows": 9684,
+      "path": "C:\\Users\\neelj\\nba-ai-system\\docs\\evidence\\forward\\scoreboard\\2026-09-30.json",
+      "resolution": "JSON text",
+      "seal_path": "docs/evidence/forward/scoreboard/PREREG_2026-09-30.json",
+      "seal_paths": [
+        "C:\\Users\\neelj\\nba-ai-system\\docs\\evidence\\forward\\scoreboard\\PREREG_2026-09-24.json",
+        "docs/evidence/forward/scoreboard/PREREG_2026-09-30.json"
+      ],
+      "seal_sha256": "801af61b2755a99f9d5e238acd59bb1b6cf88212d1cb81b11a576ac32877b7aa",
+      "sha256_lf": "12a0e3d1de28b912d7c7da9d62504a92091384fc3f1782df57dd213e2ec62294"
+    }
+  ],
+  "status": "OK"
+}

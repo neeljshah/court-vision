@@ -1,0 +1,13 @@
+{
+ "capacity_subset_selected_at": "2026-09-24T17:55:11Z",
+ "denominator_of_record": "docs/evidence/forward/schedules/2026-09-24_maker_forward_full_selection.json",
+ "not_served": [],
+ "served": [
+  "KXMLBGAME-26SEP241435NYMTEX-TEX",
+  "KXMLBGAME-26SEP241805MILPHI-PHI",
+  "KXMLBGAME-26SEP241845CLEBOS-BOS",
+  "KXMLBGAME-26SEP241915CINATL-ATL"
+ ],
+ "rule": "earliest starts, ticker order on ties, subject to capture_scheduler.schedule_rows line 113 (any three consecutive starts must span >= 3600 s); score-blind, before any start",
+ "served_file": "docs/evidence/forward/schedules/2026-09-24_maker_forward.json"
+}

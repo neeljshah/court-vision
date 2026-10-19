@@ -1,0 +1,229 @@
+{
+  "2026-09-22_census": {
+    "NOTICE": "Report-only chronological replay; admit_and_close has no production caller besides tests and this CLI. markets synthesized as complete pairs (see module docstring).",
+    "as_of": "2026-09-25T13:46:00Z",
+    "by_rate": {
+      "0.5": {
+        "admitted_after_capacity_wait": 0,
+        "capacity": 0,
+        "disposition_tally": {
+          "capacity_dropped": 3
+        },
+        "games": {
+          "823412": {
+            "capacity_wait_s": null,
+            "coverage_status": "partial",
+            "decision_reason": "capacity_dropped",
+            "observation_end": "1790126243.221827",
+            "planned_close": "1790126477.047936"
+          },
+          "824624": {
+            "capacity_wait_s": null,
+            "coverage_status": "unresolved",
+            "decision_reason": "capacity_dropped",
+            "observation_end": null,
+            "planned_close": "1790142000.000000"
+          },
+          "824785": {
+            "capacity_wait_s": null,
+            "coverage_status": "unresolved",
+            "decision_reason": "capacity_dropped",
+            "observation_end": null,
+            "planned_close": "1790138100.000000"
+          }
+        }
+      },
+      "2.0": {
+        "admitted_after_capacity_wait": 1,
+        "capacity": 2,
+        "disposition_tally": {
+          "admitted_and_closed": 3
+        },
+        "games": {
+          "823412": {
+            "capacity_wait_s": "0.000000",
+            "coverage_status": "partial",
+            "decision_reason": "admitted_and_closed",
+            "observation_end": "1790126243.221827",
+            "planned_close": "1790126477.047936"
+          },
+          "824624": {
+            "capacity_wait_s": "6197.047936",
+            "coverage_status": "unresolved",
+            "decision_reason": "admitted_and_closed",
+            "observation_end": null,
+            "planned_close": "1790142000.000000"
+          },
+          "824785": {
+            "capacity_wait_s": "0.000000",
+            "coverage_status": "unresolved",
+            "decision_reason": "admitted_and_closed",
+            "observation_end": null,
+            "planned_close": "1790138100.000000"
+          }
+        }
+      },
+      "3.0": {
+        "admitted_after_capacity_wait": 0,
+        "capacity": 3,
+        "disposition_tally": {
+          "admitted_and_closed": 3
+        },
+        "games": {
+          "823412": {
+            "capacity_wait_s": "0.000000",
+            "coverage_status": "partial",
+            "decision_reason": "admitted_and_closed",
+            "observation_end": "1790126243.221827",
+            "planned_close": "1790126477.047936"
+          },
+          "824624": {
+            "capacity_wait_s": "0.000000",
+            "coverage_status": "unresolved",
+            "decision_reason": "admitted_and_closed",
+            "observation_end": null,
+            "planned_close": "1790142000.000000"
+          },
+          "824785": {
+            "capacity_wait_s": "0.000000",
+            "coverage_status": "unresolved",
+            "decision_reason": "admitted_and_closed",
+            "observation_end": null,
+            "planned_close": "1790138100.000000"
+          }
+        }
+      }
+    },
+    "coverage_tally": {
+      "partial": 1,
+      "unresolved": 2
+    },
+    "date": "2026-09-22",
+    "rate_trajectory": "hypothetical: 3.0/2.0/0.5 fixed per rate for the whole night, not the historical AIMD rate that actually ran on this night",
+    "scheduled_games_total": 3
+  },
+  "2026-09-24_census": {
+    "NOTICE": "Report-only chronological replay; admit_and_close has no production caller besides tests and this CLI. markets synthesized as complete pairs (see module docstring).",
+    "as_of": "2026-09-25T13:46:05Z",
+    "by_rate": {
+      "0.5": {
+        "admitted_after_capacity_wait": 0,
+        "capacity": 0,
+        "disposition_tally": {
+          "capacity_dropped": 3,
+          "expired": 1
+        },
+        "games": {
+          "822842": {
+            "capacity_wait_s": null,
+            "coverage_status": "uncovered",
+            "decision_reason": "expired",
+            "observation_end": null,
+            "planned_close": "1790284349.857231"
+          },
+          "823411": {
+            "capacity_wait_s": null,
+            "coverage_status": "uncovered",
+            "decision_reason": "capacity_dropped",
+            "observation_end": null,
+            "planned_close": "1790298169.620704"
+          },
+          "824707": {
+            "capacity_wait_s": null,
+            "coverage_status": "uncovered",
+            "decision_reason": "capacity_dropped",
+            "observation_end": null,
+            "planned_close": "1790299233.762371"
+          },
+          "824866": {
+            "capacity_wait_s": null,
+            "coverage_status": "uncovered",
+            "decision_reason": "capacity_dropped",
+            "observation_end": null,
+            "planned_close": "1790301723.953554"
+          }
+        }
+      },
+      "2.0": {
+        "admitted_after_capacity_wait": 1,
+        "capacity": 2,
+        "disposition_tally": {
+          "admitted_and_closed": 4
+        },
+        "games": {
+          "822842": {
+            "capacity_wait_s": "0.000000",
+            "coverage_status": "uncovered",
+            "decision_reason": "admitted_and_closed",
+            "observation_end": null,
+            "planned_close": "1790284349.857231"
+          },
+          "823411": {
+            "capacity_wait_s": "0.000000",
+            "coverage_status": "uncovered",
+            "decision_reason": "admitted_and_closed",
+            "observation_end": null,
+            "planned_close": "1790298169.620704"
+          },
+          "824707": {
+            "capacity_wait_s": "0.000000",
+            "coverage_status": "uncovered",
+            "decision_reason": "admitted_and_closed",
+            "observation_end": null,
+            "planned_close": "1790299233.762371"
+          },
+          "824866": {
+            "capacity_wait_s": "6589.620704",
+            "coverage_status": "uncovered",
+            "decision_reason": "admitted_and_closed",
+            "observation_end": null,
+            "planned_close": "1790301723.953554"
+          }
+        }
+      },
+      "3.0": {
+        "admitted_after_capacity_wait": 0,
+        "capacity": 3,
+        "disposition_tally": {
+          "admitted_and_closed": 4
+        },
+        "games": {
+          "822842": {
+            "capacity_wait_s": "0.000000",
+            "coverage_status": "uncovered",
+            "decision_reason": "admitted_and_closed",
+            "observation_end": null,
+            "planned_close": "1790284349.857231"
+          },
+          "823411": {
+            "capacity_wait_s": "0.000000",
+            "coverage_status": "uncovered",
+            "decision_reason": "admitted_and_closed",
+            "observation_end": null,
+            "planned_close": "1790298169.620704"
+          },
+          "824707": {
+            "capacity_wait_s": "0.000000",
+            "coverage_status": "uncovered",
+            "decision_reason": "admitted_and_closed",
+            "observation_end": null,
+            "planned_close": "1790299233.762371"
+          },
+          "824866": {
+            "capacity_wait_s": "0.000000",
+            "coverage_status": "uncovered",
+            "decision_reason": "admitted_and_closed",
+            "observation_end": null,
+            "planned_close": "1790301723.953554"
+          }
+        }
+      }
+    },
+    "coverage_tally": {
+      "uncovered": 4
+    },
+    "date": "2026-09-24",
+    "rate_trajectory": "hypothetical: 3.0/2.0/0.5 fixed per rate for the whole night, not the historical AIMD rate that actually ran on this night",
+    "scheduled_games_total": 4
+  }
+}

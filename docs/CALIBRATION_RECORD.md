@@ -6,7 +6,7 @@ Source badges: [model-in-corpus] our calibrated forecaster in its own corpus; [d
 
 ## Headline state
 
-**MARKET-EFFICIENT HERE** on team-strength markets: where we have power, the calibrated forecast MATCHES the devigged close within noise -- the expected, honest success state for a calibrated predictor, never an edge. Where a slice trails the close it is stated as BEHIND; where rows are thin it ABSTAINS. The decisive measured/calibrated value is in-game state conditioning (see section 3 and the predictor's `--state` path), not a pregame $ edge.
+**MARKET-EFFICIENT HERE** on team-strength markets: the calibrated forecast TRAILS the devigged close on MLB moneyline (+0.0039 Brier, 95% CI [+0.0028, +0.0051], n=13,992) and on soccer O/U 2.5 (+0.0076 Brier, 95% CI [+0.0059, +0.0092], n=7,558), and is indistinguishable from it on NBA moneyline at an underpowered n=372 (corrected 2026-10-06 from DM_RECOMPUTE_2026-09-24; this line earlier said the forecast matched the close within noise where we have power). It never beats the close. Where a slice trails the close it is stated as BEHIND; where rows are thin it ABSTAINS. The decisive measured/calibrated value is in-game state conditioning (see section 3 and the predictor's `--state` path), not a pregame result against the close.
 
 ## 1. Eval-gate golden anchor (reliability)
 

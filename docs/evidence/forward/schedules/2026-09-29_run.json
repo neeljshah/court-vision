@@ -1,0 +1,82 @@
+{
+  "D1": "2026-09-29",
+  "argv": [
+    "--sports",
+    "mlb,nfl",
+    "--local-date-tz",
+    "America/Chicago",
+    "--books-root",
+    "data/cache/ingame_books_local",
+    "--state-root",
+    "data/cache/ingame_state_local_v2",
+    "--rewrite",
+    "add MLB wild card; markets listed 2026-09-28",
+    "--write-pointer"
+  ],
+  "capacity_subset_selected_at": "2026-09-28T20:00:57.938064+00:00",
+  "completed_at": "2026-09-28T20:00:57.938064+00:00",
+  "files": {
+    "docs/evidence/forward/schedules/2026-09-29_maker_forward.json": {
+      "bytes": 865,
+      "sha256": "b4e37a4fab8132852b4920f24a635fbb12dbcf0f152d63bb7c21b18617c381ac"
+    },
+    "docs/evidence/forward/schedules/2026-09-29_maker_forward.json.capacity_note.json": {
+      "bytes": 598,
+      "sha256": "c23f0124945d6768a8681bb5c24a4795fd213b77cb36538dcd84d79facfb5cdb"
+    },
+    "docs/evidence/forward/schedules/2026-09-29_maker_forward_full_selection.json": {
+      "bytes": 865,
+      "sha256": "b4e37a4fab8132852b4920f24a635fbb12dbcf0f152d63bb7c21b18617c381ac"
+    },
+    "docs/evidence/forward/schedules/2026-09-29_maker_forward_full_selection.json.census.json": {
+      "bytes": 4021,
+      "sha256": "d5bc61ef0e036e7ee4ebec4edac7dc0af3e4d548748f23d7e05fbebb0f92b14b"
+    }
+  },
+  "now": "2026-09-28T20:00:29.189394+00:00",
+  "per_sport": {
+    "mlb": {
+      "full": 2,
+      "not_served": 0,
+      "record_counts": {
+        "derivative_series_ignored": 1583,
+        "future_records": 8,
+        "ignored_record_type": 647719
+      },
+      "refused_by_reason": {
+        "outside_utc_date": 2
+      },
+      "served": 2
+    },
+    "nfl": {
+      "full": 1,
+      "not_served": 0,
+      "record_counts": {
+        "derivative_series_ignored": 826,
+        "espn_minute_precision_normalized": 1,
+        "ignored_record_type": 279787,
+        "listed_on_previous_us_date": 1,
+        "local_date_from_declared_tz": 1
+      },
+      "refused_by_reason": {},
+      "served": 1
+    }
+  },
+  "refused_by_reason": {},
+  "rewrite_reason": "add MLB wild card; markets listed 2026-09-28",
+  "schedule_receipts_sha256": {
+    "mlb/mlb": "34b0dfd745763e6ef3d4be68df1bdf89ba54d59d4c84dbf061e70296f4531009",
+    "nfl/nfl": "d32bdedc9f799a39a5728d8bd0c52d81096c889f596fde3cdd8b5d43bf46a8c5"
+  },
+  "started_at": "2026-09-28T20:00:29.189394+00:00",
+  "superseded": {
+    "docs/evidence/forward/schedules/2026-09-29_maker_forward.json": "docs/evidence/forward/schedules/2026-09-29_maker_forward.json.superseded_20260928T200057Z",
+    "docs/evidence/forward/schedules/2026-09-29_maker_forward.json.capacity_note.json": "docs/evidence/forward/schedules/2026-09-29_maker_forward.json.capacity_note.json.superseded_20260928T200057Z",
+    "docs/evidence/forward/schedules/2026-09-29_maker_forward_full_selection.json": "docs/evidence/forward/schedules/2026-09-29_maker_forward_full_selection.json.superseded_20260928T200057Z",
+    "docs/evidence/forward/schedules/2026-09-29_maker_forward_full_selection.json.census.json": "docs/evidence/forward/schedules/2026-09-29_maker_forward_full_selection.json.census.json.superseded_20260928T200057Z",
+    "docs/evidence/forward/schedules/2026-09-29_run.json": "docs/evidence/forward/schedules/2026-09-29_run.json.superseded_20260928T200057Z"
+  },
+  "writer_selected_at": [
+    "2026-09-28T20:00:29.604505+00:00"
+  ]
+}

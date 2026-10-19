@@ -104,6 +104,33 @@ REB 1.92, AST 1.39, FG3M 0.89. Accuracy only; no market comparison exists for th
   unsealed); it has no caller ([S400 memo](evidence/harness/S400_paper_sizing_2026-09-22.md)).
 - **No live order path exists.** No real order has ever been placed.
 
+## Forward record update (2026-10-19)
+
+This supersedes the "zero weeks" and "has not started" lines above for the period it covers. Those
+lines stay as the 2026-10-05 record. All numbers come from
+[JOB_EVIDENCE_PACKET.md section 5](JOB_EVIDENCE_PACKET.md), which carries the receipt paths under
+`docs/evidence/forward/`. PAPER ONLY.
+
+- **Served:** 113 Kalshi in-game games on prospective schedules over 2026-10-06 to 2026-10-16 (mlb 15,
+  nba 32, nfl 4, soccer 18, tennis 30, ncaaf 14). There was no schedule on 10-11, 10-17 or 10-18:
+  the laptop was dark.
+- **Nights:** 8 receipts, 1 COMPLETE (10-12) and 7 PARTIAL. 10-13 and 10-14 lost their scoreboard
+  at the 900 s step deadline, because the sealed scorer's refit grows with the history. The
+  deadline was raised to 3,600 s (S824, 10-15); the real fix (S825) is open. Nights 10-15 and 10-16
+  have not been scored.
+- **Scoreboard:** every cell is INSUFFICIENT against the 30-game floor. Arm A is the venue mid, not
+  a devigged price. The fitted arms scored ticks on two nights only. Pooled C-minus-A Brier for MLB
+  (descriptive, no interval; positive means the model trails the mid): +0.2073 on 4 games, -0.0648
+  on 3 and +0.0283 on 1, across three seals. That is no verdict in either direction.
+- **Qualification:** 0 of 31 judged games passed. Every one failed the coverage and linkage checks. The receipts name no single cause; the contributors in the period were
+  tape and state gaps, laptop sleeps and a live shadow recorder down since 10-13.
+- **Fill realism:** counts only, unqualified tape: 106 fills credited at a 5 s quote life and 452 at
+  30 s (10-08 to 10-14). There is no markout and no fee netting.
+- **NBA from 2026-10-20:** NBA is served and scored against the mid. It is not in the sealed
+  model-arm list, and no NBA forward pre-registration had been sealed at this writing.
+- **Gate G6** (eight weeks of fee-netted shadow markout) has still not started. Qualified decisions
+  are 0 on every sport.
+
 ## 4. What runs next, with dates
 
 - In-game capture (Kalshi order books plus game state) is scheduled under prospective, committed
@@ -121,6 +148,25 @@ REB 1.92, AST 1.39, FG3M 0.89. Accuracy only; no market comparison exists for th
 is the adversarially audited narrative with the do-not-claim list. [RECEIPTS.md](../RECEIPTS.md) holds
 every generated number verbatim, and [REPRODUCE.md](../REPRODUCE.md) lists the commands that re-check
 them on a fresh clone.
+
+## 6. Five-minute verification (public clone, no private data)
+
+Run from the repository root of a fresh clone with Python 3.10+, numpy and pytest. Each command was
+run on 2026-10-06 against a copy of the public allowlist (`scripts/hooks/public_allowlist.txt`) and
+finished in under 15 seconds; the expected output is beside it.
+
+| # | Command | Expected | What it checks |
+|---|---|---|---|
+| 1 | `python -m scripts.platformkit.eval_gate.claim_consistency --repo-root .` | `claim_consistency: 0 finding(s)`, exit 0 | every figure in [CANONICAL_FIGURES.json](evidence/CANONICAL_FIGURES.json) agrees across every tracked markdown page under docs/ (guide included) plus README and EVIDENCE; no retracted figure outside retraction framing |
+| 2 | `python -m pytest scripts/platformkit/eval_gate/test_claim_consistency.py -q` | `7 passed` | the gate covers the full page set and catches a changed interval, a changed verdict and the pre-correction wording, and each canonical figure matches its source memo |
+| 3 | `python -m pytest scripts/platformkit/eval_gate/test_dm_recompute_pregame.py -q` | `4 passed` | the game-clustered Diebold-Mariano recompute behind the pregame table, on fixtures (the real recompute reads private corpora; its printed rows are in the [recompute memo](evidence/pregame/DM_RECOMPUTE_2026-09-24.md)) |
+| 4 | `python -m pytest scripts/platformkit/eval_gate/test_shin.py -q` | `7 passed` | the Shin (1992) devig used for the NBA close |
+| 5 | `python -c "from scripts.platformkit.execution.venue_fees import fee_kalshi_maker as m, fee_kalshi_taker as t; print(m(10, 0.50), m(1, 0.50), t(10, 0.50))"` | `0.05 0.01 0.18` | the venue fee schedule in [KALSHI_NOTE.md](KALSHI_NOTE.md): rounding once per order, maker coefficient a quarter of the taker one |
+
+Not runnable on the public subset: the markout, paper-maker and CLV-ledger modules are published as
+readable source but import private-tree modules; their definitions are on
+[CLV_AND_MARKOUT.md](CLV_AND_MARKOUT.md). `scripts/platformkit/test_clv_ledger_io.py` is in the
+allowlist but fails to import there for the same reason.
 
 ---
 **Navigate:** [README](../README.md) - [Evidence index](../EVIDENCE.md) - [Job Evidence Packet](JOB_EVIDENCE_PACKET.md) - [Doc map](INDEX.md)

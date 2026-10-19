@@ -1,0 +1,1039 @@
+{
+  "assumptions": {
+    "cancel_latency_s": 0,
+    "fee_path": "LANDED_FLOAT_EXACT_GUARD_S422_PENDING",
+    "requested_units": 1,
+    "state_pull_window_s": 0,
+    "submit_latency_s": 0
+  },
+  "declared_ttl_s": "5",
+  "first_receipt_ts": "2026-10-04T18:14:13.967086Z",
+  "input_refusals": {
+    "duplicate_trade_ids": 0,
+    "future_records": 7761,
+    "inconsistent_touch": 317,
+    "input_prints": 83005,
+    "input_role_filtered": 2137,
+    "price_out_of_range": 25
+  },
+  "inputs": [
+    {
+      "bytes": 10834183,
+      "path": "data/cache/ingame_books_local/kalshi/mlb/2026-10-04.jsonl"
+    },
+    {
+      "bytes": 7549957,
+      "path": "data/cache/ingame_books_local/kalshi/mlb/2026-10-05.jsonl"
+    },
+    {
+      "bytes": 91749864,
+      "path": "data/cache/ingame_books_local/kalshi/nfl/2026-10-04.jsonl"
+    },
+    {
+      "bytes": 5267658,
+      "path": "data/cache/ingame_books_local/kalshi/nfl/2026-10-05.jsonl"
+    },
+    {
+      "bytes": 466331,
+      "path": "data/cache/ingame_state_local_v2/state/mlb/2026-10-04.jsonl"
+    },
+    {
+      "bytes": 315124,
+      "path": "data/cache/ingame_state_local_v2/state/mlb/2026-10-05.jsonl"
+    },
+    {
+      "bytes": 3772755,
+      "path": "data/cache/ingame_state_local_v2/state/nfl/2026-10-04.jsonl"
+    },
+    {
+      "bytes": 1739451,
+      "path": "data/cache/ingame_state_local_v2/state/nfl/2026-10-05.jsonl"
+    },
+    {
+      "bytes": 3686,
+      "path": "docs/evidence/forward/schedules/2026-10-04_maker_forward_full_selection.json"
+    }
+  ],
+  "last_receipt_ts": "2026-10-04T19:00:20.466981Z",
+  "memory_ceiling_bytes": 1073741824,
+  "mode": "COUNTS ONLY",
+  "night": {
+    "as_of": "2026-10-05T06:00:00Z",
+    "date": "2026-10-04",
+    "excluded_paths": [],
+    "iso_week": "2026-40",
+    "next_iso_week_excluded": 0,
+    "window": [
+      "2026-10-04T00:00:00.000000Z",
+      "2026-10-06T00:00:00.000000Z"
+    ]
+  },
+  "quote_life": {
+    "30": {
+      "fills_credited": 0,
+      "grid": {
+        "1": {
+          "accepted_outcomes": {
+            "counts": {
+              "fee_source_decimal": 0,
+              "fee_source_float_exact": 0,
+              "fee_zero_increment": 0
+            },
+            "unit": "fills"
+          },
+          "by_fill_basis": {
+            "through": 0,
+            "touch_queue": 0
+          },
+          "by_side": {
+            "no": 0,
+            "yes": 0
+          },
+          "fill_state_rows": {
+            "counts": {
+              "duplicate_state_records": 0,
+              "state_after_window": 0,
+              "state_content_inexact": 0,
+              "state_content_invalid": 0,
+              "state_content_nonfinite": 0,
+              "state_count_invalid": 0,
+              "state_identity_unmatched": 0,
+              "state_receipt_invalid": 0,
+              "state_record_invalid": 0,
+              "state_rows_accepted": 0
+            },
+            "unit": "fill_state_row_pairs"
+          },
+          "fills_credited": 0,
+          "fills_refused_by_reason": {
+            "all_prints_unscored": 0,
+            "book_size_invalid": 0,
+            "book_time_invalid": 0,
+            "duplicate_trade_ids": 0,
+            "fee_input_invalid": 0,
+            "future_records": 7761,
+            "inconsistent_touch": 317,
+            "poly_side_unmapped": 0,
+            "price_out_of_range": 25,
+            "print_time_invalid": 0,
+            "quote_cancel_ts_invalid": 0,
+            "quote_submit_ts_invalid": 0,
+            "replacement_refused": 0,
+            "unscored_prints": 0
+          },
+          "input_counts": {
+            "counts": {
+              "input_prints": 83005,
+              "input_role_filtered": 2137,
+              "replace_count": 1488,
+              "scored_prints": 83005
+            },
+            "unit": "input_records"
+          },
+          "market_context": {},
+          "markout_by_class": {
+            "no_state_change": {
+              "markets": {},
+              "markets_without_fills": 566
+            },
+            "state_changed": {
+              "markets": {},
+              "markets_without_fills": 566
+            },
+            "state_unavailable": {
+              "markets": {},
+              "markets_without_fills": 566
+            }
+          },
+          "partial_fills": {
+            "full": 0,
+            "partial": 0,
+            "zero": 1566
+          },
+          "queue_ahead_at_submit": {
+            "0": 0,
+            "1-9": 7,
+            "10-99": 15,
+            "100-999": 23,
+            "1000+": 1521,
+            "UNKNOWN": 2294
+          },
+          "quote_life_expiry": 78,
+          "quote_print_pairs": {
+            "counts": {
+              "outside_quote_life": 1417082,
+              "price_above_quote": 269,
+              "queue_not_depleted": 0,
+              "quote_already_filled": 0,
+              "uncredited_print": 0
+            },
+            "unit": "quote_print_pairs"
+          },
+          "quotes_placed": 1566,
+          "refusal_unit": "diagnostic_events_by_named_reason",
+          "served_ticker_fills": {
+            "fills_on_not_served_tickers": 0,
+            "fills_on_served_tickers": 0,
+            "not_served_tickers_with_fills": [],
+            "unit": "fills"
+          },
+          "state_classification": {
+            "counts": {
+              "fills_linked": 0,
+              "fills_unlinked": 0,
+              "state_comparison_unavailable": 0,
+              "state_identity_missing": 0
+            },
+            "unit": "fills"
+          },
+          "unknown_queue": 2294,
+          "unknown_queue_sentinel": 1000000,
+          "unlinked_fills": [],
+          "unmodelled_cancel_rejection": "UNMODELLED"
+        },
+        "2": {
+          "accepted_outcomes": {
+            "counts": {
+              "fee_source_decimal": 0,
+              "fee_source_float_exact": 0,
+              "fee_zero_increment": 0
+            },
+            "unit": "fills"
+          },
+          "by_fill_basis": {
+            "through": 0,
+            "touch_queue": 0
+          },
+          "by_side": {
+            "no": 0,
+            "yes": 0
+          },
+          "fill_state_rows": {
+            "counts": {
+              "duplicate_state_records": 0,
+              "state_after_window": 0,
+              "state_content_inexact": 0,
+              "state_content_invalid": 0,
+              "state_content_nonfinite": 0,
+              "state_count_invalid": 0,
+              "state_identity_unmatched": 0,
+              "state_receipt_invalid": 0,
+              "state_record_invalid": 0,
+              "state_rows_accepted": 0
+            },
+            "unit": "fill_state_row_pairs"
+          },
+          "fills_credited": 0,
+          "fills_refused_by_reason": {
+            "all_prints_unscored": 0,
+            "book_size_invalid": 0,
+            "book_time_invalid": 0,
+            "duplicate_trade_ids": 0,
+            "fee_input_invalid": 0,
+            "future_records": 7761,
+            "inconsistent_touch": 317,
+            "poly_side_unmapped": 0,
+            "price_out_of_range": 25,
+            "print_time_invalid": 0,
+            "quote_cancel_ts_invalid": 0,
+            "quote_submit_ts_invalid": 0,
+            "replacement_refused": 0,
+            "unscored_prints": 0
+          },
+          "input_counts": {
+            "counts": {
+              "input_prints": 83005,
+              "input_role_filtered": 2137,
+              "replace_count": 1488,
+              "scored_prints": 83005
+            },
+            "unit": "input_records"
+          },
+          "market_context": {},
+          "markout_by_class": {
+            "no_state_change": {
+              "markets": {},
+              "markets_without_fills": 566
+            },
+            "state_changed": {
+              "markets": {},
+              "markets_without_fills": 566
+            },
+            "state_unavailable": {
+              "markets": {},
+              "markets_without_fills": 566
+            }
+          },
+          "partial_fills": {
+            "full": 0,
+            "partial": 0,
+            "zero": 1566
+          },
+          "queue_ahead_at_submit": {
+            "0": 0,
+            "1-9": 4,
+            "10-99": 17,
+            "100-999": 8,
+            "1000+": 1537,
+            "UNKNOWN": 2294
+          },
+          "quote_life_expiry": 78,
+          "quote_print_pairs": {
+            "counts": {
+              "outside_quote_life": 1417082,
+              "price_above_quote": 269,
+              "queue_not_depleted": 0,
+              "quote_already_filled": 0,
+              "uncredited_print": 0
+            },
+            "unit": "quote_print_pairs"
+          },
+          "quotes_placed": 1566,
+          "refusal_unit": "diagnostic_events_by_named_reason",
+          "served_ticker_fills": {
+            "fills_on_not_served_tickers": 0,
+            "fills_on_served_tickers": 0,
+            "not_served_tickers_with_fills": [],
+            "unit": "fills"
+          },
+          "state_classification": {
+            "counts": {
+              "fills_linked": 0,
+              "fills_unlinked": 0,
+              "state_comparison_unavailable": 0,
+              "state_identity_missing": 0
+            },
+            "unit": "fills"
+          },
+          "unknown_queue": 2294,
+          "unknown_queue_sentinel": 1000000,
+          "unlinked_fills": [],
+          "unmodelled_cancel_rejection": "UNMODELLED"
+        },
+        "4": {
+          "accepted_outcomes": {
+            "counts": {
+              "fee_source_decimal": 0,
+              "fee_source_float_exact": 0,
+              "fee_zero_increment": 0
+            },
+            "unit": "fills"
+          },
+          "by_fill_basis": {
+            "through": 0,
+            "touch_queue": 0
+          },
+          "by_side": {
+            "no": 0,
+            "yes": 0
+          },
+          "fill_state_rows": {
+            "counts": {
+              "duplicate_state_records": 0,
+              "state_after_window": 0,
+              "state_content_inexact": 0,
+              "state_content_invalid": 0,
+              "state_content_nonfinite": 0,
+              "state_count_invalid": 0,
+              "state_identity_unmatched": 0,
+              "state_receipt_invalid": 0,
+              "state_record_invalid": 0,
+              "state_rows_accepted": 0
+            },
+            "unit": "fill_state_row_pairs"
+          },
+          "fills_credited": 0,
+          "fills_refused_by_reason": {
+            "all_prints_unscored": 0,
+            "book_size_invalid": 0,
+            "book_time_invalid": 0,
+            "duplicate_trade_ids": 0,
+            "fee_input_invalid": 0,
+            "future_records": 7761,
+            "inconsistent_touch": 317,
+            "poly_side_unmapped": 0,
+            "price_out_of_range": 25,
+            "print_time_invalid": 0,
+            "quote_cancel_ts_invalid": 0,
+            "quote_submit_ts_invalid": 0,
+            "replacement_refused": 0,
+            "unscored_prints": 0
+          },
+          "input_counts": {
+            "counts": {
+              "input_prints": 83005,
+              "input_role_filtered": 2137,
+              "replace_count": 1488,
+              "scored_prints": 83005
+            },
+            "unit": "input_records"
+          },
+          "market_context": {},
+          "markout_by_class": {
+            "no_state_change": {
+              "markets": {},
+              "markets_without_fills": 566
+            },
+            "state_changed": {
+              "markets": {},
+              "markets_without_fills": 566
+            },
+            "state_unavailable": {
+              "markets": {},
+              "markets_without_fills": 566
+            }
+          },
+          "partial_fills": {
+            "full": 0,
+            "partial": 0,
+            "zero": 1566
+          },
+          "queue_ahead_at_submit": {
+            "0": 0,
+            "1-9": 2,
+            "10-99": 19,
+            "100-999": 6,
+            "1000+": 1539,
+            "UNKNOWN": 2294
+          },
+          "quote_life_expiry": 78,
+          "quote_print_pairs": {
+            "counts": {
+              "outside_quote_life": 1417082,
+              "price_above_quote": 269,
+              "queue_not_depleted": 0,
+              "quote_already_filled": 0,
+              "uncredited_print": 0
+            },
+            "unit": "quote_print_pairs"
+          },
+          "quotes_placed": 1566,
+          "refusal_unit": "diagnostic_events_by_named_reason",
+          "served_ticker_fills": {
+            "fills_on_not_served_tickers": 0,
+            "fills_on_served_tickers": 0,
+            "not_served_tickers_with_fills": [],
+            "unit": "fills"
+          },
+          "state_classification": {
+            "counts": {
+              "fills_linked": 0,
+              "fills_unlinked": 0,
+              "state_comparison_unavailable": 0,
+              "state_identity_missing": 0
+            },
+            "unit": "fills"
+          },
+          "unknown_queue": 2294,
+          "unknown_queue_sentinel": 1000000,
+          "unlinked_fills": [],
+          "unmodelled_cancel_rejection": "UNMODELLED"
+        },
+        "8": {
+          "accepted_outcomes": {
+            "counts": {
+              "fee_source_decimal": 0,
+              "fee_source_float_exact": 0,
+              "fee_zero_increment": 0
+            },
+            "unit": "fills"
+          },
+          "by_fill_basis": {
+            "through": 0,
+            "touch_queue": 0
+          },
+          "by_side": {
+            "no": 0,
+            "yes": 0
+          },
+          "fill_state_rows": {
+            "counts": {
+              "duplicate_state_records": 0,
+              "state_after_window": 0,
+              "state_content_inexact": 0,
+              "state_content_invalid": 0,
+              "state_content_nonfinite": 0,
+              "state_count_invalid": 0,
+              "state_identity_unmatched": 0,
+              "state_receipt_invalid": 0,
+              "state_record_invalid": 0,
+              "state_rows_accepted": 0
+            },
+            "unit": "fill_state_row_pairs"
+          },
+          "fills_credited": 0,
+          "fills_refused_by_reason": {
+            "all_prints_unscored": 0,
+            "book_size_invalid": 0,
+            "book_time_invalid": 0,
+            "duplicate_trade_ids": 0,
+            "fee_input_invalid": 0,
+            "future_records": 7761,
+            "inconsistent_touch": 317,
+            "poly_side_unmapped": 0,
+            "price_out_of_range": 25,
+            "print_time_invalid": 0,
+            "quote_cancel_ts_invalid": 0,
+            "quote_submit_ts_invalid": 0,
+            "replacement_refused": 0,
+            "unscored_prints": 0
+          },
+          "input_counts": {
+            "counts": {
+              "input_prints": 83005,
+              "input_role_filtered": 2137,
+              "replace_count": 1488,
+              "scored_prints": 83005
+            },
+            "unit": "input_records"
+          },
+          "market_context": {},
+          "markout_by_class": {
+            "no_state_change": {
+              "markets": {},
+              "markets_without_fills": 566
+            },
+            "state_changed": {
+              "markets": {},
+              "markets_without_fills": 566
+            },
+            "state_unavailable": {
+              "markets": {},
+              "markets_without_fills": 566
+            }
+          },
+          "partial_fills": {
+            "full": 0,
+            "partial": 0,
+            "zero": 1566
+          },
+          "queue_ahead_at_submit": {
+            "0": 0,
+            "1-9": 1,
+            "10-99": 11,
+            "100-999": 11,
+            "1000+": 1543,
+            "UNKNOWN": 2294
+          },
+          "quote_life_expiry": 78,
+          "quote_print_pairs": {
+            "counts": {
+              "outside_quote_life": 1417082,
+              "price_above_quote": 269,
+              "queue_not_depleted": 0,
+              "quote_already_filled": 0,
+              "uncredited_print": 0
+            },
+            "unit": "quote_print_pairs"
+          },
+          "quotes_placed": 1566,
+          "refusal_unit": "diagnostic_events_by_named_reason",
+          "served_ticker_fills": {
+            "fills_on_not_served_tickers": 0,
+            "fills_on_served_tickers": 0,
+            "not_served_tickers_with_fills": [],
+            "unit": "fills"
+          },
+          "state_classification": {
+            "counts": {
+              "fills_linked": 0,
+              "fills_unlinked": 0,
+              "state_comparison_unavailable": 0,
+              "state_identity_missing": 0
+            },
+            "unit": "fills"
+          },
+          "unknown_queue": 2294,
+          "unknown_queue_sentinel": 1000000,
+          "unlinked_fills": [],
+          "unmodelled_cancel_rejection": "UNMODELLED"
+        }
+      },
+      "unknown_queue": 2294
+    },
+    "5": {
+      "fills_credited": 0,
+      "grid": {
+        "1": {
+          "accepted_outcomes": {
+            "counts": {
+              "fee_source_decimal": 0,
+              "fee_source_float_exact": 0,
+              "fee_zero_increment": 0
+            },
+            "unit": "fills"
+          },
+          "by_fill_basis": {
+            "through": 0,
+            "touch_queue": 0
+          },
+          "by_side": {
+            "no": 0,
+            "yes": 0
+          },
+          "fill_state_rows": {
+            "counts": {
+              "duplicate_state_records": 0,
+              "state_after_window": 0,
+              "state_content_inexact": 0,
+              "state_content_invalid": 0,
+              "state_content_nonfinite": 0,
+              "state_count_invalid": 0,
+              "state_identity_unmatched": 0,
+              "state_receipt_invalid": 0,
+              "state_record_invalid": 0,
+              "state_rows_accepted": 0
+            },
+            "unit": "fill_state_row_pairs"
+          },
+          "fills_credited": 0,
+          "fills_refused_by_reason": {
+            "all_prints_unscored": 0,
+            "book_size_invalid": 0,
+            "book_time_invalid": 0,
+            "duplicate_trade_ids": 0,
+            "fee_input_invalid": 0,
+            "future_records": 7761,
+            "inconsistent_touch": 317,
+            "poly_side_unmapped": 0,
+            "price_out_of_range": 25,
+            "print_time_invalid": 0,
+            "quote_cancel_ts_invalid": 0,
+            "quote_submit_ts_invalid": 0,
+            "replacement_refused": 0,
+            "unscored_prints": 0
+          },
+          "input_counts": {
+            "counts": {
+              "input_prints": 83005,
+              "input_role_filtered": 2137,
+              "replace_count": 118,
+              "scored_prints": 83005
+            },
+            "unit": "input_records"
+          },
+          "market_context": {},
+          "markout_by_class": {
+            "no_state_change": {
+              "markets": {},
+              "markets_without_fills": 566
+            },
+            "state_changed": {
+              "markets": {},
+              "markets_without_fills": 566
+            },
+            "state_unavailable": {
+              "markets": {},
+              "markets_without_fills": 566
+            }
+          },
+          "partial_fills": {
+            "full": 0,
+            "partial": 0,
+            "zero": 1566
+          },
+          "queue_ahead_at_submit": {
+            "0": 0,
+            "1-9": 7,
+            "10-99": 15,
+            "100-999": 23,
+            "1000+": 1521,
+            "UNKNOWN": 2294
+          },
+          "quote_life_expiry": 1448,
+          "quote_print_pairs": {
+            "counts": {
+              "outside_quote_life": 1417100,
+              "price_above_quote": 251,
+              "queue_not_depleted": 0,
+              "quote_already_filled": 0,
+              "uncredited_print": 0
+            },
+            "unit": "quote_print_pairs"
+          },
+          "quotes_placed": 1566,
+          "refusal_unit": "diagnostic_events_by_named_reason",
+          "served_ticker_fills": {
+            "fills_on_not_served_tickers": 0,
+            "fills_on_served_tickers": 0,
+            "not_served_tickers_with_fills": [],
+            "unit": "fills"
+          },
+          "state_classification": {
+            "counts": {
+              "fills_linked": 0,
+              "fills_unlinked": 0,
+              "state_comparison_unavailable": 0,
+              "state_identity_missing": 0
+            },
+            "unit": "fills"
+          },
+          "unknown_queue": 2294,
+          "unknown_queue_sentinel": 1000000,
+          "unlinked_fills": [],
+          "unmodelled_cancel_rejection": "UNMODELLED"
+        },
+        "2": {
+          "accepted_outcomes": {
+            "counts": {
+              "fee_source_decimal": 0,
+              "fee_source_float_exact": 0,
+              "fee_zero_increment": 0
+            },
+            "unit": "fills"
+          },
+          "by_fill_basis": {
+            "through": 0,
+            "touch_queue": 0
+          },
+          "by_side": {
+            "no": 0,
+            "yes": 0
+          },
+          "fill_state_rows": {
+            "counts": {
+              "duplicate_state_records": 0,
+              "state_after_window": 0,
+              "state_content_inexact": 0,
+              "state_content_invalid": 0,
+              "state_content_nonfinite": 0,
+              "state_count_invalid": 0,
+              "state_identity_unmatched": 0,
+              "state_receipt_invalid": 0,
+              "state_record_invalid": 0,
+              "state_rows_accepted": 0
+            },
+            "unit": "fill_state_row_pairs"
+          },
+          "fills_credited": 0,
+          "fills_refused_by_reason": {
+            "all_prints_unscored": 0,
+            "book_size_invalid": 0,
+            "book_time_invalid": 0,
+            "duplicate_trade_ids": 0,
+            "fee_input_invalid": 0,
+            "future_records": 7761,
+            "inconsistent_touch": 317,
+            "poly_side_unmapped": 0,
+            "price_out_of_range": 25,
+            "print_time_invalid": 0,
+            "quote_cancel_ts_invalid": 0,
+            "quote_submit_ts_invalid": 0,
+            "replacement_refused": 0,
+            "unscored_prints": 0
+          },
+          "input_counts": {
+            "counts": {
+              "input_prints": 83005,
+              "input_role_filtered": 2137,
+              "replace_count": 118,
+              "scored_prints": 83005
+            },
+            "unit": "input_records"
+          },
+          "market_context": {},
+          "markout_by_class": {
+            "no_state_change": {
+              "markets": {},
+              "markets_without_fills": 566
+            },
+            "state_changed": {
+              "markets": {},
+              "markets_without_fills": 566
+            },
+            "state_unavailable": {
+              "markets": {},
+              "markets_without_fills": 566
+            }
+          },
+          "partial_fills": {
+            "full": 0,
+            "partial": 0,
+            "zero": 1566
+          },
+          "queue_ahead_at_submit": {
+            "0": 0,
+            "1-9": 4,
+            "10-99": 17,
+            "100-999": 8,
+            "1000+": 1537,
+            "UNKNOWN": 2294
+          },
+          "quote_life_expiry": 1448,
+          "quote_print_pairs": {
+            "counts": {
+              "outside_quote_life": 1417100,
+              "price_above_quote": 251,
+              "queue_not_depleted": 0,
+              "quote_already_filled": 0,
+              "uncredited_print": 0
+            },
+            "unit": "quote_print_pairs"
+          },
+          "quotes_placed": 1566,
+          "refusal_unit": "diagnostic_events_by_named_reason",
+          "served_ticker_fills": {
+            "fills_on_not_served_tickers": 0,
+            "fills_on_served_tickers": 0,
+            "not_served_tickers_with_fills": [],
+            "unit": "fills"
+          },
+          "state_classification": {
+            "counts": {
+              "fills_linked": 0,
+              "fills_unlinked": 0,
+              "state_comparison_unavailable": 0,
+              "state_identity_missing": 0
+            },
+            "unit": "fills"
+          },
+          "unknown_queue": 2294,
+          "unknown_queue_sentinel": 1000000,
+          "unlinked_fills": [],
+          "unmodelled_cancel_rejection": "UNMODELLED"
+        },
+        "4": {
+          "accepted_outcomes": {
+            "counts": {
+              "fee_source_decimal": 0,
+              "fee_source_float_exact": 0,
+              "fee_zero_increment": 0
+            },
+            "unit": "fills"
+          },
+          "by_fill_basis": {
+            "through": 0,
+            "touch_queue": 0
+          },
+          "by_side": {
+            "no": 0,
+            "yes": 0
+          },
+          "fill_state_rows": {
+            "counts": {
+              "duplicate_state_records": 0,
+              "state_after_window": 0,
+              "state_content_inexact": 0,
+              "state_content_invalid": 0,
+              "state_content_nonfinite": 0,
+              "state_count_invalid": 0,
+              "state_identity_unmatched": 0,
+              "state_receipt_invalid": 0,
+              "state_record_invalid": 0,
+              "state_rows_accepted": 0
+            },
+            "unit": "fill_state_row_pairs"
+          },
+          "fills_credited": 0,
+          "fills_refused_by_reason": {
+            "all_prints_unscored": 0,
+            "book_size_invalid": 0,
+            "book_time_invalid": 0,
+            "duplicate_trade_ids": 0,
+            "fee_input_invalid": 0,
+            "future_records": 7761,
+            "inconsistent_touch": 317,
+            "poly_side_unmapped": 0,
+            "price_out_of_range": 25,
+            "print_time_invalid": 0,
+            "quote_cancel_ts_invalid": 0,
+            "quote_submit_ts_invalid": 0,
+            "replacement_refused": 0,
+            "unscored_prints": 0
+          },
+          "input_counts": {
+            "counts": {
+              "input_prints": 83005,
+              "input_role_filtered": 2137,
+              "replace_count": 118,
+              "scored_prints": 83005
+            },
+            "unit": "input_records"
+          },
+          "market_context": {},
+          "markout_by_class": {
+            "no_state_change": {
+              "markets": {},
+              "markets_without_fills": 566
+            },
+            "state_changed": {
+              "markets": {},
+              "markets_without_fills": 566
+            },
+            "state_unavailable": {
+              "markets": {},
+              "markets_without_fills": 566
+            }
+          },
+          "partial_fills": {
+            "full": 0,
+            "partial": 0,
+            "zero": 1566
+          },
+          "queue_ahead_at_submit": {
+            "0": 0,
+            "1-9": 2,
+            "10-99": 19,
+            "100-999": 6,
+            "1000+": 1539,
+            "UNKNOWN": 2294
+          },
+          "quote_life_expiry": 1448,
+          "quote_print_pairs": {
+            "counts": {
+              "outside_quote_life": 1417100,
+              "price_above_quote": 251,
+              "queue_not_depleted": 0,
+              "quote_already_filled": 0,
+              "uncredited_print": 0
+            },
+            "unit": "quote_print_pairs"
+          },
+          "quotes_placed": 1566,
+          "refusal_unit": "diagnostic_events_by_named_reason",
+          "served_ticker_fills": {
+            "fills_on_not_served_tickers": 0,
+            "fills_on_served_tickers": 0,
+            "not_served_tickers_with_fills": [],
+            "unit": "fills"
+          },
+          "state_classification": {
+            "counts": {
+              "fills_linked": 0,
+              "fills_unlinked": 0,
+              "state_comparison_unavailable": 0,
+              "state_identity_missing": 0
+            },
+            "unit": "fills"
+          },
+          "unknown_queue": 2294,
+          "unknown_queue_sentinel": 1000000,
+          "unlinked_fills": [],
+          "unmodelled_cancel_rejection": "UNMODELLED"
+        },
+        "8": {
+          "accepted_outcomes": {
+            "counts": {
+              "fee_source_decimal": 0,
+              "fee_source_float_exact": 0,
+              "fee_zero_increment": 0
+            },
+            "unit": "fills"
+          },
+          "by_fill_basis": {
+            "through": 0,
+            "touch_queue": 0
+          },
+          "by_side": {
+            "no": 0,
+            "yes": 0
+          },
+          "fill_state_rows": {
+            "counts": {
+              "duplicate_state_records": 0,
+              "state_after_window": 0,
+              "state_content_inexact": 0,
+              "state_content_invalid": 0,
+              "state_content_nonfinite": 0,
+              "state_count_invalid": 0,
+              "state_identity_unmatched": 0,
+              "state_receipt_invalid": 0,
+              "state_record_invalid": 0,
+              "state_rows_accepted": 0
+            },
+            "unit": "fill_state_row_pairs"
+          },
+          "fills_credited": 0,
+          "fills_refused_by_reason": {
+            "all_prints_unscored": 0,
+            "book_size_invalid": 0,
+            "book_time_invalid": 0,
+            "duplicate_trade_ids": 0,
+            "fee_input_invalid": 0,
+            "future_records": 7761,
+            "inconsistent_touch": 317,
+            "poly_side_unmapped": 0,
+            "price_out_of_range": 25,
+            "print_time_invalid": 0,
+            "quote_cancel_ts_invalid": 0,
+            "quote_submit_ts_invalid": 0,
+            "replacement_refused": 0,
+            "unscored_prints": 0
+          },
+          "input_counts": {
+            "counts": {
+              "input_prints": 83005,
+              "input_role_filtered": 2137,
+              "replace_count": 118,
+              "scored_prints": 83005
+            },
+            "unit": "input_records"
+          },
+          "market_context": {},
+          "markout_by_class": {
+            "no_state_change": {
+              "markets": {},
+              "markets_without_fills": 566
+            },
+            "state_changed": {
+              "markets": {},
+              "markets_without_fills": 566
+            },
+            "state_unavailable": {
+              "markets": {},
+              "markets_without_fills": 566
+            }
+          },
+          "partial_fills": {
+            "full": 0,
+            "partial": 0,
+            "zero": 1566
+          },
+          "queue_ahead_at_submit": {
+            "0": 0,
+            "1-9": 1,
+            "10-99": 11,
+            "100-999": 11,
+            "1000+": 1543,
+            "UNKNOWN": 2294
+          },
+          "quote_life_expiry": 1448,
+          "quote_print_pairs": {
+            "counts": {
+              "outside_quote_life": 1417100,
+              "price_above_quote": 251,
+              "queue_not_depleted": 0,
+              "quote_already_filled": 0,
+              "uncredited_print": 0
+            },
+            "unit": "quote_print_pairs"
+          },
+          "quotes_placed": 1566,
+          "refusal_unit": "diagnostic_events_by_named_reason",
+          "served_ticker_fills": {
+            "fills_on_not_served_tickers": 0,
+            "fills_on_served_tickers": 0,
+            "not_served_tickers_with_fills": [],
+            "unit": "fills"
+          },
+          "state_classification": {
+            "counts": {
+              "fills_linked": 0,
+              "fills_unlinked": 0,
+              "state_comparison_unavailable": 0,
+              "state_identity_missing": 0
+            },
+            "unit": "fills"
+          },
+          "unknown_queue": 2294,
+          "unknown_queue_sentinel": 1000000,
+          "unlinked_fills": [],
+          "unmodelled_cancel_rejection": "UNMODELLED"
+        }
+      },
+      "unknown_queue": 2294
+    }
+  },
+  "row_count": 98644,
+  "window_s": "30"
+}

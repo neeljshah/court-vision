@@ -339,6 +339,20 @@ An incomplete state is dropped, not rejected -- check the response for `ingame` 
 On a fresh clone (no forecast corpus), `predict_matchup` prints a plain "corpus unavailable"
 line and this returns `no_data` cleanly.
 
+**Data as-of (S504/S641).** At the MCP boundary (`tools.handler_for`, module
+`scripts/platformkit/mcp_server/served_asof.py`) an `ok` winprob envelope's `as_of` is the date
+of the newest PLAYED row in the input corpus the predictor reads (not the call time), e.g.
+`"as_of": "2026-07-12"` for an MLB Elo whose current corpus ends there. Added fields:
+`served_at` (the call time, formerly in `as_of`), `input_artifact` (repo-relative inputs),
+`as_of_source` (`input_max_played_date` | `input_max_date_unfiltered` | `input_mtime` |
+`no_played_rows` | `input_unreadable` | `unknown`; `input_mtime` only for a readable input
+with no date column; a dated input with zero played rows or any read error gives `as_of` null
+and `unknown`, never `fresh`), `stale_threshold_days` and `staleness_status` (`stale` | `fresh` | `unknown`;
+stale when the input is older than the sealed per-sport literal: 7 days nba/wnba/mlb/npb/kbo,
+14 days soccer/soccer_intl/tennis). The number is still returned: a stale answer is labelled,
+never refused. Callers of `resolver_registry.resolve` outside the MCP server still see the call
+time in `as_of`.
+
 **Failure modes:**
 - `no_data` -- predict_matchup exited nonzero, timed out (60s), or produced no JSON
   (including the clone "corpus unavailable" case). `note` carries the stdout/stderr tail.
@@ -523,19 +537,27 @@ fleet on/off state. No network, no compute; reads cached JSON only. UNITS only, 
 {
   "status": "ok",
   "category": "system_health",
+  "source_artifact": ["data/frontend/ops/freshness_sla.json"],
+  "as_of": "2026-09-01T00:00:00+00:00",
+  "parts_as_of": {"data/frontend/ops/freshness_sla.json": {"as_of": "2026-09-01T00:00:00+00:00", "as_of_source": "key:generated_at"}},
+  "staleness_days": 29.6, "staleness_days_source": "as_of",
   "fleet_on": false,
   "fleet_phase": null,
   "burst_report": {"status": "no_data", "source_artifact": "data/cache/analytics_verify/burst_report.json", "note": "absent"},
-  "freshness": {"status": "no_data", "source_artifact": "data/frontend/ops/freshness_sla.json", "note": "absent"},
-  "honest_note": "cheap reads only; no live probe. UNITS only, no $/edge."
+  "freshness": {"overall": "green", "n_red": 0, "n_daemons": 5, "generated_at": "2026-09-01T00:00:00Z"},
+  "honest_note": "cheap reads only; no live probe. UNITS only, no $/edge.",
+  "note": "absent on this box: data/cache/analytics_verify/burst_report.json, .bot_state/live_status.json"
 }
 ```
 When caches exist, `burst_report` is the last `run_burst` report, `freshness` is
 `{overall, n_red, n_daemons, generated_at}`, and `fleet_on`/`fleet_phase` reflect
 `.bot_state/live_status.json`.
 
-**Failure modes:** the tool itself always returns `status: ok` -- absence lives in the
-individual blocks (each an inline `{status:"no_data", source_artifact, note}`).
+**Failure modes:** `status: ok` while at least one of the three source files is present;
+`source_artifact` lists the files actually read, `as_of` is the OLDEST present part's as-of
+(its own as_of/generated_at/updated_at/created_at key, else the file mtime; `parts_as_of` says
+which), and missing parts are named in `note`. All three absent -> `status: no_data` with a
+note (S641). Absence also still shows in each block (an inline `{status:"no_data", source_artifact, note}`).
 `fleet_on: false` is the **by-design** resident-server default, not an error.
 
 **Source-artifact provenance:** `data/cache/analytics_verify/burst_report.json`,

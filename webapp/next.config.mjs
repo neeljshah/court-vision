@@ -7,6 +7,9 @@ if (SNAPSHOT) process.env.NEXT_PUBLIC_BASE_PATH = '/court-vision';
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Cap build workers. The default (cores - 1 = 11 here, about 5 GB; two still took 1.5 GB) starves the
+  // paper-desk recorder that shares this 16 GB box. Override: NEXT_BUILD_CPUS=<n>.
+  experimental: { cpus: Number(process.env.NEXT_BUILD_CPUS) || 1 },
   ...(SNAPSHOT
     ? {
         // Static demo build for GitHub Pages project site (neeljshah/court-vision).

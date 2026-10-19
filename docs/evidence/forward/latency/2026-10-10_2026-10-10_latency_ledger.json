@@ -1,0 +1,369 @@
+{
+ "constants": {
+  "bin_s": 0.5,
+  "flag_p95_s": 60.0,
+  "max_wait_s": 10,
+  "mid_horizon_s": 300,
+  "min_n_flag": 30,
+  "offset_bound_ms": 250,
+  "quantile_rule": "smallest bin k with cum(k) * 100 >= q * n",
+  "quantiles": [
+   10,
+   50,
+   90,
+   95,
+   99
+  ]
+ },
+ "counters": {
+  "other_record_type_ignored": 111,
+  "ticker_conflict": 0
+ },
+ "excluded_offset": [],
+ "inputs": [
+  {
+   "bytes_lf": 6508,
+   "exists": true,
+   "path": "schedules/2026-10-09_maker_forward.json",
+   "sha256_lf": "b571dd6338347c2f443276710070e6a4b9a1c7080bbe8bfea6cac8ff3a9d64f2"
+  },
+  {
+   "bytes_lf": 8894,
+   "exists": true,
+   "path": "schedules/2026-10-10_maker_forward.json",
+   "sha256_lf": "33c6469d7a1fc05dae68f276bedc61c1a6ddeb9f71587f33c3f8cf6a66d0965b"
+  },
+  {
+   "bytes": 3277579,
+   "exists": true,
+   "head_sha256": "352ba326cf4b0795bfc10e5a50d5a15c921c3c78c038853a8af7fa4db3faa8c0",
+   "lines": 1250,
+   "path": "state/nba/2026-10-10.jsonl",
+   "tail_sha256": "e5ff4e86314d142b126ee5b975e525f716295d63f186858e13667e847e5ca14c"
+  },
+  {
+   "bytes": 7149564,
+   "exists": true,
+   "head_sha256": "88b0f692c9f81449f95af9d0ef01a327fb36b2478d2abd9dcb42b363b7b0c5f7",
+   "lines": 6726,
+   "path": "state/ncaaf/2026-10-10.jsonl",
+   "tail_sha256": "43e8db6aec208b08a61d7d0a93d6deb54893d9ea2e3ddf871a7db400afe3f8fa"
+  },
+  {
+   "bytes": 74016436,
+   "exists": true,
+   "head_sha256": "2af52c0668afed4ef4269d3ed5dc074e705e6f6473f36c617ae742baf71953dd",
+   "lines_bad_json": 0,
+   "lines_parsed": 11396,
+   "lines_skipped_partial": 0,
+   "lines_skipped_unrelated": 39055,
+   "path": "books/ncaaf/2026-10-10.jsonl",
+   "tail_sha256": "a941a6ff3b427952356bda396ad27df1ab840cc661486c51aa898c4a280086ab"
+  },
+  {
+   "exists": false,
+   "path": "books/ncaaf/2026-10-11.jsonl"
+  }
+ ],
+ "notes": [
+  "events = S592 E5/E6/E7 with AMENDMENT 1 (a revisited play id is still an event; gap_negative rows skipped)",
+  "receipt_minus_event = response_end_utc - play clock, negative lags kept; with no offset journal the pooled Counter equals the S592 play_lag Counter on the same shards",
+  "poll_wait_ub = clip(request_start - max(play clock, previous request_start), 0, lag): an upper bound",
+  "first_mid_change_minus_event mixes the recorder receipt clock and the source play clock; the S664 offset bounds recorder-vs-UTC only and is never applied as a correction",
+  "book_moved_first compares two recorder-clock instants (book snapshot receipt vs state receipt); a change inside the window may belong to a later play (change_after_next_event)",
+  "latency measurement of archived rows only; not a forecast and not a trading claim"
+ ],
+ "offset_journal": null,
+ "per_sport_counters": {
+  "nba": {
+   "event_no_baseline": 0,
+   "files_missing": 0,
+   "gap_negative": 0,
+   "lines_malformed_json": 0,
+   "lines_oversize": 0,
+   "lines_skipped_no_live_token": 636,
+   "lines_total": 1250,
+   "live_rows": 614,
+   "rows_game_key_missing": 0,
+   "rows_not_object": 0,
+   "rows_status_not_live": 0
+  },
+  "ncaaf": {
+   "event_no_baseline": 0,
+   "files_missing": 0,
+   "gap_negative": 0,
+   "lines_malformed_json": 0,
+   "lines_oversize": 0,
+   "lines_skipped_no_live_token": 6437,
+   "lines_total": 6726,
+   "live_rows": 289,
+   "rows_game_key_missing": 0,
+   "rows_not_object": 0,
+   "rows_status_not_live": 0
+  }
+ },
+ "pooled": [
+  {
+   "book_moved_first": {
+    "den": 0,
+    "num": 0,
+    "share": null
+   },
+   "counters": {
+    "change_after_next_event": 0,
+    "events": 0,
+    "lag_missing_clock": 0,
+    "lag_negative": 0,
+    "lag_nonpositive": 0,
+    "play_id_revisit": 0,
+    "poll_wait_missing_clock": 0,
+    "src_without_play_clock": 0
+   },
+   "feed": "espn_scoreboard",
+   "first_mid_change_minus_event": {
+    "n": 0,
+    "p10": null,
+    "p50": null,
+    "p90": null,
+    "p95": null,
+    "p99": null,
+    "reason": "NO_EVENTS"
+   },
+   "flagged_games": 0,
+   "games": 1,
+   "mid_counts": {
+    "censored": 0,
+    "change": 0,
+    "no_prior_book": 0,
+    "no_receipt_clock": 0,
+    "no_served_ticker": 0,
+    "none": 0
+   },
+   "poll_wait_ub": {
+    "den": 0.0,
+    "num": 0.0,
+    "share": null
+   },
+   "receipt_minus_event": {
+    "n": 0,
+    "p10": null,
+    "p50": null,
+    "p90": null,
+    "p95": null,
+    "p99": null,
+    "reason": "NO_EVENTS"
+   },
+   "receipt_minus_source": {
+    "n": 0,
+    "p10": null,
+    "p50": null,
+    "p90": null,
+    "p95": null,
+    "p99": null,
+    "reason": "NO_EVENTS"
+   },
+   "sport": "nba",
+   "underpowered_games": 1
+  },
+  {
+   "book_moved_first": {
+    "den": 47,
+    "num": 38,
+    "share": 0.8085
+   },
+   "counters": {
+    "change_after_next_event": 9,
+    "events": 48,
+    "lag_missing_clock": 1,
+    "lag_negative": 0,
+    "lag_nonpositive": 0,
+    "play_id_revisit": 0,
+    "poll_wait_missing_clock": 1,
+    "src_without_play_clock": 0
+   },
+   "feed": "espn_scoreboard",
+   "first_mid_change_minus_event": {
+    "n": 47,
+    "p10": 1.0,
+    "p50": 6.0,
+    "p90": 61.5,
+    "p95": 241.0,
+    "p99": 287.0
+   },
+   "flagged_games": 0,
+   "games": 1,
+   "mid_counts": {
+    "censored": 0,
+    "change": 47,
+    "no_prior_book": 0,
+    "no_receipt_clock": 0,
+    "no_served_ticker": 0,
+    "none": 0
+   },
+   "poll_wait_ub": {
+    "den": 1627.168,
+    "num": 532.103,
+    "share": 0.327
+   },
+   "receipt_minus_event": {
+    "n": 47,
+    "p10": 22.0,
+    "p50": 35.5,
+    "p90": 45.5,
+    "p95": 49.0,
+    "p99": 57.0
+   },
+   "receipt_minus_source": {
+    "clock": "source_ts",
+    "n": 0,
+    "p10": null,
+    "p50": null,
+    "p90": null,
+    "p95": null,
+    "p99": null,
+    "reason": "NO_SOURCE_CLOCK"
+   },
+   "sport": "ncaaf",
+   "underpowered_games": 0
+  }
+ ],
+ "range": {
+  "first": "2026-10-10",
+  "last": "2026-10-10"
+ },
+ "rows": [
+  {
+   "book_moved_first": {
+    "den": 0,
+    "num": 0,
+    "share": null
+   },
+   "counters": {
+    "change_after_next_event": 0,
+    "events": 0,
+    "lag_missing_clock": 0,
+    "lag_negative": 0,
+    "lag_nonpositive": 0,
+    "play_id_revisit": 0,
+    "poll_wait_missing_clock": 0,
+    "src_without_play_clock": 0
+   },
+   "feed": "espn_scoreboard",
+   "first_mid_change_minus_event": {
+    "n": 0,
+    "p10": null,
+    "p50": null,
+    "p90": null,
+    "p95": null,
+    "p99": null,
+    "reason": "NO_EVENTS"
+   },
+   "flag_p95": null,
+   "flag_reason": "UNDERPOWERED",
+   "game_key": "401908940",
+   "mid_counts": {
+    "censored": 0,
+    "change": 0,
+    "no_prior_book": 0,
+    "no_receipt_clock": 0,
+    "no_served_ticker": 0,
+    "none": 0
+   },
+   "offset": {
+    "reason": "no_journal",
+    "status": "OFFSET_UNMEASURED"
+   },
+   "poll_wait_ub": {
+    "den": 0.0,
+    "num": 0.0,
+    "share": null
+   },
+   "receipt_minus_event": {
+    "n": 0,
+    "p10": null,
+    "p50": null,
+    "p90": null,
+    "p95": null,
+    "p99": null,
+    "reason": "NO_EVENTS"
+   },
+   "receipt_minus_source": {
+    "n": 0,
+    "p10": null,
+    "p50": null,
+    "p90": null,
+    "p95": null,
+    "p99": null,
+    "reason": "NO_EVENTS"
+   },
+   "sport": "nba",
+   "ticker": "KXNBAGAME-26OCT09MEMCHI-CHI"
+  },
+  {
+   "book_moved_first": {
+    "den": 47,
+    "num": 38,
+    "share": 0.8085
+   },
+   "counters": {
+    "change_after_next_event": 9,
+    "events": 48,
+    "lag_missing_clock": 1,
+    "lag_negative": 0,
+    "lag_nonpositive": 0,
+    "play_id_revisit": 0,
+    "poll_wait_missing_clock": 1,
+    "src_without_play_clock": 0
+   },
+   "feed": "espn_scoreboard",
+   "first_mid_change_minus_event": {
+    "n": 47,
+    "p10": 1.0,
+    "p50": 6.0,
+    "p90": 61.5,
+    "p95": 241.0,
+    "p99": 287.0
+   },
+   "flag_p95": false,
+   "game_key": "401858487",
+   "mid_counts": {
+    "censored": 0,
+    "change": 47,
+    "no_prior_book": 0,
+    "no_receipt_clock": 0,
+    "no_served_ticker": 0,
+    "none": 0
+   },
+   "offset": {
+    "reason": "no_journal",
+    "status": "OFFSET_UNMEASURED"
+   },
+   "poll_wait_ub": {
+    "den": 1627.168,
+    "num": 532.103,
+    "share": 0.327
+   },
+   "receipt_minus_event": {
+    "n": 47,
+    "p10": 22.0,
+    "p50": 35.5,
+    "p90": 45.5,
+    "p95": 49.0,
+    "p99": 57.0
+   },
+   "receipt_minus_source": {
+    "clock": "source_ts",
+    "n": 0,
+    "p10": null,
+    "p50": null,
+    "p90": null,
+    "p95": null,
+    "p99": null,
+    "reason": "NO_SOURCE_CLOCK"
+   },
+   "sport": "ncaaf",
+   "ticker": "KXNCAAFGAME-26OCT09IOWAWASH-WASH"
+  }
+ ],
+ "schema": "s663_latency_ledger_v1"
+}

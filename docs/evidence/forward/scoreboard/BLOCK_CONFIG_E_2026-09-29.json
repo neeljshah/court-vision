@@ -1,0 +1,32 @@
+{
+  "policy": {
+    "effective_from": "2026-09-29T00:00:00.000000Z",
+    "implementation_identity": "33f9c433c4b8f11cbf8c3b60329e000b350a51865b6e0a0380d59f735a3ce339",
+    "manifest_hash": "0c623d60115a6c79cc8c22277c5951eb642616dbfd9ea8a5a6cdaf813456d903",
+    "selected_block_versions": {
+      "appearance_history": "1",
+      "current_lineup": "1",
+      "live_feed": "1",
+      "microstructure": "1",
+      "mid": "1",
+      "pitcher_hand": "2",
+      "player_encounter_count": "1",
+      "player_pitcher_workload": "1",
+      "team_bullpen_usage": "1",
+      "team_state": "1"
+    },
+    "selected_blocks": [
+      "mid",
+      "team_state",
+      "live_feed",
+      "microstructure",
+      "player_pitcher_workload",
+      "player_encounter_count",
+      "team_bullpen_usage",
+      "pitcher_hand",
+      "current_lineup",
+      "appearance_history"
+    ]
+  },
+  "sha256": "98dba026bdc64da79544de3e2decdce148d34420d3e55f309db60a92e46337f3"
+}

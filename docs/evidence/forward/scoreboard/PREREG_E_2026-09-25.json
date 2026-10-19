@@ -1,0 +1,37 @@
+{
+  "policy": {
+    "arms": [
+      "A",
+      "C",
+      "E"
+    ],
+    "bootstrap": {
+      "n_boot": 500,
+      "seed": 7
+    },
+    "c_fields": [
+      "mid",
+      "inning",
+      "outs",
+      "score_home",
+      "score_away"
+    ],
+    "dedup_policy": "mid/team_state/player_pitcher_workload use S431 file-order first-copy-wins (ingame_scoreboard.py POLICY.receipts); live_feed/player_encounter_count/team_bullpen_usage/microstructure use S434 canonical-JSON-last among ties at the same instant (microstructure_features.py _ordered/_prior)",
+    "embargo_days": 3,
+    "fit_path": "scripts.platformkit.execution.registry_scorer_e_fit.fit",
+    "freshness_seconds": "21248.002449",
+    "held_out": "scored UTC date",
+    "missingness_policy": "a missing declared field is never zero-filled; the tick is refused by name and excluded from the fit that needs it; A and C need only the mid block and are never erased by an absent optional block (AMENDMENT 2(b)); E needs every selected block present on both the test tick and every training row it uses",
+    "n_clusters_floor": 5,
+    "n_games_floor": 30,
+    "training_window": "all supplied strictly earlier nights; settlement before night minus three days",
+    "vocabulary": [
+      "AHEAD",
+      "BEHIND",
+      "UNDERPOWERED",
+      "INSUFFICIENT",
+      "SINGLE-WINDOW"
+    ]
+  },
+  "sha256": "2430c81e4c6cf52afd16e88963a03e8c2bdbbe97af5d167177175d70053d7416"
+}

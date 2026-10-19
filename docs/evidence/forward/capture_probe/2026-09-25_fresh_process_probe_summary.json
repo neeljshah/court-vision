@@ -1,0 +1,14 @@
+{
+ "books": {
+  "attempts": 4,
+  "successes": 4
+ },
+ "discovery": {
+  "attempts": 8,
+  "successes": 8
+ },
+ "heartbeat_last_write": "2026-09-25T14:42:14.790422Z",
+ "note": "Orchestrator probe 2026-09-25 14:4xZ: a FRESH local_capture_runner process (--max-ticks 2, --sports mlb, the 2026-09-25 served schedule, REQUESTS_CA_BUNDLE set) into a scratch output root, run while the relaunched books child showed discovery attempts 2345 / successes 0. The shard it wrote was 471,764 bytes (ls at the time). The fleet was later found dead since 14:34Z (session job object), so this probe proves network health at 14:4xZ, not an in-process wedge.",
+ "rows_written_total": 409,
+ "shard_bytes_observed": 471764
+}

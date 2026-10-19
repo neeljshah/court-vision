@@ -1,0 +1,2744 @@
+{
+ "census": {
+  "served": 19,
+  "status_by_sport": {
+   "mlb": {
+    "NO_DEPTH": 1,
+    "NO_LIVE_STATE": 9,
+    "OK": 8,
+    "TAPE_MISSING": 1
+   }
+  }
+ },
+ "days": [
+  "2026-09-22",
+  "2026-09-23",
+  "2026-09-24",
+  "2026-09-25",
+  "2026-09-26"
+ ],
+ "definitions": {
+  "ctl|120s": "clock-grid control for ev_*|120s: instants every 30 s from a crc32-seeded random phase, same prior-book rule and censoring",
+  "ctl|15s": "clock-grid control for ev_*|15s: instants every 30 s from a crc32-seeded random phase, same prior-book rule and censoring",
+  "ctl|30s": "clock-grid control for ev_*|30s: instants every 30 s from a crc32-seeded random phase, same prior-book rule and censoring",
+  "ctl|5s": "clock-grid control for ev_*|5s: instants every 30 s from a crc32-seeded random phase, same prior-book rule and censoring",
+  "ctl|60s": "clock-grid control for ev_*|60s: instants every 30 s from a crc32-seeded random phase, same prior-book rule and censoring",
+  "ctl|before_matched_lag": "clock-grid control for ev_*|before_receipt with lags drawn from the game's own source-clock event lag list (one draw per control instant)",
+  "eng|300s|fill": "share of 30 s clock-grid join instants whose 1-contract resting order filled within 300 s (independent overlapping counterfactuals, not a policy throughput; TAPE_MISSING games excluded); arm eng = join at quote_engine.make_quotes prices (zero-inventory construction baseline) with size ahead read from the top-5 ladder at that cent",
+  "eng|300s|mo60": "cents per contract, mid of the first focus snapshot in [fill + 60, fill + 70] s minus the price for a resting bid (price minus mid for a resting ask); fee excluded; arm eng = join at quote_engine.make_quotes prices (zero-inventory construction baseline) with size ahead read from the top-5 ladder at that cent",
+  "eng|300s|through_share": "share of those 300 s fills made by a same-side print strictly through the price (rest = depletion: at-price prints reaching size ahead + 1; unknown depth = through only); arm eng = join at quote_engine.make_quotes prices (zero-inventory construction baseline) with size ahead read from the top-5 ladder at that cent",
+  "eng|300s|vs_mid_at_fill": "cents, prior-book mid at the fill time minus the price for a resting bid (price minus mid for a resting ask); arm eng = join at quote_engine.make_quotes prices (zero-inventory construction baseline) with size ahead read from the top-5 ladder at that cent",
+  "eng|60s|fill": "share of 30 s clock-grid join instants whose 1-contract resting order filled within 60 s (independent overlapping counterfactuals, not a policy throughput; TAPE_MISSING games excluded); arm eng = join at quote_engine.make_quotes prices (zero-inventory construction baseline) with size ahead read from the top-5 ladder at that cent",
+  "eng|60s|mo60": "cents per contract, mid of the first focus snapshot in [fill + 60, fill + 70] s minus the price for a resting bid (price minus mid for a resting ask); fee excluded; arm eng = join at quote_engine.make_quotes prices (zero-inventory construction baseline) with size ahead read from the top-5 ladder at that cent",
+  "eng|60s|through_share": "share of those 60 s fills made by a same-side print strictly through the price (rest = depletion: at-price prints reaching size ahead + 1; unknown depth = through only); arm eng = join at quote_engine.make_quotes prices (zero-inventory construction baseline) with size ahead read from the top-5 ladder at that cent",
+  "eng|60s|vs_mid_at_fill": "cents, prior-book mid at the fill time minus the price for a resting bid (price minus mid for a resting ask); arm eng = join at quote_engine.make_quotes prices (zero-inventory construction baseline) with size ahead read from the top-5 ladder at that cent",
+  "ev_period|120s": "share of source-clock period events whose mid moved >= 1 cent from the prior book within 120 s (coverage gap > 10 s before the first move = censored)",
+  "ev_period|15s": "share of source-clock period events whose mid moved >= 1 cent from the prior book within 15 s (coverage gap > 10 s before the first move = censored)",
+  "ev_period|30s": "share of source-clock period events whose mid moved >= 1 cent from the prior book within 30 s (coverage gap > 10 s before the first move = censored)",
+  "ev_period|5s": "share of source-clock period events whose mid moved >= 1 cent from the prior book within 5 s (coverage gap > 10 s before the first move = censored)",
+  "ev_period|60s": "share of source-clock period events whose mid moved >= 1 cent from the prior book within 60 s (coverage gap > 10 s before the first move = censored)",
+  "ev_period|before_receipt": "share of source-clock period events whose mid moved >= 1 cent between the source play time and the state capture receipt (lag > 0 only)",
+  "ev_play|120s": "share of source-clock play events whose mid moved >= 1 cent from the prior book within 120 s (coverage gap > 10 s before the first move = censored)",
+  "ev_play|15s": "share of source-clock play events whose mid moved >= 1 cent from the prior book within 15 s (coverage gap > 10 s before the first move = censored)",
+  "ev_play|30s": "share of source-clock play events whose mid moved >= 1 cent from the prior book within 30 s (coverage gap > 10 s before the first move = censored)",
+  "ev_play|5s": "share of source-clock play events whose mid moved >= 1 cent from the prior book within 5 s (coverage gap > 10 s before the first move = censored)",
+  "ev_play|60s": "share of source-clock play events whose mid moved >= 1 cent from the prior book within 60 s (coverage gap > 10 s before the first move = censored)",
+  "ev_play|before_receipt": "share of source-clock play events whose mid moved >= 1 cent between the source play time and the state capture receipt (lag > 0 only)",
+  "ev_score|120s": "share of source-clock score events whose mid moved >= 1 cent from the prior book within 120 s (coverage gap > 10 s before the first move = censored)",
+  "ev_score|15s": "share of source-clock score events whose mid moved >= 1 cent from the prior book within 15 s (coverage gap > 10 s before the first move = censored)",
+  "ev_score|30s": "share of source-clock score events whose mid moved >= 1 cent from the prior book within 30 s (coverage gap > 10 s before the first move = censored)",
+  "ev_score|5s": "share of source-clock score events whose mid moved >= 1 cent from the prior book within 5 s (coverage gap > 10 s before the first move = censored)",
+  "ev_score|60s": "share of source-clock score events whose mid moved >= 1 cent from the prior book within 60 s (coverage gap > 10 s before the first move = censored)",
+  "ev_score|before_receipt": "share of source-clock score events whose mid moved >= 1 cent between the source play time and the state capture receipt (lag > 0 only)",
+  "note:fee": "fees are excluded from every markout; venue_fees.fee_kalshi_maker(1, p) = 0.01 at interior p under the repo's one-cent rounding assumption (venue_fees.py docstring :8-12)",
+  "note:identity": "inputs identity = bytes plus sha256 of the first and last 1 MiB of each shard; a change inside the middle of a shard that keeps size and both end megabytes is NOT detected",
+  "note:joins": "join instants overlap and may share prints; they are counterfactuals, not a policy",
+  "tape_mo_contract|120s": "contract-weighted version of tape_mo_print|120s (sum(count * cents) / sum(count))",
+  "tape_mo_contract|300s": "contract-weighted version of tape_mo_print|300s (sum(count * cents) / sum(count))",
+  "tape_mo_contract|30s": "contract-weighted version of tape_mo_print|30s (sum(count * cents) / sum(count))",
+  "tape_mo_contract|5s": "contract-weighted version of tape_mo_print|5s (sum(count * cents) / sum(count))",
+  "tape_mo_contract|60s": "contract-weighted version of tape_mo_print|60s (sum(count * cents) / sum(count))",
+  "tape_mo_print|120s": "print-weighted mean cents of every in-window print as a hypothetical maker fill at its price, marked at the first focus snapshot in [t+120, t+120+10] s; taker no fills a resting bid (mark - price), taker yes a resting ask (price - mark); fee excluded",
+  "tape_mo_print|300s": "print-weighted mean cents of every in-window print as a hypothetical maker fill at its price, marked at the first focus snapshot in [t+300, t+300+10] s; taker no fills a resting bid (mark - price), taker yes a resting ask (price - mark); fee excluded",
+  "tape_mo_print|30s": "print-weighted mean cents of every in-window print as a hypothetical maker fill at its price, marked at the first focus snapshot in [t+30, t+30+10] s; taker no fills a resting bid (mark - price), taker yes a resting ask (price - mark); fee excluded",
+  "tape_mo_print|5s": "print-weighted mean cents of every in-window print as a hypothetical maker fill at its price, marked at the first focus snapshot in [t+5, t+5+10] s; taker no fills a resting bid (mark - price), taker yes a resting ask (price - mark); fee excluded",
+  "tape_mo_print|60s": "print-weighted mean cents of every in-window print as a hypothetical maker fill at its price, marked at the first focus snapshot in [t+60, t+60+10] s; taker no fills a resting bid (mark - price), taker yes a resting ask (price - mark); fee excluded",
+  "touch|300s|fill": "share of 30 s clock-grid join instants whose 1-contract resting order filled within 300 s (independent overlapping counterfactuals, not a policy throughput; TAPE_MISSING games excluded); arm touch = join at the best bid / best ask with that side's displayed top size ahead",
+  "touch|300s|mo60": "cents per contract, mid of the first focus snapshot in [fill + 60, fill + 70] s minus the price for a resting bid (price minus mid for a resting ask); fee excluded; arm touch = join at the best bid / best ask with that side's displayed top size ahead",
+  "touch|300s|through_share": "share of those 300 s fills made by a same-side print strictly through the price (rest = depletion: at-price prints reaching size ahead + 1; unknown depth = through only); arm touch = join at the best bid / best ask with that side's displayed top size ahead",
+  "touch|300s|vs_mid_at_fill": "cents, prior-book mid at the fill time minus the price for a resting bid (price minus mid for a resting ask); arm touch = join at the best bid / best ask with that side's displayed top size ahead",
+  "touch|60s|fill": "share of 30 s clock-grid join instants whose 1-contract resting order filled within 60 s (independent overlapping counterfactuals, not a policy throughput; TAPE_MISSING games excluded); arm touch = join at the best bid / best ask with that side's displayed top size ahead",
+  "touch|60s|mo60": "cents per contract, mid of the first focus snapshot in [fill + 60, fill + 70] s minus the price for a resting bid (price minus mid for a resting ask); fee excluded; arm touch = join at the best bid / best ask with that side's displayed top size ahead",
+  "touch|60s|through_share": "share of those 60 s fills made by a same-side print strictly through the price (rest = depletion: at-price prints reaching size ahead + 1; unknown depth = through only); arm touch = join at the best bid / best ask with that side's displayed top size ahead",
+  "touch|60s|vs_mid_at_fill": "cents, prior-book mid at the fill time minus the price for a resting bid (price minus mid for a resting ask); arm touch = join at the best bid / best ask with that side's displayed top size ahead"
+ },
+ "engine_construction": {
+  "behind_touch_c_by_spread": {
+   "spread1": {
+    "2.0": 1634
+   },
+   "spread2": {
+    "1.0": 150
+   },
+   "spread3": {
+    "1.0": 42
+   },
+   "spread4": {
+    "0.0": 12
+   },
+   "spread5": {
+    "0.0": 6
+   }
+  },
+  "reason": {
+   "quoted": 922,
+   "stale_book": 49,
+   "state_change": 61
+  }
+ },
+ "estimand_version": "S550.v1",
+ "games": [
+  {
+   "contracts": 336553.4,
+   "day": "2026-09-22",
+   "depth_min": 130.9,
+   "game_key": "824785",
+   "live_min": 134.1,
+   "n_events": 321,
+   "no_final_row": true,
+   "prints": 4495,
+   "sport": "mlb",
+   "spread_c": {
+    "p10": 1.0,
+    "p50": 1.0,
+    "p90": 2.0
+   },
+   "stats": {
+    "ctl|120s": [
+     233,
+     256
+    ],
+    "ctl|15s": [
+     111,
+     263
+    ],
+    "ctl|30s": [
+     148,
+     261
+    ],
+    "ctl|5s": [
+     53,
+     266
+    ],
+    "ctl|60s": [
+     193,
+     257
+    ],
+    "ctl|before_matched_lag": [
+     121,
+     261
+    ],
+    "eng|300s|fill": [
+     155.0,
+     462.0
+    ],
+    "eng|300s|mo60": [
+     63.5,
+     155.0
+    ],
+    "eng|300s|through_share": [
+     146.0,
+     155.0
+    ],
+    "eng|300s|vs_mid_at_fill": [
+     141.0,
+     155.0
+    ],
+    "eng|60s|fill": [
+     59.0,
+     462.0
+    ],
+    "eng|60s|mo60": [
+     15.0,
+     59.0
+    ],
+    "eng|60s|through_share": [
+     54.0,
+     59.0
+    ],
+    "eng|60s|vs_mid_at_fill": [
+     98.5,
+     59.0
+    ],
+    "ev_period|120s": [
+     18,
+     25
+    ],
+    "ev_period|15s": [
+     6,
+     25
+    ],
+    "ev_period|30s": [
+     9,
+     25
+    ],
+    "ev_period|5s": [
+     4,
+     25
+    ],
+    "ev_period|60s": [
+     14,
+     25
+    ],
+    "ev_period|before_receipt": [
+     5,
+     25
+    ],
+    "ev_play|120s": [
+     271,
+     279
+    ],
+    "ev_play|15s": [
+     137,
+     288
+    ],
+    "ev_play|30s": [
+     193,
+     285
+    ],
+    "ev_play|5s": [
+     94,
+     290
+    ],
+    "ev_play|60s": [
+     247,
+     279
+    ],
+    "ev_play|before_receipt": [
+     152,
+     286
+    ],
+    "ev_score|120s": [
+     3,
+     4
+    ],
+    "ev_score|15s": [
+     1,
+     4
+    ],
+    "ev_score|30s": [
+     2,
+     4
+    ],
+    "ev_score|5s": [
+     1,
+     4
+    ],
+    "ev_score|60s": [
+     3,
+     4
+    ],
+    "ev_score|before_receipt": [
+     1,
+     4
+    ],
+    "tape_mo_contract|120s": [
+     -90346.415,
+     333657.37
+    ],
+    "tape_mo_contract|300s": [
+     -155190.105,
+     327182.26
+    ],
+    "tape_mo_contract|30s": [
+     58235.82,
+     336547.19
+    ],
+    "tape_mo_contract|5s": [
+     133542.095,
+     331873.34
+    ],
+    "tape_mo_contract|60s": [
+     25867.72,
+     336539.35
+    ],
+    "tape_mo_print|120s": [
+     -2265.5,
+     4463.0
+    ],
+    "tape_mo_print|300s": [
+     -4746.0,
+     4392.0
+    ],
+    "tape_mo_print|30s": [
+     1060.0,
+     4494.0
+    ],
+    "tape_mo_print|5s": [
+     2446.5,
+     4478.0
+    ],
+    "tape_mo_print|60s": [
+     -499.0,
+     4493.0
+    ],
+    "touch|300s|fill": [
+     255.0,
+     534.0
+    ],
+    "touch|300s|mo60": [
+     -205.0,
+     254.0
+    ],
+    "touch|300s|through_share": [
+     245.0,
+     255.0
+    ],
+    "touch|300s|vs_mid_at_fill": [
+     94.0,
+     254.0
+    ],
+    "touch|60s|fill": [
+     147.0,
+     534.0
+    ],
+    "touch|60s|mo60": [
+     -95.0,
+     147.0
+    ],
+    "touch|60s|through_share": [
+     138.0,
+     147.0
+    ],
+    "touch|60s|vs_mid_at_fill": [
+     87.0,
+     146.0
+    ]
+   },
+   "status": "OK",
+   "tape_receipt_lag_s": {
+    "p10": 90.47,
+    "p50": 1288.949,
+    "p90": 3797.169
+   },
+   "ticker": "KXMLBGAME-26SEP221835TORBAL-BAL"
+  },
+  {
+   "contracts": 0,
+   "day": "2026-09-22",
+   "depth_min": 55.6,
+   "game_key": "823412",
+   "live_min": 155.3,
+   "n_events": 364,
+   "no_final_row": false,
+   "prints": 0,
+   "sport": "mlb",
+   "spread_c": {
+    "p10": 1.0,
+    "p50": 1.0,
+    "p90": 1.0
+   },
+   "stats": {
+    "ctl|120s": [
+     87,
+     92
+    ],
+    "ctl|15s": [
+     37,
+     112
+    ],
+    "ctl|30s": [
+     51,
+     108
+    ],
+    "ctl|5s": [
+     12,
+     116
+    ],
+    "ctl|60s": [
+     73,
+     98
+    ],
+    "ctl|before_matched_lag": [
+     44,
+     111
+    ],
+    "ev_period|120s": [
+     9,
+     9
+    ],
+    "ev_period|15s": [
+     6,
+     11
+    ],
+    "ev_period|30s": [
+     8,
+     11
+    ],
+    "ev_period|5s": [
+     6,
+     12
+    ],
+    "ev_period|60s": [
+     9,
+     9
+    ],
+    "ev_period|before_receipt": [
+     6,
+     11
+    ],
+    "ev_play|120s": [
+     110,
+     110
+    ],
+    "ev_play|15s": [
+     47,
+     126
+    ],
+    "ev_play|30s": [
+     73,
+     120
+    ],
+    "ev_play|5s": [
+     26,
+     128
+    ],
+    "ev_play|60s": [
+     98,
+     114
+    ],
+    "ev_play|before_receipt": [
+     61,
+     124
+    ],
+    "ev_score|120s": [
+     2,
+     2
+    ],
+    "ev_score|15s": [
+     2,
+     2
+    ],
+    "ev_score|30s": [
+     2,
+     2
+    ],
+    "ev_score|5s": [
+     1,
+     2
+    ],
+    "ev_score|60s": [
+     2,
+     2
+    ],
+    "ev_score|before_receipt": [
+     2,
+     2
+    ]
+   },
+   "status": "TAPE_MISSING",
+   "tape_receipt_lag_s": {},
+   "ticker": "KXMLBGAME-26SEP221840MILPHI-PHI"
+  },
+  {
+   "contracts": 17443.6,
+   "day": "2026-09-22",
+   "depth_min": 59.7,
+   "game_key": "824624",
+   "live_min": 360.0,
+   "n_events": 354,
+   "no_final_row": false,
+   "prints": 200,
+   "sport": "mlb",
+   "spread_c": {
+    "p10": 1.0,
+    "p50": 1.0,
+    "p90": 2.0
+   },
+   "stats": {
+    "ctl|120s": [
+     102,
+     118
+    ],
+    "ctl|15s": [
+     27,
+     119
+    ],
+    "ctl|30s": [
+     47,
+     119
+    ],
+    "ctl|5s": [
+     6,
+     120
+    ],
+    "ctl|60s": [
+     73,
+     118
+    ],
+    "ctl|before_matched_lag": [
+     35,
+     119
+    ],
+    "eng|300s|fill": [
+     0.0,
+     194.0
+    ],
+    "eng|60s|fill": [
+     0.0,
+     194.0
+    ],
+    "ev_period|120s": [
+     9,
+     12
+    ],
+    "ev_period|15s": [
+     4,
+     12
+    ],
+    "ev_period|30s": [
+     4,
+     12
+    ],
+    "ev_period|5s": [
+     2,
+     12
+    ],
+    "ev_period|60s": [
+     9,
+     12
+    ],
+    "ev_period|before_receipt": [
+     4,
+     12
+    ],
+    "ev_play|120s": [
+     122,
+     128
+    ],
+    "ev_play|15s": [
+     32,
+     130
+    ],
+    "ev_play|30s": [
+     55,
+     129
+    ],
+    "ev_play|5s": [
+     15,
+     130
+    ],
+    "ev_play|60s": [
+     88,
+     128
+    ],
+    "ev_play|before_receipt": [
+     36,
+     129
+    ],
+    "ev_score|120s": [
+     0,
+     0
+    ],
+    "ev_score|15s": [
+     0,
+     0
+    ],
+    "ev_score|30s": [
+     0,
+     0
+    ],
+    "ev_score|5s": [
+     0,
+     0
+    ],
+    "ev_score|60s": [
+     0,
+     0
+    ],
+    "ev_score|before_receipt": [
+     0,
+     0
+    ],
+    "touch|300s|fill": [
+     0.0,
+     240.0
+    ],
+    "touch|60s|fill": [
+     0.0,
+     240.0
+    ]
+   },
+   "status": "OK",
+   "tape_receipt_lag_s": {
+    "p10": 5.197,
+    "p50": 585.247,
+    "p90": 664.047
+   },
+   "ticker": "KXMLBGAME-26SEP221940MIACHC-CHC"
+  },
+  {
+   "day": "2026-09-23",
+   "game_key": "824784",
+   "sport": "mlb",
+   "status": "NO_LIVE_STATE",
+   "ticker": "KXMLBGAME-26SEP231835TORBAL-BAL"
+  },
+  {
+   "day": "2026-09-23",
+   "game_key": "823410",
+   "sport": "mlb",
+   "status": "NO_LIVE_STATE",
+   "ticker": "KXMLBGAME-26SEP231840MILPHI-PHI"
+  },
+  {
+   "day": "2026-09-23",
+   "game_key": "824625",
+   "sport": "mlb",
+   "status": "NO_LIVE_STATE",
+   "ticker": "KXMLBGAME-26SEP231940MIACHC-CHC"
+  },
+  {
+   "contracts": 1033457.3,
+   "day": "2026-09-24",
+   "depth_min": 57.0,
+   "game_key": "822842",
+   "live_min": 150.0,
+   "n_events": 179,
+   "no_final_row": false,
+   "prints": 5878,
+   "sport": "mlb",
+   "spread_c": {
+    "p10": 1.0,
+    "p50": 1.0,
+    "p90": 1.0
+   },
+   "stats": {
+    "ctl|120s": [
+     108,
+     115
+    ],
+    "ctl|15s": [
+     36,
+     115
+    ],
+    "ctl|30s": [
+     60,
+     115
+    ],
+    "ctl|5s": [
+     19,
+     115
+    ],
+    "ctl|60s": [
+     83,
+     115
+    ],
+    "ctl|before_matched_lag": [
+     49,
+     115
+    ],
+    "eng|300s|fill": [
+     116.0,
+     214.0
+    ],
+    "eng|300s|mo60": [
+     -117.0,
+     109.0
+    ],
+    "eng|300s|through_share": [
+     110.0,
+     116.0
+    ],
+    "eng|300s|vs_mid_at_fill": [
+     186.5,
+     112.0
+    ],
+    "eng|60s|fill": [
+     32.0,
+     214.0
+    ],
+    "eng|60s|mo60": [
+     -21.0,
+     31.0
+    ],
+    "eng|60s|through_share": [
+     28.0,
+     32.0
+    ],
+    "eng|60s|vs_mid_at_fill": [
+     49.0,
+     32.0
+    ],
+    "ev_period|120s": [
+     10,
+     12
+    ],
+    "ev_period|15s": [
+     3,
+     12
+    ],
+    "ev_period|30s": [
+     6,
+     12
+    ],
+    "ev_period|5s": [
+     3,
+     12
+    ],
+    "ev_period|60s": [
+     10,
+     12
+    ],
+    "ev_period|before_receipt": [
+     5,
+     12
+    ],
+    "ev_play|120s": [
+     50,
+     51
+    ],
+    "ev_play|15s": [
+     27,
+     51
+    ],
+    "ev_play|30s": [
+     35,
+     51
+    ],
+    "ev_play|5s": [
+     14,
+     51
+    ],
+    "ev_play|60s": [
+     42,
+     51
+    ],
+    "ev_play|before_receipt": [
+     31,
+     51
+    ],
+    "ev_score|120s": [
+     1,
+     2
+    ],
+    "ev_score|15s": [
+     0,
+     2
+    ],
+    "ev_score|30s": [
+     0,
+     2
+    ],
+    "ev_score|5s": [
+     0,
+     2
+    ],
+    "ev_score|60s": [
+     0,
+     2
+    ],
+    "ev_score|before_receipt": [
+     0,
+     2
+    ],
+    "tape_mo_contract|120s": [
+     -354856.57,
+     225873.16
+    ],
+    "tape_mo_contract|300s": [
+     -472269.035,
+     217096.93
+    ],
+    "tape_mo_contract|30s": [
+     -52495.91,
+     227596.4
+    ],
+    "tape_mo_contract|5s": [
+     -10122.905,
+     228271.17
+    ],
+    "tape_mo_contract|60s": [
+     -60824.7,
+     227005.21
+    ],
+    "tape_mo_print|120s": [
+     -1901.0,
+     1851.0
+    ],
+    "tape_mo_print|300s": [
+     -3196.0,
+     1750.0
+    ],
+    "tape_mo_print|30s": [
+     -1373.5,
+     1873.0
+    ],
+    "tape_mo_print|5s": [
+     -808.0,
+     1884.0
+    ],
+    "tape_mo_print|60s": [
+     -1245.5,
+     1865.0
+    ],
+    "touch|300s|fill": [
+     184.0,
+     230.0
+    ],
+    "touch|300s|mo60": [
+     -106.0,
+     175.0
+    ],
+    "touch|300s|through_share": [
+     175.0,
+     184.0
+    ],
+    "touch|300s|vs_mid_at_fill": [
+     77.0,
+     179.0
+    ],
+    "touch|60s|fill": [
+     98.0,
+     230.0
+    ],
+    "touch|60s|mo60": [
+     -90.0,
+     94.0
+    ],
+    "touch|60s|through_share": [
+     96.0,
+     98.0
+    ],
+    "touch|60s|vs_mid_at_fill": [
+     36.0,
+     96.0
+    ]
+   },
+   "status": "OK",
+   "tape_receipt_lag_s": {
+    "p10": 34.079,
+    "p50": 258.478,
+    "p90": 1106.041
+   },
+   "ticker": "KXMLBGAME-26SEP241435NYMTEX-TEX"
+  },
+  {
+   "contracts": 913431.2,
+   "day": "2026-09-24",
+   "depth_min": 53.4,
+   "game_key": "823411",
+   "live_min": 170.7,
+   "n_events": 228,
+   "no_final_row": false,
+   "prints": 7719,
+   "sport": "mlb",
+   "spread_c": {
+    "p10": 1.0,
+    "p50": 1.0,
+    "p90": 2.0
+   },
+   "stats": {
+    "ctl|120s": [
+     89,
+     92
+    ],
+    "ctl|15s": [
+     47,
+     106
+    ],
+    "ctl|30s": [
+     66,
+     100
+    ],
+    "ctl|5s": [
+     17,
+     113
+    ],
+    "ctl|60s": [
+     83,
+     96
+    ],
+    "ctl|before_matched_lag": [
+     58,
+     102
+    ],
+    "eng|300s|fill": [
+     88.0,
+     196.0
+    ],
+    "eng|300s|mo60": [
+     36.5,
+     83.0
+    ],
+    "eng|300s|through_share": [
+     82.0,
+     88.0
+    ],
+    "eng|300s|vs_mid_at_fill": [
+     93.0,
+     77.0
+    ],
+    "eng|60s|fill": [
+     33.0,
+     196.0
+    ],
+    "eng|60s|mo60": [
+     37.5,
+     31.0
+    ],
+    "eng|60s|through_share": [
+     32.0,
+     33.0
+    ],
+    "eng|60s|vs_mid_at_fill": [
+     49.0,
+     29.0
+    ],
+    "ev_period|120s": [
+     6,
+     6
+    ],
+    "ev_period|15s": [
+     5,
+     6
+    ],
+    "ev_period|30s": [
+     5,
+     6
+    ],
+    "ev_period|5s": [
+     3,
+     8
+    ],
+    "ev_period|60s": [
+     6,
+     6
+    ],
+    "ev_period|before_receipt": [
+     5,
+     6
+    ],
+    "ev_play|120s": [
+     64,
+     65
+    ],
+    "ev_play|15s": [
+     34,
+     69
+    ],
+    "ev_play|30s": [
+     53,
+     68
+    ],
+    "ev_play|5s": [
+     16,
+     69
+    ],
+    "ev_play|60s": [
+     62,
+     66
+    ],
+    "ev_play|before_receipt": [
+     40,
+     68
+    ],
+    "ev_score|120s": [
+     2,
+     2
+    ],
+    "ev_score|15s": [
+     1,
+     2
+    ],
+    "ev_score|30s": [
+     1,
+     2
+    ],
+    "ev_score|5s": [
+     0,
+     2
+    ],
+    "ev_score|60s": [
+     2,
+     2
+    ],
+    "ev_score|before_receipt": [
+     1,
+     2
+    ],
+    "tape_mo_contract|120s": [
+     70248.07,
+     414265.43
+    ],
+    "tape_mo_contract|300s": [
+     752576.85,
+     418451.52
+    ],
+    "tape_mo_contract|30s": [
+     152344.98,
+     419906.3
+    ],
+    "tape_mo_contract|5s": [
+     131183.175,
+     423085.17
+    ],
+    "tape_mo_contract|60s": [
+     -41814.55,
+     422911.6
+    ],
+    "tape_mo_print|120s": [
+     4594.5,
+     3258.0
+    ],
+    "tape_mo_print|300s": [
+     7215.0,
+     3284.0
+    ],
+    "tape_mo_print|30s": [
+     3249.0,
+     3257.0
+    ],
+    "tape_mo_print|5s": [
+     2449.0,
+     3239.0
+    ],
+    "tape_mo_print|60s": [
+     3879.5,
+     3238.0
+    ],
+    "touch|300s|fill": [
+     162.0,
+     228.0
+    ],
+    "touch|300s|mo60": [
+     -97.5,
+     157.0
+    ],
+    "touch|300s|through_share": [
+     154.0,
+     162.0
+    ],
+    "touch|300s|vs_mid_at_fill": [
+     74.0,
+     149.0
+    ],
+    "touch|60s|fill": [
+     103.0,
+     228.0
+    ],
+    "touch|60s|mo60": [
+     -9.5,
+     98.0
+    ],
+    "touch|60s|through_share": [
+     97.0,
+     103.0
+    ],
+    "touch|60s|vs_mid_at_fill": [
+     50.0,
+     97.0
+    ]
+   },
+   "status": "OK",
+   "tape_receipt_lag_s": {
+    "p10": 445.622,
+    "p50": 3965.165,
+    "p90": 12089.393
+   },
+   "ticker": "KXMLBGAME-26SEP241805MILPHI-PHI"
+  },
+  {
+   "contracts": 757601.4,
+   "day": "2026-09-24",
+   "depth_min": 57.5,
+   "game_key": "824707",
+   "live_min": 149.1,
+   "n_events": 195,
+   "no_final_row": false,
+   "prints": 5949,
+   "sport": "mlb",
+   "spread_c": {
+    "p10": 1.0,
+    "p50": 1.0,
+    "p90": 1.0
+   },
+   "stats": {
+    "ctl|120s": [
+     103,
+     111
+    ],
+    "ctl|15s": [
+     33,
+     113
+    ],
+    "ctl|30s": [
+     58,
+     111
+    ],
+    "ctl|5s": [
+     16,
+     115
+    ],
+    "ctl|60s": [
+     81,
+     111
+    ],
+    "ctl|before_matched_lag": [
+     47,
+     112
+    ],
+    "eng|300s|fill": [
+     107.0,
+     210.0
+    ],
+    "eng|300s|mo60": [
+     -39.0,
+     97.0
+    ],
+    "eng|300s|through_share": [
+     103.0,
+     107.0
+    ],
+    "eng|300s|vs_mid_at_fill": [
+     144.5,
+     105.0
+    ],
+    "eng|60s|fill": [
+     27.0,
+     210.0
+    ],
+    "eng|60s|mo60": [
+     7.0,
+     27.0
+    ],
+    "eng|60s|through_share": [
+     26.0,
+     27.0
+    ],
+    "eng|60s|vs_mid_at_fill": [
+     39.0,
+     27.0
+    ],
+    "ev_period|120s": [
+     7,
+     12
+    ],
+    "ev_period|15s": [
+     1,
+     12
+    ],
+    "ev_period|30s": [
+     2,
+     12
+    ],
+    "ev_period|5s": [
+     1,
+     12
+    ],
+    "ev_period|60s": [
+     5,
+     12
+    ],
+    "ev_period|before_receipt": [
+     2,
+     12
+    ],
+    "ev_play|120s": [
+     60,
+     63
+    ],
+    "ev_play|15s": [
+     30,
+     65
+    ],
+    "ev_play|30s": [
+     43,
+     63
+    ],
+    "ev_play|5s": [
+     18,
+     65
+    ],
+    "ev_play|60s": [
+     56,
+     63
+    ],
+    "ev_play|before_receipt": [
+     37,
+     64
+    ],
+    "ev_score|120s": [
+     1,
+     1
+    ],
+    "ev_score|15s": [
+     1,
+     1
+    ],
+    "ev_score|30s": [
+     1,
+     1
+    ],
+    "ev_score|5s": [
+     1,
+     1
+    ],
+    "ev_score|60s": [
+     1,
+     1
+    ],
+    "ev_score|before_receipt": [
+     1,
+     1
+    ],
+    "tape_mo_contract|120s": [
+     142385.965,
+     325232.42
+    ],
+    "tape_mo_contract|300s": [
+     158384.54,
+     319250.42
+    ],
+    "tape_mo_contract|30s": [
+     138192.1,
+     324458.85
+    ],
+    "tape_mo_contract|5s": [
+     94831.715,
+     326222.25
+    ],
+    "tape_mo_contract|60s": [
+     128602.755,
+     327916.05
+    ],
+    "tape_mo_print|120s": [
+     1388.5,
+     2524.0
+    ],
+    "tape_mo_print|300s": [
+     2490.5,
+     2432.0
+    ],
+    "tape_mo_print|30s": [
+     1242.5,
+     2565.0
+    ],
+    "tape_mo_print|5s": [
+     1103.5,
+     2583.0
+    ],
+    "tape_mo_print|60s": [
+     1161.0,
+     2558.0
+    ],
+    "touch|300s|fill": [
+     189.0,
+     232.0
+    ],
+    "touch|300s|mo60": [
+     -175.5,
+     184.0
+    ],
+    "touch|300s|through_share": [
+     176.0,
+     189.0
+    ],
+    "touch|300s|vs_mid_at_fill": [
+     66.0,
+     188.0
+    ],
+    "touch|60s|fill": [
+     101.0,
+     232.0
+    ],
+    "touch|60s|mo60": [
+     -53.0,
+     99.0
+    ],
+    "touch|60s|through_share": [
+     90.0,
+     101.0
+    ],
+    "touch|60s|vs_mid_at_fill": [
+     33.5,
+     101.0
+    ]
+   },
+   "status": "OK",
+   "tape_receipt_lag_s": {
+    "p10": 490.059,
+    "p50": 3981.404,
+    "p90": 8367.335
+   },
+   "ticker": "KXMLBGAME-26SEP241845CLEBOS-BOS"
+  },
+  {
+   "contracts": 581367.3,
+   "day": "2026-09-24",
+   "depth_min": 59.9,
+   "game_key": "824866",
+   "live_min": 162.2,
+   "n_events": 227,
+   "no_final_row": false,
+   "prints": 5508,
+   "sport": "mlb",
+   "spread_c": {
+    "p10": 1.0,
+    "p50": 1.0,
+    "p90": 1.0
+   },
+   "stats": {
+    "ctl|120s": [
+     102,
+     118
+    ],
+    "ctl|15s": [
+     40,
+     120
+    ],
+    "ctl|30s": [
+     56,
+     120
+    ],
+    "ctl|5s": [
+     12,
+     121
+    ],
+    "ctl|60s": [
+     78,
+     119
+    ],
+    "ctl|before_matched_lag": [
+     48,
+     119
+    ],
+    "eng|300s|fill": [
+     108.0,
+     232.0
+    ],
+    "eng|300s|mo60": [
+     -57.5,
+     108.0
+    ],
+    "eng|300s|through_share": [
+     100.0,
+     108.0
+    ],
+    "eng|300s|vs_mid_at_fill": [
+     169.5,
+     108.0
+    ],
+    "eng|60s|fill": [
+     39.0,
+     232.0
+    ],
+    "eng|60s|mo60": [
+     -50.0,
+     39.0
+    ],
+    "eng|60s|through_share": [
+     37.0,
+     39.0
+    ],
+    "eng|60s|vs_mid_at_fill": [
+     63.0,
+     39.0
+    ],
+    "ev_period|120s": [
+     6,
+     10
+    ],
+    "ev_period|15s": [
+     3,
+     11
+    ],
+    "ev_period|30s": [
+     4,
+     10
+    ],
+    "ev_period|5s": [
+     2,
+     11
+    ],
+    "ev_period|60s": [
+     6,
+     10
+    ],
+    "ev_period|before_receipt": [
+     4,
+     10
+    ],
+    "ev_play|120s": [
+     54,
+     58
+    ],
+    "ev_play|15s": [
+     21,
+     58
+    ],
+    "ev_play|30s": [
+     37,
+     58
+    ],
+    "ev_play|5s": [
+     11,
+     58
+    ],
+    "ev_play|60s": [
+     48,
+     58
+    ],
+    "ev_play|before_receipt": [
+     34,
+     58
+    ],
+    "ev_score|120s": [
+     7,
+     8
+    ],
+    "ev_score|15s": [
+     3,
+     9
+    ],
+    "ev_score|30s": [
+     4,
+     9
+    ],
+    "ev_score|5s": [
+     1,
+     9
+    ],
+    "ev_score|60s": [
+     6,
+     9
+    ],
+    "ev_score|before_receipt": [
+     4,
+     9
+    ],
+    "tape_mo_contract|120s": [
+     -74131.515,
+     190088.82
+    ],
+    "tape_mo_contract|300s": [
+     -394423.68,
+     179827.48
+    ],
+    "tape_mo_contract|30s": [
+     -495419.495,
+     230758.23
+    ],
+    "tape_mo_contract|5s": [
+     -398513.16,
+     232342.45
+    ],
+    "tape_mo_contract|60s": [
+     -494168.755,
+     229069.65
+    ],
+    "tape_mo_print|120s": [
+     -99.0,
+     2011.0
+    ],
+    "tape_mo_print|300s": [
+     -2299.5,
+     1895.0
+    ],
+    "tape_mo_print|30s": [
+     13.0,
+     2147.0
+    ],
+    "tape_mo_print|5s": [
+     447.5,
+     2154.0
+    ],
+    "tape_mo_print|60s": [
+     -12.0,
+     2127.0
+    ],
+    "touch|300s|fill": [
+     173.0,
+     240.0
+    ],
+    "touch|300s|mo60": [
+     -200.0,
+     167.0
+    ],
+    "touch|300s|through_share": [
+     158.0,
+     173.0
+    ],
+    "touch|300s|vs_mid_at_fill": [
+     71.0,
+     168.0
+    ],
+    "touch|60s|fill": [
+     103.0,
+     240.0
+    ],
+    "touch|60s|mo60": [
+     -95.5,
+     102.0
+    ],
+    "touch|60s|through_share": [
+     91.0,
+     103.0
+    ],
+    "touch|60s|vs_mid_at_fill": [
+     38.5,
+     103.0
+    ]
+   },
+   "status": "OK",
+   "tape_receipt_lag_s": {
+    "p10": 381.27,
+    "p50": 2206.112,
+    "p90": 5370.441
+   },
+   "ticker": "KXMLBGAME-26SEP241915CINATL-ATL"
+  },
+  {
+   "contracts": 271333.2,
+   "day": "2026-09-25",
+   "depth_min": 30.8,
+   "game_key": "824220",
+   "live_min": 173.1,
+   "n_events": 233,
+   "no_final_row": false,
+   "prints": 2208,
+   "sport": "mlb",
+   "spread_c": {
+    "p10": 1.0,
+    "p50": 1.0,
+    "p90": 1.0
+   },
+   "stats": {
+    "ctl|120s": [
+     55,
+     55
+    ],
+    "ctl|15s": [
+     26,
+     63
+    ],
+    "ctl|30s": [
+     38,
+     60
+    ],
+    "ctl|5s": [
+     12,
+     65
+    ],
+    "ctl|60s": [
+     48,
+     55
+    ],
+    "ctl|before_matched_lag": [
+     34,
+     61
+    ],
+    "eng|300s|fill": [
+     79.0,
+     120.0
+    ],
+    "eng|300s|mo60": [
+     -31.5,
+     66.0
+    ],
+    "eng|300s|through_share": [
+     75.0,
+     79.0
+    ],
+    "eng|300s|vs_mid_at_fill": [
+     114.0,
+     74.0
+    ],
+    "eng|60s|fill": [
+     23.0,
+     120.0
+    ],
+    "eng|60s|mo60": [
+     -5.5,
+     18.0
+    ],
+    "eng|60s|through_share": [
+     20.0,
+     23.0
+    ],
+    "eng|60s|vs_mid_at_fill": [
+     20.5,
+     21.0
+    ],
+    "ev_period|120s": [
+     1,
+     2
+    ],
+    "ev_period|15s": [
+     0,
+     6
+    ],
+    "ev_period|30s": [
+     0,
+     5
+    ],
+    "ev_period|5s": [
+     0,
+     6
+    ],
+    "ev_period|60s": [
+     0,
+     2
+    ],
+    "ev_period|before_receipt": [
+     0,
+     6
+    ],
+    "ev_play|120s": [
+     37,
+     37
+    ],
+    "ev_play|15s": [
+     18,
+     43
+    ],
+    "ev_play|30s": [
+     28,
+     40
+    ],
+    "ev_play|5s": [
+     12,
+     44
+    ],
+    "ev_play|60s": [
+     37,
+     37
+    ],
+    "ev_play|before_receipt": [
+     23,
+     41
+    ],
+    "ev_score|120s": [
+     2,
+     2
+    ],
+    "ev_score|15s": [
+     1,
+     2
+    ],
+    "ev_score|30s": [
+     1,
+     2
+    ],
+    "ev_score|5s": [
+     0,
+     2
+    ],
+    "ev_score|60s": [
+     1,
+     2
+    ],
+    "ev_score|before_receipt": [
+     1,
+     2
+    ],
+    "tape_mo_contract|120s": [
+     -6961.985,
+     46435.98
+    ],
+    "tape_mo_contract|300s": [
+     116244.93,
+     44707.23
+    ],
+    "tape_mo_contract|30s": [
+     35492.96,
+     50388.76
+    ],
+    "tape_mo_contract|5s": [
+     25529.86,
+     50507.36
+    ],
+    "tape_mo_contract|60s": [
+     35263.145,
+     47672.32
+    ],
+    "tape_mo_print|120s": [
+     421.5,
+     476.0
+    ],
+    "tape_mo_print|300s": [
+     876.0,
+     431.0
+    ],
+    "tape_mo_print|30s": [
+     278.5,
+     530.0
+    ],
+    "tape_mo_print|5s": [
+     211.0,
+     542.0
+    ],
+    "tape_mo_print|60s": [
+     314.5,
+     500.0
+    ],
+    "touch|300s|fill": [
+     103.0,
+     130.0
+    ],
+    "touch|300s|mo60": [
+     -90.5,
+     89.0
+    ],
+    "touch|300s|through_share": [
+     98.0,
+     103.0
+    ],
+    "touch|300s|vs_mid_at_fill": [
+     68.5,
+     100.0
+    ],
+    "touch|60s|fill": [
+     50.0,
+     130.0
+    ],
+    "touch|60s|mo60": [
+     -54.5,
+     45.0
+    ],
+    "touch|60s|through_share": [
+     47.0,
+     50.0
+    ],
+    "touch|60s|vs_mid_at_fill": [
+     2.5,
+     49.0
+    ]
+   },
+   "status": "OK",
+   "tape_receipt_lag_s": {
+    "p10": 145.95,
+    "p50": 1865.521,
+    "p90": 4780.847
+   },
+   "ticker": "KXMLBGAME-26SEP251840PITDET-DET"
+  },
+  {
+   "contracts": 342301.3,
+   "day": "2026-09-25",
+   "depth_min": 0.0,
+   "game_key": "823491",
+   "live_min": 167.4,
+   "n_events": 210,
+   "no_final_row": false,
+   "prints": 1277,
+   "sport": "mlb",
+   "spread_c": {},
+   "status": "NO_DEPTH",
+   "tape_receipt_lag_s": {
+    "p10": 2767.603,
+    "p50": 9749.696,
+    "p90": 19134.844
+   },
+   "ticker": "KXMLBGAME-26SEP251905BALNYY-NYY"
+  },
+  {
+   "contracts": 179624.0,
+   "day": "2026-09-25",
+   "depth_min": 57.0,
+   "game_key": "824544",
+   "live_min": 149.8,
+   "n_events": 181,
+   "no_final_row": true,
+   "prints": 1637,
+   "sport": "mlb",
+   "spread_c": {
+    "p10": 1.0,
+    "p50": 1.0,
+    "p90": 2.0
+   },
+   "stats": {
+    "ctl|120s": [
+     98,
+     108
+    ],
+    "ctl|15s": [
+     45,
+     114
+    ],
+    "ctl|30s": [
+     61,
+     113
+    ],
+    "ctl|5s": [
+     21,
+     115
+    ],
+    "ctl|60s": [
+     79,
+     111
+    ],
+    "ctl|before_matched_lag": [
+     51,
+     113
+    ],
+    "eng|300s|fill": [
+     102.0,
+     216.0
+    ],
+    "eng|300s|mo60": [
+     -17.0,
+     99.0
+    ],
+    "eng|300s|through_share": [
+     98.0,
+     102.0
+    ],
+    "eng|300s|vs_mid_at_fill": [
+     118.0,
+     99.0
+    ],
+    "eng|60s|fill": [
+     35.0,
+     216.0
+    ],
+    "eng|60s|mo60": [
+     -18.0,
+     35.0
+    ],
+    "eng|60s|through_share": [
+     35.0,
+     35.0
+    ],
+    "eng|60s|vs_mid_at_fill": [
+     48.0,
+     35.0
+    ],
+    "ev_period|120s": [
+     6,
+     10
+    ],
+    "ev_period|15s": [
+     2,
+     11
+    ],
+    "ev_period|30s": [
+     5,
+     11
+    ],
+    "ev_period|5s": [
+     2,
+     11
+    ],
+    "ev_period|60s": [
+     6,
+     11
+    ],
+    "ev_period|before_receipt": [
+     4,
+     11
+    ],
+    "ev_play|120s": [
+     57,
+     59
+    ],
+    "ev_play|15s": [
+     25,
+     63
+    ],
+    "ev_play|30s": [
+     42,
+     62
+    ],
+    "ev_play|5s": [
+     12,
+     64
+    ],
+    "ev_play|60s": [
+     51,
+     61
+    ],
+    "ev_play|before_receipt": [
+     36,
+     63
+    ],
+    "ev_score|120s": [
+     3,
+     4
+    ],
+    "ev_score|15s": [
+     1,
+     4
+    ],
+    "ev_score|30s": [
+     1,
+     4
+    ],
+    "ev_score|5s": [
+     0,
+     4
+    ],
+    "ev_score|60s": [
+     1,
+     4
+    ],
+    "ev_score|before_receipt": [
+     0,
+     4
+    ],
+    "tape_mo_contract|120s": [
+     -71001.965,
+     91452.74
+    ],
+    "tape_mo_contract|300s": [
+     -54336.805,
+     84740.89
+    ],
+    "tape_mo_contract|30s": [
+     -50263.7,
+     92603.24
+    ],
+    "tape_mo_contract|5s": [
+     -28121.18,
+     96365.65
+    ],
+    "tape_mo_contract|60s": [
+     -57956.27,
+     92102.65
+    ],
+    "tape_mo_print|120s": [
+     -6.0,
+     863.0
+    ],
+    "tape_mo_print|300s": [
+     -8.5,
+     773.0
+    ],
+    "tape_mo_print|30s": [
+     -26.5,
+     875.0
+    ],
+    "tape_mo_print|5s": [
+     264.0,
+     880.0
+    ],
+    "tape_mo_print|60s": [
+     101.0,
+     873.0
+    ],
+    "touch|300s|fill": [
+     181.0,
+     230.0
+    ],
+    "touch|300s|mo60": [
+     -21.5,
+     178.0
+    ],
+    "touch|300s|through_share": [
+     168.0,
+     181.0
+    ],
+    "touch|300s|vs_mid_at_fill": [
+     82.5,
+     178.0
+    ],
+    "touch|60s|fill": [
+     91.0,
+     230.0
+    ],
+    "touch|60s|mo60": [
+     -58.5,
+     91.0
+    ],
+    "touch|60s|through_share": [
+     83.0,
+     91.0
+    ],
+    "touch|60s|vs_mid_at_fill": [
+     23.5,
+     91.0
+    ]
+   },
+   "status": "OK",
+   "tape_receipt_lag_s": {
+    "p10": 266.57,
+    "p50": 1607.577,
+    "p90": 3619.884
+   },
+   "ticker": "KXMLBGAME-26SEP251940COLCWS-CWS"
+  },
+  {
+   "day": "2026-09-26",
+   "game_key": "824219",
+   "sport": "mlb",
+   "status": "NO_LIVE_STATE",
+   "ticker": "KXMLBGAME-26SEP261310PITDET-DET"
+  },
+  {
+   "day": "2026-09-26",
+   "game_key": "822759",
+   "sport": "mlb",
+   "status": "NO_LIVE_STATE",
+   "ticker": "KXMLBGAME-26SEP261507CINTOR-TOR"
+  },
+  {
+   "day": "2026-09-26",
+   "game_key": "823813",
+   "sport": "mlb",
+   "status": "NO_LIVE_STATE",
+   "ticker": "KXMLBGAME-26SEP261610ATLMIA-MIA"
+  },
+  {
+   "day": "2026-09-26",
+   "game_key": "823653",
+   "sport": "mlb",
+   "status": "NO_LIVE_STATE",
+   "ticker": "KXMLBGAME-26SEP261610TEXMIN-MIN"
+  },
+  {
+   "day": "2026-09-26",
+   "game_key": "824543",
+   "sport": "mlb",
+   "status": "NO_LIVE_STATE",
+   "ticker": "KXMLBGAME-26SEP261910COLCWS-CWS"
+  },
+  {
+   "day": "2026-09-26",
+   "game_key": "823733",
+   "sport": "mlb",
+   "status": "NO_LIVE_STATE",
+   "ticker": "KXMLBGAME-26SEP261910STLMIL-MIL"
+  }
+ ],
+ "inputs": [
+  {
+   "bytes_lf": 821,
+   "exists": true,
+   "path": "schedules/2026-09-22_maker_forward.json",
+   "sha256_lf": "5a14b8044187dc4e4fdd24ce7624ef09950f8dcfd9ccc0734278912ce04be3b0"
+  },
+  {
+   "bytes": 8369460,
+   "exists": true,
+   "head_sha256": "170b51f9e73f2fbbdd7e9542932edd446d0abdc8a84a75e62a958456ad1393f8",
+   "lines_bad_json": 0,
+   "lines_parsed": 1958,
+   "lines_skipped_partial": 0,
+   "lines_skipped_unrelated": 8292,
+   "path": "state/mlb/2026-09-22.jsonl",
+   "tail_sha256": "d5a7d852717d9210453d0fcad2e9cad62c5df67c68b51c0940a7eea85d2baef1"
+  },
+  {
+   "bytes": 12567521,
+   "exists": true,
+   "head_sha256": "7cdb5d44c91a408d25b89a5131b01e008f2e57e07b0952da96e981f966cb44a1",
+   "lines_bad_json": 0,
+   "lines_parsed": 2333,
+   "lines_skipped_partial": 0,
+   "lines_skipped_unrelated": 12801,
+   "path": "state/mlb/2026-09-23.jsonl",
+   "tail_sha256": "1021b84bbf0b3f544fa7b0c0d3652aa46e760d9dcbfa9571446307278b3aebce"
+  },
+  {
+   "bytes": 359982871,
+   "exists": true,
+   "head_sha256": "9ee082a4c2a2ca5dff432d104aa859eb7c6bac7834c11e859210f320dfee2ce3",
+   "lines_bad_json": 0,
+   "lines_parsed": 4674,
+   "lines_skipped_partial": 0,
+   "lines_skipped_unrelated": 186742,
+   "path": "books/mlb/2026-09-22.jsonl",
+   "tail_sha256": "f8b15d07f87e5098d39beb1a496eff86fad9401d07a747b0f40878b0c25c747d"
+  },
+  {
+   "bytes": 163193337,
+   "exists": true,
+   "head_sha256": "37028ec40e3e51a23acd8c55516ace8a67b4a8d2d101cf497fb1dad39325edea",
+   "lines_bad_json": 0,
+   "lines_parsed": 12933,
+   "lines_skipped_partial": 0,
+   "lines_skipped_unrelated": 103851,
+   "path": "books/mlb/2026-09-23.jsonl",
+   "tail_sha256": "69eb67523c92f964f2f1a141ada457c15b10a62f85a07400201b871e52399c1b"
+  },
+  {
+   "bytes_lf": 821,
+   "exists": true,
+   "path": "schedules/2026-09-23_maker_forward.json",
+   "sha256_lf": "0ce3ce59bac5efb1ce10d8a372130e02c8aee791d7316fee52c2f451aa1d3405"
+  },
+  {
+   "bytes": 12567521,
+   "exists": true,
+   "head_sha256": "7cdb5d44c91a408d25b89a5131b01e008f2e57e07b0952da96e981f966cb44a1",
+   "lines_bad_json": 0,
+   "lines_parsed": 1071,
+   "lines_skipped_partial": 0,
+   "lines_skipped_unrelated": 14063,
+   "path": "state/mlb/2026-09-23.jsonl",
+   "tail_sha256": "1021b84bbf0b3f544fa7b0c0d3652aa46e760d9dcbfa9571446307278b3aebce"
+  },
+  {
+   "bytes": 3357987,
+   "exists": true,
+   "head_sha256": "b177c9069a4c54699d8af978106a98c8b280bb67e19329a3e54b59bfc81c9b1b",
+   "lines_bad_json": 0,
+   "lines_parsed": 3,
+   "lines_skipped_partial": 0,
+   "lines_skipped_unrelated": 3695,
+   "path": "state/mlb/2026-09-24.jsonl",
+   "tail_sha256": "b42c1fa9981774ff4a321b35a7a7a7120220b4a45bd4639ff0da0e35b046f693"
+  },
+  {
+   "bytes": 163193337,
+   "exists": true,
+   "head_sha256": "37028ec40e3e51a23acd8c55516ace8a67b4a8d2d101cf497fb1dad39325edea",
+   "lines_bad_json": 0,
+   "lines_parsed": 48,
+   "lines_skipped_partial": 0,
+   "lines_skipped_unrelated": 116736,
+   "path": "books/mlb/2026-09-23.jsonl",
+   "tail_sha256": "69eb67523c92f964f2f1a141ada457c15b10a62f85a07400201b871e52399c1b"
+  },
+  {
+   "bytes": 242437642,
+   "exists": true,
+   "head_sha256": "bacea23ebb348a0741f5f3c778e397858f1d91fda012ff32ef0c82bd68876814",
+   "lines_bad_json": 0,
+   "lines_parsed": 0,
+   "lines_skipped_partial": 0,
+   "lines_skipped_unrelated": 170586,
+   "path": "books/mlb/2026-09-24.jsonl",
+   "tail_sha256": "74d5bee417ceeda62493e1d67892ff412339be85064902642017d8bb382d10d8"
+  },
+  {
+   "bytes_lf": 1094,
+   "exists": true,
+   "path": "schedules/2026-09-24_maker_forward.json",
+   "sha256_lf": "ae92f7cf5369940317db0beb9beb137481c51286c5ab90b368b0329106159c22"
+  },
+  {
+   "bytes": 3357987,
+   "exists": true,
+   "head_sha256": "b177c9069a4c54699d8af978106a98c8b280bb67e19329a3e54b59bfc81c9b1b",
+   "lines_bad_json": 0,
+   "lines_parsed": 1497,
+   "lines_skipped_partial": 0,
+   "lines_skipped_unrelated": 2201,
+   "path": "state/mlb/2026-09-24.jsonl",
+   "tail_sha256": "b42c1fa9981774ff4a321b35a7a7a7120220b4a45bd4639ff0da0e35b046f693"
+  },
+  {
+   "bytes": 12514458,
+   "exists": true,
+   "head_sha256": "9e8cd97dcee400dcd8afc1b07ea0ed0a1d16fa033264a8f54a8b03de46a98d04",
+   "lines_bad_json": 0,
+   "lines_parsed": 521,
+   "lines_skipped_partial": 0,
+   "lines_skipped_unrelated": 13930,
+   "path": "state/mlb/2026-09-25.jsonl",
+   "tail_sha256": "bae65985ba899e1118753a4e83662154f33452dc33f62c61612314fd08be18dd"
+  },
+  {
+   "bytes": 242437642,
+   "exists": true,
+   "head_sha256": "bacea23ebb348a0741f5f3c778e397858f1d91fda012ff32ef0c82bd68876814",
+   "lines_bad_json": 0,
+   "lines_parsed": 19523,
+   "lines_skipped_partial": 0,
+   "lines_skipped_unrelated": 151063,
+   "path": "books/mlb/2026-09-24.jsonl",
+   "tail_sha256": "74d5bee417ceeda62493e1d67892ff412339be85064902642017d8bb382d10d8"
+  },
+  {
+   "bytes": 308505322,
+   "exists": true,
+   "head_sha256": "d63582ba8b8b644761005ab34486f0c66a26f211abba6b42302c95b6e54c91f2",
+   "lines_bad_json": 0,
+   "lines_parsed": 14102,
+   "lines_skipped_partial": 0,
+   "lines_skipped_unrelated": 203884,
+   "path": "books/mlb/2026-09-25.jsonl",
+   "tail_sha256": "c500e89edb7829882f21f5f9f299765e2cf86a988882953536e3dabbb71ef9bf"
+  },
+  {
+   "bytes_lf": 821,
+   "exists": true,
+   "path": "schedules/2026-09-25_maker_forward.json",
+   "sha256_lf": "824f1ce16709224636973c3d60e699c830783a641f44d44389dcc93bd80b36e9"
+  },
+  {
+   "bytes": 12514458,
+   "exists": true,
+   "head_sha256": "9e8cd97dcee400dcd8afc1b07ea0ed0a1d16fa033264a8f54a8b03de46a98d04",
+   "lines_bad_json": 0,
+   "lines_parsed": 2288,
+   "lines_skipped_partial": 0,
+   "lines_skipped_unrelated": 12163,
+   "path": "state/mlb/2026-09-25.jsonl",
+   "tail_sha256": "bae65985ba899e1118753a4e83662154f33452dc33f62c61612314fd08be18dd"
+  },
+  {
+   "bytes": 4246438,
+   "exists": true,
+   "head_sha256": "c06bba8df965f3aea62bc319d3dd164c633805711870a24653ef1b099785f872",
+   "lines_bad_json": 0,
+   "lines_parsed": 445,
+   "lines_skipped_partial": 0,
+   "lines_skipped_unrelated": 3891,
+   "path": "state/mlb/2026-09-26.jsonl",
+   "tail_sha256": "c14e71a7848448ecc5b68e048c67a0e9a3c3390cefe4ed10527948232c050cd5"
+  },
+  {
+   "bytes": 308505322,
+   "exists": true,
+   "head_sha256": "d63582ba8b8b644761005ab34486f0c66a26f211abba6b42302c95b6e54c91f2",
+   "lines_bad_json": 0,
+   "lines_parsed": 4595,
+   "lines_skipped_partial": 0,
+   "lines_skipped_unrelated": 213391,
+   "path": "books/mlb/2026-09-25.jsonl",
+   "tail_sha256": "c500e89edb7829882f21f5f9f299765e2cf86a988882953536e3dabbb71ef9bf"
+  },
+  {
+   "bytes": 80858224,
+   "exists": true,
+   "head_sha256": "db7f847c9d38a20437152e7dbcd030374082cde37c7a9a6008a2f7bdd25e571a",
+   "lines_bad_json": 0,
+   "lines_parsed": 4563,
+   "lines_skipped_partial": 0,
+   "lines_skipped_unrelated": 60190,
+   "path": "books/mlb/2026-09-26.jsonl",
+   "tail_sha256": "275630d143752f400f55e200b1a7e9783bc0c0cf7369aba6d2e67c00620715ac"
+  },
+  {
+   "bytes_lf": 1737,
+   "exists": true,
+   "path": "schedules/2026-09-26_maker_forward.json",
+   "sha256_lf": "d2d11baffcdaf8fdc1facad301bc4afa99b8cec18f4910219fcfe11f304afe7d"
+  },
+  {
+   "bytes": 4246438,
+   "exists": true,
+   "head_sha256": "c06bba8df965f3aea62bc319d3dd164c633805711870a24653ef1b099785f872",
+   "lines_bad_json": 0,
+   "lines_parsed": 762,
+   "lines_skipped_partial": 0,
+   "lines_skipped_unrelated": 3574,
+   "path": "state/mlb/2026-09-26.jsonl",
+   "tail_sha256": "c14e71a7848448ecc5b68e048c67a0e9a3c3390cefe4ed10527948232c050cd5"
+  },
+  {
+   "exists": false,
+   "path": "state/mlb/2026-09-27.jsonl"
+  },
+  {
+   "bytes": 80858224,
+   "exists": true,
+   "head_sha256": "db7f847c9d38a20437152e7dbcd030374082cde37c7a9a6008a2f7bdd25e571a",
+   "lines_bad_json": 0,
+   "lines_parsed": 41,
+   "lines_skipped_partial": 0,
+   "lines_skipped_unrelated": 64712,
+   "path": "books/mlb/2026-09-26.jsonl",
+   "tail_sha256": "275630d143752f400f55e200b1a7e9783bc0c0cf7369aba6d2e67c00620715ac"
+  },
+  {
+   "exists": false,
+   "path": "books/mlb/2026-09-27.jsonl"
+  }
+ ],
+ "not_verified": [
+  "mid-shard edits that keep size and both end megabytes (identity limit)",
+  "parser behaviour on Python 3.12 (receipt built and tested on 3.10)",
+  "one development week only: exploratory, no confirmatory claim",
+  "focus depth exists only in the first focus hour of each game",
+  "in-game prints arrive by backfill (replay-labelled tape)",
+  "join instants overlap; fill shares are not a policy throughput"
+ ],
+ "pools": {
+  "mlb": {
+   "ctl|120s": {
+    "ci90": [
+     0.8994,
+     0.9383
+    ],
+    "games": 9,
+    "mean": 0.9174,
+    "n": 1065
+   },
+   "ctl|15s": {
+    "ci90": [
+     0.3146,
+     0.3928
+    ],
+    "games": 9,
+    "mean": 0.3573,
+    "n": 1125
+   },
+   "ctl|30s": {
+    "ci90": [
+     0.487,
+     0.566
+    ],
+    "games": 9,
+    "mean": 0.5285,
+    "n": 1107
+   },
+   "ctl|5s": {
+    "ci90": [
+     0.1146,
+     0.1724
+    ],
+    "games": 9,
+    "mean": 0.1466,
+    "n": 1146
+   },
+   "ctl|60s": {
+    "ci90": [
+     0.6964,
+     0.7692
+    ],
+    "games": 9,
+    "mean": 0.7324,
+    "n": 1080
+   },
+   "ctl|before_matched_lag": {
+    "ci90": [
+     0.3984,
+     0.474
+    ],
+    "games": 9,
+    "mean": 0.4376,
+    "n": 1113
+   },
+   "eng|300s|fill": {
+    "ci90": [
+     0.3158,
+     0.5049
+    ],
+    "games": 8,
+    "mean": 0.4094,
+    "n": 1844.0
+   },
+   "eng|300s|mo60": {
+    "ci90": [
+     -0.5764,
+     0.105
+    ],
+    "games": 7,
+    "mean": -0.2259,
+    "n": 717.0
+   },
+   "eng|300s|through_share": {
+    "ci90": [
+     0.9382,
+     0.9533
+    ],
+    "games": 7,
+    "mean": 0.9457,
+    "n": 755.0
+   },
+   "eng|300s|vs_mid_at_fill": {
+    "ci90": [
+     1.1502,
+     1.5038
+    ],
+    "games": 7,
+    "mean": 1.324,
+    "n": 730.0
+   },
+   "eng|60s|fill": {
+    "ci90": [
+     0.103,
+     0.16
+    ],
+    "games": 8,
+    "mean": 0.1345,
+    "n": 1844.0
+   },
+   "eng|60s|mo60": {
+    "ci90": [
+     -0.6059,
+     0.311
+    ],
+    "games": 7,
+    "mean": -0.1458,
+    "n": 240.0
+   },
+   "eng|60s|through_share": {
+    "ci90": [
+     0.9097,
+     0.961
+    ],
+    "games": 7,
+    "mean": 0.9355,
+    "n": 248.0
+   },
+   "eng|60s|vs_mid_at_fill": {
+    "ci90": [
+     1.3704,
+     1.6135
+    ],
+    "games": 7,
+    "mean": 1.5165,
+    "n": 242.0
+   },
+   "ev_period|120s": {
+    "ci90": [
+     0.6667,
+     0.8125
+    ],
+    "games": 9,
+    "mean": 0.7347,
+    "n": 98
+   },
+   "ev_period|15s": {
+    "ci90": [
+     0.2,
+     0.3782
+    ],
+    "games": 9,
+    "mean": 0.283,
+    "n": 106
+   },
+   "ev_period|30s": {
+    "ci90": [
+     0.3204,
+     0.5165
+    ],
+    "games": 9,
+    "mean": 0.4135,
+    "n": 104
+   },
+   "ev_period|5s": {
+    "ci90": [
+     0.1494,
+     0.2857
+    ],
+    "games": 9,
+    "mean": 0.211,
+    "n": 109
+   },
+   "ev_period|60s": {
+    "ci90": [
+     0.5635,
+     0.7738
+    ],
+    "games": 9,
+    "mean": 0.6566,
+    "n": 99
+   },
+   "ev_period|before_receipt": {
+    "ci90": [
+     0.252,
+     0.4368
+    ],
+    "games": 9,
+    "mean": 0.3333,
+    "n": 105
+   },
+   "ev_play|120s": {
+    "ci90": [
+     0.9599,
+     0.9811
+    ],
+    "games": 9,
+    "mean": 0.9706,
+    "n": 850
+   },
+   "ev_play|15s": {
+    "ci90": [
+     0.3509,
+     0.4635
+    ],
+    "games": 9,
+    "mean": 0.4155,
+    "n": 893
+   },
+   "ev_play|30s": {
+    "ci90": [
+     0.5714,
+     0.6923
+    ],
+    "games": 9,
+    "mean": 0.6381,
+    "n": 876
+   },
+   "ev_play|5s": {
+    "ci90": [
+     0.1822,
+     0.2875
+    ],
+    "games": 9,
+    "mean": 0.2425,
+    "n": 899
+   },
+   "ev_play|60s": {
+    "ci90": [
+     0.7969,
+     0.8912
+    ],
+    "games": 9,
+    "mean": 0.8506,
+    "n": 857
+   },
+   "ev_play|before_receipt": {
+    "ci90": [
+     0.4436,
+     0.5654
+    ],
+    "games": 9,
+    "mean": 0.509,
+    "n": 884
+   },
+   "ev_score|120s": {
+    "ci90": [
+     0.76,
+     0.9118
+    ],
+    "games": 8,
+    "mean": 0.84,
+    "n": 25
+   },
+   "ev_score|15s": {
+    "ci90": [
+     0.2812,
+     0.5455
+    ],
+    "games": 8,
+    "mean": 0.3846,
+    "n": 26
+   },
+   "ev_score|30s": {
+    "ci90": [
+     0.35,
+     0.6
+    ],
+    "games": 8,
+    "mean": 0.4615,
+    "n": 26
+   },
+   "ev_score|5s": {
+    "ci90": [
+     0.0741,
+     0.2778
+    ],
+    "games": 8,
+    "mean": 0.1538,
+    "n": 26
+   },
+   "ev_score|60s": {
+    "ci90": [
+     0.45,
+     0.7692
+    ],
+    "games": 8,
+    "mean": 0.6154,
+    "n": 26
+   },
+   "ev_score|before_receipt": {
+    "ci90": [
+     0.2273,
+     0.55
+    ],
+    "games": 8,
+    "mean": 0.3846,
+    "n": 26
+   },
+   "tape_mo_contract|120s": {
+    "ci90": [
+     -0.7403,
+     0.1079
+    ],
+    "games": 7,
+    "mean": -0.2364,
+    "n": 1627005.92
+   },
+   "tape_mo_contract|300s": {
+    "ci90": [
+     -1.1908,
+     0.8772
+    ],
+    "games": 7,
+    "mean": -0.0308,
+    "n": 1591256.73
+   },
+   "tape_mo_contract|30s": {
+    "ci90": [
+     -0.7419,
+     0.2849
+    ],
+    "games": 7,
+    "mean": -0.1272,
+    "n": 1682258.97
+   },
+   "tape_mo_contract|5s": {
+    "ci90": [
+     -0.5528,
+     0.3025
+    ],
+    "games": 7,
+    "mean": -0.0306,
+    "n": 1688667.39
+   },
+   "tape_mo_contract|60s": {
+    "ci90": [
+     -0.8359,
+     0.1266
+    ],
+    "games": 7,
+    "mean": -0.2763,
+    "n": 1683216.83
+   },
+   "tape_mo_print|120s": {
+    "ci90": [
+     -0.423,
+     0.7269
+    ],
+    "games": 7,
+    "mean": 0.1381,
+    "n": 15446.0
+   },
+   "tape_mo_print|300s": {
+    "ci90": [
+     -0.9965,
+     1.1329
+    ],
+    "games": 7,
+    "mean": 0.0222,
+    "n": 14957.0
+   },
+   "tape_mo_print|30s": {
+    "ci90": [
+     -0.0925,
+     0.5867
+    ],
+    "games": 7,
+    "mean": 0.2823,
+    "n": 15741.0
+   },
+   "tape_mo_print|5s": {
+    "ci90": [
+     0.1187,
+     0.5643
+    ],
+    "games": 7,
+    "mean": 0.3879,
+    "n": 15760.0
+   },
+   "tape_mo_print|60s": {
+    "ci90": [
+     -0.1791,
+     0.6499
+    ],
+    "games": 7,
+    "mean": 0.2363,
+    "n": 15654.0
+   },
+   "touch|300s|fill": {
+    "ci90": [
+     0.4525,
+     0.7694
+    ],
+    "games": 8,
+    "mean": 0.6042,
+    "n": 2064.0
+   },
+   "touch|300s|mo60": {
+    "ci90": [
+     -0.938,
+     -0.5373
+    ],
+    "games": 7,
+    "mean": -0.7442,
+    "n": 1204.0
+   },
+   "touch|300s|through_share": {
+    "ci90": [
+     0.931,
+     0.9518
+    ],
+    "games": 7,
+    "mean": 0.9415,
+    "n": 1247.0
+   },
+   "touch|300s|vs_mid_at_fill": {
+    "ci90": [
+     0.3962,
+     0.4976
+    ],
+    "games": 7,
+    "mean": 0.4383,
+    "n": 1216.0
+   },
+   "touch|60s|fill": {
+    "ci90": [
+     0.2503,
+     0.4241
+    ],
+    "games": 8,
+    "mean": 0.3358,
+    "n": 2064.0
+   },
+   "touch|60s|mo60": {
+    "ci90": [
+     -0.8578,
+     -0.5026
+    ],
+    "games": 7,
+    "mean": -0.6746,
+    "n": 676.0
+   },
+   "touch|60s|through_share": {
+    "ci90": [
+     0.9076,
+     0.9457
+    ],
+    "games": 7,
+    "mean": 0.9264,
+    "n": 693.0
+   },
+   "touch|60s|vs_mid_at_fill": {
+    "ci90": [
+     0.2959,
+     0.4835
+    ],
+    "games": 7,
+    "mean": 0.3968,
+    "n": 683.0
+   }
+  }
+ },
+ "refusals": {
+  "bulk_rows_ignored": 416,
+  "censored|120s": 142,
+  "censored|15s": 30,
+  "censored|30s": 67,
+  "censored|5s": 0,
+  "censored|60s": 118,
+  "censored|before_lag": 52,
+  "control_lag_absent": 0,
+  "depth_unknown_through_only": 22,
+  "duplicate_trade_id": 0,
+  "mark_missing": 90518,
+  "no_prior_book": 1260,
+  "other_record_type_ignored": 303,
+  "receipt_before_created": 0,
+  "row_key_mismatch": 1,
+  "schedule_missing": 0,
+  "snapshot_invalid_or_crossed": 0,
+  "snapshot_unparsed": 0,
+  "source_clock_absent_or_rejected": 0,
+  "state_not_dict": 0,
+  "taker_side_conflict": 0,
+  "timestamp_rejected": 0,
+  "trade_price_or_count_out_of_range": 0,
+  "trade_unparsed_or_unknown_side": 0
+ },
+ "source_receipt_lag_s": {
+  "p10": 13.169,
+  "p50": 21.867,
+  "p90": 34.064
+ }
+}

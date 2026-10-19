@@ -12,7 +12,7 @@
 
 ## The single most important statement in this guide
 
-The calibrated model **MATCHES** the Shin-devigged closing line within noise on team-strength
+The calibrated model **TRAILS** the devigged close on MLB moneyline (+0.0039 Brier, 95% CI [+0.0028, +0.0051]) and soccer O/U 2.5 (+0.0076, [+0.0059, +0.0092]) and is indistinguishable from it on NBA moneyline at an underpowered n=372 (corrected 2026-10-06 from DM_RECOMPUTE_2026-09-24) on team-strength
 markets (NBA/MLB moneyline, soccer O/U). It does **NOT beat** the close pregame. The market
 is efficient; every candidate pregame edge was tested on >= 2 independent corpora and
 correctly REJECTED. This is the expected, correct result for an efficient market, and the

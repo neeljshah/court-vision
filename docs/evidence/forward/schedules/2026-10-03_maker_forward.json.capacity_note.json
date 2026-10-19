@@ -1,0 +1,12 @@
+{
+  "capacity_subset_selected_at": "2026-10-02T13:36:44.085779+00:00",
+  "denominator_of_record": "C:/Users/neelj/nba-ai-system/docs/evidence/forward/schedules/2026-10-03_maker_forward_full_selection.json",
+  "not_served": [],
+  "rule": "earliest starts, ticker order on ties, subject to capture_scheduler.schedule_rows line 113 (any three consecutive starts must span >= 3600 s); score-blind, before any start",
+  "served": [
+    "KXMLBGAME-26OCT031300CWSCLE-CLE",
+    "KXMLBGAME-26OCT031600ATLLAD-LAD",
+    "KXMLBGAME-26OCT031830NYYTB-TB"
+  ],
+  "served_file": "C:/Users/neelj/nba-ai-system/docs/evidence/forward/schedules/2026-10-03_maker_forward.json"
+}

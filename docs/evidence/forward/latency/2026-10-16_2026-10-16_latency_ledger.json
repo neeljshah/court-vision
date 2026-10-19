@@ -1,0 +1,596 @@
+{
+ "constants": {
+  "bin_s": 0.5,
+  "flag_p95_s": 60.0,
+  "max_wait_s": 10,
+  "mid_horizon_s": 300,
+  "min_n_flag": 30,
+  "offset_bound_ms": 250,
+  "quantile_rule": "smallest bin k with cum(k) * 100 >= q * n",
+  "quantiles": [
+   10,
+   50,
+   90,
+   95,
+   99
+  ]
+ },
+ "counters": {
+  "bulk_rows_ignored": 6,
+  "other_record_type_ignored": 12,
+  "snapshot_unparsed": 623,
+  "ticker_conflict": 0
+ },
+ "excluded_offset": [],
+ "inputs": [
+  {
+   "bytes_lf": 2856,
+   "exists": true,
+   "path": "schedules/2026-10-15_maker_forward.json",
+   "sha256_lf": "72876236a822d261388be9805203e0d8abd1f0c2e1eb0534a4fe8732ddcfe1e5"
+  },
+  {
+   "bytes_lf": 3132,
+   "exists": true,
+   "path": "schedules/2026-10-16_maker_forward.json",
+   "sha256_lf": "780106564fd2269415d1aa91097012c022f0b49ac1a70d3b60f01d2214e928a6"
+  },
+  {
+   "bytes": 14042434,
+   "exists": true,
+   "head_sha256": "0a5e99566cc139dadf8b0fa0a7738ec67b3f02c8d3a0141b896d82374beb421b",
+   "lines": 1593,
+   "path": "state/mlb/2026-10-16.jsonl",
+   "tail_sha256": "e3386d39f4f56d5976f7dfe5fb4d3976da11aa87c70c924cce815a80a64e3805"
+  },
+  {
+   "bytes": 90652951,
+   "exists": true,
+   "head_sha256": "cd5ca40b22d764ba2f745e91ab25865b5206bddc74c3645418c18302f07dc97d",
+   "lines_bad_json": 0,
+   "lines_parsed": 22040,
+   "lines_skipped_partial": 0,
+   "lines_skipped_unrelated": 40911,
+   "path": "books/mlb/2026-10-16.jsonl",
+   "tail_sha256": "27fb3b2062a43fbcc8f72949b7779717064b810ee660d9327f38a1e25fc08036"
+  },
+  {
+   "exists": false,
+   "path": "books/mlb/2026-10-17.jsonl"
+  },
+  {
+   "bytes": 5084505,
+   "exists": true,
+   "head_sha256": "3637e569ee3c1a2171eec460c4985c84bf353bddccd91bc51ac3d1a9b9690910",
+   "lines": 1936,
+   "path": "state/nba/2026-10-16.jsonl",
+   "tail_sha256": "5bfa9e7f1fb8f0b937d40586c5e8d450f536681cb3c8798577ab512ca31765c3"
+  },
+  {
+   "bytes": 18046255,
+   "exists": true,
+   "head_sha256": "a54ade7bffe1f8f02c2a564fa265dda214b62deb246635f1b18db0c182ccb689",
+   "lines": 16968,
+   "path": "state/nfl/2026-10-16.jsonl",
+   "tail_sha256": "63ca0923cb1588e0acb2bc770f2eb727c1177567c8e73dc94f9db110ccfa43c3"
+  },
+  {
+   "bytes": 143769139,
+   "exists": true,
+   "head_sha256": "be10fb78ad5fb75444eaff1dfb6888a002cde0f0779786d022988c6eb9467b81",
+   "lines_bad_json": 0,
+   "lines_parsed": 32972,
+   "lines_skipped_partial": 0,
+   "lines_skipped_unrelated": 87634,
+   "path": "books/nfl/2026-10-16.jsonl",
+   "tail_sha256": "2532b5cad126fbc8f38aa89dc65f1311e527b187cdc66a6a96c8fd5af7259946"
+  },
+  {
+   "exists": false,
+   "path": "books/nfl/2026-10-17.jsonl"
+  }
+ ],
+ "notes": [
+  "events = S592 E5/E6/E7 with AMENDMENT 1 (a revisited play id is still an event; gap_negative rows skipped)",
+  "receipt_minus_event = response_end_utc - play clock, negative lags kept; with no offset journal the pooled Counter equals the S592 play_lag Counter on the same shards",
+  "poll_wait_ub = clip(request_start - max(play clock, previous request_start), 0, lag): an upper bound",
+  "first_mid_change_minus_event mixes the recorder receipt clock and the source play clock; the S664 offset bounds recorder-vs-UTC only and is never applied as a correction",
+  "book_moved_first compares two recorder-clock instants (book snapshot receipt vs state receipt); a change inside the window may belong to a later play (change_after_next_event)",
+  "latency measurement of archived rows only; not a forecast and not a trading claim"
+ ],
+ "offset_journal": null,
+ "per_sport_counters": {
+  "mlb": {
+   "event_no_baseline": 0,
+   "files_missing": 0,
+   "gap_negative": 0,
+   "lines_malformed_json": 0,
+   "lines_oversize": 0,
+   "lines_skipped_no_live_token": 475,
+   "lines_total": 1593,
+   "live_rows": 1118,
+   "rows_game_key_missing": 0,
+   "rows_not_object": 0,
+   "rows_status_not_live": 0
+  },
+  "nba": {
+   "event_no_baseline": 0,
+   "files_missing": 0,
+   "gap_negative": 0,
+   "lines_malformed_json": 0,
+   "lines_oversize": 0,
+   "lines_skipped_no_live_token": 432,
+   "lines_total": 1936,
+   "live_rows": 1504,
+   "rows_game_key_missing": 0,
+   "rows_not_object": 0,
+   "rows_status_not_live": 0
+  },
+  "nfl": {
+   "event_no_baseline": 0,
+   "files_missing": 0,
+   "gap_negative": 0,
+   "lines_malformed_json": 0,
+   "lines_oversize": 0,
+   "lines_skipped_no_live_token": 15798,
+   "lines_total": 16968,
+   "live_rows": 1170,
+   "rows_game_key_missing": 0,
+   "rows_not_object": 0,
+   "rows_status_not_live": 0
+  }
+ },
+ "pooled": [
+  {
+   "book_moved_first": {
+    "den": 314,
+    "num": 165,
+    "share": 0.5255
+   },
+   "counters": {
+    "change_after_next_event": 147,
+    "events": 382,
+    "lag_missing_clock": 0,
+    "lag_negative": 0,
+    "lag_nonpositive": 0,
+    "play_id_revisit": 27,
+    "poll_wait_missing_clock": 0,
+    "src_without_play_clock": 0
+   },
+   "feed": "statsapi_rest",
+   "first_mid_change_minus_event": {
+    "n": 314,
+    "p10": 1.5,
+    "p50": 14.5,
+    "p90": 103.0,
+    "p95": 159.5,
+    "p99": 239.5
+   },
+   "flagged_games": 0,
+   "games": 1,
+   "mid_counts": {
+    "censored": 5,
+    "change": 314,
+    "no_prior_book": 50,
+    "no_receipt_clock": 0,
+    "no_served_ticker": 0,
+    "none": 13
+   },
+   "poll_wait_ub": {
+    "den": 6565.158,
+    "num": 3823.426,
+    "share": 0.5824
+   },
+   "receipt_minus_event": {
+    "n": 382,
+    "p10": 11.0,
+    "p50": 17.0,
+    "p90": 23.5,
+    "p95": 25.0,
+    "p99": 31.0
+   },
+   "receipt_minus_source": {
+    "n": 382,
+    "p10": 11.5,
+    "p50": 18.0,
+    "p90": 24.5,
+    "p95": 26.0,
+    "p99": 32.5
+   },
+   "sport": "mlb",
+   "underpowered_games": 0
+  },
+  {
+   "book_moved_first": {
+    "den": 0,
+    "num": 0,
+    "share": null
+   },
+   "counters": {
+    "change_after_next_event": 0,
+    "events": 0,
+    "lag_missing_clock": 0,
+    "lag_negative": 0,
+    "lag_nonpositive": 0,
+    "play_id_revisit": 0,
+    "poll_wait_missing_clock": 0,
+    "src_without_play_clock": 0
+   },
+   "feed": "espn_scoreboard",
+   "first_mid_change_minus_event": {
+    "n": 0,
+    "p10": null,
+    "p50": null,
+    "p90": null,
+    "p95": null,
+    "p99": null,
+    "reason": "NO_EVENTS"
+   },
+   "flagged_games": 0,
+   "games": 2,
+   "mid_counts": {
+    "censored": 0,
+    "change": 0,
+    "no_prior_book": 0,
+    "no_receipt_clock": 0,
+    "no_served_ticker": 0,
+    "none": 0
+   },
+   "poll_wait_ub": {
+    "den": 0.0,
+    "num": 0.0,
+    "share": null
+   },
+   "receipt_minus_event": {
+    "n": 0,
+    "p10": null,
+    "p50": null,
+    "p90": null,
+    "p95": null,
+    "p99": null,
+    "reason": "NO_EVENTS"
+   },
+   "receipt_minus_source": {
+    "n": 0,
+    "p10": null,
+    "p50": null,
+    "p90": null,
+    "p95": null,
+    "p99": null,
+    "reason": "NO_EVENTS"
+   },
+   "sport": "nba",
+   "underpowered_games": 2
+  },
+  {
+   "book_moved_first": {
+    "den": 46,
+    "num": 38,
+    "share": 0.8261
+   },
+   "counters": {
+    "change_after_next_event": 9,
+    "events": 195,
+    "lag_missing_clock": 4,
+    "lag_negative": 0,
+    "lag_nonpositive": 0,
+    "play_id_revisit": 0,
+    "poll_wait_missing_clock": 4,
+    "src_without_play_clock": 0
+   },
+   "feed": "espn_scoreboard",
+   "first_mid_change_minus_event": {
+    "n": 46,
+    "p10": 4.0,
+    "p50": 7.0,
+    "p90": 54.0,
+    "p95": 88.0,
+    "p99": 264.0
+   },
+   "flagged_games": 1,
+   "games": 1,
+   "mid_counts": {
+    "censored": 1,
+    "change": 46,
+    "no_prior_book": 144,
+    "no_receipt_clock": 0,
+    "no_served_ticker": 0,
+    "none": 0
+   },
+   "poll_wait_ub": {
+    "den": 7936.555,
+    "num": 2032.507,
+    "share": 0.2561
+   },
+   "receipt_minus_event": {
+    "n": 191,
+    "p10": 27.0,
+    "p50": 40.5,
+    "p90": 54.0,
+    "p95": 61.5,
+    "p99": 85.5
+   },
+   "receipt_minus_source": {
+    "clock": "source_ts",
+    "n": 0,
+    "p10": null,
+    "p50": null,
+    "p90": null,
+    "p95": null,
+    "p99": null,
+    "reason": "NO_SOURCE_CLOCK"
+   },
+   "sport": "nfl",
+   "underpowered_games": 0
+  }
+ ],
+ "range": {
+  "first": "2026-10-16",
+  "last": "2026-10-16"
+ },
+ "rows": [
+  {
+   "book_moved_first": {
+    "den": 314,
+    "num": 165,
+    "share": 0.5255
+   },
+   "counters": {
+    "change_after_next_event": 147,
+    "events": 382,
+    "lag_missing_clock": 0,
+    "lag_negative": 0,
+    "lag_nonpositive": 0,
+    "play_id_revisit": 27,
+    "poll_wait_missing_clock": 0,
+    "src_without_play_clock": 0
+   },
+   "feed": "statsapi_rest",
+   "first_mid_change_minus_event": {
+    "n": 314,
+    "p10": 1.5,
+    "p50": 14.5,
+    "p90": 103.0,
+    "p95": 159.5,
+    "p99": 239.5
+   },
+   "flag_p95": false,
+   "game_key": "849810",
+   "mid_counts": {
+    "censored": 5,
+    "change": 314,
+    "no_prior_book": 50,
+    "no_receipt_clock": 0,
+    "no_served_ticker": 0,
+    "none": 13
+   },
+   "offset": {
+    "reason": "no_journal",
+    "status": "OFFSET_UNMEASURED"
+   },
+   "poll_wait_ub": {
+    "den": 6565.158,
+    "num": 3823.426,
+    "share": 0.5824
+   },
+   "receipt_minus_event": {
+    "n": 382,
+    "p10": 11.0,
+    "p50": 17.0,
+    "p90": 23.5,
+    "p95": 25.0,
+    "p99": 31.0
+   },
+   "receipt_minus_source": {
+    "n": 382,
+    "p10": 11.5,
+    "p50": 18.0,
+    "p90": 24.5,
+    "p95": 26.0,
+    "p99": 32.5
+   },
+   "sport": "mlb",
+   "ticker": "KXMLBGAME-26OCT152000MILLAD-LAD"
+  },
+  {
+   "book_moved_first": {
+    "den": 0,
+    "num": 0,
+    "share": null
+   },
+   "counters": {
+    "change_after_next_event": 0,
+    "events": 0,
+    "lag_missing_clock": 0,
+    "lag_negative": 0,
+    "lag_nonpositive": 0,
+    "play_id_revisit": 0,
+    "poll_wait_missing_clock": 0,
+    "src_without_play_clock": 0
+   },
+   "feed": "espn_scoreboard",
+   "first_mid_change_minus_event": {
+    "n": 0,
+    "p10": null,
+    "p50": null,
+    "p90": null,
+    "p95": null,
+    "p99": null,
+    "reason": "NO_EVENTS"
+   },
+   "flag_p95": null,
+   "flag_reason": "UNDERPOWERED",
+   "game_key": "401908622",
+   "mid_counts": {
+    "censored": 0,
+    "change": 0,
+    "no_prior_book": 0,
+    "no_receipt_clock": 0,
+    "no_served_ticker": 0,
+    "none": 0
+   },
+   "offset": {
+    "reason": "no_journal",
+    "status": "OFFSET_UNMEASURED"
+   },
+   "poll_wait_ub": {
+    "den": 0.0,
+    "num": 0.0,
+    "share": null
+   },
+   "receipt_minus_event": {
+    "n": 0,
+    "p10": null,
+    "p50": null,
+    "p90": null,
+    "p95": null,
+    "p99": null,
+    "reason": "NO_EVENTS"
+   },
+   "receipt_minus_source": {
+    "n": 0,
+    "p10": null,
+    "p50": null,
+    "p90": null,
+    "p95": null,
+    "p99": null,
+    "reason": "NO_EVENTS"
+   },
+   "sport": "nba",
+   "ticker": null
+  },
+  {
+   "book_moved_first": {
+    "den": 0,
+    "num": 0,
+    "share": null
+   },
+   "counters": {
+    "change_after_next_event": 0,
+    "events": 0,
+    "lag_missing_clock": 0,
+    "lag_negative": 0,
+    "lag_nonpositive": 0,
+    "play_id_revisit": 0,
+    "poll_wait_missing_clock": 0,
+    "src_without_play_clock": 0
+   },
+   "feed": "espn_scoreboard",
+   "first_mid_change_minus_event": {
+    "n": 0,
+    "p10": null,
+    "p50": null,
+    "p90": null,
+    "p95": null,
+    "p99": null,
+    "reason": "NO_EVENTS"
+   },
+   "flag_p95": null,
+   "flag_reason": "UNDERPOWERED",
+   "game_key": "401908945",
+   "mid_counts": {
+    "censored": 0,
+    "change": 0,
+    "no_prior_book": 0,
+    "no_receipt_clock": 0,
+    "no_served_ticker": 0,
+    "none": 0
+   },
+   "offset": {
+    "reason": "no_journal",
+    "status": "OFFSET_UNMEASURED"
+   },
+   "poll_wait_ub": {
+    "den": 0.0,
+    "num": 0.0,
+    "share": null
+   },
+   "receipt_minus_event": {
+    "n": 0,
+    "p10": null,
+    "p50": null,
+    "p90": null,
+    "p95": null,
+    "p99": null,
+    "reason": "NO_EVENTS"
+   },
+   "receipt_minus_source": {
+    "n": 0,
+    "p10": null,
+    "p50": null,
+    "p90": null,
+    "p95": null,
+    "p99": null,
+    "reason": "NO_EVENTS"
+   },
+   "sport": "nba",
+   "ticker": "KXNBAGAME-26OCT15TORNYK-NYK"
+  },
+  {
+   "book_moved_first": {
+    "den": 46,
+    "num": 38,
+    "share": 0.8261
+   },
+   "counters": {
+    "change_after_next_event": 9,
+    "events": 195,
+    "lag_missing_clock": 4,
+    "lag_negative": 0,
+    "lag_nonpositive": 0,
+    "play_id_revisit": 0,
+    "poll_wait_missing_clock": 4,
+    "src_without_play_clock": 0
+   },
+   "feed": "espn_scoreboard",
+   "first_mid_change_minus_event": {
+    "n": 46,
+    "p10": 4.0,
+    "p50": 7.0,
+    "p90": 54.0,
+    "p95": 88.0,
+    "p99": 264.0
+   },
+   "flag_p95": true,
+   "game_key": "401872995",
+   "mid_counts": {
+    "censored": 1,
+    "change": 46,
+    "no_prior_book": 144,
+    "no_receipt_clock": 0,
+    "no_served_ticker": 0,
+    "none": 0
+   },
+   "offset": {
+    "reason": "no_journal",
+    "status": "OFFSET_UNMEASURED"
+   },
+   "poll_wait_ub": {
+    "den": 7936.555,
+    "num": 2032.507,
+    "share": 0.2561
+   },
+   "receipt_minus_event": {
+    "n": 191,
+    "p10": 27.0,
+    "p50": 40.5,
+    "p90": 54.0,
+    "p95": 61.5,
+    "p99": 85.5
+   },
+   "receipt_minus_source": {
+    "clock": "source_ts",
+    "n": 0,
+    "p10": null,
+    "p50": null,
+    "p90": null,
+    "p95": null,
+    "p99": null,
+    "reason": "NO_SOURCE_CLOCK"
+   },
+   "sport": "nfl",
+   "ticker": "KXNFLGAME-26OCT15SEADEN-DEN"
+  }
+ ],
+ "schema": "s663_latency_ledger_v1"
+}

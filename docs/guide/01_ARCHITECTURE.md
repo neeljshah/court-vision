@@ -6,7 +6,7 @@ Every claim is verified against the repo.
 
 **Honest framing up front.** This is a calibrated prediction platform, not a
 betting-edge product. Pregame sports markets are efficient: our model MATCHES
-the devigged closing line within noise on team-strength markets. The decisive,
+the devigged closing line within noise only on NBA moneyline (underpowered) and TRAILS it on MLB moneyline and soccer O/U 2.5 (corrected 2026-10-06 from DM_RECOMPUTE_2026-09-24). The decisive,
 measured calibration win is in-game conditioning. No dollar edge, ROI, or
 profit is claimed anywhere in this document or the codebase. See
 `docs/JOB_EVIDENCE_PACKET.md` for the full truth source.

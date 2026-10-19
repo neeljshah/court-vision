@@ -1,0 +1,242 @@
+{
+ "as_of": "2026-10-04T06:00:00Z",
+ "counts": {
+  "JSONDecodeError": 3,
+  "daily_artifacts_outside_week": 4,
+  "families_without_scheduled_games": 4,
+  "unreadable_daily_artifacts": 3
+ },
+ "daily_artifacts": [
+  {
+   "as_of": "2026-09-23T06:00:00Z",
+   "date": "2026-09-22",
+   "path": "docs\\evidence\\forward\\qualification\\2026-09-22.json",
+   "sha256": "e8988df6a73214b031b4e97260c804d8f9f506c288062f6da10ab95dec87d05b",
+   "size_bytes": 10069
+  }
+ ],
+ "families": [
+  {
+   "appended": false,
+   "family": "maker_forward_mlb",
+   "forecast_sunday": null,
+   "ledger_row": {
+    "capture_gap_seconds": "2044.769",
+    "exclusions": {
+     "ADAPTER_REFUSED": [
+      "KXMLBGAME-26SEP221835TORBAL",
+      "KXMLBGAME-26SEP221840MILPHI",
+      "KXMLBGAME-26SEP221940MIACHC"
+     ],
+     "BOOK_CADENCE": [
+      "KXMLBGAME-26SEP221835TORBAL",
+      "KXMLBGAME-26SEP221840MILPHI",
+      "KXMLBGAME-26SEP221840STLPIT",
+      "KXMLBGAME-26SEP221845CLEBOS",
+      "KXMLBGAME-26SEP221915CINATL",
+      "KXMLBGAME-26SEP221940MIACHC"
+     ],
+     "BOOK_STALE": [
+      "KXMLBGAME-26SEP221835TORBAL",
+      "KXMLBGAME-26SEP221840MILPHI",
+      "KXMLBGAME-26SEP221940MIACHC"
+     ],
+     "COVERAGE_LOW": [
+      "KXMLBGAME-26SEP221835TORBAL",
+      "KXMLBGAME-26SEP221840MILPHI",
+      "KXMLBGAME-26SEP221840STLPIT",
+      "KXMLBGAME-26SEP221845CLEBOS",
+      "KXMLBGAME-26SEP221915CINATL",
+      "KXMLBGAME-26SEP221940MIACHC"
+     ],
+     "DECISIONS_LOW": [
+      "KXMLBGAME-26SEP221835TORBAL",
+      "KXMLBGAME-26SEP221840MILPHI",
+      "KXMLBGAME-26SEP221840STLPIT",
+      "KXMLBGAME-26SEP221845CLEBOS",
+      "KXMLBGAME-26SEP221915CINATL",
+      "KXMLBGAME-26SEP221940MIACHC"
+     ],
+     "LINKAGE_INVALID": [
+      "KXMLBGAME-26SEP221835TORBAL",
+      "KXMLBGAME-26SEP221840MILPHI",
+      "KXMLBGAME-26SEP221840STLPIT",
+      "KXMLBGAME-26SEP221845CLEBOS",
+      "KXMLBGAME-26SEP221915CINATL",
+      "KXMLBGAME-26SEP221940MIACHC"
+     ],
+     "NOT_LIVE": [
+      "KXMLBGAME-26SEP221835TORBAL"
+     ],
+     "RESERVATION_INVALID": [
+      "KXMLBGAME-26SEP221835TORBAL",
+      "KXMLBGAME-26SEP221840MILPHI",
+      "KXMLBGAME-26SEP221840STLPIT",
+      "KXMLBGAME-26SEP221845CLEBOS",
+      "KXMLBGAME-26SEP221940MIACHC"
+     ],
+     "STATE_GAP": [
+      "KXMLBGAME-26SEP221835TORBAL"
+     ],
+     "STATE_STALE": [
+      "KXMLBGAME-26SEP221835TORBAL",
+      "KXMLBGAME-26SEP221940MIACHC"
+     ],
+     "TAPE_INCOMPLETE": [
+      "KXMLBGAME-26SEP221835TORBAL",
+      "KXMLBGAME-26SEP221840MILPHI",
+      "KXMLBGAME-26SEP221840STLPIT",
+      "KXMLBGAME-26SEP221845CLEBOS",
+      "KXMLBGAME-26SEP221915CINATL",
+      "KXMLBGAME-26SEP221940MIACHC"
+     ]
+    },
+    "family": "maker_forward_mlb",
+    "fill_bearing_game_ids": [],
+    "fill_bearing_games": 0,
+    "game_ids": [
+     "KXMLBGAME-26SEP221835TORBAL",
+     "KXMLBGAME-26SEP221840MILPHI",
+     "KXMLBGAME-26SEP221840STLPIT",
+     "KXMLBGAME-26SEP221845CLEBOS",
+     "KXMLBGAME-26SEP221915CINATL",
+     "KXMLBGAME-26SEP221940MIACHC"
+    ],
+    "iso_week": 39,
+    "iso_year": 2026,
+    "qualified_game_ids": [],
+    "qualified_games": 0,
+    "source_artifact_path": "docs\\evidence\\forward\\weeks\\2026-W39_maker_forward.json",
+    "source_sha256": "e8988df6a73214b031b4e97260c804d8f9f506c288062f6da10ab95dec87d05b",
+    "sport": "mlb"
+   },
+   "qualified_games": 0,
+   "scheduled_games": 6,
+   "sport": "mlb",
+   "streak": 0,
+   "verdict": "FAIL",
+   "weekly_floor": 4
+  },
+  {
+   "appended": false,
+   "family": "maker_forward_nba",
+   "forecast_sunday": null,
+   "ledger_row": {
+    "capture_gap_seconds": "0",
+    "exclusions": {},
+    "family": "maker_forward_nba",
+    "fill_bearing_game_ids": [],
+    "fill_bearing_games": 0,
+    "game_ids": [],
+    "iso_week": 39,
+    "iso_year": 2026,
+    "qualified_game_ids": [],
+    "qualified_games": 0,
+    "source_artifact_path": "docs\\evidence\\forward\\weeks\\2026-W39_maker_forward.json",
+    "source_sha256": "e8988df6a73214b031b4e97260c804d8f9f506c288062f6da10ab95dec87d05b",
+    "sport": "nba"
+   },
+   "qualified_games": 0,
+   "scheduled_games": 0,
+   "sport": "nba",
+   "streak": 0,
+   "verdict": "FAIL",
+   "weekly_floor": 4
+  },
+  {
+   "appended": false,
+   "family": "maker_forward_nfl",
+   "forecast_sunday": null,
+   "ledger_row": {
+    "capture_gap_seconds": "0",
+    "exclusions": {},
+    "family": "maker_forward_nfl",
+    "fill_bearing_game_ids": [],
+    "fill_bearing_games": 0,
+    "game_ids": [],
+    "iso_week": 39,
+    "iso_year": 2026,
+    "qualified_game_ids": [],
+    "qualified_games": 0,
+    "source_artifact_path": "docs\\evidence\\forward\\weeks\\2026-W39_maker_forward.json",
+    "source_sha256": "e8988df6a73214b031b4e97260c804d8f9f506c288062f6da10ab95dec87d05b",
+    "sport": "nfl"
+   },
+   "qualified_games": 0,
+   "scheduled_games": 0,
+   "sport": "nfl",
+   "streak": 0,
+   "verdict": "FAIL",
+   "weekly_floor": 4
+  },
+  {
+   "appended": false,
+   "family": "maker_forward_soccer",
+   "forecast_sunday": null,
+   "ledger_row": {
+    "capture_gap_seconds": "0",
+    "exclusions": {},
+    "family": "maker_forward_soccer",
+    "fill_bearing_game_ids": [],
+    "fill_bearing_games": 0,
+    "game_ids": [],
+    "iso_week": 39,
+    "iso_year": 2026,
+    "qualified_game_ids": [],
+    "qualified_games": 0,
+    "source_artifact_path": "docs\\evidence\\forward\\weeks\\2026-W39_maker_forward.json",
+    "source_sha256": "e8988df6a73214b031b4e97260c804d8f9f506c288062f6da10ab95dec87d05b",
+    "sport": "soccer"
+   },
+   "qualified_games": 0,
+   "scheduled_games": 0,
+   "sport": "soccer",
+   "streak": 0,
+   "verdict": "FAIL",
+   "weekly_floor": 4
+  },
+  {
+   "appended": false,
+   "family": "maker_forward_tennis",
+   "forecast_sunday": null,
+   "ledger_row": {
+    "capture_gap_seconds": "0",
+    "exclusions": {},
+    "family": "maker_forward_tennis",
+    "fill_bearing_game_ids": [],
+    "fill_bearing_games": 0,
+    "game_ids": [],
+    "iso_week": 39,
+    "iso_year": 2026,
+    "qualified_game_ids": [],
+    "qualified_games": 0,
+    "source_artifact_path": "docs\\evidence\\forward\\weeks\\2026-W39_maker_forward.json",
+    "source_sha256": "e8988df6a73214b031b4e97260c804d8f9f506c288062f6da10ab95dec87d05b",
+    "sport": "tennis"
+   },
+   "qualified_games": 0,
+   "scheduled_games": 0,
+   "sport": "tennis",
+   "streak": 0,
+   "verdict": "FAIL",
+   "weekly_floor": 4
+  }
+ ],
+ "iso_week": 39,
+ "iso_year": 2026,
+ "missing_dates": [
+  "2026-09-21",
+  "2026-09-23",
+  "2026-09-24",
+  "2026-09-25",
+  "2026-09-26",
+  "2026-09-27"
+ ],
+ "refusal_reason": null,
+ "refused": 0,
+ "source_sha256": "e8988df6a73214b031b4e97260c804d8f9f506c288062f6da10ab95dec87d05b",
+ "spec": "S390",
+ "status": "INCOMPLETE",
+ "week_end": "2026-09-27",
+ "week_start": "2026-09-21"
+}

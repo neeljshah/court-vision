@@ -10,7 +10,7 @@ narrative, the honest headline numbers, and the quickstart. Come here when you w
 level deeper into a specific layer of the system.
 
 > **Non-negotiable framing.** This is a calibrated predictor, not a betting-edge product. The
-> honest, defensible win is "match the devigged close within noise" on efficient pregame markets,
+> honest, defensible win is "match the devigged close within noise" on efficient pregame markets (measured: NBA moneyline indistinguishable at an underpowered n=372; MLB moneyline and soccer O/U 2.5 TRAIL the close with 95% CIs above zero; corrected 2026-10-06 from DM_RECOMPUTE_2026-09-24),
 > plus a measured, calibrated in-game conditioning improvement. No dollar edge, ROI, or "beat the
 > close" claim appears anywhere in these docs outside of explicit retraction context. The single
 > truth source for any number is [docs/JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md).

@@ -1,0 +1,101 @@
+{
+  "capacity_rule": "live_concurrency",
+  "capacity_subset_selected_at": "2026-10-07T18:29:43.824632+00:00",
+  "denominator_of_record": "C:/Users/neelj/nba-ai-system/docs/evidence/forward/schedules/2026-10-08_maker_forward_full_selection.json",
+  "floor_per_sport": 1,
+  "focus_game_capacity": 3,
+  "focus_ticker_capacity": 6,
+  "focus_window_s": {
+    "after_start": 3600,
+    "before_start": 120
+  },
+  "max_live_overlap": 3,
+  "max_live_tickers": 6,
+  "not_served": [
+    "KXNBAGAME-26OCT07PHXCHI-CHI",
+    "KXATPMATCH-26OCT06VALROY-VAL",
+    "KXATPMATCH-26OCT07TOMARN-TOM",
+    "KXATPMATCH-26OCT07CERMEJ-CER",
+    "KXWTAMATCH-26OCT07MUCBAR-MUC",
+    "KXNBAGAME-26OCT08WASNYK-NYK"
+  ],
+  "rule": "S742 live_concurrency: earliest starts, game_id then ticker order on ties; a row is served only if the focus tickers of the served games whose scheduled-focus window [start - 120 s, start + 3600 s) is open never exceed the focus ticker capacity (anonymous_rate_ceiling x focus_tick_s requests x focus share // 100; soccer 3 tickers a game, other sports 2) and the full request budget (books + selected repoll + half the tickers' trades), with a floor of one game per sport that has a selected game in its window; score-blind, before any start; the profile key maximum_scheduled_games_per_hour declares the default rule only",
+  "served": [
+    "KXMLBGAME-26OCT072000TBNYY-NYY",
+    "KXNBAGAME-26OCT07MILOKC-OKC",
+    "KXNBAGAME-26OCT07ORLMEM-MEM",
+    "KXMLBGAME-26OCT072200MILSD-SD",
+    "KXNBAGAME-26OCT07GSWPOR-POR",
+    "KXATPMATCH-26OCT06HURDUC-HUR",
+    "KXATPMATCH-26OCT06NAVCAR-NAV",
+    "KXATPMATCH-26OCT06TIRMED-TIR",
+    "KXATPMATCH-26OCT06GIRBAE-GIR",
+    "KXATPMATCH-26OCT06LANSTR-LAN",
+    "KXATPMATCH-26OCT06MARSVA-MAR",
+    "KXATPMATCH-26OCT06KOPBER-KOP",
+    "KXATPMATCH-26OCT06VANMER-VAN",
+    "KXATPMATCH-26OCT06VANYUN-VAN",
+    "KXWTAMATCH-26OCT07ALEAND-ALE",
+    "KXATPMATCH-26OCT08NORSVR-NOR",
+    "KXNBAGAME-26OCT08BOSCLE-CLE",
+    "KXNBAGAME-26OCT08NOPMIA-MIA",
+    "KXNBAGAME-26OCT08PHIBKN-BKN"
+  ],
+  "served_file": "C:/Users/neelj/nba-ai-system/docs/evidence/forward/schedules/2026-10-08_maker_forward.json",
+  "unserved": [
+    {
+      "at": "1791417480.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXNBAGAME-26OCT07PHXCHI",
+      "limit": "total",
+      "scheduled_start": "2026-10-08T00:00:00.000000Z",
+      "sport": "nba",
+      "ticker": "KXNBAGAME-26OCT07PHXCHI-CHI"
+    },
+    {
+      "at": "1791437280.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXATPMATCH-26OCT06VALROY",
+      "limit": "total",
+      "scheduled_start": "2026-10-08T05:30:00.000000Z",
+      "sport": "tennis",
+      "ticker": "KXATPMATCH-26OCT06VALROY-VAL"
+    },
+    {
+      "at": "1791437280.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXATPMATCH-26OCT07TOMARN",
+      "limit": "total",
+      "scheduled_start": "2026-10-08T05:30:00.000000Z",
+      "sport": "tennis",
+      "ticker": "KXATPMATCH-26OCT07TOMARN-TOM"
+    },
+    {
+      "at": "1791442680.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXATPMATCH-26OCT07CERMEJ",
+      "limit": "total",
+      "scheduled_start": "2026-10-08T07:00:00.000000Z",
+      "sport": "tennis",
+      "ticker": "KXATPMATCH-26OCT07CERMEJ-CER"
+    },
+    {
+      "at": "1791442680.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXWTAMATCH-26OCT07MUCBAR",
+      "limit": "total",
+      "scheduled_start": "2026-10-08T07:00:00.000000Z",
+      "sport": "tennis",
+      "ticker": "KXWTAMATCH-26OCT07MUCBAR-MUC"
+    },
+    {
+      "at": "1791502080.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXNBAGAME-26OCT08WASNYK",
+      "limit": "total",
+      "scheduled_start": "2026-10-08T23:30:00.000000Z",
+      "sport": "nba",
+      "ticker": "KXNBAGAME-26OCT08WASNYK-NYK"
+    }
+  ]
+}

@@ -1,0 +1,4693 @@
+{
+  "assumptions": {
+    "cancel_latency_s": 0,
+    "fee_path": "LANDED_FLOAT_EXACT_GUARD_S422_PENDING",
+    "requested_units": 1,
+    "state_pull_window_s": 0,
+    "submit_latency_s": 0
+  },
+  "declared_ttl_s": "5",
+  "first_receipt_ts": "2026-10-03T00:00:01.932313Z",
+  "input_refusals": {
+    "duplicate_trade_ids": 0,
+    "future_records": 5241,
+    "inconsistent_touch": 3673,
+    "input_prints": 45607,
+    "input_role_filtered": 3363,
+    "one_sided_book": 2772,
+    "price_out_of_range": 226
+  },
+  "inputs": [
+    {
+      "bytes": 114963672,
+      "path": "data/cache/ingame_books_local/kalshi/mlb/2026-10-03.jsonl"
+    },
+    {
+      "bytes": 10834183,
+      "path": "data/cache/ingame_books_local/kalshi/mlb/2026-10-04.jsonl"
+    },
+    {
+      "bytes": 34231308,
+      "path": "data/cache/ingame_state_local_v2/state/mlb/2026-10-03.jsonl"
+    },
+    {
+      "bytes": 466331,
+      "path": "data/cache/ingame_state_local_v2/state/mlb/2026-10-04.jsonl"
+    },
+    {
+      "bytes": 867,
+      "path": "docs/evidence/forward/schedules/2026-10-03_maker_forward_full_selection.json"
+    }
+  ],
+  "last_receipt_ts": "2026-10-03T21:58:06.941853Z",
+  "memory_ceiling_bytes": 1073741824,
+  "mode": "COUNTS ONLY",
+  "night": {
+    "as_of": "2026-10-04T06:00:00Z",
+    "date": "2026-10-03",
+    "excluded_paths": [],
+    "iso_week": "2026-40",
+    "next_iso_week_excluded": 0,
+    "window": [
+      "2026-10-03T00:00:00.000000Z",
+      "2026-10-05T00:00:00.000000Z"
+    ]
+  },
+  "quote_life": {
+    "30": {
+      "fills_credited": 20,
+      "grid": {
+        "1": {
+          "accepted_outcomes": {
+            "counts": {
+              "fee_source_decimal": 0,
+              "fee_source_float_exact": 21,
+              "fee_zero_increment": 2
+            },
+            "unit": "fills"
+          },
+          "by_fill_basis": {
+            "through": 20,
+            "touch_queue": 3
+          },
+          "by_side": {
+            "no": 16,
+            "yes": 7
+          },
+          "fill_state_rows": {
+            "counts": {
+              "duplicate_state_records": 0,
+              "state_after_window": 14607,
+              "state_content_inexact": 0,
+              "state_content_invalid": 5908,
+              "state_content_nonfinite": 0,
+              "state_count_invalid": 0,
+              "state_identity_unmatched": 22515,
+              "state_receipt_invalid": 0,
+              "state_record_invalid": 0,
+              "state_rows_accepted": 4304
+            },
+            "unit": "fill_state_row_pairs"
+          },
+          "fills_credited": 23,
+          "fills_refused_by_reason": {
+            "all_prints_unscored": 0,
+            "book_size_invalid": 0,
+            "book_time_invalid": 0,
+            "duplicate_trade_ids": 0,
+            "fee_input_invalid": 0,
+            "future_records": 5241,
+            "inconsistent_touch": 3673,
+            "one_sided_book": 2772,
+            "poly_side_unmapped": 0,
+            "price_out_of_range": 226,
+            "print_time_invalid": 0,
+            "quote_cancel_ts_invalid": 0,
+            "quote_submit_ts_invalid": 0,
+            "replacement_refused": 0,
+            "unscored_prints": 0
+          },
+          "input_counts": {
+            "counts": {
+              "input_prints": 45607,
+              "input_role_filtered": 3363,
+              "replace_count": 3182,
+              "scored_prints": 45607
+            },
+            "unit": "input_records"
+          },
+          "market_context": {
+            "KXMLBF3-26OCT031300CWSCLE-CWS": {
+              "n_intents": 2,
+              "unknown_queue": 120
+            },
+            "KXMLBF3-26OCT031300CWSCLE-TIE": {
+              "n_intents": 4,
+              "unknown_queue": 120
+            },
+            "KXMLBF5TOTAL-26OCT031600ATLLAD-4": {
+              "n_intents": 4,
+              "unknown_queue": 138
+            },
+            "KXMLBGAME-26OCT031300CWSCLE-CLE": {
+              "n_intents": 1283,
+              "unknown_queue": 110
+            },
+            "KXMLBGAME-26OCT031300CWSCLE-CWS": {
+              "n_intents": 1159,
+              "unknown_queue": 110
+            }
+          },
+          "markout_by_class": {
+            "no_state_change": {
+              "markets": {},
+              "markets_without_fills": 136
+            },
+            "state_changed": {
+              "markets": {
+                "KXMLBGAME-26OCT031300CWSCLE-CLE": {
+                  "fee_source_float_exact": 6,
+                  "horizons": {
+                    "120.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {
+                        "game_id": 1
+                      },
+                      "fee_source_float_exact": 6,
+                      "largest_single_game_share": 1.0,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": 10534278000.0,
+                      "mark_delay_median_s": 10534278000.0,
+                      "mark_delay_p90_s": 10534278000.0,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CLE",
+                      "mean_units": -0.015,
+                      "n": 1,
+                      "n_clusters": 1,
+                      "no_qualifying_mark_share": 0.8571428571428571,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "30.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {
+                        "game_id": 2
+                      },
+                      "fee_source_float_exact": 6,
+                      "largest_single_game_share": 1.0,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": 23189621000.0,
+                      "mark_delay_median_s": 12203002000.0,
+                      "mark_delay_p90_s": 23189621000.0,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CLE",
+                      "mean_units": 0.015,
+                      "n": 2,
+                      "n_clusters": 1,
+                      "no_qualifying_mark_share": 0.7142857142857143,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "300.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {
+                        "game_id": 4
+                      },
+                      "fee_source_float_exact": 6,
+                      "largest_single_game_share": 1.0,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": 3083738000.0,
+                      "mark_delay_median_s": 2039502000.0,
+                      "mark_delay_p90_s": 3083738000.0,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CLE",
+                      "mean_units": 0.06,
+                      "n": 4,
+                      "n_clusters": 1,
+                      "no_qualifying_mark_share": 0.42857142857142855,
+                      "verdict": "INSUFFICIENT"
+                    }
+                  },
+                  "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CLE",
+                  "n_fills": 7,
+                  "summary_counts_by_horizon": {
+                    "120.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 7,
+                      "n_fills": 7,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 1,
+                      "n_unscored": 6,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 6
+                      },
+                      "units": "probability_points"
+                    },
+                    "30.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 7,
+                      "n_fills": 7,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 2,
+                      "n_unscored": 5,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 5
+                      },
+                      "units": "probability_points"
+                    },
+                    "300.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 7,
+                      "n_fills": 7,
+                      "n_float_field_lossy": 2,
+                      "n_scored": 4,
+                      "n_unscored": 3,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 3
+                      },
+                      "units": "probability_points"
+                    }
+                  }
+                }
+              },
+              "markets_without_fills": 135
+            },
+            "state_unavailable": {
+              "markets": {
+                "KXMLBF3-26OCT031300CWSCLE-CWS": {
+                  "fee_source_float_exact": 1,
+                  "horizons": {
+                    "120.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBF3-26OCT031300CWSCLE-CWS",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "30.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBF3-26OCT031300CWSCLE-CWS",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "300.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBF3-26OCT031300CWSCLE-CWS",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    }
+                  },
+                  "market_context_ref": "market_context/KXMLBF3-26OCT031300CWSCLE-CWS",
+                  "n_fills": 1,
+                  "summary_counts_by_horizon": {
+                    "120.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    },
+                    "30.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    },
+                    "300.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    }
+                  }
+                },
+                "KXMLBF3-26OCT031300CWSCLE-TIE": {
+                  "fee_source_float_exact": 1,
+                  "horizons": {
+                    "120.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBF3-26OCT031300CWSCLE-TIE",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "30.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBF3-26OCT031300CWSCLE-TIE",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "300.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBF3-26OCT031300CWSCLE-TIE",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    }
+                  },
+                  "market_context_ref": "market_context/KXMLBF3-26OCT031300CWSCLE-TIE",
+                  "n_fills": 1,
+                  "summary_counts_by_horizon": {
+                    "120.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    },
+                    "30.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    },
+                    "300.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    }
+                  }
+                },
+                "KXMLBF5TOTAL-26OCT031600ATLLAD-4": {
+                  "fee_source_float_exact": 1,
+                  "horizons": {
+                    "120.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBF5TOTAL-26OCT031600ATLLAD-4",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "30.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBF5TOTAL-26OCT031600ATLLAD-4",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "300.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBF5TOTAL-26OCT031600ATLLAD-4",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    }
+                  },
+                  "market_context_ref": "market_context/KXMLBF5TOTAL-26OCT031600ATLLAD-4",
+                  "n_fills": 1,
+                  "summary_counts_by_horizon": {
+                    "120.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    },
+                    "30.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    },
+                    "300.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    }
+                  }
+                },
+                "KXMLBGAME-26OCT031300CWSCLE-CWS": {
+                  "fee_source_float_exact": 12,
+                  "horizons": {
+                    "120.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {
+                        "game_id": 3
+                      },
+                      "fee_source_float_exact": 12,
+                      "largest_single_game_share": 1.0,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": 4790307000.0,
+                      "mark_delay_median_s": 4647725000.0,
+                      "mark_delay_p90_s": 4790307000.0,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CWS",
+                      "mean_units": -0.005,
+                      "n": 3,
+                      "n_clusters": 1,
+                      "no_qualifying_mark_share": 0.7692307692307693,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "30.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {
+                        "game_id": 4
+                      },
+                      "fee_source_float_exact": 12,
+                      "largest_single_game_share": 1.0,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": 13961992000.0,
+                      "mark_delay_median_s": 12764716500.0,
+                      "mark_delay_p90_s": 13961992000.0,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CWS",
+                      "mean_units": 0.0125,
+                      "n": 4,
+                      "n_clusters": 1,
+                      "no_qualifying_mark_share": 0.6923076923076923,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "300.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {
+                        "game_id": 7
+                      },
+                      "fee_source_float_exact": 12,
+                      "largest_single_game_share": 1.0,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": 9876441000.0,
+                      "mark_delay_median_s": 3546794000.0,
+                      "mark_delay_p90_s": 9876441000.0,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CWS",
+                      "mean_units": 0.017857,
+                      "n": 7,
+                      "n_clusters": 1,
+                      "no_qualifying_mark_share": 0.46153846153846156,
+                      "verdict": "INSUFFICIENT"
+                    }
+                  },
+                  "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CWS",
+                  "n_fills": 13,
+                  "summary_counts_by_horizon": {
+                    "120.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 13,
+                      "n_fills": 13,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 3,
+                      "n_unscored": 10,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 10
+                      },
+                      "units": "probability_points"
+                    },
+                    "30.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 13,
+                      "n_fills": 13,
+                      "n_float_field_lossy": 2,
+                      "n_scored": 4,
+                      "n_unscored": 9,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 9
+                      },
+                      "units": "probability_points"
+                    },
+                    "300.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 13,
+                      "n_fills": 13,
+                      "n_float_field_lossy": 2,
+                      "n_scored": 7,
+                      "n_unscored": 6,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 6
+                      },
+                      "units": "probability_points"
+                    }
+                  }
+                }
+              },
+              "markets_without_fills": 132
+            }
+          },
+          "partial_fills": {
+            "full": 21,
+            "partial": 0,
+            "zero": 4535
+          },
+          "queue_ahead_at_submit": {
+            "0": 0,
+            "1-9": 184,
+            "10-99": 276,
+            "100-999": 519,
+            "1000+": 3577,
+            "UNKNOWN": 15213
+          },
+          "quote_life_expiry": 1357,
+          "quote_print_pairs": {
+            "counts": {
+              "outside_quote_life": 15557726,
+              "price_above_quote": 6290,
+              "queue_not_depleted": 234,
+              "quote_already_filled": 758,
+              "uncredited_print": 0
+            },
+            "unit": "quote_print_pairs"
+          },
+          "quotes_placed": 4556,
+          "refusal_unit": "diagnostic_events_by_named_reason",
+          "served_ticker_fills": {
+            "fills_on_not_served_tickers": 16,
+            "fills_on_served_tickers": 7,
+            "not_served_tickers_with_fills": [
+              "KXMLBF3-26OCT031300CWSCLE-CWS",
+              "KXMLBF3-26OCT031300CWSCLE-TIE",
+              "KXMLBF5TOTAL-26OCT031600ATLLAD-4",
+              "KXMLBGAME-26OCT031300CWSCLE-CWS"
+            ],
+            "unit": "fills"
+          },
+          "state_classification": {
+            "counts": {
+              "fills_linked": 7,
+              "fills_unlinked": 16,
+              "state_comparison_unavailable": 0,
+              "state_identity_missing": 16
+            },
+            "unit": "fills"
+          },
+          "unknown_queue": 15213,
+          "unknown_queue_sentinel": 1000000,
+          "unlinked_fills": [
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T17:15:06.020543Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250938-4261-9ded-83d7-a614b0bee522"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T17:29:54.585894Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250980-0a61-a06d-3ca7-ef5d398c19cb"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T17:35:04.368995Z",
+              "ticker": "KXMLBF3-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250982-2ac9-ba4d-fb65-7db03ce60524"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T17:35:04.368995Z",
+              "ticker": "KXMLBF3-26OCT031300CWSCLE-TIE",
+              "trade_id": "07250983-04c1-b750-dda0-385ad4b78d08"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T18:37:16.680951Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250f35-4da1-a8f4-f690-3e859fa98276"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T18:52:23.192281Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "0724f469-9079-a2cb-299d-4df672d8d601"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T18:53:46.375463Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "0724f4f0-aa01-8c38-96af-7f1d63b5805d"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T18:54:48.126502Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250f64-c341-808a-a01a-9c070fe674f3"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T18:59:03.925479Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "0724f109-9949-aefb-f66c-fabd020de49a"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T19:16:42.919007Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250fe0-32e1-9142-cb5f-77786734071e"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T20:28:07.538347Z",
+              "ticker": "KXMLBF5TOTAL-26OCT031600ATLLAD-4",
+              "trade_id": "07250ea4-cf99-a472-ff88-df5b648a52d5"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "yes",
+              "submit_ts": "2026-10-03T18:40:35.046638Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250f48-4299-8a0c-6dd5-89a3039b3403"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "yes",
+              "submit_ts": "2026-10-03T18:45:10.794883Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250f42-0181-9da0-c44d-b0f5ab984cd9"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "yes",
+              "submit_ts": "2026-10-03T18:53:46.375463Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250f6b-1899-a753-494c-531114153813"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "yes",
+              "submit_ts": "2026-10-03T18:53:46.375463Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250f6b-25f1-ae2f-7d58-5b2b4dc5a868"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "yes",
+              "submit_ts": "2026-10-03T18:59:03.925479Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250fa8-4271-875e-1237-3b874ef3c2bb"
+            }
+          ],
+          "unmodelled_cancel_rejection": "UNMODELLED"
+        },
+        "2": {
+          "accepted_outcomes": {
+            "counts": {
+              "fee_source_decimal": 0,
+              "fee_source_float_exact": 19,
+              "fee_zero_increment": 2
+            },
+            "unit": "fills"
+          },
+          "by_fill_basis": {
+            "through": 20,
+            "touch_queue": 1
+          },
+          "by_side": {
+            "no": 14,
+            "yes": 7
+          },
+          "fill_state_rows": {
+            "counts": {
+              "duplicate_state_records": 0,
+              "state_after_window": 12485,
+              "state_content_inexact": 0,
+              "state_content_invalid": 5064,
+              "state_content_nonfinite": 0,
+              "state_count_invalid": 0,
+              "state_identity_unmatched": 19311,
+              "state_receipt_invalid": 0,
+              "state_record_invalid": 0,
+              "state_rows_accepted": 3712
+            },
+            "unit": "fill_state_row_pairs"
+          },
+          "fills_credited": 21,
+          "fills_refused_by_reason": {
+            "all_prints_unscored": 0,
+            "book_size_invalid": 0,
+            "book_time_invalid": 0,
+            "duplicate_trade_ids": 0,
+            "fee_input_invalid": 0,
+            "future_records": 5241,
+            "inconsistent_touch": 3673,
+            "one_sided_book": 2772,
+            "poly_side_unmapped": 0,
+            "price_out_of_range": 226,
+            "print_time_invalid": 0,
+            "quote_cancel_ts_invalid": 0,
+            "quote_submit_ts_invalid": 0,
+            "replacement_refused": 0,
+            "unscored_prints": 0
+          },
+          "input_counts": {
+            "counts": {
+              "input_prints": 45607,
+              "input_role_filtered": 3363,
+              "replace_count": 3182,
+              "scored_prints": 45607
+            },
+            "unit": "input_records"
+          },
+          "market_context": {
+            "KXMLBF3-26OCT031300CWSCLE-CWS": {
+              "n_intents": 2,
+              "unknown_queue": 120
+            },
+            "KXMLBF3-26OCT031300CWSCLE-TIE": {
+              "n_intents": 4,
+              "unknown_queue": 120
+            },
+            "KXMLBF5TOTAL-26OCT031600ATLLAD-4": {
+              "n_intents": 4,
+              "unknown_queue": 138
+            },
+            "KXMLBGAME-26OCT031300CWSCLE-CLE": {
+              "n_intents": 1283,
+              "unknown_queue": 110
+            },
+            "KXMLBGAME-26OCT031300CWSCLE-CWS": {
+              "n_intents": 1159,
+              "unknown_queue": 110
+            }
+          },
+          "markout_by_class": {
+            "no_state_change": {
+              "markets": {},
+              "markets_without_fills": 136
+            },
+            "state_changed": {
+              "markets": {
+                "KXMLBGAME-26OCT031300CWSCLE-CLE": {
+                  "fee_source_float_exact": 5,
+                  "horizons": {
+                    "120.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 5,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CLE",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "30.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {
+                        "game_id": 2
+                      },
+                      "fee_source_float_exact": 5,
+                      "largest_single_game_share": 1.0,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": 23189621000.0,
+                      "mark_delay_median_s": 12203002000.0,
+                      "mark_delay_p90_s": 23189621000.0,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CLE",
+                      "mean_units": 0.015,
+                      "n": 2,
+                      "n_clusters": 1,
+                      "no_qualifying_mark_share": 0.6666666666666666,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "300.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {
+                        "game_id": 4
+                      },
+                      "fee_source_float_exact": 5,
+                      "largest_single_game_share": 1.0,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": 3083738000.0,
+                      "mark_delay_median_s": 2039502000.0,
+                      "mark_delay_p90_s": 3083738000.0,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CLE",
+                      "mean_units": 0.06,
+                      "n": 4,
+                      "n_clusters": 1,
+                      "no_qualifying_mark_share": 0.3333333333333333,
+                      "verdict": "INSUFFICIENT"
+                    }
+                  },
+                  "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CLE",
+                  "n_fills": 6,
+                  "summary_counts_by_horizon": {
+                    "120.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 6,
+                      "n_fills": 6,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 6,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 6
+                      },
+                      "units": "probability_points"
+                    },
+                    "30.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 6,
+                      "n_fills": 6,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 2,
+                      "n_unscored": 4,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 4
+                      },
+                      "units": "probability_points"
+                    },
+                    "300.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 6,
+                      "n_fills": 6,
+                      "n_float_field_lossy": 2,
+                      "n_scored": 4,
+                      "n_unscored": 2,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 2
+                      },
+                      "units": "probability_points"
+                    }
+                  }
+                }
+              },
+              "markets_without_fills": 135
+            },
+            "state_unavailable": {
+              "markets": {
+                "KXMLBF3-26OCT031300CWSCLE-CWS": {
+                  "fee_source_float_exact": 1,
+                  "horizons": {
+                    "120.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBF3-26OCT031300CWSCLE-CWS",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "30.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBF3-26OCT031300CWSCLE-CWS",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "300.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBF3-26OCT031300CWSCLE-CWS",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    }
+                  },
+                  "market_context_ref": "market_context/KXMLBF3-26OCT031300CWSCLE-CWS",
+                  "n_fills": 1,
+                  "summary_counts_by_horizon": {
+                    "120.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    },
+                    "30.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    },
+                    "300.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    }
+                  }
+                },
+                "KXMLBF3-26OCT031300CWSCLE-TIE": {
+                  "fee_source_float_exact": 1,
+                  "horizons": {
+                    "120.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBF3-26OCT031300CWSCLE-TIE",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "30.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBF3-26OCT031300CWSCLE-TIE",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "300.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBF3-26OCT031300CWSCLE-TIE",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    }
+                  },
+                  "market_context_ref": "market_context/KXMLBF3-26OCT031300CWSCLE-TIE",
+                  "n_fills": 1,
+                  "summary_counts_by_horizon": {
+                    "120.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    },
+                    "30.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    },
+                    "300.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    }
+                  }
+                },
+                "KXMLBF5TOTAL-26OCT031600ATLLAD-4": {
+                  "fee_source_float_exact": 1,
+                  "horizons": {
+                    "120.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBF5TOTAL-26OCT031600ATLLAD-4",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "30.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBF5TOTAL-26OCT031600ATLLAD-4",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "300.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBF5TOTAL-26OCT031600ATLLAD-4",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    }
+                  },
+                  "market_context_ref": "market_context/KXMLBF5TOTAL-26OCT031600ATLLAD-4",
+                  "n_fills": 1,
+                  "summary_counts_by_horizon": {
+                    "120.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    },
+                    "30.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    },
+                    "300.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    }
+                  }
+                },
+                "KXMLBGAME-26OCT031300CWSCLE-CWS": {
+                  "fee_source_float_exact": 11,
+                  "horizons": {
+                    "120.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {
+                        "game_id": 2
+                      },
+                      "fee_source_float_exact": 11,
+                      "largest_single_game_share": 1.0,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": 4790307000.0,
+                      "mark_delay_median_s": 4719016000.0,
+                      "mark_delay_p90_s": 4790307000.0,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CWS",
+                      "mean_units": -0.005,
+                      "n": 2,
+                      "n_clusters": 1,
+                      "no_qualifying_mark_share": 0.8333333333333334,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "30.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {
+                        "game_id": 3
+                      },
+                      "fee_source_float_exact": 11,
+                      "largest_single_game_share": 1.0,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": 13961992000.0,
+                      "mark_delay_median_s": 13961992000.0,
+                      "mark_delay_p90_s": 13961992000.0,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CWS",
+                      "mean_units": 0.018333,
+                      "n": 3,
+                      "n_clusters": 1,
+                      "no_qualifying_mark_share": 0.75,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "300.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {
+                        "game_id": 7
+                      },
+                      "fee_source_float_exact": 11,
+                      "largest_single_game_share": 1.0,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": 9876441000.0,
+                      "mark_delay_median_s": 3546794000.0,
+                      "mark_delay_p90_s": 9876441000.0,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CWS",
+                      "mean_units": 0.017857,
+                      "n": 7,
+                      "n_clusters": 1,
+                      "no_qualifying_mark_share": 0.4166666666666667,
+                      "verdict": "INSUFFICIENT"
+                    }
+                  },
+                  "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CWS",
+                  "n_fills": 12,
+                  "summary_counts_by_horizon": {
+                    "120.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 12,
+                      "n_fills": 12,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 2,
+                      "n_unscored": 10,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 10
+                      },
+                      "units": "probability_points"
+                    },
+                    "30.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 12,
+                      "n_fills": 12,
+                      "n_float_field_lossy": 2,
+                      "n_scored": 3,
+                      "n_unscored": 9,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 9
+                      },
+                      "units": "probability_points"
+                    },
+                    "300.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 12,
+                      "n_fills": 12,
+                      "n_float_field_lossy": 2,
+                      "n_scored": 7,
+                      "n_unscored": 5,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 5
+                      },
+                      "units": "probability_points"
+                    }
+                  }
+                }
+              },
+              "markets_without_fills": 132
+            }
+          },
+          "partial_fills": {
+            "full": 19,
+            "partial": 0,
+            "zero": 4537
+          },
+          "queue_ahead_at_submit": {
+            "0": 0,
+            "1-9": 161,
+            "10-99": 236,
+            "100-999": 359,
+            "1000+": 3800,
+            "UNKNOWN": 15213
+          },
+          "quote_life_expiry": 1359,
+          "quote_print_pairs": {
+            "counts": {
+              "outside_quote_life": 15557726,
+              "price_above_quote": 6290,
+              "queue_not_depleted": 239,
+              "quote_already_filled": 755,
+              "uncredited_print": 0
+            },
+            "unit": "quote_print_pairs"
+          },
+          "quotes_placed": 4556,
+          "refusal_unit": "diagnostic_events_by_named_reason",
+          "served_ticker_fills": {
+            "fills_on_not_served_tickers": 15,
+            "fills_on_served_tickers": 6,
+            "not_served_tickers_with_fills": [
+              "KXMLBF3-26OCT031300CWSCLE-CWS",
+              "KXMLBF3-26OCT031300CWSCLE-TIE",
+              "KXMLBF5TOTAL-26OCT031600ATLLAD-4",
+              "KXMLBGAME-26OCT031300CWSCLE-CWS"
+            ],
+            "unit": "fills"
+          },
+          "state_classification": {
+            "counts": {
+              "fills_linked": 6,
+              "fills_unlinked": 15,
+              "state_comparison_unavailable": 0,
+              "state_identity_missing": 15
+            },
+            "unit": "fills"
+          },
+          "unknown_queue": 15213,
+          "unknown_queue_sentinel": 1000000,
+          "unlinked_fills": [
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T17:15:06.020543Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250938-4261-9ded-83d7-a614b0bee522"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T17:29:54.585894Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250980-0a61-a06d-3ca7-ef5d398c19cb"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T17:35:04.368995Z",
+              "ticker": "KXMLBF3-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250982-2ac9-ba4d-fb65-7db03ce60524"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T17:35:04.368995Z",
+              "ticker": "KXMLBF3-26OCT031300CWSCLE-TIE",
+              "trade_id": "07250983-04c1-b750-dda0-385ad4b78d08"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T18:52:23.192281Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "0724f469-9079-a2cb-299d-4df672d8d601"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T18:53:46.375463Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "0724f4f0-aa01-8c38-96af-7f1d63b5805d"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T18:54:48.126502Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250f64-c341-808a-a01a-9c070fe674f3"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T18:59:03.925479Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "0724f109-9949-aefb-f66c-fabd020de49a"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T19:16:42.919007Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250fe0-32e1-9142-cb5f-77786734071e"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T20:28:07.538347Z",
+              "ticker": "KXMLBF5TOTAL-26OCT031600ATLLAD-4",
+              "trade_id": "07250ea4-cf99-a472-ff88-df5b648a52d5"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "yes",
+              "submit_ts": "2026-10-03T18:40:35.046638Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250f48-4299-8a0c-6dd5-89a3039b3403"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "yes",
+              "submit_ts": "2026-10-03T18:45:10.794883Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250f42-0181-9da0-c44d-b0f5ab984cd9"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "yes",
+              "submit_ts": "2026-10-03T18:53:46.375463Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250f6b-1899-a753-494c-531114153813"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "yes",
+              "submit_ts": "2026-10-03T18:53:46.375463Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250f6b-25f1-ae2f-7d58-5b2b4dc5a868"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "yes",
+              "submit_ts": "2026-10-03T18:59:03.925479Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250fa8-4271-875e-1237-3b874ef3c2bb"
+            }
+          ],
+          "unmodelled_cancel_rejection": "UNMODELLED"
+        },
+        "4": {
+          "accepted_outcomes": {
+            "counts": {
+              "fee_source_decimal": 0,
+              "fee_source_float_exact": 18,
+              "fee_zero_increment": 2
+            },
+            "unit": "fills"
+          },
+          "by_fill_basis": {
+            "through": 20,
+            "touch_queue": 0
+          },
+          "by_side": {
+            "no": 14,
+            "yes": 6
+          },
+          "fill_state_rows": {
+            "counts": {
+              "duplicate_state_records": 0,
+              "state_after_window": 10012,
+              "state_content_inexact": 0,
+              "state_content_invalid": 4220,
+              "state_content_nonfinite": 0,
+              "state_count_invalid": 0,
+              "state_identity_unmatched": 16224,
+              "state_receipt_invalid": 0,
+              "state_record_invalid": 0,
+              "state_rows_accepted": 3354
+            },
+            "unit": "fill_state_row_pairs"
+          },
+          "fills_credited": 20,
+          "fills_refused_by_reason": {
+            "all_prints_unscored": 0,
+            "book_size_invalid": 0,
+            "book_time_invalid": 0,
+            "duplicate_trade_ids": 0,
+            "fee_input_invalid": 0,
+            "future_records": 5241,
+            "inconsistent_touch": 3673,
+            "one_sided_book": 2772,
+            "poly_side_unmapped": 0,
+            "price_out_of_range": 226,
+            "print_time_invalid": 0,
+            "quote_cancel_ts_invalid": 0,
+            "quote_submit_ts_invalid": 0,
+            "replacement_refused": 0,
+            "unscored_prints": 0
+          },
+          "input_counts": {
+            "counts": {
+              "input_prints": 45607,
+              "input_role_filtered": 3363,
+              "replace_count": 3182,
+              "scored_prints": 45607
+            },
+            "unit": "input_records"
+          },
+          "market_context": {
+            "KXMLBF3-26OCT031300CWSCLE-CWS": {
+              "n_intents": 2,
+              "unknown_queue": 120
+            },
+            "KXMLBF3-26OCT031300CWSCLE-TIE": {
+              "n_intents": 4,
+              "unknown_queue": 120
+            },
+            "KXMLBF5TOTAL-26OCT031600ATLLAD-4": {
+              "n_intents": 4,
+              "unknown_queue": 138
+            },
+            "KXMLBGAME-26OCT031300CWSCLE-CLE": {
+              "n_intents": 1283,
+              "unknown_queue": 110
+            },
+            "KXMLBGAME-26OCT031300CWSCLE-CWS": {
+              "n_intents": 1159,
+              "unknown_queue": 110
+            }
+          },
+          "markout_by_class": {
+            "no_state_change": {
+              "markets": {},
+              "markets_without_fills": 136
+            },
+            "state_changed": {
+              "markets": {
+                "KXMLBGAME-26OCT031300CWSCLE-CLE": {
+                  "fee_source_float_exact": 4,
+                  "horizons": {
+                    "120.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 4,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CLE",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "30.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {
+                        "game_id": 1
+                      },
+                      "fee_source_float_exact": 4,
+                      "largest_single_game_share": 1.0,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": 1216383000.0,
+                      "mark_delay_median_s": 1216383000.0,
+                      "mark_delay_p90_s": 1216383000.0,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CLE",
+                      "mean_units": 0.015,
+                      "n": 1,
+                      "n_clusters": 1,
+                      "no_qualifying_mark_share": 0.8,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "300.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {
+                        "game_id": 3
+                      },
+                      "fee_source_float_exact": 4,
+                      "largest_single_game_share": 1.0,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": 3083738000.0,
+                      "mark_delay_median_s": 2039502000.0,
+                      "mark_delay_p90_s": 3083738000.0,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CLE",
+                      "mean_units": 0.071667,
+                      "n": 3,
+                      "n_clusters": 1,
+                      "no_qualifying_mark_share": 0.4,
+                      "verdict": "INSUFFICIENT"
+                    }
+                  },
+                  "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CLE",
+                  "n_fills": 5,
+                  "summary_counts_by_horizon": {
+                    "120.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 5,
+                      "n_fills": 5,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 5,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 5
+                      },
+                      "units": "probability_points"
+                    },
+                    "30.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 5,
+                      "n_fills": 5,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 1,
+                      "n_unscored": 4,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 4
+                      },
+                      "units": "probability_points"
+                    },
+                    "300.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 5,
+                      "n_fills": 5,
+                      "n_float_field_lossy": 2,
+                      "n_scored": 3,
+                      "n_unscored": 2,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 2
+                      },
+                      "units": "probability_points"
+                    }
+                  }
+                }
+              },
+              "markets_without_fills": 135
+            },
+            "state_unavailable": {
+              "markets": {
+                "KXMLBF3-26OCT031300CWSCLE-CWS": {
+                  "fee_source_float_exact": 1,
+                  "horizons": {
+                    "120.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBF3-26OCT031300CWSCLE-CWS",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "30.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBF3-26OCT031300CWSCLE-CWS",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "300.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBF3-26OCT031300CWSCLE-CWS",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    }
+                  },
+                  "market_context_ref": "market_context/KXMLBF3-26OCT031300CWSCLE-CWS",
+                  "n_fills": 1,
+                  "summary_counts_by_horizon": {
+                    "120.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    },
+                    "30.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    },
+                    "300.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    }
+                  }
+                },
+                "KXMLBF3-26OCT031300CWSCLE-TIE": {
+                  "fee_source_float_exact": 1,
+                  "horizons": {
+                    "120.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBF3-26OCT031300CWSCLE-TIE",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "30.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBF3-26OCT031300CWSCLE-TIE",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "300.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBF3-26OCT031300CWSCLE-TIE",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    }
+                  },
+                  "market_context_ref": "market_context/KXMLBF3-26OCT031300CWSCLE-TIE",
+                  "n_fills": 1,
+                  "summary_counts_by_horizon": {
+                    "120.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    },
+                    "30.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    },
+                    "300.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    }
+                  }
+                },
+                "KXMLBF5TOTAL-26OCT031600ATLLAD-4": {
+                  "fee_source_float_exact": 1,
+                  "horizons": {
+                    "120.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBF5TOTAL-26OCT031600ATLLAD-4",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "30.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBF5TOTAL-26OCT031600ATLLAD-4",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "300.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBF5TOTAL-26OCT031600ATLLAD-4",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    }
+                  },
+                  "market_context_ref": "market_context/KXMLBF5TOTAL-26OCT031600ATLLAD-4",
+                  "n_fills": 1,
+                  "summary_counts_by_horizon": {
+                    "120.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    },
+                    "30.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    },
+                    "300.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    }
+                  }
+                },
+                "KXMLBGAME-26OCT031300CWSCLE-CWS": {
+                  "fee_source_float_exact": 11,
+                  "horizons": {
+                    "120.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {
+                        "game_id": 2
+                      },
+                      "fee_source_float_exact": 11,
+                      "largest_single_game_share": 1.0,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": 4790307000.0,
+                      "mark_delay_median_s": 4719016000.0,
+                      "mark_delay_p90_s": 4790307000.0,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CWS",
+                      "mean_units": -0.005,
+                      "n": 2,
+                      "n_clusters": 1,
+                      "no_qualifying_mark_share": 0.8333333333333334,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "30.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {
+                        "game_id": 3
+                      },
+                      "fee_source_float_exact": 11,
+                      "largest_single_game_share": 1.0,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": 13961992000.0,
+                      "mark_delay_median_s": 13961992000.0,
+                      "mark_delay_p90_s": 13961992000.0,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CWS",
+                      "mean_units": 0.018333,
+                      "n": 3,
+                      "n_clusters": 1,
+                      "no_qualifying_mark_share": 0.75,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "300.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {
+                        "game_id": 7
+                      },
+                      "fee_source_float_exact": 11,
+                      "largest_single_game_share": 1.0,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": 9876441000.0,
+                      "mark_delay_median_s": 3546794000.0,
+                      "mark_delay_p90_s": 9876441000.0,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CWS",
+                      "mean_units": 0.017857,
+                      "n": 7,
+                      "n_clusters": 1,
+                      "no_qualifying_mark_share": 0.4166666666666667,
+                      "verdict": "INSUFFICIENT"
+                    }
+                  },
+                  "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CWS",
+                  "n_fills": 12,
+                  "summary_counts_by_horizon": {
+                    "120.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 12,
+                      "n_fills": 12,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 2,
+                      "n_unscored": 10,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 10
+                      },
+                      "units": "probability_points"
+                    },
+                    "30.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 12,
+                      "n_fills": 12,
+                      "n_float_field_lossy": 2,
+                      "n_scored": 3,
+                      "n_unscored": 9,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 9
+                      },
+                      "units": "probability_points"
+                    },
+                    "300.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 12,
+                      "n_fills": 12,
+                      "n_float_field_lossy": 2,
+                      "n_scored": 7,
+                      "n_unscored": 5,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 5
+                      },
+                      "units": "probability_points"
+                    }
+                  }
+                }
+              },
+              "markets_without_fills": 132
+            }
+          },
+          "partial_fills": {
+            "full": 18,
+            "partial": 0,
+            "zero": 4538
+          },
+          "queue_ahead_at_submit": {
+            "0": 0,
+            "1-9": 109,
+            "10-99": 171,
+            "100-999": 333,
+            "1000+": 3943,
+            "UNKNOWN": 15213
+          },
+          "quote_life_expiry": 1360,
+          "quote_print_pairs": {
+            "counts": {
+              "outside_quote_life": 15557726,
+              "price_above_quote": 6294,
+              "queue_not_depleted": 242,
+              "quote_already_filled": 749,
+              "uncredited_print": 0
+            },
+            "unit": "quote_print_pairs"
+          },
+          "quotes_placed": 4556,
+          "refusal_unit": "diagnostic_events_by_named_reason",
+          "served_ticker_fills": {
+            "fills_on_not_served_tickers": 15,
+            "fills_on_served_tickers": 5,
+            "not_served_tickers_with_fills": [
+              "KXMLBF3-26OCT031300CWSCLE-CWS",
+              "KXMLBF3-26OCT031300CWSCLE-TIE",
+              "KXMLBF5TOTAL-26OCT031600ATLLAD-4",
+              "KXMLBGAME-26OCT031300CWSCLE-CWS"
+            ],
+            "unit": "fills"
+          },
+          "state_classification": {
+            "counts": {
+              "fills_linked": 5,
+              "fills_unlinked": 15,
+              "state_comparison_unavailable": 0,
+              "state_identity_missing": 15
+            },
+            "unit": "fills"
+          },
+          "unknown_queue": 15213,
+          "unknown_queue_sentinel": 1000000,
+          "unlinked_fills": [
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T17:15:06.020543Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250938-4261-9ded-83d7-a614b0bee522"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T17:29:54.585894Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250980-0a61-a06d-3ca7-ef5d398c19cb"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T17:35:04.368995Z",
+              "ticker": "KXMLBF3-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250982-2ac9-ba4d-fb65-7db03ce60524"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T17:35:04.368995Z",
+              "ticker": "KXMLBF3-26OCT031300CWSCLE-TIE",
+              "trade_id": "07250983-04c1-b750-dda0-385ad4b78d08"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T18:52:23.192281Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "0724f469-9079-a2cb-299d-4df672d8d601"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T18:53:46.375463Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "0724f4f0-aa01-8c38-96af-7f1d63b5805d"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T18:54:48.126502Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250f64-c341-808a-a01a-9c070fe674f3"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T18:59:03.925479Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "0724f109-9949-aefb-f66c-fabd020de49a"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T19:16:42.919007Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250fe0-32e1-9142-cb5f-77786734071e"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T20:28:07.538347Z",
+              "ticker": "KXMLBF5TOTAL-26OCT031600ATLLAD-4",
+              "trade_id": "07250ea4-cf99-a472-ff88-df5b648a52d5"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "yes",
+              "submit_ts": "2026-10-03T18:40:35.046638Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250f48-4299-8a0c-6dd5-89a3039b3403"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "yes",
+              "submit_ts": "2026-10-03T18:45:10.794883Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250f42-0181-9da0-c44d-b0f5ab984cd9"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "yes",
+              "submit_ts": "2026-10-03T18:53:46.375463Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250f6b-1899-a753-494c-531114153813"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "yes",
+              "submit_ts": "2026-10-03T18:53:46.375463Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250f6b-25f1-ae2f-7d58-5b2b4dc5a868"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "yes",
+              "submit_ts": "2026-10-03T18:59:03.925479Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250fa8-4271-875e-1237-3b874ef3c2bb"
+            }
+          ],
+          "unmodelled_cancel_rejection": "UNMODELLED"
+        },
+        "8": {
+          "accepted_outcomes": {
+            "counts": {
+              "fee_source_decimal": 0,
+              "fee_source_float_exact": 18,
+              "fee_zero_increment": 2
+            },
+            "unit": "fills"
+          },
+          "by_fill_basis": {
+            "through": 20,
+            "touch_queue": 0
+          },
+          "by_side": {
+            "no": 14,
+            "yes": 6
+          },
+          "fill_state_rows": {
+            "counts": {
+              "duplicate_state_records": 0,
+              "state_after_window": 10012,
+              "state_content_inexact": 0,
+              "state_content_invalid": 4220,
+              "state_content_nonfinite": 0,
+              "state_count_invalid": 0,
+              "state_identity_unmatched": 16224,
+              "state_receipt_invalid": 0,
+              "state_record_invalid": 0,
+              "state_rows_accepted": 3354
+            },
+            "unit": "fill_state_row_pairs"
+          },
+          "fills_credited": 20,
+          "fills_refused_by_reason": {
+            "all_prints_unscored": 0,
+            "book_size_invalid": 0,
+            "book_time_invalid": 0,
+            "duplicate_trade_ids": 0,
+            "fee_input_invalid": 0,
+            "future_records": 5241,
+            "inconsistent_touch": 3673,
+            "one_sided_book": 2772,
+            "poly_side_unmapped": 0,
+            "price_out_of_range": 226,
+            "print_time_invalid": 0,
+            "quote_cancel_ts_invalid": 0,
+            "quote_submit_ts_invalid": 0,
+            "replacement_refused": 0,
+            "unscored_prints": 0
+          },
+          "input_counts": {
+            "counts": {
+              "input_prints": 45607,
+              "input_role_filtered": 3363,
+              "replace_count": 3182,
+              "scored_prints": 45607
+            },
+            "unit": "input_records"
+          },
+          "market_context": {
+            "KXMLBF3-26OCT031300CWSCLE-CWS": {
+              "n_intents": 2,
+              "unknown_queue": 120
+            },
+            "KXMLBF3-26OCT031300CWSCLE-TIE": {
+              "n_intents": 4,
+              "unknown_queue": 120
+            },
+            "KXMLBF5TOTAL-26OCT031600ATLLAD-4": {
+              "n_intents": 4,
+              "unknown_queue": 138
+            },
+            "KXMLBGAME-26OCT031300CWSCLE-CLE": {
+              "n_intents": 1283,
+              "unknown_queue": 110
+            },
+            "KXMLBGAME-26OCT031300CWSCLE-CWS": {
+              "n_intents": 1159,
+              "unknown_queue": 110
+            }
+          },
+          "markout_by_class": {
+            "no_state_change": {
+              "markets": {},
+              "markets_without_fills": 136
+            },
+            "state_changed": {
+              "markets": {
+                "KXMLBGAME-26OCT031300CWSCLE-CLE": {
+                  "fee_source_float_exact": 4,
+                  "horizons": {
+                    "120.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 4,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CLE",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "30.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {
+                        "game_id": 1
+                      },
+                      "fee_source_float_exact": 4,
+                      "largest_single_game_share": 1.0,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": 1216383000.0,
+                      "mark_delay_median_s": 1216383000.0,
+                      "mark_delay_p90_s": 1216383000.0,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CLE",
+                      "mean_units": 0.015,
+                      "n": 1,
+                      "n_clusters": 1,
+                      "no_qualifying_mark_share": 0.8,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "300.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {
+                        "game_id": 3
+                      },
+                      "fee_source_float_exact": 4,
+                      "largest_single_game_share": 1.0,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": 3083738000.0,
+                      "mark_delay_median_s": 2039502000.0,
+                      "mark_delay_p90_s": 3083738000.0,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CLE",
+                      "mean_units": 0.071667,
+                      "n": 3,
+                      "n_clusters": 1,
+                      "no_qualifying_mark_share": 0.4,
+                      "verdict": "INSUFFICIENT"
+                    }
+                  },
+                  "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CLE",
+                  "n_fills": 5,
+                  "summary_counts_by_horizon": {
+                    "120.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 5,
+                      "n_fills": 5,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 5,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 5
+                      },
+                      "units": "probability_points"
+                    },
+                    "30.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 5,
+                      "n_fills": 5,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 1,
+                      "n_unscored": 4,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 4
+                      },
+                      "units": "probability_points"
+                    },
+                    "300.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 5,
+                      "n_fills": 5,
+                      "n_float_field_lossy": 2,
+                      "n_scored": 3,
+                      "n_unscored": 2,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 2
+                      },
+                      "units": "probability_points"
+                    }
+                  }
+                }
+              },
+              "markets_without_fills": 135
+            },
+            "state_unavailable": {
+              "markets": {
+                "KXMLBF3-26OCT031300CWSCLE-CWS": {
+                  "fee_source_float_exact": 1,
+                  "horizons": {
+                    "120.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBF3-26OCT031300CWSCLE-CWS",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "30.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBF3-26OCT031300CWSCLE-CWS",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "300.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBF3-26OCT031300CWSCLE-CWS",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    }
+                  },
+                  "market_context_ref": "market_context/KXMLBF3-26OCT031300CWSCLE-CWS",
+                  "n_fills": 1,
+                  "summary_counts_by_horizon": {
+                    "120.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    },
+                    "30.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    },
+                    "300.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    }
+                  }
+                },
+                "KXMLBF3-26OCT031300CWSCLE-TIE": {
+                  "fee_source_float_exact": 1,
+                  "horizons": {
+                    "120.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBF3-26OCT031300CWSCLE-TIE",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "30.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBF3-26OCT031300CWSCLE-TIE",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "300.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBF3-26OCT031300CWSCLE-TIE",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    }
+                  },
+                  "market_context_ref": "market_context/KXMLBF3-26OCT031300CWSCLE-TIE",
+                  "n_fills": 1,
+                  "summary_counts_by_horizon": {
+                    "120.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    },
+                    "30.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    },
+                    "300.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    }
+                  }
+                },
+                "KXMLBF5TOTAL-26OCT031600ATLLAD-4": {
+                  "fee_source_float_exact": 1,
+                  "horizons": {
+                    "120.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBF5TOTAL-26OCT031600ATLLAD-4",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "30.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBF5TOTAL-26OCT031600ATLLAD-4",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "300.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBF5TOTAL-26OCT031600ATLLAD-4",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    }
+                  },
+                  "market_context_ref": "market_context/KXMLBF5TOTAL-26OCT031600ATLLAD-4",
+                  "n_fills": 1,
+                  "summary_counts_by_horizon": {
+                    "120.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    },
+                    "30.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    },
+                    "300.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    }
+                  }
+                },
+                "KXMLBGAME-26OCT031300CWSCLE-CWS": {
+                  "fee_source_float_exact": 11,
+                  "horizons": {
+                    "120.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {
+                        "game_id": 2
+                      },
+                      "fee_source_float_exact": 11,
+                      "largest_single_game_share": 1.0,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": 4790307000.0,
+                      "mark_delay_median_s": 4719016000.0,
+                      "mark_delay_p90_s": 4790307000.0,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CWS",
+                      "mean_units": -0.005,
+                      "n": 2,
+                      "n_clusters": 1,
+                      "no_qualifying_mark_share": 0.8333333333333334,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "30.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {
+                        "game_id": 3
+                      },
+                      "fee_source_float_exact": 11,
+                      "largest_single_game_share": 1.0,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": 13961992000.0,
+                      "mark_delay_median_s": 13961992000.0,
+                      "mark_delay_p90_s": 13961992000.0,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CWS",
+                      "mean_units": 0.018333,
+                      "n": 3,
+                      "n_clusters": 1,
+                      "no_qualifying_mark_share": 0.75,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "300.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {
+                        "game_id": 7
+                      },
+                      "fee_source_float_exact": 11,
+                      "largest_single_game_share": 1.0,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": 9876441000.0,
+                      "mark_delay_median_s": 3546794000.0,
+                      "mark_delay_p90_s": 9876441000.0,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CWS",
+                      "mean_units": 0.017857,
+                      "n": 7,
+                      "n_clusters": 1,
+                      "no_qualifying_mark_share": 0.4166666666666667,
+                      "verdict": "INSUFFICIENT"
+                    }
+                  },
+                  "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CWS",
+                  "n_fills": 12,
+                  "summary_counts_by_horizon": {
+                    "120.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 12,
+                      "n_fills": 12,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 2,
+                      "n_unscored": 10,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 10
+                      },
+                      "units": "probability_points"
+                    },
+                    "30.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 12,
+                      "n_fills": 12,
+                      "n_float_field_lossy": 2,
+                      "n_scored": 3,
+                      "n_unscored": 9,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 9
+                      },
+                      "units": "probability_points"
+                    },
+                    "300.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 12,
+                      "n_fills": 12,
+                      "n_float_field_lossy": 2,
+                      "n_scored": 7,
+                      "n_unscored": 5,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 5
+                      },
+                      "units": "probability_points"
+                    }
+                  }
+                }
+              },
+              "markets_without_fills": 132
+            }
+          },
+          "partial_fills": {
+            "full": 18,
+            "partial": 0,
+            "zero": 4538
+          },
+          "queue_ahead_at_submit": {
+            "0": 0,
+            "1-9": 18,
+            "10-99": 182,
+            "100-999": 329,
+            "1000+": 4027,
+            "UNKNOWN": 15213
+          },
+          "quote_life_expiry": 1360,
+          "quote_print_pairs": {
+            "counts": {
+              "outside_quote_life": 15557726,
+              "price_above_quote": 6294,
+              "queue_not_depleted": 242,
+              "quote_already_filled": 749,
+              "uncredited_print": 0
+            },
+            "unit": "quote_print_pairs"
+          },
+          "quotes_placed": 4556,
+          "refusal_unit": "diagnostic_events_by_named_reason",
+          "served_ticker_fills": {
+            "fills_on_not_served_tickers": 15,
+            "fills_on_served_tickers": 5,
+            "not_served_tickers_with_fills": [
+              "KXMLBF3-26OCT031300CWSCLE-CWS",
+              "KXMLBF3-26OCT031300CWSCLE-TIE",
+              "KXMLBF5TOTAL-26OCT031600ATLLAD-4",
+              "KXMLBGAME-26OCT031300CWSCLE-CWS"
+            ],
+            "unit": "fills"
+          },
+          "state_classification": {
+            "counts": {
+              "fills_linked": 5,
+              "fills_unlinked": 15,
+              "state_comparison_unavailable": 0,
+              "state_identity_missing": 15
+            },
+            "unit": "fills"
+          },
+          "unknown_queue": 15213,
+          "unknown_queue_sentinel": 1000000,
+          "unlinked_fills": [
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T17:15:06.020543Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250938-4261-9ded-83d7-a614b0bee522"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T17:29:54.585894Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250980-0a61-a06d-3ca7-ef5d398c19cb"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T17:35:04.368995Z",
+              "ticker": "KXMLBF3-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250982-2ac9-ba4d-fb65-7db03ce60524"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T17:35:04.368995Z",
+              "ticker": "KXMLBF3-26OCT031300CWSCLE-TIE",
+              "trade_id": "07250983-04c1-b750-dda0-385ad4b78d08"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T18:52:23.192281Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "0724f469-9079-a2cb-299d-4df672d8d601"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T18:53:46.375463Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "0724f4f0-aa01-8c38-96af-7f1d63b5805d"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T18:54:48.126502Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250f64-c341-808a-a01a-9c070fe674f3"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T18:59:03.925479Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "0724f109-9949-aefb-f66c-fabd020de49a"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T19:16:42.919007Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250fe0-32e1-9142-cb5f-77786734071e"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T20:28:07.538347Z",
+              "ticker": "KXMLBF5TOTAL-26OCT031600ATLLAD-4",
+              "trade_id": "07250ea4-cf99-a472-ff88-df5b648a52d5"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "yes",
+              "submit_ts": "2026-10-03T18:40:35.046638Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250f48-4299-8a0c-6dd5-89a3039b3403"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "yes",
+              "submit_ts": "2026-10-03T18:45:10.794883Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250f42-0181-9da0-c44d-b0f5ab984cd9"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "yes",
+              "submit_ts": "2026-10-03T18:53:46.375463Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250f6b-1899-a753-494c-531114153813"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "yes",
+              "submit_ts": "2026-10-03T18:53:46.375463Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250f6b-25f1-ae2f-7d58-5b2b4dc5a868"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "yes",
+              "submit_ts": "2026-10-03T18:59:03.925479Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250fa8-4271-875e-1237-3b874ef3c2bb"
+            }
+          ],
+          "unmodelled_cancel_rejection": "UNMODELLED"
+        }
+      },
+      "unknown_queue": 15213
+    },
+    "5": {
+      "fills_credited": 6,
+      "grid": {
+        "1": {
+          "accepted_outcomes": {
+            "counts": {
+              "fee_source_decimal": 0,
+              "fee_source_float_exact": 5,
+              "fee_zero_increment": 1
+            },
+            "unit": "fills"
+          },
+          "by_fill_basis": {
+            "through": 6,
+            "touch_queue": 0
+          },
+          "by_side": {
+            "no": 3,
+            "yes": 3
+          },
+          "fill_state_rows": {
+            "counts": {
+              "duplicate_state_records": 0,
+              "state_after_window": 2050,
+              "state_content_inexact": 0,
+              "state_content_invalid": 844,
+              "state_content_nonfinite": 0,
+              "state_count_invalid": 0,
+              "state_identity_unmatched": 3228,
+              "state_receipt_invalid": 0,
+              "state_record_invalid": 0,
+              "state_rows_accepted": 640
+            },
+            "unit": "fill_state_row_pairs"
+          },
+          "fills_credited": 6,
+          "fills_refused_by_reason": {
+            "all_prints_unscored": 0,
+            "book_size_invalid": 0,
+            "book_time_invalid": 0,
+            "duplicate_trade_ids": 0,
+            "fee_input_invalid": 0,
+            "future_records": 5241,
+            "inconsistent_touch": 3673,
+            "one_sided_book": 2772,
+            "poly_side_unmapped": 0,
+            "price_out_of_range": 226,
+            "print_time_invalid": 0,
+            "quote_cancel_ts_invalid": 0,
+            "quote_submit_ts_invalid": 0,
+            "replacement_refused": 0,
+            "unscored_prints": 0
+          },
+          "input_counts": {
+            "counts": {
+              "input_prints": 45607,
+              "input_role_filtered": 3363,
+              "replace_count": 323,
+              "scored_prints": 45607
+            },
+            "unit": "input_records"
+          },
+          "market_context": {
+            "KXMLBGAME-26OCT031300CWSCLE-CLE": {
+              "n_intents": 1283,
+              "unknown_queue": 110
+            },
+            "KXMLBGAME-26OCT031300CWSCLE-CWS": {
+              "n_intents": 1159,
+              "unknown_queue": 110
+            }
+          },
+          "markout_by_class": {
+            "no_state_change": {
+              "markets": {},
+              "markets_without_fills": 136
+            },
+            "state_changed": {
+              "markets": {
+                "KXMLBGAME-26OCT031300CWSCLE-CLE": {
+                  "fee_source_float_exact": 1,
+                  "horizons": {
+                    "120.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CLE",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "30.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CLE",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "300.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CLE",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    }
+                  },
+                  "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CLE",
+                  "n_fills": 1,
+                  "summary_counts_by_horizon": {
+                    "120.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    },
+                    "30.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    },
+                    "300.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    }
+                  }
+                }
+              },
+              "markets_without_fills": 135
+            },
+            "state_unavailable": {
+              "markets": {
+                "KXMLBGAME-26OCT031300CWSCLE-CWS": {
+                  "fee_source_float_exact": 4,
+                  "horizons": {
+                    "120.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {
+                        "game_id": 1
+                      },
+                      "fee_source_float_exact": 4,
+                      "largest_single_game_share": 1.0,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": 4647725000.0,
+                      "mark_delay_median_s": 4647725000.0,
+                      "mark_delay_p90_s": 4647725000.0,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CWS",
+                      "mean_units": 0.015,
+                      "n": 1,
+                      "n_clusters": 1,
+                      "no_qualifying_mark_share": 0.8,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "30.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {
+                        "game_id": 3
+                      },
+                      "fee_source_float_exact": 4,
+                      "largest_single_game_share": 1.0,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": 13961992000.0,
+                      "mark_delay_median_s": 13961992000.0,
+                      "mark_delay_p90_s": 13961992000.0,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CWS",
+                      "mean_units": 0.018333,
+                      "n": 3,
+                      "n_clusters": 1,
+                      "no_qualifying_mark_share": 0.4,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "300.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {
+                        "game_id": 4
+                      },
+                      "fee_source_float_exact": 4,
+                      "largest_single_game_share": 1.0,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": 9876441000.0,
+                      "mark_delay_median_s": 8679165500.0,
+                      "mark_delay_p90_s": 9876441000.0,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CWS",
+                      "mean_units": 0.025,
+                      "n": 4,
+                      "n_clusters": 1,
+                      "no_qualifying_mark_share": 0.2,
+                      "verdict": "INSUFFICIENT"
+                    }
+                  },
+                  "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CWS",
+                  "n_fills": 5,
+                  "summary_counts_by_horizon": {
+                    "120.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 5,
+                      "n_fills": 5,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 1,
+                      "n_unscored": 4,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 4
+                      },
+                      "units": "probability_points"
+                    },
+                    "30.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 5,
+                      "n_fills": 5,
+                      "n_float_field_lossy": 2,
+                      "n_scored": 3,
+                      "n_unscored": 2,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 2
+                      },
+                      "units": "probability_points"
+                    },
+                    "300.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 5,
+                      "n_fills": 5,
+                      "n_float_field_lossy": 2,
+                      "n_scored": 4,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    }
+                  }
+                }
+              },
+              "markets_without_fills": 135
+            }
+          },
+          "partial_fills": {
+            "full": 5,
+            "partial": 0,
+            "zero": 4551
+          },
+          "queue_ahead_at_submit": {
+            "0": 0,
+            "1-9": 184,
+            "10-99": 276,
+            "100-999": 519,
+            "1000+": 3577,
+            "UNKNOWN": 15213
+          },
+          "quote_life_expiry": 4228,
+          "quote_print_pairs": {
+            "counts": {
+              "outside_quote_life": 15560181,
+              "price_above_quote": 4648,
+              "queue_not_depleted": 46,
+              "quote_already_filled": 150,
+              "uncredited_print": 0
+            },
+            "unit": "quote_print_pairs"
+          },
+          "quotes_placed": 4556,
+          "refusal_unit": "diagnostic_events_by_named_reason",
+          "served_ticker_fills": {
+            "fills_on_not_served_tickers": 5,
+            "fills_on_served_tickers": 1,
+            "not_served_tickers_with_fills": [
+              "KXMLBGAME-26OCT031300CWSCLE-CWS"
+            ],
+            "unit": "fills"
+          },
+          "state_classification": {
+            "counts": {
+              "fills_linked": 1,
+              "fills_unlinked": 5,
+              "state_comparison_unavailable": 0,
+              "state_identity_missing": 5
+            },
+            "unit": "fills"
+          },
+          "unknown_queue": 15213,
+          "unknown_queue_sentinel": 1000000,
+          "unlinked_fills": [
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T17:15:06.020543Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250938-4261-9ded-83d7-a614b0bee522"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T18:53:46.375463Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "0724f4f0-aa01-8c38-96af-7f1d63b5805d"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T19:16:42.919007Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250fe0-32e1-9142-cb5f-77786734071e"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "yes",
+              "submit_ts": "2026-10-03T18:53:46.375463Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250f6b-1899-a753-494c-531114153813"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "yes",
+              "submit_ts": "2026-10-03T18:53:46.375463Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250f6b-25f1-ae2f-7d58-5b2b4dc5a868"
+            }
+          ],
+          "unmodelled_cancel_rejection": "UNMODELLED"
+        },
+        "2": {
+          "accepted_outcomes": {
+            "counts": {
+              "fee_source_decimal": 0,
+              "fee_source_float_exact": 5,
+              "fee_zero_increment": 1
+            },
+            "unit": "fills"
+          },
+          "by_fill_basis": {
+            "through": 6,
+            "touch_queue": 0
+          },
+          "by_side": {
+            "no": 3,
+            "yes": 3
+          },
+          "fill_state_rows": {
+            "counts": {
+              "duplicate_state_records": 0,
+              "state_after_window": 2050,
+              "state_content_inexact": 0,
+              "state_content_invalid": 844,
+              "state_content_nonfinite": 0,
+              "state_count_invalid": 0,
+              "state_identity_unmatched": 3228,
+              "state_receipt_invalid": 0,
+              "state_record_invalid": 0,
+              "state_rows_accepted": 640
+            },
+            "unit": "fill_state_row_pairs"
+          },
+          "fills_credited": 6,
+          "fills_refused_by_reason": {
+            "all_prints_unscored": 0,
+            "book_size_invalid": 0,
+            "book_time_invalid": 0,
+            "duplicate_trade_ids": 0,
+            "fee_input_invalid": 0,
+            "future_records": 5241,
+            "inconsistent_touch": 3673,
+            "one_sided_book": 2772,
+            "poly_side_unmapped": 0,
+            "price_out_of_range": 226,
+            "print_time_invalid": 0,
+            "quote_cancel_ts_invalid": 0,
+            "quote_submit_ts_invalid": 0,
+            "replacement_refused": 0,
+            "unscored_prints": 0
+          },
+          "input_counts": {
+            "counts": {
+              "input_prints": 45607,
+              "input_role_filtered": 3363,
+              "replace_count": 323,
+              "scored_prints": 45607
+            },
+            "unit": "input_records"
+          },
+          "market_context": {
+            "KXMLBGAME-26OCT031300CWSCLE-CLE": {
+              "n_intents": 1283,
+              "unknown_queue": 110
+            },
+            "KXMLBGAME-26OCT031300CWSCLE-CWS": {
+              "n_intents": 1159,
+              "unknown_queue": 110
+            }
+          },
+          "markout_by_class": {
+            "no_state_change": {
+              "markets": {},
+              "markets_without_fills": 136
+            },
+            "state_changed": {
+              "markets": {
+                "KXMLBGAME-26OCT031300CWSCLE-CLE": {
+                  "fee_source_float_exact": 1,
+                  "horizons": {
+                    "120.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CLE",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "30.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CLE",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "300.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CLE",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    }
+                  },
+                  "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CLE",
+                  "n_fills": 1,
+                  "summary_counts_by_horizon": {
+                    "120.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    },
+                    "30.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    },
+                    "300.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    }
+                  }
+                }
+              },
+              "markets_without_fills": 135
+            },
+            "state_unavailable": {
+              "markets": {
+                "KXMLBGAME-26OCT031300CWSCLE-CWS": {
+                  "fee_source_float_exact": 4,
+                  "horizons": {
+                    "120.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {
+                        "game_id": 1
+                      },
+                      "fee_source_float_exact": 4,
+                      "largest_single_game_share": 1.0,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": 4647725000.0,
+                      "mark_delay_median_s": 4647725000.0,
+                      "mark_delay_p90_s": 4647725000.0,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CWS",
+                      "mean_units": 0.015,
+                      "n": 1,
+                      "n_clusters": 1,
+                      "no_qualifying_mark_share": 0.8,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "30.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {
+                        "game_id": 3
+                      },
+                      "fee_source_float_exact": 4,
+                      "largest_single_game_share": 1.0,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": 13961992000.0,
+                      "mark_delay_median_s": 13961992000.0,
+                      "mark_delay_p90_s": 13961992000.0,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CWS",
+                      "mean_units": 0.018333,
+                      "n": 3,
+                      "n_clusters": 1,
+                      "no_qualifying_mark_share": 0.4,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "300.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {
+                        "game_id": 4
+                      },
+                      "fee_source_float_exact": 4,
+                      "largest_single_game_share": 1.0,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": 9876441000.0,
+                      "mark_delay_median_s": 8679165500.0,
+                      "mark_delay_p90_s": 9876441000.0,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CWS",
+                      "mean_units": 0.025,
+                      "n": 4,
+                      "n_clusters": 1,
+                      "no_qualifying_mark_share": 0.2,
+                      "verdict": "INSUFFICIENT"
+                    }
+                  },
+                  "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CWS",
+                  "n_fills": 5,
+                  "summary_counts_by_horizon": {
+                    "120.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 5,
+                      "n_fills": 5,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 1,
+                      "n_unscored": 4,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 4
+                      },
+                      "units": "probability_points"
+                    },
+                    "30.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 5,
+                      "n_fills": 5,
+                      "n_float_field_lossy": 2,
+                      "n_scored": 3,
+                      "n_unscored": 2,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 2
+                      },
+                      "units": "probability_points"
+                    },
+                    "300.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 5,
+                      "n_fills": 5,
+                      "n_float_field_lossy": 2,
+                      "n_scored": 4,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    }
+                  }
+                }
+              },
+              "markets_without_fills": 135
+            }
+          },
+          "partial_fills": {
+            "full": 5,
+            "partial": 0,
+            "zero": 4551
+          },
+          "queue_ahead_at_submit": {
+            "0": 0,
+            "1-9": 161,
+            "10-99": 236,
+            "100-999": 359,
+            "1000+": 3800,
+            "UNKNOWN": 15213
+          },
+          "quote_life_expiry": 4228,
+          "quote_print_pairs": {
+            "counts": {
+              "outside_quote_life": 15560181,
+              "price_above_quote": 4648,
+              "queue_not_depleted": 46,
+              "quote_already_filled": 150,
+              "uncredited_print": 0
+            },
+            "unit": "quote_print_pairs"
+          },
+          "quotes_placed": 4556,
+          "refusal_unit": "diagnostic_events_by_named_reason",
+          "served_ticker_fills": {
+            "fills_on_not_served_tickers": 5,
+            "fills_on_served_tickers": 1,
+            "not_served_tickers_with_fills": [
+              "KXMLBGAME-26OCT031300CWSCLE-CWS"
+            ],
+            "unit": "fills"
+          },
+          "state_classification": {
+            "counts": {
+              "fills_linked": 1,
+              "fills_unlinked": 5,
+              "state_comparison_unavailable": 0,
+              "state_identity_missing": 5
+            },
+            "unit": "fills"
+          },
+          "unknown_queue": 15213,
+          "unknown_queue_sentinel": 1000000,
+          "unlinked_fills": [
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T17:15:06.020543Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250938-4261-9ded-83d7-a614b0bee522"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T18:53:46.375463Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "0724f4f0-aa01-8c38-96af-7f1d63b5805d"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T19:16:42.919007Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250fe0-32e1-9142-cb5f-77786734071e"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "yes",
+              "submit_ts": "2026-10-03T18:53:46.375463Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250f6b-1899-a753-494c-531114153813"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "yes",
+              "submit_ts": "2026-10-03T18:53:46.375463Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250f6b-25f1-ae2f-7d58-5b2b4dc5a868"
+            }
+          ],
+          "unmodelled_cancel_rejection": "UNMODELLED"
+        },
+        "4": {
+          "accepted_outcomes": {
+            "counts": {
+              "fee_source_decimal": 0,
+              "fee_source_float_exact": 5,
+              "fee_zero_increment": 1
+            },
+            "unit": "fills"
+          },
+          "by_fill_basis": {
+            "through": 6,
+            "touch_queue": 0
+          },
+          "by_side": {
+            "no": 3,
+            "yes": 3
+          },
+          "fill_state_rows": {
+            "counts": {
+              "duplicate_state_records": 0,
+              "state_after_window": 2050,
+              "state_content_inexact": 0,
+              "state_content_invalid": 844,
+              "state_content_nonfinite": 0,
+              "state_count_invalid": 0,
+              "state_identity_unmatched": 3228,
+              "state_receipt_invalid": 0,
+              "state_record_invalid": 0,
+              "state_rows_accepted": 640
+            },
+            "unit": "fill_state_row_pairs"
+          },
+          "fills_credited": 6,
+          "fills_refused_by_reason": {
+            "all_prints_unscored": 0,
+            "book_size_invalid": 0,
+            "book_time_invalid": 0,
+            "duplicate_trade_ids": 0,
+            "fee_input_invalid": 0,
+            "future_records": 5241,
+            "inconsistent_touch": 3673,
+            "one_sided_book": 2772,
+            "poly_side_unmapped": 0,
+            "price_out_of_range": 226,
+            "print_time_invalid": 0,
+            "quote_cancel_ts_invalid": 0,
+            "quote_submit_ts_invalid": 0,
+            "replacement_refused": 0,
+            "unscored_prints": 0
+          },
+          "input_counts": {
+            "counts": {
+              "input_prints": 45607,
+              "input_role_filtered": 3363,
+              "replace_count": 323,
+              "scored_prints": 45607
+            },
+            "unit": "input_records"
+          },
+          "market_context": {
+            "KXMLBGAME-26OCT031300CWSCLE-CLE": {
+              "n_intents": 1283,
+              "unknown_queue": 110
+            },
+            "KXMLBGAME-26OCT031300CWSCLE-CWS": {
+              "n_intents": 1159,
+              "unknown_queue": 110
+            }
+          },
+          "markout_by_class": {
+            "no_state_change": {
+              "markets": {},
+              "markets_without_fills": 136
+            },
+            "state_changed": {
+              "markets": {
+                "KXMLBGAME-26OCT031300CWSCLE-CLE": {
+                  "fee_source_float_exact": 1,
+                  "horizons": {
+                    "120.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CLE",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "30.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CLE",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "300.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CLE",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    }
+                  },
+                  "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CLE",
+                  "n_fills": 1,
+                  "summary_counts_by_horizon": {
+                    "120.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    },
+                    "30.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    },
+                    "300.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    }
+                  }
+                }
+              },
+              "markets_without_fills": 135
+            },
+            "state_unavailable": {
+              "markets": {
+                "KXMLBGAME-26OCT031300CWSCLE-CWS": {
+                  "fee_source_float_exact": 4,
+                  "horizons": {
+                    "120.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {
+                        "game_id": 1
+                      },
+                      "fee_source_float_exact": 4,
+                      "largest_single_game_share": 1.0,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": 4647725000.0,
+                      "mark_delay_median_s": 4647725000.0,
+                      "mark_delay_p90_s": 4647725000.0,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CWS",
+                      "mean_units": 0.015,
+                      "n": 1,
+                      "n_clusters": 1,
+                      "no_qualifying_mark_share": 0.8,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "30.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {
+                        "game_id": 3
+                      },
+                      "fee_source_float_exact": 4,
+                      "largest_single_game_share": 1.0,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": 13961992000.0,
+                      "mark_delay_median_s": 13961992000.0,
+                      "mark_delay_p90_s": 13961992000.0,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CWS",
+                      "mean_units": 0.018333,
+                      "n": 3,
+                      "n_clusters": 1,
+                      "no_qualifying_mark_share": 0.4,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "300.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {
+                        "game_id": 4
+                      },
+                      "fee_source_float_exact": 4,
+                      "largest_single_game_share": 1.0,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": 9876441000.0,
+                      "mark_delay_median_s": 8679165500.0,
+                      "mark_delay_p90_s": 9876441000.0,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CWS",
+                      "mean_units": 0.025,
+                      "n": 4,
+                      "n_clusters": 1,
+                      "no_qualifying_mark_share": 0.2,
+                      "verdict": "INSUFFICIENT"
+                    }
+                  },
+                  "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CWS",
+                  "n_fills": 5,
+                  "summary_counts_by_horizon": {
+                    "120.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 5,
+                      "n_fills": 5,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 1,
+                      "n_unscored": 4,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 4
+                      },
+                      "units": "probability_points"
+                    },
+                    "30.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 5,
+                      "n_fills": 5,
+                      "n_float_field_lossy": 2,
+                      "n_scored": 3,
+                      "n_unscored": 2,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 2
+                      },
+                      "units": "probability_points"
+                    },
+                    "300.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 5,
+                      "n_fills": 5,
+                      "n_float_field_lossy": 2,
+                      "n_scored": 4,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    }
+                  }
+                }
+              },
+              "markets_without_fills": 135
+            }
+          },
+          "partial_fills": {
+            "full": 5,
+            "partial": 0,
+            "zero": 4551
+          },
+          "queue_ahead_at_submit": {
+            "0": 0,
+            "1-9": 109,
+            "10-99": 171,
+            "100-999": 333,
+            "1000+": 3943,
+            "UNKNOWN": 15213
+          },
+          "quote_life_expiry": 4228,
+          "quote_print_pairs": {
+            "counts": {
+              "outside_quote_life": 15560181,
+              "price_above_quote": 4648,
+              "queue_not_depleted": 46,
+              "quote_already_filled": 150,
+              "uncredited_print": 0
+            },
+            "unit": "quote_print_pairs"
+          },
+          "quotes_placed": 4556,
+          "refusal_unit": "diagnostic_events_by_named_reason",
+          "served_ticker_fills": {
+            "fills_on_not_served_tickers": 5,
+            "fills_on_served_tickers": 1,
+            "not_served_tickers_with_fills": [
+              "KXMLBGAME-26OCT031300CWSCLE-CWS"
+            ],
+            "unit": "fills"
+          },
+          "state_classification": {
+            "counts": {
+              "fills_linked": 1,
+              "fills_unlinked": 5,
+              "state_comparison_unavailable": 0,
+              "state_identity_missing": 5
+            },
+            "unit": "fills"
+          },
+          "unknown_queue": 15213,
+          "unknown_queue_sentinel": 1000000,
+          "unlinked_fills": [
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T17:15:06.020543Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250938-4261-9ded-83d7-a614b0bee522"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T18:53:46.375463Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "0724f4f0-aa01-8c38-96af-7f1d63b5805d"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T19:16:42.919007Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250fe0-32e1-9142-cb5f-77786734071e"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "yes",
+              "submit_ts": "2026-10-03T18:53:46.375463Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250f6b-1899-a753-494c-531114153813"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "yes",
+              "submit_ts": "2026-10-03T18:53:46.375463Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250f6b-25f1-ae2f-7d58-5b2b4dc5a868"
+            }
+          ],
+          "unmodelled_cancel_rejection": "UNMODELLED"
+        },
+        "8": {
+          "accepted_outcomes": {
+            "counts": {
+              "fee_source_decimal": 0,
+              "fee_source_float_exact": 5,
+              "fee_zero_increment": 1
+            },
+            "unit": "fills"
+          },
+          "by_fill_basis": {
+            "through": 6,
+            "touch_queue": 0
+          },
+          "by_side": {
+            "no": 3,
+            "yes": 3
+          },
+          "fill_state_rows": {
+            "counts": {
+              "duplicate_state_records": 0,
+              "state_after_window": 2050,
+              "state_content_inexact": 0,
+              "state_content_invalid": 844,
+              "state_content_nonfinite": 0,
+              "state_count_invalid": 0,
+              "state_identity_unmatched": 3228,
+              "state_receipt_invalid": 0,
+              "state_record_invalid": 0,
+              "state_rows_accepted": 640
+            },
+            "unit": "fill_state_row_pairs"
+          },
+          "fills_credited": 6,
+          "fills_refused_by_reason": {
+            "all_prints_unscored": 0,
+            "book_size_invalid": 0,
+            "book_time_invalid": 0,
+            "duplicate_trade_ids": 0,
+            "fee_input_invalid": 0,
+            "future_records": 5241,
+            "inconsistent_touch": 3673,
+            "one_sided_book": 2772,
+            "poly_side_unmapped": 0,
+            "price_out_of_range": 226,
+            "print_time_invalid": 0,
+            "quote_cancel_ts_invalid": 0,
+            "quote_submit_ts_invalid": 0,
+            "replacement_refused": 0,
+            "unscored_prints": 0
+          },
+          "input_counts": {
+            "counts": {
+              "input_prints": 45607,
+              "input_role_filtered": 3363,
+              "replace_count": 323,
+              "scored_prints": 45607
+            },
+            "unit": "input_records"
+          },
+          "market_context": {
+            "KXMLBGAME-26OCT031300CWSCLE-CLE": {
+              "n_intents": 1283,
+              "unknown_queue": 110
+            },
+            "KXMLBGAME-26OCT031300CWSCLE-CWS": {
+              "n_intents": 1159,
+              "unknown_queue": 110
+            }
+          },
+          "markout_by_class": {
+            "no_state_change": {
+              "markets": {},
+              "markets_without_fills": 136
+            },
+            "state_changed": {
+              "markets": {
+                "KXMLBGAME-26OCT031300CWSCLE-CLE": {
+                  "fee_source_float_exact": 1,
+                  "horizons": {
+                    "120.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CLE",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "30.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CLE",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "300.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {},
+                      "fee_source_float_exact": 1,
+                      "largest_single_game_share": null,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": null,
+                      "mark_delay_median_s": null,
+                      "mark_delay_p90_s": null,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CLE",
+                      "mean_units": null,
+                      "n": 0,
+                      "n_clusters": 0,
+                      "no_qualifying_mark_share": 1.0,
+                      "verdict": "INSUFFICIENT"
+                    }
+                  },
+                  "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CLE",
+                  "n_fills": 1,
+                  "summary_counts_by_horizon": {
+                    "120.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    },
+                    "30.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    },
+                    "300.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 1,
+                      "n_fills": 1,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 0,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    }
+                  }
+                }
+              },
+              "markets_without_fills": 135
+            },
+            "state_unavailable": {
+              "markets": {
+                "KXMLBGAME-26OCT031300CWSCLE-CWS": {
+                  "fee_source_float_exact": 4,
+                  "horizons": {
+                    "120.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {
+                        "game_id": 1
+                      },
+                      "fee_source_float_exact": 4,
+                      "largest_single_game_share": 1.0,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": 4647725000.0,
+                      "mark_delay_median_s": 4647725000.0,
+                      "mark_delay_p90_s": 4647725000.0,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CWS",
+                      "mean_units": 0.015,
+                      "n": 1,
+                      "n_clusters": 1,
+                      "no_qualifying_mark_share": 0.8,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "30.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {
+                        "game_id": 3
+                      },
+                      "fee_source_float_exact": 4,
+                      "largest_single_game_share": 1.0,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": 13961992000.0,
+                      "mark_delay_median_s": 13961992000.0,
+                      "mark_delay_p90_s": 13961992000.0,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CWS",
+                      "mean_units": 0.018333,
+                      "n": 3,
+                      "n_clusters": 1,
+                      "no_qualifying_mark_share": 0.4,
+                      "verdict": "INSUFFICIENT"
+                    },
+                    "300.0": {
+                      "ci_95_units": [
+                        null,
+                        null
+                      ],
+                      "cluster_sources": {
+                        "game_id": 4
+                      },
+                      "fee_source_float_exact": 4,
+                      "largest_single_game_share": 1.0,
+                      "leave_one_game_out_range_units": null,
+                      "mark_delay_max_s": 9876441000.0,
+                      "mark_delay_median_s": 8679165500.0,
+                      "mark_delay_p90_s": 9876441000.0,
+                      "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CWS",
+                      "mean_units": 0.025,
+                      "n": 4,
+                      "n_clusters": 1,
+                      "no_qualifying_mark_share": 0.2,
+                      "verdict": "INSUFFICIENT"
+                    }
+                  },
+                  "market_context_ref": "market_context/KXMLBGAME-26OCT031300CWSCLE-CWS",
+                  "n_fills": 5,
+                  "summary_counts_by_horizon": {
+                    "120.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 5,
+                      "n_fills": 5,
+                      "n_float_field_lossy": 0,
+                      "n_scored": 1,
+                      "n_unscored": 4,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 4
+                      },
+                      "units": "probability_points"
+                    },
+                    "30.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 5,
+                      "n_fills": 5,
+                      "n_float_field_lossy": 2,
+                      "n_scored": 3,
+                      "n_unscored": 2,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 2
+                      },
+                      "units": "probability_points"
+                    },
+                    "300.0": {
+                      "cluster_key": "game_id",
+                      "n_fill_horizon_observations": 5,
+                      "n_fills": 5,
+                      "n_float_field_lossy": 2,
+                      "n_scored": 4,
+                      "n_unscored": 1,
+                      "n_unscored_by_reason": {
+                        "no_tick_in_window": 1
+                      },
+                      "units": "probability_points"
+                    }
+                  }
+                }
+              },
+              "markets_without_fills": 135
+            }
+          },
+          "partial_fills": {
+            "full": 5,
+            "partial": 0,
+            "zero": 4551
+          },
+          "queue_ahead_at_submit": {
+            "0": 0,
+            "1-9": 18,
+            "10-99": 182,
+            "100-999": 329,
+            "1000+": 4027,
+            "UNKNOWN": 15213
+          },
+          "quote_life_expiry": 4228,
+          "quote_print_pairs": {
+            "counts": {
+              "outside_quote_life": 15560181,
+              "price_above_quote": 4648,
+              "queue_not_depleted": 46,
+              "quote_already_filled": 150,
+              "uncredited_print": 0
+            },
+            "unit": "quote_print_pairs"
+          },
+          "quotes_placed": 4556,
+          "refusal_unit": "diagnostic_events_by_named_reason",
+          "served_ticker_fills": {
+            "fills_on_not_served_tickers": 5,
+            "fills_on_served_tickers": 1,
+            "not_served_tickers_with_fills": [
+              "KXMLBGAME-26OCT031300CWSCLE-CWS"
+            ],
+            "unit": "fills"
+          },
+          "state_classification": {
+            "counts": {
+              "fills_linked": 1,
+              "fills_unlinked": 5,
+              "state_comparison_unavailable": 0,
+              "state_identity_missing": 5
+            },
+            "unit": "fills"
+          },
+          "unknown_queue": 15213,
+          "unknown_queue_sentinel": 1000000,
+          "unlinked_fills": [
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T17:15:06.020543Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250938-4261-9ded-83d7-a614b0bee522"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T18:53:46.375463Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "0724f4f0-aa01-8c38-96af-7f1d63b5805d"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "no",
+              "submit_ts": "2026-10-03T19:16:42.919007Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250fe0-32e1-9142-cb5f-77786734071e"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "yes",
+              "submit_ts": "2026-10-03T18:53:46.375463Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250f6b-1899-a753-494c-531114153813"
+            },
+            {
+              "reason": "schedule_entry_absent",
+              "side": "yes",
+              "submit_ts": "2026-10-03T18:53:46.375463Z",
+              "ticker": "KXMLBGAME-26OCT031300CWSCLE-CWS",
+              "trade_id": "07250f6b-25f1-ae2f-7d58-5b2b4dc5a868"
+            }
+          ],
+          "unmodelled_cancel_rejection": "UNMODELLED"
+        }
+      },
+      "unknown_queue": 15213
+    }
+  },
+  "row_count": 77613,
+  "window_s": "30"
+}

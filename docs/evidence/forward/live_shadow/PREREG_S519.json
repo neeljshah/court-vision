@@ -1,0 +1,59 @@
+{
+ "arms": [
+  "mid",
+  "venue_prior_state_blend"
+ ],
+ "audit_export": "per-tick paired rows in the S503 paired_losses key shape (sport, game_key, ts, y, target outcome, segment None, losses {arm: {brier, logloss}}, contrast), decimal strings; an export only, never fed to scoreboard_cumulative",
+ "baseline": "mid",
+ "blend": "the blend row's model_prob_yes",
+ "code_identity": {
+  "blend_apply.py": "9f9ec929236c5a8f92f1fa8b01e6f1b5ed58b6708fdae6477f07703c7c3cdbdb",
+  "live_shadow_quoter.py": "da2b3afaf427b9900104a7df92a7e7bdc29769e64f6ab6c9cfc859ee3c4c21a0",
+  "mlb_live_model.py": "921d2f547c46b861989429f01d698695f76e024c313a94497fbb566033c678a6"
+ },
+ "code_identity_rule": "a run whose run-row sha256 map is absent, or lacks or differs on any code_identity file, is excluded code_identity_changed (counted); other files are not pinned",
+ "contrast": "venue_prior_state_blend minus mid, per game",
+ "counting": "every arm row counted by (arm, decision, reason) independently of fills, before pairing; games with no paired tick counted game_no_paired_tick",
+ "dedupe": "key (game_key, arm, run_nonce, t_epoch); identical repeat counted duplicate_row; a repeat unequal on any field except row_id and emitted_ts refuses the whole read (exit 2, no output)",
+ "disclosures": [
+  "calibration only; fills and markouts are out of scope (S516)",
+  "one corpus; the word is capped at SINGLE-WINDOW",
+  "estimand is conditional on blend availability (live, state age <= 180 s, p0 frozen pre-first-pitch); the per-game mid Brier on all mid-resolvable ticks is reported next to the paired-tick mid Brier as a descriptive selection check",
+  "the blend's p0 is a frozen venue pregame mid",
+  "recorder uptime gaps drop ticks, not games; games are assumed independent clusters"
+ ],
+ "estimator": {
+  "draws": 5000,
+  "function": "exec_policy_stats.boot over per-game differences",
+  "interval": "90 pct, 0-based sorted draws [250] and [4749]",
+  "seed": 7,
+  "tails": "p_ahead / p_behind as returned by boot"
+ },
+ "exit_codes": {
+  "prereg_cli": "0 ok, 3 refusal",
+  "reader": "2 on a conflicting duplicate"
+ },
+ "first_eligible_date_rule": "UTC date of the committer instant of the only commit of the file's current incarnation (the seal is write-once) + 1 day",
+ "floor_rule": "paired_games = settled eligible games with >= 1 paired tick; schedule_days = distinct schedule_day values among those games; the UTC scheduled_start date is used for eligibility only",
+ "floors": {
+  "paired_games": 30,
+  "schedule_days": 5
+ },
+ "labels": "arm mid is named venue mid; the word devigged is not used",
+ "loss": "ingame_scoreboard_rules._loss (brier (p-y)^2, logloss natural log)",
+ "mid": "ingame_scoreboard_rules._mid(book, state, entry): book = the unique record in <run argv --books-root>/kalshi/mlb/<book_src.path> (whole file) decoded by capture_watchdog.decode whose live_shadow_quoter.row_hash equals book_row_sha256, ticker equal to the row ticker, response_end_ts equal to book_ts and <= t_epoch; state = the unique record in <--state-root>/state/mlb/<state_src.path> whose row_hash equals state_raw_sha256; entry = the joined schedule entry; zero or several matches or a ValueError -> mid_unresolved:<reason>",
+ "multi_run": "per game, runs ordered by first t_epoch; a later run's ticks kept only where t_epoch > the last t_epoch of every earlier kept run; the overlap counted duplicate_run",
+ "outcome": "state shards for the schedule day, +1 and +2; last = max response_end_ts with status final; arm-row ticker != entry ticker -> ticker_mismatch; score_home == score_away or no final -> outcome_unsettled; else ingame_scoreboard_rules.ticker_outcome",
+ "pairing": "tick = (game_key, run_nonce, t_epoch) with both arm rows; decision is ignored; a tick is paired when both arms are available; blend: model_prob_yes None -> unavailable, counted by the blend row's reason; non-None but non-finite or not strictly inside (0,1) -> blend_invalid; mid: unresolved -> mid_unresolved:<reason>; resolved but not strictly inside (0,1) -> mid_out_of_range; resolved, in range, and the mid row's book_age_s > the run row's freshness_bars.book_max_age_s -> mid_stale; otherwise available",
+ "population": "game_keys present in arm rows joined to exactly one schedule entry (<day>_maker_forward.json; that <day> is the game's schedule_day); conflicts counted schedule_conflict; scheduled games with no rows counted no_rows; eligible when the UTC date of scheduled_start >= first_eligible_date, else game_before_eligible",
+ "primary_metric": "brier",
+ "row": "S519",
+ "schema": "s519_prereg_v1",
+ "seal": "cf998b2a33c516ff5350456d49206e1d7de1e2d963c8bd8d16d3b25a376af967",
+ "secondary_metric": "logloss (descriptive)",
+ "source_schema": "live_shadow_v1 (kind arm and run rows)",
+ "sport": "mlb",
+ "stopping_rule": "D* = the smallest schedule day such that the settled eligible games with schedule day <= D* meet both floors; the confirmatory set is exactly those games, read at or after 00:00:00Z of calendar date D* + 2; the confirmatory statistic is computed only by S519's own reader under this body; every other read is DESCRIPTIVE",
+ "verdict": "floors unmet -> INSUFFICIENT; else ingame_scoreboard_rules.contrast_verdict(n_games, ci90 lo, ci90 hi, contrast=True) with n_corpora 1 (INSUFFICIENT / UNDERPOWERED / SINGLE-WINDOW, never AHEAD or BEHIND); sign and interval reported as numbers",
+ "weighting": "each game one unit: per-game mean Brier and log-loss per arm over its paired ticks; per-game difference = blend minus mid; tick counts reported, never weights"
+}

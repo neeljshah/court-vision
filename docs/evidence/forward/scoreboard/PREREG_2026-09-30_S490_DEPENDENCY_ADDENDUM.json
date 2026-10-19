@@ -1,0 +1,15 @@
+{
+  "dependencies": {
+    "scripts/platformkit/execution/cross_venue_link.py": "7e6d1df31022671659dd8bb5a262659412e72110df007036b1f16739e7dc5d4b",
+    "scripts/platformkit/execution/forward_schedule_soccer.py": "ddded64058d2683f2e17aa21466e7a3df33aa85fa80f5f26de9f258a4f6ff8c9",
+    "scripts/platformkit/ingame/game_market_link.py": "eb7cc24e0ac594d0729c0d0761e44ed32e34e54c4238a02426624056a03fe690",
+    "scripts/platformkit/ingame/label_words.py": "3e92fa331471ca81c4669ed4bfe7268dd46203993cc1796ce698553bf046fd23",
+    "scripts/platformkit/ingame/soccer_aliases.py": "5879b5a0ebc17bfa305359b548055d8dd83ced5b1f01a4a863e86b3cbff5d9cf",
+    "scripts/platformkit/ingame/soccer_crosswalk.py": "51cb9a7dcf224e9dc4c1f15928ff5d9a3b2501ef4a73d9271b2a67fba53a8cf0",
+    "scripts/platformkit/ingame/soccer_leagues.py": "9348db01fb15b09d466bc90f162d0c785a7f4e2776aad634c7d457f32c476dfb",
+    "scripts/platformkit/ingame/team_labels.py": "943a2ac245f496c9b410547525b8a58cac80dd2e4818101c0de0d2cc3b31b99c"
+  },
+  "effective_from": "2026-10-09T00:00:00Z",
+  "prereg": "PREREG_2026-09-30.json",
+  "prereg_sha256": "ab135fc30d29411f77f9f9fc3174ccab7b3620050428c35cf47469218298f496"
+}

@@ -7,7 +7,7 @@
 > generates them.
 >
 > ALL numbers below are CALIBRATION / SHARPNESS (Brier, RMSE, ECE). There is NO $ edge, no
-> ROI, no "beat the close" claim. "MATCH the devigged close within noise" and "honest nulls
+> ROI, no "beat the close" claim. "MATCH the devigged close within noise" (where measured: NBA moneyline; MLB moneyline and soccer O/U 2.5 TRAIL -- corrected 2026-10-06 from DM_RECOMPUTE_2026-09-24) and "honest nulls
 > are successes" are the framings we stand behind. Markets are efficient; the measured,
 > calibrated, delivered advantage is IN-GAME conditioning on the realized state.
 

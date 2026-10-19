@@ -24,7 +24,7 @@ The goal is the **best calibrated predictions per sport**, claimed honestly. Thr
 hold everywhere in this guide:
 
 1. **Calibration, not edge.** We measure Brier / RMSE / BSS against the devigged market
-   close. "We MATCH the close within noise" is the realistic best case for an efficient
+   close. "We MATCH the close within noise" is the realistic best case (measured: NBA moneyline only; MLB moneyline and soccer O/U 2.5 TRAIL -- corrected 2026-10-06 from DM_RECOMPUTE_2026-09-24) for an efficient
    market -- beating it would imply information the close lacks.
 2. **The market is efficient pregame.** A real-data hunt across 4 sports and 6 independent
    corpora REJECTED every candidate pregame edge; full-sample lifts that looked positive

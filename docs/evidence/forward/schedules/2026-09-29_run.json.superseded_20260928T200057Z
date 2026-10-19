@@ -1,0 +1,61 @@
+{
+  "D1": "2026-09-29",
+  "argv": [
+    "--books-root",
+    "data/cache/ingame_books_local",
+    "--state-root",
+    "data/cache/ingame_state_local_v2",
+    "--sports",
+    "nfl",
+    "--local-date-tz",
+    "America/Chicago",
+    "--write-pointer"
+  ],
+  "capacity_subset_selected_at": "2026-09-28T16:22:42.707224+00:00",
+  "completed_at": "2026-09-28T16:22:42.707224+00:00",
+  "files": {
+    "docs/evidence/forward/schedules/2026-09-29_maker_forward.json": {
+      "bytes": 287,
+      "sha256": "021ef09ebaf7cf221d6fdcbeebc3f448d14baf8489f16585d85fab1164e6ea7c"
+    },
+    "docs/evidence/forward/schedules/2026-09-29_maker_forward.json.capacity_note.json": {
+      "bytes": 520,
+      "sha256": "f637855305e9ccae7a41d0a4777d03be0354b1dc38ef776d65db09e12c60cd02"
+    },
+    "docs/evidence/forward/schedules/2026-09-29_maker_forward_full_selection.json": {
+      "bytes": 287,
+      "sha256": "021ef09ebaf7cf221d6fdcbeebc3f448d14baf8489f16585d85fab1164e6ea7c"
+    },
+    "docs/evidence/forward/schedules/2026-09-29_maker_forward_full_selection.json.census.json": {
+      "bytes": 2009,
+      "sha256": "c37a1de03577195756ae8873a26936b36fb9d10620e2dbeb5351a189380c65db"
+    }
+  },
+  "now": "2026-09-28T16:22:33.836574+00:00",
+  "per_sport": {
+    "nfl": {
+      "full": 1,
+      "not_served": 0,
+      "record_counts": {
+        "derivative_series_ignored": 826,
+        "espn_minute_precision_normalized": 1,
+        "future_records": 4,
+        "ignored_record_type": 279787,
+        "listed_on_previous_us_date": 1,
+        "local_date_from_declared_tz": 1
+      },
+      "refused_by_reason": {},
+      "served": 1
+    }
+  },
+  "refused_by_reason": {},
+  "rewrite_reason": null,
+  "schedule_receipts_sha256": {
+    "nfl/nfl": "d32bdedc9f799a39a5728d8bd0c52d81096c889f596fde3cdd8b5d43bf46a8c5"
+  },
+  "started_at": "2026-09-28T16:22:33.836574+00:00",
+  "superseded": {},
+  "writer_selected_at": [
+    "2026-09-28T16:22:34.105629+00:00"
+  ]
+}

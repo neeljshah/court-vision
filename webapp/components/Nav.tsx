@@ -37,6 +37,7 @@ const MORE_LINKS = [
   { href: "/live",          label: "Live",         short: "Live",   exact: false, also: [] as string[] },
   { href: "/games",         label: "Games",        short: "Games",  exact: false, also: ["/p6"] },
   { href: "/paper-trading", label: "Paper",        short: "Paper",  exact: false, also: ["/paper", "/records"] },
+  { href: "/desk",          label: "Desk",         short: "Desk",   exact: false, also: [] as string[] },
   { href: "/bets",          label: "Bets",         short: "Bets",   exact: false, also: [] as string[] },
   { href: "/models",        label: "Models",       short: "Models", exact: false, also: ["/progress"] },
   { href: "/system",        label: "System",       short: "System", exact: false, also: [] as string[] },

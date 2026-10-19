@@ -1,0 +1,127 @@
+{
+ "asof": "receipt <= instant before validation or deduplication; latest parsed receipt per key",
+ "band": [
+  "0.02",
+  "0.20"
+ ],
+ "band_failure": "exclude game permanently",
+ "book": "Decimal; require finite 0 < yes_bid < yes_ask < 1; book:null is not empty",
+ "bootstrap": {
+  "ci95_indices": [
+   49,
+   1949
+  ],
+  "draws": 2000,
+  "purpose": "DESCRIPTIVE",
+  "seed": 20261020,
+  "unit": "game"
+ },
+ "clocks": "UTC epoch grid; venue_time.parse_venue_time; aware only",
+ "code_identity": {
+  "late_game_calibration_r2.py": "dbc00fb435c48740a3876a4ed9aadc4085c18f39b0b842899c94f5a2210ed6d5",
+  "late_game_calibration_r2_io.py": "f29cd37bb4a4187c1f30c9e594f3b6510a5bfdee73079b4af86ca75e6705018e",
+  "late_game_calibration_r2_prereg.py": "ffc5df373c4a2d7708f55dfac6ce19adb5ed961bdc9fd939fd3f56ca7d2142c4",
+  "late_game_calibration_r2_stats.py": "50dea877709d8ad6d2304c58fc5815a1993bb567563650c1f9f72169ce2fc2b2"
+ },
+ "cohorts": {
+  "mlb": "postseason served local game date >=first_eligible_date",
+  "nba": "regular-season served local game date <=2026-12-20 and >=first_eligible_date"
+ },
+ "core_rules": {
+  "band": [
+   "0.02",
+   "0.20"
+  ],
+  "book_age_s": 30,
+  "grid_us": 30000000,
+  "late_capture_s": 120,
+  "limits": "innings 1..30; periods 1..12; scores 0..1000; decimal exponent <=18, digits <=24",
+  "mlb_innings": [
+   8,
+   9
+  ],
+  "nba_clock_s": 600,
+  "spread": "0.10",
+  "state_age_s": 60,
+  "terminal_source": "c8de21366a88bc26dbef9f9a2139624199e14242"
+ },
+ "duplicate": "identical receipts collapse; conflicting equal-receipt books refused and counted",
+ "eligibility": "seal commit committer UTC date +1 day; never backdated; earlier dates development",
+ "entry": "first window grid instant with valid book and state; band and admission frozen here",
+ "floor": "30 games is an admission floor, not a power guarantee",
+ "freshness_seconds": {
+  "book_max": 30,
+  "state_max": 60
+ },
+ "grid_us": 30000000,
+ "inference": {
+  "alpha": "0.05",
+  "max_games": 2000,
+  "method": "exact Poisson-binomial DP, pure python floats",
+  "null": "independent Bernoulli(p_entry) across games",
+  "p": "min(1,2*min(P(S_prime>=S),P(S_prime<=S)))",
+  "statistic": "sum(p_entry-y)",
+  "verdict": "n<30 INSUFFICIENT; p<0.05 and D>0 OVERPRICED_LOSER; p<0.05 and D<0 UNDERPRICED_LOSER; otherwise NO_DETECTED_DISTORTION"
+ },
+ "io": "byte ticker/game_key prefilter without field-order assumptions; line-streamed; bounded temp observations for Platt and exact median; RSS ingestion/fitting checked every 10000 lines; exit 5 above 400 MiB with no receipt",
+ "late_capture": "first window-state receipt >120 s after window opened; kept and counted",
+ "locks": {
+  "mlb": "72 h after World Series final state receipt",
+  "nba": "2026-12-24T00:00:00Z"
+ },
+ "looks": "at lock every scheduled served game admitted/excluded by reason/unresolved; ONE immutable confirmatory receipt per sport; earlier and later receipts DESCRIPTIVE",
+ "mde": {
+  "250": "0.05",
+  "30": "0.14",
+  "90": "0.08"
+ },
+ "mde_label": "planning approximation: SD 0.27, 80 pct power, two-sided alpha 0.05",
+ "mirror": "high-band residual=-D on identical observations; construction check only; no Prelec mirror",
+ "nba_admission": "ENTRY state: type(season_type) is int, season_type==2, season_reason is None; missing, invalid and non-2 distinct exclusions",
+ "orientation": "ticker suffix equals alias(home_abbr) or alias(away_abbr); else orientation_unresolved",
+ "outcome": "admission before lookup; first final scores; conflicting finals or tied final unresolved",
+ "platt": {
+  "clip": [
+   "0.001",
+   "0.999"
+  ],
+  "instant_weight": "1/n_g",
+  "model": "logit P(y=1)=a+b logit(p)",
+  "newton_max_iterations": 50,
+  "refusal": "separation or non-convergence unavailable, counted per fit and bootstrap replicate",
+  "tolerance": "1e-10"
+ },
+ "population": "served maker_forward schedule entries only; FOCUS snapshot only; never bulk",
+ "postseason_evidence": "strict schedule season_type 3 or lead-declared postseason date roster recorded in receipt; missing evidence excluded and counted postseason_unestablished",
+ "price": "ticker YES mid=(yes_bid+yes_ask)/2; complement=1-mid labelled NO_proxy",
+ "primary": "D=mean(p_entry-y) over resolved band games; frozen entry low side; probability units and cents",
+ "provenance": "alone introduction commit; write-once; reject rewritten, merge seal, deletion/recreation",
+ "receipt": "deterministic strict JSON atomic replace; input byte sizes and head/tail sha; no time/host/path/RSS; RSS in separate .resources.json",
+ "replication": "both sports confirmatory non-null verdicts same direction; otherwise SINGLE-CORPUS",
+ "report": "CI endpoints and width; admitted/resolved/unresolved counts and wins; residual bounds with unresolved outcomes set to 0 and 1; conclusions resolved-only unless bounds agree",
+ "row": "S644",
+ "schema": "s644_late_game_r2_v1",
+ "scored_mode": {
+  "Q2": "lead appends RESULTS_LEDGER_SYSTEM.md before receipt; family=2; K at launch",
+  "Q4": "venue price only; no fitted arm; no walk-forward/CPCV applies",
+  "Q5": "NBA and MLB independent corpora; never pooled; one non-null sport SINGLE-CORPUS"
+ },
+ "seal": "ca943fb6aa390d5a9636e45c39ae176d2feb3654578246f4d54931b8e0de05a8",
+ "secondaries": [
+  "entry_cohort_path_residual=mean(m_g-y), descriptive",
+  "game-weighted window Brier",
+  "Platt slope descriptive",
+  "Prelec exp(-(-ln(p))^0.8) on entry and path; descriptive only"
+ ],
+ "shards": "adjacent UTC days joined without resetting games",
+ "spread_label": "abs(D)>median(entry half-spreads)+0.01: above spread; otherwise calibration finding, below spread plus fee",
+ "spread_max": "0.10",
+ "terminal": "status live and readable gate fields required; first final receipt hard cutoff; heuristics per instant; NBA period>=4 and clock_sec==0 excluded; OT clock>0 retained",
+ "terminal_limits": "MLB frozen end states at 2 outs stay; shortened or reviewed games unresolved by heuristic",
+ "terminal_rule": "mlb inning >= 9 and not tied: home ahead and half Bottom -> mlb_home_ahead_bottom; home ahead and (half Middle, or Top with outs 3) -> mlb_home_ahead_after_top; away ahead and (half End, or Bottom with outs 3) -> mlb_away_ahead_after_bottom. NBA period >= 4 and clock_sec == 0 excluded at every margin; OT clock_sec > 0 kept. Both sports require live status and readable gate fields. First final receipt is a hard cutoff.",
+ "windows": {
+  "mlb": "inning>=8",
+  "mlb_sensitivity": "inning>=9",
+  "nba": "period=4 and clock_sec<=600, or period>=5"
+ }
+}

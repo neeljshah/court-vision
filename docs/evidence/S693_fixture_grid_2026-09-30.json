@@ -1,0 +1,1111 @@
+{
+ "cells": {
+  "risk_averse|order_0s|delay_0s": {
+   "counts": {
+    "amend_BACK": 6,
+    "amend_KEEP": 2,
+    "amend_after_terminal": 29,
+    "amend_to_filled": 3,
+    "cancel_after_terminal": 16,
+    "cancelled": 4,
+    "expired": 8,
+    "post_only_cross": 16,
+    "self_cross_taker_at_cross": 1,
+    "stp_taker_cancelled": 1
+   },
+   "fill_basis": {
+    "through": 73,
+    "touch_queue": 24
+   },
+   "filled_contracts": 584,
+   "fills": 97,
+   "final_states": {
+    "CANCELLED": 7,
+    "EXPIRED": 8,
+    "FILLED": 56,
+    "REJECTED": 17
+   },
+   "header": {
+    "book_depth": "full depth assumed (UNVERIFIED capture property)",
+    "declared_latency_sha256": "f9903fa9391bcf65f5848c0545f2d241bf25dfe755f16d244acd04bf03069f1e",
+    "latency": {
+     "market_feed_latency_us": 0,
+     "order_latency_us": 0,
+     "source": "order and venue delay: latency_declared.json points; feeds 0 (not exercised)",
+     "state_feed_latency_us": 0,
+     "venue_delay_us": 0
+    },
+    "mode": "PAPER ONLY; execution-quality counts only",
+    "model_version": "s693_paper_exec_model_v1",
+    "queue_model": "risk_averse",
+    "rules": [
+     {
+      "rule": "post_only_cross",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "cross_is_taker",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "self_trade_prevention",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "amend_priority",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/amend-order"
+     },
+     {
+      "rule": "expiry_only_amend_keeps_place",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/amend-order"
+     },
+     {
+      "rule": "decrease_order",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/decrease-order"
+     },
+     {
+      "rule": "expiration_time",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "venue_delay",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     }
+    ],
+    "seed": 693,
+    "stp_mode": "taker_at_cross",
+    "tie_rule": "equal venue_us: actions, then prints, then books; input order within a rank",
+    "unknown_queue_contracts": 1000000
+   },
+   "orders": 88
+  },
+  "risk_averse|order_0s|delay_3s": {
+   "counts": {
+    "amend_BACK": 9,
+    "amend_KEEP": 3,
+    "amend_after_terminal": 24,
+    "amend_to_filled": 4,
+    "cancel_after_terminal": 15,
+    "cancelled": 5,
+    "expired": 11,
+    "post_only_cross": 15,
+    "self_cross_taker_at_cross": 1,
+    "stp_taker_cancelled": 1
+   },
+   "fill_basis": {
+    "through": 70,
+    "touch_queue": 23
+   },
+   "filled_contracts": 543,
+   "fills": 93,
+   "final_states": {
+    "CANCELLED": 9,
+    "EXPIRED": 11,
+    "FILLED": 52,
+    "REJECTED": 16
+   },
+   "header": {
+    "book_depth": "full depth assumed (UNVERIFIED capture property)",
+    "declared_latency_sha256": "f9903fa9391bcf65f5848c0545f2d241bf25dfe755f16d244acd04bf03069f1e",
+    "latency": {
+     "market_feed_latency_us": 0,
+     "order_latency_us": 0,
+     "source": "order and venue delay: latency_declared.json points; feeds 0 (not exercised)",
+     "state_feed_latency_us": 0,
+     "venue_delay_us": 3000000
+    },
+    "mode": "PAPER ONLY; execution-quality counts only",
+    "model_version": "s693_paper_exec_model_v1",
+    "queue_model": "risk_averse",
+    "rules": [
+     {
+      "rule": "post_only_cross",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "cross_is_taker",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "self_trade_prevention",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "amend_priority",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/amend-order"
+     },
+     {
+      "rule": "expiry_only_amend_keeps_place",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/amend-order"
+     },
+     {
+      "rule": "decrease_order",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/decrease-order"
+     },
+     {
+      "rule": "expiration_time",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "venue_delay",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     }
+    ],
+    "seed": 693,
+    "stp_mode": "taker_at_cross",
+    "tie_rule": "equal venue_us: actions, then prints, then books; input order within a rank",
+    "unknown_queue_contracts": 1000000
+   },
+   "orders": 88
+  },
+  "risk_averse|order_0s|delay_6s": {
+   "counts": {
+    "amend_BACK": 14,
+    "amend_KEEP": 9,
+    "amend_after_terminal": 13,
+    "amend_to_filled": 4,
+    "cancel_after_terminal": 15,
+    "cancelled": 5,
+    "expired": 12,
+    "post_only_cross": 15,
+    "self_cross_taker_at_cross": 1,
+    "stp_taker_cancelled": 1
+   },
+   "fill_basis": {
+    "through": 65,
+    "touch_queue": 26
+   },
+   "filled_contracts": 509,
+   "fills": 91,
+   "final_states": {
+    "CANCELLED": 9,
+    "EXPIRED": 12,
+    "FILLED": 51,
+    "REJECTED": 16
+   },
+   "header": {
+    "book_depth": "full depth assumed (UNVERIFIED capture property)",
+    "declared_latency_sha256": "f9903fa9391bcf65f5848c0545f2d241bf25dfe755f16d244acd04bf03069f1e",
+    "latency": {
+     "market_feed_latency_us": 0,
+     "order_latency_us": 0,
+     "source": "order and venue delay: latency_declared.json points; feeds 0 (not exercised)",
+     "state_feed_latency_us": 0,
+     "venue_delay_us": 6000000
+    },
+    "mode": "PAPER ONLY; execution-quality counts only",
+    "model_version": "s693_paper_exec_model_v1",
+    "queue_model": "risk_averse",
+    "rules": [
+     {
+      "rule": "post_only_cross",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "cross_is_taker",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "self_trade_prevention",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "amend_priority",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/amend-order"
+     },
+     {
+      "rule": "expiry_only_amend_keeps_place",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/amend-order"
+     },
+     {
+      "rule": "decrease_order",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/decrease-order"
+     },
+     {
+      "rule": "expiration_time",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "venue_delay",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     }
+    ],
+    "seed": 693,
+    "stp_mode": "taker_at_cross",
+    "tie_rule": "equal venue_us: actions, then prints, then books; input order within a rank",
+    "unknown_queue_contracts": 1000000
+   },
+   "orders": 88
+  },
+  "risk_averse|order_6s|delay_0s": {
+   "counts": {
+    "amend_BACK": 11,
+    "amend_KEEP": 3,
+    "amend_after_terminal": 23,
+    "amend_to_filled": 3,
+    "cancel_after_terminal": 17,
+    "cancelled": 3,
+    "expired": 12,
+    "post_only_cross": 15,
+    "self_cross_taker_at_cross": 1,
+    "stp_taker_cancelled": 1
+   },
+   "fill_basis": {
+    "through": 69,
+    "touch_queue": 31
+   },
+   "filled_contracts": 575,
+   "fills": 100,
+   "final_states": {
+    "CANCELLED": 6,
+    "EXPIRED": 12,
+    "FILLED": 54,
+    "REJECTED": 16
+   },
+   "header": {
+    "book_depth": "full depth assumed (UNVERIFIED capture property)",
+    "declared_latency_sha256": "f9903fa9391bcf65f5848c0545f2d241bf25dfe755f16d244acd04bf03069f1e",
+    "latency": {
+     "market_feed_latency_us": 0,
+     "order_latency_us": 6000000,
+     "source": "order and venue delay: latency_declared.json points; feeds 0 (not exercised)",
+     "state_feed_latency_us": 0,
+     "venue_delay_us": 0
+    },
+    "mode": "PAPER ONLY; execution-quality counts only",
+    "model_version": "s693_paper_exec_model_v1",
+    "queue_model": "risk_averse",
+    "rules": [
+     {
+      "rule": "post_only_cross",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "cross_is_taker",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "self_trade_prevention",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "amend_priority",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/amend-order"
+     },
+     {
+      "rule": "expiry_only_amend_keeps_place",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/amend-order"
+     },
+     {
+      "rule": "decrease_order",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/decrease-order"
+     },
+     {
+      "rule": "expiration_time",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "venue_delay",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     }
+    ],
+    "seed": 693,
+    "stp_mode": "taker_at_cross",
+    "tie_rule": "equal venue_us: actions, then prints, then books; input order within a rank",
+    "unknown_queue_contracts": 1000000
+   },
+   "orders": 88
+  },
+  "risk_averse|order_6s|delay_3s": {
+   "counts": {
+    "amend_BACK": 11,
+    "amend_KEEP": 6,
+    "amend_after_terminal": 20,
+    "amend_to_filled": 3,
+    "cancel_after_terminal": 14,
+    "cancelled": 6,
+    "expired": 10,
+    "post_only_cross": 15,
+    "post_only_cross_not_in_view": 1
+   },
+   "fill_basis": {
+    "through": 68,
+    "touch_queue": 30
+   },
+   "filled_contracts": 547,
+   "fills": 98,
+   "final_states": {
+    "CANCELLED": 9,
+    "EXPIRED": 10,
+    "FILLED": 54,
+    "REJECTED": 15
+   },
+   "header": {
+    "book_depth": "full depth assumed (UNVERIFIED capture property)",
+    "declared_latency_sha256": "f9903fa9391bcf65f5848c0545f2d241bf25dfe755f16d244acd04bf03069f1e",
+    "latency": {
+     "market_feed_latency_us": 0,
+     "order_latency_us": 6000000,
+     "source": "order and venue delay: latency_declared.json points; feeds 0 (not exercised)",
+     "state_feed_latency_us": 0,
+     "venue_delay_us": 3000000
+    },
+    "mode": "PAPER ONLY; execution-quality counts only",
+    "model_version": "s693_paper_exec_model_v1",
+    "queue_model": "risk_averse",
+    "rules": [
+     {
+      "rule": "post_only_cross",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "cross_is_taker",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "self_trade_prevention",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "amend_priority",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/amend-order"
+     },
+     {
+      "rule": "expiry_only_amend_keeps_place",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/amend-order"
+     },
+     {
+      "rule": "decrease_order",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/decrease-order"
+     },
+     {
+      "rule": "expiration_time",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "venue_delay",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     }
+    ],
+    "seed": 693,
+    "stp_mode": "taker_at_cross",
+    "tie_rule": "equal venue_us: actions, then prints, then books; input order within a rank",
+    "unknown_queue_contracts": 1000000
+   },
+   "orders": 88
+  },
+  "risk_averse|order_6s|delay_6s": {
+   "counts": {
+    "amend_BACK": 13,
+    "amend_KEEP": 11,
+    "amend_after_terminal": 15,
+    "amend_to_filled": 1,
+    "cancel_after_terminal": 13,
+    "cancelled": 7,
+    "expired": 11,
+    "post_only_cross": 15,
+    "post_only_cross_not_in_view": 1
+   },
+   "fill_basis": {
+    "through": 60,
+    "touch_queue": 29
+   },
+   "filled_contracts": 517,
+   "fills": 89,
+   "final_states": {
+    "CANCELLED": 8,
+    "EXPIRED": 11,
+    "FILLED": 54,
+    "REJECTED": 15
+   },
+   "header": {
+    "book_depth": "full depth assumed (UNVERIFIED capture property)",
+    "declared_latency_sha256": "f9903fa9391bcf65f5848c0545f2d241bf25dfe755f16d244acd04bf03069f1e",
+    "latency": {
+     "market_feed_latency_us": 0,
+     "order_latency_us": 6000000,
+     "source": "order and venue delay: latency_declared.json points; feeds 0 (not exercised)",
+     "state_feed_latency_us": 0,
+     "venue_delay_us": 6000000
+    },
+    "mode": "PAPER ONLY; execution-quality counts only",
+    "model_version": "s693_paper_exec_model_v1",
+    "queue_model": "risk_averse",
+    "rules": [
+     {
+      "rule": "post_only_cross",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "cross_is_taker",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "self_trade_prevention",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "amend_priority",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/amend-order"
+     },
+     {
+      "rule": "expiry_only_amend_keeps_place",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/amend-order"
+     },
+     {
+      "rule": "decrease_order",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/decrease-order"
+     },
+     {
+      "rule": "expiration_time",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "venue_delay",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     }
+    ],
+    "seed": 693,
+    "stp_mode": "taker_at_cross",
+    "tie_rule": "equal venue_us: actions, then prints, then books; input order within a rank",
+    "unknown_queue_contracts": 1000000
+   },
+   "orders": 88
+  },
+  "shrink|order_0s|delay_0s": {
+   "counts": {
+    "amend_BACK": 6,
+    "amend_KEEP": 2,
+    "amend_after_terminal": 29,
+    "amend_to_filled": 3,
+    "cancel_after_terminal": 16,
+    "cancelled": 4,
+    "expired": 8,
+    "post_only_cross": 16,
+    "queue_shrink_contracts": 90,
+    "queue_shrink_events": 26,
+    "self_cross_taker_at_cross": 1,
+    "stp_taker_cancelled": 1
+   },
+   "fill_basis": {
+    "through": 73,
+    "touch_queue": 24
+   },
+   "filled_contracts": 584,
+   "fills": 97,
+   "final_states": {
+    "CANCELLED": 7,
+    "EXPIRED": 8,
+    "FILLED": 56,
+    "REJECTED": 17
+   },
+   "header": {
+    "book_depth": "full depth assumed (UNVERIFIED capture property)",
+    "declared_latency_sha256": "f9903fa9391bcf65f5848c0545f2d241bf25dfe755f16d244acd04bf03069f1e",
+    "latency": {
+     "market_feed_latency_us": 0,
+     "order_latency_us": 0,
+     "source": "order and venue delay: latency_declared.json points; feeds 0 (not exercised)",
+     "state_feed_latency_us": 0,
+     "venue_delay_us": 0
+    },
+    "mode": "PAPER ONLY; execution-quality counts only",
+    "model_version": "s693_paper_exec_model_v1",
+    "queue_model": "shrink",
+    "rules": [
+     {
+      "rule": "post_only_cross",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "cross_is_taker",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "self_trade_prevention",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "amend_priority",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/amend-order"
+     },
+     {
+      "rule": "expiry_only_amend_keeps_place",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/amend-order"
+     },
+     {
+      "rule": "decrease_order",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/decrease-order"
+     },
+     {
+      "rule": "expiration_time",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "venue_delay",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     }
+    ],
+    "seed": 693,
+    "stp_mode": "taker_at_cross",
+    "tie_rule": "equal venue_us: actions, then prints, then books; input order within a rank",
+    "unknown_queue_contracts": 1000000
+   },
+   "orders": 88
+  },
+  "shrink|order_0s|delay_3s": {
+   "counts": {
+    "amend_BACK": 9,
+    "amend_KEEP": 3,
+    "amend_after_terminal": 24,
+    "amend_to_filled": 4,
+    "cancel_after_terminal": 15,
+    "cancelled": 5,
+    "expired": 11,
+    "post_only_cross": 15,
+    "queue_shrink_contracts": 134,
+    "queue_shrink_events": 42,
+    "self_cross_taker_at_cross": 1,
+    "stp_taker_cancelled": 1
+   },
+   "fill_basis": {
+    "through": 70,
+    "touch_queue": 24
+   },
+   "filled_contracts": 550,
+   "fills": 94,
+   "final_states": {
+    "CANCELLED": 9,
+    "EXPIRED": 11,
+    "FILLED": 52,
+    "REJECTED": 16
+   },
+   "header": {
+    "book_depth": "full depth assumed (UNVERIFIED capture property)",
+    "declared_latency_sha256": "f9903fa9391bcf65f5848c0545f2d241bf25dfe755f16d244acd04bf03069f1e",
+    "latency": {
+     "market_feed_latency_us": 0,
+     "order_latency_us": 0,
+     "source": "order and venue delay: latency_declared.json points; feeds 0 (not exercised)",
+     "state_feed_latency_us": 0,
+     "venue_delay_us": 3000000
+    },
+    "mode": "PAPER ONLY; execution-quality counts only",
+    "model_version": "s693_paper_exec_model_v1",
+    "queue_model": "shrink",
+    "rules": [
+     {
+      "rule": "post_only_cross",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "cross_is_taker",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "self_trade_prevention",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "amend_priority",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/amend-order"
+     },
+     {
+      "rule": "expiry_only_amend_keeps_place",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/amend-order"
+     },
+     {
+      "rule": "decrease_order",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/decrease-order"
+     },
+     {
+      "rule": "expiration_time",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "venue_delay",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     }
+    ],
+    "seed": 693,
+    "stp_mode": "taker_at_cross",
+    "tie_rule": "equal venue_us: actions, then prints, then books; input order within a rank",
+    "unknown_queue_contracts": 1000000
+   },
+   "orders": 88
+  },
+  "shrink|order_0s|delay_6s": {
+   "counts": {
+    "amend_BACK": 14,
+    "amend_KEEP": 9,
+    "amend_after_terminal": 13,
+    "amend_to_filled": 4,
+    "cancel_after_terminal": 15,
+    "cancelled": 5,
+    "expired": 12,
+    "post_only_cross": 15,
+    "queue_shrink_contracts": 177,
+    "queue_shrink_events": 51,
+    "self_cross_taker_at_cross": 1,
+    "stp_taker_cancelled": 1
+   },
+   "fill_basis": {
+    "through": 65,
+    "touch_queue": 30
+   },
+   "filled_contracts": 516,
+   "fills": 95,
+   "final_states": {
+    "CANCELLED": 9,
+    "EXPIRED": 12,
+    "FILLED": 51,
+    "REJECTED": 16
+   },
+   "header": {
+    "book_depth": "full depth assumed (UNVERIFIED capture property)",
+    "declared_latency_sha256": "f9903fa9391bcf65f5848c0545f2d241bf25dfe755f16d244acd04bf03069f1e",
+    "latency": {
+     "market_feed_latency_us": 0,
+     "order_latency_us": 0,
+     "source": "order and venue delay: latency_declared.json points; feeds 0 (not exercised)",
+     "state_feed_latency_us": 0,
+     "venue_delay_us": 6000000
+    },
+    "mode": "PAPER ONLY; execution-quality counts only",
+    "model_version": "s693_paper_exec_model_v1",
+    "queue_model": "shrink",
+    "rules": [
+     {
+      "rule": "post_only_cross",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "cross_is_taker",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "self_trade_prevention",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "amend_priority",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/amend-order"
+     },
+     {
+      "rule": "expiry_only_amend_keeps_place",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/amend-order"
+     },
+     {
+      "rule": "decrease_order",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/decrease-order"
+     },
+     {
+      "rule": "expiration_time",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "venue_delay",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     }
+    ],
+    "seed": 693,
+    "stp_mode": "taker_at_cross",
+    "tie_rule": "equal venue_us: actions, then prints, then books; input order within a rank",
+    "unknown_queue_contracts": 1000000
+   },
+   "orders": 88
+  },
+  "shrink|order_6s|delay_0s": {
+   "counts": {
+    "amend_BACK": 9,
+    "amend_KEEP": 3,
+    "amend_after_terminal": 25,
+    "amend_to_filled": 3,
+    "cancel_after_terminal": 17,
+    "cancelled": 3,
+    "expired": 10,
+    "post_only_cross": 15,
+    "queue_shrink_contracts": 166,
+    "queue_shrink_events": 49,
+    "self_cross_taker_at_cross": 1,
+    "stp_taker_cancelled": 1
+   },
+   "fill_basis": {
+    "through": 68,
+    "touch_queue": 35
+   },
+   "filled_contracts": 585,
+   "fills": 103,
+   "final_states": {
+    "CANCELLED": 6,
+    "EXPIRED": 10,
+    "FILLED": 56,
+    "REJECTED": 16
+   },
+   "header": {
+    "book_depth": "full depth assumed (UNVERIFIED capture property)",
+    "declared_latency_sha256": "f9903fa9391bcf65f5848c0545f2d241bf25dfe755f16d244acd04bf03069f1e",
+    "latency": {
+     "market_feed_latency_us": 0,
+     "order_latency_us": 6000000,
+     "source": "order and venue delay: latency_declared.json points; feeds 0 (not exercised)",
+     "state_feed_latency_us": 0,
+     "venue_delay_us": 0
+    },
+    "mode": "PAPER ONLY; execution-quality counts only",
+    "model_version": "s693_paper_exec_model_v1",
+    "queue_model": "shrink",
+    "rules": [
+     {
+      "rule": "post_only_cross",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "cross_is_taker",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "self_trade_prevention",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "amend_priority",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/amend-order"
+     },
+     {
+      "rule": "expiry_only_amend_keeps_place",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/amend-order"
+     },
+     {
+      "rule": "decrease_order",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/decrease-order"
+     },
+     {
+      "rule": "expiration_time",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "venue_delay",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     }
+    ],
+    "seed": 693,
+    "stp_mode": "taker_at_cross",
+    "tie_rule": "equal venue_us: actions, then prints, then books; input order within a rank",
+    "unknown_queue_contracts": 1000000
+   },
+   "orders": 88
+  },
+  "shrink|order_6s|delay_3s": {
+   "counts": {
+    "amend_BACK": 11,
+    "amend_KEEP": 6,
+    "amend_after_terminal": 20,
+    "amend_to_filled": 3,
+    "cancel_after_terminal": 14,
+    "cancelled": 6,
+    "expired": 10,
+    "post_only_cross": 15,
+    "post_only_cross_not_in_view": 1,
+    "queue_shrink_contracts": 118,
+    "queue_shrink_events": 38
+   },
+   "fill_basis": {
+    "through": 68,
+    "touch_queue": 32
+   },
+   "filled_contracts": 554,
+   "fills": 100,
+   "final_states": {
+    "CANCELLED": 9,
+    "EXPIRED": 10,
+    "FILLED": 54,
+    "REJECTED": 15
+   },
+   "header": {
+    "book_depth": "full depth assumed (UNVERIFIED capture property)",
+    "declared_latency_sha256": "f9903fa9391bcf65f5848c0545f2d241bf25dfe755f16d244acd04bf03069f1e",
+    "latency": {
+     "market_feed_latency_us": 0,
+     "order_latency_us": 6000000,
+     "source": "order and venue delay: latency_declared.json points; feeds 0 (not exercised)",
+     "state_feed_latency_us": 0,
+     "venue_delay_us": 3000000
+    },
+    "mode": "PAPER ONLY; execution-quality counts only",
+    "model_version": "s693_paper_exec_model_v1",
+    "queue_model": "shrink",
+    "rules": [
+     {
+      "rule": "post_only_cross",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "cross_is_taker",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "self_trade_prevention",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "amend_priority",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/amend-order"
+     },
+     {
+      "rule": "expiry_only_amend_keeps_place",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/amend-order"
+     },
+     {
+      "rule": "decrease_order",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/decrease-order"
+     },
+     {
+      "rule": "expiration_time",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "venue_delay",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     }
+    ],
+    "seed": 693,
+    "stp_mode": "taker_at_cross",
+    "tie_rule": "equal venue_us: actions, then prints, then books; input order within a rank",
+    "unknown_queue_contracts": 1000000
+   },
+   "orders": 88
+  },
+  "shrink|order_6s|delay_6s": {
+   "counts": {
+    "amend_BACK": 13,
+    "amend_KEEP": 11,
+    "amend_after_terminal": 15,
+    "amend_to_filled": 1,
+    "cancel_after_terminal": 13,
+    "cancelled": 7,
+    "expired": 11,
+    "post_only_cross": 15,
+    "post_only_cross_not_in_view": 1,
+    "queue_shrink_contracts": 130,
+    "queue_shrink_events": 43
+   },
+   "fill_basis": {
+    "through": 60,
+    "touch_queue": 32
+   },
+   "filled_contracts": 524,
+   "fills": 92,
+   "final_states": {
+    "CANCELLED": 8,
+    "EXPIRED": 11,
+    "FILLED": 54,
+    "REJECTED": 15
+   },
+   "header": {
+    "book_depth": "full depth assumed (UNVERIFIED capture property)",
+    "declared_latency_sha256": "f9903fa9391bcf65f5848c0545f2d241bf25dfe755f16d244acd04bf03069f1e",
+    "latency": {
+     "market_feed_latency_us": 0,
+     "order_latency_us": 6000000,
+     "source": "order and venue delay: latency_declared.json points; feeds 0 (not exercised)",
+     "state_feed_latency_us": 0,
+     "venue_delay_us": 6000000
+    },
+    "mode": "PAPER ONLY; execution-quality counts only",
+    "model_version": "s693_paper_exec_model_v1",
+    "queue_model": "shrink",
+    "rules": [
+     {
+      "rule": "post_only_cross",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "cross_is_taker",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "self_trade_prevention",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "amend_priority",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/amend-order"
+     },
+     {
+      "rule": "expiry_only_amend_keeps_place",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/amend-order"
+     },
+     {
+      "rule": "decrease_order",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/decrease-order"
+     },
+     {
+      "rule": "expiration_time",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     },
+     {
+      "rule": "venue_delay",
+      "status": "UNVERIFIED",
+      "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+     }
+    ],
+    "seed": 693,
+    "stp_mode": "taker_at_cross",
+    "tie_rule": "equal venue_us: actions, then prints, then books; input order within a rank",
+    "unknown_queue_contracts": 1000000
+   },
+   "orders": 88
+  }
+ },
+ "declared_latency_sha256": "f9903fa9391bcf65f5848c0545f2d241bf25dfe755f16d244acd04bf03069f1e",
+ "model_version": "s693_paper_exec_model_v1",
+ "note": "synthetic construct night; execution-quality counts only; PAPER ONLY",
+ "rules": [
+  {
+   "rule": "post_only_cross",
+   "status": "UNVERIFIED",
+   "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+  },
+  {
+   "rule": "cross_is_taker",
+   "status": "UNVERIFIED",
+   "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+  },
+  {
+   "rule": "self_trade_prevention",
+   "status": "UNVERIFIED",
+   "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+  },
+  {
+   "rule": "amend_priority",
+   "status": "UNVERIFIED",
+   "url": "https://docs.kalshi.com/api-reference/orders/amend-order"
+  },
+  {
+   "rule": "expiry_only_amend_keeps_place",
+   "status": "UNVERIFIED",
+   "url": "https://docs.kalshi.com/api-reference/orders/amend-order"
+  },
+  {
+   "rule": "decrease_order",
+   "status": "UNVERIFIED",
+   "url": "https://docs.kalshi.com/api-reference/orders/decrease-order"
+  },
+  {
+   "rule": "expiration_time",
+   "status": "UNVERIFIED",
+   "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+  },
+  {
+   "rule": "venue_delay",
+   "status": "UNVERIFIED",
+   "url": "https://docs.kalshi.com/api-reference/orders/create-order"
+  }
+ ],
+ "schema": "s693_fixture_grid_v1",
+ "seed": 693,
+ "tape": {
+  "amends": 40,
+  "books": 480,
+  "cancels": 20,
+  "orders": 88,
+  "prints": 512
+ },
+ "tie_rule": "equal venue_us: actions, then prints, then books; input order within a rank"
+}

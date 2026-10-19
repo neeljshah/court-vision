@@ -1,0 +1,421 @@
+{
+  "mlb": {
+    "canonical_rules": {
+      "home_alias": 6
+    },
+    "game_key_sources": {
+      "822759": "mlb_game_pk",
+      "823653": "mlb_game_pk",
+      "823733": "mlb_game_pk",
+      "823813": "mlb_game_pk",
+      "824219": "mlb_game_pk",
+      "824543": "mlb_game_pk"
+    },
+    "games_seen": 14,
+    "link_paths": {
+      "822759": "team_set",
+      "823653": "team_set",
+      "823733": "team_set",
+      "823813": "team_set",
+      "824219": "team_set",
+      "824543": "team_set"
+    },
+    "linked": 6,
+    "record_counts": {
+      "derivative_series_ignored": 1234,
+      "future_records": 36,
+      "ignored_record_type": 481226
+    },
+    "refused_by_reason": {
+      "missing_directional_team_evidence": 5,
+      "outside_utc_date": 3
+    },
+    "refused_team_evidence": {
+      "822678": {
+        "away_abbr": "NYM",
+        "compared_team_code_sets": {
+          "KXMLBGAME-26SEP261310PITDET": [
+            "DET",
+            "PIT"
+          ],
+          "KXMLBGAME-26SEP261507CINTOR": [
+            "CIN",
+            "TOR"
+          ],
+          "KXMLBGAME-26SEP261605LADSF": [
+            "LAD",
+            "SF"
+          ],
+          "KXMLBGAME-26SEP261605NYMWSH": [
+            "NYM",
+            "WSH"
+          ],
+          "KXMLBGAME-26SEP261610ATLMIA": [
+            "ATL",
+            "MIA"
+          ],
+          "KXMLBGAME-26SEP261610TEXMIN": [
+            "MIN",
+            "TEX"
+          ],
+          "KXMLBGAME-26SEP261910CLEKC": [
+            "CLE",
+            "KC"
+          ],
+          "KXMLBGAME-26SEP261910COLCWS": [
+            "COL",
+            "CWS"
+          ],
+          "KXMLBGAME-26SEP261910STLMIL": [
+            "MIL",
+            "STL"
+          ],
+          "KXMLBGAME-26SEP261915BALNYY": [
+            "BAL",
+            "NYY"
+          ],
+          "KXMLBGAME-26SEP261915TBPHI": [
+            "PHI",
+            "TB"
+          ],
+          "KXMLBGAME-26SEP262040AZSD": [
+            "AZ",
+            "SD"
+          ],
+          "KXMLBGAME-26SEP262140HOUATH": [
+            "ATH",
+            "HOU"
+          ],
+          "KXMLBGAME-26SEP262140LAASEA": [
+            "LAA",
+            "SEA"
+          ]
+        },
+        "home_abbr": "WSH",
+        "venue_team_codes": [
+          "NYM",
+          "WAS"
+        ]
+      },
+      "823165": {
+        "away_abbr": "LAD",
+        "compared_team_code_sets": {
+          "KXMLBGAME-26SEP261310PITDET": [
+            "DET",
+            "PIT"
+          ],
+          "KXMLBGAME-26SEP261507CINTOR": [
+            "CIN",
+            "TOR"
+          ],
+          "KXMLBGAME-26SEP261605LADSF": [
+            "LAD",
+            "SF"
+          ],
+          "KXMLBGAME-26SEP261605NYMWSH": [
+            "NYM",
+            "WSH"
+          ],
+          "KXMLBGAME-26SEP261610ATLMIA": [
+            "ATL",
+            "MIA"
+          ],
+          "KXMLBGAME-26SEP261610TEXMIN": [
+            "MIN",
+            "TEX"
+          ],
+          "KXMLBGAME-26SEP261910CLEKC": [
+            "CLE",
+            "KC"
+          ],
+          "KXMLBGAME-26SEP261910COLCWS": [
+            "COL",
+            "CWS"
+          ],
+          "KXMLBGAME-26SEP261910STLMIL": [
+            "MIL",
+            "STL"
+          ],
+          "KXMLBGAME-26SEP261915BALNYY": [
+            "BAL",
+            "NYY"
+          ],
+          "KXMLBGAME-26SEP261915TBPHI": [
+            "PHI",
+            "TB"
+          ],
+          "KXMLBGAME-26SEP262040AZSD": [
+            "AZ",
+            "SD"
+          ],
+          "KXMLBGAME-26SEP262140HOUATH": [
+            "ATH",
+            "HOU"
+          ],
+          "KXMLBGAME-26SEP262140LAASEA": [
+            "LAA",
+            "SEA"
+          ]
+        },
+        "home_abbr": "SF",
+        "venue_team_codes": [
+          "LAD",
+          "SFG"
+        ]
+      },
+      "823407": {
+        "away_abbr": "TB",
+        "compared_team_code_sets": {
+          "KXMLBGAME-26SEP261310PITDET": [
+            "DET",
+            "PIT"
+          ],
+          "KXMLBGAME-26SEP261507CINTOR": [
+            "CIN",
+            "TOR"
+          ],
+          "KXMLBGAME-26SEP261605LADSF": [
+            "LAD",
+            "SF"
+          ],
+          "KXMLBGAME-26SEP261605NYMWSH": [
+            "NYM",
+            "WSH"
+          ],
+          "KXMLBGAME-26SEP261610ATLMIA": [
+            "ATL",
+            "MIA"
+          ],
+          "KXMLBGAME-26SEP261610TEXMIN": [
+            "MIN",
+            "TEX"
+          ],
+          "KXMLBGAME-26SEP261910CLEKC": [
+            "CLE",
+            "KC"
+          ],
+          "KXMLBGAME-26SEP261910COLCWS": [
+            "COL",
+            "CWS"
+          ],
+          "KXMLBGAME-26SEP261910STLMIL": [
+            "MIL",
+            "STL"
+          ],
+          "KXMLBGAME-26SEP261915BALNYY": [
+            "BAL",
+            "NYY"
+          ],
+          "KXMLBGAME-26SEP261915TBPHI": [
+            "PHI",
+            "TB"
+          ],
+          "KXMLBGAME-26SEP262040AZSD": [
+            "AZ",
+            "SD"
+          ],
+          "KXMLBGAME-26SEP262140HOUATH": [
+            "ATH",
+            "HOU"
+          ],
+          "KXMLBGAME-26SEP262140LAASEA": [
+            "LAA",
+            "SEA"
+          ]
+        },
+        "home_abbr": "PHI",
+        "venue_team_codes": [
+          "PHI",
+          "TAM"
+        ]
+      },
+      "824057": {
+        "away_abbr": "CLE",
+        "compared_team_code_sets": {
+          "KXMLBGAME-26SEP261310PITDET": [
+            "DET",
+            "PIT"
+          ],
+          "KXMLBGAME-26SEP261507CINTOR": [
+            "CIN",
+            "TOR"
+          ],
+          "KXMLBGAME-26SEP261605LADSF": [
+            "LAD",
+            "SF"
+          ],
+          "KXMLBGAME-26SEP261605NYMWSH": [
+            "NYM",
+            "WSH"
+          ],
+          "KXMLBGAME-26SEP261610ATLMIA": [
+            "ATL",
+            "MIA"
+          ],
+          "KXMLBGAME-26SEP261610TEXMIN": [
+            "MIN",
+            "TEX"
+          ],
+          "KXMLBGAME-26SEP261910CLEKC": [
+            "CLE",
+            "KC"
+          ],
+          "KXMLBGAME-26SEP261910COLCWS": [
+            "COL",
+            "CWS"
+          ],
+          "KXMLBGAME-26SEP261910STLMIL": [
+            "MIL",
+            "STL"
+          ],
+          "KXMLBGAME-26SEP261915BALNYY": [
+            "BAL",
+            "NYY"
+          ],
+          "KXMLBGAME-26SEP261915TBPHI": [
+            "PHI",
+            "TB"
+          ],
+          "KXMLBGAME-26SEP262040AZSD": [
+            "AZ",
+            "SD"
+          ],
+          "KXMLBGAME-26SEP262140HOUATH": [
+            "ATH",
+            "HOU"
+          ],
+          "KXMLBGAME-26SEP262140LAASEA": [
+            "LAA",
+            "SEA"
+          ]
+        },
+        "home_abbr": "KC",
+        "venue_team_codes": [
+          "CLE",
+          "KAN"
+        ]
+      },
+      "824705": {
+        "away_abbr": "CHC",
+        "compared_team_code_sets": {
+          "KXMLBGAME-26SEP261310PITDET": [
+            "DET",
+            "PIT"
+          ],
+          "KXMLBGAME-26SEP261507CINTOR": [
+            "CIN",
+            "TOR"
+          ],
+          "KXMLBGAME-26SEP261605LADSF": [
+            "LAD",
+            "SF"
+          ],
+          "KXMLBGAME-26SEP261605NYMWSH": [
+            "NYM",
+            "WSH"
+          ],
+          "KXMLBGAME-26SEP261610ATLMIA": [
+            "ATL",
+            "MIA"
+          ],
+          "KXMLBGAME-26SEP261610TEXMIN": [
+            "MIN",
+            "TEX"
+          ],
+          "KXMLBGAME-26SEP261910CLEKC": [
+            "CLE",
+            "KC"
+          ],
+          "KXMLBGAME-26SEP261910COLCWS": [
+            "COL",
+            "CWS"
+          ],
+          "KXMLBGAME-26SEP261910STLMIL": [
+            "MIL",
+            "STL"
+          ],
+          "KXMLBGAME-26SEP261915BALNYY": [
+            "BAL",
+            "NYY"
+          ],
+          "KXMLBGAME-26SEP261915TBPHI": [
+            "PHI",
+            "TB"
+          ],
+          "KXMLBGAME-26SEP262040AZSD": [
+            "AZ",
+            "SD"
+          ],
+          "KXMLBGAME-26SEP262140HOUATH": [
+            "ATH",
+            "HOU"
+          ],
+          "KXMLBGAME-26SEP262140LAASEA": [
+            "LAA",
+            "SEA"
+          ]
+        },
+        "home_abbr": "BOS",
+        "venue_team_codes": [
+          "BOS",
+          "CHC"
+        ]
+      }
+    },
+    "schedule_receipt": {
+      "http_status": 200,
+      "request_start_utc": "2026-09-25T13:56:05.598783+00:00",
+      "response_bytes": 40157,
+      "response_end_utc": "2026-09-25T13:56:05.738409+00:00",
+      "response_sha256": "4628d4b3e8a7f0a185e603711aa0cf93065f351f82ac9786337c0832f15cd202",
+      "url": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=2026-09-26&hydrate=team"
+    },
+    "schedule_source": "live",
+    "written": 6
+  },
+  "nba": {
+    "canonical_rules": {},
+    "game_key_sources": {},
+    "games_seen": 0,
+    "link_paths": {},
+    "linked": 0,
+    "record_counts": {
+      "derivative_series_ignored": 39
+    },
+    "refused_by_reason": {},
+    "refused_team_evidence": {},
+    "schedule_receipt": {
+      "http_status": 200,
+      "request_start_utc": "2026-09-25T13:56:05.743514+00:00",
+      "response_bytes": 5489,
+      "response_end_utc": "2026-09-25T13:56:05.859614+00:00",
+      "response_sha256": "05f65af560ceb208b42bcefbd05d1057c1f44c4efd402ca842f645d547b88af0",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=20260926"
+    },
+    "schedule_source": "live",
+    "written": 0
+  },
+  "nfl": {
+    "canonical_rules": {},
+    "game_key_sources": {},
+    "games_seen": 0,
+    "link_paths": {},
+    "linked": 0,
+    "record_counts": {
+      "derivative_series_ignored": 470,
+      "ignored_record_type": 268477
+    },
+    "refused_by_reason": {},
+    "refused_team_evidence": {},
+    "schedule_receipt": {
+      "http_status": 200,
+      "request_start_utc": "2026-09-25T13:56:05.860354+00:00",
+      "response_bytes": 5193,
+      "response_end_utc": "2026-09-25T13:56:05.943486+00:00",
+      "response_sha256": "d32bdedc9f799a39a5728d8bd0c52d81096c889f596fde3cdd8b5d43bf46a8c5",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=20260926"
+    },
+    "schedule_source": "live",
+    "written": 0
+  }
+}

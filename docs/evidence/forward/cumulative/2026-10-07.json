@@ -1,0 +1,2015 @@
+{
+ "date": "2026-10-07",
+ "floor_games": 30,
+ "last_7": {
+  "calendar_days": 7,
+  "calendar_days_without_receipt": 0,
+  "complete": 3,
+  "coverage_refusals": {
+   "qualification_missing": 1,
+   "qualification_unreadable": 1,
+   "scoreboard_missing": 1
+  },
+  "fills_counts_only": {
+   "ttl_30_fills_credited": {
+    "nights_missing": 3,
+    "sum": 55
+   },
+   "ttl_5_fills_credited": {
+    "nights_missing": 3,
+    "sum": 17
+   }
+  },
+  "nights": 7,
+  "pooled": {
+   "groups": [
+    {
+     "C_minus_A": {
+      "brier": "0.4378740552057057111345195418",
+      "logloss": "2.618501157720739375624044642"
+     },
+     "n_games": 2,
+     "n_ticks": 1850,
+     "seal_sha256": "6abb1a851628a1fbf259ed5b79e7aecbdbeccf68f7542afdc665263db4ed13e4",
+     "sport": "mlb",
+     "support": "INSUFFICIENT"
+    }
+   ],
+   "refusals": {
+    "ValueError:unknown_corpus": 1
+   },
+   "seal_last_night": {
+    "6abb1a851628a1fbf259ed5b79e7aecbdbeccf68f7542afdc665263db4ed13e4": "2026-10-05",
+    "806fa58a3517d28b4f320e89c26f32a73ad6d1a5fe1f153aa5bf0aa9db7f85ea": "2026-10-07",
+    "a74e955e2fb37825e9249ed5b6280421a7c7a450b71a8239f34d6e8322a3d588": "2026-10-02"
+   },
+   "sources": 5,
+   "status": "ATTENTION"
+  },
+  "refusals": {
+   "fill_realism_absent": 3,
+   "qualification_absent": 1,
+   "qualification_unreadable": 1,
+   "registry_e_absent": 4,
+   "scoreboard_absent": 1
+  },
+  "scoreboard_sports": [
+   "mlb",
+   "nba",
+   "nfl"
+  ],
+  "sports": {
+   "mlb": {
+    "game_nights_scored": {
+     "A": {
+      "nights_missing": 1,
+      "sum": 11
+     },
+     "B": {
+      "nights_missing": 1,
+      "sum": 7
+     },
+     "B_lag": {
+      "nights_missing": 1,
+      "sum": 11
+     },
+     "C": {
+      "nights_missing": 1,
+      "sum": 7
+     },
+     "D": {
+      "nights_missing": 1,
+      "sum": 0
+     }
+    },
+    "listed": {
+     "nights_missing": 0,
+     "sum": 17
+    },
+    "qualified": {
+     "nights_missing": 2,
+     "sum": 0
+    },
+    "qualified_decisions": {
+     "nights_missing": 2,
+     "sum": 0
+    },
+    "selected": {
+     "nights_missing": 0,
+     "sum": 14
+    },
+    "served": {
+     "nights_missing": 0,
+     "sum": 14
+    },
+    "settled_games": {
+     "nights_missing": 1,
+     "sum": 9
+    },
+    "ticks": {
+     "A": {
+      "nights_missing": 1,
+      "sum": 15060
+     },
+     "B": {
+      "nights_missing": 1,
+      "sum": 5123
+     },
+     "B_lag": {
+      "nights_missing": 1,
+      "sum": 14923
+     },
+     "C": {
+      "nights_missing": 1,
+      "sum": 5098
+     },
+     "D": {
+      "nights_missing": 1,
+      "sum": 0
+     }
+    }
+   },
+   "nba": {
+    "game_nights_scored": {
+     "A": {
+      "nights_missing": 6,
+      "sum": 4
+     },
+     "B": {
+      "nights_missing": 6,
+      "sum": 0
+     },
+     "B_lag": {
+      "nights_missing": 6,
+      "sum": 4
+     },
+     "C": {
+      "nights_missing": 6,
+      "sum": 0
+     },
+     "D": {
+      "nights_missing": 6,
+      "sum": 0
+     }
+    },
+    "listed": {
+     "nights_missing": 6,
+     "sum": 4
+    },
+    "qualified": {
+     "nights_missing": 7,
+     "sum": 0
+    },
+    "qualified_decisions": {
+     "nights_missing": 7,
+     "sum": 0
+    },
+    "selected": {
+     "nights_missing": 6,
+     "sum": 4
+    },
+    "served": {
+     "nights_missing": 6,
+     "sum": 4
+    },
+    "settled_games": {
+     "nights_missing": 1,
+     "sum": 3
+    },
+    "ticks": {
+     "A": {
+      "nights_missing": 6,
+      "sum": 3624
+     },
+     "B": {
+      "nights_missing": 6,
+      "sum": 0
+     },
+     "B_lag": {
+      "nights_missing": 6,
+      "sum": 3403
+     },
+     "C": {
+      "nights_missing": 6,
+      "sum": 0
+     },
+     "D": {
+      "nights_missing": 6,
+      "sum": 0
+     }
+    }
+   },
+   "nfl": {
+    "game_nights_scored": {
+     "A": {
+      "nights_missing": 1,
+      "sum": 4
+     },
+     "B": {
+      "nights_missing": 1,
+      "sum": 3
+     },
+     "B_lag": {
+      "nights_missing": 1,
+      "sum": 4
+     },
+     "C": {
+      "nights_missing": 1,
+      "sum": 3
+     },
+     "D": {
+      "nights_missing": 1,
+      "sum": 0
+     }
+    },
+    "listed": {
+     "nights_missing": 0,
+     "sum": 16
+    },
+    "qualified": {
+     "nights_missing": 2,
+     "sum": 0
+    },
+    "qualified_decisions": {
+     "nights_missing": 2,
+     "sum": 0
+    },
+    "selected": {
+     "nights_missing": 0,
+     "sum": 13
+    },
+    "served": {
+     "nights_missing": 0,
+     "sum": 5
+    },
+    "settled_games": {
+     "nights_missing": 1,
+     "sum": 2
+    },
+    "ticks": {
+     "A": {
+      "nights_missing": 1,
+      "sum": 1512
+     },
+     "B": {
+      "nights_missing": 1,
+      "sum": 909
+     },
+     "B_lag": {
+      "nights_missing": 1,
+      "sum": 1141
+     },
+     "C": {
+      "nights_missing": 1,
+      "sum": 909
+     },
+     "D": {
+      "nights_missing": 1,
+      "sum": 0
+     }
+    }
+   },
+   "soccer": {
+    "game_nights_scored": {
+     "A": {
+      "nights_missing": 6,
+      "sum": 0
+     },
+     "B": {
+      "nights_missing": 6,
+      "sum": 0
+     },
+     "B_lag": {
+      "nights_missing": 6,
+      "sum": 0
+     },
+     "C": {
+      "nights_missing": 6,
+      "sum": 0
+     },
+     "D": {
+      "nights_missing": 6,
+      "sum": 0
+     }
+    },
+    "listed": {
+     "nights_missing": 6,
+     "sum": 0
+    },
+    "qualified": {
+     "nights_missing": 7,
+     "sum": 0
+    },
+    "qualified_decisions": {
+     "nights_missing": 7,
+     "sum": 0
+    },
+    "selected": {
+     "nights_missing": 6,
+     "sum": 0
+    },
+    "served": {
+     "nights_missing": 6,
+     "sum": 0
+    },
+    "settled_games": {
+     "nights_missing": 1,
+     "sum": 0
+    },
+    "ticks": {
+     "A": {
+      "nights_missing": 6,
+      "sum": 0
+     },
+     "B": {
+      "nights_missing": 6,
+      "sum": 0
+     },
+     "B_lag": {
+      "nights_missing": 6,
+      "sum": 0
+     },
+     "C": {
+      "nights_missing": 6,
+      "sum": 0
+     },
+     "D": {
+      "nights_missing": 6,
+      "sum": 0
+     }
+    }
+   }
+  },
+  "statuses": {
+   "COMPLETE": 3,
+   "PARTIAL": 4
+  },
+  "untracked_receipts": 4
+ },
+ "not_sealed": "S503 cumulative window: no sealed window file exists, so the sealed cumulative evaluator has never run; S721 pooled prereg: PROPOSED only (S721_PREREG_POOLED_PROPOSED_2026-10-02.json).",
+ "open_floors": [
+  {
+   "floor": "pooled C-and-A outcome games across early/middle/late, one seal (descriptive; the sealed floor of 30 games applies per cell)",
+   "have": 2,
+   "need": 28,
+   "note": "pooled reader refusals {'ValueError:unknown_corpus': 1} (an out-of-corpus sport row refuses its whole receipt: pooled_reader.CORPUS)",
+   "per_day_rate_last7": 0.286,
+   "projected": "2027-01-13",
+   "seal": "6abb1a851628",
+   "sport": "mlb"
+  },
+  {
+   "floor": "pooled C-and-A outcome games across early/middle/late, one seal (descriptive; the sealed floor of 30 games applies per cell)",
+   "have": null,
+   "need": null,
+   "note": "pooled reader refusals {'ValueError:unknown_corpus': 1} (an out-of-corpus sport row refuses its whole receipt: pooled_reader.CORPUS)",
+   "projected": null,
+   "seal": null,
+   "sport": "nba"
+  },
+  {
+   "floor": "pooled C-and-A outcome games across early/middle/late, one seal (descriptive; the sealed floor of 30 games applies per cell)",
+   "have": null,
+   "need": null,
+   "note": "pooled reader refusals {'ValueError:unknown_corpus': 1} (an out-of-corpus sport row refuses its whole receipt: pooled_reader.CORPUS)",
+   "projected": null,
+   "seal": null,
+   "sport": "nfl"
+  },
+  {
+   "floor": "pooled C-and-A outcome games across early/middle/late, one seal (descriptive; the sealed floor of 30 games applies per cell)",
+   "have": null,
+   "need": null,
+   "note": "pooled reader refusals {'ValueError:unknown_corpus': 1} (an out-of-corpus sport row refuses its whole receipt: pooled_reader.CORPUS)",
+   "projected": null,
+   "seal": null,
+   "sport": "soccer"
+  },
+  {
+   "floor": "pooled C-and-A outcome games across early/middle/late, one seal (descriptive; the sealed floor of 30 games applies per cell)",
+   "have": null,
+   "need": null,
+   "note": "pooled reader refusals {'ValueError:unknown_corpus': 1} (an out-of-corpus sport row refuses its whole receipt: pooled_reader.CORPUS)",
+   "projected": null,
+   "seal": null,
+   "sport": "tennis"
+  },
+  {
+   "floor": "qualified games (weekly family floor, families_maker_forward.json)",
+   "have": 0,
+   "need": "the weekly family floor",
+   "note": "no game has qualified (unknown on 6 nights)",
+   "projected": null,
+   "sport": "mlb"
+  },
+  {
+   "floor": "qualified games (weekly family floor, families_maker_forward.json)",
+   "have": null,
+   "need": "the weekly family floor",
+   "note": "no game has qualified (unknown on 13 nights)",
+   "projected": null,
+   "sport": "nba"
+  },
+  {
+   "floor": "qualified games (weekly family floor, families_maker_forward.json)",
+   "have": 0,
+   "need": "the weekly family floor",
+   "note": "no game has qualified (unknown on 6 nights)",
+   "projected": null,
+   "sport": "nfl"
+  },
+  {
+   "floor": "qualified games (weekly family floor, families_maker_forward.json)",
+   "have": null,
+   "need": "the weekly family floor",
+   "note": "no game has qualified (unknown on 13 nights)",
+   "projected": null,
+   "sport": "soccer"
+  },
+  {
+   "floor": "qualified games (weekly family floor, families_maker_forward.json)",
+   "have": 0,
+   "need": "the weekly family floor",
+   "note": "no game has qualified (unknown on 12 nights)",
+   "projected": null,
+   "sport": "tennis"
+  }
+ ],
+ "per_night": [
+  {
+   "cell_verdicts": null,
+   "coverage_refusals": {
+    "run_missing": 1,
+    "scoreboard_missing": 1
+   },
+   "date": "2026-09-22",
+   "fills": null,
+   "latency": null,
+   "refusals": {
+    "fill_realism_absent": 1,
+    "latency_absent": 1,
+    "nights_absent": 1,
+    "registry_e_absent": 1,
+    "scoreboard_absent": 1
+   },
+   "registry_e": null,
+   "scoreboard_sports": [],
+   "settled": null,
+   "sports": {
+    "mlb": {
+     "games_scored": null,
+     "listed": 10,
+     "qualified": 0,
+     "qualified_decisions": 0,
+     "selected": 6,
+     "served": 3,
+     "ticks": null
+    },
+    "nfl": {
+     "games_scored": null,
+     "listed": 1,
+     "qualified": 0,
+     "qualified_decisions": 0,
+     "selected": 0,
+     "served": 0,
+     "ticks": null
+    },
+    "tennis": {
+     "games_scored": null,
+     "listed": 73,
+     "qualified": 0,
+     "qualified_decisions": 0,
+     "selected": 0,
+     "served": 0,
+     "ticks": null
+    }
+   },
+   "status": null,
+   "untracked": []
+  },
+  {
+   "cell_verdicts": {
+    "INSUFFICIENT": 48
+   },
+   "coverage_refusals": {
+    "qualification_unreadable": 1,
+    "run_missing": 1
+   },
+   "date": "2026-09-24",
+   "fills": {
+    "by_ttl": {
+     "30": {
+      "fills_credited": 86,
+      "unknown_queue": 11717
+     },
+     "5": {
+      "fills_credited": 32,
+      "unknown_queue": 11717
+     }
+    },
+    "mode": "COUNTS ONLY"
+   },
+   "latency": [
+    {
+     "book_moved_first_share": 0.5725,
+     "feed": "statsapi_rest",
+     "games": 9,
+     "receipt_minus_event_p50_s": 22.5,
+     "sport": "mlb"
+    }
+   ],
+   "refusals": {
+    "qualification_unreadable": 1,
+    "registry_e_absent": 1
+   },
+   "registry_e": null,
+   "scoreboard_sports": [
+    "mlb"
+   ],
+   "settled": [],
+   "sports": {
+    "mlb": {
+     "games_scored": {
+      "A": 4,
+      "B": 0,
+      "B_lag": 4,
+      "C": 0,
+      "D": 0
+     },
+     "listed": 9,
+     "qualified": null,
+     "qualified_decisions": null,
+     "selected": 4,
+     "served": 4,
+     "ticks": {
+      "A": 1991,
+      "B": 0,
+      "B_lag": 1966,
+      "C": 0,
+      "D": 0
+     }
+    },
+    "nfl": {
+     "games_scored": {
+      "A": 0,
+      "B": 0,
+      "B_lag": 0,
+      "C": 0,
+      "D": 0
+     },
+     "listed": 0,
+     "qualified": null,
+     "qualified_decisions": null,
+     "selected": 0,
+     "served": 0,
+     "ticks": {
+      "A": 0,
+      "B": 0,
+      "B_lag": 0,
+      "C": 0,
+      "D": 0
+     }
+    }
+   },
+   "status": "PARTIAL",
+   "untracked": []
+  },
+  {
+   "cell_verdicts": null,
+   "coverage_refusals": {
+    "qualification_missing": 1,
+    "run_missing": 1,
+    "scoreboard_missing": 1
+   },
+   "date": "2026-09-25",
+   "fills": null,
+   "latency": [
+    {
+     "book_moved_first_share": 0.5325,
+     "feed": "statsapi_rest",
+     "games": 20,
+     "receipt_minus_event_p50_s": 23.0,
+     "sport": "mlb"
+    }
+   ],
+   "refusals": {
+    "fill_realism_absent": 1,
+    "qualification_absent": 1,
+    "registry_e_absent": 1,
+    "scoreboard_absent": 1
+   },
+   "registry_e": null,
+   "scoreboard_sports": [],
+   "settled": null,
+   "sports": {
+    "mlb": {
+     "games_scored": null,
+     "listed": 11,
+     "qualified": null,
+     "qualified_decisions": null,
+     "selected": 6,
+     "served": 3,
+     "ticks": null
+    },
+    "nfl": {
+     "games_scored": null,
+     "listed": 0,
+     "qualified": null,
+     "qualified_decisions": null,
+     "selected": 0,
+     "served": 0,
+     "ticks": null
+    }
+   },
+   "status": "PARTIAL",
+   "untracked": []
+  },
+  {
+   "cell_verdicts": null,
+   "coverage_refusals": {
+    "qualification_missing": 1,
+    "scoreboard_missing": 1
+   },
+   "date": "2026-09-26",
+   "fills": null,
+   "latency": [
+    {
+     "book_moved_first_share": 0.6222,
+     "feed": "statsapi_rest",
+     "games": 15,
+     "receipt_minus_event_p50_s": 24.0,
+     "sport": "mlb"
+    }
+   ],
+   "refusals": {
+    "fill_realism_absent": 1,
+    "qualification_absent": 1,
+    "scoreboard_absent": 1
+   },
+   "registry_e": {
+    "blocks": null,
+    "complete": null,
+    "e_refusals": {},
+    "e_scored": 0,
+    "max_train_games": 0,
+    "rows": 0
+   },
+   "scoreboard_sports": [],
+   "settled": null,
+   "sports": {
+    "mlb": {
+     "games_scored": null,
+     "listed": 11,
+     "qualified": null,
+     "qualified_decisions": null,
+     "selected": 6,
+     "served": 6,
+     "ticks": null
+    },
+    "nba": {
+     "games_scored": null,
+     "listed": 0,
+     "qualified": null,
+     "qualified_decisions": null,
+     "selected": 0,
+     "served": 0,
+     "ticks": null
+    },
+    "nfl": {
+     "games_scored": null,
+     "listed": 0,
+     "qualified": null,
+     "qualified_decisions": null,
+     "selected": 0,
+     "served": 0,
+     "ticks": null
+    }
+   },
+   "status": "PARTIAL",
+   "untracked": []
+  },
+  {
+   "cell_verdicts": null,
+   "coverage_refusals": {
+    "scoreboard_missing": 1
+   },
+   "date": "2026-09-29",
+   "fills": {
+    "by_ttl": {
+     "30": {
+      "fills_credited": 12,
+      "unknown_queue": 53546
+     },
+     "5": {
+      "fills_credited": 3,
+      "unknown_queue": 53546
+     }
+    },
+    "mode": "COUNTS ONLY"
+   },
+   "latency": [
+    {
+     "book_moved_first_share": 0.5174,
+     "feed": "statsapi_rest",
+     "games": 3,
+     "receipt_minus_event_p50_s": 19.0,
+     "sport": "mlb"
+    },
+    {
+     "book_moved_first_share": null,
+     "feed": "espn_scoreboard",
+     "games": 1,
+     "receipt_minus_event_p50_s": null,
+     "sport": "nfl"
+    }
+   ],
+   "refusals": {
+    "scoreboard_absent": 1
+   },
+   "registry_e": {
+    "blocks": null,
+    "complete": null,
+    "e_refusals": {},
+    "e_scored": 0,
+    "max_train_games": 0,
+    "rows": 0
+   },
+   "scoreboard_sports": [],
+   "settled": null,
+   "sports": {
+    "mlb": {
+     "games_scored": null,
+     "listed": 2,
+     "qualified": 0,
+     "qualified_decisions": 0,
+     "selected": 2,
+     "served": 2,
+     "ticks": null
+    },
+    "nfl": {
+     "games_scored": null,
+     "listed": 1,
+     "qualified": 0,
+     "qualified_decisions": 0,
+     "selected": 1,
+     "served": 1,
+     "ticks": null
+    }
+   },
+   "status": "PARTIAL",
+   "untracked": []
+  },
+  {
+   "cell_verdicts": {
+    "INSUFFICIENT": 48
+   },
+   "coverage_refusals": {
+    "qualification_unreadable": 1
+   },
+   "date": "2026-09-30",
+   "fills": {
+    "by_ttl": {
+     "30": {
+      "fills_credited": 18,
+      "unknown_queue": 9076
+     },
+     "5": {
+      "fills_credited": 7,
+      "unknown_queue": 9076
+     }
+    },
+    "mode": "COUNTS ONLY"
+   },
+   "latency": [
+    {
+     "book_moved_first_share": 0.4828,
+     "feed": "statsapi_rest",
+     "games": 6,
+     "receipt_minus_event_p50_s": 19.5,
+     "sport": "mlb"
+    }
+   ],
+   "refusals": {
+    "qualification_unreadable": 1
+   },
+   "registry_e": {
+    "blocks": [
+     "mid",
+     "team_state",
+     "microstructure",
+     "player_pitcher_workload",
+     "half_inning",
+     "base_occupancy",
+     "ball_strike_count"
+    ],
+    "complete": true,
+    "e_refusals": {
+     "training_history_absent": 4767
+    },
+    "e_scored": 0,
+    "max_train_games": 0,
+    "rows": 4767
+   },
+   "scoreboard_sports": [
+    "mlb"
+   ],
+   "settled": [
+    [
+     "mlb",
+     "849841"
+    ],
+    [
+     "mlb",
+     "849846"
+    ],
+    [
+     "mlb",
+     "849851"
+    ]
+   ],
+   "sports": {
+    "mlb": {
+     "games_scored": {
+      "A": 3,
+      "B": 3,
+      "B_lag": 3,
+      "C": 3,
+      "D": 0
+     },
+     "listed": 4,
+     "qualified": null,
+     "qualified_decisions": null,
+     "selected": 3,
+     "served": 3,
+     "ticks": {
+      "A": 4842,
+      "B": 3156,
+      "B_lag": 4808,
+      "C": 3077,
+      "D": 0
+     }
+    },
+    "nfl": {
+     "games_scored": {
+      "A": 0,
+      "B": 0,
+      "B_lag": 0,
+      "C": 0,
+      "D": 0
+     },
+     "listed": 0,
+     "qualified": null,
+     "qualified_decisions": null,
+     "selected": 0,
+     "served": 0,
+     "ticks": {
+      "A": 0,
+      "B": 0,
+      "B_lag": 0,
+      "C": 0,
+      "D": 0
+     }
+    }
+   },
+   "status": "PARTIAL",
+   "untracked": [
+    "docs/evidence/forward/qualification/2026-09-30.json"
+   ]
+  },
+  {
+   "cell_verdicts": null,
+   "coverage_refusals": {
+    "qualification_unreadable": 1,
+    "scoreboard_missing": 1
+   },
+   "date": "2026-10-01",
+   "fills": null,
+   "latency": [
+    {
+     "book_moved_first_share": 0.29,
+     "feed": "statsapi_rest",
+     "games": 4,
+     "receipt_minus_event_p50_s": 18.5,
+     "sport": "mlb"
+    }
+   ],
+   "refusals": {
+    "fill_realism_absent": 1,
+    "qualification_unreadable": 1,
+    "registry_e_absent": 1,
+    "scoreboard_absent": 1
+   },
+   "registry_e": null,
+   "scoreboard_sports": [],
+   "settled": null,
+   "sports": {
+    "mlb": {
+     "games_scored": null,
+     "listed": 4,
+     "qualified": null,
+     "qualified_decisions": null,
+     "selected": 2,
+     "served": 2,
+     "ticks": null
+    },
+    "nfl": {
+     "games_scored": null,
+     "listed": 0,
+     "qualified": null,
+     "qualified_decisions": null,
+     "selected": 0,
+     "served": 0,
+     "ticks": null
+    }
+   },
+   "status": "PARTIAL",
+   "untracked": [
+    "docs/evidence/forward/qualification/2026-10-01.json"
+   ]
+  },
+  {
+   "cell_verdicts": {
+    "INSUFFICIENT": 96
+   },
+   "coverage_refusals": {},
+   "date": "2026-10-02",
+   "fills": {
+    "by_ttl": {
+     "30": {
+      "fills_credited": 0,
+      "unknown_queue": 68145
+     },
+     "5": {
+      "fills_credited": 0,
+      "unknown_queue": 68145
+     }
+    },
+    "mode": "COUNTS ONLY"
+   },
+   "latency": [
+    {
+     "book_moved_first_share": null,
+     "feed": "statsapi_rest",
+     "games": 1,
+     "receipt_minus_event_p50_s": null,
+     "sport": "mlb"
+    }
+   ],
+   "refusals": {},
+   "registry_e": {
+    "blocks": [
+     "mid",
+     "team_state",
+     "microstructure",
+     "player_pitcher_workload",
+     "half_inning",
+     "base_occupancy",
+     "ball_strike_count"
+    ],
+    "complete": true,
+    "e_refusals": {
+     "training_history_absent": 42
+    },
+    "e_scored": 0,
+    "max_train_games": 0,
+    "rows": 42
+   },
+   "scoreboard_sports": [
+    "mlb",
+    "nfl"
+   ],
+   "settled": [
+    [
+     "mlb",
+     "849844"
+    ],
+    [
+     "nfl",
+     "401872964"
+    ]
+   ],
+   "sports": {
+    "mlb": {
+     "games_scored": {
+      "A": 1,
+      "B": 0,
+      "B_lag": 1,
+      "C": 0,
+      "D": 0
+     },
+     "listed": 1,
+     "qualified": 0,
+     "qualified_decisions": 0,
+     "selected": 1,
+     "served": 1,
+     "ticks": {
+      "A": 42,
+      "B": 0,
+      "B_lag": 41,
+      "C": 0,
+      "D": 0
+     }
+    },
+    "nfl": {
+     "games_scored": {
+      "A": 0,
+      "B": 0,
+      "B_lag": 0,
+      "C": 0,
+      "D": 0
+     },
+     "listed": 1,
+     "qualified": 0,
+     "qualified_decisions": 0,
+     "selected": 1,
+     "served": 1,
+     "ticks": {
+      "A": 0,
+      "B": 0,
+      "B_lag": 0,
+      "C": 0,
+      "D": 0
+     }
+    }
+   },
+   "status": "COMPLETE",
+   "untracked": []
+  },
+  {
+   "cell_verdicts": {
+    "INSUFFICIENT": 48
+   },
+   "coverage_refusals": {},
+   "date": "2026-10-03",
+   "fills": {
+    "by_ttl": {
+     "30": {
+      "fills_credited": 20,
+      "unknown_queue": 15213
+     },
+     "5": {
+      "fills_credited": 6,
+      "unknown_queue": 15213
+     }
+    },
+    "mode": "COUNTS ONLY"
+   },
+   "latency": [
+    {
+     "book_moved_first_share": 0.4192,
+     "feed": "statsapi_rest",
+     "games": 2,
+     "receipt_minus_event_p50_s": 18.5,
+     "sport": "mlb"
+    }
+   ],
+   "refusals": {
+    "registry_e_absent": 1
+   },
+   "registry_e": null,
+   "scoreboard_sports": [
+    "mlb"
+   ],
+   "settled": [
+    [
+     "mlb",
+     "849829"
+    ]
+   ],
+   "sports": {
+    "mlb": {
+     "games_scored": {
+      "A": 3,
+      "B": 3,
+      "B_lag": 3,
+      "C": 3,
+      "D": 0
+     },
+     "listed": 3,
+     "qualified": 0,
+     "qualified_decisions": 0,
+     "selected": 3,
+     "served": 3,
+     "ticks": {
+      "A": 5395,
+      "B": 1915,
+      "B_lag": 5353,
+      "C": 1915,
+      "D": 0
+     }
+    },
+    "nfl": {
+     "games_scored": {
+      "A": 0,
+      "B": 0,
+      "B_lag": 0,
+      "C": 0,
+      "D": 0
+     },
+     "listed": 0,
+     "qualified": 0,
+     "qualified_decisions": 0,
+     "selected": 0,
+     "served": 0,
+     "ticks": {
+      "A": 0,
+      "B": 0,
+      "B_lag": 0,
+      "C": 0,
+      "D": 0
+     }
+    }
+   },
+   "status": "PARTIAL",
+   "untracked": []
+  },
+  {
+   "cell_verdicts": {
+    "INSUFFICIENT": 96
+   },
+   "coverage_refusals": {},
+   "date": "2026-10-04",
+   "fills": {
+    "by_ttl": {
+     "30": {
+      "fills_credited": 0,
+      "unknown_queue": 2294
+     },
+     "5": {
+      "fills_credited": 0,
+      "unknown_queue": 2294
+     }
+    },
+    "mode": "COUNTS ONLY"
+   },
+   "latency": [
+    {
+     "book_moved_first_share": null,
+     "feed": "espn_scoreboard",
+     "games": 8,
+     "receipt_minus_event_p50_s": 39.5,
+     "sport": "nfl"
+    }
+   ],
+   "refusals": {},
+   "registry_e": {
+    "blocks": [
+     "mid",
+     "team_state",
+     "microstructure",
+     "player_pitcher_workload",
+     "half_inning",
+     "base_occupancy",
+     "ball_strike_count"
+    ],
+    "complete": true,
+    "e_refusals": {
+     "block_incomplete": 36
+    },
+    "e_scored": 0,
+    "max_train_games": 2,
+    "rows": 36
+   },
+   "scoreboard_sports": [
+    "mlb",
+    "nfl"
+   ],
+   "settled": [
+    [
+     "mlb",
+     "849830"
+    ]
+   ],
+   "sports": {
+    "mlb": {
+     "games_scored": {
+      "A": 1,
+      "B": 1,
+      "B_lag": 1,
+      "C": 1,
+      "D": 0
+     },
+     "listed": 2,
+     "qualified": 0,
+     "qualified_decisions": 0,
+     "selected": 2,
+     "served": 2,
+     "ticks": {
+      "A": 36,
+      "B": 36,
+      "B_lag": 24,
+      "C": 36,
+      "D": 0
+     }
+    },
+    "nfl": {
+     "games_scored": {
+      "A": 3,
+      "B": 2,
+      "B_lag": 3,
+      "C": 2,
+      "D": 0
+     },
+     "listed": 13,
+     "qualified": 0,
+     "qualified_decisions": 0,
+     "selected": 11,
+     "served": 3,
+     "ticks": {
+      "A": 380,
+      "B": 120,
+      "B_lag": 9,
+      "C": 120,
+      "D": 0
+     }
+    }
+   },
+   "status": "COMPLETE",
+   "untracked": []
+  },
+  {
+   "cell_verdicts": {
+    "INSUFFICIENT": 48
+   },
+   "coverage_refusals": {},
+   "date": "2026-10-05",
+   "fills": {
+    "by_ttl": {
+     "30": {
+      "fills_credited": 35,
+      "unknown_queue": 6560
+     },
+     "5": {
+      "fills_credited": 11,
+      "unknown_queue": 6560
+     }
+    },
+    "mode": "COUNTS ONLY"
+   },
+   "latency": [
+    {
+     "book_moved_first_share": 0.5094,
+     "feed": "statsapi_rest",
+     "games": 2,
+     "receipt_minus_event_p50_s": 18.5,
+     "sport": "mlb"
+    }
+   ],
+   "refusals": {},
+   "registry_e": {
+    "blocks": [
+     "mid",
+     "team_state",
+     "microstructure",
+     "player_pitcher_workload",
+     "half_inning",
+     "base_occupancy",
+     "ball_strike_count"
+    ],
+    "complete": true,
+    "e_refusals": {
+     "block_incomplete": 542
+    },
+    "e_scored": 979,
+    "max_train_games": 5,
+    "rows": 1521
+   },
+   "scoreboard_sports": [
+    "mlb"
+   ],
+   "settled": [
+    [
+     "mlb",
+     "849834"
+    ]
+   ],
+   "sports": {
+    "mlb": {
+     "games_scored": {
+      "A": 1,
+      "B": 1,
+      "B_lag": 1,
+      "C": 1,
+      "D": 0
+     },
+     "listed": 2,
+     "qualified": 0,
+     "qualified_decisions": 0,
+     "selected": 1,
+     "served": 1,
+     "ticks": {
+      "A": 1604,
+      "B": 1148,
+      "B_lag": 1604,
+      "C": 1160,
+      "D": 0
+     }
+    },
+    "nfl": {
+     "games_scored": {
+      "A": 0,
+      "B": 0,
+      "B_lag": 0,
+      "C": 0,
+      "D": 0
+     },
+     "listed": 1,
+     "qualified": 0,
+     "qualified_decisions": 0,
+     "selected": 0,
+     "served": 0,
+     "ticks": {
+      "A": 0,
+      "B": 0,
+      "B_lag": 0,
+      "C": 0,
+      "D": 0
+     }
+    }
+   },
+   "status": "COMPLETE",
+   "untracked": []
+  },
+  {
+   "cell_verdicts": {
+    "INSUFFICIENT": 96
+   },
+   "coverage_refusals": {},
+   "date": "2026-10-06",
+   "fills": null,
+   "latency": [
+    {
+     "book_moved_first_share": 0.3907,
+     "feed": "statsapi_rest",
+     "games": 3,
+     "receipt_minus_event_p50_s": 18.0,
+     "sport": "mlb"
+    },
+    {
+     "book_moved_first_share": 0.84,
+     "feed": "espn_scoreboard",
+     "games": 1,
+     "receipt_minus_event_p50_s": 36.5,
+     "sport": "nfl"
+    }
+   ],
+   "refusals": {
+    "fill_realism_absent": 1,
+    "registry_e_absent": 1
+   },
+   "registry_e": null,
+   "scoreboard_sports": [
+    "mlb",
+    "nfl"
+   ],
+   "settled": [
+    [
+     "mlb",
+     "849819"
+    ],
+    [
+     "mlb",
+     "849839"
+    ],
+    [
+     "nfl",
+     "401872979"
+    ]
+   ],
+   "sports": {
+    "mlb": {
+     "games_scored": {
+      "A": 2,
+      "B": 2,
+      "B_lag": 2,
+      "C": 2,
+      "D": 0
+     },
+     "listed": 2,
+     "qualified": 0,
+     "qualified_decisions": 0,
+     "selected": 2,
+     "served": 2,
+     "ticks": {
+      "A": 3617,
+      "B": 2024,
+      "B_lag": 3586,
+      "C": 1987,
+      "D": 0
+     }
+    },
+    "nfl": {
+     "games_scored": {
+      "A": 1,
+      "B": 1,
+      "B_lag": 1,
+      "C": 1,
+      "D": 0
+     },
+     "listed": 1,
+     "qualified": 0,
+     "qualified_decisions": 0,
+     "selected": 1,
+     "served": 1,
+     "ticks": {
+      "A": 1132,
+      "B": 789,
+      "B_lag": 1132,
+      "C": 789,
+      "D": 0
+     }
+    }
+   },
+   "status": "PARTIAL",
+   "untracked": []
+  },
+  {
+   "cell_verdicts": {
+    "INSUFFICIENT": 96
+   },
+   "coverage_refusals": {
+    "qualification_missing": 1
+   },
+   "date": "2026-10-07",
+   "fills": null,
+   "latency": [
+    {
+     "book_moved_first_share": 0.5046,
+     "feed": "statsapi_rest",
+     "games": 5,
+     "receipt_minus_event_p50_s": 19.0,
+     "sport": "mlb"
+    },
+    {
+     "book_moved_first_share": null,
+     "feed": "espn_scoreboard",
+     "games": 5,
+     "receipt_minus_event_p50_s": null,
+     "sport": "nba"
+    }
+   ],
+   "refusals": {
+    "fill_realism_absent": 1,
+    "qualification_absent": 1,
+    "registry_e_absent": 1
+   },
+   "registry_e": null,
+   "scoreboard_sports": [
+    "mlb",
+    "nba"
+   ],
+   "settled": [
+    [
+     "mlb",
+     "849822"
+    ],
+    [
+     "mlb",
+     "849826"
+    ],
+    [
+     "mlb",
+     "849833"
+    ],
+    [
+     "nba",
+     "401898389"
+    ],
+    [
+     "nba",
+     "401914123"
+    ],
+    [
+     "nba",
+     "401914128"
+    ]
+   ],
+   "sports": {
+    "mlb": {
+     "games_scored": {
+      "A": 3,
+      "B": 0,
+      "B_lag": 3,
+      "C": 0,
+      "D": 0
+     },
+     "listed": 3,
+     "qualified": null,
+     "qualified_decisions": null,
+     "selected": 3,
+     "served": 3,
+     "ticks": {
+      "A": 4366,
+      "B": 0,
+      "B_lag": 4315,
+      "C": 0,
+      "D": 0
+     }
+    },
+    "nba": {
+     "games_scored": {
+      "A": 4,
+      "B": 0,
+      "B_lag": 4,
+      "C": 0,
+      "D": 0
+     },
+     "listed": 4,
+     "qualified": null,
+     "qualified_decisions": null,
+     "selected": 4,
+     "served": 4,
+     "ticks": {
+      "A": 3624,
+      "B": 0,
+      "B_lag": 3403,
+      "C": 0,
+      "D": 0
+     }
+    },
+    "nfl": {
+     "games_scored": {
+      "A": 0,
+      "B": 0,
+      "B_lag": 0,
+      "C": 0,
+      "D": 0
+     },
+     "listed": 0,
+     "qualified": null,
+     "qualified_decisions": null,
+     "selected": 0,
+     "served": 0,
+     "ticks": {
+      "A": 0,
+      "B": 0,
+      "B_lag": 0,
+      "C": 0,
+      "D": 0
+     }
+    },
+    "soccer": {
+     "games_scored": {
+      "A": 0,
+      "B": 0,
+      "B_lag": 0,
+      "C": 0,
+      "D": 0
+     },
+     "listed": 0,
+     "qualified": null,
+     "qualified_decisions": null,
+     "selected": 0,
+     "served": 0,
+     "ticks": {
+      "A": 0,
+      "B": 0,
+      "B_lag": 0,
+      "C": 0,
+      "D": 0
+     }
+    }
+   },
+   "status": "PARTIAL",
+   "untracked": [
+    "docs/evidence/forward/latency/2026-10-07_2026-10-07_latency_ledger.json",
+    "docs/evidence/forward/nights/2026-10-07.json",
+    "docs/evidence/forward/scoreboard/2026-10-07.json"
+   ]
+  }
+ ],
+ "row": "S761",
+ "scope": "PAPER ONLY. Cumulative counts over nightly receipts on disk; pooled C-minus-A is the landed S721 descriptive reader (development population, not a verdict, no interval); every per-night cell verdict is the sealed scoreboard's own. Calibration and execution-quality wording only.",
+ "to_date": {
+  "calendar_days": 16,
+  "calendar_days_without_receipt": 3,
+  "complete": 3,
+  "coverage_refusals": {
+   "qualification_missing": 3,
+   "qualification_unreadable": 3,
+   "run_missing": 3,
+   "scoreboard_missing": 5
+  },
+  "fills_counts_only": {
+   "ttl_30_fills_credited": {
+    "nights_missing": 6,
+    "sum": 171
+   },
+   "ttl_5_fills_credited": {
+    "nights_missing": 6,
+    "sum": 59
+   }
+  },
+  "nights": 13,
+  "pooled": {
+   "groups": [
+    {
+     "C_minus_A": {
+      "brier": "0.4378740552057057111345195418",
+      "logloss": "2.618501157720739375624044642"
+     },
+     "n_games": 2,
+     "n_ticks": 1850,
+     "seal_sha256": "6abb1a851628a1fbf259ed5b79e7aecbdbeccf68f7542afdc665263db4ed13e4",
+     "sport": "mlb",
+     "support": "INSUFFICIENT"
+    },
+    {
+     "C_minus_A": {
+      "brier": "-0.0648418343842772774408917543",
+      "logloss": "-0.1665357567226679763508075106"
+     },
+     "n_games": 3,
+     "n_ticks": 2863,
+     "seal_sha256": "801af61b2755a99f9d5e238acd59bb1b6cf88212d1cb81b11a576ac32877b7aa",
+     "sport": "mlb",
+     "support": "INSUFFICIENT"
+    }
+   ],
+   "refusals": {
+    "ValueError:unknown_corpus": 1
+   },
+   "seal_last_night": {
+    "6976e78aa68124fc8ca8663f215fc59a5bf6aab42c8ce54e477bbe3bf717c08b": "2026-09-24",
+    "6abb1a851628a1fbf259ed5b79e7aecbdbeccf68f7542afdc665263db4ed13e4": "2026-10-05",
+    "801af61b2755a99f9d5e238acd59bb1b6cf88212d1cb81b11a576ac32877b7aa": "2026-09-30",
+    "806fa58a3517d28b4f320e89c26f32a73ad6d1a5fe1f153aa5bf0aa9db7f85ea": "2026-10-07",
+    "a74e955e2fb37825e9249ed5b6280421a7c7a450b71a8239f34d6e8322a3d588": "2026-10-02"
+   },
+   "sources": 7,
+   "status": "ATTENTION"
+  },
+  "refusals": {
+   "fill_realism_absent": 6,
+   "latency_absent": 1,
+   "nights_absent": 1,
+   "qualification_absent": 3,
+   "qualification_unreadable": 3,
+   "registry_e_absent": 7,
+   "scoreboard_absent": 5
+  },
+  "scoreboard_sports": [
+   "mlb",
+   "nba",
+   "nfl"
+  ],
+  "sports": {
+   "mlb": {
+    "game_nights_scored": {
+     "A": {
+      "nights_missing": 5,
+      "sum": 18
+     },
+     "B": {
+      "nights_missing": 5,
+      "sum": 10
+     },
+     "B_lag": {
+      "nights_missing": 5,
+      "sum": 18
+     },
+     "C": {
+      "nights_missing": 5,
+      "sum": 10
+     },
+     "D": {
+      "nights_missing": 5,
+      "sum": 0
+     }
+    },
+    "listed": {
+     "nights_missing": 0,
+     "sum": 64
+    },
+    "qualified": {
+     "nights_missing": 6,
+     "sum": 0
+    },
+    "qualified_decisions": {
+     "nights_missing": 6,
+     "sum": 0
+    },
+    "selected": {
+     "nights_missing": 0,
+     "sum": 41
+    },
+    "served": {
+     "nights_missing": 0,
+     "sum": 35
+    },
+    "settled_games": {
+     "nights_missing": 5,
+     "sum": 12
+    },
+    "ticks": {
+     "A": {
+      "nights_missing": 5,
+      "sum": 21893
+     },
+     "B": {
+      "nights_missing": 5,
+      "sum": 8279
+     },
+     "B_lag": {
+      "nights_missing": 5,
+      "sum": 21697
+     },
+     "C": {
+      "nights_missing": 5,
+      "sum": 8175
+     },
+     "D": {
+      "nights_missing": 5,
+      "sum": 0
+     }
+    }
+   },
+   "nba": {
+    "game_nights_scored": {
+     "A": {
+      "nights_missing": 12,
+      "sum": 4
+     },
+     "B": {
+      "nights_missing": 12,
+      "sum": 0
+     },
+     "B_lag": {
+      "nights_missing": 12,
+      "sum": 4
+     },
+     "C": {
+      "nights_missing": 12,
+      "sum": 0
+     },
+     "D": {
+      "nights_missing": 12,
+      "sum": 0
+     }
+    },
+    "listed": {
+     "nights_missing": 11,
+     "sum": 4
+    },
+    "qualified": {
+     "nights_missing": 13,
+     "sum": 0
+    },
+    "qualified_decisions": {
+     "nights_missing": 13,
+     "sum": 0
+    },
+    "selected": {
+     "nights_missing": 11,
+     "sum": 4
+    },
+    "served": {
+     "nights_missing": 11,
+     "sum": 4
+    },
+    "settled_games": {
+     "nights_missing": 5,
+     "sum": 3
+    },
+    "ticks": {
+     "A": {
+      "nights_missing": 12,
+      "sum": 3624
+     },
+     "B": {
+      "nights_missing": 12,
+      "sum": 0
+     },
+     "B_lag": {
+      "nights_missing": 12,
+      "sum": 3403
+     },
+     "C": {
+      "nights_missing": 12,
+      "sum": 0
+     },
+     "D": {
+      "nights_missing": 12,
+      "sum": 0
+     }
+    }
+   },
+   "nfl": {
+    "game_nights_scored": {
+     "A": {
+      "nights_missing": 5,
+      "sum": 4
+     },
+     "B": {
+      "nights_missing": 5,
+      "sum": 3
+     },
+     "B_lag": {
+      "nights_missing": 5,
+      "sum": 4
+     },
+     "C": {
+      "nights_missing": 5,
+      "sum": 3
+     },
+     "D": {
+      "nights_missing": 5,
+      "sum": 0
+     }
+    },
+    "listed": {
+     "nights_missing": 0,
+     "sum": 18
+    },
+    "qualified": {
+     "nights_missing": 6,
+     "sum": 0
+    },
+    "qualified_decisions": {
+     "nights_missing": 6,
+     "sum": 0
+    },
+    "selected": {
+     "nights_missing": 0,
+     "sum": 14
+    },
+    "served": {
+     "nights_missing": 0,
+     "sum": 6
+    },
+    "settled_games": {
+     "nights_missing": 5,
+     "sum": 2
+    },
+    "ticks": {
+     "A": {
+      "nights_missing": 5,
+      "sum": 1512
+     },
+     "B": {
+      "nights_missing": 5,
+      "sum": 909
+     },
+     "B_lag": {
+      "nights_missing": 5,
+      "sum": 1141
+     },
+     "C": {
+      "nights_missing": 5,
+      "sum": 909
+     },
+     "D": {
+      "nights_missing": 5,
+      "sum": 0
+     }
+    }
+   },
+   "soccer": {
+    "game_nights_scored": {
+     "A": {
+      "nights_missing": 12,
+      "sum": 0
+     },
+     "B": {
+      "nights_missing": 12,
+      "sum": 0
+     },
+     "B_lag": {
+      "nights_missing": 12,
+      "sum": 0
+     },
+     "C": {
+      "nights_missing": 12,
+      "sum": 0
+     },
+     "D": {
+      "nights_missing": 12,
+      "sum": 0
+     }
+    },
+    "listed": {
+     "nights_missing": 12,
+     "sum": 0
+    },
+    "qualified": {
+     "nights_missing": 13,
+     "sum": 0
+    },
+    "qualified_decisions": {
+     "nights_missing": 13,
+     "sum": 0
+    },
+    "selected": {
+     "nights_missing": 12,
+     "sum": 0
+    },
+    "served": {
+     "nights_missing": 12,
+     "sum": 0
+    },
+    "settled_games": {
+     "nights_missing": 5,
+     "sum": 0
+    },
+    "ticks": {
+     "A": {
+      "nights_missing": 12,
+      "sum": 0
+     },
+     "B": {
+      "nights_missing": 12,
+      "sum": 0
+     },
+     "B_lag": {
+      "nights_missing": 12,
+      "sum": 0
+     },
+     "C": {
+      "nights_missing": 12,
+      "sum": 0
+     },
+     "D": {
+      "nights_missing": 12,
+      "sum": 0
+     }
+    }
+   },
+   "tennis": {
+    "game_nights_scored": {
+     "A": {
+      "nights_missing": 13,
+      "sum": 0
+     },
+     "B": {
+      "nights_missing": 13,
+      "sum": 0
+     },
+     "B_lag": {
+      "nights_missing": 13,
+      "sum": 0
+     },
+     "C": {
+      "nights_missing": 13,
+      "sum": 0
+     },
+     "D": {
+      "nights_missing": 13,
+      "sum": 0
+     }
+    },
+    "listed": {
+     "nights_missing": 12,
+     "sum": 73
+    },
+    "qualified": {
+     "nights_missing": 12,
+     "sum": 0
+    },
+    "qualified_decisions": {
+     "nights_missing": 12,
+     "sum": 0
+    },
+    "selected": {
+     "nights_missing": 12,
+     "sum": 0
+    },
+    "served": {
+     "nights_missing": 12,
+     "sum": 0
+    },
+    "settled_games": {
+     "nights_missing": 5,
+     "sum": 0
+    },
+    "ticks": {
+     "A": {
+      "nights_missing": 13,
+      "sum": 0
+     },
+     "B": {
+      "nights_missing": 13,
+      "sum": 0
+     },
+     "B_lag": {
+      "nights_missing": 13,
+      "sum": 0
+     },
+     "C": {
+      "nights_missing": 13,
+      "sum": 0
+     },
+     "D": {
+      "nights_missing": 13,
+      "sum": 0
+     }
+    }
+   }
+  },
+  "statuses": {
+   "COMPLETE": 3,
+   "None": 1,
+   "PARTIAL": 9
+  },
+  "untracked_receipts": 5
+ }
+}

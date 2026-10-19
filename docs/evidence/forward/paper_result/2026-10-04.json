@@ -1,0 +1,49 @@
+{
+ "as_of": "2026-10-05T06:00:00Z",
+ "by_game": {},
+ "by_quote_life": {},
+ "by_side": {},
+ "by_sport": {},
+ "date": "2026-10-04",
+ "declared_ttl_s": "5",
+ "fills": [],
+ "fills_file": {
+  "path": "docs/evidence/forward/fills/2026-10-04.jsonl",
+  "rows": 0,
+  "sha256": "c91ddcbf72b9184d6303a4d48ad107dbe358069fa9860714a7a6e434dbd924fb"
+ },
+ "inputs": {
+  "fill_realism": {
+   "path": "docs/evidence/forward/fill_realism/2026-10-04.json",
+   "sha256": "52a65f205ab3420b34e119b2c657c483181027bf6acb1a7767897b34b98368ef"
+  },
+  "scoreboard": {
+   "path": "docs/evidence/forward/scoreboard/2026-10-04.json",
+   "sha256": "1fbdc7839882d47127d6279570bcdc39670707e683416f861768e9f495121c88"
+  }
+ },
+ "ledger_quote_life_s": "5",
+ "mode": "PAPER ONLY",
+ "note": "paper result, not a verdict",
+ "reconciliation": {
+  "30": {
+   "reconciled": true,
+   "refused": 0,
+   "report_fills_credited": 0,
+   "rows": 0
+  },
+  "5": {
+   "reconciled": true,
+   "refused": 0,
+   "report_fills_credited": 0,
+   "rows": 0
+  }
+ },
+ "refusals": {},
+ "schema": "S775.paper_result.v2",
+ "scoreboard_venue": {},
+ "settlement_sources": {},
+ "sha256_rule": "LF-normalized bytes",
+ "units": "counts, contracts, cents per contract",
+ "venue_settlement": {}
+}

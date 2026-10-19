@@ -1,0 +1,58 @@
+{
+ "constants": {
+  "anchor_range": [
+   0.005,
+   0.995
+  ],
+  "bootstrap": 2000,
+  "cell_label": "vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's",
+  "floor": 30,
+  "fresh_threshold_us": 15000000,
+  "headline": {
+   "age": "stale",
+   "cls": "live",
+   "segment": "all"
+  },
+  "lag_us": 0,
+  "latest_effective_date": "2026-10-19",
+  "mlb_insufficient": "by declaration in this row",
+  "mlb_mu_bounds": [
+   -40.0,
+   40.0,
+   60
+  ],
+  "mlb_target_clip": 0.0001,
+  "mu_clip": 30.0,
+  "nba_period_s": 2880.0,
+  "seed": 13,
+  "sigma_nba": 22.0
+ },
+ "effective_date": "2026-10-01",
+ "pins": {
+  "scripts/platformkit/eval_gate/s86_nba_every_tick.py": "5ee345fa337f7a458ab4180ebcf8b7234adcf8a1d1d6cbcddddb2cc63f68c7ad",
+  "scripts/platformkit/ingame/anchor_projection.py": "6251a4dc89c5840d71061027452b48662e74840d7619457086727b394877b39b",
+  "scripts/platformkit/ingame/anchor_projection_io.py": "9bad93b27a48e472beee2aa595ae94fe18d8119dd9f0b2367d44d78997d16a23",
+  "scripts/platformkit/ingame/anchor_projection_io_mlb.py": "675fd7e0335db4d470465aaff7cf10792c8ce12f62b42c1b4e5ab654153a68a2",
+  "scripts/platformkit/ingame/anchor_projection_stats.py": "33dc53bc0be7ca4562b5419f235e7cc081f6f2dc1bd2bb7996e430e2befd8932",
+  "scripts/platformkit/ingame/m2_readout.py": "adf2c193a013ea367558c4b3846dea7f1842b8e1f6370cf4d27e0640d646b680",
+  "scripts/platformkit/ingame/m2_readout_history.py": "14aaaab16ab3b2456647041ea9a03fa228b3ce5d50c35897a8a5ff0ddaf624db",
+  "scripts/platformkit/ingame/m2_readout_io.py": "5109f11b51b56214376725725a3c929ec096401c8772434d90a6f5782d28c57f",
+  "scripts/platformkit/ingame/s439_integrity_audit.py": "4884ec1de7440de81c89ddfcf0672d1c8715a4f4d27ddb3d01c83e9efcace754",
+  "scripts/platformkit/ingame/s439_integrity_audit_io.py": "701c78444828abfbbb888a81fffdd168ac581676a0ce31cde4ea3347d34c4f36"
+ },
+ "provenance_not_pinned": [
+  "scripts/platformkit/execution/ingame_scoreboard.py",
+  "scripts/platformkit/execution/ingame_scoreboard_rules.py"
+ ],
+ "row": "S544",
+ "rule": "Item 2: per outcome row with an A loss, the anchor book is the landed _receipts(book rows, response_end_ts, request_start_ts, tick instant) recomputed per tick with the landed _mid applied to each receipt (a refusal is counted book_mid_refused and skipped); the last valid (instant, mid) must equal (book_ts, mid) or the night is RECONCILE_FAILED (anchor_book_mismatch). tau_a = anchor_projection.run_starts over that sequence at its last index; lag 0; integer microseconds from the landed _instant. Streams come from the landed _receipts(state rows, as_of) live rows through the landed mlb_entries: MLB play = _instant(last_play_ts) with the _mlb_state_row tuple; NBA tuple (home-away, period, rem_minutes(period,0)*60+clock_sec) with play = request_start of the last live receipt that carried the previous tuple (the first live receipt uses its own). Precedence: sport not mlb/nba -> m2_not_defined; an unavailable source of the sport -> source_unavailable; mid_age_us <= 15000000 -> fresh_anchor; no live entry or no known state -> no_known_state; else anchor_projection.project(stream, t, 0, home-view mid, tau_a, sport, sigma 22.0 nba / None mlb). M2 is the tick mid string unless projected, then repr(float) oriented back to the ticker. Brier (D(M2)-D(y))**2 unclipped; M2 in {0,1} counted m2_at_bound. Nothing is fitted. Item 3: class post_final / terminal from the landed S545 census flags, else pre_live when segment is pre-live, else live; age fresh when mid_age_us <= 15000000 else stale; cells sport x class x segment(early, middle, late, all) x age(fresh, stale, all) with per-game exact Decimal sums in sorted (game_key, ts) order and cboot(2000, 13). Item 4: headline per sport = cumulative class live, segment all, age stale delta M2 - A with its CI: INSUFFICIENT when n_games < 30, else M2_LOWER_BRIER when hi < 0, M2_HIGHER_BRIER when lo > 0, else NO_RESOLVED_DIFFERENCE; MLB is INSUFFICIENT by declaration in this row; sports other than mlb and nba carry M2 = A. Outside production mode (a tmp prereg or an out-dir outside the repo) every headline verdict is DESCRIPTIVE. A paired row whose y differs from its tick outcome refuses night_row_invalid.",
+ "s542": {
+  "artifact": "docs/evidence/harness/S542_anchor_projection_replay_2026-09-29.json",
+  "lf_sha256": "e7b4366332313011b563512dbe87ddb053f5169d6d563985796d366029cae3a9",
+  "prereg_seal": "95e9cfa5ba51959666e97e3aa491ac7fccedb259fc062e2d4f9104b373dbec29",
+  "s544_scorer": "retained",
+  "verdict": "ACCEPT_STALENESS_BACKSTOP_ONLY"
+ },
+ "schema": "s544_prereg_m2_v1",
+ "seal": "936fb8fb6d3d539e978773b8c75be2d6eddfd5b766f3a643287f68b701fd2121"
+}

@@ -1,0 +1,20 @@
+[
+  {
+    "family": "maker_forward",
+    "game_id": "KXMLBGAME-26OCT011400PHIATL",
+    "game_key": "849844",
+    "scheduled_start": "2026-10-02T00:00:00.000000Z",
+    "selected_at": "2026-10-01T16:43:08.828345+00:00",
+    "sport": "mlb",
+    "ticker": "KXMLBGAME-26OCT011400PHIATL-ATL"
+  },
+  {
+    "family": "maker_forward",
+    "game_id": "KXNFLGAME-26OCT01PITCLE",
+    "game_key": "401872964",
+    "scheduled_start": "2026-10-02T00:15:00.000000Z",
+    "selected_at": "2026-10-01T16:43:08.828345+00:00",
+    "sport": "nfl",
+    "ticker": "KXNFLGAME-26OCT01PITCLE-CLE"
+  }
+]

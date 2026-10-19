@@ -1,0 +1,7 @@
+{
+  "policy": {
+    "effective_from": "2026-09-30",
+    "lookback_days": 7
+  },
+  "sha256": "31223ebe77db1c120ab4afe7889bbf80a06382a327054249c87a19fc5d7d9e02"
+}

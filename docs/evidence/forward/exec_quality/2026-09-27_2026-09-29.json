@@ -1,0 +1,842 @@
+{
+ "census": {
+  "served": 3,
+  "status_by_sport": {
+   "mlb": {
+    "OK": 2
+   },
+   "nfl": {
+    "TAPE_MISSING": 1
+   }
+  }
+ },
+ "days": [
+  "2026-09-27",
+  "2026-09-28",
+  "2026-09-29"
+ ],
+ "definitions": {
+  "ctl|120s": "clock-grid control for ev_*|120s: instants every 30 s from a crc32-seeded random phase, same prior-book rule and censoring",
+  "ctl|15s": "clock-grid control for ev_*|15s: instants every 30 s from a crc32-seeded random phase, same prior-book rule and censoring",
+  "ctl|30s": "clock-grid control for ev_*|30s: instants every 30 s from a crc32-seeded random phase, same prior-book rule and censoring",
+  "ctl|5s": "clock-grid control for ev_*|5s: instants every 30 s from a crc32-seeded random phase, same prior-book rule and censoring",
+  "ctl|60s": "clock-grid control for ev_*|60s: instants every 30 s from a crc32-seeded random phase, same prior-book rule and censoring",
+  "ctl|before_matched_lag": "clock-grid control for ev_*|before_receipt with lags drawn from the game's own source-clock event lag list (one draw per control instant)",
+  "eng|300s|fill": "share of 30 s clock-grid join instants whose 1-contract resting order filled within 300 s (independent overlapping counterfactuals, not a policy throughput; TAPE_MISSING games excluded); arm eng = join at quote_engine.make_quotes prices (zero-inventory construction baseline) with size ahead read from the top-5 ladder at that cent",
+  "eng|300s|mo60": "cents per contract, mid of the first focus snapshot in [fill + 60, fill + 70] s minus the price for a resting bid (price minus mid for a resting ask); fee excluded; arm eng = join at quote_engine.make_quotes prices (zero-inventory construction baseline) with size ahead read from the top-5 ladder at that cent",
+  "eng|300s|through_share": "share of those 300 s fills made by a same-side print strictly through the price (rest = depletion: at-price prints reaching size ahead + 1; unknown depth = through only); arm eng = join at quote_engine.make_quotes prices (zero-inventory construction baseline) with size ahead read from the top-5 ladder at that cent",
+  "eng|300s|vs_mid_at_fill": "cents, prior-book mid at the fill time minus the price for a resting bid (price minus mid for a resting ask); arm eng = join at quote_engine.make_quotes prices (zero-inventory construction baseline) with size ahead read from the top-5 ladder at that cent",
+  "eng|60s|fill": "share of 30 s clock-grid join instants whose 1-contract resting order filled within 60 s (independent overlapping counterfactuals, not a policy throughput; TAPE_MISSING games excluded); arm eng = join at quote_engine.make_quotes prices (zero-inventory construction baseline) with size ahead read from the top-5 ladder at that cent",
+  "eng|60s|mo60": "cents per contract, mid of the first focus snapshot in [fill + 60, fill + 70] s minus the price for a resting bid (price minus mid for a resting ask); fee excluded; arm eng = join at quote_engine.make_quotes prices (zero-inventory construction baseline) with size ahead read from the top-5 ladder at that cent",
+  "eng|60s|through_share": "share of those 60 s fills made by a same-side print strictly through the price (rest = depletion: at-price prints reaching size ahead + 1; unknown depth = through only); arm eng = join at quote_engine.make_quotes prices (zero-inventory construction baseline) with size ahead read from the top-5 ladder at that cent",
+  "eng|60s|vs_mid_at_fill": "cents, prior-book mid at the fill time minus the price for a resting bid (price minus mid for a resting ask); arm eng = join at quote_engine.make_quotes prices (zero-inventory construction baseline) with size ahead read from the top-5 ladder at that cent",
+  "ev_period|120s": "share of source-clock period events whose mid moved >= 1 cent from the prior book within 120 s (coverage gap > 10 s before the first move = censored)",
+  "ev_period|15s": "share of source-clock period events whose mid moved >= 1 cent from the prior book within 15 s (coverage gap > 10 s before the first move = censored)",
+  "ev_period|30s": "share of source-clock period events whose mid moved >= 1 cent from the prior book within 30 s (coverage gap > 10 s before the first move = censored)",
+  "ev_period|5s": "share of source-clock period events whose mid moved >= 1 cent from the prior book within 5 s (coverage gap > 10 s before the first move = censored)",
+  "ev_period|60s": "share of source-clock period events whose mid moved >= 1 cent from the prior book within 60 s (coverage gap > 10 s before the first move = censored)",
+  "ev_period|before_receipt": "share of source-clock period events whose mid moved >= 1 cent between the source play time and the state capture receipt (lag > 0 only)",
+  "ev_play|120s": "share of source-clock play events whose mid moved >= 1 cent from the prior book within 120 s (coverage gap > 10 s before the first move = censored)",
+  "ev_play|15s": "share of source-clock play events whose mid moved >= 1 cent from the prior book within 15 s (coverage gap > 10 s before the first move = censored)",
+  "ev_play|30s": "share of source-clock play events whose mid moved >= 1 cent from the prior book within 30 s (coverage gap > 10 s before the first move = censored)",
+  "ev_play|5s": "share of source-clock play events whose mid moved >= 1 cent from the prior book within 5 s (coverage gap > 10 s before the first move = censored)",
+  "ev_play|60s": "share of source-clock play events whose mid moved >= 1 cent from the prior book within 60 s (coverage gap > 10 s before the first move = censored)",
+  "ev_play|before_receipt": "share of source-clock play events whose mid moved >= 1 cent between the source play time and the state capture receipt (lag > 0 only)",
+  "ev_score|120s": "share of source-clock score events whose mid moved >= 1 cent from the prior book within 120 s (coverage gap > 10 s before the first move = censored)",
+  "ev_score|15s": "share of source-clock score events whose mid moved >= 1 cent from the prior book within 15 s (coverage gap > 10 s before the first move = censored)",
+  "ev_score|30s": "share of source-clock score events whose mid moved >= 1 cent from the prior book within 30 s (coverage gap > 10 s before the first move = censored)",
+  "ev_score|5s": "share of source-clock score events whose mid moved >= 1 cent from the prior book within 5 s (coverage gap > 10 s before the first move = censored)",
+  "ev_score|60s": "share of source-clock score events whose mid moved >= 1 cent from the prior book within 60 s (coverage gap > 10 s before the first move = censored)",
+  "ev_score|before_receipt": "share of source-clock score events whose mid moved >= 1 cent between the source play time and the state capture receipt (lag > 0 only)",
+  "note:fee": "fees are excluded from every markout; venue_fees.fee_kalshi_maker(1, p) = 0.01 at interior p under the repo's one-cent rounding assumption (venue_fees.py docstring :8-12)",
+  "note:identity": "inputs identity = bytes plus sha256 of the first and last 1 MiB of each shard; a change inside the middle of a shard that keeps size and both end megabytes is NOT detected",
+  "note:joins": "join instants overlap and may share prints; they are counterfactuals, not a policy",
+  "tape_mo_contract|120s": "contract-weighted version of tape_mo_print|120s (sum(count * cents) / sum(count))",
+  "tape_mo_contract|300s": "contract-weighted version of tape_mo_print|300s (sum(count * cents) / sum(count))",
+  "tape_mo_contract|30s": "contract-weighted version of tape_mo_print|30s (sum(count * cents) / sum(count))",
+  "tape_mo_contract|5s": "contract-weighted version of tape_mo_print|5s (sum(count * cents) / sum(count))",
+  "tape_mo_contract|60s": "contract-weighted version of tape_mo_print|60s (sum(count * cents) / sum(count))",
+  "tape_mo_print|120s": "print-weighted mean cents of every in-window print as a hypothetical maker fill at its price, marked at the first focus snapshot in [t+120, t+120+10] s; taker no fills a resting bid (mark - price), taker yes a resting ask (price - mark); fee excluded",
+  "tape_mo_print|300s": "print-weighted mean cents of every in-window print as a hypothetical maker fill at its price, marked at the first focus snapshot in [t+300, t+300+10] s; taker no fills a resting bid (mark - price), taker yes a resting ask (price - mark); fee excluded",
+  "tape_mo_print|30s": "print-weighted mean cents of every in-window print as a hypothetical maker fill at its price, marked at the first focus snapshot in [t+30, t+30+10] s; taker no fills a resting bid (mark - price), taker yes a resting ask (price - mark); fee excluded",
+  "tape_mo_print|5s": "print-weighted mean cents of every in-window print as a hypothetical maker fill at its price, marked at the first focus snapshot in [t+5, t+5+10] s; taker no fills a resting bid (mark - price), taker yes a resting ask (price - mark); fee excluded",
+  "tape_mo_print|60s": "print-weighted mean cents of every in-window print as a hypothetical maker fill at its price, marked at the first focus snapshot in [t+60, t+60+10] s; taker no fills a resting bid (mark - price), taker yes a resting ask (price - mark); fee excluded",
+  "touch|300s|fill": "share of 30 s clock-grid join instants whose 1-contract resting order filled within 300 s (independent overlapping counterfactuals, not a policy throughput; TAPE_MISSING games excluded); arm touch = join at the best bid / best ask with that side's displayed top size ahead",
+  "touch|300s|mo60": "cents per contract, mid of the first focus snapshot in [fill + 60, fill + 70] s minus the price for a resting bid (price minus mid for a resting ask); fee excluded; arm touch = join at the best bid / best ask with that side's displayed top size ahead",
+  "touch|300s|through_share": "share of those 300 s fills made by a same-side print strictly through the price (rest = depletion: at-price prints reaching size ahead + 1; unknown depth = through only); arm touch = join at the best bid / best ask with that side's displayed top size ahead",
+  "touch|300s|vs_mid_at_fill": "cents, prior-book mid at the fill time minus the price for a resting bid (price minus mid for a resting ask); arm touch = join at the best bid / best ask with that side's displayed top size ahead",
+  "touch|60s|fill": "share of 30 s clock-grid join instants whose 1-contract resting order filled within 60 s (independent overlapping counterfactuals, not a policy throughput; TAPE_MISSING games excluded); arm touch = join at the best bid / best ask with that side's displayed top size ahead",
+  "touch|60s|mo60": "cents per contract, mid of the first focus snapshot in [fill + 60, fill + 70] s minus the price for a resting bid (price minus mid for a resting ask); fee excluded; arm touch = join at the best bid / best ask with that side's displayed top size ahead",
+  "touch|60s|through_share": "share of those 60 s fills made by a same-side print strictly through the price (rest = depletion: at-price prints reaching size ahead + 1; unknown depth = through only); arm touch = join at the best bid / best ask with that side's displayed top size ahead",
+  "touch|60s|vs_mid_at_fill": "cents, prior-book mid at the fill time minus the price for a resting bid (price minus mid for a resting ask); arm touch = join at the best bid / best ask with that side's displayed top size ahead"
+ },
+ "engine_construction": {
+  "behind_touch_c_by_spread": {
+   "spread1": {
+    "2.0": 308
+   },
+   "spread2": {
+    "1.0": 22
+   },
+   "spread3": {
+    "1.0": 2
+   }
+  },
+  "reason": {
+   "quoted": 166,
+   "stale_book": 7,
+   "state_change": 19
+  }
+ },
+ "estimand_version": "S550.v1",
+ "games": [
+  {
+   "contracts": 0,
+   "day": "2026-09-29",
+   "depth_min": 57.3,
+   "game_key": "401872963",
+   "live_min": 174.8,
+   "n_events": 229,
+   "no_final_row": false,
+   "prints": 0,
+   "sport": "nfl",
+   "spread_c": {
+    "p10": 1.0,
+    "p50": 1.0,
+    "p90": 1.0
+   },
+   "stats": {
+    "ctl|120s": [
+     103,
+     115
+    ],
+    "ctl|15s": [
+     46,
+     115
+    ],
+    "ctl|30s": [
+     59,
+     115
+    ],
+    "ctl|5s": [
+     20,
+     115
+    ],
+    "ctl|60s": [
+     86,
+     115
+    ],
+    "ctl|before_matched_lag": [
+     0,
+     0
+    ],
+    "ev_period|120s": [
+     0,
+     0
+    ],
+    "ev_period|15s": [
+     0,
+     0
+    ],
+    "ev_period|30s": [
+     0,
+     0
+    ],
+    "ev_period|5s": [
+     0,
+     0
+    ],
+    "ev_period|60s": [
+     0,
+     0
+    ],
+    "ev_period|before_receipt": [
+     0,
+     0
+    ],
+    "ev_play|120s": [
+     0,
+     0
+    ],
+    "ev_play|15s": [
+     0,
+     0
+    ],
+    "ev_play|30s": [
+     0,
+     0
+    ],
+    "ev_play|5s": [
+     0,
+     0
+    ],
+    "ev_play|60s": [
+     0,
+     0
+    ],
+    "ev_play|before_receipt": [
+     0,
+     0
+    ],
+    "ev_score|120s": [
+     0,
+     0
+    ],
+    "ev_score|15s": [
+     0,
+     0
+    ],
+    "ev_score|30s": [
+     0,
+     0
+    ],
+    "ev_score|5s": [
+     0,
+     0
+    ],
+    "ev_score|60s": [
+     0,
+     0
+    ],
+    "ev_score|before_receipt": [
+     0,
+     0
+    ]
+   },
+   "status": "TAPE_MISSING",
+   "tape_receipt_lag_s": {},
+   "ticker": "KXNFLGAME-26SEP28PHICHI-CHI"
+  },
+  {
+   "contracts": 985198.9,
+   "day": "2026-09-29",
+   "depth_min": 45.2,
+   "game_key": "849845",
+   "live_min": 149.5,
+   "n_events": 357,
+   "no_final_row": false,
+   "prints": 4746,
+   "sport": "mlb",
+   "spread_c": {
+    "p10": 1.0,
+    "p50": 1.0,
+    "p90": 1.0
+   },
+   "stats": {
+    "ctl|120s": [
+     79,
+     90
+    ],
+    "ctl|15s": [
+     21,
+     90
+    ],
+    "ctl|30s": [
+     44,
+     90
+    ],
+    "ctl|5s": [
+     6,
+     90
+    ],
+    "ctl|60s": [
+     61,
+     90
+    ],
+    "ctl|before_matched_lag": [
+     25,
+     90
+    ],
+    "eng|300s|fill": [
+     0.0,
+     152.0
+    ],
+    "eng|60s|fill": [
+     0.0,
+     152.0
+    ],
+    "ev_period|120s": [
+     8,
+     10
+    ],
+    "ev_period|15s": [
+     2,
+     10
+    ],
+    "ev_period|30s": [
+     6,
+     10
+    ],
+    "ev_period|5s": [
+     2,
+     10
+    ],
+    "ev_period|60s": [
+     6,
+     10
+    ],
+    "ev_period|before_receipt": [
+     2,
+     10
+    ],
+    "ev_play|120s": [
+     96,
+     98
+    ],
+    "ev_play|15s": [
+     38,
+     98
+    ],
+    "ev_play|30s": [
+     62,
+     98
+    ],
+    "ev_play|5s": [
+     21,
+     98
+    ],
+    "ev_play|60s": [
+     89,
+     98
+    ],
+    "ev_play|before_receipt": [
+     45,
+     98
+    ],
+    "ev_score|120s": [
+     2,
+     2
+    ],
+    "ev_score|15s": [
+     1,
+     2
+    ],
+    "ev_score|30s": [
+     1,
+     2
+    ],
+    "ev_score|5s": [
+     1,
+     2
+    ],
+    "ev_score|60s": [
+     2,
+     2
+    ],
+    "ev_score|before_receipt": [
+     1,
+     2
+    ],
+    "touch|300s|fill": [
+     0.0,
+     182.0
+    ],
+    "touch|60s|fill": [
+     0.0,
+     182.0
+    ]
+   },
+   "status": "OK",
+   "tape_receipt_lag_s": {
+    "p10": 7289.231,
+    "p50": 13353.154,
+    "p90": 19622.685
+   },
+   "ticker": "KXMLBGAME-26SEP291400PHIATL-ATL"
+  },
+  {
+   "contracts": 688545.1,
+   "day": "2026-09-29",
+   "depth_min": 50.3,
+   "game_key": "849849",
+   "live_min": 194.7,
+   "n_events": 388,
+   "no_final_row": false,
+   "prints": 3700,
+   "sport": "mlb",
+   "spread_c": {
+    "p10": 1.0,
+    "p50": 1.0,
+    "p90": 1.0
+   },
+   "stats": {
+    "ctl|120s": [
+     90,
+     98
+    ],
+    "ctl|15s": [
+     34,
+     101
+    ],
+    "ctl|30s": [
+     54,
+     101
+    ],
+    "ctl|5s": [
+     12,
+     101
+    ],
+    "ctl|60s": [
+     72,
+     100
+    ],
+    "ctl|before_matched_lag": [
+     39,
+     101
+    ],
+    "eng|300s|fill": [
+     0.0,
+     180.0
+    ],
+    "eng|60s|fill": [
+     0.0,
+     180.0
+    ],
+    "ev_period|120s": [
+     7,
+     7
+    ],
+    "ev_period|15s": [
+     5,
+     7
+    ],
+    "ev_period|30s": [
+     6,
+     7
+    ],
+    "ev_period|5s": [
+     4,
+     8
+    ],
+    "ev_period|60s": [
+     7,
+     7
+    ],
+    "ev_period|before_receipt": [
+     4,
+     7
+    ],
+    "ev_play|120s": [
+     94,
+     100
+    ],
+    "ev_play|15s": [
+     53,
+     100
+    ],
+    "ev_play|30s": [
+     74,
+     100
+    ],
+    "ev_play|5s": [
+     29,
+     100
+    ],
+    "ev_play|60s": [
+     86,
+     100
+    ],
+    "ev_play|before_receipt": [
+     59,
+     100
+    ],
+    "ev_score|120s": [
+     2,
+     2
+    ],
+    "ev_score|15s": [
+     1,
+     2
+    ],
+    "ev_score|30s": [
+     1,
+     2
+    ],
+    "ev_score|5s": [
+     1,
+     2
+    ],
+    "ev_score|60s": [
+     2,
+     2
+    ],
+    "ev_score|before_receipt": [
+     1,
+     2
+    ],
+    "touch|300s|fill": [
+     0.0,
+     202.0
+    ],
+    "touch|60s|fill": [
+     0.0,
+     202.0
+    ]
+   },
+   "status": "OK",
+   "tape_receipt_lag_s": {
+    "p10": 1032.097,
+    "p50": 6950.385,
+    "p90": 12152.431
+   },
+   "ticker": "KXMLBGAME-26SEP291700CWSHOU-HOU"
+  }
+ ],
+ "inputs": [
+  {
+   "exists": false,
+   "path": "schedules/2026-09-27_maker_forward.json"
+  },
+  {
+   "exists": false,
+   "path": "schedules/2026-09-28_maker_forward.json"
+  },
+  {
+   "bytes_lf": 865,
+   "exists": true,
+   "path": "schedules/2026-09-29_maker_forward.json",
+   "sha256_lf": "b4e37a4fab8132852b4920f24a635fbb12dbcf0f152d63bb7c21b18617c381ac"
+  },
+  {
+   "bytes": 19653419,
+   "exists": true,
+   "head_sha256": "7fe5383dd10eb82011b4ca5ced7e135cea43281b945f23d50d8a3bfed23b6980",
+   "lines_bad_json": 0,
+   "lines_parsed": 1183,
+   "lines_skipped_partial": 0,
+   "lines_skipped_unrelated": 17745,
+   "path": "state/nfl/2026-09-29.jsonl",
+   "tail_sha256": "6999a079de9e1823f10912b8d989180d1816669b6c7c9be57f8517a04f639951"
+  },
+  {
+   "bytes": 481342,
+   "exists": true,
+   "head_sha256": "6aa59722e580f00b5d5463f35f4b3026d11666bc353e7b1ead2b1f1e9047bb94",
+   "lines_bad_json": 0,
+   "lines_parsed": 29,
+   "lines_skipped_partial": 0,
+   "lines_skipped_unrelated": 435,
+   "path": "state/nfl/2026-09-30.jsonl",
+   "tail_sha256": "6aa59722e580f00b5d5463f35f4b3026d11666bc353e7b1ead2b1f1e9047bb94"
+  },
+  {
+   "bytes": 133627646,
+   "exists": true,
+   "head_sha256": "d1bd4d3e72c44a5c4dbc200e2c48438b988cf7de694b225d27fd9cae4b933df1",
+   "lines_bad_json": 0,
+   "lines_parsed": 6421,
+   "lines_skipped_partial": 0,
+   "lines_skipped_unrelated": 85880,
+   "path": "books/nfl/2026-09-29.jsonl",
+   "tail_sha256": "3f316d77f0b74f472daf4124481fdd1a9273b7d00398bc23fd7866782398df89"
+  },
+  {
+   "bytes": 7453246,
+   "exists": true,
+   "head_sha256": "c971eb9b7cffff8b4ae440665d830e2056b425560e564c48035935fad527a415",
+   "lines_bad_json": 0,
+   "lines_parsed": 0,
+   "lines_skipped_partial": 0,
+   "lines_skipped_unrelated": 2860,
+   "path": "books/nfl/2026-09-30.jsonl",
+   "tail_sha256": "ea6ee74d1dc391fa6e24c66f7b2fa53402aacdda97b53958bc509090c21db30e"
+  },
+  {
+   "bytes": 37117927,
+   "exists": true,
+   "head_sha256": "c816b68bf04a46e903c1e92aca088ddc23d63d68714fffba4572ee90440375ac",
+   "lines_bad_json": 0,
+   "lines_parsed": 3204,
+   "lines_skipped_partial": 0,
+   "lines_skipped_unrelated": 1634,
+   "path": "state/mlb/2026-09-29.jsonl",
+   "tail_sha256": "337ce5eaee3bd6fef02088ecc314e5842f592d598a8e90e38ef804ae4fbdd96f"
+  },
+  {
+   "bytes": 15493602,
+   "exists": true,
+   "head_sha256": "0c56542582f524691d18b6b5a5c81eb7e3dae2db0b3a46bcd802d1b3e62b401d",
+   "lines_bad_json": 0,
+   "lines_parsed": 92,
+   "lines_skipped_partial": 0,
+   "lines_skipped_unrelated": 1791,
+   "path": "state/mlb/2026-09-30.jsonl",
+   "tail_sha256": "2caafceffc29d682d0f6d377f1c9a5960e78df13948923bbbb962726c17df4bd"
+  },
+  {
+   "bytes": 83014904,
+   "exists": true,
+   "head_sha256": "3fd5797095f9378f00236860d044363840a813a9eebebb311e9128678aaf4e92",
+   "lines_bad_json": 0,
+   "lines_parsed": 14029,
+   "lines_skipped_partial": 0,
+   "lines_skipped_unrelated": 43030,
+   "path": "books/mlb/2026-09-29.jsonl",
+   "tail_sha256": "90eac3194e51557f61a665b8a88d646a8be1723b7a6520d5f3f8823f328344a1"
+  },
+  {
+   "bytes": 36999744,
+   "exists": true,
+   "head_sha256": "8b65144fc9f13b6b0f990a59c89de6ad1948647e6ce582cfd5d3473eb339ef52",
+   "lines_bad_json": 0,
+   "lines_parsed": 5511,
+   "lines_skipped_partial": 0,
+   "lines_skipped_unrelated": 21591,
+   "path": "books/mlb/2026-09-30.jsonl",
+   "tail_sha256": "2a9e41823f41960f7010db71f5ca564ef0cae1e1907c00923aa800cd1154605c"
+  }
+ ],
+ "not_verified": [
+  "mid-shard edits that keep size and both end megabytes (identity limit)",
+  "parser behaviour on Python 3.12 (receipt built and tested on 3.10)",
+  "one development week only: exploratory, no confirmatory claim",
+  "focus depth exists only in the first focus hour of each game",
+  "in-game prints arrive by backfill (replay-labelled tape)",
+  "join instants overlap; fill shares are not a policy throughput"
+ ],
+ "pools": {
+  "mlb": {
+   "ctl|120s": {
+    "games": 2,
+    "status": "INSUFFICIENT"
+   },
+   "ctl|15s": {
+    "games": 2,
+    "status": "INSUFFICIENT"
+   },
+   "ctl|30s": {
+    "games": 2,
+    "status": "INSUFFICIENT"
+   },
+   "ctl|5s": {
+    "games": 2,
+    "status": "INSUFFICIENT"
+   },
+   "ctl|60s": {
+    "games": 2,
+    "status": "INSUFFICIENT"
+   },
+   "ctl|before_matched_lag": {
+    "games": 2,
+    "status": "INSUFFICIENT"
+   },
+   "eng|300s|fill": {
+    "games": 2,
+    "status": "INSUFFICIENT"
+   },
+   "eng|60s|fill": {
+    "games": 2,
+    "status": "INSUFFICIENT"
+   },
+   "ev_period|120s": {
+    "games": 2,
+    "status": "INSUFFICIENT"
+   },
+   "ev_period|15s": {
+    "games": 2,
+    "status": "INSUFFICIENT"
+   },
+   "ev_period|30s": {
+    "games": 2,
+    "status": "INSUFFICIENT"
+   },
+   "ev_period|5s": {
+    "games": 2,
+    "status": "INSUFFICIENT"
+   },
+   "ev_period|60s": {
+    "games": 2,
+    "status": "INSUFFICIENT"
+   },
+   "ev_period|before_receipt": {
+    "games": 2,
+    "status": "INSUFFICIENT"
+   },
+   "ev_play|120s": {
+    "games": 2,
+    "status": "INSUFFICIENT"
+   },
+   "ev_play|15s": {
+    "games": 2,
+    "status": "INSUFFICIENT"
+   },
+   "ev_play|30s": {
+    "games": 2,
+    "status": "INSUFFICIENT"
+   },
+   "ev_play|5s": {
+    "games": 2,
+    "status": "INSUFFICIENT"
+   },
+   "ev_play|60s": {
+    "games": 2,
+    "status": "INSUFFICIENT"
+   },
+   "ev_play|before_receipt": {
+    "games": 2,
+    "status": "INSUFFICIENT"
+   },
+   "ev_score|120s": {
+    "games": 2,
+    "status": "INSUFFICIENT"
+   },
+   "ev_score|15s": {
+    "games": 2,
+    "status": "INSUFFICIENT"
+   },
+   "ev_score|30s": {
+    "games": 2,
+    "status": "INSUFFICIENT"
+   },
+   "ev_score|5s": {
+    "games": 2,
+    "status": "INSUFFICIENT"
+   },
+   "ev_score|60s": {
+    "games": 2,
+    "status": "INSUFFICIENT"
+   },
+   "ev_score|before_receipt": {
+    "games": 2,
+    "status": "INSUFFICIENT"
+   },
+   "touch|300s|fill": {
+    "games": 2,
+    "status": "INSUFFICIENT"
+   },
+   "touch|60s|fill": {
+    "games": 2,
+    "status": "INSUFFICIENT"
+   }
+  },
+  "nfl": {
+   "ctl|120s": {
+    "games": 1,
+    "status": "INSUFFICIENT"
+   },
+   "ctl|15s": {
+    "games": 1,
+    "status": "INSUFFICIENT"
+   },
+   "ctl|30s": {
+    "games": 1,
+    "status": "INSUFFICIENT"
+   },
+   "ctl|5s": {
+    "games": 1,
+    "status": "INSUFFICIENT"
+   },
+   "ctl|60s": {
+    "games": 1,
+    "status": "INSUFFICIENT"
+   },
+   "ctl|before_matched_lag": {
+    "games": 0,
+    "status": "INSUFFICIENT"
+   },
+   "ev_period|120s": {
+    "games": 0,
+    "status": "INSUFFICIENT"
+   },
+   "ev_period|15s": {
+    "games": 0,
+    "status": "INSUFFICIENT"
+   },
+   "ev_period|30s": {
+    "games": 0,
+    "status": "INSUFFICIENT"
+   },
+   "ev_period|5s": {
+    "games": 0,
+    "status": "INSUFFICIENT"
+   },
+   "ev_period|60s": {
+    "games": 0,
+    "status": "INSUFFICIENT"
+   },
+   "ev_period|before_receipt": {
+    "games": 0,
+    "status": "INSUFFICIENT"
+   },
+   "ev_play|120s": {
+    "games": 0,
+    "status": "INSUFFICIENT"
+   },
+   "ev_play|15s": {
+    "games": 0,
+    "status": "INSUFFICIENT"
+   },
+   "ev_play|30s": {
+    "games": 0,
+    "status": "INSUFFICIENT"
+   },
+   "ev_play|5s": {
+    "games": 0,
+    "status": "INSUFFICIENT"
+   },
+   "ev_play|60s": {
+    "games": 0,
+    "status": "INSUFFICIENT"
+   },
+   "ev_play|before_receipt": {
+    "games": 0,
+    "status": "INSUFFICIENT"
+   },
+   "ev_score|120s": {
+    "games": 0,
+    "status": "INSUFFICIENT"
+   },
+   "ev_score|15s": {
+    "games": 0,
+    "status": "INSUFFICIENT"
+   },
+   "ev_score|30s": {
+    "games": 0,
+    "status": "INSUFFICIENT"
+   },
+   "ev_score|5s": {
+    "games": 0,
+    "status": "INSUFFICIENT"
+   },
+   "ev_score|60s": {
+    "games": 0,
+    "status": "INSUFFICIENT"
+   },
+   "ev_score|before_receipt": {
+    "games": 0,
+    "status": "INSUFFICIENT"
+   }
+  }
+ },
+ "refusals": {
+  "bulk_rows_ignored": 84,
+  "censored|120s": 4,
+  "censored|15s": 1,
+  "censored|30s": 1,
+  "censored|5s": 0,
+  "censored|60s": 2,
+  "censored|before_lag": 1,
+  "control_lag_absent": 115,
+  "depth_unknown_through_only": 1,
+  "duplicate_trade_id": 0,
+  "mark_missing": 42230,
+  "no_prior_book": 525,
+  "other_record_type_ignored": 3,
+  "receipt_before_created": 0,
+  "row_key_mismatch": 0,
+  "schedule_missing": 2,
+  "snapshot_invalid_or_crossed": 0,
+  "snapshot_unparsed": 0,
+  "source_clock_absent_or_rejected": 229,
+  "state_not_dict": 0,
+  "taker_side_conflict": 0,
+  "timestamp_rejected": 0,
+  "trade_price_or_count_out_of_range": 0,
+  "trade_unparsed_or_unknown_side": 0
+ },
+ "source_receipt_lag_s": {
+  "p10": 12.189,
+  "p50": 19.193,
+  "p90": 26.963
+ }
+}

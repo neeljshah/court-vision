@@ -1,0 +1,10 @@
+{
+  "capacity_subset_selected_at": "2026-10-05T14:09:30.280454+00:00",
+  "denominator_of_record": "docs/evidence/forward/schedules/2026-10-05_maker_forward_full_selection.json",
+  "not_served": [],
+  "rule": "earliest starts, ticker order on ties, subject to capture_scheduler.schedule_rows line 113 (any three consecutive starts must span >= 3600 s); score-blind, before any start",
+  "served": [
+    "KXMLBGAME-26OCT051700CWSCLE-CLE"
+  ],
+  "served_file": "docs/evidence/forward/schedules/2026-10-05_maker_forward.json"
+}

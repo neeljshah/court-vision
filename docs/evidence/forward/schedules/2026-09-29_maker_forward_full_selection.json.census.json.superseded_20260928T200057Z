@@ -1,0 +1,57 @@
+{
+  "nfl": {
+    "canonical_rules": {
+      "home_alias": 1
+    },
+    "game_key_sources": {
+      "401872963": "espn_event_id"
+    },
+    "games_seen": 1,
+    "link_paths": {
+      "401872963": "team_set"
+    },
+    "linked": 1,
+    "local_date_tz": "America/Chicago",
+    "record_counts": {
+      "derivative_series_ignored": 826,
+      "espn_minute_precision_normalized": 1,
+      "future_records": 4,
+      "ignored_record_type": 279787,
+      "listed_on_previous_us_date": 1,
+      "local_date_from_declared_tz": 1
+    },
+    "refused_by_reason": {},
+    "refused_team_evidence": {},
+    "schedule_receipt": {
+      "http_status": 200,
+      "kept_from": {
+        "401872963": "20260928"
+      },
+      "query_receipts": {
+        "20260928": {
+          "http_status": 200,
+          "request_start_utc": "2026-09-28T16:22:33.856734+00:00",
+          "response_bytes": 23194,
+          "response_end_utc": "2026-09-28T16:22:34.011517+00:00",
+          "response_sha256": "f724aa0b91a6c7a6f63c2474027aea684df02f13a93f81391c22d7183a0dab49",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=20260928"
+        },
+        "20260929": {
+          "http_status": 200,
+          "request_start_utc": "2026-09-28T16:22:34.011517+00:00",
+          "response_bytes": 5193,
+          "response_end_utc": "2026-09-28T16:22:34.105629+00:00",
+          "response_sha256": "d32bdedc9f799a39a5728d8bd0c52d81096c889f596fde3cdd8b5d43bf46a8c5",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=20260929"
+        }
+      },
+      "request_start_utc": "2026-09-28T16:22:34.011517+00:00",
+      "response_bytes": 5193,
+      "response_end_utc": "2026-09-28T16:22:34.105629+00:00",
+      "response_sha256": "d32bdedc9f799a39a5728d8bd0c52d81096c889f596fde3cdd8b5d43bf46a8c5",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=20260929"
+    },
+    "schedule_source": "live",
+    "written": 1
+  }
+}

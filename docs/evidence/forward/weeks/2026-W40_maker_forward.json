@@ -1,0 +1,400 @@
+{
+ "as_of": "2026-10-11T06:00:00Z",
+ "counts": {
+  "JSONDecodeError": 4,
+  "daily_artifacts_outside_week": 4,
+  "families_without_scheduled_games": 3,
+  "refused_daily_artifacts": 1,
+  "unreadable_daily_artifacts": 4
+ },
+ "daily_artifacts": [
+  {
+   "as_of": "2026-09-30T06:00:00Z",
+   "date": "2026-09-29",
+   "path": "docs\\evidence\\forward\\qualification\\2026-09-29.json",
+   "sha256": "e1ddfbf88da8ba0194dd0638eb95341e6ea30f75d667cd1b1f518c7b83a9329b",
+   "size_bytes": 9992
+  },
+  {
+   "as_of": "2026-10-03T06:00:00Z",
+   "date": "2026-10-02",
+   "path": "docs\\evidence\\forward\\qualification\\2026-10-02.json",
+   "sha256": "5a43f7cd8990fec6dfab5438ba0bff345a40b62b70a768f3dcad3cf6a570c13f",
+   "size_bytes": 9131
+  },
+  {
+   "as_of": "2026-10-04T06:00:00Z",
+   "date": "2026-10-03",
+   "path": "docs\\evidence\\forward\\qualification\\2026-10-03.json",
+   "sha256": "300518b5120f5a93f3ef8d042a479789142d2f683a96f8e230c8fc17c758fd70",
+   "size_bytes": 8068
+  },
+  {
+   "as_of": "2026-10-05T06:00:00Z",
+   "date": "2026-10-04",
+   "path": "docs\\evidence\\forward\\qualification\\2026-10-04.json",
+   "sha256": "7bba19f67ef3571e26986658443dcb6c0f5088cc03cc5bc820dc4da25ba6da59",
+   "size_bytes": 16505
+  }
+ ],
+ "families": [
+  {
+   "appended": false,
+   "family": "maker_forward_mlb",
+   "forecast_sunday": null,
+   "ledger_row": {
+    "capture_gap_seconds": "3600",
+    "exclusions": {
+     "ADAPTER_REFUSED": [
+      "KXMLBGAME-26OCT011400PHIATL",
+      "KXMLBGAME-26OCT031300CWSCLE",
+      "KXMLBGAME-26OCT031600ATLLAD",
+      "KXMLBGAME-26SEP291400PHIATL",
+      "KXMLBGAME-26SEP291700CWSHOU"
+     ],
+     "BOOK_CADENCE": [
+      "KXMLBGAME-26OCT011400PHIATL",
+      "KXMLBGAME-26OCT031300CWSCLE",
+      "KXMLBGAME-26OCT031600ATLLAD",
+      "KXMLBGAME-26OCT031830NYYTB",
+      "KXMLBGAME-26OCT032030SDMIL",
+      "KXMLBGAME-26OCT041600SDMIL",
+      "KXMLBGAME-26SEP291400PHIATL",
+      "KXMLBGAME-26SEP291700CWSHOU"
+     ],
+     "BOOK_STALE": [
+      "KXMLBGAME-26OCT011400PHIATL",
+      "KXMLBGAME-26OCT031300CWSCLE",
+      "KXMLBGAME-26OCT031600ATLLAD",
+      "KXMLBGAME-26SEP291400PHIATL",
+      "KXMLBGAME-26SEP291700CWSHOU"
+     ],
+     "COVERAGE_LOW": [
+      "KXMLBGAME-26OCT011400PHIATL",
+      "KXMLBGAME-26OCT031300CWSCLE",
+      "KXMLBGAME-26OCT031600ATLLAD",
+      "KXMLBGAME-26OCT031830NYYTB",
+      "KXMLBGAME-26OCT032030SDMIL",
+      "KXMLBGAME-26OCT041600SDMIL",
+      "KXMLBGAME-26SEP291400PHIATL",
+      "KXMLBGAME-26SEP291700CWSHOU"
+     ],
+     "DECISIONS_LOW": [
+      "KXMLBGAME-26OCT011400PHIATL",
+      "KXMLBGAME-26OCT031300CWSCLE",
+      "KXMLBGAME-26OCT031600ATLLAD",
+      "KXMLBGAME-26OCT031830NYYTB",
+      "KXMLBGAME-26OCT032030SDMIL",
+      "KXMLBGAME-26OCT041600SDMIL",
+      "KXMLBGAME-26SEP291400PHIATL",
+      "KXMLBGAME-26SEP291700CWSHOU"
+     ],
+     "LINKAGE_INVALID": [
+      "KXMLBGAME-26OCT011400PHIATL",
+      "KXMLBGAME-26OCT031300CWSCLE",
+      "KXMLBGAME-26OCT031600ATLLAD",
+      "KXMLBGAME-26OCT031830NYYTB",
+      "KXMLBGAME-26OCT032030SDMIL",
+      "KXMLBGAME-26OCT041600SDMIL",
+      "KXMLBGAME-26SEP291400PHIATL",
+      "KXMLBGAME-26SEP291700CWSHOU"
+     ],
+     "NOT_LIVE": [
+      "KXMLBGAME-26OCT011400PHIATL"
+     ],
+     "RESERVATION_INVALID": [
+      "KXMLBGAME-26OCT011400PHIATL",
+      "KXMLBGAME-26OCT031300CWSCLE",
+      "KXMLBGAME-26OCT031600ATLLAD",
+      "KXMLBGAME-26SEP291400PHIATL",
+      "KXMLBGAME-26SEP291700CWSHOU"
+     ],
+     "STATE_GAP": [
+      "KXMLBGAME-26OCT011400PHIATL",
+      "KXMLBGAME-26OCT031600ATLLAD",
+      "KXMLBGAME-26OCT031830NYYTB",
+      "KXMLBGAME-26OCT032030SDMIL",
+      "KXMLBGAME-26OCT041600SDMIL"
+     ],
+     "STATE_STALE": [
+      "KXMLBGAME-26OCT011400PHIATL"
+     ],
+     "TAPE_INCOMPLETE": [
+      "KXMLBGAME-26OCT011400PHIATL",
+      "KXMLBGAME-26OCT031300CWSCLE",
+      "KXMLBGAME-26OCT031600ATLLAD",
+      "KXMLBGAME-26OCT031830NYYTB",
+      "KXMLBGAME-26OCT032030SDMIL",
+      "KXMLBGAME-26OCT041600SDMIL",
+      "KXMLBGAME-26SEP291400PHIATL",
+      "KXMLBGAME-26SEP291700CWSHOU"
+     ]
+    },
+    "family": "maker_forward_mlb",
+    "fill_bearing_game_ids": [],
+    "fill_bearing_games": 0,
+    "game_ids": [
+     "KXMLBGAME-26OCT011400PHIATL",
+     "KXMLBGAME-26OCT031300CWSCLE",
+     "KXMLBGAME-26OCT031600ATLLAD",
+     "KXMLBGAME-26OCT031830NYYTB",
+     "KXMLBGAME-26OCT032030SDMIL",
+     "KXMLBGAME-26OCT041600SDMIL",
+     "KXMLBGAME-26SEP291400PHIATL",
+     "KXMLBGAME-26SEP291700CWSHOU"
+    ],
+    "iso_week": 40,
+    "iso_year": 2026,
+    "qualified_game_ids": [],
+    "qualified_games": 0,
+    "source_artifact_path": "docs\\evidence\\forward\\weeks\\2026-W40_maker_forward.json",
+    "source_sha256": "6eaeee5890f58df58b3578f7bf3e824772749cdeabbb7088698c9c277996cba9",
+    "sport": "mlb"
+   },
+   "qualified_games": 0,
+   "scheduled_games": 8,
+   "sport": "mlb",
+   "streak": 0,
+   "verdict": "FAIL",
+   "weekly_floor": 4
+  },
+  {
+   "appended": false,
+   "family": "maker_forward_nba",
+   "forecast_sunday": null,
+   "ledger_row": {
+    "capture_gap_seconds": "0",
+    "exclusions": {},
+    "family": "maker_forward_nba",
+    "fill_bearing_game_ids": [],
+    "fill_bearing_games": 0,
+    "game_ids": [],
+    "iso_week": 40,
+    "iso_year": 2026,
+    "qualified_game_ids": [],
+    "qualified_games": 0,
+    "source_artifact_path": "docs\\evidence\\forward\\weeks\\2026-W40_maker_forward.json",
+    "source_sha256": "6eaeee5890f58df58b3578f7bf3e824772749cdeabbb7088698c9c277996cba9",
+    "sport": "nba"
+   },
+   "qualified_games": 0,
+   "scheduled_games": 0,
+   "sport": "nba",
+   "streak": 0,
+   "verdict": "FAIL",
+   "weekly_floor": 4
+  },
+  {
+   "appended": false,
+   "family": "maker_forward_nfl",
+   "forecast_sunday": null,
+   "ledger_row": {
+    "capture_gap_seconds": "3600",
+    "exclusions": {
+     "ADAPTER_REFUSED": [
+      "KXNFLGAME-26SEP28PHICHI"
+     ],
+     "BOOK_CADENCE": [
+      "KXNFLGAME-26OCT01PITCLE",
+      "KXNFLGAME-26OCT04ARINYG",
+      "KXNFLGAME-26OCT04DALHOU",
+      "KXNFLGAME-26OCT04DENSF",
+      "KXNFLGAME-26OCT04GBTB",
+      "KXNFLGAME-26OCT04KCLV",
+      "KXNFLGAME-26OCT04LACSEA",
+      "KXNFLGAME-26OCT04LARPHI",
+      "KXNFLGAME-26OCT04MIAMIN",
+      "KXNFLGAME-26OCT04NEBUF",
+      "KXNFLGAME-26OCT04NYJCHI",
+      "KXNFLGAME-26OCT04TENBAL",
+      "KXNFLGAME-26SEP28PHICHI"
+     ],
+     "BOOK_STALE": [
+      "KXNFLGAME-26SEP28PHICHI"
+     ],
+     "COVERAGE_LOW": [
+      "KXNFLGAME-26OCT01PITCLE",
+      "KXNFLGAME-26OCT04ARINYG",
+      "KXNFLGAME-26OCT04DALHOU",
+      "KXNFLGAME-26OCT04DENSF",
+      "KXNFLGAME-26OCT04GBTB",
+      "KXNFLGAME-26OCT04KCLV",
+      "KXNFLGAME-26OCT04LACSEA",
+      "KXNFLGAME-26OCT04LARPHI",
+      "KXNFLGAME-26OCT04MIAMIN",
+      "KXNFLGAME-26OCT04NEBUF",
+      "KXNFLGAME-26OCT04NYJCHI",
+      "KXNFLGAME-26OCT04TENBAL",
+      "KXNFLGAME-26SEP28PHICHI"
+     ],
+     "DECISIONS_LOW": [
+      "KXNFLGAME-26OCT01PITCLE",
+      "KXNFLGAME-26OCT04ARINYG",
+      "KXNFLGAME-26OCT04DALHOU",
+      "KXNFLGAME-26OCT04DENSF",
+      "KXNFLGAME-26OCT04GBTB",
+      "KXNFLGAME-26OCT04KCLV",
+      "KXNFLGAME-26OCT04LACSEA",
+      "KXNFLGAME-26OCT04LARPHI",
+      "KXNFLGAME-26OCT04MIAMIN",
+      "KXNFLGAME-26OCT04NEBUF",
+      "KXNFLGAME-26OCT04NYJCHI",
+      "KXNFLGAME-26OCT04TENBAL",
+      "KXNFLGAME-26SEP28PHICHI"
+     ],
+     "LINKAGE_INVALID": [
+      "KXNFLGAME-26OCT01PITCLE",
+      "KXNFLGAME-26OCT04ARINYG",
+      "KXNFLGAME-26OCT04DALHOU",
+      "KXNFLGAME-26OCT04DENSF",
+      "KXNFLGAME-26OCT04GBTB",
+      "KXNFLGAME-26OCT04KCLV",
+      "KXNFLGAME-26OCT04LACSEA",
+      "KXNFLGAME-26OCT04LARPHI",
+      "KXNFLGAME-26OCT04MIAMIN",
+      "KXNFLGAME-26OCT04NEBUF",
+      "KXNFLGAME-26OCT04NYJCHI",
+      "KXNFLGAME-26OCT04TENBAL",
+      "KXNFLGAME-26SEP28PHICHI"
+     ],
+     "NOT_LIVE": [
+      "KXNFLGAME-26SEP28PHICHI"
+     ],
+     "RESERVATION_INVALID": [
+      "KXNFLGAME-26SEP28PHICHI"
+     ],
+     "STATE_GAP": [
+      "KXNFLGAME-26OCT01PITCLE",
+      "KXNFLGAME-26OCT04ARINYG",
+      "KXNFLGAME-26OCT04DALHOU",
+      "KXNFLGAME-26OCT04DENSF",
+      "KXNFLGAME-26OCT04GBTB",
+      "KXNFLGAME-26OCT04KCLV",
+      "KXNFLGAME-26OCT04LACSEA",
+      "KXNFLGAME-26OCT04LARPHI",
+      "KXNFLGAME-26OCT04MIAMIN",
+      "KXNFLGAME-26OCT04NEBUF",
+      "KXNFLGAME-26OCT04NYJCHI",
+      "KXNFLGAME-26OCT04TENBAL",
+      "KXNFLGAME-26SEP28PHICHI"
+     ],
+     "STATE_STALE": [
+      "KXNFLGAME-26SEP28PHICHI"
+     ],
+     "TAPE_INCOMPLETE": [
+      "KXNFLGAME-26OCT01PITCLE",
+      "KXNFLGAME-26OCT04ARINYG",
+      "KXNFLGAME-26OCT04DALHOU",
+      "KXNFLGAME-26OCT04DENSF",
+      "KXNFLGAME-26OCT04GBTB",
+      "KXNFLGAME-26OCT04KCLV",
+      "KXNFLGAME-26OCT04LACSEA",
+      "KXNFLGAME-26OCT04LARPHI",
+      "KXNFLGAME-26OCT04MIAMIN",
+      "KXNFLGAME-26OCT04NEBUF",
+      "KXNFLGAME-26OCT04NYJCHI",
+      "KXNFLGAME-26OCT04TENBAL",
+      "KXNFLGAME-26SEP28PHICHI"
+     ]
+    },
+    "family": "maker_forward_nfl",
+    "fill_bearing_game_ids": [],
+    "fill_bearing_games": 0,
+    "game_ids": [
+     "KXNFLGAME-26OCT01PITCLE",
+     "KXNFLGAME-26OCT04ARINYG",
+     "KXNFLGAME-26OCT04DALHOU",
+     "KXNFLGAME-26OCT04DENSF",
+     "KXNFLGAME-26OCT04GBTB",
+     "KXNFLGAME-26OCT04KCLV",
+     "KXNFLGAME-26OCT04LACSEA",
+     "KXNFLGAME-26OCT04LARPHI",
+     "KXNFLGAME-26OCT04MIAMIN",
+     "KXNFLGAME-26OCT04NEBUF",
+     "KXNFLGAME-26OCT04NYJCHI",
+     "KXNFLGAME-26OCT04TENBAL",
+     "KXNFLGAME-26SEP28PHICHI"
+    ],
+    "iso_week": 40,
+    "iso_year": 2026,
+    "qualified_game_ids": [],
+    "qualified_games": 0,
+    "source_artifact_path": "docs\\evidence\\forward\\weeks\\2026-W40_maker_forward.json",
+    "source_sha256": "6eaeee5890f58df58b3578f7bf3e824772749cdeabbb7088698c9c277996cba9",
+    "sport": "nfl"
+   },
+   "qualified_games": 0,
+   "scheduled_games": 13,
+   "sport": "nfl",
+   "streak": 0,
+   "verdict": "FAIL",
+   "weekly_floor": 4
+  },
+  {
+   "appended": false,
+   "family": "maker_forward_soccer",
+   "forecast_sunday": null,
+   "ledger_row": {
+    "capture_gap_seconds": "0",
+    "exclusions": {},
+    "family": "maker_forward_soccer",
+    "fill_bearing_game_ids": [],
+    "fill_bearing_games": 0,
+    "game_ids": [],
+    "iso_week": 40,
+    "iso_year": 2026,
+    "qualified_game_ids": [],
+    "qualified_games": 0,
+    "source_artifact_path": "docs\\evidence\\forward\\weeks\\2026-W40_maker_forward.json",
+    "source_sha256": "6eaeee5890f58df58b3578f7bf3e824772749cdeabbb7088698c9c277996cba9",
+    "sport": "soccer"
+   },
+   "qualified_games": 0,
+   "scheduled_games": 0,
+   "sport": "soccer",
+   "streak": 0,
+   "verdict": "FAIL",
+   "weekly_floor": 4
+  },
+  {
+   "appended": false,
+   "family": "maker_forward_tennis",
+   "forecast_sunday": null,
+   "ledger_row": {
+    "capture_gap_seconds": "0",
+    "exclusions": {},
+    "family": "maker_forward_tennis",
+    "fill_bearing_game_ids": [],
+    "fill_bearing_games": 0,
+    "game_ids": [],
+    "iso_week": 40,
+    "iso_year": 2026,
+    "qualified_game_ids": [],
+    "qualified_games": 0,
+    "source_artifact_path": "docs\\evidence\\forward\\weeks\\2026-W40_maker_forward.json",
+    "source_sha256": "6eaeee5890f58df58b3578f7bf3e824772749cdeabbb7088698c9c277996cba9",
+    "sport": "tennis"
+   },
+   "qualified_games": 0,
+   "scheduled_games": 0,
+   "sport": "tennis",
+   "streak": 0,
+   "verdict": "FAIL",
+   "weekly_floor": 4
+  }
+ ],
+ "iso_week": 40,
+ "iso_year": 2026,
+ "missing_dates": [
+  "2026-09-28",
+  "2026-09-30",
+  "2026-10-01"
+ ],
+ "refusal_reason": null,
+ "refused": 0,
+ "source_sha256": "6eaeee5890f58df58b3578f7bf3e824772749cdeabbb7088698c9c277996cba9",
+ "spec": "S390",
+ "status": "INCOMPLETE",
+ "week_end": "2026-10-04",
+ "week_start": "2026-09-28"
+}

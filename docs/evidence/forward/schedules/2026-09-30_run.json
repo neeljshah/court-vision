@@ -1,0 +1,75 @@
+{
+  "D1": "2026-09-30",
+  "argv": [
+    "--sports",
+    "mlb,nfl",
+    "--local-date-tz",
+    "America/Chicago",
+    "--books-root",
+    "data/cache/ingame_books_local",
+    "--state-root",
+    "data/cache/ingame_state_local_v2",
+    "--write-pointer"
+  ],
+  "capacity_subset_selected_at": "2026-09-29T14:16:05.176507+00:00",
+  "completed_at": "2026-09-29T14:16:05.176507+00:00",
+  "files": {
+    "docs/evidence/forward/schedules/2026-09-30_maker_forward.json": {
+      "bytes": 870,
+      "sha256": "f34f8ac3723a1f8bc27e115d9f89c3b9dfbef3f4e0413d4e3797469de057bab9"
+    },
+    "docs/evidence/forward/schedules/2026-09-30_maker_forward.json.capacity_note.json": {
+      "bytes": 602,
+      "sha256": "c4c529b17d41ca115639a58de432a8df7c8149ccba20de713f459392100eb709"
+    },
+    "docs/evidence/forward/schedules/2026-09-30_maker_forward_full_selection.json": {
+      "bytes": 870,
+      "sha256": "f34f8ac3723a1f8bc27e115d9f89c3b9dfbef3f4e0413d4e3797469de057bab9"
+    },
+    "docs/evidence/forward/schedules/2026-09-30_maker_forward_full_selection.json.census.json": {
+      "bytes": 4604,
+      "sha256": "5597d923c6f398a82c30ea4830fd2ea26768947dcfc541670c72e87838a994e3"
+    }
+  },
+  "now": "2026-09-29T14:15:05.567633+00:00",
+  "per_sport": {
+    "mlb": {
+      "full": 3,
+      "not_served": 0,
+      "record_counts": {
+        "derivative_series_ignored": 1583,
+        "future_records": 32,
+        "ignored_record_type": 649889,
+        "listed_on_previous_us_date": 2,
+        "previous_us_date_other_day": 2
+      },
+      "refused_by_reason": {
+        "missing_directional_team_evidence": 1,
+        "outside_utc_date": 2
+      },
+      "served": 3
+    },
+    "nfl": {
+      "full": 0,
+      "not_served": 0,
+      "record_counts": {
+        "derivative_series_ignored": 855,
+        "future_records": 8,
+        "ignored_record_type": 353564
+      },
+      "refused_by_reason": {},
+      "served": 0
+    }
+  },
+  "refused_by_reason": {},
+  "rewrite_reason": null,
+  "schedule_receipts_sha256": {
+    "mlb/mlb": "04cc58035e6f54c4a7da72293a1407eb957f783d33d8434987df08a5a95e2b3d",
+    "nfl/nfl": "d32bdedc9f799a39a5728d8bd0c52d81096c889f596fde3cdd8b5d43bf46a8c5"
+  },
+  "started_at": "2026-09-29T14:15:05.567633+00:00",
+  "superseded": {},
+  "writer_selected_at": [
+    "2026-09-29T14:15:06.320609+00:00"
+  ]
+}

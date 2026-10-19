@@ -3,7 +3,7 @@
 **The product is a calibrated predictor, not a betting-edge system.** Every claim on this
 page is about calibration/sharpness (Brier, RMSE, ECE) versus the devigged market close —
 never a dollar edge or ROI. Pregame markets are efficient; the honest, defensible result is
-"matches the devigged close within noise" on team-strength markets, plus a measured,
+"matches the devigged close within noise" on team-strength markets (measured: NBA moneyline indistinguishable at an underpowered n=372; MLB moneyline and soccer O/U 2.5 TRAIL the close with 95% CIs above zero; corrected 2026-10-06 from DM_RECOMPUTE_2026-09-24), plus a measured,
 calibrated in-game conditioning improvement. See [`../PLATFORM.md`](../PLATFORM.md) and
 `docs/JOB_EVIDENCE_PACKET.md` (the single numeric truth source) for the full framing. An
 honest REJECT — a signal or model that fails its gate — is recorded as a success, not

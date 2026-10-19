@@ -1,0 +1,5 @@
+- **S669 - HOLD.** If every log record lacks a valid family, `scripts/platformkit/execution/risk_receipt.py:249-255` returns no receipts and `risk_receipt_io.py:153-161` prints success without creating the requested artifact. The registered fill-cause and queue-variant split is absent from `risk_receipt.py:219-220` and `risk_receipt_marks.py:92-120`. `tests/platformkit/execution/test_risk_receipt.py:150-159` checks the worst-cell peak against the path produced by the same code, so that assertion cannot establish correct risk values. `risk_receipt_io.py:101` uses bare `os.replace`.
+
+| S669 | HOLD | S666; S667/S668 for full receipt inputs | Success without artifact; fill split absent | L |
+
+**Landing order:** Land S666. After fixes and verification, S660 is independent; S664 precedes S695 and measured-offset use in S663. S667 follows S666. S668 follows S666 and S695; S669 follows the risk inputs it is meant to report.

@@ -6,8 +6,8 @@ surface plus an in-game repricer. Measured leak-free / OOS on held-out data
 (numbers live in `vault/_Edge_Maps/`; the single honesty truth-source is
 `docs/JOB_EVIDENCE_PACKET.md`), the platform does two things well:
 
-- **Pregame MATCHES the devigged closing line within noise** on team-strength
-  markets (NBA moneyline, MLB moneyline, Soccer O/U-2.5), trailing only on totals
+- **Pregame TRAILS the devigged close on MLB moneyline (+0.0039 Brier, 95% CI [+0.0028, +0.0051]) and soccer O/U 2.5 (+0.0076, [+0.0059, +0.0092]) and is indistinguishable from it on NBA moneyline at an underpowered n=372 (corrected 2026-10-06 from DM_RECOMPUTE_2026-09-24)** on team-strength
+  markets (NBA moneyline, MLB moneyline, Soccer O/U-2.5), trailing by more on totals
   and ATP match-win by freshness data (injuries, lineups, park / weather, starting
   pitchers) a public / box model cannot see.
 - **In-game conditioning WINS in all 4 sports** - fusing the pregame intelligence

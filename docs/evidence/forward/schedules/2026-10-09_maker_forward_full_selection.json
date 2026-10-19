@@ -1,0 +1,231 @@
+[
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXMLBGAME-26OCT081700CLECWS",
+    "game_key": "849832",
+    "scheduled_start": "2026-10-09T00:00:00.000000Z",
+    "selected_at": "2026-10-08T15:56:34.726126+00:00",
+    "sport": "mlb",
+    "ticker": "KXMLBGAME-26OCT081700CLECWS-CWS"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXNBAGAME-26OCT08ATLSAS",
+    "game_key": "401898394",
+    "scheduled_start": "2026-10-09T00:00:00.000000Z",
+    "season_reason": null,
+    "season_type": 1,
+    "season_year": 2027,
+    "selected_at": "2026-10-08T15:56:34.726126+00:00",
+    "sport": "nba",
+    "ticker": "KXNBAGAME-26OCT08ATLSAS-SAS"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXNFLGAME-26OCT08TBDAL",
+    "game_key": "401872980",
+    "scheduled_start": "2026-10-09T00:15:00.000000Z",
+    "selected_at": "2026-10-08T15:56:34.726126+00:00",
+    "sport": "nfl",
+    "ticker": "KXNFLGAME-26OCT08TBDAL-DAL"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXNBAGAME-26OCT08SACLAL",
+    "game_key": "401898717",
+    "scheduled_start": "2026-10-09T02:30:00.000000Z",
+    "season_reason": null,
+    "season_type": 1,
+    "season_year": 2027,
+    "selected_at": "2026-10-08T15:56:34.726126+00:00",
+    "sport": "nba",
+    "ticker": "KXNBAGAME-26OCT08SACLAL-LAL"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXATPMATCH-26OCT09BERNAK",
+    "game_key": "atp:184926",
+    "scheduled_start": "2026-10-09T05:30:00.000000Z",
+    "selected_at": "2026-10-08T15:56:34.726126+00:00",
+    "sport": "tennis",
+    "ticker": "KXATPMATCH-26OCT09BERNAK-BER"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXATPMATCH-26OCT09HALBLO",
+    "game_key": "atp:184924",
+    "scheduled_start": "2026-10-09T05:30:00.000000Z",
+    "selected_at": "2026-10-08T15:56:34.726126+00:00",
+    "sport": "tennis",
+    "ticker": "KXATPMATCH-26OCT09HALBLO-HAL"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXATPMATCH-26OCT09HANTIA",
+    "game_key": "atp:184904",
+    "scheduled_start": "2026-10-09T05:30:00.000000Z",
+    "selected_at": "2026-10-08T15:56:34.726126+00:00",
+    "sport": "tennis",
+    "ticker": "KXATPMATCH-26OCT09HANTIA-HAN"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXATPMATCH-26OCT09ZVEYIB",
+    "game_key": "atp:184928",
+    "scheduled_start": "2026-10-09T05:30:00.000000Z",
+    "selected_at": "2026-10-08T15:56:34.726126+00:00",
+    "sport": "tennis",
+    "ticker": "KXATPMATCH-26OCT09ZVEYIB-ZVE"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXATPMATCH-26OCT08DAVBRO",
+    "game_key": "atp:184919",
+    "scheduled_start": "2026-10-09T07:00:00.000000Z",
+    "selected_at": "2026-10-08T15:56:34.726126+00:00",
+    "sport": "tennis",
+    "ticker": "KXATPMATCH-26OCT08DAVBRO-DAV"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXATPMATCH-26OCT09DEMOL",
+    "game_key": "atp:184927",
+    "scheduled_start": "2026-10-09T07:00:00.000000Z",
+    "selected_at": "2026-10-08T15:56:34.726126+00:00",
+    "sport": "tennis",
+    "ticker": "KXATPMATCH-26OCT09DEMOL-DE"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXATPMATCH-26OCT09KHAFER",
+    "game_key": "atp:184915",
+    "scheduled_start": "2026-10-09T07:00:00.000000Z",
+    "selected_at": "2026-10-08T15:56:34.726126+00:00",
+    "sport": "tennis",
+    "ticker": "KXATPMATCH-26OCT09KHAFER-KHA"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXWTAMATCH-26OCT09ZHESVI",
+    "game_key": "wta:184347",
+    "scheduled_start": "2026-10-09T07:00:00.000000Z",
+    "selected_at": "2026-10-08T15:56:34.726126+00:00",
+    "sport": "tennis",
+    "ticker": "KXWTAMATCH-26OCT09ZHESVI-ZHE"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXATPMATCH-26OCT09BUBMAC",
+    "game_key": "atp:184925",
+    "scheduled_start": "2026-10-09T08:30:00.000000Z",
+    "selected_at": "2026-10-08T15:56:34.726126+00:00",
+    "sport": "tennis",
+    "ticker": "KXATPMATCH-26OCT09BUBMAC-BUB"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXATPMATCH-26OCT09CERSAF",
+    "game_key": "atp:184922",
+    "scheduled_start": "2026-10-09T08:30:00.000000Z",
+    "selected_at": "2026-10-08T15:56:34.726126+00:00",
+    "sport": "tennis",
+    "ticker": "KXATPMATCH-26OCT09CERSAF-CER"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXATPMATCH-26OCT09KECMEN",
+    "game_key": "atp:184923",
+    "scheduled_start": "2026-10-09T08:30:00.000000Z",
+    "selected_at": "2026-10-08T15:56:34.726126+00:00",
+    "sport": "tennis",
+    "ticker": "KXATPMATCH-26OCT09KECMEN-KEC"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXATPMATCH-26OCT08DJOHUR",
+    "game_key": "atp:184917",
+    "scheduled_start": "2026-10-09T10:00:00.000000Z",
+    "selected_at": "2026-10-08T15:56:34.726126+00:00",
+    "sport": "tennis",
+    "ticker": "KXATPMATCH-26OCT08DJOHUR-DJO"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXWTAMATCH-26OCT07MERSWI",
+    "game_key": "wta:184353",
+    "scheduled_start": "2026-10-09T11:00:00.000000Z",
+    "selected_at": "2026-10-08T15:56:34.726126+00:00",
+    "sport": "tennis",
+    "ticker": "KXWTAMATCH-26OCT07MERSWI-MER"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXATPMATCH-26OCT09ZHOMUS",
+    "game_key": "atp:184918",
+    "scheduled_start": "2026-10-09T11:30:00.000000Z",
+    "selected_at": "2026-10-08T15:56:34.726126+00:00",
+    "sport": "tennis",
+    "ticker": "KXATPMATCH-26OCT09ZHOMUS-ZHO"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXNBAGAME-26OCT09HOUDAL",
+    "game_key": "401898395",
+    "scheduled_start": "2026-10-09T12:00:00.000000Z",
+    "season_reason": null,
+    "season_type": 1,
+    "season_year": 2027,
+    "selected_at": "2026-10-08T15:56:34.726126+00:00",
+    "sport": "nba",
+    "ticker": "KXNBAGAME-26OCT09HOUDAL-DAL"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXBUNDESLIGAGAME-26OCT09BVBSVW",
+    "game_key": "ger.1:401884781",
+    "scheduled_start": "2026-10-09T18:30:00.000000Z",
+    "selected_at": "2026-10-08T15:56:34.726126+00:00",
+    "sport": "soccer",
+    "ticker": "KXBUNDESLIGAGAME-26OCT09BVBSVW-BVB"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXLIGUE1GAME-26OCT09RCLOL",
+    "game_key": "fra.1:401876447",
+    "scheduled_start": "2026-10-09T18:45:00.000000Z",
+    "selected_at": "2026-10-08T15:56:34.726126+00:00",
+    "sport": "soccer",
+    "ticker": "KXLIGUE1GAME-26OCT09RCLOL-RCL"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXLALIGAGAME-26OCT09MCFESP",
+    "game_key": "esp.1:401882851",
+    "scheduled_start": "2026-10-09T19:00:00.000000Z",
+    "selected_at": "2026-10-08T15:56:34.726126+00:00",
+    "sport": "soccer",
+    "ticker": "KXLALIGAGAME-26OCT09MCFESP-MCF"
+  }
+]

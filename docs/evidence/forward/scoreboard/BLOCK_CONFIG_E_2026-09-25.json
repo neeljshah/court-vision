@@ -1,0 +1,26 @@
+{
+  "policy": {
+    "effective_from": "2026-09-25T00:00:00.000000Z",
+    "implementation_identity": "a2e279f65b4891bf41dc3930d53cf7dc0f35c686d8aeb0dfc642b6f26df49218",
+    "manifest_hash": "6a94c03bf7385b63ecb15d3241a5205f99bc711fabfc84a04b2ec012a4447f4b",
+    "selected_block_versions": {
+      "live_feed": "1",
+      "microstructure": "1",
+      "mid": "1",
+      "player_encounter_count": "1",
+      "player_pitcher_workload": "1",
+      "team_bullpen_usage": "1",
+      "team_state": "1"
+    },
+    "selected_blocks": [
+      "mid",
+      "team_state",
+      "live_feed",
+      "microstructure",
+      "player_pitcher_workload",
+      "player_encounter_count",
+      "team_bullpen_usage"
+    ]
+  },
+  "sha256": "26a4657b39bf186e9748218cdfa50869414c5a19f802e73386369f5b34812267"
+}

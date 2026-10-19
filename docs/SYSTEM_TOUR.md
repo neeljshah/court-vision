@@ -4,7 +4,7 @@
 
 CourtVision is an NBA-origin computer-vision, forecasting, and decision-research system. The
 central result is deliberately unglamorous: against real closing lines, the market is efficient.
-The pregame model matches the Shin-devigged close within noise on team-strength markets across six
+The pregame model trails the devigged close on MLB moneyline (+0.0039 Brier, 95% CI [+0.0028, +0.0051]) and soccer O/U 2.5 (+0.0076, [+0.0059, +0.0092]) and is indistinguishable from it on NBA moneyline at an underpowered n=372 (corrected 2026-10-06 from DM_RECOMPUTE_2026-09-24), across six
 independent corpora; it is a calibration result, not an edge claim. Measured in-game conditioning
 is the lane: conditioning on realized game state improves the forecaster, while the market has that
 same state too.
@@ -19,7 +19,7 @@ All figures in this opening are from the audited
 | NBA player props | PTS MAE 4.83; REB 1.92; AST 1.39; FG3M 0.89 | Production-model chronological holdout: 20,354 player-game rows, scored through the production inference path. |
 | Win probability | 0.709 accuracy; 0.193 Brier | Three-fold walk-forward measurement. |
 | In-game conditioning | NBA Brier 0.209 to 0.159; MLB 0.241 to 0.126 | Real-corpus out-of-sample conditioning result. It measures forecast quality, not a tradable advantage. |
-| Pregame market comparison | Matches the devigged close within noise | Team-strength markets across six independent corpora; the documented outcome is market efficiency. |
+| Pregame market comparison | Trails the devigged close on MLB moneyline (+0.0039 Brier, 95% CI [+0.0028, +0.0051]) and soccer O/U 2.5 (+0.0076, [+0.0059, +0.0092]) and is indistinguishable from it on NBA moneyline at an underpowered n=372 (corrected 2026-10-06 from DM_RECOMPUTE_2026-09-24) | Team-strength markets across six independent corpora; the documented outcome is market efficiency. |
 
 ## Credible rigor: the result includes the rejects
 

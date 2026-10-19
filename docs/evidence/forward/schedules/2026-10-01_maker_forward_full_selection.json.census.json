@@ -1,0 +1,115 @@
+{
+  "mlb": {
+    "canonical_rules": {
+      "home_alias": 2
+    },
+    "game_key_sources": {
+      "849842": "mlb_game_pk",
+      "849848": "mlb_game_pk"
+    },
+    "games_seen": 6,
+    "link_paths": {
+      "849842": "team_set",
+      "849848": "team_set"
+    },
+    "linked": 2,
+    "local_date_tz": "America/Chicago",
+    "record_counts": {
+      "derivative_series_ignored": 1663,
+      "future_records": 38,
+      "ignored_record_type": 765938,
+      "listed_on_previous_us_date": 2,
+      "previous_us_date_other_day": 2
+    },
+    "refused_by_reason": {
+      "no_kalshi_event_for_date_and_team": 2,
+      "outside_utc_date": 2
+    },
+    "refused_team_evidence": {},
+    "schedule_receipt": {
+      "http_status": 200,
+      "kept_from": {
+        "849840": "20261001",
+        "849842": "20260930",
+        "849844": "20261001",
+        "849847": "20261001",
+        "849848": "20260930",
+        "849850": "20261001"
+      },
+      "query_receipts": {
+        "20260930": {
+          "http_status": 200,
+          "request_start_utc": "2026-09-30T15:26:40.813154+00:00",
+          "response_bytes": 11892,
+          "response_end_utc": "2026-09-30T15:26:40.917508+00:00",
+          "response_sha256": "3c0d2da7a48c6ee61d5232550660412c033058a7af753638f5ca7ecce93ac4e7",
+          "url": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=2026-09-30&hydrate=team"
+        },
+        "20261001": {
+          "http_status": 200,
+          "request_start_utc": "2026-09-30T15:26:40.918508+00:00",
+          "response_bytes": 11897,
+          "response_end_utc": "2026-09-30T15:26:41.001548+00:00",
+          "response_sha256": "29ba1afd1beee499729e279ad9224d1fecce06ace7f025786321a006fcbd21e2",
+          "url": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=2026-10-01&hydrate=team"
+        }
+      },
+      "request_start_utc": "2026-09-30T15:26:40.918508+00:00",
+      "response_bytes": 11897,
+      "response_end_utc": "2026-09-30T15:26:41.001548+00:00",
+      "response_sha256": "29ba1afd1beee499729e279ad9224d1fecce06ace7f025786321a006fcbd21e2",
+      "url": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=2026-10-01&hydrate=team"
+    },
+    "schedule_source": "live",
+    "written": 2
+  },
+  "nfl": {
+    "canonical_rules": {},
+    "game_key_sources": {},
+    "games_seen": 1,
+    "link_paths": {},
+    "linked": 0,
+    "local_date_tz": "America/Chicago",
+    "record_counts": {
+      "derivative_series_ignored": 855,
+      "espn_minute_precision_normalized": 1,
+      "future_records": 16,
+      "ignored_record_type": 353564
+    },
+    "refused_by_reason": {
+      "outside_utc_date": 1
+    },
+    "refused_team_evidence": {},
+    "schedule_receipt": {
+      "http_status": 200,
+      "kept_from": {
+        "401872964": "20261001"
+      },
+      "query_receipts": {
+        "20260930": {
+          "http_status": 200,
+          "request_start_utc": "2026-09-30T15:26:41.002552+00:00",
+          "response_bytes": 5193,
+          "response_end_utc": "2026-09-30T15:26:41.075630+00:00",
+          "response_sha256": "d32bdedc9f799a39a5728d8bd0c52d81096c889f596fde3cdd8b5d43bf46a8c5",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=20260930"
+        },
+        "20261001": {
+          "http_status": 200,
+          "request_start_utc": "2026-09-30T15:26:41.075630+00:00",
+          "response_bytes": 22876,
+          "response_end_utc": "2026-09-30T15:26:41.146280+00:00",
+          "response_sha256": "faa462ec8c804ca799c9652b7b35663609350831a7f6dd874ef1fe51d8d62875",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=20261001"
+        }
+      },
+      "request_start_utc": "2026-09-30T15:26:41.075630+00:00",
+      "response_bytes": 22876,
+      "response_end_utc": "2026-09-30T15:26:41.146280+00:00",
+      "response_sha256": "faa462ec8c804ca799c9652b7b35663609350831a7f6dd874ef1fe51d8d62875",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=20261001"
+    },
+    "schedule_source": "live",
+    "written": 0
+  }
+}

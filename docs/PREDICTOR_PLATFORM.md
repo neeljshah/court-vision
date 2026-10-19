@@ -34,7 +34,7 @@ Three honest claims, all calibration/sharpness, never a dollar edge:
 
 **We never claim:** a dollar edge / ROI / profitable betting edge; beating the close; a
 computer-vision predictive moat (CV SHAP is ~0 in production today). Honest framings we DO
-use: "matches the devigged close within noise", "calibrated", "the in-game conditioning edge",
+use: "matches the devigged close within noise" (NBA moneyline only; MLB moneyline and soccer O/U 2.5 trail the close -- corrected 2026-10-06 from DM_RECOMPUTE_2026-09-24), "calibrated", "the in-game conditioning edge",
 "leak-free / walk-forward / OOS", and "we caught and retracted our own over-claims" - the rigor
 is the sell.
 

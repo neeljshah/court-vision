@@ -1,0 +1,5 @@
+- **S663 - HOLD.** `scripts/platformkit/ops/latency_ledger_io.py:134-143,203-217` skips missing sport directories and days, then can write an exit-zero receipt with an incomplete or empty quantile denominator. `tests/platformkit/ops/test_latency_ledger_mid.py:145-153` covers a missing root, not a missing sport or day. The required real-archive replay is marked unverified in `docs/evidence/harness/S663_cloud_result_2026-09-30.md:64-68`. The writer called at `latency_ledger_io.py:214-215` uses bare `os.replace` in `exec_quality_audit_io.py:222`. The offset sign described in `S663_spec_2026-09-30.md:37` conflicts with S664's definition; current absolute-value exclusion masks that mismatch.
+
+| S663 | HOLD | S664 for measured offsets | Missing shards can produce a success receipt | M |
+
+**Landing order:** Land S666. After fixes and verification, S660 is independent; S664 precedes S695 and measured-offset use in S663. S667 follows S666. S668 follows S666 and S695; S669 follows the risk inputs it is meant to report.

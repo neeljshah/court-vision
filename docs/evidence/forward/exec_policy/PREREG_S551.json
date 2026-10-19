@@ -1,0 +1,67 @@
+{
+ "arms": [
+  "static_touch",
+  "cancel_on_book_move",
+  "cancel_on_state_receipt"
+ ],
+ "baseline": "static_touch",
+ "censoring": "a mark missing at horizon h is unavailable, never zero; > 20 pct missing = MARKS_INCOMPLETE",
+ "clocks": "integer microseconds via venue_time.parse_venue_time; book time = snapshot receipt response_end_ts; state time = state row receipt; tape time = venue created_time, read only by phase 2 and the ledger",
+ "decision_rule": {
+  "behind": "Holm p_behind < 0.05",
+  "min_diff_cents": "0.3",
+  "min_fill_ratio": "0.5",
+  "min_hour_sum_diff": "0"
+ },
+ "deferred": [
+  "static_engine",
+  "both",
+  "sensitivity reruns"
+ ],
+ "estimator": {
+  "draws": 5000,
+  "interval": "90 pct, sorted draws [250] and [4749]",
+  "p_ahead": "(1 + draws with mean <= 0) / 5001",
+  "p_behind": "(1 + draws with mean >= 0) / 5001",
+  "seed": 7
+ },
+ "fee_schedule_version": "venue_fees:kalshi-maker:2026-09-01:0.0175",
+ "first_eligible_date_rule": "UTC date of the seal commit's committer instant + 1 day",
+ "floor_paired_games": 30,
+ "horizons_s": [
+  5,
+  30,
+  60,
+  300
+ ],
+ "latency_rationale": "S = C = 6.0 s is a conservative declared value; decisions are already taken at receipt, so the cadence part is a deliberate margin, not a modelled delay (N2)",
+ "max_wait_s": 10.0,
+ "multiplicity": {
+  "alpha_one_sided": 0.05,
+  "family": 4,
+  "method": "holm"
+ },
+ "ordering": "equal receipts form one batch; conflicting touches at one receipt = no decision; at each instant: match resting orders, decide, then submit arrives t+S and cancel ends t+C; a print strictly inside (arrival, end) fills",
+ "params": {
+  "cadence_s": 5.2,
+  "cancel_latency_s": 6.0,
+  "cooldown_s": 30.0,
+  "qty": 1,
+  "stale_s": 60.0,
+  "submit_latency_s": 6.0,
+  "ttl_s": 60.0
+ },
+ "primary_horizon_s": 60,
+ "queue_scenarios": [
+  "through_only",
+  "displayed_depletion"
+ ],
+ "row": "S551",
+ "schema": "s551_prereg_v1",
+ "seal": "683025ace6597064a6f0f904e13e106a4249f1c05f04ef30a97d982cca8e751c",
+ "state_trigger": "a state row with state_changed is True (forward_replay.py:108), receipt time",
+ "stopping_rule": "exactly one confirmatory look: the first receipt at which every non-baseline cell has >= 30 paired games; later receipts are DESCRIPTIVE",
+ "tape_completeness": "PROVISIONAL when the max drain_watermark of the ticker's trade_backfill_closed rows is earlier than the depth-window end (or absent), or a trade_gap interval intersects it",
+ "unknown_queue_contracts": 1000000,
+ "weighting": "game mean = (sum(qty * gross markout) - sum(fee_units)) / sum(qty) in cents; each game one unit; paired by game against static_touch in the same scenario"
+}

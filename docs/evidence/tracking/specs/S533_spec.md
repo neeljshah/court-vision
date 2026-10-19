@@ -1,0 +1,6 @@
+GAP S533 | wnba | worktree h151 | log none (orchestrator direct)
+# S533: restore test_01_quoted_fixture_end_to_end (stale wnba zero-coverage reason set)
+CONTRACT: TEST-ONLY. night_coverage_census.py unchanged. SINGLE PROBLEM: night_coverage_census.py:144-145 adds not_in_capture_series / no_schedule_series / no_identity_aliases only for sports absent from SERIES_BY_SPORT / WINNER_SERIES / ALIASES; WNBA is now in all three (S481, S486), so the fixture night's wnba reasons are exactly {no_schedule_rows, book_shard_absent, state_shard_absent} and the test's six-reason set fails (before: 1 failed, 39 passed on master).
+CHANGE: tests/platformkit/execution/test_night_coverage_census.py:61-62 expected set -> the three reasons. CASES: C1 file passes; C2 mutant: the old set fails.
+MUST-NOT-MOVE: every other file. NOT IN SCOPE: census code.
+AMENDMENT 1 (2026-09-29, Opus ACCEPT with a coverage NOTE): test_18's vacuous check (:193-194, wnba already in SERIES_BY_SPORT) is replaced by a scoped monkeypatch.context deleting wnba from SERIES_BY_SPORT / WINNER_SERIES / ALIASES and asserting all three registry reasons are emitted (mutant: renaming no_identity_aliases in the census -> 2 failed). File stays at 300 lines.

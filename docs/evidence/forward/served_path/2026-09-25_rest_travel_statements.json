@@ -1,0 +1,50 @@
+{
+ "bytes": 95060,
+ "kind": "REAL RUN 1 (orchestrator, main repo; metadata-only, no column payload decoded)",
+ "num_columns": 7,
+ "num_row_groups": 1,
+ "num_rows": 12156,
+ "parquet": "data/rest_travel.parquet",
+ "rest_travel": {
+  "columns": {
+   "altitude_ft": {
+    "max": 5183.0,
+    "min": 3.0,
+    "verdict": "MISMATCH"
+   },
+   "is_b2b": {
+    "max": 1.0,
+    "min": -0.0,
+    "verdict": "MISMATCH"
+   },
+   "is_b3b": {
+    "max": 0.0,
+    "min": -0.0,
+    "verdict": "MATCH"
+   },
+   "miles_traveled": {
+    "max": 2704.4,
+    "min": -0.0,
+    "verdict": "MISMATCH"
+   }
+  },
+  "joined_2024_25_row_level_shift": {
+   "reason": "1 row group(s) / metadata-only scope; a joined 2024-25 row-level shift needs decoded row payloads against the served holdout corpus, which this metadata-only probe never reads",
+   "status": "INSUFFICIENT"
+  },
+  "num_row_groups": 1,
+  "parquet_path": "data/rest_travel.parquet"
+ },
+ "row": "S452",
+ "run_all_non_rest_travel_keys_agree_with_recorded_worktree_payload_after_path_normalisation": {
+  "binding_proof": false,
+  "case1_trainer_synthetic": true,
+  "case2_pergame_real": true
+ },
+ "run_utc": "2026-09-25T02:43:46Z",
+ "sha256": {
+  "bytes": 95060,
+  "path": "data\\rest_travel.parquet",
+  "sha256": "20ba8ffbc78bd0e1131677ffbc3ab261df18810fbb1a6f7dd554cd23f58d57ba"
+ }
+}

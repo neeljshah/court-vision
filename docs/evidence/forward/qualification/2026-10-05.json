@@ -1,0 +1,217 @@
+{
+ "as_of": "2026-10-06T06:00:00Z",
+ "changed_inputs": [],
+ "date": "2026-10-05",
+ "declared_constants": {
+  "capture_profile_path": "C:\\Users\\neelj\\nba-ai-system\\scripts\\platformkit\\ingame\\forward_capture_profile.json",
+  "capture_profile_sha256": "5bb818074c5083049e804bffda59c2b5b701706048983d32bbb313120ea3607c",
+  "focus_tick_s": 5,
+  "global_cap": "1",
+  "max_order_qty": "1",
+  "reservation_ttl_s": 5,
+  "window_s": 3600
+ },
+ "diagnostics": {
+  "duplicate_records": 0,
+  "future_records": 4070,
+  "missing_directional_team_evidence": 4,
+  "no_kalshi_event_for_date_and_team": 2,
+  "one_sided_book": 7271,
+  "price_out_of_range": 558,
+  "state_rows_missing_start": 0,
+  "unconsumed_books_records": 71955,
+  "unconsumed_supervisor_records": 83,
+  "unconsumed_trades_records": 17731,
+  "unlinked_state_row": 2525,
+  "unselected_trade_records": 55609
+ },
+ "games": [
+  {
+   "book_gap_max_ms": 5933,
+   "book_gap_median_ms": 5060,
+   "book_gap_p95_ms": 5608,
+   "covered_ms": 2923484,
+   "family": "maker_forward_mlb",
+   "game_id": "KXMLBGAME-26OCT051700CWSCLE",
+   "game_key": "849834",
+   "qualified_decisions": 652,
+   "reason_counts": {
+    "COVERAGE_LOW": 1,
+    "LINKAGE_INVALID": 5918,
+    "RESERVATION_INVALID": 39,
+    "TAPE_INCOMPLETE": 1
+   },
+   "schedule_family": "maker_forward",
+   "scheduled_start": "2026-10-05T21:00:00.000000Z",
+   "served": true,
+   "sport": "mlb",
+   "state_gap_max_ms": 11807,
+   "ticker": "KXMLBGAME-26OCT051700CWSCLE-CLE",
+   "total_ms": 3600000,
+   "verdict": "FAIL"
+  }
+ ],
+ "games_total": 1,
+ "input_counts": {
+  "appended_bytes": 277465,
+  "dropped_schedule_fields": 0,
+  "state_shard_missing_sports": 0,
+  "torn_tail_bytes": 0
+ },
+ "inputs": {
+  "archives": [
+   {
+    "appended_bytes": 0,
+    "hashed_bytes": 72887378,
+    "kind": "books",
+    "path": "data\\cache\\ingame_capture_view_v2\\kalshi\\mlb\\2026-10-05.jsonl",
+    "present": true,
+    "sha256": "ff0a19bde0e029e69bd393df8a991603ae391b4a74070ef7d8b9f3500f0f2212",
+    "shard_date": "2026-10-05",
+    "size_bytes": 72887378,
+    "sport": "mlb",
+    "torn_tail_bytes": 0
+   },
+   {
+    "appended_bytes": 274730,
+    "hashed_bytes": 77306077,
+    "kind": "books",
+    "path": "data\\cache\\ingame_capture_view_v2\\kalshi\\mlb\\2026-10-06.jsonl",
+    "present": true,
+    "sha256": "95480f34f8b89ac2c06a5e40ca997e80e9996f038d0d4bda19a5350980404611",
+    "shard_date": "2026-10-06",
+    "size_bytes": 77306077,
+    "sport": "mlb",
+    "torn_tail_bytes": 0
+   },
+   {
+    "appended_bytes": 0,
+    "first_response_end_ts": "2026-10-05T13:52:58.186797Z",
+    "hashed_bytes": 19382984,
+    "kind": "state",
+    "last_response_end_ts": "2026-10-05T23:59:59.766828Z",
+    "path": "data\\cache\\ingame_capture_view_v2\\state\\mlb\\2026-10-05.jsonl",
+    "present": true,
+    "sha256": "67b2c3686fcdb77832d85e185a7a5a599d0b53acc9e23f8f36dcc62efe5eda93",
+    "shard_date": "2026-10-05",
+    "size_bytes": 19382984,
+    "sport": "mlb",
+    "torn_tail_bytes": 0
+   },
+   {
+    "appended_bytes": 2735,
+    "first_response_end_ts": "2026-10-06T00:00:05.449302Z",
+    "hashed_bytes": 14917154,
+    "kind": "state",
+    "last_response_end_ts": "2026-10-06T06:26:26.956655Z",
+    "path": "data\\cache\\ingame_capture_view_v2\\state\\mlb\\2026-10-06.jsonl",
+    "present": true,
+    "sha256": "60905e2a101059e5151fc83432368a93fb9331c3009910e6a89ecf34cef23ab5",
+    "shard_date": "2026-10-06",
+    "size_bytes": 14917154,
+    "sport": "mlb",
+    "torn_tail_bytes": 0
+   }
+  ],
+  "capture_profile": {
+   "appended_bytes": 0,
+   "hashed_bytes": 158,
+   "path": "C:\\Users\\neelj\\nba-ai-system\\scripts\\platformkit\\ingame\\forward_capture_profile.json",
+   "present": true,
+   "sha256": "5bb818074c5083049e804bffda59c2b5b701706048983d32bbb313120ea3607c",
+   "size_bytes": 158
+  },
+  "capture_root": {
+   "books_root": "data\\cache\\ingame_capture_view_v2\\kalshi",
+   "root": "data\\cache\\ingame_capture_view_v2",
+   "root_realpath": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame_capture_view_v2",
+   "state_root": "data\\cache\\ingame_capture_view_v2\\state",
+   "state_root_realpath": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame_state_local_v2\\state",
+   "subtrees_present": true
+  },
+  "families": {
+   "appended_bytes": 0,
+   "hashed_bytes": 4287,
+   "path": "docs\\evidence\\forward\\families_maker_forward.json",
+   "present": true,
+   "sha256": "d9117eed01191e43daf2d45fd272500714295a020ddaf33da38c551db4bf0e31",
+   "size_bytes": 4287
+  },
+  "schedule": {
+   "appended_bytes": 0,
+   "hashed_bytes": 292,
+   "path": "docs\\evidence\\forward\\schedules\\2026-10-05_maker_forward_full_selection.json",
+   "present": true,
+   "sha256": "58e75fc5434721fe49933ddac400ea2111350dececeeae810fab8a9cd7a6d87d",
+   "size_bytes": 292
+  },
+  "served_schedule": {
+   "appended_bytes": 0,
+   "hashed_bytes": 292,
+   "path": "docs\\evidence\\forward\\schedules\\2026-10-05_maker_forward.json",
+   "present": true,
+   "sha256": "58e75fc5434721fe49933ddac400ea2111350dececeeae810fab8a9cd7a6d87d",
+   "size_bytes": 292
+  },
+  "snapshots": {
+   "bytes": 184510372,
+   "files": 9,
+   "removed": true,
+   "root": "docs\\evidence\\forward\\qualification\\2026-10-05.json.snapshots",
+   "truncated": []
+  },
+  "supervisor_journals": [
+   {
+    "appended_bytes": 0,
+    "hashed_bytes": 5874,
+    "path": "data\\cache\\capture_supervisor\\supervisor_books.jsonl",
+    "present": true,
+    "sha256": "83f0cefa672000d987b39a2c6680f3bc8e87b42b41dd7e9746269f2b55cc9736",
+    "size_bytes": 5874,
+    "torn_tail_bytes": 0
+   },
+   {
+    "appended_bytes": 0,
+    "hashed_bytes": 89,
+    "path": "data\\cache\\capture_supervisor\\supervisor_live_shadow.jsonl",
+    "present": true,
+    "sha256": "9bc6895ce0930ff329c987804902272c6c19ba43ee5fc2a8b34b776623d4782e",
+    "size_bytes": 89,
+    "torn_tail_bytes": 0
+   },
+   {
+    "appended_bytes": 0,
+    "hashed_bytes": 4883,
+    "path": "data\\cache\\capture_supervisor\\supervisor_polymarket.jsonl",
+    "present": true,
+    "sha256": "b45367ee885a78fac1f73cae45a537bc66c997235642b52c3a2d71ab9e5fc0ee",
+    "size_bytes": 4883,
+    "torn_tail_bytes": 0
+   },
+   {
+    "appended_bytes": 0,
+    "hashed_bytes": 89,
+    "path": "data\\cache\\capture_supervisor\\supervisor_state.jsonl",
+    "present": true,
+    "sha256": "15e6246b516f837d88c5ea2f49e9cee8b3638e85ca7491e9e743dc196a78b546",
+    "size_bytes": 89,
+    "torn_tail_bytes": 0
+   },
+   {
+    "appended_bytes": 0,
+    "hashed_bytes": 5844,
+    "path": "data\\cache\\capture_supervisor\\supervisor_state2.jsonl",
+    "present": true,
+    "sha256": "b84a7113ed657069dff568ccd429fcaa8dea0c4f76a7211cb8070ebffdba9beb",
+    "size_bytes": 5844,
+    "torn_tail_bytes": 0
+   }
+  ]
+ },
+ "refusal_reason": null,
+ "refused": 0,
+ "run_nonce": "paper-night-2026-10-05",
+ "scheduled_games_total": 1,
+ "served_games_total": 1,
+ "spec": "S390"
+}

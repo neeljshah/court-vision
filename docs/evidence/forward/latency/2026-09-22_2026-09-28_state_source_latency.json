@@ -1,0 +1,887 @@
+{
+  "files_read": [
+    {
+      "date": "2026-09-22",
+      "lines": 10250,
+      "sport": "mlb"
+    },
+    {
+      "date": "2026-09-23",
+      "lines": 15134,
+      "sport": "mlb"
+    },
+    {
+      "date": "2026-09-24",
+      "lines": 3698,
+      "sport": "mlb"
+    },
+    {
+      "date": "2026-09-25",
+      "lines": 14451,
+      "sport": "mlb"
+    },
+    {
+      "date": "2026-09-26",
+      "lines": 4336,
+      "sport": "mlb"
+    },
+    {
+      "date": "2026-09-22",
+      "lines": 415,
+      "sport": "nba"
+    },
+    {
+      "date": "2026-09-23",
+      "lines": 357,
+      "sport": "nba"
+    },
+    {
+      "date": "2026-09-24",
+      "lines": 293,
+      "sport": "nba"
+    },
+    {
+      "date": "2026-09-25",
+      "lines": 662,
+      "sport": "nba"
+    },
+    {
+      "date": "2026-09-26",
+      "lines": 127,
+      "sport": "nba"
+    },
+    {
+      "date": "2026-09-28",
+      "lines": 456,
+      "sport": "nba"
+    },
+    {
+      "date": "2026-09-22",
+      "lines": 7470,
+      "sport": "ncaaf"
+    },
+    {
+      "date": "2026-09-23",
+      "lines": 6426,
+      "sport": "ncaaf"
+    },
+    {
+      "date": "2026-09-24",
+      "lines": 5256,
+      "sport": "ncaaf"
+    },
+    {
+      "date": "2026-09-25",
+      "lines": 11898,
+      "sport": "ncaaf"
+    },
+    {
+      "date": "2026-09-26",
+      "lines": 4176,
+      "sport": "ncaaf"
+    },
+    {
+      "date": "2026-09-28",
+      "lines": 7296,
+      "sport": "ncaaf"
+    },
+    {
+      "date": "2026-09-22",
+      "lines": 1344,
+      "sport": "nfl"
+    },
+    {
+      "date": "2026-09-23",
+      "lines": 4096,
+      "sport": "nfl"
+    },
+    {
+      "date": "2026-09-24",
+      "lines": 4672,
+      "sport": "nfl"
+    },
+    {
+      "date": "2026-09-25",
+      "lines": 15296,
+      "sport": "nfl"
+    },
+    {
+      "date": "2026-09-26",
+      "lines": 2048,
+      "sport": "nfl"
+    },
+    {
+      "date": "2026-09-28",
+      "lines": 7296,
+      "sport": "nfl"
+    },
+    {
+      "date": "2026-09-22",
+      "lines": 336,
+      "sport": "soccer"
+    },
+    {
+      "date": "2026-09-23",
+      "lines": 292,
+      "sport": "soccer"
+    },
+    {
+      "date": "2026-09-24",
+      "lines": 256,
+      "sport": "soccer"
+    },
+    {
+      "date": "2026-09-25",
+      "lines": 592,
+      "sport": "soccer"
+    },
+    {
+      "date": "2026-09-26",
+      "lines": 104,
+      "sport": "soccer"
+    },
+    {
+      "date": "2026-09-28",
+      "lines": 404,
+      "sport": "soccer"
+    },
+    {
+      "date": "2026-09-22",
+      "lines": 533324,
+      "sport": "tennis"
+    },
+    {
+      "date": "2026-09-23",
+      "lines": 589237,
+      "sport": "tennis"
+    },
+    {
+      "date": "2026-09-24",
+      "lines": 136068,
+      "sport": "tennis"
+    },
+    {
+      "date": "2026-09-25",
+      "lines": 348304,
+      "sport": "tennis"
+    },
+    {
+      "date": "2026-09-26",
+      "lines": 64768,
+      "sport": "tennis"
+    },
+    {
+      "date": "2026-09-28",
+      "lines": 217242,
+      "sport": "tennis"
+    },
+    {
+      "date": "2026-09-28",
+      "lines": 704,
+      "sport": "wnba"
+    }
+  ],
+  "notes": [
+    "mlb rows come from the statsapi feed/live REST endpoint on every tick; --mlb-live (docs/operations relaunch scripts) only attaches lineup facts and does not change the source",
+    "bin(x) = floor(2x + 0.5) / 2 (0.5 s bins, half-up); quantiles are taken on the bin Counters",
+    "per row publish + fetch equals the un-binned play lag, but medians are not additive",
+    "age_all_live covers every live row with a source_ts (stale-feed tail) and is never mixed into fetch",
+    "latency measurement of archived rows only; not a forecast and not a trading claim"
+  ],
+  "per_sport": {
+    "mlb": {
+      "age_all_live": {
+        "n": 22618,
+        "p10": 17.5,
+        "p50": 33.5,
+        "p90": 540.0
+      },
+      "counters": {
+        "event_no_baseline": 0,
+        "events": 8893,
+        "files_missing": 2,
+        "game_first_row_in_file": 71,
+        "gap_negative": 0,
+        "gap_zero": 0,
+        "lag_missing_clock": 0,
+        "lag_negative": 0,
+        "lines_malformed_json": 0,
+        "lines_oversize": 0,
+        "lines_skipped_no_live_token": 25251,
+        "lines_total": 47869,
+        "live_rows": 22618,
+        "no_play_key": 0,
+        "pc_source:absent": 22618,
+        "play_id_revisit": 355,
+        "request_dedup": 0,
+        "rows_game_key_missing": 0,
+        "rows_not_object": 0,
+        "rows_status_not_live": 0,
+        "wc_game_not_fetched": 8538,
+        "wc_revisit_skipped": 355
+      },
+      "fetch": {
+        "n": 8893,
+        "p10": 14.0,
+        "p50": 23.0,
+        "p90": 35.0
+      },
+      "games": 47,
+      "live_rows": 22618,
+      "play_lag": {
+        "games": 44,
+        "n": 8893,
+        "p10": 13.0,
+        "p50": 22.0,
+        "p90": 34.0,
+        "pc_sources": {
+          "absent": 22618
+        }
+      },
+      "poll_gap": {
+        "games": 47,
+        "n": 22547,
+        "p10": 10.0,
+        "p50": 10.0,
+        "p90": 48.5
+      },
+      "publish": {
+        "n": 8893,
+        "p10": -1.5,
+        "p50": -1.0,
+        "p90": -0.5
+      },
+      "request_duration": {
+        "n": 22618,
+        "p10": 0.0,
+        "p50": 0.0,
+        "p90": 0.0
+      },
+      "rows_with_play_clock": 22618,
+      "source": "statsapi_rest",
+      "source_clock_share": {
+        "den": 22618,
+        "num": 22618
+      },
+      "source_delay_lb": {
+        "n": 8893,
+        "p10": 0.0,
+        "p50": 5.5,
+        "p90": 17.0
+      },
+      "tick_offset": {
+        "n": 22618,
+        "p10": 0.0,
+        "p50": 1.0,
+        "p90": 3.0
+      },
+      "wallclock_join": {
+        "games": 0,
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "reason": "no_wallclock_map",
+        "wc_source": "espn_core_plays_wallclock"
+      }
+    },
+    "nba": {
+      "age_all_live": {
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "reason": "no_live_rows"
+      },
+      "counters": {
+        "event_no_baseline": 0,
+        "events": 0,
+        "files_missing": 1,
+        "game_first_row_in_file": 0,
+        "gap_negative": 0,
+        "gap_zero": 0,
+        "lag_missing_clock": 0,
+        "lag_negative": 0,
+        "lines_malformed_json": 0,
+        "lines_oversize": 0,
+        "lines_skipped_no_live_token": 2310,
+        "lines_total": 2310,
+        "live_rows": 0,
+        "no_play_key": 0,
+        "play_id_revisit": 0,
+        "request_dedup": 0,
+        "rows_game_key_missing": 0,
+        "rows_not_object": 0,
+        "rows_status_not_live": 0
+      },
+      "fetch": {
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "reason": "no_live_rows"
+      },
+      "games": 0,
+      "live_rows": 0,
+      "play_lag": {
+        "games": 0,
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "pc_sources": {},
+        "reason": "no_live_rows"
+      },
+      "poll_gap": {
+        "games": 0,
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "reason": "no_live_rows"
+      },
+      "publish": {
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "reason": "no_live_rows"
+      },
+      "request_duration": {
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "reason": "no_live_rows"
+      },
+      "rows_with_play_clock": 0,
+      "source": "espn_scoreboard",
+      "source_clock_share": {
+        "den": 0,
+        "num": 0
+      },
+      "source_delay_lb": {
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "reason": "no_live_rows"
+      },
+      "tick_offset": {
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "reason": "no_live_rows"
+      },
+      "wallclock_join": {
+        "games": 0,
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "reason": "no_live_rows",
+        "wc_source": "espn_core_plays_wallclock"
+      }
+    },
+    "ncaaf": {
+      "age_all_live": {
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "reason": "no_source_ts"
+      },
+      "counters": {
+        "event_no_baseline": 1,
+        "events": 81,
+        "files_missing": 1,
+        "game_first_row_in_file": 1,
+        "gap_negative": 0,
+        "gap_zero": 0,
+        "lag_missing_clock": 81,
+        "lag_negative": 0,
+        "lines_malformed_json": 0,
+        "lines_oversize": 0,
+        "lines_skipped_no_live_token": 42296,
+        "lines_total": 42522,
+        "live_rows": 226,
+        "no_play_key": 1,
+        "play_id_revisit": 0,
+        "request_dedup": 0,
+        "rows_game_key_missing": 0,
+        "rows_not_object": 0,
+        "rows_status_not_live": 0,
+        "ts_null:source_ts": 226,
+        "ts_null:state.last_play_ts": 226,
+        "wc_missing": 2
+      },
+      "fetch": {
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "reason": "no_play_clock"
+      },
+      "games": 1,
+      "live_rows": 226,
+      "play_lag": {
+        "games": 0,
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "pc_sources": {},
+        "reason": "no_play_clock"
+      },
+      "poll_gap": {
+        "games": 1,
+        "n": 225,
+        "p10": 4.5,
+        "p50": 52.0,
+        "p90": 59.5
+      },
+      "publish": {
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "reason": "no_play_clock"
+      },
+      "request_duration": {
+        "n": 226,
+        "p10": 0.0,
+        "p50": 0.0,
+        "p90": 0.0
+      },
+      "rows_with_play_clock": 0,
+      "source": "espn_scoreboard",
+      "source_clock_share": {
+        "den": 226,
+        "num": 0
+      },
+      "source_delay_lb": {
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "reason": "no_play_clock"
+      },
+      "tick_offset": {
+        "n": 226,
+        "p10": 3.0,
+        "p50": 4.0,
+        "p90": 53.0
+      },
+      "wallclock_join": {
+        "games": 1,
+        "n": 79,
+        "p10": 25.0,
+        "p50": 46.5,
+        "p90": 67.5,
+        "wc_source": "espn_core_plays_wallclock"
+      }
+    },
+    "nfl": {
+      "age_all_live": {
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "reason": "no_source_ts"
+      },
+      "counters": {
+        "event_no_baseline": 0,
+        "events": 153,
+        "files_missing": 1,
+        "game_first_row_in_file": 1,
+        "gap_negative": 0,
+        "gap_zero": 0,
+        "lag_missing_clock": 153,
+        "lag_negative": 0,
+        "lines_malformed_json": 0,
+        "lines_oversize": 0,
+        "lines_skipped_no_live_token": 34283,
+        "lines_total": 34752,
+        "live_rows": 469,
+        "no_play_key": 0,
+        "play_id_revisit": 0,
+        "request_dedup": 0,
+        "rows_game_key_missing": 0,
+        "rows_not_object": 0,
+        "rows_status_not_live": 0,
+        "ts_null:source_ts": 469,
+        "ts_null:state.last_play_ts": 469,
+        "wc_missing": 3
+      },
+      "fetch": {
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "reason": "no_play_clock"
+      },
+      "games": 1,
+      "live_rows": 469,
+      "play_lag": {
+        "games": 0,
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "pc_sources": {},
+        "reason": "no_play_clock"
+      },
+      "poll_gap": {
+        "games": 1,
+        "n": 468,
+        "p10": 2.5,
+        "p50": 10.0,
+        "p90": 51.0
+      },
+      "publish": {
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "reason": "no_play_clock"
+      },
+      "request_duration": {
+        "n": 469,
+        "p10": 0.0,
+        "p50": 0.0,
+        "p90": 0.0
+      },
+      "rows_with_play_clock": 0,
+      "source": "espn_scoreboard",
+      "source_clock_share": {
+        "den": 469,
+        "num": 0
+      },
+      "source_delay_lb": {
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "reason": "no_play_clock"
+      },
+      "tick_offset": {
+        "n": 469,
+        "p10": 1.0,
+        "p50": 1.5,
+        "p90": 41.0
+      },
+      "wallclock_join": {
+        "games": 1,
+        "n": 150,
+        "p10": 29.0,
+        "p50": 50.0,
+        "p90": 74.0,
+        "wc_source": "espn_core_plays_wallclock"
+      }
+    },
+    "soccer": {
+      "age_all_live": {
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "reason": "no_live_rows"
+      },
+      "counters": {
+        "event_no_baseline": 0,
+        "events": 0,
+        "files_missing": 1,
+        "game_first_row_in_file": 0,
+        "gap_negative": 0,
+        "gap_zero": 0,
+        "lag_missing_clock": 0,
+        "lag_negative": 0,
+        "lines_malformed_json": 0,
+        "lines_oversize": 0,
+        "lines_skipped_no_live_token": 1984,
+        "lines_total": 1984,
+        "live_rows": 0,
+        "no_play_key": 0,
+        "play_id_revisit": 0,
+        "request_dedup": 0,
+        "rows_game_key_missing": 0,
+        "rows_not_object": 0,
+        "rows_status_not_live": 0
+      },
+      "fetch": {
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "reason": "no_live_rows"
+      },
+      "games": 0,
+      "live_rows": 0,
+      "play_lag": {
+        "games": 0,
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "pc_sources": {},
+        "reason": "no_live_rows"
+      },
+      "poll_gap": {
+        "games": 0,
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "reason": "no_live_rows"
+      },
+      "publish": {
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "reason": "no_live_rows"
+      },
+      "request_duration": {
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "reason": "no_live_rows"
+      },
+      "rows_with_play_clock": 0,
+      "source": "espn_scoreboard",
+      "source_clock_share": {
+        "den": 0,
+        "num": 0
+      },
+      "source_delay_lb": {
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "reason": "no_live_rows"
+      },
+      "tick_offset": {
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "reason": "no_live_rows"
+      },
+      "wallclock_join": {
+        "games": 0,
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "reason": "no_live_rows",
+        "wc_source": "espn_core_plays_wallclock"
+      }
+    },
+    "tennis": {
+      "age_all_live": {
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "reason": "no_source_ts"
+      },
+      "counters": {
+        "event_no_baseline": 0,
+        "events": 0,
+        "files_missing": 1,
+        "game_first_row_in_file": 33,
+        "gap_negative": 0,
+        "gap_zero": 0,
+        "lag_missing_clock": 0,
+        "lag_negative": 0,
+        "lines_malformed_json": 0,
+        "lines_oversize": 0,
+        "lines_skipped_no_live_token": 1882740,
+        "lines_total": 1888943,
+        "live_rows": 6203,
+        "no_play_key": 6203,
+        "play_id_revisit": 0,
+        "request_dedup": 3107,
+        "rows_game_key_missing": 0,
+        "rows_not_object": 0,
+        "rows_status_not_live": 0,
+        "ts_null:source_ts": 6203,
+        "ts_null:state.last_play_ts": 6203
+      },
+      "fetch": {
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "reason": "no_play_clock"
+      },
+      "games": 32,
+      "live_rows": 6203,
+      "play_lag": {
+        "games": 0,
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "pc_sources": {},
+        "reason": "no_play_clock"
+      },
+      "poll_gap": {
+        "games": 32,
+        "n": 6170,
+        "p10": 10.0,
+        "p50": 10.0,
+        "p90": 48.5
+      },
+      "publish": {
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "reason": "no_play_clock"
+      },
+      "request_duration": {
+        "n": 3096,
+        "p10": 0.0,
+        "p50": 0.0,
+        "p90": 0.0
+      },
+      "rows_with_play_clock": 0,
+      "source": "espn_scoreboard",
+      "source_clock_share": {
+        "den": 6203,
+        "num": 0
+      },
+      "source_delay_lb": {
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "reason": "no_play_clock"
+      },
+      "tick_offset": {
+        "n": 3096,
+        "p10": 0.5,
+        "p50": 0.5,
+        "p90": 5.0
+      },
+      "wallclock_join": {
+        "games": 0,
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "reason": "state_has_no_play_key",
+        "wc_source": "espn_core_plays_wallclock"
+      }
+    },
+    "wnba": {
+      "age_all_live": {
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "reason": "no_live_rows"
+      },
+      "counters": {
+        "event_no_baseline": 0,
+        "events": 0,
+        "files_missing": 6,
+        "game_first_row_in_file": 0,
+        "gap_negative": 0,
+        "gap_zero": 0,
+        "lag_missing_clock": 0,
+        "lag_negative": 0,
+        "lines_malformed_json": 0,
+        "lines_oversize": 0,
+        "lines_skipped_no_live_token": 704,
+        "lines_total": 704,
+        "live_rows": 0,
+        "no_play_key": 0,
+        "play_id_revisit": 0,
+        "request_dedup": 0,
+        "rows_game_key_missing": 0,
+        "rows_not_object": 0,
+        "rows_status_not_live": 0
+      },
+      "fetch": {
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "reason": "no_live_rows"
+      },
+      "games": 0,
+      "live_rows": 0,
+      "play_lag": {
+        "games": 0,
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "pc_sources": {},
+        "reason": "no_live_rows"
+      },
+      "poll_gap": {
+        "games": 0,
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "reason": "no_live_rows"
+      },
+      "publish": {
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "reason": "no_live_rows"
+      },
+      "request_duration": {
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "reason": "no_live_rows"
+      },
+      "rows_with_play_clock": 0,
+      "source": "espn_scoreboard",
+      "source_clock_share": {
+        "den": 0,
+        "num": 0
+      },
+      "source_delay_lb": {
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "reason": "no_live_rows"
+      },
+      "tick_offset": {
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "reason": "no_live_rows"
+      },
+      "wallclock_join": {
+        "games": 0,
+        "n": 0,
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "reason": "no_live_rows",
+        "wc_source": "espn_core_plays_wallclock"
+      }
+    }
+  },
+  "range": {
+    "first_read": "2026-09-22",
+    "last_read": "2026-09-28",
+    "requested_first": "2026-09-22",
+    "requested_last": "2026-09-28"
+  },
+  "schema": "s592_state_source_latency_v1"
+}

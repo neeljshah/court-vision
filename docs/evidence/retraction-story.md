@@ -71,7 +71,7 @@ have the harnesses that prove it.
 
 The market-efficiency result these retractions leave standing is recorded in
 [docs/MARKET_EFFICIENCY_PROOF.md](../MARKET_EFFICIENCY_PROOF.md): the leak-free OOS model
-MATCHES the Shin-devigged close within noise on team-strength markets (NBA moneyline Brier
+TRAILS the devigged close on MLB moneyline and soccer O/U 2.5 and is indistinguishable from it on NBA moneyline (corrected 2026-10-06 from DM_RECOMPUTE_2026-09-24; NBA moneyline Brier
 0.1735 vs 0.1672, n=372; MLB moneyline 0.2429 vs 0.2390, n=13,992), and every candidate
 signal was REJECTED across >=2 independent corpora.
 

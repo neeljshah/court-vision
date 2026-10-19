@@ -1,0 +1,82 @@
+{
+  "D1": "2026-10-01",
+  "argv": [
+    "--now",
+    "2026-09-30T15:26:40.625937Z",
+    "--sports",
+    "mlb,nfl",
+    "--local-date-tz",
+    "America/Chicago",
+    "--books-root",
+    "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame_books_local",
+    "--state-root",
+    "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame_state_local_v2",
+    "--out-dir",
+    "C:\\Users\\neelj\\nba-ai-system\\docs\\evidence\\forward\\schedules",
+    "--write-pointer"
+  ],
+  "capacity_subset_selected_at": "2026-09-30T15:27:39.058065+00:00",
+  "completed_at": "2026-09-30T15:27:39.058065+00:00",
+  "files": {
+    "C:/Users/neelj/nba-ai-system/docs/evidence/forward/schedules/2026-10-01_maker_forward.json": {
+      "bytes": 578,
+      "sha256": "ba8e8ed27313c5da402dd3a9afa9f19f98ab088432ac152f6b62cdbc024e7ecf"
+    },
+    "C:/Users/neelj/nba-ai-system/docs/evidence/forward/schedules/2026-10-01_maker_forward.json.capacity_note.json": {
+      "bytes": 619,
+      "sha256": "adbaa12a57aa46a687d14c040e91a5f6c4e441f0c31f826c5d7404352dc93f52"
+    },
+    "C:/Users/neelj/nba-ai-system/docs/evidence/forward/schedules/2026-10-01_maker_forward_full_selection.json": {
+      "bytes": 578,
+      "sha256": "ba8e8ed27313c5da402dd3a9afa9f19f98ab088432ac152f6b62cdbc024e7ecf"
+    },
+    "C:/Users/neelj/nba-ai-system/docs/evidence/forward/schedules/2026-10-01_maker_forward_full_selection.json.census.json": {
+      "bytes": 4089,
+      "sha256": "43c1fdcf384c0196bf85d3efff1750702bebb2e473c59b05aff38358290d5833"
+    }
+  },
+  "now": "2026-09-30T15:26:40.625937Z",
+  "per_sport": {
+    "mlb": {
+      "full": 2,
+      "not_served": 0,
+      "record_counts": {
+        "derivative_series_ignored": 1663,
+        "future_records": 38,
+        "ignored_record_type": 765938,
+        "listed_on_previous_us_date": 2,
+        "previous_us_date_other_day": 2
+      },
+      "refused_by_reason": {
+        "no_kalshi_event_for_date_and_team": 2,
+        "outside_utc_date": 2
+      },
+      "served": 2
+    },
+    "nfl": {
+      "full": 0,
+      "not_served": 0,
+      "record_counts": {
+        "derivative_series_ignored": 855,
+        "espn_minute_precision_normalized": 1,
+        "future_records": 16,
+        "ignored_record_type": 353564
+      },
+      "refused_by_reason": {
+        "outside_utc_date": 1
+      },
+      "served": 0
+    }
+  },
+  "refused_by_reason": {},
+  "rewrite_reason": null,
+  "schedule_receipts_sha256": {
+    "mlb/mlb": "29ba1afd1beee499729e279ad9224d1fecce06ace7f025786321a006fcbd21e2",
+    "nfl/nfl": "faa462ec8c804ca799c9652b7b35663609350831a7f6dd874ef1fe51d8d62875"
+  },
+  "started_at": "2026-09-30T15:26:40.802100+00:00",
+  "superseded": {},
+  "writer_selected_at": [
+    "2026-09-30T15:26:41.146280+00:00"
+  ]
+}

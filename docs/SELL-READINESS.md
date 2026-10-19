@@ -4,7 +4,7 @@
 > tennis) pregame + in-game predictor with a fail-closed eval gate and a reproducible
 > calibration record. It is **NOT** a picks / profit / +EV / ROI product. The honest,
 > defensible claim is calibration and sharpness -- matching the Shin-devigged closing
-> line within noise on team-strength markets, plus a measured, calibrated in-game
+> line within noise on NBA moneyline (underpowered) while trailing it on MLB moneyline and soccer O/U 2.5 (corrected 2026-10-06 from DM_RECOMPUTE_2026-09-24), plus a measured, calibrated in-game
 > conditioning gap. `edge_claimed=False` everywhere; no $ figure is produced or implied.
 > The single truth source for what may / may not be claimed is
 > [docs/JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md).
@@ -48,7 +48,7 @@ collapses.
       + `python -m scripts.platformkit.edge_hunt_scoreboard` reject every candidate pregame
       edge across >=2 independent corpora (4 sports / 6 corpora), and the H1/H2 sign-flip
       self-audit catches my own full-sample overfits. The pregame model MATCHES the
-      Shin-devigged close within noise on team-strength markets -- the rigorously-proven,
+      Shin-devigged close within noise on NBA moneyline only; it TRAILS on MLB moneyline and soccer O/U 2.5 (corrected 2026-10-06 from DM_RECOMPUTE_2026-09-24) -- the rigorously-proven,
       honest result. "No edge / market efficient" is the FEATURE.
 - [x] **In-game conditioning lever surfaced as a calibration win** -- the static->conditional
       Brier gain (NBA 0.209 -> 0.159, MLB 0.241 -> 0.126) is presented in

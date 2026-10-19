@@ -1,0 +1,105 @@
+{
+  "mlb": {
+    "canonical_rules": {
+      "home_alias": 3
+    },
+    "game_key_sources": {
+      "849828": "mlb_game_pk",
+      "849829": "mlb_game_pk",
+      "849835": "mlb_game_pk"
+    },
+    "games_seen": 4,
+    "link_paths": {
+      "849828": "team_set",
+      "849829": "team_set",
+      "849835": "team_set"
+    },
+    "linked": 3,
+    "local_date_tz": "America/Chicago",
+    "record_counts": {
+      "derivative_series_ignored": 1776,
+      "ignored_record_type": 898873
+    },
+    "refused_by_reason": {
+      "outside_utc_date": 1
+    },
+    "refused_team_evidence": {},
+    "schedule_receipt": {
+      "http_status": 200,
+      "kept_from": {
+        "849828": "20261003",
+        "849829": "20261003",
+        "849830": "20261003",
+        "849835": "20261003"
+      },
+      "query_receipts": {
+        "20261002": {
+          "http_status": 200,
+          "request_start_utc": "2026-10-02T13:34:08.880033+00:00",
+          "response_bytes": 262,
+          "response_end_utc": "2026-10-02T13:34:09.044624+00:00",
+          "response_sha256": "e945970d3a4d1b17afde3ecfc6a444e395dceb14f2c9e4a35d1e06837d79f9b0",
+          "url": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=2026-10-02&hydrate=team"
+        },
+        "20261003": {
+          "http_status": 200,
+          "request_start_utc": "2026-10-02T13:34:09.044624+00:00",
+          "response_bytes": 11891,
+          "response_end_utc": "2026-10-02T13:34:09.124428+00:00",
+          "response_sha256": "278011c78437362c08e25973ac38ff412cb609523db517cb647770ba674e1107",
+          "url": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=2026-10-03&hydrate=team"
+        }
+      },
+      "request_start_utc": "2026-10-02T13:34:09.044624+00:00",
+      "response_bytes": 11891,
+      "response_end_utc": "2026-10-02T13:34:09.124428+00:00",
+      "response_sha256": "278011c78437362c08e25973ac38ff412cb609523db517cb647770ba674e1107",
+      "url": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=2026-10-03&hydrate=team"
+    },
+    "schedule_source": "live",
+    "written": 3
+  },
+  "nfl": {
+    "canonical_rules": {},
+    "game_key_sources": {},
+    "games_seen": 0,
+    "link_paths": {},
+    "linked": 0,
+    "local_date_tz": "America/Chicago",
+    "record_counts": {
+      "derivative_series_ignored": 855,
+      "ignored_record_type": 353564
+    },
+    "refused_by_reason": {},
+    "refused_team_evidence": {},
+    "schedule_receipt": {
+      "http_status": 200,
+      "kept_from": {},
+      "query_receipts": {
+        "20261002": {
+          "http_status": 200,
+          "request_start_utc": "2026-10-02T13:34:09.125430+00:00",
+          "response_bytes": 5050,
+          "response_end_utc": "2026-10-02T13:34:09.224417+00:00",
+          "response_sha256": "d0b7c1d790cfa9721ccd5f8d4d5bafaadb09697286709bfb74b4f200f06e9b8d",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=20261002"
+        },
+        "20261003": {
+          "http_status": 200,
+          "request_start_utc": "2026-10-02T13:34:09.225417+00:00",
+          "response_bytes": 5050,
+          "response_end_utc": "2026-10-02T13:34:09.306219+00:00",
+          "response_sha256": "d0b7c1d790cfa9721ccd5f8d4d5bafaadb09697286709bfb74b4f200f06e9b8d",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=20261003"
+        }
+      },
+      "request_start_utc": "2026-10-02T13:34:09.225417+00:00",
+      "response_bytes": 5050,
+      "response_end_utc": "2026-10-02T13:34:09.306219+00:00",
+      "response_sha256": "d0b7c1d790cfa9721ccd5f8d4d5bafaadb09697286709bfb74b4f200f06e9b8d",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=20261003"
+    },
+    "schedule_source": "live",
+    "written": 0
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "schema": "canonical_figures/v1",
+  "as_of": "2026-10-06",
+  "purpose": "Every public pregame-vs-close and in-game-vs-market figure with its source artifact and the sentence it licenses. Read by scripts/platformkit/eval_gate/claim_consistency.py. Calibration and execution-quality language only.",
+  "surfaces": [
+    "README.md",
+    "EVIDENCE.md",
+    "docs/JOB_EVIDENCE_PACKET.md",
+    "docs/CALIBRATION_RECORD.md",
+    "docs/QUANT_BRIEF.md",
+    "docs/PUBLIC_EVIDENCE.md",
+    "docs/MARKET_EFFICIENCY_PROOF.md",
+    "docs/CLV_AND_MARKOUT.md",
+    "docs/KALSHI_NOTE.md"
+  ],
+  "surface_roots": ["README.md", "EVIDENCE.md", "docs"],
+  "exclude_prefixes": ["docs/research/", "docs/strategy/", "docs/evidence/tracking/"],
+  "exclude_prefixes_why": "research/strategy are local-only; tracking/ holds CV tracking memos with no pricing figures (their 0.119 and 78.11 values are unrelated recall and table numbers).",
+  "exclude_dated_memos": [
+    {"prefix": "docs/evidence/harness/", "before": "2026-09-24"},
+    {"prefix": "docs/direction/", "before": "2026-09-24"}
+  ],
+  "exclude_dated_memos_why": "dated memos written before the 2026-09-24 recompute record what was known on their date; docs/direction/ is not in the public export.",
+  "retraction_window_words": ["artifact"],
+  "strict_language_surfaces": [
+    "docs/CLV_AND_MARKOUT.md",
+    "docs/KALSHI_NOTE.md"
+  ],
+  "framing_words": ["retract", "corrected", "superseded", "debunk", "do-not-claim", "do not claim"],
+  "retracted_tokens": ["+18.38%", "0.119", "+54%", "78.11", "8.94", "54.57"],
+  "strict_forbidden_patterns": ["\\bROI\\b", "\\bprofit", "\\bbankroll", "\\$", "\\bedge\\b", "\\bP&L\\b"],
+  "stale_claims": [
+    {
+      "key": "mlb_soccer_within_noise",
+      "pattern": "(?i)\\bmatch(es)?\\b(\\s+\\S+){0,3}?\\s+clos\\w*(\\s+line)?\\s+within\\s+noise|within noise on team-strength",
+      "unless": "^(?=.*NBA)(?!.*(?i:MLB|soccer|team-strength|corpora))",
+      "unless_why": "a line about NBA moneyline alone may say within noise: that row is MATCHES_CLOSE (underpowered).",
+      "why": "MLB moneyline and soccer O/U 2.5 TRAIL the close with 95% CIs above zero (DM_RECOMPUTE_2026-09-24); 'within noise' holds only for NBA moneyline, which is underpowered."
+    }
+  ],
+  "figures": [
+    {
+      "key": "mlb_ml_pregame_vs_close",
+      "sport": "mlb", "market": "moneyline", "metric": "Brier", "devig": "proportional",
+      "n": 13992, "model": 0.2429, "close": 0.2390, "gap": 0.0039, "ci95": [0.0028, 0.0051],
+      "dm_p": "3.6e-12", "mde": 0.0016, "verdict": "TRAILS_CLOSE",
+      "anchor": "\\+0\\.0039\\b",
+      "source": "docs/evidence/pregame/DM_RECOMPUTE_2026-09-24.md", "as_of": "2026-09-24",
+      "licenses": "On MLB moneyline the pregame model trails the devigged close by +0.0039 Brier (95% CI [+0.0028, +0.0051], DM p 3.6e-12, n=13,992)."
+    },
+    {
+      "key": "soccer_ou25_pregame_vs_close",
+      "sport": "soccer", "market": "O/U 2.5", "metric": "Brier", "devig": "proportional",
+      "n": 7558, "model": 0.2465, "close": 0.2390, "gap": 0.0076, "ci95": [0.0059, 0.0092],
+      "dm_p": "1.1e-19", "mde": 0.0023, "verdict": "TRAILS_CLOSE",
+      "also_ci95": [[0.0060, 0.0093]], "also_ci95_why": "Shin-devig sensitivity row of the same memo (n=7,555, same gap)",
+      "anchor": "\\+0\\.0076\\b",
+      "source": "docs/evidence/pregame/DM_RECOMPUTE_2026-09-24.md", "as_of": "2026-09-24",
+      "licenses": "On soccer O/U 2.5 the pregame model trails the devigged close by +0.0076 Brier (95% CI [+0.0059, +0.0092], DM p 1.1e-19, n=7,558)."
+    },
+    {
+      "key": "nba_ml_pregame_vs_close_shin",
+      "sport": "nba", "market": "moneyline", "metric": "Brier", "devig": "shin",
+      "n": 372, "model": 0.1735, "close": 0.1666, "gap": 0.0069, "ci95": [-0.0038, 0.0175],
+      "dm_p": "0.20", "mde": 0.0152, "verdict": "MATCHES_CLOSE",
+      "anchor": "\\+0\\.0069\\b",
+      "source": "docs/evidence/pregame/DM_RECOMPUTE_2026-09-24.md", "as_of": "2026-09-24",
+      "licenses": "On NBA moneyline the gap to the Shin-devigged close, +0.0069 Brier (95% CI [-0.0038, +0.0175], DM p 0.20, n=372), is indistinguishable from zero and underpowered (MDE 0.0152)."
+    },
+    {
+      "key": "nba_ml_pregame_vs_close_proportional",
+      "sport": "nba", "market": "moneyline", "metric": "Brier", "devig": "proportional",
+      "n": 372, "model": 0.1735, "close": 0.1672, "gap": 0.0063, "ci95": [-0.0042, 0.0168],
+      "dm_p": "0.237", "mde": 0.0150, "verdict": "MATCHES_CLOSE",
+      "anchor": "\\+0\\.0063\\b",
+      "source": "docs/evidence/pregame/DM_RECOMPUTE_2026-09-24.md", "as_of": "2026-09-24",
+      "licenses": "Against the proportional-devig close the NBA moneyline gap is +0.0063 Brier (95% CI [-0.0042, +0.0168], DM p 0.237, n=372); same verdict."
+    },
+    {
+      "key": "mlb_ingame_vs_kalshi_mid",
+      "sport": "mlb", "market": "in-play win probability", "metric": "Brier",
+      "n": 227, "n_unit": "games", "model": 0.2377, "close": 0.2067, "gap": 0.0310, "ci95": [0.0170, 0.0454],
+      "verdict": "BEHIND",
+      "anchor": "\\+0\\.0310\\b",
+      "source": "docs/evidence/ingame/GATE_A0_2026-09-14.md", "as_of": "2026-09-14",
+      "licenses": "On paired in-play ticks the MLB in-game model trails the contemporaneous Kalshi price (Brier 0.2377 vs 0.2067, delta +0.0310, CI [0.0170, 0.0454], 227 games); the corpus later failed the join-integrity check and the 178-game segmented revision keeps the verdict."
+    },
+    {
+      "key": "soccer_ingame_vs_kalshi_mid",
+      "sport": "soccer_intl", "market": "in-play win probability", "metric": "Brier",
+      "n": 51, "n_unit": "games", "model": 0.2279, "close": 0.1427, "gap": 0.0852, "ci95": [0.0488, 0.1270], "verdict": "BEHIND",
+      "anchor": "0\\.2279\\b",
+      "source": "docs/evidence/ingame/GATE_A0_2026-09-14.md", "as_of": "2026-09-14",
+      "licenses": "On paired in-play ticks the soccer in-game model trails the Kalshi price (Brier 0.2279 vs 0.1427, delta +0.0852, CI [0.0488, 0.1270], 51 games); same join-integrity caveat."
+    },
+    {
+      "key": "paper_desk_fill_counts",
+      "sport": "all", "market": "in-play maker paper quotes", "metric": "credited paper fills (counts only)",
+      "ttl_30_fills_credited": 136, "ttl_5_fills_credited": 48, "nights_with_receipt": 10, "nights_complete": 2,
+      "qualified_games": 0, "verdict": "INSUFFICIENT",
+      "source": "docs/evidence/forward/cumulative/2026-10-04.md", "as_of": "2026-10-04",
+      "licenses": "To 2026-10-04 the paper desk has 10 nights with any receipt (2 COMPLETE), 0 qualified games, and 136 TTL-30 credited paper fills on unqualified tape; every pooled cell is INSUFFICIENT."
+    }
+  ]
+}

@@ -290,7 +290,7 @@ flags, and component health -- the operational dashboard.
   `config/betting.yaml` sets the paper mode. Even if wired for live placement,
   the risk gate and kill-switch are the last line of defense.
 - **No claimed pregame edge.** The market is efficient pregame. The calibrated model
-  MATCHES the Shin-devigged close within noise on team-strength markets. The execution
+  TRAILS the devigged close on MLB moneyline (+0.0039 Brier, 95% CI [+0.0028, +0.0051]) and soccer O/U 2.5 (+0.0076, [+0.0059, +0.0092]) and is indistinguishable from it on NBA moneyline at an underpowered n=372 (corrected 2026-10-06 from DM_RECOMPUTE_2026-09-24). The execution
   layer does not manufacture edge that the model did not find.
 - **No cross-book arbitrage claims.** `detect_arb()` surfaces pure arbitrage (combined
   implied probability < 1.0) as an informational signal. Arb opportunities at real

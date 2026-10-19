@@ -1,0 +1,632 @@
+{
+ "all_sport_counters": {
+  "qualification_diagnostics": {
+   "denominator": null,
+   "denominator_name": "qualification records and rows, all sports (total not carried)",
+   "null_because": [],
+   "value": {
+    "duplicate_records": 0,
+    "future_records": 13497,
+    "missing_directional_team_evidence": 3,
+    "no_game_date": 27,
+    "one_sided_book": 282,
+    "open_backfill": 2,
+    "price_out_of_range": 1163,
+    "state_rows_missing_start": 0,
+    "unconsumed_books_records": 197087,
+    "unconsumed_supervisor_records": 123,
+    "unconsumed_trades_records": 43346,
+    "unlinked_state_row": 31883,
+    "unselected_trade_records": 149714
+   }
+  },
+  "scoreboard_counts": {
+   "denominator": null,
+   "denominator_name": "scoreboard ticks and games, all sports (per key; emitted ticks = 10624)",
+   "null_because": [],
+   "value": {
+    "future_records": 30285,
+    "mlb_inningstate_end": 131,
+    "mlb_inningstate_middle": 113,
+    "model_not_reconstructible:B": 10624,
+    "model_not_reconstructible:B_lag": 90,
+    "model_not_reconstructible:C": 10624,
+    "model_not_reconstructible:D": 10624,
+    "model_state_refused": 3674,
+    "served_games": 7,
+    "tick_refused:book_absent": 70,
+    "tick_refused:invalid_decimal": 469,
+    "training_duplicate": 0,
+    "unsettled_games": 3
+   }
+  }
+ },
+ "captured_sports_seen": {
+  "denominator": null,
+  "denominator_name": "sports in qualification archives or scoreboard ticks/sources",
+  "null_because": [],
+  "value": [
+   "mlb",
+   "nba",
+   "soccer"
+  ]
+ },
+ "date": "2026-10-12",
+ "enabled_sports": [
+  "mlb",
+  "nba",
+  "ncaaf",
+  "nfl",
+  "soccer"
+ ],
+ "exit_code": 0,
+ "inputs": {
+  "capacity_note": {
+   "bytes": 1837,
+   "path": "docs/evidence/forward/schedules/2026-10-12_maker_forward.json.capacity_note.json",
+   "present": true,
+   "sha256": "e4401fb22374b3c5688200b565e8739c78a1e6812c5099c67700ebc0c1d2cb3f"
+  },
+  "census": {
+   "bytes": 20415,
+   "path": "docs/evidence/forward/schedules/2026-10-12_maker_forward_full_selection.json.census.json",
+   "present": true,
+   "sha256": "dda15e29be78a8a16a96ae0f830b5ea7bd52efd4b094afba9b2a30d5f8a66713"
+  },
+  "full": {
+   "bytes": 2878,
+   "path": "docs/evidence/forward/schedules/2026-10-12_maker_forward_full_selection.json",
+   "present": true,
+   "sha256": "8eb349f11607cf4ff4313e7ffe5639b752060574a28407c5134de5eef6e4f8c4"
+  },
+  "qualification": {
+   "bytes": 15226,
+   "path": "docs/evidence/forward/qualification/2026-10-12.json",
+   "present": true,
+   "sha256": "e35e351ae389670c620588ae5eab891e02e515f68b70231289a6ea6bc8c5d396"
+  },
+  "run": {
+   "bytes": 4726,
+   "path": "docs/evidence/forward/schedules/2026-10-12_run.json",
+   "present": true,
+   "sha256": "442568bbd0189d005c148debc802e839034ad2f06c54a2e78ff1a6c95f048a04"
+  },
+  "scoreboard": {
+   "bytes": 14865552,
+   "path": "docs/evidence/forward/scoreboard/2026-10-12.json",
+   "present": true,
+   "sha256": "2fc082eb11324b3829804376ed6323e8ce8fca5976f7dabeb3ee8d10c1bd3e1b"
+  },
+  "served": {
+   "bytes": 2538,
+   "path": "docs/evidence/forward/schedules/2026-10-12_maker_forward.json",
+   "present": true,
+   "sha256": "0695af92c1ae031c4e1970a35fc0b5e255cb0d14910b204002cf2ecc00a7964f"
+  }
+ },
+ "listed_definition": "census schedule-feed games starting on D (games_seen - outside_utc_date); the inputs carry no count of venue-listed game events",
+ "notes": {
+  "legacy_name_used": [],
+  "qualification_schedule_input": {
+   "path": "docs\\evidence\\forward\\schedules\\2026-10-12_maker_forward_full_selection.json",
+   "sha256": "8eb349f11607cf4ff4313e7ffe5639b752060574a28407c5134de5eef6e4f8c4",
+   "size_bytes": 2878
+  }
+ },
+ "refusal_total": 0,
+ "refusals": {},
+ "row": "S743",
+ "scope": "PAPER ONLY. Coverage counts per sport for one UTC date; no scored comparison, no calibration metric and no prereg are read or reported here.",
+ "sports": [
+  {
+   "census_record_counts": {
+    "denominator": null,
+    "denominator_name": "venue records read by the writer (total not carried)",
+    "null_because": [],
+    "value": {
+     "derivative_series_ignored": 2080,
+     "future_records": 352,
+     "ignored_record_type": 1374457,
+     "listed_on_previous_us_date": 1
+    }
+   },
+   "census_refused_by_reason": {
+    "denominator": 3,
+    "denominator_name": "census games_seen",
+    "null_because": [],
+    "value": {
+     "not_pregame": 1,
+     "outside_utc_date": 1
+    }
+   },
+   "enabled": true,
+   "listed": {
+    "denominator": null,
+    "denominator_name": "census games on D (games_seen - outside_utc_date)",
+    "null_because": [],
+    "value": 2
+   },
+   "outside_utc_date": {
+    "denominator": 3,
+    "denominator_name": "census games_seen (query window)",
+    "null_because": [],
+    "value": 1
+   },
+   "partition": "listed == selected + link_or_alias + not_pregame + not_prospective + duplicate_game_or_ticker + other:*; selected == served + cap",
+   "qualified": {
+    "denominator": 1,
+    "denominator_name": "selected games",
+    "null_because": [],
+    "value": {
+     "FAIL": 1,
+     "PASS": 0
+    }
+   },
+   "qualified_served": {
+    "denominator": 1,
+    "denominator_name": "served games",
+    "null_because": [],
+    "value": {
+     "FAIL": 1,
+     "PASS": 0
+    }
+   },
+   "scored_games": {
+    "denominator": 1,
+    "denominator_name": "served games",
+    "null_because": [],
+    "value": {
+     "A": 1,
+     "B": 0,
+     "B_lag": 1,
+     "C": 0,
+     "D": 0
+    }
+   },
+   "scored_ticks": {
+    "denominator": 1797,
+    "denominator_name": "emitted ticks of the sport",
+    "null_because": [],
+    "value": {
+     "A": 1797,
+     "B": 0,
+     "B_lag": 1797,
+     "C": 0,
+     "D": 0
+    }
+   },
+   "scored_ticks_all_sport_attempted": {
+    "denominator": null,
+    "denominator_name": "all-sport emitted ticks + tick_refused:* + model_state_refused (scoreboard counts)",
+    "null_because": [],
+    "value": 14837
+   },
+   "selected": {
+    "denominator": 2,
+    "denominator_name": "listed",
+    "null_because": [],
+    "value": 1
+   },
+   "served": {
+    "denominator": 1,
+    "denominator_name": "selected",
+    "null_because": [],
+    "value": 1
+   },
+   "sport": "mlb",
+   "unscoreable_by_cause": [],
+   "unserved_by_cause": {
+    "cap": 0,
+    "not_pregame": 1
+   }
+  },
+  {
+   "census_record_counts": {
+    "denominator": null,
+    "denominator_name": "venue records read by the writer (total not carried)",
+    "null_because": [],
+    "value": {
+     "derivative_series_ignored": 1394,
+     "espn_minute_precision_normalized": 9,
+     "future_records": 4,
+     "ignored_record_type": 334843,
+     "listed_on_previous_us_date": 1,
+     "local_date_from_declared_tz": 4,
+     "previous_us_date_other_day": 3
+    }
+   },
+   "census_refused_by_reason": {
+    "denominator": 6,
+    "denominator_name": "census games_seen",
+    "null_because": [],
+    "value": {
+     "missing_directional_team_evidence": 1,
+     "not_pregame": 1,
+     "outside_utc_date": 1
+    }
+   },
+   "enabled": true,
+   "listed": {
+    "denominator": null,
+    "denominator_name": "census games on D (games_seen - outside_utc_date)",
+    "null_because": [],
+    "value": 5
+   },
+   "outside_utc_date": {
+    "denominator": 6,
+    "denominator_name": "census games_seen (query window)",
+    "null_because": [],
+    "value": 1
+   },
+   "partition": "listed == selected + link_or_alias + not_pregame + not_prospective + duplicate_game_or_ticker + other:*; selected == served + cap",
+   "qualified": {
+    "denominator": 3,
+    "denominator_name": "selected games",
+    "null_because": [],
+    "value": {
+     "FAIL": 3,
+     "PASS": 0
+    }
+   },
+   "qualified_served": {
+    "denominator": 3,
+    "denominator_name": "served games",
+    "null_because": [],
+    "value": {
+     "FAIL": 3,
+     "PASS": 0
+    }
+   },
+   "scored_games": {
+    "denominator": 3,
+    "denominator_name": "served games",
+    "null_because": [],
+    "value": {
+     "A": 3,
+     "B": 0,
+     "B_lag": 3,
+     "C": 0,
+     "D": 0
+    }
+   },
+   "scored_ticks": {
+    "denominator": 4874,
+    "denominator_name": "emitted ticks of the sport",
+    "null_because": [],
+    "value": {
+     "A": 4874,
+     "B": 0,
+     "B_lag": 4874,
+     "C": 0,
+     "D": 0
+    }
+   },
+   "scored_ticks_all_sport_attempted": {
+    "denominator": null,
+    "denominator_name": "all-sport emitted ticks + tick_refused:* + model_state_refused (scoreboard counts)",
+    "null_because": [],
+    "value": 14837
+   },
+   "selected": {
+    "denominator": 5,
+    "denominator_name": "listed",
+    "null_because": [],
+    "value": 3
+   },
+   "served": {
+    "denominator": 3,
+    "denominator_name": "selected",
+    "null_because": [],
+    "value": 3
+   },
+   "sport": "nba",
+   "unscoreable_by_cause": [],
+   "unserved_by_cause": {
+    "cap": 0,
+    "link_or_alias": 1,
+    "not_pregame": 1
+   }
+  },
+  {
+   "census_record_counts": {
+    "denominator": null,
+    "denominator_name": "venue records read by the writer (total not carried)",
+    "null_because": [],
+    "value": {
+     "future_records": 218,
+     "ignored_record_type": 63498
+    }
+   },
+   "census_refused_by_reason": {
+    "denominator": 0,
+    "denominator_name": "census games_seen",
+    "null_because": [],
+    "value": {}
+   },
+   "enabled": true,
+   "listed": {
+    "denominator": null,
+    "denominator_name": "census games on D (games_seen - outside_utc_date)",
+    "null_because": [],
+    "value": 0
+   },
+   "outside_utc_date": {
+    "denominator": 0,
+    "denominator_name": "census games_seen (query window)",
+    "null_because": [],
+    "value": 0
+   },
+   "partition": "listed == selected + link_or_alias + not_pregame + not_prospective + duplicate_game_or_ticker + other:*; selected == served + cap",
+   "qualified": {
+    "denominator": 0,
+    "denominator_name": "selected games",
+    "null_because": [],
+    "value": {
+     "FAIL": 0,
+     "PASS": 0
+    }
+   },
+   "qualified_served": {
+    "denominator": 0,
+    "denominator_name": "served games",
+    "null_because": [],
+    "value": {
+     "FAIL": 0,
+     "PASS": 0
+    }
+   },
+   "scored_games": {
+    "denominator": 0,
+    "denominator_name": "served games",
+    "null_because": [],
+    "value": {
+     "A": 0,
+     "B": 0,
+     "B_lag": 0,
+     "C": 0,
+     "D": 0
+    }
+   },
+   "scored_ticks": {
+    "denominator": 0,
+    "denominator_name": "emitted ticks of the sport",
+    "null_because": [],
+    "value": {
+     "A": 0,
+     "B": 0,
+     "B_lag": 0,
+     "C": 0,
+     "D": 0
+    }
+   },
+   "scored_ticks_all_sport_attempted": {
+    "denominator": null,
+    "denominator_name": "all-sport emitted ticks + tick_refused:* + model_state_refused (scoreboard counts)",
+    "null_because": [],
+    "value": 14837
+   },
+   "selected": {
+    "denominator": 0,
+    "denominator_name": "listed",
+    "null_because": [],
+    "value": 0
+   },
+   "served": {
+    "denominator": 0,
+    "denominator_name": "selected",
+    "null_because": [],
+    "value": 0
+   },
+   "sport": "ncaaf",
+   "unscoreable_by_cause": [],
+   "unserved_by_cause": {
+    "cap": 0
+   }
+  },
+  {
+   "census_record_counts": {
+    "denominator": null,
+    "denominator_name": "venue records read by the writer (total not carried)",
+    "null_because": [],
+    "value": {
+     "derivative_series_ignored": 1553,
+     "espn_minute_precision_normalized": 14,
+     "future_records": 113,
+     "ignored_record_type": 605267,
+     "listed_on_previous_us_date": 1,
+     "previous_us_date_other_day": 12
+    }
+   },
+   "census_refused_by_reason": {
+    "denominator": 2,
+    "denominator_name": "census games_seen",
+    "null_because": [],
+    "value": {
+     "not_pregame": 1,
+     "outside_utc_date": 1
+    }
+   },
+   "enabled": true,
+   "listed": {
+    "denominator": null,
+    "denominator_name": "census games on D (games_seen - outside_utc_date)",
+    "null_because": [],
+    "value": 1
+   },
+   "outside_utc_date": {
+    "denominator": 2,
+    "denominator_name": "census games_seen (query window)",
+    "null_because": [],
+    "value": 1
+   },
+   "partition": "listed == selected + link_or_alias + not_pregame + not_prospective + duplicate_game_or_ticker + other:*; selected == served + cap",
+   "qualified": {
+    "denominator": 0,
+    "denominator_name": "selected games",
+    "null_because": [],
+    "value": {
+     "FAIL": 0,
+     "PASS": 0
+    }
+   },
+   "qualified_served": {
+    "denominator": 0,
+    "denominator_name": "served games",
+    "null_because": [],
+    "value": {
+     "FAIL": 0,
+     "PASS": 0
+    }
+   },
+   "scored_games": {
+    "denominator": 0,
+    "denominator_name": "served games",
+    "null_because": [],
+    "value": {
+     "A": 0,
+     "B": 0,
+     "B_lag": 0,
+     "C": 0,
+     "D": 0
+    }
+   },
+   "scored_ticks": {
+    "denominator": 0,
+    "denominator_name": "emitted ticks of the sport",
+    "null_because": [],
+    "value": {
+     "A": 0,
+     "B": 0,
+     "B_lag": 0,
+     "C": 0,
+     "D": 0
+    }
+   },
+   "scored_ticks_all_sport_attempted": {
+    "denominator": null,
+    "denominator_name": "all-sport emitted ticks + tick_refused:* + model_state_refused (scoreboard counts)",
+    "null_because": [],
+    "value": 14837
+   },
+   "selected": {
+    "denominator": 1,
+    "denominator_name": "listed",
+    "null_because": [],
+    "value": 0
+   },
+   "served": {
+    "denominator": 0,
+    "denominator_name": "selected",
+    "null_because": [],
+    "value": 0
+   },
+   "sport": "nfl",
+   "unscoreable_by_cause": [],
+   "unserved_by_cause": {
+    "cap": 0,
+    "not_pregame": 1
+   }
+  },
+  {
+   "census_record_counts": {
+    "denominator": null,
+    "denominator_name": "venue records read by the writer (total not carried)",
+    "null_because": [],
+    "value": {
+     "derivative_series_ignored": 67,
+     "espn_minute_precision_normalized": 21,
+     "future_records": 126,
+     "ignored_record_type": 66612,
+     "local_date_from_declared_tz": 4,
+     "previous_us_date_other_day": 17
+    }
+   },
+   "census_refused_by_reason": {
+    "denominator": 4,
+    "denominator_name": "census games_seen",
+    "null_because": [],
+    "value": {}
+   },
+   "enabled": true,
+   "listed": {
+    "denominator": null,
+    "denominator_name": "census games on D (games_seen - outside_utc_date)",
+    "null_because": [],
+    "value": 4
+   },
+   "outside_utc_date": {
+    "denominator": 4,
+    "denominator_name": "census games_seen (query window)",
+    "null_because": [],
+    "value": 0
+   },
+   "partition": "listed == selected + link_or_alias + not_pregame + not_prospective + duplicate_game_or_ticker + other:*; selected == served + cap",
+   "qualified": {
+    "denominator": 4,
+    "denominator_name": "selected games",
+    "null_because": [],
+    "value": {
+     "FAIL": 4,
+     "PASS": 0
+    }
+   },
+   "qualified_served": {
+    "denominator": 3,
+    "denominator_name": "served games",
+    "null_because": [],
+    "value": {
+     "FAIL": 3,
+     "PASS": 0
+    }
+   },
+   "scored_games": {
+    "denominator": 3,
+    "denominator_name": "served games",
+    "null_because": [],
+    "value": {
+     "A": 3,
+     "B": 0,
+     "B_lag": 3,
+     "C": 0,
+     "D": 0
+    }
+   },
+   "scored_ticks": {
+    "denominator": 3953,
+    "denominator_name": "emitted ticks of the sport",
+    "null_because": [],
+    "value": {
+     "A": 3953,
+     "B": 0,
+     "B_lag": 3863,
+     "C": 0,
+     "D": 0
+    }
+   },
+   "scored_ticks_all_sport_attempted": {
+    "denominator": null,
+    "denominator_name": "all-sport emitted ticks + tick_refused:* + model_state_refused (scoreboard counts)",
+    "null_because": [],
+    "value": 14837
+   },
+   "selected": {
+    "denominator": 4,
+    "denominator_name": "listed",
+    "null_because": [],
+    "value": 4
+   },
+   "served": {
+    "denominator": 4,
+    "denominator_name": "selected",
+    "null_because": [],
+    "value": 3
+   },
+   "sport": "soccer",
+   "unscoreable_by_cause": [],
+   "unserved_by_cause": {
+    "cap": 1
+   }
+  }
+ ],
+ "visibility_note": "a sport outside the schedule writer's --sports is invisible to the census, the capacity note and the run record; it can only appear here when the qualification archives or scoreboard show it captured"
+}

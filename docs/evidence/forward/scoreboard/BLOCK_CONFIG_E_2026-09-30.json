@@ -1,0 +1,26 @@
+{
+  "policy": {
+    "effective_from": "2026-09-30T00:00:00.000000Z",
+    "implementation_identity": "f4b5183527fd4148540c0d74f6ba14f51dd872d722ba445a2c51a5088efa70b0",
+    "manifest_hash": "cfc3bdbdabea6d7b99ebdd23995b0be5953aa38ec6493aebce617c896b5f6e22",
+    "selected_block_versions": {
+      "ball_strike_count": "1",
+      "base_occupancy": "1",
+      "half_inning": "1",
+      "microstructure": "1",
+      "mid": "1",
+      "player_pitcher_workload": "1",
+      "team_state": "1"
+    },
+    "selected_blocks": [
+      "mid",
+      "team_state",
+      "microstructure",
+      "player_pitcher_workload",
+      "half_inning",
+      "base_occupancy",
+      "ball_strike_count"
+    ]
+  },
+  "sha256": "ee89183e36572b1441082d50421c5809f9bd9f4d05d2c0789d28232a20218b8e"
+}

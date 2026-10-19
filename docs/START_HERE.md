@@ -165,7 +165,7 @@ python scripts/batch_season.py --season 2025-26
 | Betting vs **real** closing lines | break-even-minus-vig; AST edge RETRACTED 2026-07-21 (regime-dependent; no ROI edge claimed) — see JOB_EVIDENCE_PACKET | `scripts/run_gate1_full_analysis.py` → −2.00% unfiltered |
 | CV pipeline | 17,254 cv_features rows / 241 games / 252 players · ~$0.10–0.13/game | `data/nba_ai.db` |
 | DNP predictor AUC | 0.979 | committed metrics |
-| In-play paper-ceiling ROI (L5 line proxy, n=55,073) | 78% hit / +54% — **ceiling, not edge**; no realized estimate quoted | ⚠️ L5 proxy, first real CLV Oct 2026 |
+| In-play L5-proxy backtest (n=55,073) | RETRACTED as a result (JOB_EVIDENCE_PACKET section 4): graded against an L5 line proxy, a model-quality ceiling only; no figure is quoted here | ⚠️ L5 proxy, first real CLV Oct 2026 |
 | Shots in training data | 221,866 | |
 
 **Retracted (artifacts the harness caught):** +18.38% ROI (market-follow grading bug → real break-even-minus-vig), endQ3 0.119 (Q4 leak → ~0.141), +54% in-play (L5 proxy). Full account: [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md).

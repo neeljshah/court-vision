@@ -60,7 +60,7 @@ shape a working eval loop produces.
   code, not that this is a drop-in replacement for a commercial platform.
 - **No performance or edge claim.** This page maps machinery, not results. The only
   measured quality win is in-game calibration (Brier deltas above, `edge_claimed=False`);
-  pregame the system MATCHES the efficient closing line within noise and beats nothing
+  pregame the system TRAILS the devigged close on MLB moneyline (+0.0039 Brier, 95% CI [+0.0028, +0.0051]) and soccer O/U 2.5 (+0.0076, [+0.0059, +0.0092]) and is indistinguishable from it on NBA moneyline at an underpowered n=372 (corrected 2026-10-06 from DM_RECOMPUTE_2026-09-24) and beats nothing
   (see [MARKET_EFFICIENCY_PROOF.md](MARKET_EFFICIENCY_PROOF.md)). No dollar/ROI/edge
   figure appears anywhere on this page, and none of the retracted measurement artifacts
   (listed only in [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md)) are quoted here.

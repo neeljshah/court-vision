@@ -7,7 +7,7 @@ on screen.
 Read this first so the framing is clear:
 
 - This is a **calibrated predictor**, not a betting-edge product. The honest, defensible
-  result is "**match the devigged closing line within noise**" on team-strength markets.
+  result is "**match the devigged closing line within noise**" on team-strength markets (measured: NBA moneyline indistinguishable at an underpowered n=372; MLB moneyline and soccer O/U 2.5 TRAIL the close with 95% CIs above zero; corrected 2026-10-06 from DM_RECOMPUTE_2026-09-24).
   Markets are efficient pregame; we do **not** claim to beat them.
 - The one **measured** win is **in-game conditioning**: fusing the pre-game prior with the
   realized mid-game score sharpens the live win-probability forecast (a **calibration**

@@ -80,6 +80,8 @@ python scripts/platformkit/analytics_showcase/check_all.py
 Each showcase module re-verifies its own committed artifact; **0 FAIL is the bar**. Details and
 scope limits: [REPRODUCE.md](REPRODUCE.md). Generated receipts, one row per measurement:
 [RECEIPTS.md](RECEIPTS.md).
+Five more cross-page checks (figure consistency, devig, fee schedule) are in the
+[desk brief, section 6](docs/QUANT_BRIEF.md); the methods are defined on [CLV_AND_MARKOUT.md](docs/CLV_AND_MARKOUT.md) and [KALSHI_NOTE.md](docs/KALSHI_NOTE.md).
 
 ## How it is built
 

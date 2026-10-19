@@ -1,0 +1,38 @@
+[
+  {
+    "family": "maker_forward",
+    "game_id": "KXMLBGAME-26SEP241435NYMTEX",
+    "game_key": "822842",
+    "scheduled_start": "2026-09-24T18:35:00.000000Z",
+    "selected_at": "2026-09-24T17:54:31.703109+00:00",
+    "sport": "mlb",
+    "ticker": "KXMLBGAME-26SEP241435NYMTEX-TEX"
+  },
+  {
+    "family": "maker_forward",
+    "game_id": "KXMLBGAME-26SEP241805MILPHI",
+    "game_key": "823411",
+    "scheduled_start": "2026-09-24T22:05:00.000000Z",
+    "selected_at": "2026-09-24T17:54:31.703109+00:00",
+    "sport": "mlb",
+    "ticker": "KXMLBGAME-26SEP241805MILPHI-PHI"
+  },
+  {
+    "family": "maker_forward",
+    "game_id": "KXMLBGAME-26SEP241845CLEBOS",
+    "game_key": "824707",
+    "scheduled_start": "2026-09-24T22:45:00.000000Z",
+    "selected_at": "2026-09-24T17:54:31.703109+00:00",
+    "sport": "mlb",
+    "ticker": "KXMLBGAME-26SEP241845CLEBOS-BOS"
+  },
+  {
+    "family": "maker_forward",
+    "game_id": "KXMLBGAME-26SEP241915CINATL",
+    "game_key": "824866",
+    "scheduled_start": "2026-09-24T23:15:00.000000Z",
+    "selected_at": "2026-09-24T17:54:31.703109+00:00",
+    "sport": "mlb",
+    "ticker": "KXMLBGAME-26SEP241915CINATL-ATL"
+  }
+]

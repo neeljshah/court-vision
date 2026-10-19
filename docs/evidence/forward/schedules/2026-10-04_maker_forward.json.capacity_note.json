@@ -1,0 +1,23 @@
+{
+  "capacity_subset_selected_at": "2026-10-03T12:35:33.610696+00:00",
+  "denominator_of_record": "C:/Users/neelj/nba-ai-system/docs/evidence/forward/schedules/2026-10-04_maker_forward_full_selection.json",
+  "not_served": [
+    "KXNFLGAME-26OCT04GBTB-TB",
+    "KXNFLGAME-26OCT04LARPHI-PHI",
+    "KXNFLGAME-26OCT04NEBUF-BUF",
+    "KXNFLGAME-26OCT04NYJCHI-CHI",
+    "KXNFLGAME-26OCT04TENBAL-BAL",
+    "KXNFLGAME-26OCT04DENSF-SF",
+    "KXNFLGAME-26OCT04KCLV-LV",
+    "KXNFLGAME-26OCT04LACSEA-SEA"
+  ],
+  "rule": "earliest starts, ticker order on ties, subject to capture_scheduler.schedule_rows line 113 (any three consecutive starts must span >= 3600 s); score-blind, before any start",
+  "served": [
+    "KXMLBGAME-26OCT032030SDMIL-MIL",
+    "KXNFLGAME-26OCT04ARINYG-NYG",
+    "KXNFLGAME-26OCT04DALHOU-HOU",
+    "KXMLBGAME-26OCT041600SDMIL-MIL",
+    "KXNFLGAME-26OCT04MIAMIN-MIN"
+  ],
+  "served_file": "C:/Users/neelj/nba-ai-system/docs/evidence/forward/schedules/2026-10-04_maker_forward.json"
+}

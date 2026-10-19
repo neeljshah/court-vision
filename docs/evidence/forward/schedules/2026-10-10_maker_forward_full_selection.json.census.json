@@ -1,0 +1,4485 @@
+{
+  "mlb": {
+    "canonical_rules": {},
+    "game_key_sources": {},
+    "games_seen": 1,
+    "link_paths": {},
+    "linked": 0,
+    "local_date_tz": "America/Chicago",
+    "record_counts": {
+      "derivative_series_ignored": 2044,
+      "future_records": 11,
+      "ignored_record_type": 1371492
+    },
+    "refused_by_reason": {
+      "outside_utc_date": 1
+    },
+    "refused_team_evidence": {},
+    "schedule_receipt": {
+      "fetch_status": "OK",
+      "http_status": 200,
+      "kept_from": {
+        "849831": "20261010"
+      },
+      "query_receipts": {
+        "20261009": {
+          "fetch_status": "OK",
+          "http_status": 200,
+          "request_start_utc": "2026-10-09T13:27:45.882410+00:00",
+          "response_bytes": 262,
+          "response_end_utc": "2026-10-09T13:27:45.945828+00:00",
+          "response_sha256": "e945970d3a4d1b17afde3ecfc6a444e395dceb14f2c9e4a35d1e06837d79f9b0",
+          "url": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=2026-10-09&hydrate=team"
+        },
+        "20261010": {
+          "fetch_status": "OK",
+          "http_status": 200,
+          "request_start_utc": "2026-10-09T13:27:45.945828+00:00",
+          "response_bytes": 3250,
+          "response_end_utc": "2026-10-09T13:27:46.009271+00:00",
+          "response_sha256": "15a35e708972cc6213e19c6805bae9bd998a248e79906e405ea5dce35d9fc017",
+          "url": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=2026-10-10&hydrate=team"
+        }
+      },
+      "request_start_utc": "2026-10-09T13:27:45.945828+00:00",
+      "response_bytes": 3250,
+      "response_end_utc": "2026-10-09T13:27:46.009271+00:00",
+      "response_sha256": "15a35e708972cc6213e19c6805bae9bd998a248e79906e405ea5dce35d9fc017",
+      "url": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=2026-10-10&hydrate=team"
+    },
+    "schedule_source": "live",
+    "written": 0
+  },
+  "nba": {
+    "canonical_rules": {
+      "home_alias": 4
+    },
+    "game_key_sources": {
+      "401898396": "espn_event_id",
+      "401902645": "espn_event_id",
+      "401906510": "espn_event_id",
+      "401908940": "espn_event_id"
+    },
+    "games_seen": 8,
+    "link_paths": {
+      "401898396": "team_set",
+      "401902645": "team_set",
+      "401906510": "team_set",
+      "401908940": "team_set"
+    },
+    "linked": 4,
+    "local_date_tz": "America/Chicago",
+    "record_counts": {
+      "derivative_series_ignored": 1118,
+      "espn_minute_precision_normalized": 9,
+      "future_records": 5252,
+      "ignored_record_type": 292777,
+      "listed_on_previous_us_date": 1,
+      "local_date_from_declared_tz": 4,
+      "previous_us_date_other_day": 1
+    },
+    "refused_by_reason": {
+      "outside_utc_date": 4
+    },
+    "refused_team_evidence": {},
+    "schedule_receipt": {
+      "fetch_status": "OK",
+      "http_status": 200,
+      "kept_from": {
+        "401898396": "20261010",
+        "401898397": "20261010",
+        "401898398": "20261010",
+        "401898399": "20261010",
+        "401898720": "20261010",
+        "401902645": "20261010",
+        "401906510": "20261010",
+        "401908940": "20261009"
+      },
+      "query_receipts": {
+        "20261009": {
+          "fetch_status": "OK",
+          "http_status": 200,
+          "request_start_utc": "2026-10-09T13:27:46.009271+00:00",
+          "response_bytes": 29356,
+          "response_end_utc": "2026-10-09T13:27:46.120574+00:00",
+          "response_sha256": "b66d6cf0c4d8fb56bac1e9d74ef475c83a7e09ec22c1b422c3fb434460719531",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=20261009"
+        },
+        "20261010": {
+          "fetch_status": "OK",
+          "http_status": 200,
+          "request_start_utc": "2026-10-09T13:27:46.120574+00:00",
+          "response_bytes": 43626,
+          "response_end_utc": "2026-10-09T13:27:46.200449+00:00",
+          "response_sha256": "18ad9ae5d951aeaf982979e6599ba4a9be9783edd388c203791d357b2bedcd72",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=20261010"
+        }
+      },
+      "request_start_utc": "2026-10-09T13:27:46.120574+00:00",
+      "response_bytes": 43626,
+      "response_end_utc": "2026-10-09T13:27:46.200449+00:00",
+      "response_sha256": "18ad9ae5d951aeaf982979e6599ba4a9be9783edd388c203791d357b2bedcd72",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=20261010"
+    },
+    "schedule_source": "live",
+    "written": 4
+  },
+  "ncaaf": {
+    "canonical_rules": {
+      "home_alias": 36
+    },
+    "game_key_sources": {
+      "401856712": "espn_event_id",
+      "401856713": "espn_event_id",
+      "401856715": "espn_event_id",
+      "401856718": "espn_event_id",
+      "401856823": "espn_event_id",
+      "401856824": "espn_event_id",
+      "401856825": "espn_event_id",
+      "401856826": "espn_event_id",
+      "401858255": "espn_event_id",
+      "401858256": "espn_event_id",
+      "401858257": "espn_event_id",
+      "401858258": "espn_event_id",
+      "401858259": "espn_event_id",
+      "401858480": "espn_event_id",
+      "401858483": "espn_event_id",
+      "401858484": "espn_event_id",
+      "401858485": "espn_event_id",
+      "401858487": "espn_event_id",
+      "401860902": "espn_event_id",
+      "401860922": "espn_event_id",
+      "401861964": "espn_event_id",
+      "401862795": "espn_event_id",
+      "401862797": "espn_event_id",
+      "401862798": "espn_event_id",
+      "401862799": "espn_event_id",
+      "401864516": "espn_event_id",
+      "401864517": "espn_event_id",
+      "401864518": "espn_event_id",
+      "401864519": "espn_event_id",
+      "401866435": "espn_event_id",
+      "401866436": "espn_event_id",
+      "401866437": "espn_event_id",
+      "401866438": "espn_event_id",
+      "401866439": "espn_event_id",
+      "401869843": "espn_event_id",
+      "401869949": "espn_event_id"
+    },
+    "games_seen": 50,
+    "link_paths": {
+      "401856712": "team_set",
+      "401856713": "team_set",
+      "401856715": "team_set",
+      "401856718": "team_set",
+      "401856823": "team_set",
+      "401856824": "team_set",
+      "401856825": "team_set",
+      "401856826": "team_set",
+      "401858255": "team_set",
+      "401858256": "team_set",
+      "401858257": "team_set",
+      "401858258": "team_set",
+      "401858259": "team_set",
+      "401858480": "team_set",
+      "401858483": "team_set",
+      "401858484": "team_set",
+      "401858485": "team_set",
+      "401858487": "team_set",
+      "401860902": "team_set",
+      "401860922": "team_set",
+      "401861964": "team_set",
+      "401862795": "team_set",
+      "401862797": "team_set",
+      "401862798": "team_set",
+      "401862799": "team_set",
+      "401864516": "team_set",
+      "401864517": "team_set",
+      "401864518": "team_set",
+      "401864519": "team_set",
+      "401866435": "team_set",
+      "401866436": "team_set",
+      "401866437": "team_set",
+      "401866438": "team_set",
+      "401866439": "team_set",
+      "401869843": "team_set",
+      "401869949": "team_set"
+    },
+    "linked": 36,
+    "local_date_tz": "America/Chicago",
+    "record_counts": {
+      "espn_minute_precision_normalized": 51,
+      "future_records": 136,
+      "ignored_record_type": 10779,
+      "listed_on_previous_us_date": 4,
+      "local_date_from_declared_tz": 46,
+      "previous_us_date_other_day": 1
+    },
+    "refused_by_reason": {
+      "missing_directional_team_evidence": 10,
+      "outside_utc_date": 4
+    },
+    "refused_team_evidence": {
+      "401856714": {
+        "away_abbr": "SC",
+        "compared_team_code_sets": {
+          "KXNCAAFGAME-26OCT10AFANIU": [
+            "AFA",
+            "NIU"
+          ],
+          "KXNCAAFGAME-26OCT10ARIZWVU": [
+            "ARIZ",
+            "WVU"
+          ],
+          "KXNCAAFGAME-26OCT10BALLNW": [
+            "BALL",
+            "NW"
+          ],
+          "KXNCAAFGAME-26OCT10BRYBRWN": [
+            "BRWN",
+            "BRY"
+          ],
+          "KXNCAAFGAME-26OCT10BSUFRES": [
+            "BSU",
+            "FRES"
+          ],
+          "KXNCAAFGAME-26OCT10BUCKGTWN": [
+            "BUCK",
+            "GTWN"
+          ],
+          "KXNCAAFGAME-26OCT10BUFFTOL": [
+            "BUFF",
+            "TOL"
+          ],
+          "KXNCAAFGAME-26OCT10CARKAC": [
+            "AC",
+            "CARK"
+          ],
+          "KXNCAAFGAME-26OCT10CCARMRSH": [
+            "CCAR",
+            "MRSH"
+          ],
+          "KXNCAAFGAME-26OCT10CHARUNT": [
+            "CHAR",
+            "UNT"
+          ],
+          "KXNCAAFGAME-26OCT10CMUOHIO": [
+            "CMU",
+            "OHIO"
+          ],
+          "KXNCAAFGAME-26OCT10CONNTEM": [
+            "CONN",
+            "TEM"
+          ],
+          "KXNCAAFGAME-26OCT10COOKAAMU": [
+            "AAMU",
+            "COOK"
+          ],
+          "KXNCAAFGAME-26OCT10CPIDST": [
+            "CP",
+            "IDST"
+          ],
+          "KXNCAAFGAME-26OCT10DARTYALE": [
+            "DART",
+            "YALE"
+          ],
+          "KXNCAAFGAME-26OCT10DAVPRE": [
+            "DAV",
+            "PRE"
+          ],
+          "KXNCAAFGAME-26OCT10DRKEVALP": [
+            "DRKE",
+            "VALP"
+          ],
+          "KXNCAAFGAME-26OCT10DUKEGT": [
+            "DUKE",
+            "GT"
+          ],
+          "KXNCAAFGAME-26OCT10EIUWEBB": [
+            "EIU",
+            "WEBB"
+          ],
+          "KXNCAAFGAME-26OCT10EMUAKR": [
+            "AKR",
+            "EMU"
+          ],
+          "KXNCAAFGAME-26OCT10ETSUCIT": [
+            "CIT",
+            "ETSU"
+          ],
+          "KXNCAAFGAME-26OCT10FAMUALST": [
+            "ALST",
+            "FAMU"
+          ],
+          "KXNCAAFGAME-26OCT10FURTNTC": [
+            "FUR",
+            "TNTC"
+          ],
+          "KXNCAAFGAME-26OCT10HARVCOR": [
+            "COR",
+            "HARV"
+          ],
+          "KXNCAAFGAME-26OCT10HAWASU": [
+            "ASU",
+            "HAW"
+          ],
+          "KXNCAAFGAME-26OCT10HOUKSU": [
+            "HOU",
+            "KSU"
+          ],
+          "KXNCAAFGAME-26OCT10HOWPENN": [
+            "HOW",
+            "PENN"
+          ],
+          "KXNCAAFGAME-26OCT10IDHOWEB": [
+            "IDHO",
+            "WEB"
+          ],
+          "KXNCAAFGAME-26OCT10ILLMSU": [
+            "ILL",
+            "MSU"
+          ],
+          "KXNCAAFGAME-26OCT10INDNEB": [
+            "IND",
+            "NEB"
+          ],
+          "KXNCAAFGAME-26OCT10IWLAM": [
+            "IW",
+            "LAM"
+          ],
+          "KXNCAAFGAME-26OCT10JKSTGRAM": [
+            "GRAM",
+            "JKST"
+          ],
+          "KXNCAAFGAME-26OCT10JMUGASO": [
+            "GASO",
+            "JMU"
+          ],
+          "KXNCAAFGAME-26OCT10KENTWMU": [
+            "KENT",
+            "WMU"
+          ],
+          "KXNCAAFGAME-26OCT10KUUTAH": [
+            "KU",
+            "UTAH"
+          ],
+          "KXNCAAFGAME-26OCT10LIUDUQ": [
+            "DUQ",
+            "LIU"
+          ],
+          "KXNCAAFGAME-26OCT10LSUUK": [
+            "LSU",
+            "UK"
+          ],
+          "KXNCAAFGAME-26OCT10MDOSU": [
+            "MD",
+            "OSU"
+          ],
+          "KXNCAAFGAME-26OCT10MINNPUR": [
+            "MINN",
+            "PUR"
+          ],
+          "KXNCAAFGAME-26OCT10MISSVAN": [
+            "MISS",
+            "VAN"
+          ],
+          "KXNCAAFGAME-26OCT10MOHMASS": [
+            "MASS",
+            "MOH"
+          ],
+          "KXNCAAFGAME-26OCT10MONTNAU": [
+            "MONT",
+            "NAU"
+          ],
+          "KXNCAAFGAME-26OCT10MOREDAY": [
+            "DAY",
+            "MORE"
+          ],
+          "KXNCAAFGAME-26OCT10MVSUTXSO": [
+            "MVSU",
+            "TXSO"
+          ],
+          "KXNCAAFGAME-26OCT10NDSUUNLV": [
+            "NDSU",
+            "UNLV"
+          ],
+          "KXNCAAFGAME-26OCT10NEVUTEP": [
+            "NEV",
+            "UTEP"
+          ],
+          "KXNCAAFGAME-26OCT10ODUAPP": [
+            "APP",
+            "ODU"
+          ],
+          "KXNCAAFGAME-26OCT10PRINWAG": [
+            "PRIN",
+            "WAG"
+          ],
+          "KXNCAAFGAME-26OCT10RICEECU": [
+            "ECU",
+            "RICE"
+          ],
+          "KXNCAAFGAME-26OCT10RICHFOR": [
+            "FOR",
+            "RICH"
+          ],
+          "KXNCAAFGAME-26OCT10RMUMORG": [
+            "MORG",
+            "RMU"
+          ],
+          "KXNCAAFGAME-26OCT10SACBGSU": [
+            "BGSU",
+            "SAC"
+          ],
+          "KXNCAAFGAME-26OCT10SAMCHAT": [
+            "CHAT",
+            "SAM"
+          ],
+          "KXNCAAFGAME-26OCT10SCARFLA": [
+            "FLA",
+            "SCAR"
+          ],
+          "KXNCAAFGAME-26OCT10SCSTCHSO": [
+            "CHSO",
+            "SCST"
+          ],
+          "KXNCAAFGAME-26OCT10SDSUORST": [
+            "ORST",
+            "SDSU"
+          ],
+          "KXNCAAFGAME-26OCT10SELAUTRGV": [
+            "SELA",
+            "UTRGV"
+          ],
+          "KXNCAAFGAME-26OCT10SEMOLINW": [
+            "LINW",
+            "SEMO"
+          ],
+          "KXNCAAFGAME-26OCT10SIUSDAK": [
+            "SDAK",
+            "SIU"
+          ],
+          "KXNCAAFGAME-26OCT10SOUPV": [
+            "PV",
+            "SOU"
+          ],
+          "KXNCAAFGAME-26OCT10STANND": [
+            "ND",
+            "STAN"
+          ],
+          "KXNCAAFGAME-26OCT10STETUST": [
+            "STET",
+            "UST"
+          ],
+          "KXNCAAFGAME-26OCT10STNHSHU": [
+            "SHU",
+            "STNH"
+          ],
+          "KXNCAAFGAME-26OCT10STONTOWS": [
+            "STON",
+            "TOWS"
+          ],
+          "KXNCAAFGAME-26OCT10SYRUVA": [
+            "SYR",
+            "UVA"
+          ],
+          "KXNCAAFGAME-26OCT10TARLPEAY": [
+            "PEAY",
+            "TARL"
+          ],
+          "KXNCAAFGAME-26OCT10TENNARK": [
+            "ARK",
+            "TENN"
+          ],
+          "KXNCAAFGAME-26OCT10TEXOKLA": [
+            "OKLA",
+            "TEX"
+          ],
+          "KXNCAAFGAME-26OCT10TLSANAVY": [
+            "NAVY",
+            "TLSA"
+          ],
+          "KXNCAAFGAME-26OCT10TULNARMY": [
+            "ARMY",
+            "TULN"
+          ],
+          "KXNCAAFGAME-26OCT10TXAMMIZZ": [
+            "MIZZ",
+            "TXAM"
+          ],
+          "KXNCAAFGAME-26OCT10UABMEM": [
+            "MEM",
+            "UAB"
+          ],
+          "KXNCAAFGAME-26OCT10UCFOKST": [
+            "OKST",
+            "UCF"
+          ],
+          "KXNCAAFGAME-26OCT10UCLAORE": [
+            "ORE",
+            "UCLA"
+          ],
+          "KXNCAAFGAME-26OCT10UGAALA": [
+            "ALA",
+            "UGA"
+          ],
+          "KXNCAAFGAME-26OCT10ULLLT": [
+            "LT",
+            "ULL"
+          ],
+          "KXNCAAFGAME-26OCT10UNCOEWU": [
+            "EWU",
+            "UNCO"
+          ],
+          "KXNCAAFGAME-26OCT10UNCPITT": [
+            "PITT",
+            "UNC"
+          ],
+          "KXNCAAFGAME-26OCT10UNDUNI": [
+            "UND",
+            "UNI"
+          ],
+          "KXNCAAFGAME-26OCT10UNHNCAT": [
+            "NCAT",
+            "UNH"
+          ],
+          "KXNCAAFGAME-26OCT10USCPSU": [
+            "PSU",
+            "USC"
+          ],
+          "KXNCAAFGAME-26OCT10USDBUT": [
+            "BUT",
+            "USD"
+          ],
+          "KXNCAAFGAME-26OCT10UTMTNST": [
+            "TNST",
+            "UTM"
+          ],
+          "KXNCAAFGAME-26OCT10UTUPRST": [
+            "PRST",
+            "UTU"
+          ],
+          "KXNCAAFGAME-26OCT10UWGAEKY": [
+            "EKY",
+            "UWGA"
+          ],
+          "KXNCAAFGAME-26OCT10VTCAL": [
+            "CAL",
+            "VT"
+          ],
+          "KXNCAAFGAME-26OCT10WAKENCST": [
+            "NCST",
+            "WAKE"
+          ],
+          "KXNCAAFGAME-26OCT10WCUMER": [
+            "MER",
+            "WCU"
+          ],
+          "KXNCAAFGAME-26OCT10WMNCCU": [
+            "NCCU",
+            "WM"
+          ],
+          "KXNCAAFGAME-26OCT10WOFELON": [
+            "ELON",
+            "WOF"
+          ],
+          "KXNCAAFGAME-26OCT10YSUINST": [
+            "INST",
+            "YSU"
+          ]
+        },
+        "home_abbr": "FLA",
+        "venue_team_codes": [
+          "FLA",
+          "SC"
+        ]
+      },
+      "401856716": {
+        "away_abbr": "TA&M",
+        "compared_team_code_sets": {
+          "KXNCAAFGAME-26OCT10AFANIU": [
+            "AFA",
+            "NIU"
+          ],
+          "KXNCAAFGAME-26OCT10ARIZWVU": [
+            "ARIZ",
+            "WVU"
+          ],
+          "KXNCAAFGAME-26OCT10BALLNW": [
+            "BALL",
+            "NW"
+          ],
+          "KXNCAAFGAME-26OCT10BRYBRWN": [
+            "BRWN",
+            "BRY"
+          ],
+          "KXNCAAFGAME-26OCT10BSUFRES": [
+            "BSU",
+            "FRES"
+          ],
+          "KXNCAAFGAME-26OCT10BUCKGTWN": [
+            "BUCK",
+            "GTWN"
+          ],
+          "KXNCAAFGAME-26OCT10BUFFTOL": [
+            "BUFF",
+            "TOL"
+          ],
+          "KXNCAAFGAME-26OCT10CARKAC": [
+            "AC",
+            "CARK"
+          ],
+          "KXNCAAFGAME-26OCT10CCARMRSH": [
+            "CCAR",
+            "MRSH"
+          ],
+          "KXNCAAFGAME-26OCT10CHARUNT": [
+            "CHAR",
+            "UNT"
+          ],
+          "KXNCAAFGAME-26OCT10CMUOHIO": [
+            "CMU",
+            "OHIO"
+          ],
+          "KXNCAAFGAME-26OCT10CONNTEM": [
+            "CONN",
+            "TEM"
+          ],
+          "KXNCAAFGAME-26OCT10COOKAAMU": [
+            "AAMU",
+            "COOK"
+          ],
+          "KXNCAAFGAME-26OCT10CPIDST": [
+            "CP",
+            "IDST"
+          ],
+          "KXNCAAFGAME-26OCT10DARTYALE": [
+            "DART",
+            "YALE"
+          ],
+          "KXNCAAFGAME-26OCT10DAVPRE": [
+            "DAV",
+            "PRE"
+          ],
+          "KXNCAAFGAME-26OCT10DRKEVALP": [
+            "DRKE",
+            "VALP"
+          ],
+          "KXNCAAFGAME-26OCT10DUKEGT": [
+            "DUKE",
+            "GT"
+          ],
+          "KXNCAAFGAME-26OCT10EIUWEBB": [
+            "EIU",
+            "WEBB"
+          ],
+          "KXNCAAFGAME-26OCT10EMUAKR": [
+            "AKR",
+            "EMU"
+          ],
+          "KXNCAAFGAME-26OCT10ETSUCIT": [
+            "CIT",
+            "ETSU"
+          ],
+          "KXNCAAFGAME-26OCT10FAMUALST": [
+            "ALST",
+            "FAMU"
+          ],
+          "KXNCAAFGAME-26OCT10FURTNTC": [
+            "FUR",
+            "TNTC"
+          ],
+          "KXNCAAFGAME-26OCT10HARVCOR": [
+            "COR",
+            "HARV"
+          ],
+          "KXNCAAFGAME-26OCT10HAWASU": [
+            "ASU",
+            "HAW"
+          ],
+          "KXNCAAFGAME-26OCT10HOUKSU": [
+            "HOU",
+            "KSU"
+          ],
+          "KXNCAAFGAME-26OCT10HOWPENN": [
+            "HOW",
+            "PENN"
+          ],
+          "KXNCAAFGAME-26OCT10IDHOWEB": [
+            "IDHO",
+            "WEB"
+          ],
+          "KXNCAAFGAME-26OCT10ILLMSU": [
+            "ILL",
+            "MSU"
+          ],
+          "KXNCAAFGAME-26OCT10INDNEB": [
+            "IND",
+            "NEB"
+          ],
+          "KXNCAAFGAME-26OCT10IWLAM": [
+            "IW",
+            "LAM"
+          ],
+          "KXNCAAFGAME-26OCT10JKSTGRAM": [
+            "GRAM",
+            "JKST"
+          ],
+          "KXNCAAFGAME-26OCT10JMUGASO": [
+            "GASO",
+            "JMU"
+          ],
+          "KXNCAAFGAME-26OCT10KENTWMU": [
+            "KENT",
+            "WMU"
+          ],
+          "KXNCAAFGAME-26OCT10KUUTAH": [
+            "KU",
+            "UTAH"
+          ],
+          "KXNCAAFGAME-26OCT10LIUDUQ": [
+            "DUQ",
+            "LIU"
+          ],
+          "KXNCAAFGAME-26OCT10LSUUK": [
+            "LSU",
+            "UK"
+          ],
+          "KXNCAAFGAME-26OCT10MDOSU": [
+            "MD",
+            "OSU"
+          ],
+          "KXNCAAFGAME-26OCT10MINNPUR": [
+            "MINN",
+            "PUR"
+          ],
+          "KXNCAAFGAME-26OCT10MISSVAN": [
+            "MISS",
+            "VAN"
+          ],
+          "KXNCAAFGAME-26OCT10MOHMASS": [
+            "MASS",
+            "MOH"
+          ],
+          "KXNCAAFGAME-26OCT10MONTNAU": [
+            "MONT",
+            "NAU"
+          ],
+          "KXNCAAFGAME-26OCT10MOREDAY": [
+            "DAY",
+            "MORE"
+          ],
+          "KXNCAAFGAME-26OCT10MVSUTXSO": [
+            "MVSU",
+            "TXSO"
+          ],
+          "KXNCAAFGAME-26OCT10NDSUUNLV": [
+            "NDSU",
+            "UNLV"
+          ],
+          "KXNCAAFGAME-26OCT10NEVUTEP": [
+            "NEV",
+            "UTEP"
+          ],
+          "KXNCAAFGAME-26OCT10ODUAPP": [
+            "APP",
+            "ODU"
+          ],
+          "KXNCAAFGAME-26OCT10PRINWAG": [
+            "PRIN",
+            "WAG"
+          ],
+          "KXNCAAFGAME-26OCT10RICEECU": [
+            "ECU",
+            "RICE"
+          ],
+          "KXNCAAFGAME-26OCT10RICHFOR": [
+            "FOR",
+            "RICH"
+          ],
+          "KXNCAAFGAME-26OCT10RMUMORG": [
+            "MORG",
+            "RMU"
+          ],
+          "KXNCAAFGAME-26OCT10SACBGSU": [
+            "BGSU",
+            "SAC"
+          ],
+          "KXNCAAFGAME-26OCT10SAMCHAT": [
+            "CHAT",
+            "SAM"
+          ],
+          "KXNCAAFGAME-26OCT10SCARFLA": [
+            "FLA",
+            "SCAR"
+          ],
+          "KXNCAAFGAME-26OCT10SCSTCHSO": [
+            "CHSO",
+            "SCST"
+          ],
+          "KXNCAAFGAME-26OCT10SDSUORST": [
+            "ORST",
+            "SDSU"
+          ],
+          "KXNCAAFGAME-26OCT10SELAUTRGV": [
+            "SELA",
+            "UTRGV"
+          ],
+          "KXNCAAFGAME-26OCT10SEMOLINW": [
+            "LINW",
+            "SEMO"
+          ],
+          "KXNCAAFGAME-26OCT10SIUSDAK": [
+            "SDAK",
+            "SIU"
+          ],
+          "KXNCAAFGAME-26OCT10SOUPV": [
+            "PV",
+            "SOU"
+          ],
+          "KXNCAAFGAME-26OCT10STANND": [
+            "ND",
+            "STAN"
+          ],
+          "KXNCAAFGAME-26OCT10STETUST": [
+            "STET",
+            "UST"
+          ],
+          "KXNCAAFGAME-26OCT10STNHSHU": [
+            "SHU",
+            "STNH"
+          ],
+          "KXNCAAFGAME-26OCT10STONTOWS": [
+            "STON",
+            "TOWS"
+          ],
+          "KXNCAAFGAME-26OCT10SYRUVA": [
+            "SYR",
+            "UVA"
+          ],
+          "KXNCAAFGAME-26OCT10TARLPEAY": [
+            "PEAY",
+            "TARL"
+          ],
+          "KXNCAAFGAME-26OCT10TENNARK": [
+            "ARK",
+            "TENN"
+          ],
+          "KXNCAAFGAME-26OCT10TEXOKLA": [
+            "OKLA",
+            "TEX"
+          ],
+          "KXNCAAFGAME-26OCT10TLSANAVY": [
+            "NAVY",
+            "TLSA"
+          ],
+          "KXNCAAFGAME-26OCT10TULNARMY": [
+            "ARMY",
+            "TULN"
+          ],
+          "KXNCAAFGAME-26OCT10TXAMMIZZ": [
+            "MIZZ",
+            "TXAM"
+          ],
+          "KXNCAAFGAME-26OCT10UABMEM": [
+            "MEM",
+            "UAB"
+          ],
+          "KXNCAAFGAME-26OCT10UCFOKST": [
+            "OKST",
+            "UCF"
+          ],
+          "KXNCAAFGAME-26OCT10UCLAORE": [
+            "ORE",
+            "UCLA"
+          ],
+          "KXNCAAFGAME-26OCT10UGAALA": [
+            "ALA",
+            "UGA"
+          ],
+          "KXNCAAFGAME-26OCT10ULLLT": [
+            "LT",
+            "ULL"
+          ],
+          "KXNCAAFGAME-26OCT10UNCOEWU": [
+            "EWU",
+            "UNCO"
+          ],
+          "KXNCAAFGAME-26OCT10UNCPITT": [
+            "PITT",
+            "UNC"
+          ],
+          "KXNCAAFGAME-26OCT10UNDUNI": [
+            "UND",
+            "UNI"
+          ],
+          "KXNCAAFGAME-26OCT10UNHNCAT": [
+            "NCAT",
+            "UNH"
+          ],
+          "KXNCAAFGAME-26OCT10USCPSU": [
+            "PSU",
+            "USC"
+          ],
+          "KXNCAAFGAME-26OCT10USDBUT": [
+            "BUT",
+            "USD"
+          ],
+          "KXNCAAFGAME-26OCT10UTMTNST": [
+            "TNST",
+            "UTM"
+          ],
+          "KXNCAAFGAME-26OCT10UTUPRST": [
+            "PRST",
+            "UTU"
+          ],
+          "KXNCAAFGAME-26OCT10UWGAEKY": [
+            "EKY",
+            "UWGA"
+          ],
+          "KXNCAAFGAME-26OCT10VTCAL": [
+            "CAL",
+            "VT"
+          ],
+          "KXNCAAFGAME-26OCT10WAKENCST": [
+            "NCST",
+            "WAKE"
+          ],
+          "KXNCAAFGAME-26OCT10WCUMER": [
+            "MER",
+            "WCU"
+          ],
+          "KXNCAAFGAME-26OCT10WMNCCU": [
+            "NCCU",
+            "WM"
+          ],
+          "KXNCAAFGAME-26OCT10WOFELON": [
+            "ELON",
+            "WOF"
+          ],
+          "KXNCAAFGAME-26OCT10YSUINST": [
+            "INST",
+            "YSU"
+          ]
+        },
+        "home_abbr": "MIZ",
+        "venue_team_codes": [
+          "MIZ",
+          "TA&M"
+        ]
+      },
+      "401856717": {
+        "away_abbr": "TEX",
+        "compared_team_code_sets": {
+          "KXNCAAFGAME-26OCT10AFANIU": [
+            "AFA",
+            "NIU"
+          ],
+          "KXNCAAFGAME-26OCT10ARIZWVU": [
+            "ARIZ",
+            "WVU"
+          ],
+          "KXNCAAFGAME-26OCT10BALLNW": [
+            "BALL",
+            "NW"
+          ],
+          "KXNCAAFGAME-26OCT10BRYBRWN": [
+            "BRWN",
+            "BRY"
+          ],
+          "KXNCAAFGAME-26OCT10BSUFRES": [
+            "BSU",
+            "FRES"
+          ],
+          "KXNCAAFGAME-26OCT10BUCKGTWN": [
+            "BUCK",
+            "GTWN"
+          ],
+          "KXNCAAFGAME-26OCT10BUFFTOL": [
+            "BUFF",
+            "TOL"
+          ],
+          "KXNCAAFGAME-26OCT10CARKAC": [
+            "AC",
+            "CARK"
+          ],
+          "KXNCAAFGAME-26OCT10CCARMRSH": [
+            "CCAR",
+            "MRSH"
+          ],
+          "KXNCAAFGAME-26OCT10CHARUNT": [
+            "CHAR",
+            "UNT"
+          ],
+          "KXNCAAFGAME-26OCT10CMUOHIO": [
+            "CMU",
+            "OHIO"
+          ],
+          "KXNCAAFGAME-26OCT10CONNTEM": [
+            "CONN",
+            "TEM"
+          ],
+          "KXNCAAFGAME-26OCT10COOKAAMU": [
+            "AAMU",
+            "COOK"
+          ],
+          "KXNCAAFGAME-26OCT10CPIDST": [
+            "CP",
+            "IDST"
+          ],
+          "KXNCAAFGAME-26OCT10DARTYALE": [
+            "DART",
+            "YALE"
+          ],
+          "KXNCAAFGAME-26OCT10DAVPRE": [
+            "DAV",
+            "PRE"
+          ],
+          "KXNCAAFGAME-26OCT10DRKEVALP": [
+            "DRKE",
+            "VALP"
+          ],
+          "KXNCAAFGAME-26OCT10DUKEGT": [
+            "DUKE",
+            "GT"
+          ],
+          "KXNCAAFGAME-26OCT10EIUWEBB": [
+            "EIU",
+            "WEBB"
+          ],
+          "KXNCAAFGAME-26OCT10EMUAKR": [
+            "AKR",
+            "EMU"
+          ],
+          "KXNCAAFGAME-26OCT10ETSUCIT": [
+            "CIT",
+            "ETSU"
+          ],
+          "KXNCAAFGAME-26OCT10FAMUALST": [
+            "ALST",
+            "FAMU"
+          ],
+          "KXNCAAFGAME-26OCT10FURTNTC": [
+            "FUR",
+            "TNTC"
+          ],
+          "KXNCAAFGAME-26OCT10HARVCOR": [
+            "COR",
+            "HARV"
+          ],
+          "KXNCAAFGAME-26OCT10HAWASU": [
+            "ASU",
+            "HAW"
+          ],
+          "KXNCAAFGAME-26OCT10HOUKSU": [
+            "HOU",
+            "KSU"
+          ],
+          "KXNCAAFGAME-26OCT10HOWPENN": [
+            "HOW",
+            "PENN"
+          ],
+          "KXNCAAFGAME-26OCT10IDHOWEB": [
+            "IDHO",
+            "WEB"
+          ],
+          "KXNCAAFGAME-26OCT10ILLMSU": [
+            "ILL",
+            "MSU"
+          ],
+          "KXNCAAFGAME-26OCT10INDNEB": [
+            "IND",
+            "NEB"
+          ],
+          "KXNCAAFGAME-26OCT10IWLAM": [
+            "IW",
+            "LAM"
+          ],
+          "KXNCAAFGAME-26OCT10JKSTGRAM": [
+            "GRAM",
+            "JKST"
+          ],
+          "KXNCAAFGAME-26OCT10JMUGASO": [
+            "GASO",
+            "JMU"
+          ],
+          "KXNCAAFGAME-26OCT10KENTWMU": [
+            "KENT",
+            "WMU"
+          ],
+          "KXNCAAFGAME-26OCT10KUUTAH": [
+            "KU",
+            "UTAH"
+          ],
+          "KXNCAAFGAME-26OCT10LIUDUQ": [
+            "DUQ",
+            "LIU"
+          ],
+          "KXNCAAFGAME-26OCT10LSUUK": [
+            "LSU",
+            "UK"
+          ],
+          "KXNCAAFGAME-26OCT10MDOSU": [
+            "MD",
+            "OSU"
+          ],
+          "KXNCAAFGAME-26OCT10MINNPUR": [
+            "MINN",
+            "PUR"
+          ],
+          "KXNCAAFGAME-26OCT10MISSVAN": [
+            "MISS",
+            "VAN"
+          ],
+          "KXNCAAFGAME-26OCT10MOHMASS": [
+            "MASS",
+            "MOH"
+          ],
+          "KXNCAAFGAME-26OCT10MONTNAU": [
+            "MONT",
+            "NAU"
+          ],
+          "KXNCAAFGAME-26OCT10MOREDAY": [
+            "DAY",
+            "MORE"
+          ],
+          "KXNCAAFGAME-26OCT10MVSUTXSO": [
+            "MVSU",
+            "TXSO"
+          ],
+          "KXNCAAFGAME-26OCT10NDSUUNLV": [
+            "NDSU",
+            "UNLV"
+          ],
+          "KXNCAAFGAME-26OCT10NEVUTEP": [
+            "NEV",
+            "UTEP"
+          ],
+          "KXNCAAFGAME-26OCT10ODUAPP": [
+            "APP",
+            "ODU"
+          ],
+          "KXNCAAFGAME-26OCT10PRINWAG": [
+            "PRIN",
+            "WAG"
+          ],
+          "KXNCAAFGAME-26OCT10RICEECU": [
+            "ECU",
+            "RICE"
+          ],
+          "KXNCAAFGAME-26OCT10RICHFOR": [
+            "FOR",
+            "RICH"
+          ],
+          "KXNCAAFGAME-26OCT10RMUMORG": [
+            "MORG",
+            "RMU"
+          ],
+          "KXNCAAFGAME-26OCT10SACBGSU": [
+            "BGSU",
+            "SAC"
+          ],
+          "KXNCAAFGAME-26OCT10SAMCHAT": [
+            "CHAT",
+            "SAM"
+          ],
+          "KXNCAAFGAME-26OCT10SCARFLA": [
+            "FLA",
+            "SCAR"
+          ],
+          "KXNCAAFGAME-26OCT10SCSTCHSO": [
+            "CHSO",
+            "SCST"
+          ],
+          "KXNCAAFGAME-26OCT10SDSUORST": [
+            "ORST",
+            "SDSU"
+          ],
+          "KXNCAAFGAME-26OCT10SELAUTRGV": [
+            "SELA",
+            "UTRGV"
+          ],
+          "KXNCAAFGAME-26OCT10SEMOLINW": [
+            "LINW",
+            "SEMO"
+          ],
+          "KXNCAAFGAME-26OCT10SIUSDAK": [
+            "SDAK",
+            "SIU"
+          ],
+          "KXNCAAFGAME-26OCT10SOUPV": [
+            "PV",
+            "SOU"
+          ],
+          "KXNCAAFGAME-26OCT10STANND": [
+            "ND",
+            "STAN"
+          ],
+          "KXNCAAFGAME-26OCT10STETUST": [
+            "STET",
+            "UST"
+          ],
+          "KXNCAAFGAME-26OCT10STNHSHU": [
+            "SHU",
+            "STNH"
+          ],
+          "KXNCAAFGAME-26OCT10STONTOWS": [
+            "STON",
+            "TOWS"
+          ],
+          "KXNCAAFGAME-26OCT10SYRUVA": [
+            "SYR",
+            "UVA"
+          ],
+          "KXNCAAFGAME-26OCT10TARLPEAY": [
+            "PEAY",
+            "TARL"
+          ],
+          "KXNCAAFGAME-26OCT10TENNARK": [
+            "ARK",
+            "TENN"
+          ],
+          "KXNCAAFGAME-26OCT10TEXOKLA": [
+            "OKLA",
+            "TEX"
+          ],
+          "KXNCAAFGAME-26OCT10TLSANAVY": [
+            "NAVY",
+            "TLSA"
+          ],
+          "KXNCAAFGAME-26OCT10TULNARMY": [
+            "ARMY",
+            "TULN"
+          ],
+          "KXNCAAFGAME-26OCT10TXAMMIZZ": [
+            "MIZZ",
+            "TXAM"
+          ],
+          "KXNCAAFGAME-26OCT10UABMEM": [
+            "MEM",
+            "UAB"
+          ],
+          "KXNCAAFGAME-26OCT10UCFOKST": [
+            "OKST",
+            "UCF"
+          ],
+          "KXNCAAFGAME-26OCT10UCLAORE": [
+            "ORE",
+            "UCLA"
+          ],
+          "KXNCAAFGAME-26OCT10UGAALA": [
+            "ALA",
+            "UGA"
+          ],
+          "KXNCAAFGAME-26OCT10ULLLT": [
+            "LT",
+            "ULL"
+          ],
+          "KXNCAAFGAME-26OCT10UNCOEWU": [
+            "EWU",
+            "UNCO"
+          ],
+          "KXNCAAFGAME-26OCT10UNCPITT": [
+            "PITT",
+            "UNC"
+          ],
+          "KXNCAAFGAME-26OCT10UNDUNI": [
+            "UND",
+            "UNI"
+          ],
+          "KXNCAAFGAME-26OCT10UNHNCAT": [
+            "NCAT",
+            "UNH"
+          ],
+          "KXNCAAFGAME-26OCT10USCPSU": [
+            "PSU",
+            "USC"
+          ],
+          "KXNCAAFGAME-26OCT10USDBUT": [
+            "BUT",
+            "USD"
+          ],
+          "KXNCAAFGAME-26OCT10UTMTNST": [
+            "TNST",
+            "UTM"
+          ],
+          "KXNCAAFGAME-26OCT10UTUPRST": [
+            "PRST",
+            "UTU"
+          ],
+          "KXNCAAFGAME-26OCT10UWGAEKY": [
+            "EKY",
+            "UWGA"
+          ],
+          "KXNCAAFGAME-26OCT10VTCAL": [
+            "CAL",
+            "VT"
+          ],
+          "KXNCAAFGAME-26OCT10WAKENCST": [
+            "NCST",
+            "WAKE"
+          ],
+          "KXNCAAFGAME-26OCT10WCUMER": [
+            "MER",
+            "WCU"
+          ],
+          "KXNCAAFGAME-26OCT10WMNCCU": [
+            "NCCU",
+            "WM"
+          ],
+          "KXNCAAFGAME-26OCT10WOFELON": [
+            "ELON",
+            "WOF"
+          ],
+          "KXNCAAFGAME-26OCT10YSUINST": [
+            "INST",
+            "YSU"
+          ]
+        },
+        "home_abbr": "OU",
+        "venue_team_codes": [
+          "OU",
+          "TEX"
+        ]
+      },
+      "401858260": {
+        "away_abbr": "WAKE",
+        "compared_team_code_sets": {
+          "KXNCAAFGAME-26OCT10AFANIU": [
+            "AFA",
+            "NIU"
+          ],
+          "KXNCAAFGAME-26OCT10ARIZWVU": [
+            "ARIZ",
+            "WVU"
+          ],
+          "KXNCAAFGAME-26OCT10BALLNW": [
+            "BALL",
+            "NW"
+          ],
+          "KXNCAAFGAME-26OCT10BRYBRWN": [
+            "BRWN",
+            "BRY"
+          ],
+          "KXNCAAFGAME-26OCT10BSUFRES": [
+            "BSU",
+            "FRES"
+          ],
+          "KXNCAAFGAME-26OCT10BUCKGTWN": [
+            "BUCK",
+            "GTWN"
+          ],
+          "KXNCAAFGAME-26OCT10BUFFTOL": [
+            "BUFF",
+            "TOL"
+          ],
+          "KXNCAAFGAME-26OCT10CARKAC": [
+            "AC",
+            "CARK"
+          ],
+          "KXNCAAFGAME-26OCT10CCARMRSH": [
+            "CCAR",
+            "MRSH"
+          ],
+          "KXNCAAFGAME-26OCT10CHARUNT": [
+            "CHAR",
+            "UNT"
+          ],
+          "KXNCAAFGAME-26OCT10CMUOHIO": [
+            "CMU",
+            "OHIO"
+          ],
+          "KXNCAAFGAME-26OCT10CONNTEM": [
+            "CONN",
+            "TEM"
+          ],
+          "KXNCAAFGAME-26OCT10COOKAAMU": [
+            "AAMU",
+            "COOK"
+          ],
+          "KXNCAAFGAME-26OCT10CPIDST": [
+            "CP",
+            "IDST"
+          ],
+          "KXNCAAFGAME-26OCT10DARTYALE": [
+            "DART",
+            "YALE"
+          ],
+          "KXNCAAFGAME-26OCT10DAVPRE": [
+            "DAV",
+            "PRE"
+          ],
+          "KXNCAAFGAME-26OCT10DRKEVALP": [
+            "DRKE",
+            "VALP"
+          ],
+          "KXNCAAFGAME-26OCT10DUKEGT": [
+            "DUKE",
+            "GT"
+          ],
+          "KXNCAAFGAME-26OCT10EIUWEBB": [
+            "EIU",
+            "WEBB"
+          ],
+          "KXNCAAFGAME-26OCT10EMUAKR": [
+            "AKR",
+            "EMU"
+          ],
+          "KXNCAAFGAME-26OCT10ETSUCIT": [
+            "CIT",
+            "ETSU"
+          ],
+          "KXNCAAFGAME-26OCT10FAMUALST": [
+            "ALST",
+            "FAMU"
+          ],
+          "KXNCAAFGAME-26OCT10FURTNTC": [
+            "FUR",
+            "TNTC"
+          ],
+          "KXNCAAFGAME-26OCT10HARVCOR": [
+            "COR",
+            "HARV"
+          ],
+          "KXNCAAFGAME-26OCT10HAWASU": [
+            "ASU",
+            "HAW"
+          ],
+          "KXNCAAFGAME-26OCT10HOUKSU": [
+            "HOU",
+            "KSU"
+          ],
+          "KXNCAAFGAME-26OCT10HOWPENN": [
+            "HOW",
+            "PENN"
+          ],
+          "KXNCAAFGAME-26OCT10IDHOWEB": [
+            "IDHO",
+            "WEB"
+          ],
+          "KXNCAAFGAME-26OCT10ILLMSU": [
+            "ILL",
+            "MSU"
+          ],
+          "KXNCAAFGAME-26OCT10INDNEB": [
+            "IND",
+            "NEB"
+          ],
+          "KXNCAAFGAME-26OCT10IWLAM": [
+            "IW",
+            "LAM"
+          ],
+          "KXNCAAFGAME-26OCT10JKSTGRAM": [
+            "GRAM",
+            "JKST"
+          ],
+          "KXNCAAFGAME-26OCT10JMUGASO": [
+            "GASO",
+            "JMU"
+          ],
+          "KXNCAAFGAME-26OCT10KENTWMU": [
+            "KENT",
+            "WMU"
+          ],
+          "KXNCAAFGAME-26OCT10KUUTAH": [
+            "KU",
+            "UTAH"
+          ],
+          "KXNCAAFGAME-26OCT10LIUDUQ": [
+            "DUQ",
+            "LIU"
+          ],
+          "KXNCAAFGAME-26OCT10LSUUK": [
+            "LSU",
+            "UK"
+          ],
+          "KXNCAAFGAME-26OCT10MDOSU": [
+            "MD",
+            "OSU"
+          ],
+          "KXNCAAFGAME-26OCT10MINNPUR": [
+            "MINN",
+            "PUR"
+          ],
+          "KXNCAAFGAME-26OCT10MISSVAN": [
+            "MISS",
+            "VAN"
+          ],
+          "KXNCAAFGAME-26OCT10MOHMASS": [
+            "MASS",
+            "MOH"
+          ],
+          "KXNCAAFGAME-26OCT10MONTNAU": [
+            "MONT",
+            "NAU"
+          ],
+          "KXNCAAFGAME-26OCT10MOREDAY": [
+            "DAY",
+            "MORE"
+          ],
+          "KXNCAAFGAME-26OCT10MVSUTXSO": [
+            "MVSU",
+            "TXSO"
+          ],
+          "KXNCAAFGAME-26OCT10NDSUUNLV": [
+            "NDSU",
+            "UNLV"
+          ],
+          "KXNCAAFGAME-26OCT10NEVUTEP": [
+            "NEV",
+            "UTEP"
+          ],
+          "KXNCAAFGAME-26OCT10ODUAPP": [
+            "APP",
+            "ODU"
+          ],
+          "KXNCAAFGAME-26OCT10PRINWAG": [
+            "PRIN",
+            "WAG"
+          ],
+          "KXNCAAFGAME-26OCT10RICEECU": [
+            "ECU",
+            "RICE"
+          ],
+          "KXNCAAFGAME-26OCT10RICHFOR": [
+            "FOR",
+            "RICH"
+          ],
+          "KXNCAAFGAME-26OCT10RMUMORG": [
+            "MORG",
+            "RMU"
+          ],
+          "KXNCAAFGAME-26OCT10SACBGSU": [
+            "BGSU",
+            "SAC"
+          ],
+          "KXNCAAFGAME-26OCT10SAMCHAT": [
+            "CHAT",
+            "SAM"
+          ],
+          "KXNCAAFGAME-26OCT10SCARFLA": [
+            "FLA",
+            "SCAR"
+          ],
+          "KXNCAAFGAME-26OCT10SCSTCHSO": [
+            "CHSO",
+            "SCST"
+          ],
+          "KXNCAAFGAME-26OCT10SDSUORST": [
+            "ORST",
+            "SDSU"
+          ],
+          "KXNCAAFGAME-26OCT10SELAUTRGV": [
+            "SELA",
+            "UTRGV"
+          ],
+          "KXNCAAFGAME-26OCT10SEMOLINW": [
+            "LINW",
+            "SEMO"
+          ],
+          "KXNCAAFGAME-26OCT10SIUSDAK": [
+            "SDAK",
+            "SIU"
+          ],
+          "KXNCAAFGAME-26OCT10SOUPV": [
+            "PV",
+            "SOU"
+          ],
+          "KXNCAAFGAME-26OCT10STANND": [
+            "ND",
+            "STAN"
+          ],
+          "KXNCAAFGAME-26OCT10STETUST": [
+            "STET",
+            "UST"
+          ],
+          "KXNCAAFGAME-26OCT10STNHSHU": [
+            "SHU",
+            "STNH"
+          ],
+          "KXNCAAFGAME-26OCT10STONTOWS": [
+            "STON",
+            "TOWS"
+          ],
+          "KXNCAAFGAME-26OCT10SYRUVA": [
+            "SYR",
+            "UVA"
+          ],
+          "KXNCAAFGAME-26OCT10TARLPEAY": [
+            "PEAY",
+            "TARL"
+          ],
+          "KXNCAAFGAME-26OCT10TENNARK": [
+            "ARK",
+            "TENN"
+          ],
+          "KXNCAAFGAME-26OCT10TEXOKLA": [
+            "OKLA",
+            "TEX"
+          ],
+          "KXNCAAFGAME-26OCT10TLSANAVY": [
+            "NAVY",
+            "TLSA"
+          ],
+          "KXNCAAFGAME-26OCT10TULNARMY": [
+            "ARMY",
+            "TULN"
+          ],
+          "KXNCAAFGAME-26OCT10TXAMMIZZ": [
+            "MIZZ",
+            "TXAM"
+          ],
+          "KXNCAAFGAME-26OCT10UABMEM": [
+            "MEM",
+            "UAB"
+          ],
+          "KXNCAAFGAME-26OCT10UCFOKST": [
+            "OKST",
+            "UCF"
+          ],
+          "KXNCAAFGAME-26OCT10UCLAORE": [
+            "ORE",
+            "UCLA"
+          ],
+          "KXNCAAFGAME-26OCT10UGAALA": [
+            "ALA",
+            "UGA"
+          ],
+          "KXNCAAFGAME-26OCT10ULLLT": [
+            "LT",
+            "ULL"
+          ],
+          "KXNCAAFGAME-26OCT10UNCOEWU": [
+            "EWU",
+            "UNCO"
+          ],
+          "KXNCAAFGAME-26OCT10UNCPITT": [
+            "PITT",
+            "UNC"
+          ],
+          "KXNCAAFGAME-26OCT10UNDUNI": [
+            "UND",
+            "UNI"
+          ],
+          "KXNCAAFGAME-26OCT10UNHNCAT": [
+            "NCAT",
+            "UNH"
+          ],
+          "KXNCAAFGAME-26OCT10USCPSU": [
+            "PSU",
+            "USC"
+          ],
+          "KXNCAAFGAME-26OCT10USDBUT": [
+            "BUT",
+            "USD"
+          ],
+          "KXNCAAFGAME-26OCT10UTMTNST": [
+            "TNST",
+            "UTM"
+          ],
+          "KXNCAAFGAME-26OCT10UTUPRST": [
+            "PRST",
+            "UTU"
+          ],
+          "KXNCAAFGAME-26OCT10UWGAEKY": [
+            "EKY",
+            "UWGA"
+          ],
+          "KXNCAAFGAME-26OCT10VTCAL": [
+            "CAL",
+            "VT"
+          ],
+          "KXNCAAFGAME-26OCT10WAKENCST": [
+            "NCST",
+            "WAKE"
+          ],
+          "KXNCAAFGAME-26OCT10WCUMER": [
+            "MER",
+            "WCU"
+          ],
+          "KXNCAAFGAME-26OCT10WMNCCU": [
+            "NCCU",
+            "WM"
+          ],
+          "KXNCAAFGAME-26OCT10WOFELON": [
+            "ELON",
+            "WOF"
+          ],
+          "KXNCAAFGAME-26OCT10YSUINST": [
+            "INST",
+            "YSU"
+          ]
+        },
+        "home_abbr": "NCSU",
+        "venue_team_codes": [
+          "NCSU",
+          "WAKE"
+        ]
+      },
+      "401858481": {
+        "away_abbr": "IU",
+        "compared_team_code_sets": {
+          "KXNCAAFGAME-26OCT10AFANIU": [
+            "AFA",
+            "NIU"
+          ],
+          "KXNCAAFGAME-26OCT10ARIZWVU": [
+            "ARIZ",
+            "WVU"
+          ],
+          "KXNCAAFGAME-26OCT10BALLNW": [
+            "BALL",
+            "NW"
+          ],
+          "KXNCAAFGAME-26OCT10BRYBRWN": [
+            "BRWN",
+            "BRY"
+          ],
+          "KXNCAAFGAME-26OCT10BSUFRES": [
+            "BSU",
+            "FRES"
+          ],
+          "KXNCAAFGAME-26OCT10BUCKGTWN": [
+            "BUCK",
+            "GTWN"
+          ],
+          "KXNCAAFGAME-26OCT10BUFFTOL": [
+            "BUFF",
+            "TOL"
+          ],
+          "KXNCAAFGAME-26OCT10CARKAC": [
+            "AC",
+            "CARK"
+          ],
+          "KXNCAAFGAME-26OCT10CCARMRSH": [
+            "CCAR",
+            "MRSH"
+          ],
+          "KXNCAAFGAME-26OCT10CHARUNT": [
+            "CHAR",
+            "UNT"
+          ],
+          "KXNCAAFGAME-26OCT10CMUOHIO": [
+            "CMU",
+            "OHIO"
+          ],
+          "KXNCAAFGAME-26OCT10CONNTEM": [
+            "CONN",
+            "TEM"
+          ],
+          "KXNCAAFGAME-26OCT10COOKAAMU": [
+            "AAMU",
+            "COOK"
+          ],
+          "KXNCAAFGAME-26OCT10CPIDST": [
+            "CP",
+            "IDST"
+          ],
+          "KXNCAAFGAME-26OCT10DARTYALE": [
+            "DART",
+            "YALE"
+          ],
+          "KXNCAAFGAME-26OCT10DAVPRE": [
+            "DAV",
+            "PRE"
+          ],
+          "KXNCAAFGAME-26OCT10DRKEVALP": [
+            "DRKE",
+            "VALP"
+          ],
+          "KXNCAAFGAME-26OCT10DUKEGT": [
+            "DUKE",
+            "GT"
+          ],
+          "KXNCAAFGAME-26OCT10EIUWEBB": [
+            "EIU",
+            "WEBB"
+          ],
+          "KXNCAAFGAME-26OCT10EMUAKR": [
+            "AKR",
+            "EMU"
+          ],
+          "KXNCAAFGAME-26OCT10ETSUCIT": [
+            "CIT",
+            "ETSU"
+          ],
+          "KXNCAAFGAME-26OCT10FAMUALST": [
+            "ALST",
+            "FAMU"
+          ],
+          "KXNCAAFGAME-26OCT10FURTNTC": [
+            "FUR",
+            "TNTC"
+          ],
+          "KXNCAAFGAME-26OCT10HARVCOR": [
+            "COR",
+            "HARV"
+          ],
+          "KXNCAAFGAME-26OCT10HAWASU": [
+            "ASU",
+            "HAW"
+          ],
+          "KXNCAAFGAME-26OCT10HOUKSU": [
+            "HOU",
+            "KSU"
+          ],
+          "KXNCAAFGAME-26OCT10HOWPENN": [
+            "HOW",
+            "PENN"
+          ],
+          "KXNCAAFGAME-26OCT10IDHOWEB": [
+            "IDHO",
+            "WEB"
+          ],
+          "KXNCAAFGAME-26OCT10ILLMSU": [
+            "ILL",
+            "MSU"
+          ],
+          "KXNCAAFGAME-26OCT10INDNEB": [
+            "IND",
+            "NEB"
+          ],
+          "KXNCAAFGAME-26OCT10IWLAM": [
+            "IW",
+            "LAM"
+          ],
+          "KXNCAAFGAME-26OCT10JKSTGRAM": [
+            "GRAM",
+            "JKST"
+          ],
+          "KXNCAAFGAME-26OCT10JMUGASO": [
+            "GASO",
+            "JMU"
+          ],
+          "KXNCAAFGAME-26OCT10KENTWMU": [
+            "KENT",
+            "WMU"
+          ],
+          "KXNCAAFGAME-26OCT10KUUTAH": [
+            "KU",
+            "UTAH"
+          ],
+          "KXNCAAFGAME-26OCT10LIUDUQ": [
+            "DUQ",
+            "LIU"
+          ],
+          "KXNCAAFGAME-26OCT10LSUUK": [
+            "LSU",
+            "UK"
+          ],
+          "KXNCAAFGAME-26OCT10MDOSU": [
+            "MD",
+            "OSU"
+          ],
+          "KXNCAAFGAME-26OCT10MINNPUR": [
+            "MINN",
+            "PUR"
+          ],
+          "KXNCAAFGAME-26OCT10MISSVAN": [
+            "MISS",
+            "VAN"
+          ],
+          "KXNCAAFGAME-26OCT10MOHMASS": [
+            "MASS",
+            "MOH"
+          ],
+          "KXNCAAFGAME-26OCT10MONTNAU": [
+            "MONT",
+            "NAU"
+          ],
+          "KXNCAAFGAME-26OCT10MOREDAY": [
+            "DAY",
+            "MORE"
+          ],
+          "KXNCAAFGAME-26OCT10MVSUTXSO": [
+            "MVSU",
+            "TXSO"
+          ],
+          "KXNCAAFGAME-26OCT10NDSUUNLV": [
+            "NDSU",
+            "UNLV"
+          ],
+          "KXNCAAFGAME-26OCT10NEVUTEP": [
+            "NEV",
+            "UTEP"
+          ],
+          "KXNCAAFGAME-26OCT10ODUAPP": [
+            "APP",
+            "ODU"
+          ],
+          "KXNCAAFGAME-26OCT10PRINWAG": [
+            "PRIN",
+            "WAG"
+          ],
+          "KXNCAAFGAME-26OCT10RICEECU": [
+            "ECU",
+            "RICE"
+          ],
+          "KXNCAAFGAME-26OCT10RICHFOR": [
+            "FOR",
+            "RICH"
+          ],
+          "KXNCAAFGAME-26OCT10RMUMORG": [
+            "MORG",
+            "RMU"
+          ],
+          "KXNCAAFGAME-26OCT10SACBGSU": [
+            "BGSU",
+            "SAC"
+          ],
+          "KXNCAAFGAME-26OCT10SAMCHAT": [
+            "CHAT",
+            "SAM"
+          ],
+          "KXNCAAFGAME-26OCT10SCARFLA": [
+            "FLA",
+            "SCAR"
+          ],
+          "KXNCAAFGAME-26OCT10SCSTCHSO": [
+            "CHSO",
+            "SCST"
+          ],
+          "KXNCAAFGAME-26OCT10SDSUORST": [
+            "ORST",
+            "SDSU"
+          ],
+          "KXNCAAFGAME-26OCT10SELAUTRGV": [
+            "SELA",
+            "UTRGV"
+          ],
+          "KXNCAAFGAME-26OCT10SEMOLINW": [
+            "LINW",
+            "SEMO"
+          ],
+          "KXNCAAFGAME-26OCT10SIUSDAK": [
+            "SDAK",
+            "SIU"
+          ],
+          "KXNCAAFGAME-26OCT10SOUPV": [
+            "PV",
+            "SOU"
+          ],
+          "KXNCAAFGAME-26OCT10STANND": [
+            "ND",
+            "STAN"
+          ],
+          "KXNCAAFGAME-26OCT10STETUST": [
+            "STET",
+            "UST"
+          ],
+          "KXNCAAFGAME-26OCT10STNHSHU": [
+            "SHU",
+            "STNH"
+          ],
+          "KXNCAAFGAME-26OCT10STONTOWS": [
+            "STON",
+            "TOWS"
+          ],
+          "KXNCAAFGAME-26OCT10SYRUVA": [
+            "SYR",
+            "UVA"
+          ],
+          "KXNCAAFGAME-26OCT10TARLPEAY": [
+            "PEAY",
+            "TARL"
+          ],
+          "KXNCAAFGAME-26OCT10TENNARK": [
+            "ARK",
+            "TENN"
+          ],
+          "KXNCAAFGAME-26OCT10TEXOKLA": [
+            "OKLA",
+            "TEX"
+          ],
+          "KXNCAAFGAME-26OCT10TLSANAVY": [
+            "NAVY",
+            "TLSA"
+          ],
+          "KXNCAAFGAME-26OCT10TULNARMY": [
+            "ARMY",
+            "TULN"
+          ],
+          "KXNCAAFGAME-26OCT10TXAMMIZZ": [
+            "MIZZ",
+            "TXAM"
+          ],
+          "KXNCAAFGAME-26OCT10UABMEM": [
+            "MEM",
+            "UAB"
+          ],
+          "KXNCAAFGAME-26OCT10UCFOKST": [
+            "OKST",
+            "UCF"
+          ],
+          "KXNCAAFGAME-26OCT10UCLAORE": [
+            "ORE",
+            "UCLA"
+          ],
+          "KXNCAAFGAME-26OCT10UGAALA": [
+            "ALA",
+            "UGA"
+          ],
+          "KXNCAAFGAME-26OCT10ULLLT": [
+            "LT",
+            "ULL"
+          ],
+          "KXNCAAFGAME-26OCT10UNCOEWU": [
+            "EWU",
+            "UNCO"
+          ],
+          "KXNCAAFGAME-26OCT10UNCPITT": [
+            "PITT",
+            "UNC"
+          ],
+          "KXNCAAFGAME-26OCT10UNDUNI": [
+            "UND",
+            "UNI"
+          ],
+          "KXNCAAFGAME-26OCT10UNHNCAT": [
+            "NCAT",
+            "UNH"
+          ],
+          "KXNCAAFGAME-26OCT10USCPSU": [
+            "PSU",
+            "USC"
+          ],
+          "KXNCAAFGAME-26OCT10USDBUT": [
+            "BUT",
+            "USD"
+          ],
+          "KXNCAAFGAME-26OCT10UTMTNST": [
+            "TNST",
+            "UTM"
+          ],
+          "KXNCAAFGAME-26OCT10UTUPRST": [
+            "PRST",
+            "UTU"
+          ],
+          "KXNCAAFGAME-26OCT10UWGAEKY": [
+            "EKY",
+            "UWGA"
+          ],
+          "KXNCAAFGAME-26OCT10VTCAL": [
+            "CAL",
+            "VT"
+          ],
+          "KXNCAAFGAME-26OCT10WAKENCST": [
+            "NCST",
+            "WAKE"
+          ],
+          "KXNCAAFGAME-26OCT10WCUMER": [
+            "MER",
+            "WCU"
+          ],
+          "KXNCAAFGAME-26OCT10WMNCCU": [
+            "NCCU",
+            "WM"
+          ],
+          "KXNCAAFGAME-26OCT10WOFELON": [
+            "ELON",
+            "WOF"
+          ],
+          "KXNCAAFGAME-26OCT10YSUINST": [
+            "INST",
+            "YSU"
+          ]
+        },
+        "home_abbr": "NEB",
+        "venue_team_codes": [
+          "IU",
+          "NEB"
+        ]
+      },
+      "401858482": {
+        "away_abbr": "BALL",
+        "compared_team_code_sets": {
+          "KXNCAAFGAME-26OCT10AFANIU": [
+            "AFA",
+            "NIU"
+          ],
+          "KXNCAAFGAME-26OCT10ARIZWVU": [
+            "ARIZ",
+            "WVU"
+          ],
+          "KXNCAAFGAME-26OCT10BALLNW": [
+            "BALL",
+            "NW"
+          ],
+          "KXNCAAFGAME-26OCT10BRYBRWN": [
+            "BRWN",
+            "BRY"
+          ],
+          "KXNCAAFGAME-26OCT10BSUFRES": [
+            "BSU",
+            "FRES"
+          ],
+          "KXNCAAFGAME-26OCT10BUCKGTWN": [
+            "BUCK",
+            "GTWN"
+          ],
+          "KXNCAAFGAME-26OCT10BUFFTOL": [
+            "BUFF",
+            "TOL"
+          ],
+          "KXNCAAFGAME-26OCT10CARKAC": [
+            "AC",
+            "CARK"
+          ],
+          "KXNCAAFGAME-26OCT10CCARMRSH": [
+            "CCAR",
+            "MRSH"
+          ],
+          "KXNCAAFGAME-26OCT10CHARUNT": [
+            "CHAR",
+            "UNT"
+          ],
+          "KXNCAAFGAME-26OCT10CMUOHIO": [
+            "CMU",
+            "OHIO"
+          ],
+          "KXNCAAFGAME-26OCT10CONNTEM": [
+            "CONN",
+            "TEM"
+          ],
+          "KXNCAAFGAME-26OCT10COOKAAMU": [
+            "AAMU",
+            "COOK"
+          ],
+          "KXNCAAFGAME-26OCT10CPIDST": [
+            "CP",
+            "IDST"
+          ],
+          "KXNCAAFGAME-26OCT10DARTYALE": [
+            "DART",
+            "YALE"
+          ],
+          "KXNCAAFGAME-26OCT10DAVPRE": [
+            "DAV",
+            "PRE"
+          ],
+          "KXNCAAFGAME-26OCT10DRKEVALP": [
+            "DRKE",
+            "VALP"
+          ],
+          "KXNCAAFGAME-26OCT10DUKEGT": [
+            "DUKE",
+            "GT"
+          ],
+          "KXNCAAFGAME-26OCT10EIUWEBB": [
+            "EIU",
+            "WEBB"
+          ],
+          "KXNCAAFGAME-26OCT10EMUAKR": [
+            "AKR",
+            "EMU"
+          ],
+          "KXNCAAFGAME-26OCT10ETSUCIT": [
+            "CIT",
+            "ETSU"
+          ],
+          "KXNCAAFGAME-26OCT10FAMUALST": [
+            "ALST",
+            "FAMU"
+          ],
+          "KXNCAAFGAME-26OCT10FURTNTC": [
+            "FUR",
+            "TNTC"
+          ],
+          "KXNCAAFGAME-26OCT10HARVCOR": [
+            "COR",
+            "HARV"
+          ],
+          "KXNCAAFGAME-26OCT10HAWASU": [
+            "ASU",
+            "HAW"
+          ],
+          "KXNCAAFGAME-26OCT10HOUKSU": [
+            "HOU",
+            "KSU"
+          ],
+          "KXNCAAFGAME-26OCT10HOWPENN": [
+            "HOW",
+            "PENN"
+          ],
+          "KXNCAAFGAME-26OCT10IDHOWEB": [
+            "IDHO",
+            "WEB"
+          ],
+          "KXNCAAFGAME-26OCT10ILLMSU": [
+            "ILL",
+            "MSU"
+          ],
+          "KXNCAAFGAME-26OCT10INDNEB": [
+            "IND",
+            "NEB"
+          ],
+          "KXNCAAFGAME-26OCT10IWLAM": [
+            "IW",
+            "LAM"
+          ],
+          "KXNCAAFGAME-26OCT10JKSTGRAM": [
+            "GRAM",
+            "JKST"
+          ],
+          "KXNCAAFGAME-26OCT10JMUGASO": [
+            "GASO",
+            "JMU"
+          ],
+          "KXNCAAFGAME-26OCT10KENTWMU": [
+            "KENT",
+            "WMU"
+          ],
+          "KXNCAAFGAME-26OCT10KUUTAH": [
+            "KU",
+            "UTAH"
+          ],
+          "KXNCAAFGAME-26OCT10LIUDUQ": [
+            "DUQ",
+            "LIU"
+          ],
+          "KXNCAAFGAME-26OCT10LSUUK": [
+            "LSU",
+            "UK"
+          ],
+          "KXNCAAFGAME-26OCT10MDOSU": [
+            "MD",
+            "OSU"
+          ],
+          "KXNCAAFGAME-26OCT10MINNPUR": [
+            "MINN",
+            "PUR"
+          ],
+          "KXNCAAFGAME-26OCT10MISSVAN": [
+            "MISS",
+            "VAN"
+          ],
+          "KXNCAAFGAME-26OCT10MOHMASS": [
+            "MASS",
+            "MOH"
+          ],
+          "KXNCAAFGAME-26OCT10MONTNAU": [
+            "MONT",
+            "NAU"
+          ],
+          "KXNCAAFGAME-26OCT10MOREDAY": [
+            "DAY",
+            "MORE"
+          ],
+          "KXNCAAFGAME-26OCT10MVSUTXSO": [
+            "MVSU",
+            "TXSO"
+          ],
+          "KXNCAAFGAME-26OCT10NDSUUNLV": [
+            "NDSU",
+            "UNLV"
+          ],
+          "KXNCAAFGAME-26OCT10NEVUTEP": [
+            "NEV",
+            "UTEP"
+          ],
+          "KXNCAAFGAME-26OCT10ODUAPP": [
+            "APP",
+            "ODU"
+          ],
+          "KXNCAAFGAME-26OCT10PRINWAG": [
+            "PRIN",
+            "WAG"
+          ],
+          "KXNCAAFGAME-26OCT10RICEECU": [
+            "ECU",
+            "RICE"
+          ],
+          "KXNCAAFGAME-26OCT10RICHFOR": [
+            "FOR",
+            "RICH"
+          ],
+          "KXNCAAFGAME-26OCT10RMUMORG": [
+            "MORG",
+            "RMU"
+          ],
+          "KXNCAAFGAME-26OCT10SACBGSU": [
+            "BGSU",
+            "SAC"
+          ],
+          "KXNCAAFGAME-26OCT10SAMCHAT": [
+            "CHAT",
+            "SAM"
+          ],
+          "KXNCAAFGAME-26OCT10SCARFLA": [
+            "FLA",
+            "SCAR"
+          ],
+          "KXNCAAFGAME-26OCT10SCSTCHSO": [
+            "CHSO",
+            "SCST"
+          ],
+          "KXNCAAFGAME-26OCT10SDSUORST": [
+            "ORST",
+            "SDSU"
+          ],
+          "KXNCAAFGAME-26OCT10SELAUTRGV": [
+            "SELA",
+            "UTRGV"
+          ],
+          "KXNCAAFGAME-26OCT10SEMOLINW": [
+            "LINW",
+            "SEMO"
+          ],
+          "KXNCAAFGAME-26OCT10SIUSDAK": [
+            "SDAK",
+            "SIU"
+          ],
+          "KXNCAAFGAME-26OCT10SOUPV": [
+            "PV",
+            "SOU"
+          ],
+          "KXNCAAFGAME-26OCT10STANND": [
+            "ND",
+            "STAN"
+          ],
+          "KXNCAAFGAME-26OCT10STETUST": [
+            "STET",
+            "UST"
+          ],
+          "KXNCAAFGAME-26OCT10STNHSHU": [
+            "SHU",
+            "STNH"
+          ],
+          "KXNCAAFGAME-26OCT10STONTOWS": [
+            "STON",
+            "TOWS"
+          ],
+          "KXNCAAFGAME-26OCT10SYRUVA": [
+            "SYR",
+            "UVA"
+          ],
+          "KXNCAAFGAME-26OCT10TARLPEAY": [
+            "PEAY",
+            "TARL"
+          ],
+          "KXNCAAFGAME-26OCT10TENNARK": [
+            "ARK",
+            "TENN"
+          ],
+          "KXNCAAFGAME-26OCT10TEXOKLA": [
+            "OKLA",
+            "TEX"
+          ],
+          "KXNCAAFGAME-26OCT10TLSANAVY": [
+            "NAVY",
+            "TLSA"
+          ],
+          "KXNCAAFGAME-26OCT10TULNARMY": [
+            "ARMY",
+            "TULN"
+          ],
+          "KXNCAAFGAME-26OCT10TXAMMIZZ": [
+            "MIZZ",
+            "TXAM"
+          ],
+          "KXNCAAFGAME-26OCT10UABMEM": [
+            "MEM",
+            "UAB"
+          ],
+          "KXNCAAFGAME-26OCT10UCFOKST": [
+            "OKST",
+            "UCF"
+          ],
+          "KXNCAAFGAME-26OCT10UCLAORE": [
+            "ORE",
+            "UCLA"
+          ],
+          "KXNCAAFGAME-26OCT10UGAALA": [
+            "ALA",
+            "UGA"
+          ],
+          "KXNCAAFGAME-26OCT10ULLLT": [
+            "LT",
+            "ULL"
+          ],
+          "KXNCAAFGAME-26OCT10UNCOEWU": [
+            "EWU",
+            "UNCO"
+          ],
+          "KXNCAAFGAME-26OCT10UNCPITT": [
+            "PITT",
+            "UNC"
+          ],
+          "KXNCAAFGAME-26OCT10UNDUNI": [
+            "UND",
+            "UNI"
+          ],
+          "KXNCAAFGAME-26OCT10UNHNCAT": [
+            "NCAT",
+            "UNH"
+          ],
+          "KXNCAAFGAME-26OCT10USCPSU": [
+            "PSU",
+            "USC"
+          ],
+          "KXNCAAFGAME-26OCT10USDBUT": [
+            "BUT",
+            "USD"
+          ],
+          "KXNCAAFGAME-26OCT10UTMTNST": [
+            "TNST",
+            "UTM"
+          ],
+          "KXNCAAFGAME-26OCT10UTUPRST": [
+            "PRST",
+            "UTU"
+          ],
+          "KXNCAAFGAME-26OCT10UWGAEKY": [
+            "EKY",
+            "UWGA"
+          ],
+          "KXNCAAFGAME-26OCT10VTCAL": [
+            "CAL",
+            "VT"
+          ],
+          "KXNCAAFGAME-26OCT10WAKENCST": [
+            "NCST",
+            "WAKE"
+          ],
+          "KXNCAAFGAME-26OCT10WCUMER": [
+            "MER",
+            "WCU"
+          ],
+          "KXNCAAFGAME-26OCT10WMNCCU": [
+            "NCCU",
+            "WM"
+          ],
+          "KXNCAAFGAME-26OCT10WOFELON": [
+            "ELON",
+            "WOF"
+          ],
+          "KXNCAAFGAME-26OCT10YSUINST": [
+            "INST",
+            "YSU"
+          ]
+        },
+        "home_abbr": "NU",
+        "venue_team_codes": [
+          "BALL",
+          "NU"
+        ]
+      },
+      "401862796": {
+        "away_abbr": "CLT",
+        "compared_team_code_sets": {
+          "KXNCAAFGAME-26OCT10AFANIU": [
+            "AFA",
+            "NIU"
+          ],
+          "KXNCAAFGAME-26OCT10ARIZWVU": [
+            "ARIZ",
+            "WVU"
+          ],
+          "KXNCAAFGAME-26OCT10BALLNW": [
+            "BALL",
+            "NW"
+          ],
+          "KXNCAAFGAME-26OCT10BRYBRWN": [
+            "BRWN",
+            "BRY"
+          ],
+          "KXNCAAFGAME-26OCT10BSUFRES": [
+            "BSU",
+            "FRES"
+          ],
+          "KXNCAAFGAME-26OCT10BUCKGTWN": [
+            "BUCK",
+            "GTWN"
+          ],
+          "KXNCAAFGAME-26OCT10BUFFTOL": [
+            "BUFF",
+            "TOL"
+          ],
+          "KXNCAAFGAME-26OCT10CARKAC": [
+            "AC",
+            "CARK"
+          ],
+          "KXNCAAFGAME-26OCT10CCARMRSH": [
+            "CCAR",
+            "MRSH"
+          ],
+          "KXNCAAFGAME-26OCT10CHARUNT": [
+            "CHAR",
+            "UNT"
+          ],
+          "KXNCAAFGAME-26OCT10CMUOHIO": [
+            "CMU",
+            "OHIO"
+          ],
+          "KXNCAAFGAME-26OCT10CONNTEM": [
+            "CONN",
+            "TEM"
+          ],
+          "KXNCAAFGAME-26OCT10COOKAAMU": [
+            "AAMU",
+            "COOK"
+          ],
+          "KXNCAAFGAME-26OCT10CPIDST": [
+            "CP",
+            "IDST"
+          ],
+          "KXNCAAFGAME-26OCT10DARTYALE": [
+            "DART",
+            "YALE"
+          ],
+          "KXNCAAFGAME-26OCT10DAVPRE": [
+            "DAV",
+            "PRE"
+          ],
+          "KXNCAAFGAME-26OCT10DRKEVALP": [
+            "DRKE",
+            "VALP"
+          ],
+          "KXNCAAFGAME-26OCT10DUKEGT": [
+            "DUKE",
+            "GT"
+          ],
+          "KXNCAAFGAME-26OCT10EIUWEBB": [
+            "EIU",
+            "WEBB"
+          ],
+          "KXNCAAFGAME-26OCT10EMUAKR": [
+            "AKR",
+            "EMU"
+          ],
+          "KXNCAAFGAME-26OCT10ETSUCIT": [
+            "CIT",
+            "ETSU"
+          ],
+          "KXNCAAFGAME-26OCT10FAMUALST": [
+            "ALST",
+            "FAMU"
+          ],
+          "KXNCAAFGAME-26OCT10FURTNTC": [
+            "FUR",
+            "TNTC"
+          ],
+          "KXNCAAFGAME-26OCT10HARVCOR": [
+            "COR",
+            "HARV"
+          ],
+          "KXNCAAFGAME-26OCT10HAWASU": [
+            "ASU",
+            "HAW"
+          ],
+          "KXNCAAFGAME-26OCT10HOUKSU": [
+            "HOU",
+            "KSU"
+          ],
+          "KXNCAAFGAME-26OCT10HOWPENN": [
+            "HOW",
+            "PENN"
+          ],
+          "KXNCAAFGAME-26OCT10IDHOWEB": [
+            "IDHO",
+            "WEB"
+          ],
+          "KXNCAAFGAME-26OCT10ILLMSU": [
+            "ILL",
+            "MSU"
+          ],
+          "KXNCAAFGAME-26OCT10INDNEB": [
+            "IND",
+            "NEB"
+          ],
+          "KXNCAAFGAME-26OCT10IWLAM": [
+            "IW",
+            "LAM"
+          ],
+          "KXNCAAFGAME-26OCT10JKSTGRAM": [
+            "GRAM",
+            "JKST"
+          ],
+          "KXNCAAFGAME-26OCT10JMUGASO": [
+            "GASO",
+            "JMU"
+          ],
+          "KXNCAAFGAME-26OCT10KENTWMU": [
+            "KENT",
+            "WMU"
+          ],
+          "KXNCAAFGAME-26OCT10KUUTAH": [
+            "KU",
+            "UTAH"
+          ],
+          "KXNCAAFGAME-26OCT10LIUDUQ": [
+            "DUQ",
+            "LIU"
+          ],
+          "KXNCAAFGAME-26OCT10LSUUK": [
+            "LSU",
+            "UK"
+          ],
+          "KXNCAAFGAME-26OCT10MDOSU": [
+            "MD",
+            "OSU"
+          ],
+          "KXNCAAFGAME-26OCT10MINNPUR": [
+            "MINN",
+            "PUR"
+          ],
+          "KXNCAAFGAME-26OCT10MISSVAN": [
+            "MISS",
+            "VAN"
+          ],
+          "KXNCAAFGAME-26OCT10MOHMASS": [
+            "MASS",
+            "MOH"
+          ],
+          "KXNCAAFGAME-26OCT10MONTNAU": [
+            "MONT",
+            "NAU"
+          ],
+          "KXNCAAFGAME-26OCT10MOREDAY": [
+            "DAY",
+            "MORE"
+          ],
+          "KXNCAAFGAME-26OCT10MVSUTXSO": [
+            "MVSU",
+            "TXSO"
+          ],
+          "KXNCAAFGAME-26OCT10NDSUUNLV": [
+            "NDSU",
+            "UNLV"
+          ],
+          "KXNCAAFGAME-26OCT10NEVUTEP": [
+            "NEV",
+            "UTEP"
+          ],
+          "KXNCAAFGAME-26OCT10ODUAPP": [
+            "APP",
+            "ODU"
+          ],
+          "KXNCAAFGAME-26OCT10PRINWAG": [
+            "PRIN",
+            "WAG"
+          ],
+          "KXNCAAFGAME-26OCT10RICEECU": [
+            "ECU",
+            "RICE"
+          ],
+          "KXNCAAFGAME-26OCT10RICHFOR": [
+            "FOR",
+            "RICH"
+          ],
+          "KXNCAAFGAME-26OCT10RMUMORG": [
+            "MORG",
+            "RMU"
+          ],
+          "KXNCAAFGAME-26OCT10SACBGSU": [
+            "BGSU",
+            "SAC"
+          ],
+          "KXNCAAFGAME-26OCT10SAMCHAT": [
+            "CHAT",
+            "SAM"
+          ],
+          "KXNCAAFGAME-26OCT10SCARFLA": [
+            "FLA",
+            "SCAR"
+          ],
+          "KXNCAAFGAME-26OCT10SCSTCHSO": [
+            "CHSO",
+            "SCST"
+          ],
+          "KXNCAAFGAME-26OCT10SDSUORST": [
+            "ORST",
+            "SDSU"
+          ],
+          "KXNCAAFGAME-26OCT10SELAUTRGV": [
+            "SELA",
+            "UTRGV"
+          ],
+          "KXNCAAFGAME-26OCT10SEMOLINW": [
+            "LINW",
+            "SEMO"
+          ],
+          "KXNCAAFGAME-26OCT10SIUSDAK": [
+            "SDAK",
+            "SIU"
+          ],
+          "KXNCAAFGAME-26OCT10SOUPV": [
+            "PV",
+            "SOU"
+          ],
+          "KXNCAAFGAME-26OCT10STANND": [
+            "ND",
+            "STAN"
+          ],
+          "KXNCAAFGAME-26OCT10STETUST": [
+            "STET",
+            "UST"
+          ],
+          "KXNCAAFGAME-26OCT10STNHSHU": [
+            "SHU",
+            "STNH"
+          ],
+          "KXNCAAFGAME-26OCT10STONTOWS": [
+            "STON",
+            "TOWS"
+          ],
+          "KXNCAAFGAME-26OCT10SYRUVA": [
+            "SYR",
+            "UVA"
+          ],
+          "KXNCAAFGAME-26OCT10TARLPEAY": [
+            "PEAY",
+            "TARL"
+          ],
+          "KXNCAAFGAME-26OCT10TENNARK": [
+            "ARK",
+            "TENN"
+          ],
+          "KXNCAAFGAME-26OCT10TEXOKLA": [
+            "OKLA",
+            "TEX"
+          ],
+          "KXNCAAFGAME-26OCT10TLSANAVY": [
+            "NAVY",
+            "TLSA"
+          ],
+          "KXNCAAFGAME-26OCT10TULNARMY": [
+            "ARMY",
+            "TULN"
+          ],
+          "KXNCAAFGAME-26OCT10TXAMMIZZ": [
+            "MIZZ",
+            "TXAM"
+          ],
+          "KXNCAAFGAME-26OCT10UABMEM": [
+            "MEM",
+            "UAB"
+          ],
+          "KXNCAAFGAME-26OCT10UCFOKST": [
+            "OKST",
+            "UCF"
+          ],
+          "KXNCAAFGAME-26OCT10UCLAORE": [
+            "ORE",
+            "UCLA"
+          ],
+          "KXNCAAFGAME-26OCT10UGAALA": [
+            "ALA",
+            "UGA"
+          ],
+          "KXNCAAFGAME-26OCT10ULLLT": [
+            "LT",
+            "ULL"
+          ],
+          "KXNCAAFGAME-26OCT10UNCOEWU": [
+            "EWU",
+            "UNCO"
+          ],
+          "KXNCAAFGAME-26OCT10UNCPITT": [
+            "PITT",
+            "UNC"
+          ],
+          "KXNCAAFGAME-26OCT10UNDUNI": [
+            "UND",
+            "UNI"
+          ],
+          "KXNCAAFGAME-26OCT10UNHNCAT": [
+            "NCAT",
+            "UNH"
+          ],
+          "KXNCAAFGAME-26OCT10USCPSU": [
+            "PSU",
+            "USC"
+          ],
+          "KXNCAAFGAME-26OCT10USDBUT": [
+            "BUT",
+            "USD"
+          ],
+          "KXNCAAFGAME-26OCT10UTMTNST": [
+            "TNST",
+            "UTM"
+          ],
+          "KXNCAAFGAME-26OCT10UTUPRST": [
+            "PRST",
+            "UTU"
+          ],
+          "KXNCAAFGAME-26OCT10UWGAEKY": [
+            "EKY",
+            "UWGA"
+          ],
+          "KXNCAAFGAME-26OCT10VTCAL": [
+            "CAL",
+            "VT"
+          ],
+          "KXNCAAFGAME-26OCT10WAKENCST": [
+            "NCST",
+            "WAKE"
+          ],
+          "KXNCAAFGAME-26OCT10WCUMER": [
+            "MER",
+            "WCU"
+          ],
+          "KXNCAAFGAME-26OCT10WMNCCU": [
+            "NCCU",
+            "WM"
+          ],
+          "KXNCAAFGAME-26OCT10WOFELON": [
+            "ELON",
+            "WOF"
+          ],
+          "KXNCAAFGAME-26OCT10YSUINST": [
+            "INST",
+            "YSU"
+          ]
+        },
+        "home_abbr": "UNT",
+        "venue_team_codes": [
+          "CLT",
+          "UNT"
+        ]
+      },
+      "401866440": {
+        "away_abbr": "M-OH",
+        "compared_team_code_sets": {
+          "KXNCAAFGAME-26OCT10AFANIU": [
+            "AFA",
+            "NIU"
+          ],
+          "KXNCAAFGAME-26OCT10ARIZWVU": [
+            "ARIZ",
+            "WVU"
+          ],
+          "KXNCAAFGAME-26OCT10BALLNW": [
+            "BALL",
+            "NW"
+          ],
+          "KXNCAAFGAME-26OCT10BRYBRWN": [
+            "BRWN",
+            "BRY"
+          ],
+          "KXNCAAFGAME-26OCT10BSUFRES": [
+            "BSU",
+            "FRES"
+          ],
+          "KXNCAAFGAME-26OCT10BUCKGTWN": [
+            "BUCK",
+            "GTWN"
+          ],
+          "KXNCAAFGAME-26OCT10BUFFTOL": [
+            "BUFF",
+            "TOL"
+          ],
+          "KXNCAAFGAME-26OCT10CARKAC": [
+            "AC",
+            "CARK"
+          ],
+          "KXNCAAFGAME-26OCT10CCARMRSH": [
+            "CCAR",
+            "MRSH"
+          ],
+          "KXNCAAFGAME-26OCT10CHARUNT": [
+            "CHAR",
+            "UNT"
+          ],
+          "KXNCAAFGAME-26OCT10CMUOHIO": [
+            "CMU",
+            "OHIO"
+          ],
+          "KXNCAAFGAME-26OCT10CONNTEM": [
+            "CONN",
+            "TEM"
+          ],
+          "KXNCAAFGAME-26OCT10COOKAAMU": [
+            "AAMU",
+            "COOK"
+          ],
+          "KXNCAAFGAME-26OCT10CPIDST": [
+            "CP",
+            "IDST"
+          ],
+          "KXNCAAFGAME-26OCT10DARTYALE": [
+            "DART",
+            "YALE"
+          ],
+          "KXNCAAFGAME-26OCT10DAVPRE": [
+            "DAV",
+            "PRE"
+          ],
+          "KXNCAAFGAME-26OCT10DRKEVALP": [
+            "DRKE",
+            "VALP"
+          ],
+          "KXNCAAFGAME-26OCT10DUKEGT": [
+            "DUKE",
+            "GT"
+          ],
+          "KXNCAAFGAME-26OCT10EIUWEBB": [
+            "EIU",
+            "WEBB"
+          ],
+          "KXNCAAFGAME-26OCT10EMUAKR": [
+            "AKR",
+            "EMU"
+          ],
+          "KXNCAAFGAME-26OCT10ETSUCIT": [
+            "CIT",
+            "ETSU"
+          ],
+          "KXNCAAFGAME-26OCT10FAMUALST": [
+            "ALST",
+            "FAMU"
+          ],
+          "KXNCAAFGAME-26OCT10FURTNTC": [
+            "FUR",
+            "TNTC"
+          ],
+          "KXNCAAFGAME-26OCT10HARVCOR": [
+            "COR",
+            "HARV"
+          ],
+          "KXNCAAFGAME-26OCT10HAWASU": [
+            "ASU",
+            "HAW"
+          ],
+          "KXNCAAFGAME-26OCT10HOUKSU": [
+            "HOU",
+            "KSU"
+          ],
+          "KXNCAAFGAME-26OCT10HOWPENN": [
+            "HOW",
+            "PENN"
+          ],
+          "KXNCAAFGAME-26OCT10IDHOWEB": [
+            "IDHO",
+            "WEB"
+          ],
+          "KXNCAAFGAME-26OCT10ILLMSU": [
+            "ILL",
+            "MSU"
+          ],
+          "KXNCAAFGAME-26OCT10INDNEB": [
+            "IND",
+            "NEB"
+          ],
+          "KXNCAAFGAME-26OCT10IWLAM": [
+            "IW",
+            "LAM"
+          ],
+          "KXNCAAFGAME-26OCT10JKSTGRAM": [
+            "GRAM",
+            "JKST"
+          ],
+          "KXNCAAFGAME-26OCT10JMUGASO": [
+            "GASO",
+            "JMU"
+          ],
+          "KXNCAAFGAME-26OCT10KENTWMU": [
+            "KENT",
+            "WMU"
+          ],
+          "KXNCAAFGAME-26OCT10KUUTAH": [
+            "KU",
+            "UTAH"
+          ],
+          "KXNCAAFGAME-26OCT10LIUDUQ": [
+            "DUQ",
+            "LIU"
+          ],
+          "KXNCAAFGAME-26OCT10LSUUK": [
+            "LSU",
+            "UK"
+          ],
+          "KXNCAAFGAME-26OCT10MDOSU": [
+            "MD",
+            "OSU"
+          ],
+          "KXNCAAFGAME-26OCT10MINNPUR": [
+            "MINN",
+            "PUR"
+          ],
+          "KXNCAAFGAME-26OCT10MISSVAN": [
+            "MISS",
+            "VAN"
+          ],
+          "KXNCAAFGAME-26OCT10MOHMASS": [
+            "MASS",
+            "MOH"
+          ],
+          "KXNCAAFGAME-26OCT10MONTNAU": [
+            "MONT",
+            "NAU"
+          ],
+          "KXNCAAFGAME-26OCT10MOREDAY": [
+            "DAY",
+            "MORE"
+          ],
+          "KXNCAAFGAME-26OCT10MVSUTXSO": [
+            "MVSU",
+            "TXSO"
+          ],
+          "KXNCAAFGAME-26OCT10NDSUUNLV": [
+            "NDSU",
+            "UNLV"
+          ],
+          "KXNCAAFGAME-26OCT10NEVUTEP": [
+            "NEV",
+            "UTEP"
+          ],
+          "KXNCAAFGAME-26OCT10ODUAPP": [
+            "APP",
+            "ODU"
+          ],
+          "KXNCAAFGAME-26OCT10PRINWAG": [
+            "PRIN",
+            "WAG"
+          ],
+          "KXNCAAFGAME-26OCT10RICEECU": [
+            "ECU",
+            "RICE"
+          ],
+          "KXNCAAFGAME-26OCT10RICHFOR": [
+            "FOR",
+            "RICH"
+          ],
+          "KXNCAAFGAME-26OCT10RMUMORG": [
+            "MORG",
+            "RMU"
+          ],
+          "KXNCAAFGAME-26OCT10SACBGSU": [
+            "BGSU",
+            "SAC"
+          ],
+          "KXNCAAFGAME-26OCT10SAMCHAT": [
+            "CHAT",
+            "SAM"
+          ],
+          "KXNCAAFGAME-26OCT10SCARFLA": [
+            "FLA",
+            "SCAR"
+          ],
+          "KXNCAAFGAME-26OCT10SCSTCHSO": [
+            "CHSO",
+            "SCST"
+          ],
+          "KXNCAAFGAME-26OCT10SDSUORST": [
+            "ORST",
+            "SDSU"
+          ],
+          "KXNCAAFGAME-26OCT10SELAUTRGV": [
+            "SELA",
+            "UTRGV"
+          ],
+          "KXNCAAFGAME-26OCT10SEMOLINW": [
+            "LINW",
+            "SEMO"
+          ],
+          "KXNCAAFGAME-26OCT10SIUSDAK": [
+            "SDAK",
+            "SIU"
+          ],
+          "KXNCAAFGAME-26OCT10SOUPV": [
+            "PV",
+            "SOU"
+          ],
+          "KXNCAAFGAME-26OCT10STANND": [
+            "ND",
+            "STAN"
+          ],
+          "KXNCAAFGAME-26OCT10STETUST": [
+            "STET",
+            "UST"
+          ],
+          "KXNCAAFGAME-26OCT10STNHSHU": [
+            "SHU",
+            "STNH"
+          ],
+          "KXNCAAFGAME-26OCT10STONTOWS": [
+            "STON",
+            "TOWS"
+          ],
+          "KXNCAAFGAME-26OCT10SYRUVA": [
+            "SYR",
+            "UVA"
+          ],
+          "KXNCAAFGAME-26OCT10TARLPEAY": [
+            "PEAY",
+            "TARL"
+          ],
+          "KXNCAAFGAME-26OCT10TENNARK": [
+            "ARK",
+            "TENN"
+          ],
+          "KXNCAAFGAME-26OCT10TEXOKLA": [
+            "OKLA",
+            "TEX"
+          ],
+          "KXNCAAFGAME-26OCT10TLSANAVY": [
+            "NAVY",
+            "TLSA"
+          ],
+          "KXNCAAFGAME-26OCT10TULNARMY": [
+            "ARMY",
+            "TULN"
+          ],
+          "KXNCAAFGAME-26OCT10TXAMMIZZ": [
+            "MIZZ",
+            "TXAM"
+          ],
+          "KXNCAAFGAME-26OCT10UABMEM": [
+            "MEM",
+            "UAB"
+          ],
+          "KXNCAAFGAME-26OCT10UCFOKST": [
+            "OKST",
+            "UCF"
+          ],
+          "KXNCAAFGAME-26OCT10UCLAORE": [
+            "ORE",
+            "UCLA"
+          ],
+          "KXNCAAFGAME-26OCT10UGAALA": [
+            "ALA",
+            "UGA"
+          ],
+          "KXNCAAFGAME-26OCT10ULLLT": [
+            "LT",
+            "ULL"
+          ],
+          "KXNCAAFGAME-26OCT10UNCOEWU": [
+            "EWU",
+            "UNCO"
+          ],
+          "KXNCAAFGAME-26OCT10UNCPITT": [
+            "PITT",
+            "UNC"
+          ],
+          "KXNCAAFGAME-26OCT10UNDUNI": [
+            "UND",
+            "UNI"
+          ],
+          "KXNCAAFGAME-26OCT10UNHNCAT": [
+            "NCAT",
+            "UNH"
+          ],
+          "KXNCAAFGAME-26OCT10USCPSU": [
+            "PSU",
+            "USC"
+          ],
+          "KXNCAAFGAME-26OCT10USDBUT": [
+            "BUT",
+            "USD"
+          ],
+          "KXNCAAFGAME-26OCT10UTMTNST": [
+            "TNST",
+            "UTM"
+          ],
+          "KXNCAAFGAME-26OCT10UTUPRST": [
+            "PRST",
+            "UTU"
+          ],
+          "KXNCAAFGAME-26OCT10UWGAEKY": [
+            "EKY",
+            "UWGA"
+          ],
+          "KXNCAAFGAME-26OCT10VTCAL": [
+            "CAL",
+            "VT"
+          ],
+          "KXNCAAFGAME-26OCT10WAKENCST": [
+            "NCST",
+            "WAKE"
+          ],
+          "KXNCAAFGAME-26OCT10WCUMER": [
+            "MER",
+            "WCU"
+          ],
+          "KXNCAAFGAME-26OCT10WMNCCU": [
+            "NCCU",
+            "WM"
+          ],
+          "KXNCAAFGAME-26OCT10WOFELON": [
+            "ELON",
+            "WOF"
+          ],
+          "KXNCAAFGAME-26OCT10YSUINST": [
+            "INST",
+            "YSU"
+          ]
+        },
+        "home_abbr": "MASS",
+        "venue_team_codes": [
+          "M-OH",
+          "MASS"
+        ]
+      },
+      "401869943": {
+        "away_abbr": "CCU",
+        "compared_team_code_sets": {
+          "KXNCAAFGAME-26OCT10AFANIU": [
+            "AFA",
+            "NIU"
+          ],
+          "KXNCAAFGAME-26OCT10ARIZWVU": [
+            "ARIZ",
+            "WVU"
+          ],
+          "KXNCAAFGAME-26OCT10BALLNW": [
+            "BALL",
+            "NW"
+          ],
+          "KXNCAAFGAME-26OCT10BRYBRWN": [
+            "BRWN",
+            "BRY"
+          ],
+          "KXNCAAFGAME-26OCT10BSUFRES": [
+            "BSU",
+            "FRES"
+          ],
+          "KXNCAAFGAME-26OCT10BUCKGTWN": [
+            "BUCK",
+            "GTWN"
+          ],
+          "KXNCAAFGAME-26OCT10BUFFTOL": [
+            "BUFF",
+            "TOL"
+          ],
+          "KXNCAAFGAME-26OCT10CARKAC": [
+            "AC",
+            "CARK"
+          ],
+          "KXNCAAFGAME-26OCT10CCARMRSH": [
+            "CCAR",
+            "MRSH"
+          ],
+          "KXNCAAFGAME-26OCT10CHARUNT": [
+            "CHAR",
+            "UNT"
+          ],
+          "KXNCAAFGAME-26OCT10CMUOHIO": [
+            "CMU",
+            "OHIO"
+          ],
+          "KXNCAAFGAME-26OCT10CONNTEM": [
+            "CONN",
+            "TEM"
+          ],
+          "KXNCAAFGAME-26OCT10COOKAAMU": [
+            "AAMU",
+            "COOK"
+          ],
+          "KXNCAAFGAME-26OCT10CPIDST": [
+            "CP",
+            "IDST"
+          ],
+          "KXNCAAFGAME-26OCT10DARTYALE": [
+            "DART",
+            "YALE"
+          ],
+          "KXNCAAFGAME-26OCT10DAVPRE": [
+            "DAV",
+            "PRE"
+          ],
+          "KXNCAAFGAME-26OCT10DRKEVALP": [
+            "DRKE",
+            "VALP"
+          ],
+          "KXNCAAFGAME-26OCT10DUKEGT": [
+            "DUKE",
+            "GT"
+          ],
+          "KXNCAAFGAME-26OCT10EIUWEBB": [
+            "EIU",
+            "WEBB"
+          ],
+          "KXNCAAFGAME-26OCT10EMUAKR": [
+            "AKR",
+            "EMU"
+          ],
+          "KXNCAAFGAME-26OCT10ETSUCIT": [
+            "CIT",
+            "ETSU"
+          ],
+          "KXNCAAFGAME-26OCT10FAMUALST": [
+            "ALST",
+            "FAMU"
+          ],
+          "KXNCAAFGAME-26OCT10FURTNTC": [
+            "FUR",
+            "TNTC"
+          ],
+          "KXNCAAFGAME-26OCT10HARVCOR": [
+            "COR",
+            "HARV"
+          ],
+          "KXNCAAFGAME-26OCT10HAWASU": [
+            "ASU",
+            "HAW"
+          ],
+          "KXNCAAFGAME-26OCT10HOUKSU": [
+            "HOU",
+            "KSU"
+          ],
+          "KXNCAAFGAME-26OCT10HOWPENN": [
+            "HOW",
+            "PENN"
+          ],
+          "KXNCAAFGAME-26OCT10IDHOWEB": [
+            "IDHO",
+            "WEB"
+          ],
+          "KXNCAAFGAME-26OCT10ILLMSU": [
+            "ILL",
+            "MSU"
+          ],
+          "KXNCAAFGAME-26OCT10INDNEB": [
+            "IND",
+            "NEB"
+          ],
+          "KXNCAAFGAME-26OCT10IWLAM": [
+            "IW",
+            "LAM"
+          ],
+          "KXNCAAFGAME-26OCT10JKSTGRAM": [
+            "GRAM",
+            "JKST"
+          ],
+          "KXNCAAFGAME-26OCT10JMUGASO": [
+            "GASO",
+            "JMU"
+          ],
+          "KXNCAAFGAME-26OCT10KENTWMU": [
+            "KENT",
+            "WMU"
+          ],
+          "KXNCAAFGAME-26OCT10KUUTAH": [
+            "KU",
+            "UTAH"
+          ],
+          "KXNCAAFGAME-26OCT10LIUDUQ": [
+            "DUQ",
+            "LIU"
+          ],
+          "KXNCAAFGAME-26OCT10LSUUK": [
+            "LSU",
+            "UK"
+          ],
+          "KXNCAAFGAME-26OCT10MDOSU": [
+            "MD",
+            "OSU"
+          ],
+          "KXNCAAFGAME-26OCT10MINNPUR": [
+            "MINN",
+            "PUR"
+          ],
+          "KXNCAAFGAME-26OCT10MISSVAN": [
+            "MISS",
+            "VAN"
+          ],
+          "KXNCAAFGAME-26OCT10MOHMASS": [
+            "MASS",
+            "MOH"
+          ],
+          "KXNCAAFGAME-26OCT10MONTNAU": [
+            "MONT",
+            "NAU"
+          ],
+          "KXNCAAFGAME-26OCT10MOREDAY": [
+            "DAY",
+            "MORE"
+          ],
+          "KXNCAAFGAME-26OCT10MVSUTXSO": [
+            "MVSU",
+            "TXSO"
+          ],
+          "KXNCAAFGAME-26OCT10NDSUUNLV": [
+            "NDSU",
+            "UNLV"
+          ],
+          "KXNCAAFGAME-26OCT10NEVUTEP": [
+            "NEV",
+            "UTEP"
+          ],
+          "KXNCAAFGAME-26OCT10ODUAPP": [
+            "APP",
+            "ODU"
+          ],
+          "KXNCAAFGAME-26OCT10PRINWAG": [
+            "PRIN",
+            "WAG"
+          ],
+          "KXNCAAFGAME-26OCT10RICEECU": [
+            "ECU",
+            "RICE"
+          ],
+          "KXNCAAFGAME-26OCT10RICHFOR": [
+            "FOR",
+            "RICH"
+          ],
+          "KXNCAAFGAME-26OCT10RMUMORG": [
+            "MORG",
+            "RMU"
+          ],
+          "KXNCAAFGAME-26OCT10SACBGSU": [
+            "BGSU",
+            "SAC"
+          ],
+          "KXNCAAFGAME-26OCT10SAMCHAT": [
+            "CHAT",
+            "SAM"
+          ],
+          "KXNCAAFGAME-26OCT10SCARFLA": [
+            "FLA",
+            "SCAR"
+          ],
+          "KXNCAAFGAME-26OCT10SCSTCHSO": [
+            "CHSO",
+            "SCST"
+          ],
+          "KXNCAAFGAME-26OCT10SDSUORST": [
+            "ORST",
+            "SDSU"
+          ],
+          "KXNCAAFGAME-26OCT10SELAUTRGV": [
+            "SELA",
+            "UTRGV"
+          ],
+          "KXNCAAFGAME-26OCT10SEMOLINW": [
+            "LINW",
+            "SEMO"
+          ],
+          "KXNCAAFGAME-26OCT10SIUSDAK": [
+            "SDAK",
+            "SIU"
+          ],
+          "KXNCAAFGAME-26OCT10SOUPV": [
+            "PV",
+            "SOU"
+          ],
+          "KXNCAAFGAME-26OCT10STANND": [
+            "ND",
+            "STAN"
+          ],
+          "KXNCAAFGAME-26OCT10STETUST": [
+            "STET",
+            "UST"
+          ],
+          "KXNCAAFGAME-26OCT10STNHSHU": [
+            "SHU",
+            "STNH"
+          ],
+          "KXNCAAFGAME-26OCT10STONTOWS": [
+            "STON",
+            "TOWS"
+          ],
+          "KXNCAAFGAME-26OCT10SYRUVA": [
+            "SYR",
+            "UVA"
+          ],
+          "KXNCAAFGAME-26OCT10TARLPEAY": [
+            "PEAY",
+            "TARL"
+          ],
+          "KXNCAAFGAME-26OCT10TENNARK": [
+            "ARK",
+            "TENN"
+          ],
+          "KXNCAAFGAME-26OCT10TEXOKLA": [
+            "OKLA",
+            "TEX"
+          ],
+          "KXNCAAFGAME-26OCT10TLSANAVY": [
+            "NAVY",
+            "TLSA"
+          ],
+          "KXNCAAFGAME-26OCT10TULNARMY": [
+            "ARMY",
+            "TULN"
+          ],
+          "KXNCAAFGAME-26OCT10TXAMMIZZ": [
+            "MIZZ",
+            "TXAM"
+          ],
+          "KXNCAAFGAME-26OCT10UABMEM": [
+            "MEM",
+            "UAB"
+          ],
+          "KXNCAAFGAME-26OCT10UCFOKST": [
+            "OKST",
+            "UCF"
+          ],
+          "KXNCAAFGAME-26OCT10UCLAORE": [
+            "ORE",
+            "UCLA"
+          ],
+          "KXNCAAFGAME-26OCT10UGAALA": [
+            "ALA",
+            "UGA"
+          ],
+          "KXNCAAFGAME-26OCT10ULLLT": [
+            "LT",
+            "ULL"
+          ],
+          "KXNCAAFGAME-26OCT10UNCOEWU": [
+            "EWU",
+            "UNCO"
+          ],
+          "KXNCAAFGAME-26OCT10UNCPITT": [
+            "PITT",
+            "UNC"
+          ],
+          "KXNCAAFGAME-26OCT10UNDUNI": [
+            "UND",
+            "UNI"
+          ],
+          "KXNCAAFGAME-26OCT10UNHNCAT": [
+            "NCAT",
+            "UNH"
+          ],
+          "KXNCAAFGAME-26OCT10USCPSU": [
+            "PSU",
+            "USC"
+          ],
+          "KXNCAAFGAME-26OCT10USDBUT": [
+            "BUT",
+            "USD"
+          ],
+          "KXNCAAFGAME-26OCT10UTMTNST": [
+            "TNST",
+            "UTM"
+          ],
+          "KXNCAAFGAME-26OCT10UTUPRST": [
+            "PRST",
+            "UTU"
+          ],
+          "KXNCAAFGAME-26OCT10UWGAEKY": [
+            "EKY",
+            "UWGA"
+          ],
+          "KXNCAAFGAME-26OCT10VTCAL": [
+            "CAL",
+            "VT"
+          ],
+          "KXNCAAFGAME-26OCT10WAKENCST": [
+            "NCST",
+            "WAKE"
+          ],
+          "KXNCAAFGAME-26OCT10WCUMER": [
+            "MER",
+            "WCU"
+          ],
+          "KXNCAAFGAME-26OCT10WMNCCU": [
+            "NCCU",
+            "WM"
+          ],
+          "KXNCAAFGAME-26OCT10WOFELON": [
+            "ELON",
+            "WOF"
+          ],
+          "KXNCAAFGAME-26OCT10YSUINST": [
+            "INST",
+            "YSU"
+          ]
+        },
+        "home_abbr": "MRSH",
+        "venue_team_codes": [
+          "CCU",
+          "MRSH"
+        ]
+      },
+      "401869965": {
+        "away_abbr": "UL",
+        "compared_team_code_sets": {
+          "KXNCAAFGAME-26OCT10AFANIU": [
+            "AFA",
+            "NIU"
+          ],
+          "KXNCAAFGAME-26OCT10ARIZWVU": [
+            "ARIZ",
+            "WVU"
+          ],
+          "KXNCAAFGAME-26OCT10BALLNW": [
+            "BALL",
+            "NW"
+          ],
+          "KXNCAAFGAME-26OCT10BRYBRWN": [
+            "BRWN",
+            "BRY"
+          ],
+          "KXNCAAFGAME-26OCT10BSUFRES": [
+            "BSU",
+            "FRES"
+          ],
+          "KXNCAAFGAME-26OCT10BUCKGTWN": [
+            "BUCK",
+            "GTWN"
+          ],
+          "KXNCAAFGAME-26OCT10BUFFTOL": [
+            "BUFF",
+            "TOL"
+          ],
+          "KXNCAAFGAME-26OCT10CARKAC": [
+            "AC",
+            "CARK"
+          ],
+          "KXNCAAFGAME-26OCT10CCARMRSH": [
+            "CCAR",
+            "MRSH"
+          ],
+          "KXNCAAFGAME-26OCT10CHARUNT": [
+            "CHAR",
+            "UNT"
+          ],
+          "KXNCAAFGAME-26OCT10CMUOHIO": [
+            "CMU",
+            "OHIO"
+          ],
+          "KXNCAAFGAME-26OCT10CONNTEM": [
+            "CONN",
+            "TEM"
+          ],
+          "KXNCAAFGAME-26OCT10COOKAAMU": [
+            "AAMU",
+            "COOK"
+          ],
+          "KXNCAAFGAME-26OCT10CPIDST": [
+            "CP",
+            "IDST"
+          ],
+          "KXNCAAFGAME-26OCT10DARTYALE": [
+            "DART",
+            "YALE"
+          ],
+          "KXNCAAFGAME-26OCT10DAVPRE": [
+            "DAV",
+            "PRE"
+          ],
+          "KXNCAAFGAME-26OCT10DRKEVALP": [
+            "DRKE",
+            "VALP"
+          ],
+          "KXNCAAFGAME-26OCT10DUKEGT": [
+            "DUKE",
+            "GT"
+          ],
+          "KXNCAAFGAME-26OCT10EIUWEBB": [
+            "EIU",
+            "WEBB"
+          ],
+          "KXNCAAFGAME-26OCT10EMUAKR": [
+            "AKR",
+            "EMU"
+          ],
+          "KXNCAAFGAME-26OCT10ETSUCIT": [
+            "CIT",
+            "ETSU"
+          ],
+          "KXNCAAFGAME-26OCT10FAMUALST": [
+            "ALST",
+            "FAMU"
+          ],
+          "KXNCAAFGAME-26OCT10FURTNTC": [
+            "FUR",
+            "TNTC"
+          ],
+          "KXNCAAFGAME-26OCT10HARVCOR": [
+            "COR",
+            "HARV"
+          ],
+          "KXNCAAFGAME-26OCT10HAWASU": [
+            "ASU",
+            "HAW"
+          ],
+          "KXNCAAFGAME-26OCT10HOUKSU": [
+            "HOU",
+            "KSU"
+          ],
+          "KXNCAAFGAME-26OCT10HOWPENN": [
+            "HOW",
+            "PENN"
+          ],
+          "KXNCAAFGAME-26OCT10IDHOWEB": [
+            "IDHO",
+            "WEB"
+          ],
+          "KXNCAAFGAME-26OCT10ILLMSU": [
+            "ILL",
+            "MSU"
+          ],
+          "KXNCAAFGAME-26OCT10INDNEB": [
+            "IND",
+            "NEB"
+          ],
+          "KXNCAAFGAME-26OCT10IWLAM": [
+            "IW",
+            "LAM"
+          ],
+          "KXNCAAFGAME-26OCT10JKSTGRAM": [
+            "GRAM",
+            "JKST"
+          ],
+          "KXNCAAFGAME-26OCT10JMUGASO": [
+            "GASO",
+            "JMU"
+          ],
+          "KXNCAAFGAME-26OCT10KENTWMU": [
+            "KENT",
+            "WMU"
+          ],
+          "KXNCAAFGAME-26OCT10KUUTAH": [
+            "KU",
+            "UTAH"
+          ],
+          "KXNCAAFGAME-26OCT10LIUDUQ": [
+            "DUQ",
+            "LIU"
+          ],
+          "KXNCAAFGAME-26OCT10LSUUK": [
+            "LSU",
+            "UK"
+          ],
+          "KXNCAAFGAME-26OCT10MDOSU": [
+            "MD",
+            "OSU"
+          ],
+          "KXNCAAFGAME-26OCT10MINNPUR": [
+            "MINN",
+            "PUR"
+          ],
+          "KXNCAAFGAME-26OCT10MISSVAN": [
+            "MISS",
+            "VAN"
+          ],
+          "KXNCAAFGAME-26OCT10MOHMASS": [
+            "MASS",
+            "MOH"
+          ],
+          "KXNCAAFGAME-26OCT10MONTNAU": [
+            "MONT",
+            "NAU"
+          ],
+          "KXNCAAFGAME-26OCT10MOREDAY": [
+            "DAY",
+            "MORE"
+          ],
+          "KXNCAAFGAME-26OCT10MVSUTXSO": [
+            "MVSU",
+            "TXSO"
+          ],
+          "KXNCAAFGAME-26OCT10NDSUUNLV": [
+            "NDSU",
+            "UNLV"
+          ],
+          "KXNCAAFGAME-26OCT10NEVUTEP": [
+            "NEV",
+            "UTEP"
+          ],
+          "KXNCAAFGAME-26OCT10ODUAPP": [
+            "APP",
+            "ODU"
+          ],
+          "KXNCAAFGAME-26OCT10PRINWAG": [
+            "PRIN",
+            "WAG"
+          ],
+          "KXNCAAFGAME-26OCT10RICEECU": [
+            "ECU",
+            "RICE"
+          ],
+          "KXNCAAFGAME-26OCT10RICHFOR": [
+            "FOR",
+            "RICH"
+          ],
+          "KXNCAAFGAME-26OCT10RMUMORG": [
+            "MORG",
+            "RMU"
+          ],
+          "KXNCAAFGAME-26OCT10SACBGSU": [
+            "BGSU",
+            "SAC"
+          ],
+          "KXNCAAFGAME-26OCT10SAMCHAT": [
+            "CHAT",
+            "SAM"
+          ],
+          "KXNCAAFGAME-26OCT10SCARFLA": [
+            "FLA",
+            "SCAR"
+          ],
+          "KXNCAAFGAME-26OCT10SCSTCHSO": [
+            "CHSO",
+            "SCST"
+          ],
+          "KXNCAAFGAME-26OCT10SDSUORST": [
+            "ORST",
+            "SDSU"
+          ],
+          "KXNCAAFGAME-26OCT10SELAUTRGV": [
+            "SELA",
+            "UTRGV"
+          ],
+          "KXNCAAFGAME-26OCT10SEMOLINW": [
+            "LINW",
+            "SEMO"
+          ],
+          "KXNCAAFGAME-26OCT10SIUSDAK": [
+            "SDAK",
+            "SIU"
+          ],
+          "KXNCAAFGAME-26OCT10SOUPV": [
+            "PV",
+            "SOU"
+          ],
+          "KXNCAAFGAME-26OCT10STANND": [
+            "ND",
+            "STAN"
+          ],
+          "KXNCAAFGAME-26OCT10STETUST": [
+            "STET",
+            "UST"
+          ],
+          "KXNCAAFGAME-26OCT10STNHSHU": [
+            "SHU",
+            "STNH"
+          ],
+          "KXNCAAFGAME-26OCT10STONTOWS": [
+            "STON",
+            "TOWS"
+          ],
+          "KXNCAAFGAME-26OCT10SYRUVA": [
+            "SYR",
+            "UVA"
+          ],
+          "KXNCAAFGAME-26OCT10TARLPEAY": [
+            "PEAY",
+            "TARL"
+          ],
+          "KXNCAAFGAME-26OCT10TENNARK": [
+            "ARK",
+            "TENN"
+          ],
+          "KXNCAAFGAME-26OCT10TEXOKLA": [
+            "OKLA",
+            "TEX"
+          ],
+          "KXNCAAFGAME-26OCT10TLSANAVY": [
+            "NAVY",
+            "TLSA"
+          ],
+          "KXNCAAFGAME-26OCT10TULNARMY": [
+            "ARMY",
+            "TULN"
+          ],
+          "KXNCAAFGAME-26OCT10TXAMMIZZ": [
+            "MIZZ",
+            "TXAM"
+          ],
+          "KXNCAAFGAME-26OCT10UABMEM": [
+            "MEM",
+            "UAB"
+          ],
+          "KXNCAAFGAME-26OCT10UCFOKST": [
+            "OKST",
+            "UCF"
+          ],
+          "KXNCAAFGAME-26OCT10UCLAORE": [
+            "ORE",
+            "UCLA"
+          ],
+          "KXNCAAFGAME-26OCT10UGAALA": [
+            "ALA",
+            "UGA"
+          ],
+          "KXNCAAFGAME-26OCT10ULLLT": [
+            "LT",
+            "ULL"
+          ],
+          "KXNCAAFGAME-26OCT10UNCOEWU": [
+            "EWU",
+            "UNCO"
+          ],
+          "KXNCAAFGAME-26OCT10UNCPITT": [
+            "PITT",
+            "UNC"
+          ],
+          "KXNCAAFGAME-26OCT10UNDUNI": [
+            "UND",
+            "UNI"
+          ],
+          "KXNCAAFGAME-26OCT10UNHNCAT": [
+            "NCAT",
+            "UNH"
+          ],
+          "KXNCAAFGAME-26OCT10USCPSU": [
+            "PSU",
+            "USC"
+          ],
+          "KXNCAAFGAME-26OCT10USDBUT": [
+            "BUT",
+            "USD"
+          ],
+          "KXNCAAFGAME-26OCT10UTMTNST": [
+            "TNST",
+            "UTM"
+          ],
+          "KXNCAAFGAME-26OCT10UTUPRST": [
+            "PRST",
+            "UTU"
+          ],
+          "KXNCAAFGAME-26OCT10UWGAEKY": [
+            "EKY",
+            "UWGA"
+          ],
+          "KXNCAAFGAME-26OCT10VTCAL": [
+            "CAL",
+            "VT"
+          ],
+          "KXNCAAFGAME-26OCT10WAKENCST": [
+            "NCST",
+            "WAKE"
+          ],
+          "KXNCAAFGAME-26OCT10WCUMER": [
+            "MER",
+            "WCU"
+          ],
+          "KXNCAAFGAME-26OCT10WMNCCU": [
+            "NCCU",
+            "WM"
+          ],
+          "KXNCAAFGAME-26OCT10WOFELON": [
+            "ELON",
+            "WOF"
+          ],
+          "KXNCAAFGAME-26OCT10YSUINST": [
+            "INST",
+            "YSU"
+          ]
+        },
+        "home_abbr": "LT",
+        "venue_team_codes": [
+          "LT",
+          "UL"
+        ]
+      }
+    },
+    "schedule_receipt": {
+      "fetch_status": "OK",
+      "http_status": 200,
+      "kept_from": {
+        "401856712": "20261010",
+        "401856713": "20261010",
+        "401856714": "20261010",
+        "401856715": "20261010",
+        "401856716": "20261010",
+        "401856717": "20261010",
+        "401856718": "20261010",
+        "401856808": "20261010",
+        "401856823": "20261010",
+        "401856824": "20261010",
+        "401856825": "20261010",
+        "401856826": "20261009",
+        "401856827": "20261010",
+        "401858255": "20261010",
+        "401858256": "20261010",
+        "401858257": "20261010",
+        "401858258": "20261010",
+        "401858259": "20261010",
+        "401858260": "20261010",
+        "401858480": "20261010",
+        "401858481": "20261010",
+        "401858482": "20261010",
+        "401858483": "20261010",
+        "401858484": "20261010",
+        "401858485": "20261010",
+        "401858486": "20261010",
+        "401858487": "20261009",
+        "401860901": "20261010",
+        "401860902": "20261010",
+        "401860922": "20261009",
+        "401861964": "20261010",
+        "401862795": "20261010",
+        "401862796": "20261010",
+        "401862797": "20261010",
+        "401862798": "20261010",
+        "401862799": "20261010",
+        "401864516": "20261010",
+        "401864517": "20261010",
+        "401864518": "20261010",
+        "401864519": "20261009",
+        "401866435": "20261010",
+        "401866436": "20261010",
+        "401866437": "20261010",
+        "401866438": "20261010",
+        "401866439": "20261010",
+        "401866440": "20261010",
+        "401869843": "20261010",
+        "401869943": "20261010",
+        "401869949": "20261010",
+        "401869965": "20261010"
+      },
+      "query_receipts": {
+        "20261009": {
+          "fetch_status": "OK",
+          "http_status": 200,
+          "request_start_utc": "2026-10-09T13:27:46.200449+00:00",
+          "response_bytes": 97851,
+          "response_end_utc": "2026-10-09T13:27:46.279687+00:00",
+          "response_sha256": "203bfa49aa913fbe73366bd91a2ccd835233fcaa7189bcedffaa6b30568b02ac",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?dates=20261009"
+        },
+        "20261010": {
+          "fetch_status": "OK",
+          "http_status": 200,
+          "request_start_utc": "2026-10-09T13:27:46.279687+00:00",
+          "response_bytes": 868530,
+          "response_end_utc": "2026-10-09T13:27:46.390848+00:00",
+          "response_sha256": "e529f914ef84f618f96beaa9b10a1f1a5ab9ca5b288197f76f2f41179ad16ca7",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?dates=20261010"
+        }
+      },
+      "request_start_utc": "2026-10-09T13:27:46.279687+00:00",
+      "response_bytes": 868530,
+      "response_end_utc": "2026-10-09T13:27:46.390848+00:00",
+      "response_sha256": "e529f914ef84f618f96beaa9b10a1f1a5ab9ca5b288197f76f2f41179ad16ca7",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?dates=20261010"
+    },
+    "schedule_source": "live",
+    "written": 36
+  },
+  "nfl": {
+    "canonical_rules": {},
+    "game_key_sources": {},
+    "games_seen": 0,
+    "link_paths": {},
+    "linked": 0,
+    "local_date_tz": "America/Chicago",
+    "record_counts": {
+      "derivative_series_ignored": 1270,
+      "future_records": 42,
+      "ignored_record_type": 605267
+    },
+    "refused_by_reason": {},
+    "refused_team_evidence": {},
+    "schedule_receipt": {
+      "fetch_status": "OK",
+      "http_status": 200,
+      "kept_from": {},
+      "query_receipts": {
+        "20261009": {
+          "fetch_status": "OK",
+          "http_status": 200,
+          "request_start_utc": "2026-10-09T13:27:46.406548+00:00",
+          "response_bytes": 5050,
+          "response_end_utc": "2026-10-09T13:27:46.469941+00:00",
+          "response_sha256": "d0b7c1d790cfa9721ccd5f8d4d5bafaadb09697286709bfb74b4f200f06e9b8d",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=20261009"
+        },
+        "20261010": {
+          "fetch_status": "OK",
+          "http_status": 200,
+          "request_start_utc": "2026-10-09T13:27:46.469941+00:00",
+          "response_bytes": 5050,
+          "response_end_utc": "2026-10-09T13:27:46.533090+00:00",
+          "response_sha256": "d0b7c1d790cfa9721ccd5f8d4d5bafaadb09697286709bfb74b4f200f06e9b8d",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=20261010"
+        }
+      },
+      "request_start_utc": "2026-10-09T13:27:46.469941+00:00",
+      "response_bytes": 5050,
+      "response_end_utc": "2026-10-09T13:27:46.533090+00:00",
+      "response_sha256": "d0b7c1d790cfa9721ccd5f8d4d5bafaadb09697286709bfb74b4f200f06e9b8d",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=20261010"
+    },
+    "schedule_source": "live",
+    "written": 0
+  },
+  "soccer": {
+    "canonical_rules": {
+      "home_alias": 23
+    },
+    "game_key_sources": {
+      "401878772": "espn_event_id",
+      "401878773": "espn_event_id",
+      "401878775": "espn_event_id",
+      "401878776": "espn_event_id",
+      "401879265": "espn_event_id",
+      "401879268": "espn_event_id",
+      "esp.1:401882848": "espn_event_id",
+      "esp.1:401882853": "espn_event_id",
+      "esp.1:401882856": "espn_event_id",
+      "fra.1:401876442": "espn_event_id",
+      "fra.1:401876444": "espn_event_id",
+      "fra.1:401876445": "espn_event_id",
+      "fra.1:401876446": "espn_event_id",
+      "fra.1:401876448": "espn_event_id",
+      "ger.1:401884773": "espn_event_id",
+      "ger.1:401884775": "espn_event_id",
+      "ger.1:401884776": "espn_event_id",
+      "ger.1:401884777": "espn_event_id",
+      "ger.1:401884779": "espn_event_id",
+      "ger.1:401884780": "espn_event_id",
+      "ita.1:401874754": "espn_event_id",
+      "ita.1:401874947": "espn_event_id",
+      "ita.1:401875021": "espn_event_id"
+    },
+    "games_seen": 24,
+    "link_paths": {
+      "401878772": "soccer_crosswalk",
+      "401878773": "soccer_crosswalk",
+      "401878775": "soccer_crosswalk",
+      "401878776": "soccer_crosswalk",
+      "401879265": "soccer_crosswalk",
+      "401879268": "soccer_crosswalk",
+      "esp.1:401882848": "soccer_crosswalk",
+      "esp.1:401882853": "soccer_crosswalk",
+      "esp.1:401882856": "soccer_crosswalk",
+      "fra.1:401876442": "soccer_crosswalk",
+      "fra.1:401876444": "soccer_crosswalk",
+      "fra.1:401876445": "soccer_crosswalk",
+      "fra.1:401876446": "soccer_crosswalk",
+      "fra.1:401876448": "soccer_crosswalk",
+      "ger.1:401884773": "soccer_crosswalk",
+      "ger.1:401884775": "soccer_crosswalk",
+      "ger.1:401884776": "soccer_crosswalk",
+      "ger.1:401884777": "soccer_crosswalk",
+      "ger.1:401884779": "soccer_crosswalk",
+      "ger.1:401884780": "soccer_crosswalk",
+      "ita.1:401874754": "soccer_crosswalk",
+      "ita.1:401874947": "soccer_crosswalk",
+      "ita.1:401875021": "soccer_crosswalk"
+    },
+    "linked": 23,
+    "local_date_tz": "America/Chicago",
+    "per_league": {
+      "eng.1": {
+        "games_seen": 6,
+        "linked": 6,
+        "refused_by_reason": {},
+        "written": 6
+      },
+      "esp.1": {
+        "games_seen": 4,
+        "linked": 3,
+        "refused_by_reason": {
+          "soccer_alias_unmapped": 1
+        },
+        "written": 3
+      },
+      "fra.1": {
+        "games_seen": 5,
+        "linked": 5,
+        "refused_by_reason": {},
+        "written": 5
+      },
+      "ger.1": {
+        "games_seen": 6,
+        "linked": 6,
+        "refused_by_reason": {},
+        "written": 6
+      },
+      "ita.1": {
+        "games_seen": 3,
+        "linked": 3,
+        "refused_by_reason": {},
+        "written": 3
+      },
+      "uefa.champions": {
+        "games_seen": 0,
+        "linked": 0,
+        "refused_by_reason": {},
+        "written": 0
+      }
+    },
+    "record_counts": {
+      "derivative_series_ignored": 45,
+      "espn_minute_precision_normalized": 27,
+      "future_records": 173,
+      "local_date_from_declared_tz": 24,
+      "previous_us_date_other_day": 3
+    },
+    "refused_by_reason": {
+      "soccer_alias_unmapped": 1
+    },
+    "refused_team_evidence": {},
+    "schedule_receipt": {
+      "tour_receipts": {
+        "eng.1": {
+          "fetch_status": "OK",
+          "http_status": 200,
+          "kept_from": {
+            "401878772": "20261010",
+            "401878773": "20261010",
+            "401878775": "20261010",
+            "401878776": "20261010",
+            "401879265": "20261010",
+            "401879268": "20261010"
+          },
+          "query_receipts": {
+            "20261009": {
+              "fetch_status": "OK",
+              "http_status": 200,
+              "request_start_utc": "2026-10-09T13:27:46.533090+00:00",
+              "response_bytes": 2363,
+              "response_end_utc": "2026-10-09T13:27:46.597156+00:00",
+              "response_sha256": "57e18c687bf21abd795e68e9cdcd961cbeba98d5c583cc5a81e60abbeb8f544a",
+              "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20261009"
+            },
+            "20261010": {
+              "fetch_status": "OK",
+              "http_status": 200,
+              "request_start_utc": "2026-10-09T13:27:46.597156+00:00",
+              "response_bytes": 77612,
+              "response_end_utc": "2026-10-09T13:27:46.691686+00:00",
+              "response_sha256": "c4f7ac78822c21d11a16f8f05f1ab3a9defe11c3a1a32daa5db02c5d3690604a",
+              "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20261010"
+            }
+          },
+          "request_start_utc": "2026-10-09T13:27:46.597156+00:00",
+          "response_bytes": 77612,
+          "response_end_utc": "2026-10-09T13:27:46.691686+00:00",
+          "response_sha256": "c4f7ac78822c21d11a16f8f05f1ab3a9defe11c3a1a32daa5db02c5d3690604a",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20261010"
+        },
+        "esp.1": {
+          "fetch_status": "OK",
+          "http_status": 200,
+          "kept_from": {
+            "esp.1:401882848": "20261010",
+            "esp.1:401882849": "20261010",
+            "esp.1:401882853": "20261010",
+            "esp.1:401882856": "20261010"
+          },
+          "query_receipts": {
+            "20261009": {
+              "fetch_status": "OK",
+              "http_status": 200,
+              "request_start_utc": "2026-10-09T13:27:46.869098+00:00",
+              "response_bytes": 15481,
+              "response_end_utc": "2026-10-09T13:27:46.945382+00:00",
+              "response_sha256": "9098e070d5930160a05e1a1895a97f1d6ca619e475ce16aadba960eca6eb206f",
+              "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261009"
+            },
+            "20261010": {
+              "fetch_status": "OK",
+              "http_status": 200,
+              "request_start_utc": "2026-10-09T13:27:46.945382+00:00",
+              "response_bytes": 53450,
+              "response_end_utc": "2026-10-09T13:27:47.029818+00:00",
+              "response_sha256": "ed3814c9fb74235cbae49a88544fc35b7f6987de0b54ef831dd1cd6d55817a2f",
+              "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261010"
+            }
+          },
+          "request_start_utc": "2026-10-09T13:27:46.945382+00:00",
+          "response_bytes": 53450,
+          "response_end_utc": "2026-10-09T13:27:47.029818+00:00",
+          "response_sha256": "ed3814c9fb74235cbae49a88544fc35b7f6987de0b54ef831dd1cd6d55817a2f",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261010"
+        },
+        "fra.1": {
+          "fetch_status": "OK",
+          "http_status": 200,
+          "kept_from": {
+            "fra.1:401876442": "20261010",
+            "fra.1:401876444": "20261010",
+            "fra.1:401876445": "20261010",
+            "fra.1:401876446": "20261010",
+            "fra.1:401876448": "20261010"
+          },
+          "query_receipts": {
+            "20261009": {
+              "fetch_status": "OK",
+              "http_status": 200,
+              "request_start_utc": "2026-10-09T13:27:47.167298+00:00",
+              "response_bytes": 14282,
+              "response_end_utc": "2026-10-09T13:27:47.278137+00:00",
+              "response_sha256": "7ca65994eda1aaa110774a5419e649e7f5418316b82d815cc8fe3f2fe7630a0d",
+              "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261009"
+            },
+            "20261010": {
+              "fetch_status": "OK",
+              "http_status": 200,
+              "request_start_utc": "2026-10-09T13:27:47.278137+00:00",
+              "response_bytes": 62297,
+              "response_end_utc": "2026-10-09T13:27:47.356923+00:00",
+              "response_sha256": "cb3a13643038fd4b3b8d61b22c5f36a1a219b70594f0f1bd044beea7603aa5ce",
+              "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261010"
+            }
+          },
+          "request_start_utc": "2026-10-09T13:27:47.278137+00:00",
+          "response_bytes": 62297,
+          "response_end_utc": "2026-10-09T13:27:47.356923+00:00",
+          "response_sha256": "cb3a13643038fd4b3b8d61b22c5f36a1a219b70594f0f1bd044beea7603aa5ce",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261010"
+        },
+        "ger.1": {
+          "fetch_status": "OK",
+          "http_status": 200,
+          "kept_from": {
+            "ger.1:401884773": "20261010",
+            "ger.1:401884775": "20261010",
+            "ger.1:401884776": "20261010",
+            "ger.1:401884777": "20261010",
+            "ger.1:401884779": "20261010",
+            "ger.1:401884780": "20261010"
+          },
+          "query_receipts": {
+            "20261009": {
+              "fetch_status": "OK",
+              "http_status": 200,
+              "request_start_utc": "2026-10-09T13:27:46.693244+00:00",
+              "response_bytes": 14515,
+              "response_end_utc": "2026-10-09T13:27:46.771122+00:00",
+              "response_sha256": "a72ca830b141170225deb0fe96ae0c61803497786dda839d9f2e711db2529640",
+              "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261009"
+            },
+            "20261010": {
+              "fetch_status": "OK",
+              "http_status": 200,
+              "request_start_utc": "2026-10-09T13:27:46.771122+00:00",
+              "response_bytes": 71625,
+              "response_end_utc": "2026-10-09T13:27:46.865834+00:00",
+              "response_sha256": "443087fecd38fe7d6d842389c9c96952ad0830ca452ab46a29334cd982089a56",
+              "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261010"
+            }
+          },
+          "request_start_utc": "2026-10-09T13:27:46.771122+00:00",
+          "response_bytes": 71625,
+          "response_end_utc": "2026-10-09T13:27:46.865834+00:00",
+          "response_sha256": "443087fecd38fe7d6d842389c9c96952ad0830ca452ab46a29334cd982089a56",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261010"
+        },
+        "ita.1": {
+          "fetch_status": "OK",
+          "http_status": 200,
+          "kept_from": {
+            "ita.1:401874754": "20261010",
+            "ita.1:401874947": "20261010",
+            "ita.1:401875021": "20261010"
+          },
+          "query_receipts": {
+            "20261009": {
+              "fetch_status": "OK",
+              "http_status": 200,
+              "request_start_utc": "2026-10-09T13:27:47.029818+00:00",
+              "response_bytes": 2568,
+              "response_end_utc": "2026-10-09T13:27:47.087870+00:00",
+              "response_sha256": "2048ebfe872d9a0cca6236e6397c9e0a3044969672cee3a2dfa21cf34c450d5b",
+              "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261009"
+            },
+            "20261010": {
+              "fetch_status": "OK",
+              "http_status": 200,
+              "request_start_utc": "2026-10-09T13:27:47.087870+00:00",
+              "response_bytes": 38989,
+              "response_end_utc": "2026-10-09T13:27:47.167298+00:00",
+              "response_sha256": "a6a1a2233546963f57c4d6dad0c1c5d559fbf4055283455d5e12fc1d2772e382",
+              "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261010"
+            }
+          },
+          "request_start_utc": "2026-10-09T13:27:47.087870+00:00",
+          "response_bytes": 38989,
+          "response_end_utc": "2026-10-09T13:27:47.167298+00:00",
+          "response_sha256": "a6a1a2233546963f57c4d6dad0c1c5d559fbf4055283455d5e12fc1d2772e382",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261010"
+        },
+        "uefa.champions": {
+          "fetch_status": "OK",
+          "http_status": 200,
+          "kept_from": {},
+          "query_receipts": {
+            "20261009": {
+              "fetch_status": "OK",
+              "http_status": 200,
+              "request_start_utc": "2026-10-09T13:27:47.356923+00:00",
+              "response_bytes": 1786,
+              "response_end_utc": "2026-10-09T13:27:47.420153+00:00",
+              "response_sha256": "0a74e0ff565268e9bba896aa280e4e1327015cfae3f09087c2f944aa70dfe321",
+              "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard?dates=20261009"
+            },
+            "20261010": {
+              "fetch_status": "OK",
+              "http_status": 200,
+              "request_start_utc": "2026-10-09T13:27:47.420153+00:00",
+              "response_bytes": 1786,
+              "response_end_utc": "2026-10-09T13:27:47.483453+00:00",
+              "response_sha256": "0a74e0ff565268e9bba896aa280e4e1327015cfae3f09087c2f944aa70dfe321",
+              "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard?dates=20261010"
+            }
+          },
+          "request_start_utc": "2026-10-09T13:27:47.420153+00:00",
+          "response_bytes": 1786,
+          "response_end_utc": "2026-10-09T13:27:47.483453+00:00",
+          "response_sha256": "0a74e0ff565268e9bba896aa280e4e1327015cfae3f09087c2f944aa70dfe321",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard?dates=20261010"
+        }
+      }
+    },
+    "schedule_source": "live",
+    "written": 23
+  },
+  "tennis": {
+    "canonical_rules": {
+      "tennis_player_name": 8
+    },
+    "game_key_sources": {
+      "atp:184897": "espn_competition_id",
+      "atp:184899": "espn_competition_id",
+      "atp:184901": "espn_competition_id",
+      "atp:184902": "espn_competition_id",
+      "atp:184905": "espn_competition_id",
+      "atp:184906": "espn_competition_id",
+      "atp:184911": "espn_competition_id",
+      "atp:184912": "espn_competition_id"
+    },
+    "games_seen": 830,
+    "link_paths": {
+      "atp:184897": "tennis_player_name",
+      "atp:184899": "tennis_player_name",
+      "atp:184901": "tennis_player_name",
+      "atp:184902": "tennis_player_name",
+      "atp:184905": "tennis_player_name",
+      "atp:184906": "tennis_player_name",
+      "atp:184911": "tennis_player_name",
+      "atp:184912": "tennis_player_name"
+    },
+    "linked": 8,
+    "local_date_tz": "America/Chicago",
+    "record_counts": {
+      "espn_minute_precision_normalized": 830,
+      "tennis_book_after_selected_at": 726,
+      "tennis_book_shard_missing": 2
+    },
+    "refused_by_reason": {
+      "missing_player_name": 15,
+      "name_unmatched": 22,
+      "not_pregame": 629,
+      "other_local_day": 130,
+      "outside_listing_window": 1,
+      "placeholder_player_name": 25
+    },
+    "refused_team_evidence": {},
+    "schedule_receipt": {
+      "tour_receipts": {
+        "atp": {
+          "fetch_status": "OK",
+          "http_status": 200,
+          "request_start_utc": "2026-10-09T13:27:47.483453+00:00",
+          "response_bytes": 860434,
+          "response_end_utc": "2026-10-09T13:27:47.626475+00:00",
+          "response_sha256": "07ad63b1cbfa75f0b5167254179cc4643835e197a645c427ddc13732c48f18bb",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/tennis/atp/scoreboard?dates=20261010"
+        },
+        "wta": {
+          "fetch_status": "OK",
+          "http_status": 200,
+          "request_start_utc": "2026-10-09T13:27:47.626475+00:00",
+          "response_bytes": 938348,
+          "response_end_utc": "2026-10-09T13:27:47.768918+00:00",
+          "response_sha256": "1e2dce97b053d0934da2a64e1acf6374c4c3b7c1f1b8df0b738a4e40b39628dc",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/tennis/wta/scoreboard?dates=20261010"
+        }
+      }
+    },
+    "schedule_source": "live",
+    "written": 8
+  }
+}

@@ -3,6 +3,7 @@
   "family": "maker_forward_mlb",
   "independence_rules": {
    "maker_forward_nba": "Sports are separate strata and are never pooled: maker_forward_mlb counts only mlb games and never borrows a game from maker_forward_nba (nba).",
+   "maker_forward_ncaaf": "Sports are separate strata and are never pooled: maker_forward_mlb counts only mlb games and never borrows a game from maker_forward_ncaaf (ncaaf).",
    "maker_forward_nfl": "Sports are separate strata and are never pooled: maker_forward_mlb counts only mlb games and never borrows a game from maker_forward_nfl (nfl).",
    "maker_forward_soccer": "Sports are separate strata and are never pooled: maker_forward_mlb counts only mlb games and never borrows a game from maker_forward_soccer (soccer).",
    "maker_forward_tennis": "Sports are separate strata and are never pooled: maker_forward_mlb counts only mlb games and never borrows a game from maker_forward_tennis (tennis)."
@@ -16,6 +17,7 @@
   "independence_rules": {
    "maker_forward_mlb": "Sports are separate strata and are never pooled: maker_forward_nfl counts only nfl games and never borrows a game from maker_forward_mlb (mlb).",
    "maker_forward_nba": "Sports are separate strata and are never pooled: maker_forward_nfl counts only nfl games and never borrows a game from maker_forward_nba (nba).",
+   "maker_forward_ncaaf": "Sports are separate strata and are never pooled: maker_forward_nfl counts only nfl games and never borrows a game from maker_forward_ncaaf (ncaaf).",
    "maker_forward_soccer": "Sports are separate strata and are never pooled: maker_forward_nfl counts only nfl games and never borrows a game from maker_forward_soccer (soccer).",
    "maker_forward_tennis": "Sports are separate strata and are never pooled: maker_forward_nfl counts only nfl games and never borrows a game from maker_forward_tennis (tennis)."
   },
@@ -28,6 +30,7 @@
   "independence_rules": {
    "maker_forward_mlb": "Sports are separate strata and are never pooled: maker_forward_tennis counts only tennis games and never borrows a game from maker_forward_mlb (mlb).",
    "maker_forward_nba": "Sports are separate strata and are never pooled: maker_forward_tennis counts only tennis games and never borrows a game from maker_forward_nba (nba).",
+   "maker_forward_ncaaf": "Sports are separate strata and are never pooled: maker_forward_tennis counts only tennis games and never borrows a game from maker_forward_ncaaf (ncaaf).",
    "maker_forward_nfl": "Sports are separate strata and are never pooled: maker_forward_tennis counts only tennis games and never borrows a game from maker_forward_nfl (nfl).",
    "maker_forward_soccer": "Sports are separate strata and are never pooled: maker_forward_tennis counts only tennis games and never borrows a game from maker_forward_soccer (soccer)."
   },
@@ -39,6 +42,7 @@
   "family": "maker_forward_nba",
   "independence_rules": {
    "maker_forward_mlb": "Sports are separate strata and are never pooled: maker_forward_nba counts only nba games and never borrows a game from maker_forward_mlb (mlb).",
+   "maker_forward_ncaaf": "Sports are separate strata and are never pooled: maker_forward_nba counts only nba games and never borrows a game from maker_forward_ncaaf (ncaaf).",
    "maker_forward_nfl": "Sports are separate strata and are never pooled: maker_forward_nba counts only nba games and never borrows a game from maker_forward_nfl (nfl).",
    "maker_forward_soccer": "Sports are separate strata and are never pooled: maker_forward_nba counts only nba games and never borrows a game from maker_forward_soccer (soccer).",
    "maker_forward_tennis": "Sports are separate strata and are never pooled: maker_forward_nba counts only nba games and never borrows a game from maker_forward_tennis (tennis)."
@@ -52,11 +56,25 @@
   "independence_rules": {
    "maker_forward_mlb": "Sports are separate strata and are never pooled: maker_forward_soccer counts only soccer games and never borrows a game from maker_forward_mlb (mlb).",
    "maker_forward_nba": "Sports are separate strata and are never pooled: maker_forward_soccer counts only soccer games and never borrows a game from maker_forward_nba (nba).",
+   "maker_forward_ncaaf": "Sports are separate strata and are never pooled: maker_forward_soccer counts only soccer games and never borrows a game from maker_forward_ncaaf (ncaaf).",
    "maker_forward_nfl": "Sports are separate strata and are never pooled: maker_forward_soccer counts only soccer games and never borrows a game from maker_forward_nfl (nfl).",
    "maker_forward_tennis": "Sports are separate strata and are never pooled: maker_forward_soccer counts only soccer games and never borrows a game from maker_forward_tennis (tennis)."
   },
   "market_type": "maker",
   "sport": "soccer",
+  "weekly_floor": 4
+ },
+ {
+  "family": "maker_forward_ncaaf",
+  "independence_rules": {
+   "maker_forward_mlb": "Sports are separate strata and are never pooled: maker_forward_ncaaf counts only ncaaf games and never borrows a game from maker_forward_mlb (mlb).",
+   "maker_forward_nba": "Sports are separate strata and are never pooled: maker_forward_ncaaf counts only ncaaf games and never borrows a game from maker_forward_nba (nba).",
+   "maker_forward_nfl": "Sports are separate strata and are never pooled: maker_forward_ncaaf counts only ncaaf games and never borrows a game from maker_forward_nfl (nfl).",
+   "maker_forward_soccer": "Sports are separate strata and are never pooled: maker_forward_ncaaf counts only ncaaf games and never borrows a game from maker_forward_soccer (soccer).",
+   "maker_forward_tennis": "Sports are separate strata and are never pooled: maker_forward_ncaaf counts only ncaaf games and never borrows a game from maker_forward_tennis (tennis)."
+  },
+  "market_type": "maker",
+  "sport": "ncaaf",
   "weekly_floor": 4
  }
 ]

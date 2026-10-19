@@ -1,0 +1,101 @@
+[
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXMLBGAME-26OCT122000CLETB",
+    "game_key": "849820",
+    "scheduled_start": "2026-10-13T00:00:00.000000Z",
+    "selected_at": "2026-10-12T15:26:34.269780+00:00",
+    "sport": "mlb",
+    "ticker": "KXMLBGAME-26OCT122000CLETB-TB"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXNFLGAME-26OCT12BUFLAR",
+    "game_key": "401872994",
+    "scheduled_start": "2026-10-13T00:15:00.000000Z",
+    "selected_at": "2026-10-12T15:26:34.269780+00:00",
+    "sport": "nfl",
+    "ticker": "KXNFLGAME-26OCT12BUFLAR-LAR"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXNBAGAME-26OCT12SASUTA",
+    "game_key": "401898721",
+    "scheduled_start": "2026-10-13T01:00:00.000000Z",
+    "season_reason": null,
+    "season_type": 1,
+    "season_year": 2027,
+    "selected_at": "2026-10-12T15:26:34.269780+00:00",
+    "sport": "nba",
+    "ticker": "KXNBAGAME-26OCT12SASUTA-UTA"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXUCLGAME-26OCT13RCLSPO",
+    "game_key": "uefa.champions:401915418",
+    "scheduled_start": "2026-10-13T16:45:00.000000Z",
+    "selected_at": "2026-10-12T15:26:34.269780+00:00",
+    "sport": "soccer",
+    "ticker": "KXUCLGAME-26OCT13RCLSPO-RCL"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXUCLGAME-26OCT13SBHSLA",
+    "game_key": "uefa.champions:401915436",
+    "scheduled_start": "2026-10-13T16:45:00.000000Z",
+    "selected_at": "2026-10-12T15:26:34.269780+00:00",
+    "sport": "soccer",
+    "ticker": "KXUCLGAME-26OCT13SBHSLA-SBH"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXUCLGAME-26OCT13ARSLIL",
+    "game_key": "uefa.champions:401915417",
+    "scheduled_start": "2026-10-13T19:00:00.000000Z",
+    "selected_at": "2026-10-12T15:26:34.269780+00:00",
+    "sport": "soccer",
+    "ticker": "KXUCLGAME-26OCT13ARSLIL-ARS"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXUCLGAME-26OCT13ATMMUN",
+    "game_key": "uefa.champions:401915412",
+    "scheduled_start": "2026-10-13T19:00:00.000000Z",
+    "selected_at": "2026-10-12T15:26:34.269780+00:00",
+    "sport": "soccer",
+    "ticker": "KXUCLGAME-26OCT13ATMMUN-ATM"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXNBAGAME-26OCT13CLEORL",
+    "game_key": "401898403",
+    "scheduled_start": "2026-10-13T23:00:00.000000Z",
+    "season_reason": null,
+    "season_type": 1,
+    "season_year": 2027,
+    "selected_at": "2026-10-12T15:26:34.269780+00:00",
+    "sport": "nba",
+    "ticker": "KXNBAGAME-26OCT13CLEORL-ORL"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXNBAGAME-26OCT13NYKTOR",
+    "game_key": "401908944",
+    "scheduled_start": "2026-10-13T23:00:00.000000Z",
+    "season_reason": null,
+    "season_type": 1,
+    "season_year": 2027,
+    "selected_at": "2026-10-12T15:26:34.269780+00:00",
+    "sport": "nba",
+    "ticker": "KXNBAGAME-26OCT13NYKTOR-TOR"
+  }
+]

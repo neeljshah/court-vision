@@ -95,7 +95,7 @@ Read this section with its caveat: these rows show *discipline*, not a working t
 The execution modules below are published as readable source; their wider import closure lives in the
 private tree, so they are not runnable from this repository.
 The forward paper series is currently dormant, and the in-game models trail the live market
-reference (section C). Both facts are part of the record.
+reference (section C). Both facts are part of the record. Update 2026-10-19: the forward paper series ran from 2026-10-06 (row below and [JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md) section 5). It has no verdict yet.
 
 | Claim | Number | Verdict | Artifact | Reproduce |
 |---|---|---|---|---|
@@ -108,6 +108,7 @@ reference (section C). Both facts are part of the record.
 | A check-then-append race in the ledger writer, closed and proven by a test that races two real OS processes | test passes | engineering control | [clv_ledger_io.py](scripts/platformkit/clv_ledger_io.py), [test_clv_ledger_io.py](scripts/platformkit/test_clv_ledger_io.py) | readable here; runs in the full private tree |
 | The bar for any real order is fixed in advance: six gates, including 8 weeks of fee-netted shadow markout with an interval excluding 0 on two market families; no gate may be weakened after its own result | pre-registered 2026-09-17; G6 not started | pre-registration | [docs/GO_LIVE_GATES.md](docs/GO_LIVE_GATES.md) | read the page |
 | An integrity checker that fails the project's own headline in-game corpus, shipped with the finding it produced | exit 1 on the original corpus | engineering control | [check_ingame_join_integrity.py](scripts/platformkit/check_ingame_join_integrity.py) | [live: join-integrity finding](https://neeljshah.github.io/court-vision/analytics/findings/ingame-join-integrity/) |
+| Forward paper record 2026-10-06 to 2026-10-18: 113 games served on prospective schedules, 8 night receipts (1 COMPLETE, 7 PARTIAL), every scoreboard cell INSUFFICIENT, 0 of 31 games qualified | as of 2026-10-19 | `DESCRIPTIVE` (no verdict) | [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md) section 5, [cumulative/2026-10-14.md](docs/evidence/forward/cumulative/2026-10-14.md) | recorded |
 
 ---
 

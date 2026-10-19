@@ -1,7 +1,7 @@
 # In-Game Conditioning -- the one measured calibration win
 
 > Pregame, the market is efficient: across 4 sports and 6 independent corpora my leak-free
-> forecaster MATCHES the Shin-devigged closing line within noise and beats nothing. The one
+> forecaster TRAILS the devigged close on MLB moneyline (+0.0039 Brier, 95% CI [+0.0028, +0.0051]) and soccer O/U 2.5 (+0.0076, [+0.0059, +0.0092]) and is indistinguishable from it on NBA moneyline at an underpowered n=372 (corrected 2026-10-06 from DM_RECOMPUTE_2026-09-24) and beats nothing. The one
 > place the machinery measurably sharpens is IN-GAME -- fusing the pregame rating prior with
 > the realized mid-game state improves win-probability calibration. A live book sees the
 > score too, so this is a CALIBRATION result, not a claim of beating anyone. Every number

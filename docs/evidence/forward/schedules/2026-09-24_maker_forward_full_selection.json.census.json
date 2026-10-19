@@ -1,0 +1,184 @@
+{
+  "mlb": {
+    "canonical_rules": {
+      "home_alias": 4
+    },
+    "game_key_sources": {
+      "822842": "mlb_game_pk",
+      "823411": "mlb_game_pk",
+      "824707": "mlb_game_pk",
+      "824866": "mlb_game_pk"
+    },
+    "games_seen": 12,
+    "link_paths": {
+      "822842": "team_set",
+      "823411": "team_set",
+      "824707": "team_set",
+      "824866": "team_set"
+    },
+    "linked": 4,
+    "record_counts": {
+      "derivative_series_ignored": 744,
+      "ignored_record_type": 257896
+    },
+    "refused_by_reason": {
+      "missing_directional_team_evidence": 2,
+      "not_pregame": 3,
+      "outside_utc_date": 3
+    },
+    "refused_team_evidence": {
+      "823493": {
+        "away_abbr": "TB",
+        "compared_team_code_sets": {
+          "KXMLBGAME-26SEP241235STLPIT": [
+            "PIT",
+            "STL"
+          ],
+          "KXMLBGAME-26SEP241410CWSKC": [
+            "CWS",
+            "KC"
+          ],
+          "KXMLBGAME-26SEP241420MIACHC": [
+            "CHC",
+            "MIA"
+          ],
+          "KXMLBGAME-26SEP241435NYMTEX": [
+            "NYM",
+            "TEX"
+          ],
+          "KXMLBGAME-26SEP241510AZCOL": [
+            "AZ",
+            "COL"
+          ],
+          "KXMLBGAME-26SEP241805MILPHI": [
+            "MIL",
+            "PHI"
+          ],
+          "KXMLBGAME-26SEP241845CLEBOS": [
+            "BOS",
+            "CLE"
+          ],
+          "KXMLBGAME-26SEP241905TBNYY": [
+            "NYY",
+            "TB"
+          ],
+          "KXMLBGAME-26SEP241915CINATL": [
+            "ATL",
+            "CIN"
+          ],
+          "KXMLBGAME-26SEP242140HOUATH": [
+            "ATH",
+            "HOU"
+          ],
+          "KXMLBGAME-26SEP242140LAASEA": [
+            "LAA",
+            "SEA"
+          ],
+          "KXMLBGAME-26SEP242210SDLAD": [
+            "LAD",
+            "SD"
+          ]
+        },
+        "home_abbr": "NYY",
+        "venue_team_codes": [
+          "NYY",
+          "TAM"
+        ]
+      },
+      "824298": {
+        "away_abbr": "AZ",
+        "compared_team_code_sets": {
+          "KXMLBGAME-26SEP241235STLPIT": [
+            "PIT",
+            "STL"
+          ],
+          "KXMLBGAME-26SEP241410CWSKC": [
+            "CWS",
+            "KC"
+          ],
+          "KXMLBGAME-26SEP241420MIACHC": [
+            "CHC",
+            "MIA"
+          ],
+          "KXMLBGAME-26SEP241435NYMTEX": [
+            "NYM",
+            "TEX"
+          ],
+          "KXMLBGAME-26SEP241510AZCOL": [
+            "AZ",
+            "COL"
+          ],
+          "KXMLBGAME-26SEP241805MILPHI": [
+            "MIL",
+            "PHI"
+          ],
+          "KXMLBGAME-26SEP241845CLEBOS": [
+            "BOS",
+            "CLE"
+          ],
+          "KXMLBGAME-26SEP241905TBNYY": [
+            "NYY",
+            "TB"
+          ],
+          "KXMLBGAME-26SEP241915CINATL": [
+            "ATL",
+            "CIN"
+          ],
+          "KXMLBGAME-26SEP242140HOUATH": [
+            "ATH",
+            "HOU"
+          ],
+          "KXMLBGAME-26SEP242140LAASEA": [
+            "LAA",
+            "SEA"
+          ],
+          "KXMLBGAME-26SEP242210SDLAD": [
+            "LAD",
+            "SD"
+          ]
+        },
+        "home_abbr": "COL",
+        "venue_team_codes": [
+          "ARI",
+          "COL"
+        ]
+      }
+    },
+    "schedule_receipt": {
+      "http_status": 200,
+      "request_start_utc": "2026-09-24T17:54:31.454940+00:00",
+      "response_bytes": 34540,
+      "response_end_utc": "2026-09-24T17:54:31.611397+00:00",
+      "response_sha256": "3cf4f90a5ebec68c39698061b2498b513f17801607aff023b1a94d1c93ea9e11",
+      "url": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=2026-09-24&hydrate=team"
+    },
+    "schedule_source": "live",
+    "written": 4
+  },
+  "nfl": {
+    "canonical_rules": {},
+    "game_key_sources": {},
+    "games_seen": 1,
+    "link_paths": {},
+    "linked": 0,
+    "record_counts": {
+      "derivative_series_ignored": 441,
+      "espn_minute_precision_normalized": 1,
+      "ignored_record_type": 216047
+    },
+    "refused_by_reason": {
+      "outside_utc_date": 1
+    },
+    "refused_team_evidence": {},
+    "schedule_receipt": {
+      "http_status": 200,
+      "request_start_utc": "2026-09-24T17:54:31.613399+00:00",
+      "response_bytes": 22788,
+      "response_end_utc": "2026-09-24T17:54:31.703109+00:00",
+      "response_sha256": "84b23b81c6756ad3dcf751025a5a72d891426ab68792962b42f5f6a656b4c42b",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=20260924"
+    },
+    "schedule_source": "live",
+    "written": 0
+  }
+}

@@ -1,0 +1,117 @@
+{
+ "as_of": "2026-10-11T06:00:00Z",
+ "changed_inputs": [],
+ "date": "2026-10-10",
+ "declared_constants": {
+  "capture_profile_path": "C:\\Users\\neelj\\nba-ai-system\\scripts\\platformkit\\ingame\\forward_capture_profile.json",
+  "capture_profile_sha256": "5bb818074c5083049e804bffda59c2b5b701706048983d32bbb313120ea3607c",
+  "focus_tick_s": null,
+  "global_cap": "1",
+  "max_order_qty": "1",
+  "reservation_ttl_s": null,
+  "window_s": 3600
+ },
+ "diagnostics": {},
+ "games": [],
+ "games_total": 0,
+ "input_counts": {
+  "dropped_schedule_fields": 5,
+  "refusals": 1,
+  "state_shard_missing_sports": 0,
+  "torn_tail_bytes": 0
+ },
+ "inputs": {
+  "archives": [],
+  "capture_profile": {
+   "hashed_bytes": 158,
+   "path": "C:\\Users\\neelj\\nba-ai-system\\scripts\\platformkit\\ingame\\forward_capture_profile.json",
+   "present": true,
+   "sha256": "5bb818074c5083049e804bffda59c2b5b701706048983d32bbb313120ea3607c",
+   "size_bytes": 158
+  },
+  "capture_root": {
+   "books_root": "data\\cache\\ingame_capture_view_v2\\kalshi",
+   "root": "data\\cache\\ingame_capture_view_v2",
+   "root_realpath": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame_capture_view_v2",
+   "state_root": "data\\cache\\ingame_capture_view_v2\\state",
+   "state_root_realpath": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame_state_local_v2\\state",
+   "subtrees_present": true
+  },
+  "families": {
+   "hashed_bytes": 4287,
+   "path": "docs\\evidence\\forward\\families_maker_forward.json",
+   "present": true,
+   "sha256": "d9117eed01191e43daf2d45fd272500714295a020ddaf33da38c551db4bf0e31",
+   "size_bytes": 4287
+  },
+  "schedule": {
+   "hashed_bytes": 24012,
+   "path": "docs\\evidence\\forward\\schedules\\2026-10-10_maker_forward_full_selection.json",
+   "present": true,
+   "sha256": "9339dd5339860ff9d0068d330dc10f85820e575df5785bdc1351a036cf23f6c0",
+   "size_bytes": 24012
+  },
+  "served_schedule": {
+   "hashed_bytes": 8894,
+   "path": "docs\\evidence\\forward\\schedules\\2026-10-10_maker_forward.json",
+   "present": true,
+   "sha256": "33c6469d7a1fc05dae68f276bedc61c1a6ddeb9f71587f33c3f8cf6a66d0965b",
+   "size_bytes": 8894
+  },
+  "snapshots": {
+   "bytes": 0,
+   "files": 0,
+   "removed": true,
+   "root": "docs\\evidence\\forward\\qualification\\2026-10-10.json.snapshots",
+   "truncated": []
+  },
+  "supervisor_journals": [
+   {
+    "hashed_bytes": 8587,
+    "path": "data\\cache\\capture_supervisor\\supervisor_books.jsonl",
+    "present": true,
+    "sha256": "1ac1b700cfcf07118f780754cddc2279dbbc63efbb1c442fa3bbebf23365f819",
+    "size_bytes": 8587,
+    "torn_tail_bytes": 0
+   },
+   {
+    "hashed_bytes": 805,
+    "path": "data\\cache\\capture_supervisor\\supervisor_live_shadow.jsonl",
+    "present": true,
+    "sha256": "302f8a93ebfb130aa83774e4ba77ee72f1cc8ed25796e70358eec915cc78a173",
+    "size_bytes": 805,
+    "torn_tail_bytes": 0
+   },
+   {
+    "hashed_bytes": 7969,
+    "path": "data\\cache\\capture_supervisor\\supervisor_polymarket.jsonl",
+    "present": true,
+    "sha256": "754ed6b9044417e941f463d59b0a28a84d6cb578abd90eb69bac4a1e73aff7ec",
+    "size_bytes": 7969,
+    "torn_tail_bytes": 0
+   },
+   {
+    "hashed_bytes": 89,
+    "path": "data\\cache\\capture_supervisor\\supervisor_state.jsonl",
+    "present": true,
+    "sha256": "15e6246b516f837d88c5ea2f49e9cee8b3638e85ca7491e9e743dc196a78b546",
+    "size_bytes": 89,
+    "torn_tail_bytes": 0
+   },
+   {
+    "hashed_bytes": 8191,
+    "path": "data\\cache\\capture_supervisor\\supervisor_state2.jsonl",
+    "present": true,
+    "sha256": "1c378c598aba2df5e0e51a1bf533992c50dfca7e4290c9bfcefdbb5d1004f42b",
+    "size_bytes": 8191,
+    "torn_tail_bytes": 0
+   }
+  ]
+ },
+ "refusal_reason": "undeclared_sport",
+ "refused": 1,
+ "run_nonce": "paper-night-2026-10-10",
+ "scheduled_games_total": 71,
+ "served_games_total": null,
+ "spec": "S390"
+}

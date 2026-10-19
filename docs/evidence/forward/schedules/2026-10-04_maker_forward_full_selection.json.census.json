@@ -1,0 +1,284 @@
+{
+  "mlb": {
+    "canonical_rules": {
+      "home_alias": 2
+    },
+    "game_key_sources": {
+      "849825": "mlb_game_pk",
+      "849830": "mlb_game_pk"
+    },
+    "games_seen": 3,
+    "link_paths": {
+      "849825": "team_set",
+      "849830": "team_set"
+    },
+    "linked": 2,
+    "local_date_tz": "America/Chicago",
+    "record_counts": {
+      "derivative_series_ignored": 1776,
+      "ignored_record_type": 898873,
+      "listed_on_previous_us_date": 1,
+      "previous_us_date_other_day": 3
+    },
+    "refused_by_reason": {
+      "outside_utc_date": 1
+    },
+    "refused_team_evidence": {},
+    "schedule_receipt": {
+      "http_status": 200,
+      "kept_from": {
+        "849823": "20261004",
+        "849825": "20261004",
+        "849830": "20261003"
+      },
+      "query_receipts": {
+        "20261003": {
+          "http_status": 200,
+          "request_start_utc": "2026-10-03T12:29:49.095805+00:00",
+          "response_bytes": 11891,
+          "response_end_utc": "2026-10-03T12:29:56.044263+00:00",
+          "response_sha256": "278011c78437362c08e25973ac38ff412cb609523db517cb647770ba674e1107",
+          "url": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=2026-10-03&hydrate=team"
+        },
+        "20261004": {
+          "http_status": 200,
+          "request_start_utc": "2026-10-03T12:29:56.044263+00:00",
+          "response_bytes": 6144,
+          "response_end_utc": "2026-10-03T12:29:56.158018+00:00",
+          "response_sha256": "db6c8f0c01112285890aa55483bc1908c784e1589a07865f2877888245e151aa",
+          "url": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=2026-10-04&hydrate=team"
+        }
+      },
+      "request_start_utc": "2026-10-03T12:29:56.044263+00:00",
+      "response_bytes": 6144,
+      "response_end_utc": "2026-10-03T12:29:56.158018+00:00",
+      "response_sha256": "db6c8f0c01112285890aa55483bc1908c784e1589a07865f2877888245e151aa",
+      "url": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=2026-10-04&hydrate=team"
+    },
+    "schedule_source": "live",
+    "written": 2
+  },
+  "nfl": {
+    "canonical_rules": {
+      "home_alias": 11
+    },
+    "game_key_sources": {
+      "401872966": "espn_event_id",
+      "401872967": "espn_event_id",
+      "401872968": "espn_event_id",
+      "401872970": "espn_event_id",
+      "401872971": "espn_event_id",
+      "401872972": "espn_event_id",
+      "401872973": "espn_event_id",
+      "401872974": "espn_event_id",
+      "401872975": "espn_event_id",
+      "401872976": "espn_event_id",
+      "401872977": "espn_event_id"
+    },
+    "games_seen": 14,
+    "link_paths": {
+      "401872966": "team_set",
+      "401872967": "team_set",
+      "401872968": "team_set",
+      "401872970": "team_set",
+      "401872971": "team_set",
+      "401872972": "team_set",
+      "401872973": "team_set",
+      "401872974": "team_set",
+      "401872975": "team_set",
+      "401872976": "team_set",
+      "401872977": "team_set"
+    },
+    "linked": 11,
+    "local_date_tz": "America/Chicago",
+    "record_counts": {
+      "derivative_series_ignored": 882,
+      "espn_minute_precision_normalized": 14,
+      "future_records": 96,
+      "ignored_record_type": 353564,
+      "local_date_from_declared_tz": 13
+    },
+    "refused_by_reason": {
+      "missing_directional_team_evidence": 2,
+      "outside_utc_date": 1
+    },
+    "refused_team_evidence": {
+      "401872965": {
+        "away_abbr": "IND",
+        "compared_team_code_sets": {
+          "KXNFLGAME-26OCT04ARINYG": [
+            "ARI",
+            "NYG"
+          ],
+          "KXNFLGAME-26OCT04DALHOU": [
+            "DAL",
+            "HOU"
+          ],
+          "KXNFLGAME-26OCT04DENSF": [
+            "DEN",
+            "SF"
+          ],
+          "KXNFLGAME-26OCT04DETCAR": [
+            "CAR",
+            "DET"
+          ],
+          "KXNFLGAME-26OCT04GBTB": [
+            "GB",
+            "TB"
+          ],
+          "KXNFLGAME-26OCT04INDWAS": [
+            "IND",
+            "WAS"
+          ],
+          "KXNFLGAME-26OCT04JACCIN": [
+            "CIN",
+            "JAC"
+          ],
+          "KXNFLGAME-26OCT04KCLV": [
+            "KC",
+            "LV"
+          ],
+          "KXNFLGAME-26OCT04LACSEA": [
+            "LAC",
+            "SEA"
+          ],
+          "KXNFLGAME-26OCT04LARPHI": [
+            "LAR",
+            "PHI"
+          ],
+          "KXNFLGAME-26OCT04MIAMIN": [
+            "MIA",
+            "MIN"
+          ],
+          "KXNFLGAME-26OCT04NEBUF": [
+            "BUF",
+            "NE"
+          ],
+          "KXNFLGAME-26OCT04NYJCHI": [
+            "CHI",
+            "NYJ"
+          ],
+          "KXNFLGAME-26OCT04TENBAL": [
+            "BAL",
+            "TEN"
+          ]
+        },
+        "home_abbr": "WSH",
+        "venue_team_codes": [
+          "IND",
+          "WSH"
+        ]
+      },
+      "401872969": {
+        "away_abbr": "JAX",
+        "compared_team_code_sets": {
+          "KXNFLGAME-26OCT04ARINYG": [
+            "ARI",
+            "NYG"
+          ],
+          "KXNFLGAME-26OCT04DALHOU": [
+            "DAL",
+            "HOU"
+          ],
+          "KXNFLGAME-26OCT04DENSF": [
+            "DEN",
+            "SF"
+          ],
+          "KXNFLGAME-26OCT04DETCAR": [
+            "CAR",
+            "DET"
+          ],
+          "KXNFLGAME-26OCT04GBTB": [
+            "GB",
+            "TB"
+          ],
+          "KXNFLGAME-26OCT04INDWAS": [
+            "IND",
+            "WAS"
+          ],
+          "KXNFLGAME-26OCT04JACCIN": [
+            "CIN",
+            "JAC"
+          ],
+          "KXNFLGAME-26OCT04KCLV": [
+            "KC",
+            "LV"
+          ],
+          "KXNFLGAME-26OCT04LACSEA": [
+            "LAC",
+            "SEA"
+          ],
+          "KXNFLGAME-26OCT04LARPHI": [
+            "LAR",
+            "PHI"
+          ],
+          "KXNFLGAME-26OCT04MIAMIN": [
+            "MIA",
+            "MIN"
+          ],
+          "KXNFLGAME-26OCT04NEBUF": [
+            "BUF",
+            "NE"
+          ],
+          "KXNFLGAME-26OCT04NYJCHI": [
+            "CHI",
+            "NYJ"
+          ],
+          "KXNFLGAME-26OCT04TENBAL": [
+            "BAL",
+            "TEN"
+          ]
+        },
+        "home_abbr": "CIN",
+        "venue_team_codes": [
+          "CIN",
+          "JAX"
+        ]
+      }
+    },
+    "schedule_receipt": {
+      "http_status": 200,
+      "kept_from": {
+        "401872965": "20261004",
+        "401872966": "20261004",
+        "401872967": "20261004",
+        "401872968": "20261004",
+        "401872969": "20261004",
+        "401872970": "20261004",
+        "401872971": "20261004",
+        "401872972": "20261004",
+        "401872973": "20261004",
+        "401872974": "20261004",
+        "401872975": "20261004",
+        "401872976": "20261004",
+        "401872977": "20261004",
+        "401872978": "20261004"
+      },
+      "query_receipts": {
+        "20261003": {
+          "http_status": 200,
+          "request_start_utc": "2026-10-03T12:29:56.158018+00:00",
+          "response_bytes": 5050,
+          "response_end_utc": "2026-10-03T12:29:56.264466+00:00",
+          "response_sha256": "d0b7c1d790cfa9721ccd5f8d4d5bafaadb09697286709bfb74b4f200f06e9b8d",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=20261003"
+        },
+        "20261004": {
+          "http_status": 200,
+          "request_start_utc": "2026-10-03T12:29:56.264466+00:00",
+          "response_bytes": 248858,
+          "response_end_utc": "2026-10-03T12:29:56.365839+00:00",
+          "response_sha256": "d7db842f95989c68a62420359687ba3513b3763da7362d338278497af7d3d5a3",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=20261004"
+        }
+      },
+      "request_start_utc": "2026-10-03T12:29:56.264466+00:00",
+      "response_bytes": 248858,
+      "response_end_utc": "2026-10-03T12:29:56.365839+00:00",
+      "response_sha256": "d7db842f95989c68a62420359687ba3513b3763da7362d338278497af7d3d5a3",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=20261004"
+    },
+    "schedule_source": "live",
+    "written": 11
+  }
+}

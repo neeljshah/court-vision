@@ -1,0 +1,22 @@
+PROBE RAILS (In-game Model 2.0, Phase 1 probes; binding for every probe agent)
+
+Repo: C:/Users/neelj/nba-ai-system (Windows 11, Git Bash, conda python 3.10 on PATH as `python`).
+Probe dir (write ALL your files here, nowhere else):
+  C:/Users/neelj/AppData/Local/Temp/claude/C--Users-neelj-nba-ai-system/64725a34-ccec-42c2-9cfc-cdd6507d5c83/scratchpad/ingame2/
+Schema card for every archive (READ FIRST, it has exact field names):
+  C:/Users/neelj/AppData/Local/Temp/claude/C--Users-neelj-nba-ai-system/64725a34-ccec-42c2-9cfc-cdd6507d5c83/scratchpad/ingame2_schema.md
+
+HARD RULES
+1. READ-ONLY on data/. Never write, move, or delete anything under data/. Never edit any repo file. Never git add/commit.
+2. Prefix every bash command with `cd /c/Users/neelj/nba-ai-system && `. ASCII-only stdout (cp1252 console): no unicode arrows/box chars.
+3. A PreToolUse hook blocks bash command TEXT containing some path strings (data/registry, data/cache in some forms, and the word pytest followed by tests/). So: write probe code as .py files with the Write tool, build data paths inside python with os.path.join('data', 'cache', ...) relative to the repo root, and run `cd /c/Users/neelj/nba-ai-system && python <probe_dir>/probe_x.py`.
+4. RAM: free RAM on this laptop is 1.5-3 GB and other jobs run. Each probe process must stay under 350 MB peak. STREAM every file line by line (`with open(p, 'rb') as f: for line in f:`), filter early (check a cheap substring like b'KXMLBGAME' before json.loads), keep only the compact tuples you need, never load a whole shard, never pandas-read a big file. Print the process peak at the end: `import psutil; print('PEAK_RSS_MB', psutil.Process().memory_info().peak_wset // 2**20)` (Windows field). If a run would exceed 350 MB, restructure (per-shard/per-game passes).
+5. Runtime: keep each probe run under ~15 minutes. Big shards: kalshi mlb 120-360 MB/day, tennis 400-1000 MB (avoid tennis). Run probes one at a time (not in parallel) and in the foreground.
+6. Leak-free: anything FITTED (a logistic, isotonic, a table) is walk-forward by DATE: train only on games whose date is strictly earlier than the scored game's date (plus the scored night held out entirely); no feature may use information timestamped after the tick (as-of joins only: the latest record with ts <= tick ts). Fixed a-priori formulas (e.g. a normal-approximation win-expectancy with constants chosen BEFORE seeing outcomes and written in the script) count as not fitted; state the constants and why.
+7. Statistics: per-tick paired loss deltas with a GAME-CLUSTERED bootstrap (2000 resamples, seed 13) giving a 95 pct CI; always report n_ticks and n_games; any cell with fewer than 30 games is labelled INSUFFICIENT (report numbers, but no verdict). Brier and log loss (clip p to [1e-4, 1-1e-4]); ECE with 10 equal-width bins where asked. Delta sign convention: delta = loss(candidate) - loss(comparator); negative = candidate better.
+8. Vocabulary: calibration language only. Report Brier, log loss, ECE, reliability, "matches / trails / ahead of the venue mid within CI". No money or return vocabulary anywhere (the repo rule file under .claude/rules governs).
+9. Every number in your final report must be printed by your script in the same run (copy from stdout). Save stdout to <probe>_stdout.txt and a JSON summary to <probe>_out.json in the probe dir.
+10. Reuse existing repo code for joins instead of re-implementing when practical (import from scripts.platformkit...; run python from the repo root): scripts/platformkit/ingame/game_market_link.py (index_kalshi_events, link_game), scripts/platformkit/execution/forward_capture_bridge.py (_links), scripts/platformkit/execution/venue_time.py (parse_venue_time), scripts/platformkit/ingame/microstructure_features.py, scripts/platformkit/ingame/event_response_events.py. Read their signatures first. If reuse is awkward, a simpler direct join is fine (e.g. MLB: ticker KXMLBGAME-<yy><MON><dd><HHMM><AWAY><HOME>-<TEAM>; match by team codes + date) but COUNT and report unmatched games.
+11. Outcome labels: from the state archive's final rows (status == "final": scores) for capture_view_v2; the graded corpora carry `outcome`. Report games with no settlement as excluded, counted.
+
+FINAL REPORT (your last message): per probe: script path, what it measures, the exact printed numbers (n_games, n_ticks, estimates, CIs), PEAK_RSS_MB and wall time, known caveats (e.g. cadence floors, join losses), and a one-line ranking implication for the model design. Max ~80 lines.

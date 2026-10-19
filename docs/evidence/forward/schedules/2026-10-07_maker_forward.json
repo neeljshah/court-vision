@@ -1,0 +1,84 @@
+[
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXNBAGAME-26OCT06NOPOKC",
+    "game_key": "401898389",
+    "scheduled_start": "2026-10-07T00:00:00.000000Z",
+    "season_reason": null,
+    "season_type": 1,
+    "season_year": 2027,
+    "selected_at": "2026-10-06T12:26:33.954879+00:00",
+    "sport": "nba",
+    "ticker": "KXNBAGAME-26OCT06NOPOKC-OKC"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXNBAGAME-26OCT06DENUTA",
+    "game_key": "401914128",
+    "scheduled_start": "2026-10-07T01:00:00.000000Z",
+    "season_reason": null,
+    "season_type": 1,
+    "season_year": 2027,
+    "selected_at": "2026-10-06T12:26:33.954879+00:00",
+    "sport": "nba",
+    "ticker": "KXNBAGAME-26OCT06DENUTA-UTA"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXMLBGAME-26OCT062130MILSD",
+    "game_key": "849826",
+    "scheduled_start": "2026-10-07T01:30:00.000000Z",
+    "selected_at": "2026-10-06T12:26:33.954879+00:00",
+    "sport": "mlb",
+    "ticker": "KXMLBGAME-26OCT062130MILSD-SD"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXNBAGAME-26OCT06LALGSW",
+    "game_key": "401898390",
+    "scheduled_start": "2026-10-07T02:00:00.000000Z",
+    "season_reason": null,
+    "season_type": 1,
+    "season_year": 2027,
+    "selected_at": "2026-10-06T12:26:33.954879+00:00",
+    "sport": "nba",
+    "ticker": "KXNBAGAME-26OCT06LALGSW-GSW"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXMLBGAME-26OCT071600CLECWS",
+    "game_key": "849833",
+    "scheduled_start": "2026-10-07T20:00:00.000000Z",
+    "selected_at": "2026-10-06T12:26:33.954879+00:00",
+    "sport": "mlb",
+    "ticker": "KXMLBGAME-26OCT071600CLECWS-CWS"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXMLBGAME-26OCT071800LADATL",
+    "game_key": "849822",
+    "scheduled_start": "2026-10-07T22:00:00.000000Z",
+    "selected_at": "2026-10-06T12:26:33.954879+00:00",
+    "sport": "mlb",
+    "ticker": "KXMLBGAME-26OCT071800LADATL-ATL"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXNBAGAME-26OCT07MININD",
+    "game_key": "401914123",
+    "scheduled_start": "2026-10-07T23:00:00.000000Z",
+    "season_reason": null,
+    "season_type": 1,
+    "season_year": 2027,
+    "selected_at": "2026-10-06T12:26:33.954879+00:00",
+    "sport": "nba",
+    "ticker": "KXNBAGAME-26OCT07MININD-IND"
+  }
+]

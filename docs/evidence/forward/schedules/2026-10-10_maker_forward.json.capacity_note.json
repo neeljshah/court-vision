@@ -1,0 +1,516 @@
+{
+  "capacity_rule": "live_concurrency",
+  "capacity_subset_selected_at": "2026-10-09T13:36:44.405034+00:00",
+  "denominator_of_record": "C:/Users/neelj/nba-ai-system/docs/evidence/forward/schedules/2026-10-10_maker_forward_full_selection.json",
+  "floor_per_sport": 1,
+  "focus_game_capacity": 3,
+  "focus_ticker_capacity": 6,
+  "focus_window_s": {
+    "after_start": 3600,
+    "before_start": 120
+  },
+  "max_live_overlap": 3,
+  "max_live_tickers": 6,
+  "not_served": [
+    "KXNCAAFGAME-26OCT09WYOSJSU-SJSU",
+    "KXATPMATCH-26OCT08VANMIC-VAN",
+    "KXBUNDESLIGAGAME-26OCT10M05LEV-M05",
+    "KXBUNDESLIGAGAME-26OCT10PADVFB-PAD",
+    "KXBUNDESLIGAGAME-26OCT10TSGHSV-TSG",
+    "KXBUNDESLIGAGAME-26OCT10UNISVE-UNI",
+    "KXEPLGAME-26OCT10AVLBRE-AVL",
+    "KXEPLGAME-26OCT10CFCBOU-CFC",
+    "KXEPLGAME-26OCT10IPSFUL-IPS",
+    "KXEPLGAME-26OCT10SUNBRI-SUN",
+    "KXNCAAFGAME-26OCT10SACBGSU-BGSU",
+    "KXNCAAFGAME-26OCT10TULNARMY-ARMY",
+    "KXNCAAFGAME-26OCT10UCFOKST-OKST",
+    "KXNCAAFGAME-26OCT10UNCPITT-PITT",
+    "KXSERIEAGAME-26OCT10INTPAR-INT",
+    "KXEPLGAME-26OCT10MUNTOT-MUN",
+    "KXLALIGAGAME-26OCT10BARGET-BAR",
+    "KXNCAAFGAME-26OCT10ODUAPP-APP",
+    "KXLIGUE1GAME-26OCT10FCLPAR-FCL",
+    "KXLIGUE1GAME-26OCT10PSGMAN-PSG",
+    "KXLIGUE1GAME-26OCT10STBANG-STB",
+    "KXSERIEAGAME-26OCT10NAPFRO-NAP",
+    "KXLALIGAGAME-26OCT10RMAVIL-RMA",
+    "KXNCAAFGAME-26OCT10CMUOHIO-OHIO",
+    "KXNCAAFGAME-26OCT10DUKEGT-GT",
+    "KXNCAAFGAME-26OCT10EMUAKR-AKR",
+    "KXNCAAFGAME-26OCT10HOUKSU-KSU",
+    "KXNCAAFGAME-26OCT10ILLMSU-MSU",
+    "KXNCAAFGAME-26OCT10KENTWMU-WMU",
+    "KXNCAAFGAME-26OCT10MISSVAN-VAN",
+    "KXNCAAFGAME-26OCT10STANND-ND",
+    "KXNCAAFGAME-26OCT10TLSANAVY-NAVY",
+    "KXNCAAFGAME-26OCT10UCLAORE-ORE",
+    "KXNCAAFGAME-26OCT10VTCAL-CAL",
+    "KXNCAAFGAME-26OCT10CONNTEM-TEM",
+    "KXNCAAFGAME-26OCT10RICEECU-ECU",
+    "KXNBAGAME-26OCT10DETWAS-WAS",
+    "KXNCAAFGAME-26OCT10LSUUK-UK",
+    "KXNCAAFGAME-26OCT10NDSUUNLV-UNLV",
+    "KXNCAAFGAME-26OCT10NEVUTEP-UTEP",
+    "KXNCAAFGAME-26OCT10UABMEM-MEM",
+    "KXNCAAFGAME-26OCT10JMUGASO-GASO",
+    "KXNCAAFGAME-26OCT10SYRUVA-UVA",
+    "KXNCAAFGAME-26OCT10UGAALA-ALA",
+    "KXNCAAFGAME-26OCT10USCPSU-PSU"
+  ],
+  "rule": "S742 live_concurrency: earliest starts, game_id then ticker order on ties; a row is served only if the focus tickers of the served games whose scheduled-focus window [start - 120 s, start + 3600 s) is open never exceed the focus ticker capacity (anonymous_rate_ceiling x focus_tick_s requests x focus share // 100; soccer 3 tickers a game, other sports 2) and the full request budget (books + selected repoll + half the tickers' trades), with a floor of one game per sport that has a selected game in its window; score-blind, before any start; the profile key maximum_scheduled_games_per_hour declares the default rule only",
+  "served": [
+    "KXNBAGAME-26OCT09MEMCHI-CHI",
+    "KXNCAAFGAME-26OCT09IOWAWASH-WASH",
+    "KXNCAAFGAME-26OCT09WSUUSU-USU",
+    "KXNCAAFGAME-26OCT09ISUBYU-BYU",
+    "KXATPMATCH-26OCT08SVRETC-SVR",
+    "KXATPMATCH-26OCT08YUNRUU-YUN",
+    "KXATPMATCH-26OCT08TIESVA-TIE",
+    "KXATPMATCH-26OCT09FILKOT-FIL",
+    "KXATPMATCH-26OCT08BUSBER-BUS",
+    "KXATPMATCH-26OCT08PAUVAL-PAU",
+    "KXATPMATCH-26OCT09DARTSI-DAR",
+    "KXEPLGAME-26OCT10ARSLEE-ARS",
+    "KXSERIEAGAME-26OCT10GENFIO-GEN",
+    "KXBUNDESLIGAGAME-26OCT10FCABMU-FCA",
+    "KXLALIGAGAME-26OCT10ALAATM-ALA",
+    "KXLIGUE1GAME-26OCT10LILHAC-LIL",
+    "KXNCAAFGAME-26OCT10ARIZWVU-WVU",
+    "KXBUNDESLIGAGAME-26OCT10RBLSGE-RBL",
+    "KXLIGUE1GAME-26OCT10ASMTFC-ASM",
+    "KXNCAAFGAME-26OCT10BUFFTOL-TOL",
+    "KXNCAAFGAME-26OCT10MDOSU-OSU",
+    "KXNCAAFGAME-26OCT10TENNARK-ARK",
+    "KXNCAAFGAME-26OCT10SDSUORST-ORST",
+    "KXNBAGAME-26OCT10LACTOR-TOR",
+    "KXNBAGAME-26OCT10ATLIND-IND",
+    "KXNCAAFGAME-26OCT10AFANIU-NIU"
+  ],
+  "served_file": "C:/Users/neelj/nba-ai-system/docs/evidence/forward/schedules/2026-10-10_maker_forward.json",
+  "unserved": [
+    {
+      "at": "1791593880.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXNCAAFGAME-26OCT09WYOSJSU",
+      "limit": "total",
+      "scheduled_start": "2026-10-10T01:00:00.000000Z",
+      "sport": "ncaaf",
+      "ticker": "KXNCAAFGAME-26OCT09WYOSJSU-SJSU"
+    },
+    {
+      "at": "1791622680.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXATPMATCH-26OCT08VANMIC",
+      "limit": "total",
+      "scheduled_start": "2026-10-10T09:00:00.000000Z",
+      "sport": "tennis",
+      "ticker": "KXATPMATCH-26OCT08VANMIC-VAN"
+    },
+    {
+      "at": "1791638880.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXBUNDESLIGAGAME-26OCT10M05LEV",
+      "limit": "total",
+      "scheduled_start": "2026-10-10T13:30:00.000000Z",
+      "sport": "soccer",
+      "ticker": "KXBUNDESLIGAGAME-26OCT10M05LEV-M05"
+    },
+    {
+      "at": "1791638880.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXBUNDESLIGAGAME-26OCT10PADVFB",
+      "limit": "total",
+      "scheduled_start": "2026-10-10T13:30:00.000000Z",
+      "sport": "soccer",
+      "ticker": "KXBUNDESLIGAGAME-26OCT10PADVFB-PAD"
+    },
+    {
+      "at": "1791638880.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXBUNDESLIGAGAME-26OCT10TSGHSV",
+      "limit": "total",
+      "scheduled_start": "2026-10-10T13:30:00.000000Z",
+      "sport": "soccer",
+      "ticker": "KXBUNDESLIGAGAME-26OCT10TSGHSV-TSG"
+    },
+    {
+      "at": "1791638880.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXBUNDESLIGAGAME-26OCT10UNISVE",
+      "limit": "total",
+      "scheduled_start": "2026-10-10T13:30:00.000000Z",
+      "sport": "soccer",
+      "ticker": "KXBUNDESLIGAGAME-26OCT10UNISVE-UNI"
+    },
+    {
+      "at": "1791640680.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXEPLGAME-26OCT10AVLBRE",
+      "limit": "total",
+      "scheduled_start": "2026-10-10T14:00:00.000000Z",
+      "sport": "soccer",
+      "ticker": "KXEPLGAME-26OCT10AVLBRE-AVL"
+    },
+    {
+      "at": "1791640680.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXEPLGAME-26OCT10CFCBOU",
+      "limit": "total",
+      "scheduled_start": "2026-10-10T14:00:00.000000Z",
+      "sport": "soccer",
+      "ticker": "KXEPLGAME-26OCT10CFCBOU-CFC"
+    },
+    {
+      "at": "1791640680.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXEPLGAME-26OCT10IPSFUL",
+      "limit": "total",
+      "scheduled_start": "2026-10-10T14:00:00.000000Z",
+      "sport": "soccer",
+      "ticker": "KXEPLGAME-26OCT10IPSFUL-IPS"
+    },
+    {
+      "at": "1791640680.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXEPLGAME-26OCT10SUNBRI",
+      "limit": "total",
+      "scheduled_start": "2026-10-10T14:00:00.000000Z",
+      "sport": "soccer",
+      "ticker": "KXEPLGAME-26OCT10SUNBRI-SUN"
+    },
+    {
+      "at": "1791647880.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXNCAAFGAME-26OCT10SACBGSU",
+      "limit": "total",
+      "scheduled_start": "2026-10-10T16:00:00.000000Z",
+      "sport": "ncaaf",
+      "ticker": "KXNCAAFGAME-26OCT10SACBGSU-BGSU"
+    },
+    {
+      "at": "1791647880.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXNCAAFGAME-26OCT10TULNARMY",
+      "limit": "total",
+      "scheduled_start": "2026-10-10T16:00:00.000000Z",
+      "sport": "ncaaf",
+      "ticker": "KXNCAAFGAME-26OCT10TULNARMY-ARMY"
+    },
+    {
+      "at": "1791647880.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXNCAAFGAME-26OCT10UCFOKST",
+      "limit": "total",
+      "scheduled_start": "2026-10-10T16:00:00.000000Z",
+      "sport": "ncaaf",
+      "ticker": "KXNCAAFGAME-26OCT10UCFOKST-OKST"
+    },
+    {
+      "at": "1791647880.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXNCAAFGAME-26OCT10UNCPITT",
+      "limit": "total",
+      "scheduled_start": "2026-10-10T16:00:00.000000Z",
+      "sport": "ncaaf",
+      "ticker": "KXNCAAFGAME-26OCT10UNCPITT-PITT"
+    },
+    {
+      "at": "1791647880.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXSERIEAGAME-26OCT10INTPAR",
+      "limit": "total",
+      "scheduled_start": "2026-10-10T16:00:00.000000Z",
+      "sport": "soccer",
+      "ticker": "KXSERIEAGAME-26OCT10INTPAR-INT"
+    },
+    {
+      "at": "1791649680.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXEPLGAME-26OCT10MUNTOT",
+      "limit": "total",
+      "scheduled_start": "2026-10-10T16:30:00.000000Z",
+      "sport": "soccer",
+      "ticker": "KXEPLGAME-26OCT10MUNTOT-MUN"
+    },
+    {
+      "at": "1791649680.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXLALIGAGAME-26OCT10BARGET",
+      "limit": "total",
+      "scheduled_start": "2026-10-10T16:30:00.000000Z",
+      "sport": "soccer",
+      "ticker": "KXLALIGAGAME-26OCT10BARGET-BAR"
+    },
+    {
+      "at": "1791651480.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXNCAAFGAME-26OCT10ODUAPP",
+      "limit": "total",
+      "scheduled_start": "2026-10-10T17:00:00.000000Z",
+      "sport": "ncaaf",
+      "ticker": "KXNCAAFGAME-26OCT10ODUAPP-APP"
+    },
+    {
+      "at": "1791660480.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXLIGUE1GAME-26OCT10FCLPAR",
+      "limit": "floor",
+      "reserved_for": [
+        "ncaaf"
+      ],
+      "scheduled_start": "2026-10-10T18:45:00.000000Z",
+      "sport": "soccer",
+      "ticker": "KXLIGUE1GAME-26OCT10FCLPAR-FCL"
+    },
+    {
+      "at": "1791660480.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXLIGUE1GAME-26OCT10PSGMAN",
+      "limit": "floor",
+      "reserved_for": [
+        "ncaaf"
+      ],
+      "scheduled_start": "2026-10-10T18:45:00.000000Z",
+      "sport": "soccer",
+      "ticker": "KXLIGUE1GAME-26OCT10PSGMAN-PSG"
+    },
+    {
+      "at": "1791660480.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXLIGUE1GAME-26OCT10STBANG",
+      "limit": "floor",
+      "reserved_for": [
+        "ncaaf"
+      ],
+      "scheduled_start": "2026-10-10T18:45:00.000000Z",
+      "sport": "soccer",
+      "ticker": "KXLIGUE1GAME-26OCT10STBANG-STB"
+    },
+    {
+      "at": "1791660480.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXSERIEAGAME-26OCT10NAPFRO",
+      "limit": "floor",
+      "reserved_for": [
+        "ncaaf"
+      ],
+      "scheduled_start": "2026-10-10T18:45:00.000000Z",
+      "sport": "soccer",
+      "ticker": "KXSERIEAGAME-26OCT10NAPFRO-NAP"
+    },
+    {
+      "at": "1791660480.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXLALIGAGAME-26OCT10RMAVIL",
+      "limit": "floor",
+      "reserved_for": [
+        "ncaaf"
+      ],
+      "scheduled_start": "2026-10-10T19:00:00.000000Z",
+      "sport": "soccer",
+      "ticker": "KXLALIGAGAME-26OCT10RMAVIL-RMA"
+    },
+    {
+      "at": "1791660480.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXNCAAFGAME-26OCT10CMUOHIO",
+      "limit": "total",
+      "scheduled_start": "2026-10-10T19:30:00.000000Z",
+      "sport": "ncaaf",
+      "ticker": "KXNCAAFGAME-26OCT10CMUOHIO-OHIO"
+    },
+    {
+      "at": "1791660480.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXNCAAFGAME-26OCT10DUKEGT",
+      "limit": "total",
+      "scheduled_start": "2026-10-10T19:30:00.000000Z",
+      "sport": "ncaaf",
+      "ticker": "KXNCAAFGAME-26OCT10DUKEGT-GT"
+    },
+    {
+      "at": "1791660480.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXNCAAFGAME-26OCT10EMUAKR",
+      "limit": "total",
+      "scheduled_start": "2026-10-10T19:30:00.000000Z",
+      "sport": "ncaaf",
+      "ticker": "KXNCAAFGAME-26OCT10EMUAKR-AKR"
+    },
+    {
+      "at": "1791660480.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXNCAAFGAME-26OCT10HOUKSU",
+      "limit": "total",
+      "scheduled_start": "2026-10-10T19:30:00.000000Z",
+      "sport": "ncaaf",
+      "ticker": "KXNCAAFGAME-26OCT10HOUKSU-KSU"
+    },
+    {
+      "at": "1791660480.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXNCAAFGAME-26OCT10ILLMSU",
+      "limit": "total",
+      "scheduled_start": "2026-10-10T19:30:00.000000Z",
+      "sport": "ncaaf",
+      "ticker": "KXNCAAFGAME-26OCT10ILLMSU-MSU"
+    },
+    {
+      "at": "1791660480.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXNCAAFGAME-26OCT10KENTWMU",
+      "limit": "total",
+      "scheduled_start": "2026-10-10T19:30:00.000000Z",
+      "sport": "ncaaf",
+      "ticker": "KXNCAAFGAME-26OCT10KENTWMU-WMU"
+    },
+    {
+      "at": "1791660480.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXNCAAFGAME-26OCT10MISSVAN",
+      "limit": "total",
+      "scheduled_start": "2026-10-10T19:30:00.000000Z",
+      "sport": "ncaaf",
+      "ticker": "KXNCAAFGAME-26OCT10MISSVAN-VAN"
+    },
+    {
+      "at": "1791660480.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXNCAAFGAME-26OCT10STANND",
+      "limit": "total",
+      "scheduled_start": "2026-10-10T19:30:00.000000Z",
+      "sport": "ncaaf",
+      "ticker": "KXNCAAFGAME-26OCT10STANND-ND"
+    },
+    {
+      "at": "1791660480.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXNCAAFGAME-26OCT10TLSANAVY",
+      "limit": "total",
+      "scheduled_start": "2026-10-10T19:30:00.000000Z",
+      "sport": "ncaaf",
+      "ticker": "KXNCAAFGAME-26OCT10TLSANAVY-NAVY"
+    },
+    {
+      "at": "1791660480.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXNCAAFGAME-26OCT10UCLAORE",
+      "limit": "total",
+      "scheduled_start": "2026-10-10T19:30:00.000000Z",
+      "sport": "ncaaf",
+      "ticker": "KXNCAAFGAME-26OCT10UCLAORE-ORE"
+    },
+    {
+      "at": "1791660480.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXNCAAFGAME-26OCT10VTCAL",
+      "limit": "total",
+      "scheduled_start": "2026-10-10T19:30:00.000000Z",
+      "sport": "ncaaf",
+      "ticker": "KXNCAAFGAME-26OCT10VTCAL-CAL"
+    },
+    {
+      "at": "1791661380.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXNCAAFGAME-26OCT10CONNTEM",
+      "limit": "total",
+      "scheduled_start": "2026-10-10T19:45:00.000000Z",
+      "sport": "ncaaf",
+      "ticker": "KXNCAAFGAME-26OCT10CONNTEM-TEM"
+    },
+    {
+      "at": "1791662280.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXNCAAFGAME-26OCT10RICEECU",
+      "limit": "floor",
+      "reserved_for": [
+        "soccer"
+      ],
+      "scheduled_start": "2026-10-10T20:00:00.000000Z",
+      "sport": "ncaaf",
+      "ticker": "KXNCAAFGAME-26OCT10RICEECU-ECU"
+    },
+    {
+      "at": "1791673080.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXNBAGAME-26OCT10DETWAS",
+      "limit": "total",
+      "scheduled_start": "2026-10-10T23:00:00.000000Z",
+      "sport": "nba",
+      "ticker": "KXNBAGAME-26OCT10DETWAS-WAS"
+    },
+    {
+      "at": "1791673080.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXNCAAFGAME-26OCT10LSUUK",
+      "limit": "total",
+      "scheduled_start": "2026-10-10T23:00:00.000000Z",
+      "sport": "ncaaf",
+      "ticker": "KXNCAAFGAME-26OCT10LSUUK-UK"
+    },
+    {
+      "at": "1791673080.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXNCAAFGAME-26OCT10NDSUUNLV",
+      "limit": "total",
+      "scheduled_start": "2026-10-10T23:00:00.000000Z",
+      "sport": "ncaaf",
+      "ticker": "KXNCAAFGAME-26OCT10NDSUUNLV-UNLV"
+    },
+    {
+      "at": "1791673080.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXNCAAFGAME-26OCT10NEVUTEP",
+      "limit": "total",
+      "scheduled_start": "2026-10-10T23:00:00.000000Z",
+      "sport": "ncaaf",
+      "ticker": "KXNCAAFGAME-26OCT10NEVUTEP-UTEP"
+    },
+    {
+      "at": "1791673080.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXNCAAFGAME-26OCT10UABMEM",
+      "limit": "total",
+      "scheduled_start": "2026-10-10T23:00:00.000000Z",
+      "sport": "ncaaf",
+      "ticker": "KXNCAAFGAME-26OCT10UABMEM-MEM"
+    },
+    {
+      "at": "1791674880.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXNCAAFGAME-26OCT10JMUGASO",
+      "limit": "total",
+      "scheduled_start": "2026-10-10T23:30:00.000000Z",
+      "sport": "ncaaf",
+      "ticker": "KXNCAAFGAME-26OCT10JMUGASO-GASO"
+    },
+    {
+      "at": "1791674880.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXNCAAFGAME-26OCT10SYRUVA",
+      "limit": "total",
+      "scheduled_start": "2026-10-10T23:30:00.000000Z",
+      "sport": "ncaaf",
+      "ticker": "KXNCAAFGAME-26OCT10SYRUVA-UVA"
+    },
+    {
+      "at": "1791674880.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXNCAAFGAME-26OCT10UGAALA",
+      "limit": "total",
+      "scheduled_start": "2026-10-10T23:30:00.000000Z",
+      "sport": "ncaaf",
+      "ticker": "KXNCAAFGAME-26OCT10UGAALA-ALA"
+    },
+    {
+      "at": "1791674880.000000",
+      "cause": "cap_concurrency",
+      "game_id": "KXNCAAFGAME-26OCT10USCPSU",
+      "limit": "total",
+      "scheduled_start": "2026-10-10T23:30:00.000000Z",
+      "sport": "ncaaf",
+      "ticker": "KXNCAAFGAME-26OCT10USCPSU-PSU"
+    }
+  ]
+}

@@ -1,0 +1,2400 @@
+{
+  "assumptions": {
+    "cancel_latency_s": 0,
+    "fee_path": "LANDED_FLOAT_EXACT_GUARD_S422_PENDING",
+    "requested_units": 1,
+    "state_pull_window_s": 0,
+    "submit_latency_s": 0
+  },
+  "declared_ttl_s": "5",
+  "first_receipt_ts": "2026-09-22T00:00:36.237368Z",
+  "input_refusals": {
+    "duplicate_trade_ids": 0,
+    "inconsistent_touch": 4367,
+    "input_prints": 121060,
+    "input_role_filtered": 6141,
+    "one_sided_book": 4857,
+    "price_out_of_range": 3288
+  },
+  "inputs": [
+    {
+      "bytes": 359982871,
+      "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame_books_local\\kalshi\\mlb\\2026-09-22.jsonl"
+    },
+    {
+      "bytes": 8369460,
+      "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame_state_local_v2\\state\\mlb\\2026-09-22.jsonl"
+    }
+  ],
+  "last_receipt_ts": "2026-09-22T23:59:57.121905Z",
+  "memory_ceiling_bytes": 1073741824,
+  "mode": "COUNTS ONLY",
+  "quote_life": {
+    "30": {
+      "fills_credited": 34,
+      "grid": {
+        "1": {
+          "by_fill_basis": {
+            "through": 32,
+            "touch_queue": 3
+          },
+          "by_side": {
+            "no": 18,
+            "yes": 17
+          },
+          "cancel_count": 44668,
+          "fills_credited": 35,
+          "fills_refused_by_reason": {
+            "all_prints_unscored": 0,
+            "book_size_invalid": 0,
+            "book_time_invalid": 0,
+            "duplicate_trade_ids": 0,
+            "fee_input_invalid": 0,
+            "fee_source_float_exact": 32,
+            "fee_zero": 3,
+            "inconsistent_touch": 4367,
+            "input_prints": 121060,
+            "input_role_filtered": 6141,
+            "one_sided_book": 4857,
+            "outside_quote_life": 61936634,
+            "poly_side_unmapped": 0,
+            "price_above_quote": 14259,
+            "price_out_of_range": 3288,
+            "print_time_invalid": 0,
+            "queue_not_depleted": 313,
+            "quote_already_filled": 1181,
+            "quote_cancel_ts_invalid": 0,
+            "quote_submit_ts_invalid": 0,
+            "replace_count": 26174,
+            "replacement_refused": 0,
+            "scored_prints": 121060,
+            "state_after_window": 243733,
+            "state_comparison_unavailable": 35,
+            "state_identity_unmatched": 115017,
+            "unknown_queue": 58605,
+            "unscored_prints": 0
+          },
+          "markout_by_state": {
+            "no_state_change": {
+              "cluster_key": "game_id",
+              "fee_source_float_exact": 0,
+              "horizons": {
+                "120.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "30.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "300.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                }
+              },
+              "n_fill_horizon_observations": 0,
+              "n_fills": 0,
+              "n_float_field_lossy": 0,
+              "n_intents": 44668,
+              "n_scored": 0,
+              "n_unscored": 0,
+              "n_unscored_by_reason": {},
+              "units": "probability_points",
+              "unknown_queue": 58605
+            },
+            "state_changed": {
+              "cluster_key": "game_id",
+              "fee_source_float_exact": 0,
+              "horizons": {
+                "120.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "30.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "300.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                }
+              },
+              "n_fill_horizon_observations": 0,
+              "n_fills": 0,
+              "n_float_field_lossy": 0,
+              "n_intents": 44668,
+              "n_scored": 0,
+              "n_unscored": 0,
+              "n_unscored_by_reason": {},
+              "units": "probability_points",
+              "unknown_queue": 58605
+            },
+            "state_unavailable": {
+              "cluster_key": "game_id",
+              "fee_source_float_exact": 32,
+              "horizons": {
+                "120.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {
+                    "game_id": 1
+                  },
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 32,
+                  "largest_single_game_share": "1.000000",
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": "0.025000",
+                  "n": 1,
+                  "n_clusters": 1,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "30.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {
+                    "game_id": 4
+                  },
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 32,
+                  "largest_single_game_share": "1.000000",
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": "-0.025000",
+                  "n": 4,
+                  "n_clusters": 1,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "300.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {
+                    "game_id": 7
+                  },
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 32,
+                  "largest_single_game_share": "1.000000",
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": "-0.045000",
+                  "n": 7,
+                  "n_clusters": 1,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                }
+              },
+              "n_fill_horizon_observations": 105,
+              "n_fills": 35,
+              "n_float_field_lossy": 2,
+              "n_intents": 44668,
+              "n_scored": 12,
+              "n_unscored": 93,
+              "n_unscored_by_reason": {
+                "fee_zero": 2,
+                "no_tick_in_window": 91
+              },
+              "units": "probability_points",
+              "unknown_queue": 58605
+            }
+          },
+          "partial_fills": {
+            "full": 32,
+            "partial": 0,
+            "zero": 44636
+          },
+          "queue_ahead_at_submit": {
+            "0": 0,
+            "1-9": 370,
+            "10-99": 5864,
+            "100-999": 7044,
+            "1000+": 31390,
+            "UNKNOWN": 58605
+          },
+          "quote_life_expiry": 18466,
+          "replace_count": 26174,
+          "unknown_queue": 58605,
+          "unknown_queue_sentinel": 1000000,
+          "unmodelled_cancel_rejection": "UNMODELLED"
+        },
+        "2": {
+          "by_fill_basis": {
+            "through": 32,
+            "touch_queue": 2
+          },
+          "by_side": {
+            "no": 17,
+            "yes": 17
+          },
+          "cancel_count": 44668,
+          "fills_credited": 34,
+          "fills_refused_by_reason": {
+            "all_prints_unscored": 0,
+            "book_size_invalid": 0,
+            "book_time_invalid": 0,
+            "duplicate_trade_ids": 0,
+            "fee_input_invalid": 0,
+            "fee_source_float_exact": 31,
+            "fee_zero": 3,
+            "inconsistent_touch": 4367,
+            "input_prints": 121060,
+            "input_role_filtered": 6141,
+            "one_sided_book": 4857,
+            "outside_quote_life": 61936634,
+            "poly_side_unmapped": 0,
+            "price_above_quote": 14276,
+            "price_out_of_range": 3288,
+            "print_time_invalid": 0,
+            "queue_not_depleted": 321,
+            "quote_already_filled": 1157,
+            "quote_cancel_ts_invalid": 0,
+            "quote_submit_ts_invalid": 0,
+            "replace_count": 26174,
+            "replacement_refused": 0,
+            "scored_prints": 121060,
+            "state_after_window": 236150,
+            "state_comparison_unavailable": 34,
+            "state_identity_unmatched": 112350,
+            "unknown_queue": 58605,
+            "unscored_prints": 0
+          },
+          "markout_by_state": {
+            "no_state_change": {
+              "cluster_key": "game_id",
+              "fee_source_float_exact": 0,
+              "horizons": {
+                "120.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "30.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "300.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                }
+              },
+              "n_fill_horizon_observations": 0,
+              "n_fills": 0,
+              "n_float_field_lossy": 0,
+              "n_intents": 44668,
+              "n_scored": 0,
+              "n_unscored": 0,
+              "n_unscored_by_reason": {},
+              "units": "probability_points",
+              "unknown_queue": 58605
+            },
+            "state_changed": {
+              "cluster_key": "game_id",
+              "fee_source_float_exact": 0,
+              "horizons": {
+                "120.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "30.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "300.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                }
+              },
+              "n_fill_horizon_observations": 0,
+              "n_fills": 0,
+              "n_float_field_lossy": 0,
+              "n_intents": 44668,
+              "n_scored": 0,
+              "n_unscored": 0,
+              "n_unscored_by_reason": {},
+              "units": "probability_points",
+              "unknown_queue": 58605
+            },
+            "state_unavailable": {
+              "cluster_key": "game_id",
+              "fee_source_float_exact": 31,
+              "horizons": {
+                "120.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {
+                    "game_id": 1
+                  },
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 31,
+                  "largest_single_game_share": "1.000000",
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": "0.025000",
+                  "n": 1,
+                  "n_clusters": 1,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "30.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {
+                    "game_id": 3
+                  },
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 31,
+                  "largest_single_game_share": "1.000000",
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": "-0.038333",
+                  "n": 3,
+                  "n_clusters": 1,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "300.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {
+                    "game_id": 7
+                  },
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 31,
+                  "largest_single_game_share": "1.000000",
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": "-0.045000",
+                  "n": 7,
+                  "n_clusters": 1,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                }
+              },
+              "n_fill_horizon_observations": 102,
+              "n_fills": 34,
+              "n_float_field_lossy": 2,
+              "n_intents": 44668,
+              "n_scored": 11,
+              "n_unscored": 91,
+              "n_unscored_by_reason": {
+                "fee_zero": 2,
+                "no_tick_in_window": 89
+              },
+              "units": "probability_points",
+              "unknown_queue": 58605
+            }
+          },
+          "partial_fills": {
+            "full": 31,
+            "partial": 0,
+            "zero": 44637
+          },
+          "queue_ahead_at_submit": {
+            "0": 0,
+            "1-9": 140,
+            "10-99": 4426,
+            "100-999": 5885,
+            "1000+": 34217,
+            "UNKNOWN": 58605
+          },
+          "quote_life_expiry": 18466,
+          "replace_count": 26174,
+          "unknown_queue": 58605,
+          "unknown_queue_sentinel": 1000000,
+          "unmodelled_cancel_rejection": "UNMODELLED"
+        },
+        "4": {
+          "by_fill_basis": {
+            "through": 32,
+            "touch_queue": 2
+          },
+          "by_side": {
+            "no": 17,
+            "yes": 17
+          },
+          "cancel_count": 44668,
+          "fills_credited": 34,
+          "fills_refused_by_reason": {
+            "all_prints_unscored": 0,
+            "book_size_invalid": 0,
+            "book_time_invalid": 0,
+            "duplicate_trade_ids": 0,
+            "fee_input_invalid": 0,
+            "fee_source_float_exact": 31,
+            "fee_zero": 3,
+            "inconsistent_touch": 4367,
+            "input_prints": 121060,
+            "input_role_filtered": 6141,
+            "one_sided_book": 4857,
+            "outside_quote_life": 61936634,
+            "poly_side_unmapped": 0,
+            "price_above_quote": 14276,
+            "price_out_of_range": 3288,
+            "print_time_invalid": 0,
+            "queue_not_depleted": 321,
+            "quote_already_filled": 1157,
+            "quote_cancel_ts_invalid": 0,
+            "quote_submit_ts_invalid": 0,
+            "replace_count": 26174,
+            "replacement_refused": 0,
+            "scored_prints": 121060,
+            "state_after_window": 236150,
+            "state_comparison_unavailable": 34,
+            "state_identity_unmatched": 112350,
+            "unknown_queue": 58605,
+            "unscored_prints": 0
+          },
+          "markout_by_state": {
+            "no_state_change": {
+              "cluster_key": "game_id",
+              "fee_source_float_exact": 0,
+              "horizons": {
+                "120.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "30.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "300.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                }
+              },
+              "n_fill_horizon_observations": 0,
+              "n_fills": 0,
+              "n_float_field_lossy": 0,
+              "n_intents": 44668,
+              "n_scored": 0,
+              "n_unscored": 0,
+              "n_unscored_by_reason": {},
+              "units": "probability_points",
+              "unknown_queue": 58605
+            },
+            "state_changed": {
+              "cluster_key": "game_id",
+              "fee_source_float_exact": 0,
+              "horizons": {
+                "120.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "30.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "300.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                }
+              },
+              "n_fill_horizon_observations": 0,
+              "n_fills": 0,
+              "n_float_field_lossy": 0,
+              "n_intents": 44668,
+              "n_scored": 0,
+              "n_unscored": 0,
+              "n_unscored_by_reason": {},
+              "units": "probability_points",
+              "unknown_queue": 58605
+            },
+            "state_unavailable": {
+              "cluster_key": "game_id",
+              "fee_source_float_exact": 31,
+              "horizons": {
+                "120.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {
+                    "game_id": 1
+                  },
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 31,
+                  "largest_single_game_share": "1.000000",
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": "0.025000",
+                  "n": 1,
+                  "n_clusters": 1,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "30.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {
+                    "game_id": 3
+                  },
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 31,
+                  "largest_single_game_share": "1.000000",
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": "-0.038333",
+                  "n": 3,
+                  "n_clusters": 1,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "300.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {
+                    "game_id": 7
+                  },
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 31,
+                  "largest_single_game_share": "1.000000",
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": "-0.045000",
+                  "n": 7,
+                  "n_clusters": 1,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                }
+              },
+              "n_fill_horizon_observations": 102,
+              "n_fills": 34,
+              "n_float_field_lossy": 2,
+              "n_intents": 44668,
+              "n_scored": 11,
+              "n_unscored": 91,
+              "n_unscored_by_reason": {
+                "fee_zero": 2,
+                "no_tick_in_window": 89
+              },
+              "units": "probability_points",
+              "unknown_queue": 58605
+            }
+          },
+          "partial_fills": {
+            "full": 31,
+            "partial": 0,
+            "zero": 44637
+          },
+          "queue_ahead_at_submit": {
+            "0": 0,
+            "1-9": 95,
+            "10-99": 1718,
+            "100-999": 7003,
+            "1000+": 35852,
+            "UNKNOWN": 58605
+          },
+          "quote_life_expiry": 18466,
+          "replace_count": 26174,
+          "unknown_queue": 58605,
+          "unknown_queue_sentinel": 1000000,
+          "unmodelled_cancel_rejection": "UNMODELLED"
+        },
+        "8": {
+          "by_fill_basis": {
+            "through": 32,
+            "touch_queue": 2
+          },
+          "by_side": {
+            "no": 17,
+            "yes": 17
+          },
+          "cancel_count": 44668,
+          "fills_credited": 34,
+          "fills_refused_by_reason": {
+            "all_prints_unscored": 0,
+            "book_size_invalid": 0,
+            "book_time_invalid": 0,
+            "duplicate_trade_ids": 0,
+            "fee_input_invalid": 0,
+            "fee_source_float_exact": 31,
+            "fee_zero": 3,
+            "inconsistent_touch": 4367,
+            "input_prints": 121060,
+            "input_role_filtered": 6141,
+            "one_sided_book": 4857,
+            "outside_quote_life": 61936634,
+            "poly_side_unmapped": 0,
+            "price_above_quote": 14276,
+            "price_out_of_range": 3288,
+            "print_time_invalid": 0,
+            "queue_not_depleted": 321,
+            "quote_already_filled": 1157,
+            "quote_cancel_ts_invalid": 0,
+            "quote_submit_ts_invalid": 0,
+            "replace_count": 26174,
+            "replacement_refused": 0,
+            "scored_prints": 121060,
+            "state_after_window": 236150,
+            "state_comparison_unavailable": 34,
+            "state_identity_unmatched": 112350,
+            "unknown_queue": 58605,
+            "unscored_prints": 0
+          },
+          "markout_by_state": {
+            "no_state_change": {
+              "cluster_key": "game_id",
+              "fee_source_float_exact": 0,
+              "horizons": {
+                "120.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "30.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "300.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                }
+              },
+              "n_fill_horizon_observations": 0,
+              "n_fills": 0,
+              "n_float_field_lossy": 0,
+              "n_intents": 44668,
+              "n_scored": 0,
+              "n_unscored": 0,
+              "n_unscored_by_reason": {},
+              "units": "probability_points",
+              "unknown_queue": 58605
+            },
+            "state_changed": {
+              "cluster_key": "game_id",
+              "fee_source_float_exact": 0,
+              "horizons": {
+                "120.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "30.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "300.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                }
+              },
+              "n_fill_horizon_observations": 0,
+              "n_fills": 0,
+              "n_float_field_lossy": 0,
+              "n_intents": 44668,
+              "n_scored": 0,
+              "n_unscored": 0,
+              "n_unscored_by_reason": {},
+              "units": "probability_points",
+              "unknown_queue": 58605
+            },
+            "state_unavailable": {
+              "cluster_key": "game_id",
+              "fee_source_float_exact": 31,
+              "horizons": {
+                "120.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {
+                    "game_id": 1
+                  },
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 31,
+                  "largest_single_game_share": "1.000000",
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": "0.025000",
+                  "n": 1,
+                  "n_clusters": 1,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "30.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {
+                    "game_id": 3
+                  },
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 31,
+                  "largest_single_game_share": "1.000000",
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": "-0.038333",
+                  "n": 3,
+                  "n_clusters": 1,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "300.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {
+                    "game_id": 7
+                  },
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 31,
+                  "largest_single_game_share": "1.000000",
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": "-0.045000",
+                  "n": 7,
+                  "n_clusters": 1,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                }
+              },
+              "n_fill_horizon_observations": 102,
+              "n_fills": 34,
+              "n_float_field_lossy": 2,
+              "n_intents": 44668,
+              "n_scored": 11,
+              "n_unscored": 91,
+              "n_unscored_by_reason": {
+                "fee_zero": 2,
+                "no_tick_in_window": 89
+              },
+              "units": "probability_points",
+              "unknown_queue": 58605
+            }
+          },
+          "partial_fills": {
+            "full": 31,
+            "partial": 0,
+            "zero": 44637
+          },
+          "queue_ahead_at_submit": {
+            "0": 0,
+            "1-9": 45,
+            "10-99": 413,
+            "100-999": 6830,
+            "1000+": 37380,
+            "UNKNOWN": 58605
+          },
+          "quote_life_expiry": 18466,
+          "replace_count": 26174,
+          "unknown_queue": 58605,
+          "unknown_queue_sentinel": 1000000,
+          "unmodelled_cancel_rejection": "UNMODELLED"
+        }
+      },
+      "unknown_queue": 58605
+    },
+    "5": {
+      "fills_credited": 12,
+      "grid": {
+        "1": {
+          "by_fill_basis": {
+            "through": 12,
+            "touch_queue": 0
+          },
+          "by_side": {
+            "no": 6,
+            "yes": 6
+          },
+          "cancel_count": 44668,
+          "fills_credited": 12,
+          "fills_refused_by_reason": {
+            "all_prints_unscored": 0,
+            "book_size_invalid": 0,
+            "book_time_invalid": 0,
+            "duplicate_trade_ids": 0,
+            "fee_input_invalid": 0,
+            "fee_source_float_exact": 12,
+            "inconsistent_touch": 4367,
+            "input_prints": 121060,
+            "input_role_filtered": 6141,
+            "one_sided_book": 4857,
+            "outside_quote_life": 61941553,
+            "poly_side_unmapped": 0,
+            "price_above_quote": 10348,
+            "price_out_of_range": 3288,
+            "print_time_invalid": 0,
+            "queue_not_depleted": 67,
+            "quote_already_filled": 442,
+            "quote_cancel_ts_invalid": 0,
+            "quote_submit_ts_invalid": 0,
+            "replace_count": 4775,
+            "replacement_refused": 0,
+            "scored_prints": 121060,
+            "state_after_window": 80571,
+            "state_comparison_unavailable": 12,
+            "state_identity_unmatched": 42429,
+            "unknown_queue": 58605,
+            "unscored_prints": 0
+          },
+          "markout_by_state": {
+            "no_state_change": {
+              "cluster_key": "game_id",
+              "fee_source_float_exact": 0,
+              "horizons": {
+                "120.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "30.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "300.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                }
+              },
+              "n_fill_horizon_observations": 0,
+              "n_fills": 0,
+              "n_float_field_lossy": 0,
+              "n_intents": 44668,
+              "n_scored": 0,
+              "n_unscored": 0,
+              "n_unscored_by_reason": {},
+              "units": "probability_points",
+              "unknown_queue": 58605
+            },
+            "state_changed": {
+              "cluster_key": "game_id",
+              "fee_source_float_exact": 0,
+              "horizons": {
+                "120.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "30.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "300.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                }
+              },
+              "n_fill_horizon_observations": 0,
+              "n_fills": 0,
+              "n_float_field_lossy": 0,
+              "n_intents": 44668,
+              "n_scored": 0,
+              "n_unscored": 0,
+              "n_unscored_by_reason": {},
+              "units": "probability_points",
+              "unknown_queue": 58605
+            },
+            "state_unavailable": {
+              "cluster_key": "game_id",
+              "fee_source_float_exact": 12,
+              "horizons": {
+                "120.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 12,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "30.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {
+                    "game_id": 1
+                  },
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 12,
+                  "largest_single_game_share": "1.000000",
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": "-0.065000",
+                  "n": 1,
+                  "n_clusters": 1,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "300.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {
+                    "game_id": 3
+                  },
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 12,
+                  "largest_single_game_share": "1.000000",
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": "-0.091667",
+                  "n": 3,
+                  "n_clusters": 1,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                }
+              },
+              "n_fill_horizon_observations": 36,
+              "n_fills": 12,
+              "n_float_field_lossy": 0,
+              "n_intents": 44668,
+              "n_scored": 4,
+              "n_unscored": 32,
+              "n_unscored_by_reason": {
+                "no_tick_in_window": 32
+              },
+              "units": "probability_points",
+              "unknown_queue": 58605
+            }
+          },
+          "partial_fills": {
+            "full": 12,
+            "partial": 0,
+            "zero": 44656
+          },
+          "queue_ahead_at_submit": {
+            "0": 0,
+            "1-9": 370,
+            "10-99": 5864,
+            "100-999": 7044,
+            "1000+": 31390,
+            "UNKNOWN": 58605
+          },
+          "quote_life_expiry": 39882,
+          "replace_count": 4775,
+          "unknown_queue": 58605,
+          "unknown_queue_sentinel": 1000000,
+          "unmodelled_cancel_rejection": "UNMODELLED"
+        },
+        "2": {
+          "by_fill_basis": {
+            "through": 12,
+            "touch_queue": 0
+          },
+          "by_side": {
+            "no": 6,
+            "yes": 6
+          },
+          "cancel_count": 44668,
+          "fills_credited": 12,
+          "fills_refused_by_reason": {
+            "all_prints_unscored": 0,
+            "book_size_invalid": 0,
+            "book_time_invalid": 0,
+            "duplicate_trade_ids": 0,
+            "fee_input_invalid": 0,
+            "fee_source_float_exact": 12,
+            "inconsistent_touch": 4367,
+            "input_prints": 121060,
+            "input_role_filtered": 6141,
+            "one_sided_book": 4857,
+            "outside_quote_life": 61941553,
+            "poly_side_unmapped": 0,
+            "price_above_quote": 10348,
+            "price_out_of_range": 3288,
+            "print_time_invalid": 0,
+            "queue_not_depleted": 67,
+            "quote_already_filled": 442,
+            "quote_cancel_ts_invalid": 0,
+            "quote_submit_ts_invalid": 0,
+            "replace_count": 4775,
+            "replacement_refused": 0,
+            "scored_prints": 121060,
+            "state_after_window": 80571,
+            "state_comparison_unavailable": 12,
+            "state_identity_unmatched": 42429,
+            "unknown_queue": 58605,
+            "unscored_prints": 0
+          },
+          "markout_by_state": {
+            "no_state_change": {
+              "cluster_key": "game_id",
+              "fee_source_float_exact": 0,
+              "horizons": {
+                "120.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "30.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "300.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                }
+              },
+              "n_fill_horizon_observations": 0,
+              "n_fills": 0,
+              "n_float_field_lossy": 0,
+              "n_intents": 44668,
+              "n_scored": 0,
+              "n_unscored": 0,
+              "n_unscored_by_reason": {},
+              "units": "probability_points",
+              "unknown_queue": 58605
+            },
+            "state_changed": {
+              "cluster_key": "game_id",
+              "fee_source_float_exact": 0,
+              "horizons": {
+                "120.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "30.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "300.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                }
+              },
+              "n_fill_horizon_observations": 0,
+              "n_fills": 0,
+              "n_float_field_lossy": 0,
+              "n_intents": 44668,
+              "n_scored": 0,
+              "n_unscored": 0,
+              "n_unscored_by_reason": {},
+              "units": "probability_points",
+              "unknown_queue": 58605
+            },
+            "state_unavailable": {
+              "cluster_key": "game_id",
+              "fee_source_float_exact": 12,
+              "horizons": {
+                "120.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 12,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "30.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {
+                    "game_id": 1
+                  },
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 12,
+                  "largest_single_game_share": "1.000000",
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": "-0.065000",
+                  "n": 1,
+                  "n_clusters": 1,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "300.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {
+                    "game_id": 3
+                  },
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 12,
+                  "largest_single_game_share": "1.000000",
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": "-0.091667",
+                  "n": 3,
+                  "n_clusters": 1,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                }
+              },
+              "n_fill_horizon_observations": 36,
+              "n_fills": 12,
+              "n_float_field_lossy": 0,
+              "n_intents": 44668,
+              "n_scored": 4,
+              "n_unscored": 32,
+              "n_unscored_by_reason": {
+                "no_tick_in_window": 32
+              },
+              "units": "probability_points",
+              "unknown_queue": 58605
+            }
+          },
+          "partial_fills": {
+            "full": 12,
+            "partial": 0,
+            "zero": 44656
+          },
+          "queue_ahead_at_submit": {
+            "0": 0,
+            "1-9": 140,
+            "10-99": 4426,
+            "100-999": 5885,
+            "1000+": 34217,
+            "UNKNOWN": 58605
+          },
+          "quote_life_expiry": 39882,
+          "replace_count": 4775,
+          "unknown_queue": 58605,
+          "unknown_queue_sentinel": 1000000,
+          "unmodelled_cancel_rejection": "UNMODELLED"
+        },
+        "4": {
+          "by_fill_basis": {
+            "through": 12,
+            "touch_queue": 0
+          },
+          "by_side": {
+            "no": 6,
+            "yes": 6
+          },
+          "cancel_count": 44668,
+          "fills_credited": 12,
+          "fills_refused_by_reason": {
+            "all_prints_unscored": 0,
+            "book_size_invalid": 0,
+            "book_time_invalid": 0,
+            "duplicate_trade_ids": 0,
+            "fee_input_invalid": 0,
+            "fee_source_float_exact": 12,
+            "inconsistent_touch": 4367,
+            "input_prints": 121060,
+            "input_role_filtered": 6141,
+            "one_sided_book": 4857,
+            "outside_quote_life": 61941553,
+            "poly_side_unmapped": 0,
+            "price_above_quote": 10348,
+            "price_out_of_range": 3288,
+            "print_time_invalid": 0,
+            "queue_not_depleted": 67,
+            "quote_already_filled": 442,
+            "quote_cancel_ts_invalid": 0,
+            "quote_submit_ts_invalid": 0,
+            "replace_count": 4775,
+            "replacement_refused": 0,
+            "scored_prints": 121060,
+            "state_after_window": 80571,
+            "state_comparison_unavailable": 12,
+            "state_identity_unmatched": 42429,
+            "unknown_queue": 58605,
+            "unscored_prints": 0
+          },
+          "markout_by_state": {
+            "no_state_change": {
+              "cluster_key": "game_id",
+              "fee_source_float_exact": 0,
+              "horizons": {
+                "120.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "30.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "300.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                }
+              },
+              "n_fill_horizon_observations": 0,
+              "n_fills": 0,
+              "n_float_field_lossy": 0,
+              "n_intents": 44668,
+              "n_scored": 0,
+              "n_unscored": 0,
+              "n_unscored_by_reason": {},
+              "units": "probability_points",
+              "unknown_queue": 58605
+            },
+            "state_changed": {
+              "cluster_key": "game_id",
+              "fee_source_float_exact": 0,
+              "horizons": {
+                "120.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "30.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "300.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                }
+              },
+              "n_fill_horizon_observations": 0,
+              "n_fills": 0,
+              "n_float_field_lossy": 0,
+              "n_intents": 44668,
+              "n_scored": 0,
+              "n_unscored": 0,
+              "n_unscored_by_reason": {},
+              "units": "probability_points",
+              "unknown_queue": 58605
+            },
+            "state_unavailable": {
+              "cluster_key": "game_id",
+              "fee_source_float_exact": 12,
+              "horizons": {
+                "120.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 12,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "30.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {
+                    "game_id": 1
+                  },
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 12,
+                  "largest_single_game_share": "1.000000",
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": "-0.065000",
+                  "n": 1,
+                  "n_clusters": 1,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "300.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {
+                    "game_id": 3
+                  },
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 12,
+                  "largest_single_game_share": "1.000000",
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": "-0.091667",
+                  "n": 3,
+                  "n_clusters": 1,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                }
+              },
+              "n_fill_horizon_observations": 36,
+              "n_fills": 12,
+              "n_float_field_lossy": 0,
+              "n_intents": 44668,
+              "n_scored": 4,
+              "n_unscored": 32,
+              "n_unscored_by_reason": {
+                "no_tick_in_window": 32
+              },
+              "units": "probability_points",
+              "unknown_queue": 58605
+            }
+          },
+          "partial_fills": {
+            "full": 12,
+            "partial": 0,
+            "zero": 44656
+          },
+          "queue_ahead_at_submit": {
+            "0": 0,
+            "1-9": 95,
+            "10-99": 1718,
+            "100-999": 7003,
+            "1000+": 35852,
+            "UNKNOWN": 58605
+          },
+          "quote_life_expiry": 39882,
+          "replace_count": 4775,
+          "unknown_queue": 58605,
+          "unknown_queue_sentinel": 1000000,
+          "unmodelled_cancel_rejection": "UNMODELLED"
+        },
+        "8": {
+          "by_fill_basis": {
+            "through": 12,
+            "touch_queue": 0
+          },
+          "by_side": {
+            "no": 6,
+            "yes": 6
+          },
+          "cancel_count": 44668,
+          "fills_credited": 12,
+          "fills_refused_by_reason": {
+            "all_prints_unscored": 0,
+            "book_size_invalid": 0,
+            "book_time_invalid": 0,
+            "duplicate_trade_ids": 0,
+            "fee_input_invalid": 0,
+            "fee_source_float_exact": 12,
+            "inconsistent_touch": 4367,
+            "input_prints": 121060,
+            "input_role_filtered": 6141,
+            "one_sided_book": 4857,
+            "outside_quote_life": 61941553,
+            "poly_side_unmapped": 0,
+            "price_above_quote": 10348,
+            "price_out_of_range": 3288,
+            "print_time_invalid": 0,
+            "queue_not_depleted": 67,
+            "quote_already_filled": 442,
+            "quote_cancel_ts_invalid": 0,
+            "quote_submit_ts_invalid": 0,
+            "replace_count": 4775,
+            "replacement_refused": 0,
+            "scored_prints": 121060,
+            "state_after_window": 80571,
+            "state_comparison_unavailable": 12,
+            "state_identity_unmatched": 42429,
+            "unknown_queue": 58605,
+            "unscored_prints": 0
+          },
+          "markout_by_state": {
+            "no_state_change": {
+              "cluster_key": "game_id",
+              "fee_source_float_exact": 0,
+              "horizons": {
+                "120.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "30.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "300.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                }
+              },
+              "n_fill_horizon_observations": 0,
+              "n_fills": 0,
+              "n_float_field_lossy": 0,
+              "n_intents": 44668,
+              "n_scored": 0,
+              "n_unscored": 0,
+              "n_unscored_by_reason": {},
+              "units": "probability_points",
+              "unknown_queue": 58605
+            },
+            "state_changed": {
+              "cluster_key": "game_id",
+              "fee_source_float_exact": 0,
+              "horizons": {
+                "120.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "30.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "300.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 0,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                }
+              },
+              "n_fill_horizon_observations": 0,
+              "n_fills": 0,
+              "n_float_field_lossy": 0,
+              "n_intents": 44668,
+              "n_scored": 0,
+              "n_unscored": 0,
+              "n_unscored_by_reason": {},
+              "units": "probability_points",
+              "unknown_queue": 58605
+            },
+            "state_unavailable": {
+              "cluster_key": "game_id",
+              "fee_source_float_exact": 12,
+              "horizons": {
+                "120.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {},
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 12,
+                  "largest_single_game_share": null,
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": null,
+                  "n": 0,
+                  "n_clusters": 0,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "30.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {
+                    "game_id": 1
+                  },
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 12,
+                  "largest_single_game_share": "1.000000",
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": "-0.065000",
+                  "n": 1,
+                  "n_clusters": 1,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                },
+                "300.0": {
+                  "ci_95_units": [
+                    null,
+                    null
+                  ],
+                  "cluster_sources": {
+                    "game_id": 3
+                  },
+                  "delay_metadata_status": "UNAVAILABLE_PER_MARKET_FOLD",
+                  "fee_source_float_exact": 12,
+                  "largest_single_game_share": "1.000000",
+                  "leave_one_game_out_range_units": null,
+                  "mark_delay_max_s": null,
+                  "mark_delay_median_s": null,
+                  "mark_delay_p90_s": null,
+                  "mean_units": "-0.091667",
+                  "n": 3,
+                  "n_clusters": 1,
+                  "no_qualifying_mark_share": null,
+                  "unknown_queue": 58605,
+                  "verdict": "INSUFFICIENT"
+                }
+              },
+              "n_fill_horizon_observations": 36,
+              "n_fills": 12,
+              "n_float_field_lossy": 0,
+              "n_intents": 44668,
+              "n_scored": 4,
+              "n_unscored": 32,
+              "n_unscored_by_reason": {
+                "no_tick_in_window": 32
+              },
+              "units": "probability_points",
+              "unknown_queue": 58605
+            }
+          },
+          "partial_fills": {
+            "full": 12,
+            "partial": 0,
+            "zero": 44656
+          },
+          "queue_ahead_at_submit": {
+            "0": 0,
+            "1-9": 45,
+            "10-99": 413,
+            "100-999": 6830,
+            "1000+": 37380,
+            "UNKNOWN": 58605
+          },
+          "quote_life_expiry": 39882,
+          "replace_count": 4775,
+          "unknown_queue": 58605,
+          "unknown_queue_sentinel": 1000000,
+          "unmodelled_cancel_rejection": "UNMODELLED"
+        }
+      },
+      "unknown_queue": 58605
+    }
+  },
+  "row_count": 201666,
+  "window_s": "30"
+}

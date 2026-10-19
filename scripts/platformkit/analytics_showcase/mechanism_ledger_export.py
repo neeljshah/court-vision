@@ -3,6 +3,7 @@ import argparse
 import collections
 import glob
 import json
+import math
 import os
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -60,12 +61,15 @@ def evidence_pointer(row):
 
 def export_mechanism(row):
     verdict = row.get("verdict")
+    p_value = row.get("p")
+    if isinstance(p_value, float) and not math.isfinite(p_value):
+        p_value = None
     return {
         "mechanism": row.get("hypothesis"),
         "verdict": verdict,
         "bucket": bucket(verdict),
         "effect": row.get("effect"),
-        "p": row.get("p"),
+        "p": p_value,
         "corpus": row.get("corpus"),
         "evidence": evidence_pointer(row),
         "as_of": row.get("run_ts"),  # null when the run predates run_ts stamping
@@ -171,27 +175,17 @@ def main():
         return
 
     result = build()
+    # NaN is not JSON; strict parsers (the paper evidence checker) reject it.
+    serialized = json.dumps(result, indent=2, allow_nan=False)
     os.makedirs(os.path.dirname(OUT_JSON), exist_ok=True)
     with open(OUT_JSON, "w", encoding="utf-8") as f:
-        # NaN is not JSON; strict parsers (the paper evidence checker) reject it.
-        json.dump(_nan_to_null(result), f, indent=2, allow_nan=False)
+        f.write(serialized)
     render_png(result, OUT_PNG)
     print("wrote", OUT_JSON)
     print("wrote", OUT_PNG)
     print("overall_counts:", result["overall_counts"])
     for s, v in result["by_sport"].items():
         print(f"  {s}:", v["counts"])
-
-
-def _nan_to_null(obj):
-    """Replace float NaN/inf with None recursively so the artifact is strict JSON."""
-    if isinstance(obj, float) and (obj != obj or obj in (float("inf"), float("-inf"))):
-        return None
-    if isinstance(obj, dict):
-        return {k: _nan_to_null(v) for k, v in obj.items()}
-    if isinstance(obj, list):
-        return [_nan_to_null(v) for v in obj]
-    return obj
 
 
 if __name__ == "__main__":
