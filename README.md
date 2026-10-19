@@ -2,6 +2,12 @@
 
 **Calibrated multi-sport forecasting, audited in public -- with the rejects and retractions left in.**
 
+**Built:** a four-sport forecasting system (NBA broadcast-video tracking, now paused; a FastAPI serving layer; a
+leak-guarded walk-forward harness) and a public analytics site. **Measured:** Brier score against the devigged
+closing line and the live market, on held-out games, with intervals. **Result:** the model matches or trails the
+close and is never ahead of it; 0 of 60 candidate signal classes passed the gate; a paper-only forward series has
+run since 2026-10-06 and has no verdict yet.
+
 ### [Open the live analytics site -> neeljshah.github.io/court-vision/analytics](https://neeljshah.github.io/court-vision/analytics/)
 
 **Reading this as a trading desk or quant team?** Start with the one-page
@@ -34,25 +40,30 @@ artifact -> reproduce command).
 | What got retracted? | six headline figures, each root-caused to a leak or a grading artifact by the project's own harnesses | [the retraction record](docs/evidence/retraction-story.md) |
 | Player-prop accuracy | PTS MAE 4.83, REB 1.92, AST 1.39 on a 20,354-row chronological holdout | accuracy only |
 
+Brier: mean squared error of a probability forecast, lower is better. Devigged close: the closing market price with
+the bookmaker margin removed.
+
 The strongest signal in this repository is not a metric. It is that the same person who built
 the system also built the instruments that caught his own overclaims, and published the result.
 
 ## How far it goes
 
-One person directing an agentic build pipeline, 6,800+ commits since March 2026. Counts below are read
+One person directing an agentic build pipeline: 8,600+ commits since March 2026 in the full private repository,
+6,500+ in this public one (counted 2026-10-19; most are agent-authored under direction). Counts below are read
 from committed artifacts or the audited [evidence packet](docs/JOB_EVIDENCE_PACKET.md); the layer-by-layer
 map is **[docs/CAPABILITIES.md](docs/CAPABILITIES.md)**.
 
 | Layer | Scale |
 |---|---|
 | Sports covered by one kernel + per-sport adapters | NBA, MLB, soccer, tennis |
-| Analytics site (public, static, CI-gated) | 29 research papers, 77 measurement modules, 18 findings, 10 interactive inspectors, 1,549 entity cards, 1,653 searchable records |
+| Analytics site (public, static, CI-gated) | 29 research papers, 77 measurement modules, 17 findings, 10 interactive inspectors, 1,549 entity cards, 1,653 searchable records |
 | Intelligence layer between raw data and models | 151 files; a 291,625-pair player-vs-player matchup matrix; 1,249 player dossiers across 28 categories |
 | Signal discovery under a gate built to refute | 60 candidate signal classes, 0 shipped; 513 recorded reject / defer verdicts; 197 hypothesis-ledger rows with every NULL kept ([the ledgers are public](domains/)) |
 | Fact-claims corpus | 103,048 generated claims, 101,864 re-verified from their declared source and formula |
 | Simulation | possession-level Monte Carlo where the negative teammate correlation emerges from a shared scoring pie instead of a hand-tuned matrix |
-| Engine (private repository) | about 99 API endpoints across 12 routers, 9 long-running daemons under a watchdog, a 430-module codebase, about 7,400 tests |
-| Execution | paper only, behind [six pre-registered go-live gates](docs/GO_LIVE_GATES.md); the order lifecycle has no reachable live path; a daily forward paper desk has run since 2026-10-06 (113 games served on in-game markets through 10-16, night receipts under `docs/evidence/forward/`, every scored cell still below its 30-game floor -- [forward record](docs/JOB_EVIDENCE_PACKET.md), section 5) |
+| Engine (private repository, not runnable here) | FastAPI serving layer, about 99 routes across 12 routers ([API reference](docs/API.md), [capability map](docs/CAPABILITIES.md)), 9 long-running daemons under a watchdog, a 430-module codebase, about 7,400 tests; read access on request |
+| Computer vision (paused) | Broadcast video to court coordinates (YOLOv8n, SIFT homography, Kalman + Hungarian tracker, OSNet re-ID). Status: paused since 2026-09-17; the frozen audit accepted no game as coordinate-quality evidence, and tracked features carry no measured forecast lift. Code is in the private repository; the audit and design notes are [TRACKING.md](docs/TRACKING.md) and [CV_TRACKING.md](docs/CV_TRACKING.md) |
+| Execution | paper only, behind [six pre-registered go-live gates](docs/GO_LIVE_GATES.md); the order lifecycle has no reachable live path; a daily forward paper desk has run since 2026-10-06 (113 games served on in-game markets through 10-16, night receipts under `docs/evidence/forward/`, every scored cell still below its 30-game floor -- [forward record, packet section 5](docs/JOB_EVIDENCE_PACKET.md#5-forward-paper-record-2026-10-06--2026-10-18-as-of-2026-10-19)) |
 
 ## What is on the site
 
@@ -128,7 +139,7 @@ Longer reads: [ARCHITECTURE.md](ARCHITECTURE.md) -
 | Path | What is there |
 |---|---|
 | [EVIDENCE.md](EVIDENCE.md) | the claim-by-claim evidence index -- start here |
-| [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md) | the adversarially audited account, including the do-not-claim list |
+| [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md) | the adversarially audited account, including the retired-figures list |
 | [docs/evidence/](docs/evidence/) | per-claim pages, calibration artifacts, in-game and props gate results, written memos |
 | [webapp/](webapp/) | the analytics site (Next.js static export) and its published data |
 | [scripts/platformkit/analytics_showcase/](scripts/platformkit/analytics_showcase/) | the generators and committed artifacts behind the site |
@@ -151,14 +162,15 @@ reviewers can request read access. What is public is chosen by one reviewed allo
 
 ## Related public repos
 
-Single-concept repos distilled from this platform, each runnable on its own: [shin-devig](https://github.com/neeljshah/shin-devig) (four de-vig methods incl. Shin 1992), [calibration-gate](https://github.com/neeljshah/calibration-gate) (Brier decomposition, ECE, recalibration, two-corpus acceptance), [walkforward-guard](https://github.com/neeljshah/walkforward-guard) (leak-proof time-series CV; the demo plants two leaks and catches both), [prereg-cards](https://github.com/neeljshah/prereg-cards) (pre-registration workflow), [sdv-calibration-audit](https://github.com/neeljshah/sdv-calibration-audit) (a calibration audit of a published sports-model probability column).
+Single-concept repos distilled from this platform, each runnable on its own: [shin-devig](https://github.com/neeljshah/shin-devig) (four de-vig methods incl. Shin 1992; the Shin-devigged NBA close used in [EVIDENCE.md section A](EVIDENCE.md) is the 0.1666 figure), [calibration-gate](https://github.com/neeljshah/calibration-gate) (Brier decomposition, ECE, recalibration, two-corpus acceptance), [walkforward-guard](https://github.com/neeljshah/walkforward-guard) (leak-proof time-series CV; the demo plants two leaks and catches both), [prereg-cards](https://github.com/neeljshah/prereg-cards) (pre-registration workflow), [sdv-calibration-audit](https://github.com/neeljshah/sdv-calibration-audit) (a calibration audit of a published sports-model probability column).
 
 ## Contact
 
-Built solo by Neel Shah, directing an agentic build pipeline. Open to quant research, ML
+Built by Neel Shah, who has three years of data-science coursework at the University of Iowa, directing an
+agentic build pipeline. Open to quant research, ML
 engineering and founding-engineer roles, and to conversations about the system itself.
 
-- Start with [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md)
+- Start with the [desk brief](docs/QUANT_BRIEF.md) or the [evidence index](EVIDENCE.md)
 - Resume: [docs/assets/NeelShahResume.pdf](docs/assets/NeelShahResume.pdf)
 - Portfolio: [neelshahportfolio.netlify.app](https://neelshahportfolio.netlify.app)
 - Email: [neeljshah22@gmail.com](mailto:neeljshah22@gmail.com)

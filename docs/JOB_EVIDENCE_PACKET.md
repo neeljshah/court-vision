@@ -6,7 +6,7 @@
 > below was independently verified against the code, tests, and data artifacts by an
 > adversarial audit whose job was to *refute* the headlines, not confirm them. Where a
 > famous number did not survive scrutiny, the honest version is stated and the inflated
-> one is listed in the "Do Not Claim" section so it never reaches a recruiter.
+> one is listed in the retired-figures section (section 4).
 >
 > The single strongest signal in this repo is not any metric. It is that the same person
 > who built the system also built the instruments that caught his own overclaims, and
@@ -26,7 +26,7 @@ system who rigorously audits and disproves his own results — senior-grade engi
 discipline.
 
 **The honest headline finding (§3):** against real closing lines I found the market is
-efficient — the model is about break-even-minus-vig, and every candidate edge, including
+efficient — the pregame model matches or trails the devigged close in Brier, and every candidate signal, including
 my strongest (assists), was ultimately rejected or retracted by my own gates. That is a
 sophisticated and honest result, and I have the harnesses that prove it.
 
@@ -191,10 +191,10 @@ claimed, so the candidate can pre-empt the gap rather than be caught by it.
 - **PBP Finals replay (G1–G3):** win-prob Brier **0.34–0.40** in-series — worse than a coin flip. Cleanest proof that the playoff market is efficient.
 - **Per-regime recalibration, honest keys (S212, 2026-09-04, fresh-process reproducible):** after-ECE with date-group train-only regime keys -- nba **0.022205**, mlb **0.009672**, soccer **0.009192**, tennis **0.016928**. Supersedes the earlier S05 screen (nba 0.024843 / mlb 0.008077 / soccer 0.009302 / tennis 0.008403), whose tercile key was fitted on the scored rows (leak; tennis was flattered about 2x). Calibration only; no market comparison implied. Artifact: docs/evidence/harness/S212_regime_key_clean_rerun_2026-09-04.md (landing 6226fb042).
 
-### Betting edge vs real closing lines — "the market is efficient"
+### Pregame vs real closing lines — "the market is efficient"
 
-- Against real DraftKings/FanDuel/MGM **closing** lines, the model is **roughly
-  break-even-minus-vig overall** (~-2% to -5%; -2.00% unfiltered from `gate1_full_analysis.json`).
+- Against real DraftKings/FanDuel/MGM **closing** lines, the pregame model trails or matches the
+  devigged close in Brier on every market tested (see EVIDENCE.md section A); no return figure is claimed.
   The market is efficient on closing lines.
 - **RETRACTED (2026-07-21): the earlier "assists ~+4–5% ROI durable edge" claim is superseded
   and must not be quoted as a live result.** It was regime-dependent (broke in the playoffs)
@@ -202,7 +202,7 @@ claimed, so the candidate can pre-empt the gap rather than be caught by it.
   measurement remains in the gate artifacts (`gate1_full_analysis.json`) as a record of the
   stress-testing methodology, nothing more.
 - **The honest framing:** "Against real closing lines I found the market is efficient — the
-  model is about break-even-minus-vig. Every candidate edge, including my strongest (assists),
+  pregame model matches or trails the devigged close in Brier. Every candidate signal, including my strongest (assists),
   was ultimately rejected or retracted by my own gates. That is a sophisticated and honest
   result, and I have the harnesses that prove it."
 
@@ -225,11 +225,11 @@ claimed, so the candidate can pre-empt the gap rather than be caught by it.
   it predicts. The cited source file actually reports 0.1354, not 0.1191.
 - **Honest version: the leak-free walk-forward endQ3 Brier is ~0.141** (after removing the two
   Q4-derived features). A controlled A/B showed the leak inflated it by ~4% relative.
-  **Frame this as a leak you caught in your own pipeline**, not as a competitive number.
+  This is a leak caught in the project's own pipeline, not a competitive number.
 
 ### The self-caught leaks ARE the strength
 
-Frame every item above as evidence of senior judgment:
+Every item above was caught by the project's own instruments:
 
 - Built three independent reproducible harnesses that **debunked his own flagship "+18.38% ROI"**
   and root-caused it to specific lines of code (the grader bet the market's devigged favorite —
@@ -249,14 +249,16 @@ Frame every item above as evidence of senior judgment:
 
 **The pitch:** "I build ambitious systems and then build the instruments to disprove my own
 hype. Here is exactly what works and exactly what I have not yet validated." That is a rare and
-high-value senior-engineering signal — especially for a candidate without a degree.
+high-value senior-engineering signal.
 
 ---
 
-## 4. Do-not-claim list (never put these in front of a recruiter)
+<a id="4-do-not-claim-list-never-put-these-in-front-of-a-recruiter"></a>
+
+## 4. Retired figures (retracted or unverifiable; not claimed anywhere in this repository)
 
 These numbers are inflated, leaked, artifactual, or unverifiable. A probing recruiter who runs
-the repo will catch each one — which is disqualifying for a no-degree candidate. Drop them.
+the repo will catch each one. Do not cite them as current results.
 
 | Do NOT claim | Why it fails | Say instead |
 |---|---|---|

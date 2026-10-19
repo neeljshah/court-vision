@@ -1,6 +1,6 @@
 # CourtVision for a trading desk -- the one-page brief
 
-**Neel Shah** -- [resume (PDF)](assets/NeelShahResume.pdf) -- [neeljshah22@gmail.com](mailto:neeljshah22@gmail.com) -- [GitHub](https://github.com/neeljshah/court-vision) -- [LinkedIn](https://linkedin.com/in/neeljshah22) -- [live analytics site](https://neeljshah.github.io/court-vision/analytics/)
+**Neel Shah** -- three years of data-science coursework at the University of Iowa -- [resume (PDF)](assets/NeelShahResume.pdf) -- [neeljshah22@gmail.com](mailto:neeljshah22@gmail.com) -- [GitHub](https://github.com/neeljshah/court-vision) -- [LinkedIn](https://linkedin.com/in/neeljshah22) -- [live analytics site](https://neeljshah.github.io/court-vision/analytics/)
 
 CourtVision is a calibrated pricing engine for NBA, MLB, soccer and tennis, built with walk-forward
 validation and paper-only execution controls. This page says, in desk terms, where the engine
@@ -19,14 +19,14 @@ intervals, Diebold-Mariano p-values and verdicts for the three win-market rows a
 functions before attaching the interval; the NBA close is Shin-devigged there, 0.1666, where the proof
 page prints the proportional-devig close, 0.1672, on the same 372 scored games):
 
-| Sport | Market | Metric | N | Model | Close | Gap | Standing |
-|---|---|---|---|---|---|---|---|
-| NBA | moneyline | Brier | 372 | 0.1735 | 0.1666 | +0.0069, 95% CI [-0.0038, +0.0175], DM p 0.20 | MATCHES_CLOSE (CI includes 0; underpowered: MDE 0.0152) |
-| NBA | total O/U | RMSE | 372 | 19.17 | 18.11 | +1.06 | BEHIND (freshness) |
-| MLB | moneyline | Brier | 13,992 | 0.2429 | 0.2390 | +0.0039, 95% CI [+0.0028, +0.0051], DM p 3.6e-12 | TRAILS_CLOSE (small, measurable) |
-| MLB | total O/U | RMSE | 1,679 | 4.72 | 4.44 | +0.28 | BEHIND (freshness) |
-| Soccer | O/U 2.5 | Brier | 7,558 | 0.2465 | 0.2390 | +0.0076, 95% CI [+0.0059, +0.0092], DM p 1.1e-19 | TRAILS_CLOSE (small, measurable) |
-| Tennis (ATP) | match-win | Brier | 7,374 | 0.2177 | 0.2028 | +0.0149 | BEHIND (freshness) |
+| Sport | Market | Metric | Devig method | N | Model | Close | Gap | Standing |
+|---|---|---|---|---|---|---|---|---|
+| NBA | moneyline | Brier | Shin | 372 | 0.1735 | 0.1666 | +0.0069, 95% CI [-0.0038, +0.0175], DM p 0.20 | MATCHES_CLOSE (CI includes 0; underpowered: MDE 0.0152) |
+| NBA | total O/U | RMSE | not recorded | 372 | 19.17 | 18.11 | +1.06 | BEHIND (freshness) |
+| MLB | moneyline | Brier | proportional | 13,992 | 0.2429 | 0.2390 | +0.0039, 95% CI [+0.0028, +0.0051], DM p 3.6e-12 | TRAILS_CLOSE (small, measurable) |
+| MLB | total O/U | RMSE | not recorded | 1,679 | 4.72 | 4.44 | +0.28 | BEHIND (freshness) |
+| Soccer | O/U 2.5 | Brier | proportional | 7,558 | 0.2465 | 0.2390 | +0.0076, 95% CI [+0.0059, +0.0092], DM p 1.1e-19 | TRAILS_CLOSE (small, measurable) |
+| Tennis (ATP) | match-win | Brier | not recorded | 7,374 | 0.2177 | 0.2028 | +0.0149 | BEHIND (freshness) |
 
 Reading: the model trails the sharp close by small margins everywhere and beats it nowhere. On NBA
 moneyline the gap is not distinguishable from zero, but the row is underpowered (a deficit the size
@@ -86,29 +86,11 @@ REB 1.92, AST 1.39, FG3M 0.89. Accuracy only; no market comparison exists for th
 - **An honesty CI:** the build fails when a retracted figure appears outside retraction framing
   ([HONESTY_SYSTEM.md](HONESTY_SYSTEM.md)).
 
-## 3. What is not shown -- read before the call
-
-- **No edge against the close pregame, and no established edge against the live market in-play.**
-  The one MODEL_SHARPER_PROVISIONAL row (MLB total runs, n=49-55) is a small-sample retrospective
-  diagnostic recorded in EVIDENCE.md; it is not treated here as evidence of market outperformance. No dollar,
-  ROI or return figure is claimed; retracted figures appear only inside retraction framing. Six
-  earlier headline figures were retracted after the project's own instruments traced each one to
-  a leak, a grading artifact, an overfit or regime dependence
-  ([the retraction record](evidence/retraction-story.md)).
-- **Forward record: zero weeks.** Six go-live gates were pre-registered on 2026-09-17
-  ([GO_LIVE_GATES.md](GO_LIVE_GATES.md)). Gate G6 requires at least eight consecutive weeks of
-  shadow maker quoting, fee-netted markout positive with a game-clustered 95 percent interval
-  excluding zero, on at least two independent market families, with a pre-registered single-game and single-week
-  concentration check and a calendar-half sign-flip reject. It has not started. The fee-aware paper sizing policy returns
-  zero because every cell is refused (the in-game result is underpowered, the second corpus is
-  unsealed); it has no caller ([S400 memo](evidence/harness/S400_paper_sizing_2026-09-22.md)).
-- **No live order path exists.** No real order has ever been placed.
-
 ## Forward record update (2026-10-19)
 
-This supersedes the "zero weeks" and "has not started" lines above for the period it covers. Those
-lines stay as the 2026-10-05 record. All numbers come from
-[JOB_EVIDENCE_PACKET.md section 5](JOB_EVIDENCE_PACKET.md), which carries the receipt paths under
+The forward paper series has run daily since 2026-10-06 (the 2026-10-05 version of this page said it had
+not started). All numbers come from
+[JOB_EVIDENCE_PACKET.md section 5](JOB_EVIDENCE_PACKET.md#5-forward-paper-record-2026-10-06--2026-10-18-as-of-2026-10-19), which carries the receipt paths under
 `docs/evidence/forward/`. PAPER ONLY.
 
 - **Served:** 113 Kalshi in-game games on prospective schedules over 2026-10-06 to 2026-10-16 (mlb 15,
@@ -133,21 +115,45 @@ lines stay as the 2026-10-05 record. All numbers come from
 - **Gate G6** (eight weeks of fee-netted shadow markout) has still not started. Qualified decisions
   are 0 on every sport.
 
+## 3. What is not shown -- read before the call
+
+- **No edge against the close pregame, and no established edge against the live market in-play.**
+  The one MODEL_SHARPER_PROVISIONAL row (MLB total runs, n=49-55) is a small-sample retrospective
+  diagnostic recorded in EVIDENCE.md; it is not treated here as evidence of market outperformance. No dollar,
+  ROI or return figure is claimed; retracted figures appear only inside retraction framing. Six
+  earlier headline figures were retracted after the project's own instruments traced each one to
+  a leak, a grading artifact, an overfit or regime dependence
+  ([the retraction record](evidence/retraction-story.md)).
+- **Forward record: running since 2026-10-06, no verdict yet.** 113 prospective games served through
+  2026-10-16, every scored cell below its 30-game floor (details in the update above). The consolidated
+  scoreboard pre-registration, `PREREG_2026-10-07.json`, was sealed 2026-10-07 and covers every served
+  sport, NBA included. Six go-live gates were pre-registered on 2026-09-17
+  ([GO_LIVE_GATES.md](GO_LIVE_GATES.md)). Gate G6 requires at least eight consecutive weeks of
+  shadow maker quoting, fee-netted markout positive with a game-clustered 95 percent interval
+  excluding zero, on at least two independent market families, with a pre-registered single-game and single-week
+  concentration check and a calendar-half sign-flip reject. Gate G6 itself (eight weeks of fee-netted
+  shadow markout) has not started. The fee-aware paper sizing policy returns
+  zero because every cell is refused (the in-game result is underpowered, the second corpus is
+  unsealed); it has no caller ([S400 memo](evidence/harness/S400_paper_sizing_2026-09-22.md)).
+- **No live order path exists.** No real order has ever been placed.
+
 ## 4. What runs next, with dates
 
 - In-game capture (Kalshi order books plus game state) is scheduled under prospective, committed
   schedule files; the earliest records its selection at 2026-09-22T03:03Z
   ([schedules](evidence/forward/schedules/)).
-- The NBA in-game preregistration is a draft, not yet sealed; the seal waits on named amendments
-  ([S382 draft r1](evidence/ingame/S382_NBA_PREREG_DRAFT_r1_2026-09-21.md)).
-- The forward maker paper series has not started. When it does, the G6 verdict is published on
+- NBA in-game scoring runs under the consolidated scoreboard pre-registration `PREREG_2026-10-07.json`,
+  sealed 2026-10-07, which covers every served sport (arm A and B_lag cells so far; every cell below
+  the 30-game floor). The NBA-specific draft ([S382 draft r1](evidence/ingame/S382_NBA_PREREG_DRAFT_r1_2026-09-21.md))
+  was not sealed on its own.
+- The G6 maker-quoting series (eight weeks, fee-netted markout) has not started. When it does, its verdict is published on
   schedule whether or not the gate is met; the pre-registered expected year-end outcome is
   "G6 not met, N weeks collected" ([GO_LIVE_GATES.md](GO_LIVE_GATES.md)).
 
 ## 5. How to read the rest
 
 [EVIDENCE.md](../EVIDENCE.md) is the claim-to-artifact index. [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md)
-is the adversarially audited narrative with the do-not-claim list. [RECEIPTS.md](../RECEIPTS.md) holds
+is the adversarially audited narrative with the retired-figures list. [RECEIPTS.md](../RECEIPTS.md) holds
 every generated number verbatim, and [REPRODUCE.md](../REPRODUCE.md) lists the commands that re-check
 them on a fresh clone.
 
