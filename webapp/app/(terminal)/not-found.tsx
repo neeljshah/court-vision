@@ -1,25 +1,7 @@
-// app/(terminal)/not-found.tsx -- terminal-scoped 404 (exports to out/404.html).
-// Lives inside the (terminal) route group so it inherits that group's root
-// layout (html/body + AppShell) -- the multi-root-layout split means a
-// top-level app/not-found.tsx has no root layout above it and fails the build.
-import Link from "next/link";
+// app/(terminal)/not-found.tsx -- notFound() inside a site-group segment; the group
+// layout already supplies the shell, so this is the shared 404 body only.
+import { NotFoundBody } from "@/components/shell/NotFoundBody";
 
 export default function NotFound() {
-  return (
-    <div className="flex min-h-[40vh] flex-col items-center justify-center gap-4 p-8 text-center">
-      <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-        404 -- not found
-      </span>
-      <p className="max-w-sm text-sm text-muted-foreground">
-        This page does not exist or the link is out of date. Nothing here is
-        fabricated to fill the gap.
-      </p>
-      <Link
-        href="/"
-        className="rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-      >
-        Back to the scoreboard
-      </Link>
-    </div>
-  );
+  return <NotFoundBody />;
 }

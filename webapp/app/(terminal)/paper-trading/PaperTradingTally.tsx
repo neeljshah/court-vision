@@ -1,12 +1,15 @@
 "use client";
 
 import type { ClvScoreboard } from "@/lib/p5api";
-import { fmtPct } from "@/lib/utils";
-import { StatTile, meanClvClass, EMPTY_CELL, type TallySummary } from "./paperTradingHelpers";
+import { Unavailable } from "@/components/p6/Primitives";
+import { CLV_UNAVAILABLE } from "@/lib/clvUnavailable";
+import { StatTile, EMPTY_CELL, type TallySummary } from "./paperTradingHelpers";
 
-export function PaperTradingTally({ tally, clv, loading }: {
+// clv stays in the props for the page's feed wiring; no CLV figure renders
+// (no closing-line-value reading exists -- lib/clvUnavailable.ts).
+export function PaperTradingTally({ tally, loading }: {
   tally: TallySummary | null;
-  clv: ClvScoreboard | null;
+  clv?: ClvScoreboard | null;
   loading: boolean;
 }) {
   return (
@@ -29,20 +32,9 @@ export function PaperTradingTally({ tally, clv, loading }: {
           value={loading || !tally ? EMPTY_CELL : String(tally.nPush)} />
         <StatTile label="Units staked" testId="tally-units-staked" loading={loading}
           value={loading || !tally ? EMPTY_CELL : tally.unitsStaked.toFixed(2)} />
-        <StatTile
-          label="Mean CLV" testId="clv-mean-clv" loading={loading}
-          valueClass={meanClvClass(clv)}
-          value={
-            loading ? EMPTY_CELL
-            : clv?.mean_clv_pct != null ? fmtPct(clv.mean_clv_pct / 100)
-            : EMPTY_CELL
-          }
-          note={
-            !loading && clv?.clv_is_proxy
-              ? `(proxy close${clv.n_proxy ? `, n=${clv.n_proxy}` : ""})`
-              : undefined
-          }
-        />
+        <div className="col-span-2 sm:col-span-4 lg:col-span-7" data-testid="clv-mean-clv">
+          <Unavailable reason={CLV_UNAVAILABLE} />
+        </div>
       </div>
   );
 }

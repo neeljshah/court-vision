@@ -5,7 +5,6 @@ import {
   api,
   isUnavailable,
   type PaperTrail as PaperTrailEnvelope,
-  type ClvScoreboard as Clv,
 } from "@/lib/p5api";
 import { useLiveData } from "@/lib/useLiveData";
 import { Unavailable, Badge } from "./Primitives";
@@ -19,10 +18,9 @@ import {
 } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { cn, fmtPct } from "@/lib/utils";
-import { EMPTY_CELL } from "@/lib/tokens";
+import { cn } from "@/lib/utils";
+import { CLV_UNAVAILABLE } from "@/lib/clvUnavailable";
 import {
-  clvCellClass,
   deriveResult,
   sportLabel,
   sortRows,
@@ -35,7 +33,6 @@ import {
   EmptyState,
   FilterGroup,
   SortHead,
-  Stat,
   TableSkeleton,
   TradeRow,
 } from "./PaperTradeRow";
@@ -78,16 +75,6 @@ export function PaperHistory() {
     staleAfterSec: 120,
   });
 
-  // CLV scoreboard -- polled separately so it updates independently.
-  const clvFetcher = useCallback(
-    (s: AbortSignal) => api.getPaperClv(s) as Promise<Clv>,
-    [],
-  );
-  const { data: clv } = useLiveData<Clv>(clvFetcher, {
-    intervalMs: 30000,
-    staleAfterSec: 120,
-  });
-
   const allRows = useMemo(() => env?.trail ?? [], [env]);
 
   const sportsAvailable = useMemo(() => {
@@ -117,7 +104,6 @@ export function PaperHistory() {
     setResult("all");
   };
   const filtersActive = sport !== "all" || result !== "all";
-  const settled = (clv?.n_bets ?? 0) > 0;
   const sortProps = { sortKey, sortDir, onSort };
 
   // Real fetch-time timestamp for the panel's as-of stamp -- never fabricated.
@@ -140,40 +126,9 @@ export function PaperHistory() {
         }
       />
       <div className="p-4">
-      {/* CLV summary row (real zeros from API; no $ / ROI). */}
-      <div className="mb-4 grid grid-cols-3 gap-3">
-        <Stat
-          label="Graded bets"
-          value={isLoading && !clv ? null : String(clv?.n_bets ?? 0)}
-        />
-        <Stat
-          label="% beat close"
-          value={
-            isLoading && !clv
-              ? null
-              : clv?.pct_beat_close != null
-                ? fmtPct(clv.pct_beat_close / 100, false)
-                : EMPTY_CELL
-          }
-        />
-        <Stat
-          label="Mean CLV"
-          value={
-            isLoading && !clv
-              ? null
-              : clv?.mean_clv_pct != null
-                ? fmtPct(clv.mean_clv_pct / 100)
-                : EMPTY_CELL
-          }
-          valueClass={clvCellClass(clv?.mean_clv_pct ?? null)}
-        />
+      <div className="mb-4" data-testid="paper-history-clv-unavailable">
+        <Unavailable reason={CLV_UNAVAILABLE} />
       </div>
-      {!isLoading && !settled ? (
-        <p className="mb-3 text-[11px] text-faint">
-          No settled bets yet -- CLV populates as paper bets grade against the
-          close. No edge is claimed.
-        </p>
-      ) : null}
 
       {/* Last-updated age (stale-never-green). */}
       <div

@@ -98,7 +98,7 @@ describe("a11y smoke -- InfoTip", () => {
 describe("a11y smoke -- SignalVerdictBadge", () => {
   it("shows the verdict as TEXT, not color alone (SHIP)", () => {
     const { container } = render(<SignalVerdictBadge verdict="SHIP" />);
-    expect(screen.getByText("SHIP")).toBeInTheDocument();
+    expect(screen.getByText("CALIBRATION SURVIVOR -- NOT SHIPPED")).toBeInTheDocument();
     // SHIP always carries the calibration-only honest framing as visible text.
     expect(
       screen.getByText(/calibration-only, vs_close UNPROVEN/i),

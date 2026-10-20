@@ -35,11 +35,11 @@ const PRIMARY_LINKS = [
 
 const MORE_LINKS = [
   { href: "/today",         label: "Today",        short: "Today",  exact: false, also: [] as string[] },
-  { href: "/live",          label: "Live",         short: "Live",   exact: false, also: [] as string[] },
+  { href: "/live",          label: "Paper live view", short: "P-live",   exact: false, also: [] as string[] },
   { href: "/games",         label: "Games",        short: "Games",  exact: false, also: ["/p6"] },
   { href: "/paper-trading", label: "Paper",        short: "Paper",  exact: false, also: ["/paper", "/records"] },
-  { href: "/desk",          label: "Desk",         short: "Desk",   exact: false, also: [] as string[] },
-  { href: "/bets",          label: "Bets",         short: "Bets",   exact: false, also: [] as string[] },
+  { href: "/desk",          label: "Paper desk",   short: "Desk",   exact: false, also: [] as string[] },
+  { href: "/bets",          label: "Paper record", short: "Record",   exact: false, also: [] as string[] },
   { href: "/progress",      label: "Progress",     short: "Prog",   exact: false, also: [] as string[] },
   { href: "/system",        label: "System",       short: "System", exact: false, also: [] as string[] },
   { href: "/how-it-works",  label: "How it works", short: "How",    exact: false, also: [] as string[] },

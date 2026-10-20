@@ -10,6 +10,7 @@
 // 0 cards clear the tier floor; real money default-DENY; edge_claimed always
 // false (never a profit/ROI claim).
 
+import { CLV_UNAVAILABLE } from "@/lib/clvUnavailable";
 import { useParams } from "next/navigation";
 import { useCallback, useMemo } from "react";
 import { api, isUnavailable } from "@/lib/p5api";
@@ -135,7 +136,7 @@ function EmptyState({ sport, reason, apiReason, apiNote }: {
       >
         {copy.headline}
       </p>
-      <p className="mt-2 text-[11px] text-muted-foreground">
+      <p className="mt-2 text-xs text-muted-foreground">
         {sport.toUpperCase()}: {copy.detail}
       </p>
       {/* Surface the raw API reason/note when present so nothing is hidden */}
@@ -196,10 +197,10 @@ function SportBetsBoard({ sport }: { sport: string }) {
   return (
     <Panel>
       <PanelHead
-        title={`${sport.toUpperCase()} best bets board`}
+        title={`${sport.toUpperCase()} paper record board`}
         right={<AgeBadge asOf={observation.oldest} />}
       />
-      <section aria-label={`${sport.toUpperCase()} best bets board`} className="flex flex-col gap-4 p-4">
+      <section aria-label={`${sport.toUpperCase()} paper record board`} className="flex flex-col gap-4 p-4">
       <BoardObservation observation={observation} loading={isLoading && !anyFetched} />
       {isStale && anyFetched && error && (
         <span className="font-data text-[10px] text-stale">
@@ -221,7 +222,7 @@ function SportBetsBoard({ sport }: { sport: string }) {
         <EmptyState
           sport={sport}
           reason="unavailable"
-          apiReason={error ?? "Could not load best bets."}
+          apiReason={error ?? "Could not load the paper record."}
         />
       ) : cards.length === 0 ? (
         <EmptyState
@@ -234,7 +235,7 @@ function SportBetsBoard({ sport }: { sport: string }) {
         <div
           className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
           role="list"
-          aria-label={`${sport.toUpperCase()} best bets -- ranked calibrated divergence cards`}
+          aria-label={`${sport.toUpperCase()} paper record -- ranked calibrated divergence cards`}
           data-testid="sport-cards-grid"
         >
           {cards.map((card, i) => (
@@ -261,36 +262,34 @@ export default function SportBetsPageClient() {
     <main className="mx-auto flex max-w-7xl flex-col gap-4 p-6">
       <header className="flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          {sport.toUpperCase()} Best Bets{" "}
+          {sport.toUpperCase()} Paper record{" "}
           <span className="font-data text-sm text-muted-foreground">
             ranked calibrated divergence -- units only, no edge claimed
           </span>
         </h1>
-        <span className="font-data text-[11px] text-muted-foreground">
+        <span className="font-data text-xs text-muted-foreground">
           paper only -- no $
         </span>
       </header>
 
       {/* Honesty banner */}
-      <Panel className="px-4 py-3 text-[12px] text-muted-foreground">
+      <Panel className="px-4 py-3 text-xs text-muted-foreground">
         <span className="microlabel mr-2">units only -- no dollars</span>
         <span>
           Cards ranked by <strong className="text-foreground">calibrated model-vs-market divergence</strong>{" "}
           and tier. This is <span className="font-data">CALIBRATION</span>, not a
           profit claim. Real money is{" "}
           <span className="font-data uppercase text-foreground">DENY</span> (paper
-          only). CLV may show{" "}
-          <span className="font-data">INSUFFICIENT_DATA</span> when no live
-          in-play prices exist.
+          only). No CLV figure is shown: {CLV_UNAVAILABLE}
         </span>
       </Panel>
 
       {/* Sport board */}
       <SportBetsBoard sport={sport} />
 
-      <footer className="mt-4 text-center text-[11px] text-muted-foreground">
-        {HONEST_DISCLAIMER} Best bets = ranked calibrated divergence + tier +
-        confidence + CLV, never a fabricated profit claim. Units only -- no $
+      <footer className="mt-4 text-center text-xs text-muted-foreground">
+        {HONEST_DISCLAIMER} The board = ranked calibrated divergence + tier +
+        confidence, never a fabricated profit claim. Units only -- no $
         anywhere. Real money is default-DENY.
       </footer>
     </main>

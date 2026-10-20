@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
+import { CLV_UNAVAILABLE } from "@/lib/clvUnavailable";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 
 // Tests for W6 Best Bets board components.
@@ -122,15 +123,14 @@ describe("BetCard", () => {
     expect(/\bP&L\b|\bPnL\b/i.test(txt)).toBe(false);
   });
 
-  it("shows INSUFFICIENT_DATA when CLV is null", () => {
+  it("shows the CLV-unavailable chip when CLV is null", () => {
     render(<BetCard card={makeBetCard({ clv: null, clv_is_proxy: true })} />);
-    expect(screen.getByText(/INSUFFICIENT_DATA/i)).toBeTruthy();
+    expect(screen.getByText("CLV: unavailable").getAttribute("title")).toBe(CLV_UNAVAILABLE);
   });
 
-  it("shows CLV percentage when CLV is provided", () => {
+  it("never shows a CLV percentage even when CLV is provided", () => {
     render(<BetCard card={makeBetCard({ clv: 0.03, clv_is_proxy: false })} />);
-    // Should show CLV +3.0%
-    expect(screen.getByText(/CLV \+3\.0%/i)).toBeTruthy();
+    expect(screen.queryByText(/CLV \+3\.0%/i)).toBeNull();
   });
 
   it("shows LIVE status dot for live cards", () => {
@@ -682,7 +682,7 @@ function makeBoardResponse(cards: BestBetsCard[]): BestBetsBoardType {
 
 // Import the default export (SportBetsPage) after navigation mock is set up.
 // We test SportBetsBoard behavior indirectly through the page render.
-const SportBetsPage = (await import("@/app/(terminal)/bets/[sport]/page")).default;
+const SportBetsPage = (await import("@/app/(terminal)/bets/[sport]/SportBetsPageClient")).default;
 
 describe("Sport bets board (/bets/[sport]) -- P0 acceptance tests", () => {
   let originalBestbetsBoard: typeof import("@/lib/p5api").api.bestbetsBoard;

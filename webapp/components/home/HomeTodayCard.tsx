@@ -139,7 +139,7 @@ export function HomeTodayCard() {
           {/* At-a-glance stat tiles */}
           <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
             <StatTile
-              label="Best bets today"
+              label="Candidates today"
               testId="today-bestbets-count"
               value={bestBetsCount != null ? String(bestBetsCount) : "--"}
               sub="candidate board"
@@ -223,7 +223,7 @@ export function HomeTodayCard() {
               Full today view -&gt;
             </Link>
             <Link href="/bets" className="border border-border px-3 py-1.5 font-data text-[11px] text-muted-foreground transition-colors hover:bg-accent/40" data-testid="cta-bets">
-              Best bets board -&gt;
+              Paper record board -&gt;
             </Link>
             <Link href="/paper-trading" className="border border-border px-3 py-1.5 font-data text-[11px] text-muted-foreground transition-colors hover:bg-accent/40" data-testid="cta-paper">
               Full equity curve -&gt;

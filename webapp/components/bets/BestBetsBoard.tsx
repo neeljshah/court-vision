@@ -137,10 +137,10 @@ export function BestBetsBoard() {
   const activeSports: string[] = boards ? SPORTS.filter((s) => s in boards) : [];
 
   return (
-    <PanelErrorBoundary label="best bets board">
+    <PanelErrorBoundary label="paper candidate board">
       <Panel>
-        <PanelHead title="Best bets board" />
-        <section aria-label="Best bets board" className="flex flex-col gap-4 p-4">
+        <PanelHead title="Paper candidate board" />
+        <section aria-label="Paper candidate board" className="flex flex-col gap-4 p-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <StatusTabs value={tab} onChange={setTab} counts={counts} panelId="bets-board-panel" />
           <SortControls value={sort} onChange={setSort} />
@@ -185,14 +185,14 @@ export function BestBetsBoard() {
             ))}
           </div>
         )}
-        <div id="bets-board-panel" role="tabpanel" aria-label={`${tab} best bets`}
+        <div id="bets-board-panel" role="tabpanel" aria-label={`${tab} paper candidates`}
           aria-labelledby={`status-tab-${tab}`}>
           {isLoading && !anyFetched ? (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {[1, 2, 3].map((i) => <div key={i} className="skeleton-shimmer h-64" />)}
             </div>
           ) : showError ? (
-            <Unavailable reason={error ?? "Could not load best bets."} />
+            <Unavailable reason={error ?? "Could not load the paper candidates."} />
           ) : activeSports.length === 0 ? (
             <EmptySection status={tab}
               label={anyFetched
@@ -207,7 +207,7 @@ export function BestBetsBoard() {
                 const sorted = sortCards(sportCards, sort);
                 const reason = unavailableReasons[sport] ?? null;
                 return (
-                  <section key={sport} aria-label={`${sport.toUpperCase()} best bets`}
+                  <section key={sport} aria-label={`${sport.toUpperCase()} paper candidates`}
                     data-testid={`sport-section-${sport}`} className="flex flex-col gap-3">
                     <div className="flex items-center gap-2">
                       <span className="microlabel">
@@ -223,7 +223,7 @@ export function BestBetsBoard() {
                       <SportSectionEmpty sport={sport} reason={reason} />
                     ) : (
                       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3" role="list"
-                        aria-label={`${sport.toUpperCase()} ${tab} best bets`}>
+                        aria-label={`${sport.toUpperCase()} ${tab} paper candidates`}>
                         {sorted.map((card, i) => (
                           <div key={`${card.game_id}-${card.market_type}-${card.side}-${i}`}
                             role="listitem" data-testid="card-row">

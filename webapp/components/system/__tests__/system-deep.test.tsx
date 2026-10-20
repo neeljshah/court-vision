@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
+import { CLV_UNAVAILABLE } from "@/lib/clvUnavailable";
 import { render, screen, waitFor, fireEvent, within } from "@testing-library/react";
 import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -238,32 +239,11 @@ describe("BacklogPanel -- 73 ranked, filterable, show-all, measurement-only", ()
   });
 });
 
-describe("ClvOverTimePanel -- INSUFFICIENT_DATA default, vs_close UNPROVEN, probability", () => {
-  it("renders INSUFFICIENT_DATA + UNPROVEN + probability framing (no $)", async () => {
-    const clv = {
-      status: "ok",
-      pool_verdict: "INSUFFICIENT_DATA",
-      n_games: 1,
-      n_settled_games: 0,
-      pooled_mean_clv: null,
-      clv_over_time: [],
-      vs_close: "UNPROVEN",
-      label: "CLV / calibration in probability space, no currency.",
-      edge_claimed: false,
-    };
-    global.fetch = routeFetch([[/clv\/over-time/, { body: clv }]]);
+describe("ClvOverTimePanel -- the site-wide CLV sentence only", () => {
+  it("renders the CLV Unavailable sentence and no CLV figure (no $)", () => {
     const { container } = render(<ClvOverTimePanel />);
-    await waitFor(() => expect(screen.getByText("INSUFFICIENT_DATA")).toBeTruthy());
-    expect(screen.getByText("UNPROVEN")).toBeTruthy();
-    expect(screen.getByText(/One game is variance/i)).toBeTruthy();
-    // probability space, never $.
+    expect(screen.getByTestId("clv-over-time-unavailable")).toHaveTextContent(CLV_UNAVAILABLE);
     expect(container.textContent || "").not.toMatch(/\$/);
-  });
-
-  it("an unavailable CLV endpoint degrades honestly", async () => {
-    global.fetch = routeFetch([[/clv\/over-time/, { body: {}, status: 503, ok: false }]]);
-    render(<ClvOverTimePanel />);
-    await waitFor(() => expect(screen.getByText(/HTTP 503/)).toBeTruthy());
   });
 });
 

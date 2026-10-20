@@ -232,11 +232,11 @@ export function PlacedBetsForGamePanel({
       right={headerRight}
       className={className}
     >
-      <p className="mb-2 text-[11px] leading-relaxed text-faint">
+      <p className="mb-2 text-xs leading-relaxed text-faint">
         What the system actually <strong className="text-foreground">staked</strong> for
-        this game in the paper ledger -- the money-makers. Stake is in{" "}
+        this game in the paper ledger (simulated). Stake is in{" "}
         <span className="font-data">UNITS</span>; click a row for the full execution
-        trail + CLV grade. Real money is{" "}
+        trail. Real money is{" "}
         <span className="font-data uppercase text-stale">DENY</span>.
       </p>
 

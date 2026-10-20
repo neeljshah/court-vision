@@ -206,6 +206,8 @@ teflon-quant-dashboard/
 
 # -- Model training runs (large artifacts, re-generable) ----------------------
 models/
+!webapp/app/**/models/
+!webapp/app/**/models/**
 !src/models/
 !scripts/platformkit/models/
 src/detection/data/images/

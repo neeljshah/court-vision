@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { CLV_UNAVAILABLE } from "@/lib/clvUnavailable";
 import { act, cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import { api } from "@/lib/p5api";
 import type { ClvScoreboard, PaperTrailRow, PmTrailRow, PnlSeries } from "@/lib/types";
@@ -38,8 +39,8 @@ function mocks() {
 
 async function summariesLoaded() {
   await waitFor(() => {
-    expect(screen.getByTestId("paper-tally-clv")).toHaveTextContent("+13.36%");
-    expect(screen.getByTestId("clv-mean-clv")).toHaveTextContent("+4.4%");
+    expect(screen.getByTestId("paper-tally-clv")).toHaveTextContent(CLV_UNAVAILABLE);
+    expect(screen.getByTestId("clv-mean-clv")).toHaveTextContent(CLV_UNAVAILABLE);
   });
 }
 
@@ -103,7 +104,7 @@ describe("PaperTradingPage independent feed failures", () => {
     expect(await screen.findByRole("status", { name: "Unavailable paper data" })).toBeInTheDocument();
     await waitFor(() => expect(screen.getByTestId("done-total")).toHaveTextContent("--"));
     expect(screen.getByTestId("tally-open")).toHaveTextContent("--");
-    expect(screen.getByTestId("clv-mean-clv")).toHaveTextContent("--");
+    expect(screen.getByTestId("clv-mean-clv")).toHaveTextContent(CLV_UNAVAILABLE);
     expect(screen.queryByTestId("paper-equity-chart")).not.toBeInTheDocument();
     expect(screen.queryByTestId("no-paper-trades")).not.toBeInTheDocument();
     expect(screen.queryByTestId("open-positions-loading")).not.toBeInTheDocument();

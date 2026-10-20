@@ -14,6 +14,7 @@
 //   * Real-money DENY text present.
 
 import { describe, it, expect, vi, afterEach } from "vitest";
+import { CLV_UNAVAILABLE } from "@/lib/clvUnavailable";
 import { render, screen, waitFor } from "@testing-library/react";
 
 vi.mock("next/link", () => ({
@@ -224,13 +225,13 @@ describe("/paper-trading -- running tally tiles", () => {
   it("CLV tile shows formatted pct when mean_clv_pct is present", async () => {
     mockApiWithTrades();
     await renderPage();
-    await waitFor(() => expect(screen.getByTestId("clv-mean-clv").textContent).toMatch(/\+0\.5%/));
+    await waitFor(() => expect(screen.getByTestId("clv-mean-clv").textContent).toContain(CLV_UNAVAILABLE));
   });
 
   it("CLV tile shows EMPTY_CELL when mean_clv_pct is null", async () => {
     mockApiEmpty();
     await renderPage();
-    await waitFor(() => expect(screen.getByTestId("clv-mean-clv").textContent).toBe("--"));
+    await waitFor(() => expect(screen.getByTestId("clv-mean-clv").textContent).toContain(CLV_UNAVAILABLE));
   });
 });
 

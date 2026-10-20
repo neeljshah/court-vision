@@ -5,6 +5,8 @@
 // co-headline "win" is a staged MODEL_SHARPER_PROVISIONAL CRPS row (labelled
 // provisional); the scoreboard shows losses + underpowered rows unfiltered.
 
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Panel, PanelHead } from "@/components/ui/terminal";
@@ -13,6 +15,7 @@ import { DeltaBars } from "@/components/charts/DeltaBars";
 import { loadArtifact } from "@/lib/showcase.server";
 import { listPacks } from "@/lib/atlas.server";
 import { buildClaimIndex } from "@/lib/evidence.server";
+import { modelMinusMarket, DELTA_LEGEND } from "@/lib/scoreboardDelta";
 
 export const metadata: Metadata = {
   title: "Calibration Scoreboard",
@@ -63,12 +66,26 @@ const LIVE_LINKS: [string, string][] = [
   ["/methodology", "methodology"],
 ];
 
+// check_all.py's own report (build-time read): PASS / NO_CHECK counts + its as-of.
+function checkCounts(): { pass: number; noCheck: number; total: number; asOf: string } | null {
+  try {
+    const rows = JSON.parse(readFileSync(join(process.cwd(),
+      "../scripts/platformkit/analytics_showcase/out/check_all_report.json"), "utf-8")) as
+      { status: string; as_of?: string }[];
+    const asOf = rows.map((x) => x.as_of ?? "").sort().pop()?.slice(0, 10) ?? "";
+    return { pass: rows.filter((x) => x.status === "PASS").length,
+      noCheck: rows.filter((x) => x.status === "NO_CHECK").length, total: rows.length, asOf };
+  } catch {
+    return null;
+  }
+}
+
 function VerdictPill({ v }: { v: string }) {
   const cls = v.startsWith("MODEL_SHARPER") ? "text-success border-success/50"
     : v.startsWith("MARKET_SHARPER") ? "text-danger border-danger/50"
       : "text-faint border-border";
   return (
-    <span className={`inline-block whitespace-nowrap border px-1.5 py-px font-data text-[10px] tracking-wide ${cls}`}>
+    <span className={`inline-block whitespace-nowrap border px-1.5 py-px font-data text-xs tracking-wide ${cls}`}>
       {v.replace(/_/g, " ")}
     </span>
   );
@@ -84,7 +101,7 @@ function Door({ href, kicker, title, body, stat, go }: DoorProps) {
       <h3 className="mt-1 text-lg font-semibold tracking-tight text-foreground">{title}</h3>
       <p className="mt-1.5 flex-1 text-[13.5px] leading-relaxed text-muted-foreground">{body}</p>
       {stat && <div className="mt-3 font-data text-2xl text-primary tabular">{stat}</div>}
-      <div className="mt-2 font-data text-[11px] uppercase tracking-wider text-faint group-hover:text-foreground">
+      <div className="mt-2 font-data text-xs uppercase tracking-wider text-faint group-hover:text-foreground">
         {go} -&gt;
       </div>
     </Link>
@@ -101,8 +118,10 @@ export default function Home() {
   const rows = board?.rows ?? [];
   const asOf = board?.generated_at ?? null;
   const win = rows.find((r) => r.checkpoint === "total_runs|end_inning_7");
+  const winD = win ? modelMinusMarket(win.paired_delta_mean, win.paired_delta_95ci) : null;
   const mlbAll = brier?.sports?.mlb?.grains?.all;
 
+  const checks = checkCounts();
   const packs = listPacks();
   const atlasTotal = packs.reduce((s, p) => s + p.count, 0);
   const claimCount = buildClaimIndex().claimCount;
@@ -120,7 +139,7 @@ export default function Home() {
   ];
 
   return (
-    <div className="mx-auto max-w-[1200px] px-6 pb-16">
+    <div className="mx-auto max-w-[1200px] px-4 pb-16 sm:px-6 [overflow-wrap:anywhere]">
       <section className="pt-8 pb-3 sm:pt-11">
         <p className="microlabel">
           CourtVision -- forecast calibration platform for NBA, MLB, soccer, and tennis -- built by Neel Shah
@@ -146,7 +165,7 @@ export default function Home() {
             Open the analytics site -&gt;
           </Link>
         </div>
-        <span className="mt-4 inline-flex items-center gap-2 border border-border px-2.5 py-1 font-data text-[11px] text-faint">
+        <span className="mt-4 inline-flex max-w-full flex-wrap items-center gap-x-2 border border-border px-2.5 py-1 font-data text-xs text-faint">
           POSITIONING <b className="text-foreground">calibration, not profit</b> &middot; edge_claimed: false on every artifact
         </span>
       </section>
@@ -157,20 +176,21 @@ export default function Home() {
           {win ? (
             <>
               <div className="mt-2 font-data text-3xl font-semibold text-success tabular">
-                {fmt(win.paired_delta_mean)} CRPS
+                {fmt(winD!.delta)} CRPS
                 <ReceiptChip sourceArtifact={win.source} asOf={asOf} verified="edge_claimed:false"
-                  verdict={win.verdict} n={win.n} ci={win.paired_delta_95ci} />
+                  verdict={win.verdict} n={win.n} ci={winD!.ci} />
               </div>
-              <div className="mt-1 font-data text-[11px] text-faint">
+              <div className="mt-1 font-data text-xs text-faint">
+                model minus market (lower CRPS is better; negative = model sharper) &middot;{" "}
                 as of {day(asOf) ?? "date not published"} &middot; n = {win.n} &middot; {win.verdict.replace(/_/g, " ")}
               </div>
-              <div className="font-data text-[11px] text-faint">
+              <div className="font-data text-xs text-faint">
                 small-sample retrospective diagnostic; not evidence of market outperformance
               </div>
               <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
                 Model total-runs forecast is sharper than the market&apos;s at end of
-                inning 7 (n={win.n}, 95% CI [{fmt(win.paired_delta_95ci[0])},{" "}
-                {fmt(win.paired_delta_95ci[1])}]). MODEL_SHARPER_PROVISIONAL -- still
+                inning 7 (n={win.n}, model minus market 95% CI [{fmt(winD!.ci[0])},{" "}
+                {fmt(winD!.ci[1])}]). MODEL_SHARPER_PROVISIONAL -- still
                 provisional on a small sample. A sharpness result measured leak-free,
                 not an edge.
               </p>
@@ -195,7 +215,7 @@ export default function Home() {
             )}{" "}
             Both readings are true. We publish both.
           </p>
-          <div className="mt-2 font-data text-[11px] text-faint">
+          <div className="mt-2 font-data text-xs text-faint">
             as of {day(brier?.generated_at ?? asOf) ?? "date not published"} &middot; pregame: matches or trails the devigged close on every market tested
           </div>
         </div>
@@ -218,31 +238,37 @@ export default function Home() {
               </tr>
             </thead>
             <tbody>
-              {rows.map((r, i) => (
+              {rows.map((r, i) => {
+                const d = modelMinusMarket(r.paired_delta_mean, r.paired_delta_95ci);
+                return (
                 <tr key={i} className="border-t border-border hover:bg-surface-2">
                   <td className="px-3 py-2 font-data">{r.sport}</td>
                   <td className="px-3 py-2">{r.market}</td>
-                  <td className="px-3 py-2 font-data text-[12px]">{r.checkpoint}</td>
+                  <td className="px-3 py-2 font-data text-xs">{r.checkpoint}</td>
                   <td className="px-3 py-2 text-right font-data tabular">{r.n}</td>
                   <td className="px-3 py-2">
                     <div className="flex items-center gap-2">
-                      <DeltaBars delta={r.paired_delta_mean} ci={r.paired_delta_95ci} verdict={r.verdict} />
-                      <span className="font-data tabular text-foreground">{fmt(r.paired_delta_mean)}</span>
+                      <DeltaBars delta={d.delta} ci={d.ci} verdict={r.verdict} />
+                      <span className="font-data tabular text-foreground">{fmt(d.delta)}</span>
                       <ReceiptChip sourceArtifact={r.source} asOf={asOf} verified="edge_claimed:false"
-                        verdict={r.verdict} n={r.n} ci={r.paired_delta_95ci} />
+                        verdict={r.verdict} n={r.n} ci={d.ci} />
                     </div>
                   </td>
                   <td className="px-3 py-2 text-right font-data tabular text-faint">
-                    [{fmt(r.paired_delta_95ci[0])}, {fmt(r.paired_delta_95ci[1])}]
+                    [{fmt(d.ci[0])}, {fmt(d.ci[1])}]
                   </td>
                   <td className="px-3 py-2">
                     <VerdictPill v={r.verdict} />
                   </td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
         </div>
+        <p className="border-t border-border px-3 py-2 text-xs text-muted-foreground" data-testid="delta-legend">
+          {DELTA_LEGEND} (lower CRPS is better too).
+        </p>
         <div className="flex items-center justify-between border-t border-border px-3 py-2">
           <span className="microlabel">
             {board?.n_rows ?? rows.length} rows total. Losses and underpowered rows are shown, not filtered.
@@ -264,10 +290,16 @@ export default function Home() {
             {strip.map(([k, l]) => (
               <div key={l} className="bg-card p-4">
                 <div className="font-data text-2xl tabular text-foreground">{k}</div>
-                <div className="mt-0.5 text-[12px] text-faint">{l}</div>
+                <div className="mt-0.5 text-xs text-faint">{l}</div>
               </div>
             ))}
           </div>
+          <p className="mt-1 text-xs text-faint" data-testid="tally-scope">
+            Scope: rows of the four per-sport validation ledgers
+            (domains/&lt;sport&gt;/knowledge/validation_ledger.jsonl), honesty_exhibit.json as of{" "}
+            {day(honesty.generated_at)}. A different population from the analytics site&apos;s
+            published research records and from the README&apos;s gate-verdict count.
+          </p>
         </>
       )}
 
@@ -302,19 +334,21 @@ export default function Home() {
         </span>
       </div>
 
-      <div className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-border pt-4 text-[12px] text-faint">
+      <div className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-border pt-4 text-xs text-faint">
         <span className="microlabel">live app</span>
         {LIVE_LINKS.map(([href, label]) => (
           <Link key={href} href={href} className="inline-flex min-h-6 items-center hover:text-foreground">{label}</Link>
         ))}
       </div>
 
-      <footer className="mt-6 border-t border-border pt-5 text-[12px] leading-relaxed text-faint">
+      <footer className="mt-6 border-t border-border pt-5 text-xs leading-relaxed text-faint [overflow-wrap:anywhere]">
         Built by Neel Shah. Every figure traces to a committed JSON under{" "}
         <span className="font-data">scripts/platformkit/analytics_showcase/out/</span>. Reproduce the
         whole set with{" "}
         <span className="font-data">python scripts/platformkit/analytics_showcase/check_all.py</span>{" "}
-        (52/52 on a bare clone). Truth source:{" "}
+        ({checks
+          ? `${checks.pass} of ${checks.total} module self-checks PASS, ${checks.noCheck} have no self-check; check_all_report.json as of ${checks.asOf}`
+          : "check report not present on this clone"}). Truth source:{" "}
         <span className="font-data">docs/JOB_EVIDENCE_PACKET.md</span>.
       </footer>
     </div>

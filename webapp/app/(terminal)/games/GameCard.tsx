@@ -211,7 +211,7 @@ export function GameCard({
         {chip.decision === "bet" ? (
           <span
             className="inline-flex items-center gap-1.5"
-            aria-label={`best bet: tier ${chip.tier ?? "--"}, ${chip.stakeUnits != null ? chip.stakeUnits.toFixed(2) : "--"} units`}
+            aria-label={`paper candidate: tier ${chip.tier ?? "--"}, ${chip.stakeUnits != null ? chip.stakeUnits.toFixed(2) : "--"} units`}
           >
             <span
               className={cn(

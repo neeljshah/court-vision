@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import { api } from "@/lib/p5api";
 import type { PnlSeries, PnlSummary } from "@/lib/types";
+import { CLV_UNAVAILABLE } from "@/lib/clvUnavailable";
 import { BetsMoneyHeadline } from "@/components/bets/BetsMoneyHeadline";
 import { PaperEquityPanel } from "@/components/paper/PaperEquityPanel";
 
@@ -58,7 +59,7 @@ describe("BetsMoneyHeadline PnL mean CLV percentage contract", () => {
     await waitFor(() => {
       // Also confirms that the PnL response has loaded before sentinel assertions.
       expect(screen.getByTestId("money-winrate")).toHaveTextContent("50%");
-      expect(screen.getByTestId("money-clv")).toHaveTextContent(bets);
+      expect(screen.getByTestId("money-clv")).toHaveTextContent(CLV_UNAVAILABLE);
     });
   });
 });
@@ -67,6 +68,6 @@ describe("PaperEquityPanel PnL mean CLV percentage contract", () => {
   it.each(CASES)("preserves $mean CLV while keeping the fraction win rate", ({ mean, equity }) => {
     render(<PaperEquityPanel series={series(mean)} bankroll={null} />);
     expect(screen.getByTestId("paper-tally-winrate")).toHaveTextContent("50%");
-    expect(screen.getByTestId("paper-tally-clv")).toHaveTextContent(equity);
+    expect(screen.getByTestId("paper-tally-clv")).toHaveTextContent(CLV_UNAVAILABLE);
   });
 });

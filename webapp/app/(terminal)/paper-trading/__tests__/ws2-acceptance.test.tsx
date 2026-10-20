@@ -16,6 +16,7 @@
 // Lane: frontend (webapp/**). Per-file vitest only (full-suite freezes the box).
 
 import { describe, it, expect, vi, afterEach } from "vitest";
+import { CLV_UNAVAILABLE } from "@/lib/clvUnavailable";
 import { render, screen, waitFor } from "@testing-library/react";
 import type { PaperTrailRow, PmTrail, ClvScoreboard } from "@/lib/p5api";
 
@@ -667,7 +668,7 @@ describe("WS2-misc -- structural requirements", () => {
     mockWith54RowTrail(CLV_EMPTY);
     await renderPage();
     await waitFor(() => {
-      expect(screen.getByTestId("clv-mean-clv").textContent).toBe("--");
+      expect(screen.getByTestId("clv-mean-clv").textContent).toContain(CLV_UNAVAILABLE);
     });
   });
 
@@ -675,7 +676,7 @@ describe("WS2-misc -- structural requirements", () => {
     mockWith54RowTrail(CLV_PRESENT);
     await renderPage();
     await waitFor(() => {
-      expect(screen.getByTestId("clv-mean-clv").textContent).toMatch(/\+1\.5%/);
+      expect(screen.getByTestId("clv-mean-clv").textContent).toContain(CLV_UNAVAILABLE);
     });
   });
 

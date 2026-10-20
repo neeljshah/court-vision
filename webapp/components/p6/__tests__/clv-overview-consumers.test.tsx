@@ -5,6 +5,7 @@ import { HomeRecordsHero } from "@/components/home/HomeRecordsHero";
 import { BetsMoneyHeadline } from "@/components/bets/BetsMoneyHeadline";
 import { RecordsClvStrip } from "@/components/records/RecordsClvStrip";
 import PaperTradingPage from "@/app/(terminal)/paper-trading/page";
+import { CLV_UNAVAILABLE } from "@/lib/clvUnavailable";
 
 afterEach(() => {
   cleanup();
@@ -48,48 +49,26 @@ describe("HomeRecordsHero CLV rate units", () => {
   });
 });
 
-describe("BetsMoneyHeadline CLV rate units", () => {
-  it.each([
-    { value: 36.3341, expected: /1233 graded vs close; beat-close 36%\./ },
-    { value: 0, expected: /1233 graded vs close; beat-close 0%\./ },
-    { value: null, expected: /1233 graded vs close; beat-close pending\./ },
-  ])("preserves $value percent and missing-rate semantics", async ({ value, expected }) => {
+describe("CLV consumers render only the site-wide Unavailable sentence", () => {
+  it.each([36.3341, 0, null])("BetsMoneyHeadline shows no CLV rate (%s)", async (value) => {
     mockFeeds({ ...PUBLIC_CLV, pct_beat_close: value });
     render(<BetsMoneyHeadline />);
-    expect(await screen.findByText(expected)).toBeInTheDocument();
+    expect(await screen.findByTestId("money-clv")).toHaveTextContent(CLV_UNAVAILABLE);
+    expect(screen.getByTestId("bets-money-headline")).not.toHaveTextContent(/beat-close \d/);
   });
-});
 
-describe("PaperTradingPage CLV mean units", () => {
-  it.each([
-    { value: 4.368363, expected: "+4.4%" },
-    { value: 0, expected: "0.0%" },
-    { value: null, expected: "--" },
-  ])("preserves $value percent and missing-mean semantics", async ({ value, expected }) => {
+  it.each([4.368363, 0, null])("PaperTradingPage shows no mean CLV (%s)", async (value) => {
     mockFeeds({ ...PUBLIC_CLV, mean_clv_pct: value });
     render(<PaperTradingPage />);
-    // The proxy note appears only after the combined feed resolves, including
-    // when the loaded null mean and the loading placeholder both read "--".
-    expect(await screen.findByText("(proxy close)")).toBeInTheDocument();
     await waitFor(() => {
-      expect(screen.getByTestId("clv-mean-clv")).toHaveTextContent(expected);
+      expect(screen.getByTestId("clv-mean-clv")).toHaveTextContent(CLV_UNAVAILABLE);
     });
+    expect(screen.queryByText("+4.4%")).toBeNull();
   });
-});
 
-describe("RecordsClvStrip percentage units", () => {
-  it.each([
-    { rate: 36.3341, mean: 4.368363, expectedRate: "36.3%", expectedMean: "+4.4%" },
-    { rate: 0, mean: 0, expectedRate: "0.0%", expectedMean: "+0.0%" },
-    { rate: null, mean: null, expectedRate: "--", expectedMean: "--" },
-    { rate: 0.4, mean: 0.4, expectedRate: "0.4%", expectedMean: "+0.4%" },
-  ])("preserves rate $rate and mean $mean as percentages", ({ rate, mean, expectedRate, expectedMean }) => {
-    render(
-      <RecordsClvStrip
-        clv={{ ...PUBLIC_CLV, pct_beat_close: rate, mean_clv_pct: mean }}
-      />,
-    );
-    expect(screen.getByTestId("clv-strip-beat-close")).toHaveTextContent(expectedRate);
-    expect(screen.getByTestId("clv-strip-mean-clv")).toHaveTextContent(expectedMean);
+  it("RecordsClvStrip shows no rate or mean", () => {
+    render(<RecordsClvStrip clv={PUBLIC_CLV} />);
+    expect(screen.getByTestId("records-clv-strip")).toHaveTextContent(CLV_UNAVAILABLE);
+    expect(screen.getByTestId("records-clv-strip")).not.toHaveTextContent("36.3%");
   });
 });

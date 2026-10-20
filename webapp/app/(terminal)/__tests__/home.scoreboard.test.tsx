@@ -7,6 +7,7 @@ import scoreboard from "../../../public/data/showcase/cross_sport_scoreboard.jso
 vi.mock("@/lib/atlas.server", () => ({ listPacks: () => [] }));
 
 import Home from "../page";
+import { modelMinusMarket } from "@/lib/scoreboardDelta";
 
 const fmt = (value: number) => (value >= 0 ? "+" : "") + value.toFixed(4);
 
@@ -43,10 +44,9 @@ describe("Home scoreboard evidence", () => {
       expect(cells[1].textContent).toBe(row.market);
       expect(cells[2].textContent).toBe(row.checkpoint);
       expect(cells[3].textContent).toBe(String(row.n));
-      expect(within(cells[4]).getByText(fmt(row.paired_delta_mean))).toBeVisible();
-      expect(cells[5].textContent?.trim()).toBe(
-        `[${fmt(row.paired_delta_95ci[0])}, ${fmt(row.paired_delta_95ci[1])}]`
-      );
+      const d = modelMinusMarket(row.paired_delta_mean, row.paired_delta_95ci as [number, number]);
+      expect(within(cells[4]).getByText(fmt(d.delta))).toBeVisible();
+      expect(cells[5].textContent?.trim()).toBe(`[${fmt(d.ci[0])}, ${fmt(d.ci[1])}]`);
       expect(within(cells[4]).getByRole("button", {
         name: "show receipt: source, as-of, verification",
       })).toBeVisible();

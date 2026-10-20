@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { CLV_UNAVAILABLE } from "@/lib/clvUnavailable";
 import { render, screen } from "@testing-library/react";
 
 // venue-summary.test.tsx -- unit tests for venueAggregate + VenueSummary component.
@@ -303,20 +304,14 @@ describe("VenueSummary -- renders one tile per venue", () => {
     expect(screen.getByText("polymarket")).toBeInTheDocument();
   });
 
-  it("shows INSUFFICIENT_DATA for venue with no settled close rows", () => {
-    const rows = [makeRow({ taken_book: "kalshi", status: "open" })];
-    const { container } = render(<VenueSummary rows={rows} />);
-    expect(container.textContent).toContain("INSUFFICIENT_DATA");
-  });
-
-  it("does NOT show INSUFFICIENT_DATA inside the venue tile when venue has real CLV", () => {
-    const rows = [settledRow({ taken_book: "kalshi", clv_pct: 0.03 })];
-    render(<VenueSummary rows={rows} />);
-    // The tile itself should not say INSUFFICIENT_DATA -- only the footer disclaimer
-    // may mention it generically. We check the tile element directly.
+  it.each([
+    [makeRow({ taken_book: "kalshi", status: "open" })],
+    [settledRow({ taken_book: "kalshi", clv_pct: 0.03 })],
+  ])("renders the site-wide CLV sentence, never a venue CLV figure (%#)", (row) => {
+    render(<VenueSummary rows={[row]} />);
     const tile = screen.getByTestId("venue-tile");
-    expect(tile.textContent).not.toContain("INSUFFICIENT_DATA");
-    expect(tile.textContent).toContain("%");
+    expect(tile).toHaveTextContent(CLV_UNAVAILABLE);
+    expect(tile.textContent).not.toContain("+3.00%");
   });
 
   it("never renders a dollar sign in output", () => {

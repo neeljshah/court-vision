@@ -254,34 +254,3 @@ describe("QA #3 / iter10-P2 -- unit-convention clarity in PortfolioRiskPanel", (
     expect(trigger).toBeTruthy();
   });
 });
-
-describe("QA #3 / iter10-P2 -- unit-convention note text on /paper (static)", () => {
-  it("paper-unit-convention-note static copy mentions Kelly-style, flat 1.0-per-bet, UNITS, no $", async () => {
-    // Render the real PaperPage so the test fails if the copy in page.tsx regresses.
-    // The note (data-testid="paper-unit-convention-note") is in the static header and
-    // always present regardless of fetch state -- but we mock fetch so the effect does
-    // not produce unhandled promise rejections.
-    global.fetch = vi
-      .fn()
-      .mockResolvedValue({
-        ok: false,
-        status: 503,
-        headers: new Headers({ "content-type": "application/json" }),
-        json: async () => ({ status: "unavailable", reason: "test" }),
-      }) as unknown as typeof fetch;
-
-    const { default: PaperPage } = await import("@/app/(terminal)/paper/page");
-    render(<PaperPage />);
-
-    const note = screen.getByTestId("paper-unit-convention-note");
-    const text = note.textContent ?? "";
-
-    expect(text).toMatch(/kelly/i);
-    expect(text).toMatch(/flat/i);
-    expect(text).toMatch(/1\.0.{0,10}bet/i);
-    expect(text).toMatch(/units/i);
-    expect(text).not.toMatch(/\$/);
-    // Confirm no curly/smart apostrophe (U+2019) leaked into the rendered text.
-    expect(text.includes("’")).toBe(false);
-  });
-});

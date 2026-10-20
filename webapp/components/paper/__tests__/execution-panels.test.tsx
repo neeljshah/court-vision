@@ -9,6 +9,7 @@ import { PerMarketClvStrips } from "@/components/paper/PerMarketClvStrips";
 import { CircuitBreakerPanel } from "@/components/paper/CircuitBreakerPanel";
 import { ExecutionQualityPanel } from "@/components/paper/ExecutionQualityPanel";
 import { RealizedIngameClvPanel } from "@/components/paper/RealizedIngameClvPanel";
+import { CLV_UNAVAILABLE } from "@/lib/clvUnavailable";
 
 const EXEC: ExecutionBlock = {
   by_market_type: {
@@ -42,21 +43,12 @@ const EXEC: ExecutionBlock = {
 };
 
 describe("PerMarketClvStrips", () => {
-  it("renders honest empty state with no execution data", () => {
-    render(<PerMarketClvStrips execution={null} />);
-    expect(screen.getByTestId("per-market-clv-strips")).toHaveTextContent(
-      /No placed bets yet/i,
-    );
-  });
-
-  it("renders a row per market with signed median CLV (not the mean)", () => {
-    render(<PerMarketClvStrips execution={EXEC} />);
-    const table = screen.getByTestId("per-market-clv-table");
-    expect(table).toHaveTextContent("prop");
-    expect(table).toHaveTextContent("+1.25%"); // median, not the +1.4 mean
-    expect(table).toHaveTextContent("moneyline");
-    expect(table).toHaveTextContent("-0.50%"); // median stays negative despite +8.0 mean
-    expect(table).not.toHaveTextContent("+8.00%");
+  it.each([null, EXEC])("renders only the site-wide CLV sentence (%#)", (execution) => {
+    render(<PerMarketClvStrips execution={execution} />);
+    const el = screen.getByTestId("per-market-clv-strips");
+    expect(el).toHaveTextContent(CLV_UNAVAILABLE);
+    expect(el).not.toHaveTextContent("+1.25%");
+    expect(el).not.toHaveTextContent("+8.00%");
   });
 });
 
@@ -85,12 +77,13 @@ describe("ExecutionQualityPanel", () => {
     );
   });
 
-  it("renders gated/ungated counts and avg expected CLV", () => {
+  it("renders gated/ungated counts and no expected-CLV figure", () => {
     render(<ExecutionQualityPanel execution={EXEC} />);
     const panel = screen.getByTestId("execution-quality-panel");
     expect(panel).toHaveTextContent("2"); // n_gated
     expect(panel).toHaveTextContent("8"); // n_ungated
-    expect(panel).toHaveTextContent("+1.40%");
+    expect(panel).not.toHaveTextContent("+1.40%");
+    expect(screen.getByTestId("exec-quality-clv-unavailable")).toHaveTextContent(CLV_UNAVAILABLE);
     expect(panel).toHaveTextContent("220ms");
   });
 

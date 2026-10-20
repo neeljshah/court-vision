@@ -1,15 +1,8 @@
-import type { Metadata } from "next";
-import Workspace from "@/components/analytics/workspace/Workspace";
-import { getDashboardData } from "@/lib/analytics/dashboardData";
-import { loadHomeCalibrationExample } from "@/lib/analytics/homeCalibrationExample.server";
-import "./workspace.css";
-import "./overview.css";
+// Retired route (DESIGN_BRIEF 2026-10-20 section 3a): static redirect stub; the map is lib/redirects.ts.
+import { RedirectStub, stubMetadata } from "@/components/shell/RedirectStub";
 
-export const metadata: Metadata = {
-  title: { absolute: "CourtVision Analytics | Forecast Calibration Workspace" },
-  description: "Read published forecast calibration examples, source-linked research, and descriptive player and team profiles.",
-};
-export default function AnalyticsHome() {
-  const { paperCount, novelCount, findingCount, ...data } = getDashboardData();
-  return <Workspace data={data} calibrationExample={loadHomeCalibrationExample()} paperCount={paperCount} novelCount={novelCount} findingCount={findingCount} />;
+export const metadata = stubMetadata("/analytics/");
+
+export default function Page() {
+  return <RedirectStub from="/analytics/" />;
 }

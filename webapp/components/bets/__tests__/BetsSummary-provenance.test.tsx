@@ -19,6 +19,7 @@ vi.mock("@/lib/useLiveData", () => ({
   useLiveData: () => mockHooks.states[mockHooks.index++],
 }));
 
+import { CLV_UNAVAILABLE } from "@/lib/clvUnavailable";
 import { BetsMoneyHeadline } from "../BetsMoneyHeadline";
 import { TodayPlacedBets } from "../TodayPlacedBets";
 
@@ -66,7 +67,7 @@ describe("bets summary source provenance", () => {
     expect(headline).toHaveTextContent("Bankroll updated: 2026-07-16 01:37:24 UTC");
     expect(headline.querySelectorAll("time")[0]).toHaveAttribute("dateTime", "2026-07-16T01:37:24.782Z");
     expect(headline.querySelectorAll("time")[1]).toHaveAttribute("dateTime", "2026-07-16T01:37:24.968Z");
-    expect(screen.getByText("CLV scoreboard time: unavailable")).toBeInTheDocument();
+    expect(screen.getByTestId("money-clv")).toHaveTextContent(CLV_UNAVAILABLE);
     expect(screen.getByTestId("bets-money-headline")).not.toHaveTextContent("2026-10-05");
     expect(headline).not.toHaveTextContent(/as of/i);
     expect(screen.getByTestId("money-net-units")).toHaveTextContent("+101.54u");

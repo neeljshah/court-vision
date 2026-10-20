@@ -99,7 +99,7 @@ describe("ProvenanceBadge -- model | phase", () => {
 describe("SignalVerdictBadge -- honest verdict framing", () => {
   it("SHIP shows calibration-only, vs_close UNPROVEN", () => {
     render(<SignalVerdictBadge verdict="SHIP" stat="clustered-DM p ~= 0.0015" />);
-    expect(screen.getByText("SHIP")).toBeTruthy();
+    expect(screen.getByText("CALIBRATION SURVIVOR -- NOT SHIPPED")).toBeTruthy();
     expect(
       screen.getByText(/calibration-only, vs_close UNPROVEN/)
     ).toBeTruthy();

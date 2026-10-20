@@ -5,6 +5,7 @@
 // Exports: clvLabel, statusDot, fmtAmericanOdds, fmtTipoff, buildArticleLabel,
 //          DIVERGENCE_TIP, UNITS_TIP, SuppressedCard.
 
+import { CLV_UNAVAILABLE } from "@/lib/clvUnavailable";
 import * as React from "react";
 import Link from "next/link";
 import { cn, fmtPct, tierClass } from "@/lib/utils";
@@ -33,25 +34,13 @@ export const UNITS_TIP =
 // Formatting helpers
 // ---------------------------------------------------------------------------
 
-// clvLabel: CLV null -> INSUFFICIENT_DATA (amber, never green); numeric -> colored.
-export function clvLabel(clv: number | null, proxy: boolean): React.ReactNode {
-  if (clv === null) {
-    return (
-      <span
-        className="font-data text-[10px] text-stale"
-        aria-label="CLV: INSUFFICIENT_DATA -- no live prices available"
-      >
-        CLV: INSUFFICIENT_DATA
-      </span>
-    );
-  }
+// clvLabel: no per-bet CLV figure renders -- the July 2026 snapshot's CLV values
+// were proxy-close numbers and no closing-line-value reading exists
+// (lib/clvUnavailable.ts). Signature kept for callers.
+export function clvLabel(_clv: number | null, _proxy: boolean): React.ReactNode {
   return (
-    <span
-      className={cn("font-data tabular text-[10px]", clv > 0 ? "text-up" : "text-down")}
-      aria-label={`CLV ${clv > 0 ? "+" : ""}${(clv * 100).toFixed(1)}%${proxy ? " (proxy)" : ""}`}
-    >
-      CLV {clv > 0 ? "+" : ""}{(clv * 100).toFixed(1)}%
-      {proxy ? " (proxy)" : ""}
+    <span className="font-data text-xs text-stale" title={CLV_UNAVAILABLE} aria-label={`CLV unavailable: ${CLV_UNAVAILABLE}`}>
+      CLV: unavailable
     </span>
   );
 }

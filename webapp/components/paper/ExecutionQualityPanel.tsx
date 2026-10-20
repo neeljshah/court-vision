@@ -7,6 +7,8 @@
 // exec_gate/latency -- n_gated stays 0 and averages stay "--", never a
 // fabricated number. ASCII only. <=300 LOC.
 
+import { Unavailable } from "@/components/p6/Primitives";
+import { CLV_UNAVAILABLE } from "@/lib/clvUnavailable";
 import type { ExecutionBlock } from "@/lib/paperToday";
 import { EMPTY_CELL } from "@/lib/tokens";
 import { Panel, PanelHead, Num } from "@/components/ui/terminal";
@@ -41,39 +43,23 @@ export function ExecutionQualityPanel({
         <div className="flex flex-wrap items-end gap-6 px-4 py-3">
           <div className="flex flex-col gap-0.5">
             <span className="microlabel">gated placements</span>
-            <Num className="text-[14px] font-semibold text-foreground">
+            <Num className="text-sm font-semibold text-foreground">
               {q ? q.n_gated : 0}
             </Num>
           </div>
           <div className="flex flex-col gap-0.5">
             <span className="microlabel">ungated placements</span>
-            <Num className="text-[14px] font-semibold text-muted-foreground">
+            <Num className="text-sm font-semibold text-muted-foreground">
               {q ? q.n_ungated : 0}
             </Num>
           </div>
-          <div className="flex flex-col gap-0.5">
-            <span className="microlabel">avg expected CLV</span>
-            <Num
-              className={`text-[14px] font-semibold ${
-                q?.avg_expected_clv_pct != null
-                  ? q.avg_expected_clv_pct >= 0
-                    ? "text-up"
-                    : "text-down"
-                  : "text-faint"
-              }`}
-            >
-              {fmtPctSigned(q?.avg_expected_clv_pct ?? null)}
-            </Num>
-            {t ? (
-              <span className="font-data text-[9px] text-faint">
-                min {fmtPctSigned(t.prop_expected_clv_min_pct)} (prop) / {" "}
-                {fmtPctSigned(t.ingame_expected_clv_min_pct)} (in-game)
-              </span>
-            ) : null}
+          <div className="flex max-w-md flex-col gap-0.5" data-testid="exec-quality-clv-unavailable">
+            <span className="microlabel">expected CLV</span>
+            <Unavailable reason={CLV_UNAVAILABLE} />
           </div>
           <div className="flex flex-col gap-0.5">
             <span className="microlabel">median latency</span>
-            <Num className="text-[14px] font-semibold text-foreground">
+            <Num className="text-sm font-semibold text-foreground">
               {fmtMs(q?.median_placement_latency_ms ?? null)}
             </Num>
           </div>

@@ -24,7 +24,7 @@ export function NotAvailable({ refusals }: { refusals: Refusal[] }) {
   return (
     <div className="flex flex-col gap-1 px-3 py-2">
       {list.map((r, i) => (
-        <span key={i} className="inline-block w-fit border border-stale/60 px-2 py-0.5 font-data text-[11px] text-stale">
+        <span key={i} className="inline-block w-fit border border-stale/60 px-2 py-0.5 font-data text-xs text-stale">
           not available: {r.section}: {r.reason}
         </span>
       ))}
@@ -36,7 +36,7 @@ export function NotAvailable({ refusals }: { refusals: Refusal[] }) {
 export function T({ head, rows }: { head: string[]; rows: ReactNode[][] }) {
   return (
     <div className="overflow-x-auto">
-      <table className="w-full font-data text-[12px]">
+      <table className="w-full font-data text-xs">
         <thead>
           <tr className="border-b border-border text-left text-faint">
             {head.map((h) => <th key={h} className="px-3 py-1 font-normal">{h}</th>)}
@@ -77,14 +77,19 @@ export function DeskShell({ desk, title, active, children }: {
       <header>
         <p className="microlabel">{desk?.header ?? PAPER_HEADER}</p>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight text-foreground">{title}</h1>
-        <p className="mt-1 font-data text-[11px] text-faint">
+        <p className="mt-1 font-data text-xs text-faint">
           {desk ? `export ${desk.date}, generated ${desk.generated_at_utc}; ${desk.refusals.length} refusal(s)` :
             "desk export not staged"}
+        </p>
+        <p className="mt-1 text-xs text-muted-foreground" data-testid="desk-dates">
+          Dates: 2026-09-24 = first night in the fill-realism table (recorded capture history);
+          2026-10-03 = first ledger night with paper fills; 2026-10-06 = start of the prospective
+          forward paper series (JOB_EVIDENCE_PACKET.md section 5). No verdict yet.
         </p>
         <nav className="mt-3 flex flex-wrap gap-2">
           {TABS.map((t) => (
             <Link key={t.href} href={t.href}
-              className={"border px-2 py-0.5 text-[12px] " +
+              className={"border px-2 py-0.5 text-xs " +
                 (t.href === active ? "border-foreground text-foreground" : "border-border text-muted-foreground")}>
               {t.label}
             </Link>

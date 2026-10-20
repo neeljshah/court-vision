@@ -152,7 +152,7 @@ function SportRow({ b }: { b: SportBucket }) {
 
       {/* model-vs-market divergence */}
       <div className="flex flex-col gap-0.5 min-w-[56px]">
-        <span className="microlabel">avg edge pp</span>
+        <span className="microlabel">avg divergence pp</span>
         <span data-testid={`rollup-div-${b.sport}`}>
           <Num
             className={`text-[13px] font-semibold ${

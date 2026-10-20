@@ -68,7 +68,7 @@ jobs:
         run: |
           # Legit retraction / limitations surfaces where these numbers MUST appear,
           # struck through and labelled. Anywhere else is a regression.
-          ALLOW='findings/retraction|evidence/retraction-story|methodology/'
+          ALLOW='findings/retraction|evidence/retraction-story|evidence/retractions|methodology/'
           # Each retracted figure is bounded by non-digits so 8.94 does not match
           # 18.945 etc; +54% is matched literally.
           HITS=$(grep -rElE '([^0-9])(18\.38|78\.11|54\.57|8\.94)([^0-9])|\+54%' out --include='*.html' \
@@ -84,8 +84,8 @@ jobs:
         run: |
           N=$(find out -name '*.html' | wc -l)
           echo "Exported HTML pages: $N"
-          if [ "$N" -lt 3200 ]; then
-            echo "::error::Page-count tripwire FAILED -- only $N pages (< 3200). A template refactor may have dropped routes."
+          if [ "$N" -lt 1700 ]; then
+            echo "::error::Page-count tripwire FAILED -- only $N pages (< 1700; the 2026-10-20 restructure retired the duplicate atlas family, ~1,800 expected). A template refactor may have dropped routes."
             exit 1
           fi
-          echo "Page-count tripwire GREEN ($N >= 3200)."
+          echo "Page-count tripwire GREEN ($N >= 1700)."

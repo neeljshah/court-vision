@@ -1,8 +1,8 @@
-import { redirect } from "next/navigation";
+// Retired route (DESIGN_BRIEF 2026-10-20 section 3a): static redirect stub; the map is lib/redirects.ts.
+import { RedirectStub, stubMetadata } from "@/components/shell/RedirectStub";
 
-// Legacy route. The canonical, richer System view (health + self-improve +
-// gate ledger + backlog + parity + CLV-over-time) now lives at /system.
-// Redirect so there is exactly ONE System surface (no duplicate page).
-export default function LegacyP6SystemRedirect() {
-  redirect("/system");
+export const metadata = stubMetadata("/p6/system/");
+
+export default function Page() {
+  return <RedirectStub from="/p6/system/" />;
 }

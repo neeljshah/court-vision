@@ -92,7 +92,7 @@ const VERIFIED_ROWS: { badge: string; tone: string; meaning: string }[] = [
     badge: "MODEL_SHARPER_PROVISIONAL",
     tone: "text-success border-success/50",
     meaning:
-      "The model's calibration beat the devigged close on this fold, provisionally. " +
+      "Sharper than the live market on this cell (CRPS or Brier), provisional; the reference is the live market, not the devigged close. " +
       "Shown at the same size as a loss.",
   },
   {

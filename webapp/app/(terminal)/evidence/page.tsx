@@ -3,6 +3,7 @@
 
 import { buildClaimIndex } from "@/lib/evidence.server";
 import { ClaimIndex } from "@/components/evidence/ClaimIndex";
+import { EvidenceHubLinks } from "@/components/shell/EvidenceHubLinks";
 
 // Counts come from the staged evidence_index.json so the description cannot
 // drift from the page (it once said 22 while the index held 23).
@@ -31,6 +32,8 @@ export default function EvidencePage() {
           calibration and engineering evidence only.
         </p>
       </header>
+
+      <EvidenceHubLinks />
 
       {index.buckets.length === 0 ? (
         <p className="text-sm text-muted-foreground">

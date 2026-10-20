@@ -64,7 +64,7 @@ export function LineShopPanel({ books, side }: LineShopPanelProps) {
           lineStr ? `line ${lineStr}` : null,
           `price ${priceStr}`,
           b.is_pm ? "prediction market, not best-bettable" : null,
-          isBest ? "best bettable line" : null,
+          isBest ? "best available line" : null,
           !b.fresh ? "stale" : null,
         ]
           .filter(Boolean)

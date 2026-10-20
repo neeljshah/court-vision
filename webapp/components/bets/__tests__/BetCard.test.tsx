@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { CLV_UNAVAILABLE } from "@/lib/clvUnavailable";
 import { render, screen } from "@testing-library/react";
 import { BetCard, type BetCardData } from "../BetCard";
 
@@ -199,15 +200,15 @@ describe("BetCard -- tier badge and units", () => {
 // ---------------------------------------------------------------------------
 
 describe("BetCard -- CLV honesty", () => {
-  it("shows INSUFFICIENT_DATA when clv is null", () => {
+  it("shows the CLV-unavailable chip when clv is null", () => {
     render(<BetCard card={makeCard({ clv: null })} />);
-    expect(screen.getByText(/INSUFFICIENT_DATA/)).toBeInTheDocument();
+    expect(screen.getByText("CLV: unavailable")).toHaveAttribute("title", CLV_UNAVAILABLE);
   });
 
-  it("shows numeric CLV when clv is provided", () => {
+  it("never shows a numeric CLV even when clv is provided", () => {
     render(<BetCard card={makeCard({ clv: 0.032, clv_is_proxy: false })} />);
-    // Should show "+3.2%" somewhere
-    expect(screen.getByText(/CLV.*3\.2%/)).toBeInTheDocument();
+    expect(screen.queryByText(/CLV.*3\.2%/)).toBeNull();
+    expect(screen.getByText("CLV: unavailable")).toBeInTheDocument();
   });
 });
 

@@ -7,39 +7,20 @@
 //   - current balance vs start in UNITS + net P&L in UNITS
 //   - cumulative-units line chart over points[] ("how much I would have made")
 //   - a daily P&L mini strip from daily[]
-//   - a tally (n_bets / W-L / win_rate / mean CLV)
+//   - a tally (n_bets / W-L / win_rate); CLV = the site-wide Unavailable sentence
+//   - labelled the July 2026 model snapshot (simulated units, not the forward record)
 //
 // HONESTY RAILS:
 //   - PAPER simulation; UNITS not $ -- NO "$" token anywhere.
 //   - edge_claimed=false -> NO profit/edge claim language.
-//   - mean_clv_pct_or_INSUFFICIENT shown as "CLV: INSUFFICIENT_DATA" honestly
-//     when that's the value; never fabricated.
+//   - no CLV figure is shown: no closing-line-value reading exists (packet s4/s5).
 //   - Unavailable -> honest empty state, never a fabricated curve.
 //   - ASCII only. Under 300 LOC (chart split into PaperEquityChart.tsx).
 
 import type { PnlSeries, PaperBankroll } from "@/lib/types";
 import { PaperEquityChart, fmtUnits, fmtSignedUnits } from "./PaperEquityChart";
 import { Unavailable } from "@/components/p6/Primitives";
-
-// ---------------------------------------------------------------------------
-// CLV arrives in percent units; "INSUFFICIENT_DATA" is surfaced verbatim.
-// ---------------------------------------------------------------------------
-
-function clvDisplay(v: number | string | null | undefined): {
-  text: string;
-  cls: string;
-} {
-  if (v === null || v === undefined || v === "INSUFFICIENT_DATA") {
-    return { text: "INSUFFICIENT_DATA", cls: "text-muted-foreground" };
-  }
-  if (typeof v === "string") {
-    // any other string (e.g. "UNPROVEN") surfaced verbatim, never greened
-    return { text: v, cls: "text-muted-foreground" };
-  }
-  const sign = v >= 0 ? "+" : "";
-  const cls = v > 0 ? "text-emerald-400" : v < 0 ? "text-rose-400" : "text-foreground";
-  return { text: `${sign}${v.toFixed(2)}%`, cls };
-}
+import { CLV_UNAVAILABLE, JULY_SNAPSHOT_LABEL } from "@/lib/clvUnavailable";
 
 // ---------------------------------------------------------------------------
 // Tile
@@ -60,14 +41,14 @@ function Tile({
 }) {
   return (
     <div className="rounded-lg border border-slate-800 bg-bg-subtle px-3 py-3">
-      <div className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</div>
+      <div className="text-xs uppercase tracking-wide text-muted-foreground">{label}</div>
       <div
         className={`mt-1 font-mono text-lg tabular-nums ${valueCls ?? "text-foreground"}`}
         data-testid={testId}
       >
         {value}
       </div>
-      {sub ? <div className="mt-0.5 font-mono text-[9px] text-faint">{sub}</div> : null}
+      {sub ? <div className="mt-0.5 font-mono text-xs text-faint">{sub}</div> : null}
     </div>
   );
 }
@@ -81,7 +62,7 @@ function DailyStrip({ daily }: { daily: PnlSeries["daily"] }) {
     return (
       <p
         data-testid="paper-daily-empty"
-        className="font-mono text-[10px] text-faint"
+        className="font-mono text-xs text-faint"
       >
         no settled days yet -- day units appear once paper bets grade
       </p>
@@ -109,7 +90,7 @@ function DailyStrip({ daily }: { daily: PnlSeries["daily"] }) {
               style={{ height: `${h}px` }}
               aria-hidden="true"
             />
-            <span className="font-mono text-[8px] text-faint">
+            <span className="font-mono text-xs text-faint">
               {d.day ? d.day.slice(5) : "--"}
             </span>
           </li>
@@ -144,7 +125,6 @@ export function PaperEquityPanel({ series, bankroll, loading }: PaperEquityPanel
     startUnits != null && currentUnits != null ? currentUnits - startUnits : null;
 
   const summary = !isUnavail ? series!.summary : null;
-  const clv = clvDisplay(summary?.mean_clv_pct_or_INSUFFICIENT);
   const winRate =
     summary?.win_rate != null ? `${(summary.win_rate * 100).toFixed(0)}%` : "--";
 
@@ -156,10 +136,10 @@ export function PaperEquityPanel({ series, bankroll, loading }: PaperEquityPanel
     >
       <header className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 px-4 py-2.5">
         <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          Bankroll &amp; equity curve
+          Paper equity -- July 2026 model snapshot
         </h2>
-        <span className="font-mono text-[10px] uppercase tracking-wide text-amber-400">
-          paper simulation -- units, not $
+        <span className="font-mono text-xs text-amber-400" data-testid="paper-equity-snapshot-label">
+          {JULY_SNAPSHOT_LABEL}
         </span>
       </header>
 
@@ -233,26 +213,22 @@ export function PaperEquityPanel({ series, bankroll, loading }: PaperEquityPanel
             testId="paper-tally-push"
             value={summary ? String(summary.n_push) : "--"}
           />
-          <Tile
-            label="CLV (mean)"
-            testId="paper-tally-clv"
-            value={clv.text}
-            valueCls={clv.cls}
-            sub="price taken vs the close; calibration only"
-          />
+        </div>
+        <div className="mb-4" data-testid="paper-tally-clv">
+          <Unavailable reason={CLV_UNAVAILABLE} />
         </div>
 
         {/* Daily units mini strip */}
         <div>
-          <span className="mb-2 block font-mono text-[9px] uppercase tracking-widest text-muted-foreground">
+          <span className="mb-2 block font-mono text-xs uppercase tracking-widest text-muted-foreground">
             Day units (last 14 days)
           </span>
-          {isUnavail ? <p className="font-mono text-[10px] text-faint">{loading ? "Loading daily units" : "Daily units unavailable"}</p>
+          {isUnavail ? <p className="font-mono text-xs text-faint">{loading ? "Loading daily units" : "Daily units unavailable"}</p>
             : <DailyStrip daily={series!.daily ?? []} />}
         </div>
 
         {/* Honest footer */}
-        <p className="mt-4 border-t border-slate-800 pt-3 font-mono text-[10px] text-faint">
+        <p className="mt-4 border-t border-slate-800 pt-3 font-mono text-xs text-faint">
           PAPER simulation -- the units the simulated paper stakes would have settled to; not a return, not
           dollars. Executed: false. Real-money: DENY. No edge or profit is claimed;
           a flat/negative curve that tracks the efficient close is an honest result.

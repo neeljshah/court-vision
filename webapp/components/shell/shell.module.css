@@ -1,0 +1,95 @@
+/* components/shell/shell.module.css -- the shared site chrome (header, nav, breadcrumbs,
+   footer, snapshot banner, 404). Self-contained tokens so the same chrome renders under
+   both CSS worlds (terminal globals.css + tailwind, analytics.css) and under the bare
+   root 404. Values are the site surfaces from PALETTE_2026-10-20.md; dark is selected,
+   not flipped. Theme = html[data-theme], set by the one theme init script. */
+
+.header, .footer, .crumbs, .banner, .notFound, .skip, .page {
+  --sh-page: #F3F1EC; --sh-card: #FBFAF7; --sh-ink: #1C1F26; --sh-muted: #5F6675;
+  --sh-rule: #D8D3C8; --sh-accent: #B37B14; --sh-warn-ink: #7A5210; --sh-focus: #2a78d6;
+  font-family: var(--font-sans, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif);
+}
+:global(html[data-theme="dark"]) .header, :global(html[data-theme="dark"]) .footer,
+:global(html[data-theme="dark"]) .crumbs, :global(html[data-theme="dark"]) .banner,
+:global(html[data-theme="dark"]) .notFound, :global(html[data-theme="dark"]) .skip,
+:global(html[data-theme="dark"]) .page {
+  --sh-page: #0C0F15; --sh-card: #12161F; --sh-ink: #E7EAF2; --sh-muted: #8A93A6;
+  --sh-rule: #232A38; --sh-accent: #E2A33C; --sh-warn-ink: #E2A33C; --sh-focus: #3987e5;
+}
+
+.skip { position: absolute; left: 8px; top: -60px; z-index: 70; padding: 10px 14px;
+  background: var(--sh-ink); color: var(--sh-card); border-radius: 6px; font-size: 14px; }
+.skip:focus { top: 8px; }
+
+.banner { background: var(--sh-card); color: var(--sh-warn-ink); border-bottom: 1px solid var(--sh-rule);
+  padding: 4px 16px; text-align: center; font-size: 12px; line-height: 1.5; }
+
+/* ---- header ---- */
+.header { position: sticky; top: 0; z-index: 40; background: var(--sh-card); color: var(--sh-ink);
+  border-bottom: 1px solid var(--sh-rule); }
+.row { max-width: 1200px; margin: 0 auto; padding: 0 16px; min-height: 56px; display: flex;
+  align-items: center; gap: 12px; }
+.brand { display: inline-flex; align-items: center; min-height: 44px; font-weight: 700;
+  font-size: 17px; letter-spacing: -0.01em; color: var(--sh-ink); text-decoration: none; margin-right: 8px; }
+.brand:hover { text-decoration: none; }
+.navList { display: flex; list-style: none; margin: 0; padding: 0; gap: 2px; }
+.navLink { display: inline-flex; align-items: center; min-height: 44px; padding: 0 10px; font-size: 14px;
+  color: var(--sh-muted); text-decoration: none; border-bottom: 2px solid transparent; }
+.navLink:hover { color: var(--sh-ink); text-decoration: none; }
+.navLink[aria-current="page"] { color: var(--sh-ink); font-weight: 600; border-bottom-color: var(--sh-accent); }
+.tools { margin-left: auto; display: flex; align-items: center; gap: 6px; }
+.tool { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px;
+  min-width: 44px; padding: 0 10px; font: inherit; font-size: 14px; color: var(--sh-ink);
+  background: transparent; border: 1px solid var(--sh-rule); border-radius: 8px; cursor: pointer;
+  text-decoration: none; }
+.tool:hover { background: var(--sh-page); text-decoration: none; }
+.kbd { font-family: ui-monospace, Consolas, monospace; font-size: 12px; color: var(--sh-muted); }
+.menuButton { display: none; }
+.mobileMenu { border-top: 1px solid var(--sh-rule); padding: 8px 16px 12px; }
+.mobileMenu .navList { flex-direction: column; }
+.mobileMenu .navLink { border-bottom: 0; border-left: 3px solid transparent; }
+.mobileMenu .navLink[aria-current="page"] { border-left-color: var(--sh-accent); }
+
+@media (max-width: 899px) {
+  .row > nav, .hideNarrow { display: none; }
+  .menuButton { display: inline-flex; }
+}
+
+.header a:focus-visible, .header button:focus-visible, .footer a:focus-visible,
+.crumbs a:focus-visible, .notFound a:focus-visible {
+  outline: 2px solid var(--sh-focus); outline-offset: 2px;
+}
+
+/* ---- breadcrumbs ---- */
+.crumbs { max-width: 1200px; margin: 0 auto; padding: 8px 16px 0; font-size: 13px; color: var(--sh-muted); }
+.crumbs ol { display: flex; flex-wrap: wrap; list-style: none; margin: 0; padding: 0; gap: 4px; }
+.crumbs li + li::before { content: ">"; margin-right: 4px; color: var(--sh-muted); }
+.crumbs a { color: var(--sh-ink); text-decoration: underline; text-underline-offset: 2px; }
+
+/* ---- footer ---- */
+.footer { margin-top: 48px; background: var(--sh-card); color: var(--sh-muted); border-top: 1px solid var(--sh-rule);
+  font-size: 14px; line-height: 1.6; }
+.footInner { max-width: 1200px; margin: 0 auto; padding: 24px 16px; display: grid; gap: 16px; }
+.footer ul { display: flex; flex-wrap: wrap; list-style: none; margin: 0; padding: 0; gap: 4px 16px; }
+.footer a { display: inline-flex; align-items: center; min-height: 32px; color: var(--sh-ink);
+  text-decoration: underline; text-underline-offset: 2px; }
+.footer p { margin: 0; }
+
+/* ---- 404 / redirect stub ---- */
+.notFound { max-width: 680px; margin: 0 auto; padding: 64px 16px; color: var(--sh-ink); }
+.notFound h1 { font-size: 28px; line-height: 1.2; margin: 8px 0 12px; }
+.notFound p { color: var(--sh-muted); margin: 0 0 16px; }
+.notFound ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.notFound a { display: inline-flex; align-items: center; min-height: 44px; color: var(--sh-ink);
+  text-decoration: underline; text-underline-offset: 2px; }
+.page { min-height: 100vh; background: var(--sh-page); }
+
+/* The analytics CommandPalette reads analytics tokens; map them onto the terminal tokens
+   on terminal pages only (the dialog portals to body, so the mapping sits on body). */
+:global(body):has(.terminalScope) {
+  --ink: hsl(var(--foreground)); --ink-3: hsl(var(--muted-foreground));
+  --paper-raised: hsl(var(--card)); --paper-tint: hsl(var(--secondary));
+  --rule: hsl(var(--border)); --rule-strong: hsl(var(--border));
+  --radius-card: 6px; --radius-chip: 4px; --shadow-raise: 0 12px 32px rgba(0, 0, 0, .25);
+}
+.terminalScope { display: contents; }

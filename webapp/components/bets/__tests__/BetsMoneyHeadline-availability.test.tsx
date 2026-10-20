@@ -6,6 +6,7 @@ import pnlJson from "@/public/demo-data/api_paper_pnl_series.json";
 import bankJson from "@/public/demo-data/api_paper_bankroll.json";
 import clvJson from "@/public/demo-data/api_paper_clv.json";
 import { BetsMoneyHeadline } from "../BetsMoneyHeadline";
+import { CLV_UNAVAILABLE } from "@/lib/clvUnavailable";
 
 const PNL = { ...pnlJson, points: [] } as PnlSeries;
 const BANK = bankJson as PaperBankroll;
@@ -23,7 +24,6 @@ async function show() {
   render(<BetsMoneyHeadline />);
   await waitFor(() => expect(api.getPaperPnlSeries).toHaveBeenCalled());
   await waitFor(() => expect(api.getPaperBankroll).toHaveBeenCalled());
-  await waitFor(() => expect(api.getPaperClv).toHaveBeenCalled());
   await act(async () => { await Promise.resolve(); });
 }
 
@@ -44,8 +44,8 @@ describe("BetsMoneyHeadline feed availability", () => {
     expect(value("money-record")).toHaveTextContent("--");
     expect(value("money-bankroll")).toHaveTextContent("--");
     expect(value("money-net-units")).toHaveTextContent("--");
-    expect(value("money-clv")).toHaveTextContent("--");
-    expect(screen.getByTestId("bets-money-headline")).toHaveTextContent("CLV scoreboard unavailable.");
+    expect(value("money-clv")).toHaveTextContent(CLV_UNAVAILABLE);
+    expect(screen.getByTestId("bets-money-headline")).toHaveTextContent(CLV_UNAVAILABLE);
   });
 
   it("keeps unavailable feeds unknown rather than inventing a zero record or balance", async () => {
@@ -55,7 +55,7 @@ describe("BetsMoneyHeadline feed availability", () => {
     expect(value("money-record")).toHaveTextContent("--");
     expect(value("money-bankroll")).toHaveTextContent("--");
     expect(value("money-net-units")).toHaveTextContent("--");
-    expect(screen.getByTestId("bets-money-headline")).toHaveTextContent("CLV scoreboard unavailable.");
+    expect(screen.getByTestId("bets-money-headline")).toHaveTextContent(CLV_UNAVAILABLE);
   });
 
   it("preserves genuine zero counts and a zero-zero record", async () => {
@@ -65,7 +65,7 @@ describe("BetsMoneyHeadline feed availability", () => {
     expect(value("money-nbets")).toHaveTextContent("0");
     expect(value("money-record")).toHaveTextContent("0-0");
     expect(value("money-net-units")).toHaveTextContent("+0.00u");
-    expect(screen.getByTestId("bets-money-headline")).toHaveTextContent("CLV vs-close INSUFFICIENT_DATA");
+    expect(screen.getByTestId("bets-money-headline")).toHaveTextContent(CLV_UNAVAILABLE);
   });
 
   it("withholds an incomplete record but retains a known graded count", async () => {
@@ -107,15 +107,15 @@ describe("BetsMoneyHeadline feed availability", () => {
     await show();
     expect(value("money-nbets")).toHaveTextContent("--");
     expect(value("money-record")).toHaveTextContent("--");
-    expect(value("money-clv")).toHaveTextContent("--");
+    expect(value("money-clv")).toHaveTextContent(CLV_UNAVAILABLE);
     expect(value("money-bankroll")).toHaveTextContent("201.54u");
   });
 
   it.each([null, undefined, NaN])(
-    "keeps a present summary with missing or invalid mean CLV unknown (%s)", async (mean) => {
+    "never renders a CLV figure, only the site-wide sentence (%s)", async (mean) => {
       feeds({ ...PNL, summary: { ...PNL.summary, mean_clv_pct_or_INSUFFICIENT: mean } }, BANK, CLV);
       await show();
-      expect(value("money-clv")).toHaveTextContent("--");
+      expect(value("money-clv")).toHaveTextContent(CLV_UNAVAILABLE);
     },
   );
 

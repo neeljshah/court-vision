@@ -36,7 +36,7 @@ export function BestBets({
 
   if (!game || game.status === "unavailable") {
     return (
-      <Panel title="Best bets (paper)" asOf={asOf} stale={stale}>
+      <Panel title="Candidate board (paper)" asOf={asOf} stale={stale}>
         <Unavailable reason={game?.reason || "no edge view for this game"} />
       </Panel>
     );
@@ -51,7 +51,7 @@ export function BestBets({
 
   return (
     <Panel
-      title="Best bets (paper)"
+      title="Candidate board (paper)"
       asOf={asOf}
       stale={stale}
       right={<Badge tone="slate">units only &middot; no $</Badge>}
@@ -61,7 +61,7 @@ export function BestBets({
           No candidate clears the tier floor right now.
         </p>
       ) : (
-        <ul className="flex flex-col gap-2" aria-label="Best bet candidates">
+        <ul className="flex flex-col gap-2" aria-label="Paper candidates">
           {bets.map((b, i) => (
             <BetCard
               key={`${b.market_type}-${b.side}-${i}`}

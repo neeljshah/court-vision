@@ -33,7 +33,7 @@ const OPTIONS: { key: SortKey; label: string; tip: string }[] = [
 
 export function SortControls({ value, onChange }: SortControlsProps) {
   return (
-    <div className="flex items-center gap-2" role="group" aria-label="Sort best bets">
+    <div className="flex items-center gap-2" role="group" aria-label="Sort paper candidates">
       <span className="microlabel">Sort</span>
       {OPTIONS.map((opt) => {
         const isActive = value === opt.key;

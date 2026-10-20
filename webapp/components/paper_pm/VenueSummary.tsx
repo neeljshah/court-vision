@@ -7,9 +7,9 @@
 // Pure presentational: receives rows prop; parent owns polling / data fetching.
 
 import { useMemo } from "react";
-import { fmtPct } from "@/lib/utils";
 import { EMPTY_CELL } from "@/lib/tokens";
-import { Badge } from "@/components/p6/Primitives";
+import { Badge, Unavailable } from "@/components/p6/Primitives";
+import { CLV_UNAVAILABLE } from "@/lib/clvUnavailable";
 import { Panel, PanelHead, Num } from "@/components/ui/terminal";
 import { aggregateByVenue } from "./venueAggregate";
 import type { VenueStats } from "./venueAggregate";
@@ -23,20 +23,6 @@ function fmtProb(p: number | null): string {
 
 function fmtUnits(u: number | null): string {
   return u != null ? `${u.toFixed(2)}u` : EMPTY_CELL;
-}
-
-// CLV: null means INSUFFICIENT_DATA (zero settling rows with a real close).
-// Never render 0 in place of null.
-function fmtClv(clv: number | null): string {
-  if (clv === null) return "INSUFFICIENT_DATA";
-  return fmtPct(clv, true);
-}
-
-function clvTextClass(clv: number | null): string {
-  if (clv === null) return "text-stale";
-  if (clv > 0) return "text-up";
-  if (clv < 0) return "text-down";
-  return "text-faint";
 }
 
 // -- sub-components --
@@ -65,8 +51,6 @@ function VenueTile({ stats }: VenueTileProps) {
     push,
     stake_units_total,
     model_prob_mean,
-    clv_mean,
-    clv_sample_n,
   } = stats;
 
   return (
@@ -107,18 +91,11 @@ function VenueTile({ stats }: VenueTileProps) {
               <Num>{fmtUnits(stake_units_total)}</Num>
             </StatCell>
             <StatCell label="Avg model prob"><Num>{fmtProb(model_prob_mean)}</Num></StatCell>
-            <StatCell label={`CLV (n=${clv_sample_n})`}>
-              <Num className={clvTextClass(clv_mean)}>{fmtClv(clv_mean)}</Num>
-            </StatCell>
           </div>
 
-          {/* Honesty footnote when CLV is unavailable */}
-          {clv_mean === null ? (
-            <p className="text-[10px] leading-relaxed text-faint">
-              CLV shown as INSUFFICIENT_DATA -- no settled trades with a captured
-              closing line at this venue yet.
-            </p>
-          ) : null}
+          <div data-testid="venue-clv-unavailable">
+            <Unavailable reason={CLV_UNAVAILABLE} />
+          </div>
         </div>
       </Panel>
     </div>

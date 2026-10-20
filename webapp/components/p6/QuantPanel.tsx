@@ -118,7 +118,7 @@ export function QuantPanel() {
                 <th className="microlabel py-1.5 px-3">Side / market</th>
                 <th className="microlabel py-1.5 px-3">Model</th>
                 <th className="microlabel py-1.5 px-3">Devig close</th>
-                <th className="microlabel py-1.5 px-3">Edge</th>
+                <th className="microlabel py-1.5 px-3">Divergence</th>
                 <th className="microlabel py-1.5 px-3">Tier</th>
                 <th className="microlabel py-1.5 px-3">Units</th>
                 <th className="microlabel py-1.5 px-3">Decision</th>

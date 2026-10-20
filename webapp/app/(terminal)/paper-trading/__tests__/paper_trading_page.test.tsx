@@ -12,6 +12,7 @@
 //   * Running tally tiles (open/settled/win/loss/push/units/clv) correct.
 
 import { describe, it, expect, vi, afterEach } from "vitest";
+import { CLV_UNAVAILABLE } from "@/lib/clvUnavailable";
 import { render, screen, waitFor } from "@testing-library/react";
 
 // next/link stub (jsdom has no router)
@@ -373,7 +374,7 @@ describe("/paper-trading -- CLV honesty (INSUFFICIENT_DATA)", () => {
     mockEmpty();
     await renderPage();
     await waitFor(() =>
-      expect(screen.getByTestId("clv-mean-clv").textContent).toBe("--")
+      expect(screen.getByTestId("clv-mean-clv").textContent).toContain(CLV_UNAVAILABLE)
     );
   });
 
@@ -381,7 +382,7 @@ describe("/paper-trading -- CLV honesty (INSUFFICIENT_DATA)", () => {
     mockWithTrades();
     await renderPage();
     await waitFor(() =>
-      expect(screen.getByTestId("clv-mean-clv").textContent).toMatch(/\+0\.5%/)
+      expect(screen.getByTestId("clv-mean-clv").textContent).toContain(CLV_UNAVAILABLE)
     );
   });
 

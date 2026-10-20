@@ -52,6 +52,7 @@ vi.mock("@/lib/p5api", () => ({
 }));
 
 import { PlacedBetsForGamePanel } from "../PlacedBetsForGamePanel";
+import { CLV_UNAVAILABLE } from "@/lib/clvUnavailable";
 import { BetsMoneyHeadline } from "@/components/bets/BetsMoneyHeadline";
 
 function row(over: Partial<PaperTrailRow>): PaperTrailRow {
@@ -147,17 +148,17 @@ describe("BetsMoneyHeadline", () => {
     expect(screen.getByTestId("money-net-units")).toHaveTextContent("+4.50u");
     expect(screen.getByTestId("money-bankroll")).toHaveTextContent("104.50u");
     expect(screen.getByTestId("money-record")).toHaveTextContent("7-5");
-    expect(screen.getByTestId("money-clv")).toHaveTextContent("+0.8%");
+    expect(screen.getByTestId("money-clv")).toHaveTextContent(CLV_UNAVAILABLE);
   });
 
-  it("shows mean CLV INSUFFICIENT_DATA honestly", () => {
+  it("never shows a CLV figure, only the site-wide sentence", () => {
     const pnl2: PnlSeries = {
       ...pnl,
       summary: { ...pnl.summary, mean_clv_pct_or_INSUFFICIENT: "INSUFFICIENT_DATA" },
     };
     setStates([{ data: pnl2 }, { data: bank }, { data: { n_bets: 0 } as ClvScoreboard }]);
     render(<BetsMoneyHeadline />);
-    expect(screen.getByTestId("money-clv")).toHaveTextContent("INSUFFICIENT_DATA");
+    expect(screen.getByTestId("money-clv")).toHaveTextContent(CLV_UNAVAILABLE);
   });
 
   it("renders no dollar-amount string ($N) in the DOM", () => {

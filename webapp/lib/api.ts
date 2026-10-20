@@ -213,7 +213,7 @@ export const HONEST_FINDINGS = [
 export const PRODUCT_NAME = "CourtVision";
 export const HONEST_DISCLAIMER =
   "Calibrated decision-support only. Markets are efficient; no dollar edge is claimed. " +
-  "The confirmed survivor is calibration, not a market edge. Paper mode only. Local only.";
+  "The confirmed survivor is calibration, not a market edge. Paper mode only.";
 
 // ---------------------------------------------------------------------------
 // PROGRESS (the honest "getting better" data spine -- /api/progress)

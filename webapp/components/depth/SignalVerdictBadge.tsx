@@ -36,7 +36,7 @@ const VERDICT_STYLE: Record<SignalVerdict, string> = {
 };
 
 const VERDICT_LABEL: Record<SignalVerdict, string> = {
-  SHIP: "SHIP",
+  SHIP: "CALIBRATION SURVIVOR -- NOT SHIPPED",
   REJECT: "REJECT",
   INSUFFICIENT_DATA: "INSUFFICIENT DATA",
   TIER3_BLOCKED: "TIER-3 BLOCKED",
@@ -44,7 +44,7 @@ const VERDICT_LABEL: Record<SignalVerdict, string> = {
 
 // The honest framing carried alongside each verdict. SHIP is NEVER an edge.
 const VERDICT_NOTE: Record<SignalVerdict, string> = {
-  SHIP: "calibration-only, vs_close UNPROVEN",
+  SHIP: "calibration-only, vs_close UNPROVEN; a proposal, not shipped (0 of 60 signal classes shipped, JOB_EVIDENCE_PACKET s4)",
   REJECT: "recorded reject -- a success, not a failure",
   INSUFFICIENT_DATA: "not enough data to decide -- honest empty, no verdict",
   TIER3_BLOCKED: "blocked at tier-3 gate -- not promoted",
@@ -64,14 +64,14 @@ export function SignalVerdictBadge({
         variant="outline"
         title={hover}
         className={cn(
-          "rounded-none font-data text-[10px] font-semibold uppercase tracking-wide",
+          "rounded-none font-data text-xs font-semibold uppercase tracking-wide",
           VERDICT_STYLE[verdict]
         )}
       >
         {VERDICT_LABEL[verdict]}
       </Badge>
       {verdict === "SHIP" && (
-        <span className="font-data text-[10px] text-faint">
+        <span className="font-data text-xs text-faint">
           {VERDICT_NOTE.SHIP}
         </span>
       )}
