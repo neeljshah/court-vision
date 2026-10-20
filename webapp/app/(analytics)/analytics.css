@@ -213,5 +213,6 @@ main table { max-width: none; }
 /* Target size (WCAG 2.5.8): a 24px minimum hit box. Vertical padding on an inline
    link extends its target without moving the surrounding text; :where() keeps the
    rule below any class-based padding so styled links are untouched. */
-main a:where(:not([class])) { padding-top: 4px; padding-bottom: 4px; }
+main a:where(:not([class])), main a:where(.mono) { padding-top: 5px; padding-bottom: 5px; }
 main summary { padding-top: 5px; padding-bottom: 5px; }
+main input:where([type="search"], [type="text"], :not([type])) { min-height: 24px; }
