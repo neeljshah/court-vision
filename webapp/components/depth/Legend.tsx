@@ -48,7 +48,7 @@ export function Legend({ title = "Legend", terms, items, className }: LegendProp
       aria-label={title}
       className={cn("border border-border bg-surface-1 p-3 text-xs", className)}
     >
-      <h3 className="microlabel mb-2">{title}</h3>
+      <h2 className="microlabel mb-2">{title}</h2>
       <dl className="flex flex-wrap gap-x-4 gap-y-2">
         {all.map((it, i) => (
           <div key={`${it.label}-${i}`} className="flex items-center gap-1.5">

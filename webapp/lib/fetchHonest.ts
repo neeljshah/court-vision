@@ -50,6 +50,24 @@ const SNAPSHOT_FILES: ReadonlySet<string> | null = (() => {
   }
 })();
 
+// Game detail pages the export contains (manifest.games, inlined the same way).
+const SNAPSHOT_GAMES: ReadonlySet<string> | null = (() => {
+  const raw = process.env.NEXT_PUBLIC_SNAPSHOT_GAMES;
+  if (!raw) return null;
+  try {
+    const games = JSON.parse(raw) as unknown;
+    return Array.isArray(games) ? new Set(games.filter((g): g is string => typeof g === "string")) : null;
+  } catch {
+    return null;
+  }
+})();
+
+/** True when a /games or /p6 detail page exists for this game (always true live). */
+export function snapshotHasGame(sport: string, gameId: string): boolean {
+  if (!isSnapshotMode || !SNAPSHOT_GAMES) return true;
+  return SNAPSHOT_GAMES.has(`${sport}/${gameId}`);
+}
+
 /** True when the snapshot build baked a file for this GET (or has no file list). */
 export function snapshotHas(url: string): boolean {
   if (!SNAPSHOT_FILES) return true;

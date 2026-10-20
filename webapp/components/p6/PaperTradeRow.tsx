@@ -240,6 +240,7 @@ export function TableSkeleton() {
   return (
     <div
       aria-busy="true"
+      role="status"
       aria-label="Loading trade history"
       className="space-y-2 border border-border p-3"
     >

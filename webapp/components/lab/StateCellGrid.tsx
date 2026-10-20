@@ -85,7 +85,7 @@ export function StateCellGrid({
                       style={isSel ? { outline: "2px solid hsl(var(--primary))", outlineOffset: -2 } : undefined}
                     >
                       <div className="font-data text-[15px]">{c ? "-" : "."}</div>
-                      {c && <div className="mt-0.5 font-data text-[9.5px] text-faint">market only</div>}
+                      {c && <div className="mt-0.5 font-data text-[9.5px] text-foreground">market only</div>}
                     </div>
                   );
                 }
@@ -102,7 +102,7 @@ export function StateCellGrid({
                     aria-pressed={isSel}
                   >
                     <div className="font-data text-[15px] tabular-nums">{m.calErr.toFixed(4)}</div>
-                    <div className="mt-0.5 font-data text-[9.5px] text-faint">n {comma(m.n)}</div>
+                    <div className="mt-0.5 font-data text-[9.5px] text-foreground">n {comma(m.n)}</div>
                   </button>
                 );
               })}

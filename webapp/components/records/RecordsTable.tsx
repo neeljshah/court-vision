@@ -119,7 +119,7 @@ function RecordsRow({ row }: { row: PaperPredictionRow }) {
   // Per-row deep-link to /paper/[betId] execution detail page (W5).
   // If game_id is absent, no link is rendered (matchup shown as plain text).
   const betId = buildPaperBetId(row);
-  const detailHref = betId ? `/paper/${betId}` : null;
+  const detailHref = betId ? `/paper/${encodeURIComponent(betId)}` : null;
 
   return (
     <tr

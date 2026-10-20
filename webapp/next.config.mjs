@@ -1,4 +1,4 @@
-import { readdirSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 
 const SNAPSHOT = process.env.NEXT_PUBLIC_DATA_MODE === 'snapshot';
 // Mirrors output.basePath below -- read by lib/fetchHonest.ts to prefix the
@@ -21,13 +21,31 @@ function snapshotFiles() {
 }
 const SNAPSHOT_FILES = snapshotFiles();
 
+// The games whose detail pages the export actually contains (manifest.games is
+// what generateStaticParams builds). Client lists link only those; the rest
+// render as plain cards instead of links that would 404.
+function snapshotGames() {
+  if (!SNAPSHOT) return null;
+  try {
+    const manifest = JSON.parse(readFileSync(new URL('./public/demo-data/manifest.json', import.meta.url), 'utf8'));
+    const games = (manifest.games || []).map((g) => `${g.sport}/${g.game_id}`);
+    return games.length ? JSON.stringify(games) : null;
+  } catch {
+    return null;
+  }
+}
+const SNAPSHOT_GAMES = snapshotGames();
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   // Cap build workers. The default (cores - 1 = 11 here, about 5 GB; two still took 1.5 GB) starves the
   // paper-desk recorder that shares this 16 GB box. Override: NEXT_BUILD_CPUS=<n>.
   experimental: { cpus: Number(process.env.NEXT_BUILD_CPUS) || 1 },
-  ...(SNAPSHOT_FILES ? { env: { NEXT_PUBLIC_SNAPSHOT_FILES: SNAPSHOT_FILES } } : {}),
+  env: {
+    ...(SNAPSHOT_FILES ? { NEXT_PUBLIC_SNAPSHOT_FILES: SNAPSHOT_FILES } : {}),
+    ...(SNAPSHOT_GAMES ? { NEXT_PUBLIC_SNAPSHOT_GAMES: SNAPSHOT_GAMES } : {}),
+  },
   ...(SNAPSHOT
     ? {
         // Static demo build for GitHub Pages project site (neeljshah/court-vision).

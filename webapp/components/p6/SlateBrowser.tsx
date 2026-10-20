@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { snapshotHasGame } from "@/lib/fetchHonest";
 import { api, isUnavailable, SPORTS, type ReportList } from "@/lib/p5api";
 import { Panel, Unavailable, Badge } from "./Primitives";
 import { Num } from "@/components/ui/terminal";
@@ -67,12 +68,22 @@ export function SlateBrowser() {
               <ul className="grid grid-cols-2 gap-2 md:grid-cols-3">
                 {s.list.game_ids.map((gid) => (
                   <li key={gid}>
-                    <Link
-                      href={`/p6/${s.sport}/${gid}`}
-                      className="block border border-border bg-surface-1 px-3 py-2 font-mono text-xs text-foreground transition hover:border-slate-600 hover:bg-surface-2 hover:text-foreground"
-                    >
-                      {gid}
-                    </Link>
+                    {snapshotHasGame(s.sport, gid) ? (
+                      <Link
+                        href={`/p6/${s.sport}/${gid}`}
+                        className="block border border-border bg-surface-1 px-3 py-2 font-mono text-xs text-foreground transition hover:border-slate-600 hover:bg-surface-2 hover:text-foreground"
+                      >
+                        {gid}
+                      </Link>
+                    ) : (
+                      // Snapshot export: no detail page was baked for this game.
+                      <span
+                        title="Game detail is not included in this snapshot"
+                        className="block border border-border bg-surface-1 px-3 py-2 font-mono text-xs text-faint"
+                      >
+                        {gid}
+                      </span>
+                    )}
                   </li>
                 ))}
               </ul>

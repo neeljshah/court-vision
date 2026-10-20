@@ -226,8 +226,11 @@ export function OpsPanel() {
               <dd className="font-mono text-foreground">{autData.loop?.cycle ?? "--"}</dd>
             </div>
             {autData.idle_reason ? (
-              <div className="border border-border bg-surface-1 px-2 py-1.5 text-[11px] text-amber-500/80">
-                {autData.idle_reason}
+              <div>
+                <dt className="sr-only">idle reason</dt>
+                <dd className="border border-border bg-surface-1 px-2 py-1.5 text-[11px] text-amber-500/80">
+                  {autData.idle_reason}
+                </dd>
               </div>
             ) : null}
             {autData.generated_at != null ? (

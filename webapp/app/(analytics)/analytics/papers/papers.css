@@ -45,7 +45,7 @@
 .paper-card-abstract { font-size: 14.5px; line-height: 1.6; color: var(--ink-3); margin-top: 10px; }
 
 .paper-empty { font-size: 16px; color: var(--ink-2); margin-top: 26px; max-width: 72ch; }
-.paper-back { font-size: 13px; font-weight: 600; color: var(--accent); }
+.paper-back { padding: 4px 0; font-size: 13px; font-weight: 600; color: var(--accent); }
 .paper { max-width: 72ch; margin-top: 22px; }
 .paper-head h1 { font-size: clamp(1.9rem, 4vw, 2.6rem); font-weight: 500; line-height: 1.12; letter-spacing: -.015em; margin-top: 8px; }
 .paper-byline { font-size: 12px; color: var(--ink-3); margin-top: 14px; }

@@ -194,7 +194,7 @@ export function LiveIndicator() {
             : h?.sub || reason || "supervisor_status.json missing or stale"}
         </p>
         {data ? (
-          <dl className="mt-2 flex flex-wrap gap-x-5 gap-y-1 font-mono text-[11px] text-muted-foreground">
+          <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 font-mono text-[11px] text-muted-foreground">
             <span>
               uptime <span className="text-foreground">{fmtDuration(data.uptime_sec)}</span>
             </span>
@@ -212,7 +212,7 @@ export function LiveIndicator() {
               feed age{" "}
               <span className="text-foreground">{fmtDuration(data.age_sec)}</span>
             </span>
-          </dl>
+          </div>
         ) : null}
       </div>
 

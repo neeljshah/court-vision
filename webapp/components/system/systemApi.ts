@@ -13,6 +13,7 @@
 // do NOT edit it -- this keeps page-local concerns out of the shared surface.
 
 import { P5_BASE, isUnavailable, type Unavailable } from "@/lib/api";
+import { fetchHonest, isSnapshotMode } from "@/lib/fetchHonest";
 
 export interface LedgerRow {
   id: string;
@@ -54,6 +55,9 @@ export interface Backlog {
 }
 
 async function getJson<T>(path: string, signal?: AbortSignal): Promise<T | Unavailable> {
+  // Snapshot export: read the baked file (or the honest sentinel when the
+  // exporter never wrote one) instead of hitting a backend that is not there.
+  if (isSnapshotMode) return fetchHonest<T>(path, { signal });
   try {
     const r = await fetch(`${P5_BASE}${path}`, { signal, cache: "no-store" });
     if (!r.ok) return { status: "unavailable", reason: `HTTP ${r.status}` };
@@ -133,6 +137,7 @@ export interface FunnelArtifacts {
 
 // Same-origin Next route (no P5_BASE) -- always reachable when the page renders.
 async function getLocalJson<T>(path: string, signal?: AbortSignal): Promise<T | Unavailable> {
+  if (isSnapshotMode) return fetchHonest<T>(path, { signal });
   try {
     const r = await fetch(path, { signal, cache: "no-store" });
     if (!r.ok) return { status: "unavailable", reason: `HTTP ${r.status}` };

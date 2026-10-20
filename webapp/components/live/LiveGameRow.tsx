@@ -8,8 +8,10 @@
  * red). ModelMarketBar + BestBetLine surface the leading priced candidate.
  */
 
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { snapshotHasGame } from "@/lib/fetchHonest";
 import { LiveChip, ModelMarketBar, BestBetLine } from "@/components/live/LiveGameParts";
 import { SideProb } from "@/components/live/SideProb";
 import { humanizeMatchup } from "@/lib/betdesc";
@@ -39,13 +41,10 @@ export function LiveGameRow({ entry }: { entry: LiveGameEntry }) {
 
   return (
     <li className="border-b border-border last:border-b-0" data-testid="live-game-row">
-      <Link
+      <RowShell
+        published={snapshotHasGame(entry.sport, entry.game_id)}
         href={`/games/${entry.sport}/${entry.game_id}?m=${encodeURIComponent(`${awayLabel} @ ${homeLabel}`)}`}
-        aria-label={linkAriaLabel}
-        className={cn(
-          "flex cursor-pointer flex-col gap-1.5 px-3 py-2 transition-colors hover:bg-surface-2",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background",
-        )}
+        label={linkAriaLabel}
       >
         <div className="flex flex-wrap items-center justify-between gap-2">
           <span className="text-sm font-semibold text-foreground">
@@ -100,7 +99,35 @@ export function LiveGameRow({ entry }: { entry: LiveGameEntry }) {
             </span>
           ) : null}
         </div>
-      </Link>
+      </RowShell>
     </li>
+  );
+}
+
+// A row links to its game page only when that page exists: the snapshot export
+// bakes a handful of detail pages, and a link to an unbaked one would 404.
+function RowShell({ published, href, label, children }: {
+  published: boolean; href: string; label: string; children: ReactNode;
+}) {
+  const base = "flex flex-col gap-1.5 px-3 py-2 transition-colors";
+  if (!published) {
+    return (
+      <div className={base} aria-label={label.replace(/ -- open game detail$/, "")} title="Game detail is not included in this snapshot">
+        {children}
+      </div>
+    );
+  }
+  return (
+    <Link
+      href={href}
+      aria-label={label}
+      className={cn(
+        base,
+        "cursor-pointer hover:bg-surface-2",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background",
+      )}
+    >
+      {children}
+    </Link>
   );
 }
