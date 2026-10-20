@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     default: "CourtVision",
   },
   description:
-    "Real-time NBA in-play intelligence. Calibrated predictions -- paper-only, no dollar edge claimed.",
+    "CourtVision: a multi-sport forecast-calibration platform (NBA, MLB, soccer, tennis) that publishes its own scorecard against devigged closing markets -- losses, nulls, and retractions included. Paper only; no dollar edge claimed.",
   icons: {
     icon: [
       { url: `${BASE_PATH}/brand/favicon.ico`, sizes: "any" },
