@@ -73,7 +73,6 @@ jobs:
           npx vitest run 'app/(analytics)/analytics/findings/shrinkage/page.test.tsx'
           npx vitest run components/analytics/PercentileBar.test.tsx
           npx vitest run components/analytics/entities/EntityMeasurements.test.tsx
-          npx vitest run components/atlas/EntityCard.test.tsx
           npx vitest run components/onboarding/OnboardingOverlay.test.tsx
           npx vitest run lib/__tests__/snapshotMode.test.ts
           npx vitest run 'app/(terminal)/games/__tests__/snapshot-labels.test.tsx'
@@ -83,22 +82,11 @@ jobs:
           npx vitest run 'app/(terminal)/games/__tests__/decision-availability.test.tsx'
           npx vitest run 'app/(terminal)/games/__tests__/slate-and-card.test.tsx'
           npx vitest run 'app/(terminal)/games/__tests__/game-view-snapshot.test.tsx'
-          npx vitest run components/home/__tests__/HomeStatusRow.test.tsx
-          npx vitest run components/home/__tests__/HomeTodayCard-availability.test.tsx
-          npx vitest run components/bets/__tests__/TodayPlacedBets-availability.test.tsx
-          npx vitest run components/bets/__tests__/BetCard-probability-availability.test.tsx
-          npx vitest run components/bets/__tests__/BestBetsBoard-provenance.test.tsx
-          npx vitest run components/bets/__tests__/BetsSummary-provenance.test.tsx
-          npx vitest run components/bets/__tests__/BetsMoneyHeadline-availability.test.tsx
-          npx vitest run components/p6/__tests__/ops-faces.test.tsx
           npx vitest run components/p6/__tests__/clv-percent-contract.test.tsx
-          npx vitest run components/p6/__tests__/clv-summary-consumers.test.tsx
           npx vitest run components/p6/__tests__/clv-overview-consumers.test.tsx
           npx vitest run components/p6/__tests__/pnl-clv-percent-contract.test.tsx
           npx vitest run 'app/(terminal)/paper-trading/__tests__/paper-combined-feeds.test.ts'
           npx vitest run 'app/(terminal)/paper-trading/__tests__/paper-partial-feeds.test.tsx'
-          npx vitest run components/records/__tests__/RecordsClvSeries.test.tsx
-          npx vitest run components/records/__tests__/records-clv-series-percent.test.tsx
           npx vitest run components/depth/__tests__/depth.test.tsx
           npx vitest run components/games_depth/__tests__/games_depth_render.test.tsx
           npx vitest run components/games_depth/__tests__/snapshot-provenance.test.tsx
@@ -268,8 +256,6 @@ jobs:
           npx vitest run components/analytics/CommandPalette.test.tsx
           npx vitest run components/shell/__tests__/SiteHeader.test.tsx
           npx vitest run components/shell/__tests__/Breadcrumbs.test.tsx
-          npx vitest run components/analytics/workspace/Workspace.test.tsx
-          npx vitest run components/analytics/workspace/Research.test.tsx
 
       - name: Verify published JSON
         run: |

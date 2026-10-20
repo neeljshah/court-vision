@@ -1,9 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
-import { api } from "@/lib/p5api";
+import { cleanup, render, screen } from "@testing-library/react";
 import type { PnlSeries, PnlSummary } from "@/lib/types";
 import { CLV_UNAVAILABLE } from "@/lib/clvUnavailable";
-import { BetsMoneyHeadline } from "@/components/bets/BetsMoneyHeadline";
 import { PaperEquityPanel } from "@/components/paper/PaperEquityPanel";
 
 afterEach(() => {
@@ -44,25 +42,6 @@ const CASES = [
   { mean: "INSUFFICIENT_DATA", bets: "INSUFFICIENT_DATA", equity: "INSUFFICIENT_DATA" },
   { mean: "UNPROVEN", bets: "UNPROVEN", equity: "UNPROVEN" },
 ];
-
-describe("BetsMoneyHeadline PnL mean CLV percentage contract", () => {
-  it.each(CASES)("preserves $mean CLV while keeping the fraction win rate", async ({ mean, bets }) => {
-    vi.spyOn(api, "getPaperPnlSeries").mockResolvedValue(series(mean));
-    vi.spyOn(api, "getPaperBankroll").mockResolvedValue({
-      start_units: 100, current_units: 100, updated_at: null,
-    });
-    vi.spyOn(api, "getPaperClv").mockResolvedValue({
-      n_bets: 0, pct_beat_close: null, mean_clv_pct: null,
-      by_sport: null, clv_is_proxy: false,
-    });
-    render(<BetsMoneyHeadline />);
-    await waitFor(() => {
-      // Also confirms that the PnL response has loaded before sentinel assertions.
-      expect(screen.getByTestId("money-winrate")).toHaveTextContent("50%");
-      expect(screen.getByTestId("money-clv")).toHaveTextContent(CLV_UNAVAILABLE);
-    });
-  });
-});
 
 describe("PaperEquityPanel PnL mean CLV percentage contract", () => {
   it.each(CASES)("preserves $mean CLV while keeping the fraction win rate", ({ mean, equity }) => {

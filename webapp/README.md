@@ -41,9 +41,6 @@ Dev server (hot reload) when you want it:
   `app/live/`, `app/games/`, `app/progress/`, `app/risk/`, `app/today/`,
   `app/models/`, `app/how-it-works/` -- dedicated views (13 top-level routes
   total including `app/p6/`).
-- `components/p6/PropsPanel.tsx` -- player props (mlb + soccer_intl), reads
-  `GET :8099/api/predict/props/{sport}` (route-collision fix + scraped-book
-  bridge shipped 2026-07-02, commits 460fd0cb + 9bc820d4).
 - `lib/p5api.ts`, `lib/types_w12.ts` -- API client + response shapes.
 
 Tests: `cd webapp && npx vitest run <file>` (per-file only, same rule as pytest).

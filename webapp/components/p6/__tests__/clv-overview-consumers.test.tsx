@@ -1,9 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import { api, type ClvScoreboard as Clv } from "@/lib/p5api";
-import { HomeRecordsHero } from "@/components/home/HomeRecordsHero";
-import { BetsMoneyHeadline } from "@/components/bets/BetsMoneyHeadline";
-import { RecordsClvStrip } from "@/components/records/RecordsClvStrip";
 import PaperTradingPage from "@/app/(terminal)/paper-trading/page";
 import { CLV_UNAVAILABLE } from "@/lib/clvUnavailable";
 
@@ -35,28 +32,7 @@ function mockFeeds(clv: Clv) {
   vi.spyOn(api, "getPaperBankroll").mockResolvedValue({ status: "unavailable", reason: "No bankroll" });
 }
 
-describe("HomeRecordsHero CLV rate units", () => {
-  it.each([
-    { value: 36.3341, expected: "beat close: 36.3%" },
-    { value: 0, expected: "beat close: 0.0%" },
-    { value: null, expected: "beat-close: pending" },
-  ])("preserves $value percent and missing-rate semantics", async ({ value, expected }) => {
-    mockFeeds({ ...PUBLIC_CLV, pct_beat_close: value });
-    render(<HomeRecordsHero />);
-    await waitFor(() => {
-      expect(screen.getByTestId("clv-value")).toHaveTextContent(expected);
-    });
-  });
-});
-
 describe("CLV consumers render only the site-wide Unavailable sentence", () => {
-  it.each([36.3341, 0, null])("BetsMoneyHeadline shows no CLV rate (%s)", async (value) => {
-    mockFeeds({ ...PUBLIC_CLV, pct_beat_close: value });
-    render(<BetsMoneyHeadline />);
-    expect(await screen.findByTestId("money-clv")).toHaveTextContent(CLV_UNAVAILABLE);
-    expect(screen.getByTestId("bets-money-headline")).not.toHaveTextContent(/beat-close \d/);
-  });
-
   it.each([4.368363, 0, null])("PaperTradingPage shows no mean CLV (%s)", async (value) => {
     mockFeeds({ ...PUBLIC_CLV, mean_clv_pct: value });
     render(<PaperTradingPage />);
@@ -64,11 +40,5 @@ describe("CLV consumers render only the site-wide Unavailable sentence", () => {
       expect(screen.getByTestId("clv-mean-clv")).toHaveTextContent(CLV_UNAVAILABLE);
     });
     expect(screen.queryByText("+4.4%")).toBeNull();
-  });
-
-  it("RecordsClvStrip shows no rate or mean", () => {
-    render(<RecordsClvStrip clv={PUBLIC_CLV} />);
-    expect(screen.getByTestId("records-clv-strip")).toHaveTextContent(CLV_UNAVAILABLE);
-    expect(screen.getByTestId("records-clv-strip")).not.toHaveTextContent("36.3%");
   });
 });

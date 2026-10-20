@@ -81,7 +81,6 @@ vi.mock("@/components/ui/dialog", () => ({
 // ---------------------------------------------------------------------------
 // Imports (after mocks)
 // ---------------------------------------------------------------------------
-import { TopBets } from "../../TopBets";
 import { ClvScoreboard } from "../ClvScoreboard";
 import { BestBets } from "../BestBets";
 
@@ -96,7 +95,6 @@ describe("WS-A ASCII rail -- source file scan (zero non-ASCII bytes)", () => {
   const webappRoot = join(thisDir, "..", "..", "..");
 
   const ownedFiles = [
-    join(webappRoot, "components", "TopBets.tsx"),
     join(webappRoot, "app", "(terminal)", "games", "GameCard.tsx"),
     join(webappRoot, "components", "p6", "ClvScoreboard.tsx"),
     join(webappRoot, "components", "p6", "GameReport.tsx"),
@@ -132,14 +130,6 @@ describe("WS-A ASCII rail -- source file scan (zero non-ASCII bytes)", () => {
 // the historically-offending U+2014 em-dash, U+2026 ellipsis.
 
 const BANNED_LITERAL_GLYPHS = /[—…]/; // em-dash, ellipsis
-
-describe("WS-A ASCII rail -- TopBets empty state (no em-dash/ellipsis)", () => {
-  it("empty-state text contains no em-dash or ellipsis glyphs", () => {
-    const { container } = render(<TopBets />);
-    const text = container.textContent ?? "";
-    expect(text).not.toMatch(BANNED_LITERAL_GLYPHS);
-  });
-});
 
 describe("WS-A ASCII rail -- ClvScoreboard empty/null state (no em-dash)", () => {
   it("unavailable state renders without em-dash or ellipsis", () => {
