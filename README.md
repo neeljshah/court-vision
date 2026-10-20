@@ -90,6 +90,14 @@ The site is a static export built from [`webapp/`](webapp/) on every push; publi
 scrubbed and receipt-checked in CI before it ships. Page-by-page map, data lineage and the CI gates:
 **[docs/ANALYTICS_SITE.md](docs/ANALYTICS_SITE.md)**.
 
+## Papers, model cards and the desk record
+
+- **[Pregame vs the close](docs/papers/PREGAME_VS_CLOSE_2026.md)** -- the pregame Brier comparison against the devigged close, with the 2026-09-24 recompute.
+- **[In-game vs the market](docs/papers/INGAME_VS_MARKET_2026.md)** -- Gate A-0, the cleaned MLB corpus, the six rejected Model 2.0 probe families and the staleness backstop: the model trails a fresh venue mid in every corpus.
+- **[In-play capture latency](docs/papers/INPLAY_LATENCY_2026.md)** -- capture-leg latency recomputed from 20 committed nightly ledgers (no venue latency, no pricing claim).
+- **[Model cards](docs/evidence/model_cards/INDEX.json)** -- one card per forecaster the pages cite: intended and not-intended use, inputs, validation, measured performance with as-of dates, failure modes and the retraction record; `scripts/platformkit/eval_gate/model_card_check.py` fails on a missing card, field or hash.
+- **[Desk uptime](docs/evidence/DESK_UPTIME_2026-10-20.md)** -- how many scheduled nights the paper desk actually scored, from tracked receipts only.
+
 ## Verify it yourself (no private data, about 5 minutes)
 
 ```bash

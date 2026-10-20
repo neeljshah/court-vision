@@ -78,3 +78,32 @@ def test_unlisted_card_fails(tmp_path):
 
 def test_real_cards_pass(capsys):
     assert main(["--repo-root", str(REPO)]) == 0, capsys.readouterr().out
+
+
+def _set_sha(cards: Path, value) -> Path:
+    index = json.loads((cards / "INDEX.json").read_text(encoding="utf-8"))
+    art = index["cards"][0]["artifacts"][0]
+    if value == "DROP":
+        del art["sha256"]
+    else:
+        art["sha256"] = value
+    (cards / "INDEX.json").write_text(json.dumps(index, indent=1), encoding="utf-8")
+    return cards
+
+
+def test_missing_null_empty_sha_on_existing_artifact_fails(tmp_path):
+    for i, value in enumerate(["DROP", None, "", "abc"]):
+        root = tmp_path / str(i)
+        root.mkdir()
+        out = check(_set_sha(_fixture(root), value), root)
+        assert any("sha256 missing or not 64 hex chars" in f for f in out), (value, out)
+
+
+def test_absent_artifact_is_skipped_and_reported(tmp_path, capsys):
+    cards = _set_sha(_fixture(tmp_path), None)
+    (tmp_path / "art.bin").unlink()
+    skipped: list[str] = []
+    assert check(cards, tmp_path, skipped) == []
+    assert len(skipped) == 1 and "absent on this box" in skipped[0]
+    assert main(["--repo-root", str(tmp_path), "--cards-dir", str(cards)]) == 0
+    assert "1 artifacts absent on this box" in capsys.readouterr().out

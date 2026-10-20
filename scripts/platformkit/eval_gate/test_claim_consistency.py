@@ -148,3 +148,26 @@ def test_explain_prints_every_figure_with_source(capsys):
 def test_real_repo_is_green(capsys):
     assert main(["--repo-root", str(ROOT)]) == 0
     assert "claim_consistency: 0 finding(s)" in capsys.readouterr().out
+
+
+def test_framing_and_unless_apply_to_the_figures_own_clause():
+    # codex counterexamples (REVIEW_tooling_20261020): both returned no findings before
+    assert _kinds(scan_counts("f.md", "18 findings (uncorrected)", CFG)) == ["COUNT"]
+    assert _kinds(scan_counts(
+        "m.md", "74 analytics modules; 23 modules in the recorded-analytics inventory", CFG)) == ["COUNT"]
+    assert _kinds(scan_counts("f.md", "18 findings. The old 20 findings figure was retracted.", CFG)) == ["COUNT"]
+    assert _kinds(scan_counts("f.md", "| 18 findings | superseded |", CFG)) == ["COUNT"]
+    assert scan_counts("m.md", "23 modules in the recorded-analytics inventory", CFG) == []
+
+
+def test_historical_commit_count_needs_its_own_date_on_the_clause():
+    assert _kinds(scan_counts("c.md", "5,504 commits, latest audit date 2026-10-19", CFG)) == ["COUNT"]
+    assert _kinds(scan_counts("c.md", "| 5,504 commits | 2026-09-07 |", CFG)) == ["COUNT"]
+    assert scan_counts("c.md", "5,504 commits at 2026-09-07", CFG) == []
+    assert scan_counts("c.md", "An intensive solo build (5,504 commits, Mar\u2013Sep 2026).", CFG) == []
+    assert scan_counts("c.md", "5,504 commits as of Sep 2026", CFG) == []
+
+
+def test_forward_window_end_any_iso_date():
+    assert _kinds(scan_counts("w.md", "record 2026-10-06 to 2026-11-01", CFG)) == ["COUNT"]
+    assert _kinds(scan_counts("w.md", "record 2026-10-06 through 2027-10-16", CFG)) == ["COUNT"]

@@ -8,8 +8,9 @@ finding) when:
   - a card lacks one of the INDEX `required_sections` (a `## <section>` heading);
   - a card has no `Last verified: YYYY-MM-DD` line, or an INDEX / artifact `as_of` is not a date;
   - an artifact's recorded sha256 is not printed in its card;
-  - an artifact path exists on this box and its sha256 differs from the recorded one
-    (an absent path is skipped: data/ and engine files are not in every clone);
+  - an artifact path exists on this box and its recorded sha256 is missing, null, empty,
+    not 64 hex chars, or differs from the bytes (an absent path is skipped and listed as
+    such in the output: data/ and engine files are not in every clone);
   - a banned word (edge / ROI / profit language) or a retracted figure appears in a card.
 
 Calibration documentation only; no figure is computed here.
@@ -27,6 +28,7 @@ import sys
 from pathlib import Path
 
 CARDS_REL = "docs/evidence/model_cards"
+_HEX64 = re.compile(r"[0-9a-f]{64}")
 _VERIFIED = re.compile(r"^Last verified:\s*(\S+)", re.M)
 # Banned regardless of framing: cards describe calibration, never a wagering result.
 BANNED = [
@@ -57,8 +59,11 @@ def _sha_matches(path: Path, want: str) -> bool:
                     hashlib.sha256(raw.replace(b"\r\n", b"\n")).hexdigest())
 
 
-def check(cards_dir: Path, repo_root: Path) -> list[str]:
-    """Return every finding as `file:line: message`; empty means green."""
+def check(cards_dir: Path, repo_root: Path, skipped: list[str] | None = None) -> list[str]:
+    """Return every finding as `file:line: message`; empty means green.
+
+    Artifacts absent on this box are appended to `skipped` (not findings)."""
+    skipped = [] if skipped is None else skipped
     index_path = cards_dir / "INDEX.json"
     if not index_path.is_file():
         return [f"{index_path}:1: INDEX.json missing"]
@@ -96,12 +101,16 @@ def check(cards_dir: Path, repo_root: Path) -> list[str]:
             where = f"{index_path}:{idx_line(path)}"
             if "as_of" in art and not _is_date(art["as_of"]):
                 out.append(f"{where}: {path}: as_of is not a date")
-            if not want:
-                continue  # artifact recorded as not on this box
+            target = repo_root / path
+            if not target.is_file():
+                skipped.append(f"{where}: {path}: absent on this box, sha256 not verified")
+                continue
+            if not isinstance(want, str) or not _HEX64.fullmatch(want):
+                out.append(f"{where}: {path}: sha256 missing or not 64 hex chars")
+                continue
             if want not in text:
                 out.append(f"{card}:1: sha256 of {path} recorded in INDEX but not printed in card")
-            target = repo_root / path
-            if target.is_file() and not _sha_matches(target, want):
+            if not _sha_matches(target, want):
                 out.append(f"{where}: sha256 mismatch for {path}")
         for no, line in enumerate(lines, 1):
             for rx, why in BANNED:
@@ -119,11 +128,15 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--cards-dir", type=Path, default=None)
     args = ap.parse_args(argv)
     cards_dir = args.cards_dir or args.repo_root / CARDS_REL
-    findings = check(cards_dir, args.repo_root)
+    skipped: list[str] = []
+    findings = check(cards_dir, args.repo_root, skipped)
     for f in findings:
         print(f)
+    for s in skipped:
+        print(f"skipped: {s}")
     n_cards = len(list(cards_dir.glob("*.md"))) if cards_dir.is_dir() else 0
-    print(f"model_card_check: {n_cards} cards, {len(findings)} findings")
+    print(f"model_card_check: {n_cards} cards, {len(findings)} findings, "
+          f"{len(skipped)} artifacts absent on this box")
     return 1 if findings else 0
 
 

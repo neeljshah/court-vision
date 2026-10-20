@@ -68,6 +68,7 @@ Summary (2026-09-24 to 2026-10-18, 25 days):
 - dark spell 1: 2026-09-25T13:56Z to 2026-09-28T15:07Z = 73.2 h
 - dark spell 2: 2026-10-09T14:11Z to 2026-10-12T13:36Z = 71.4 h
 - partial reasons on scored nights: ceiling_exceeded 2, child_nonzero_exit 3, free_ram_below_floor 4, step_deadline_exceeded 8
+- ignored out-of-window timestamps (outside 2026-09-24T00:00Z to 2026-10-19T00:00Z): 2026-09-22T03:03Z, 2026-09-22T17:03Z, 2026-10-19T15:59Z, 2026-10-19T16:04Z, 2026-10-19T16:08Z, 2026-10-19T16:20Z
 
 Owner-reported sleep windows (self-reported, from .planning/NOW.md; not receipt-derived):
 

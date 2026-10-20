@@ -40,7 +40,7 @@
     }
   ],
   "canonical_counts": {
-    "why": "Build-volume, site-size, forward-window and G6-status figures that drifted across the public pages (docs/research/R20g_recruiter_scan_audit_2026-10-19.md fix 5; settled in docs/research/PR5_REVIEW_2026-10-20.md). Checked only on count_surfaces; a line with a framing word is exempt.",
+    "why": "Build-volume, site-size, forward-window and G6-status figures that drifted across the public pages (docs/research/R20g_recruiter_scan_audit_2026-10-19.md fix 5; settled in docs/research/PR5_REVIEW_2026-10-20.md). Checked only on count_surfaces; a figure whose own clause (sentence or table cell) carries a framing word is exempt.",
     "count_surfaces": [
       "README.md", "EVIDENCE.md", "docs/PUBLIC_EVIDENCE.md", "docs/QUANT_BRIEF.md",
       "docs/JOB_EVIDENCE_PACKET.md", "docs/INDEX.md", "docs/CAPABILITIES.md",
@@ -52,8 +52,8 @@
         "pattern": "(?<![\\d,.])(\\d[\\d,]*)\\+? commits\\b",
         "source": "git rev-list --count origin/master in the public clone at merge base 6a3520ffe (2026-10-19); docs/research/PR5_REVIEW_2026-10-20.md",
         "historical": [
-          {"value": 5504, "as_of": "2026-09-07", "requires": "(?i)\\bMar\\b|2026-09-07|audit date",
-           "source": "docs/JOB_EVIDENCE_PACKET.md section 4 (lines 276-277): the Mar-Sep 2026 audit count; allowed only on a line that dates it"}
+          {"value": 5504, "as_of": "2026-09-07", "requires": "(?i)2026-09-07|\\bMar\\w*\\s*(?:-|\u2013|to)\\s*Sep\\w*\\.?\\s+2026|\\bSep\\w*\\.?\\s+2026\\b",
+           "source": "docs/JOB_EVIDENCE_PACKET.md section 4 (lines 276-277): the Mar-Sep 2026 audit count; allowed only on a clause that carries its own date (2026-09-07, Mar-Sep 2026 or Sep 2026)"}
         ]
       },
       {
@@ -70,7 +70,7 @@
       },
       {
         "key": "forward_window_end", "value": "2026-10-16", "as_of": "2026-10-19",
-        "pattern": "2026-10-06\\s*(?:to|through|\\.\\.|--?|\u2013)\\s*(2026-10-\\d{2})",
+        "pattern": "2026-10-06\\s*(?:to|through|\\.\\.|--?|\u2013)\\s*(\\d{4}-\\d{2}-\\d{2})",
         "source": "docs/JOB_EVIDENCE_PACKET.md section 5: last served night 2026-10-16 (no schedule on 10-17 or 10-18); window starts 2026-10-06"
       },
       {

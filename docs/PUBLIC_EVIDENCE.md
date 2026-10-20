@@ -194,7 +194,7 @@ the honest version was written down and the inflated one retired:
 | endQ3 Brier 0.119 "Pinnacle-class" | Q4 feature leak (`halftime_pace_shift`, `trailing_team_q4_usg_hhi`); source file reads 0.1354, not 0.1191 | Leak-free ~0.141 (caught own pipeline Q4 leak) |
 | +54% in-play ROI | L5-proxy model-quality ceiling, not a tradeable/realized result | No $ figure quoted; the forward paper series (since 2026-10-06) has no verdict yet |
 | "Season edge proven" | Full-season WF: CLV ≈ 0; model explains 0.13%/0.29% of line move | Market is efficient; well-calibrated but does not beat the close |
-| "13-month build" / "hand-typed 5,504 commits" | Git history spans ~6 months (2026-03-09 to 2026-09-07); the large majority of commits are agent-authored under direction | ~6-month build; solo human architect/director of an agentic pipeline |
+| "13-month build" / "hand-typed 5,504 commits" (the 2026-09-07 count) | Git history spans ~6 months (2026-03-09 to 2026-09-07); the large majority of commits are agent-authored under direction | ~6-month build; solo human architect/director of an agentic pipeline |
 
 Full do-not-claim list with source-code root causes: **[JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md)**.
 

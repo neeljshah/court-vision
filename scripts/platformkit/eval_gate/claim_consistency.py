@@ -12,10 +12,10 @@ surface_roots (minus local-only trees and dated harness memos before the cutoff)
              and none in the markdown heading above it.
   LANGUAGE   a strict-language surface (the methods pages) carries a forbidden token.
   MISSING    a listed surface does not exist.
-  COUNT      on a canonical_counts.count_surfaces page (no framing word on the line): a commit
-             count, published-module count, findings count or forward-window end date that
-             differs from canonical_counts (a dated historical value passes only on a line that
-             matches its `requires` pattern).
+  COUNT      on a canonical_counts.count_surfaces page: a commit count, published-module count,
+             findings count or forward-window end date that differs from canonical_counts. The
+             framing-word skip, the `unless` exemption and a dated historical value's `requires`
+             pattern all apply to the figure's own clause (sentence, ';' part or table cell).
   WORDING    a canonical_counts `forbidden` phrase (G6 "zero qualifying weeks"; the record says
              G6 has not started).
 
@@ -121,11 +121,27 @@ def scan_text(rel: str, text: str, cfg: dict, strict: bool = False) -> list[str]
     return out
 
 
-def _count_ok(got: str, fig: dict, line: str) -> bool:
+# clause = the sentence or table cell holding a matched figure ('|', ';' or a sentence stop)
+_CLAUSE_END = re.compile(r"\||;|[.!?](?=\s|$)")
+
+
+def _clause(line: str, start: int, end: int) -> str:
+    """The part of `line` around [start, end) bounded by the nearest clause separators."""
+    lo = max((m.end() for m in _CLAUSE_END.finditer(line, 0, start)), default=0)
+    hi = next((m.start() for m in _CLAUSE_END.finditer(line, end)), len(line))
+    return line[lo:hi]
+
+
+def _bounded(text: str, words: list[str]) -> bool:
+    """Framing word at a word start ('retract' hits 'retracted'; 'corrected' misses 'uncorrected')."""
+    return any(re.search(r"(?<![a-z])" + re.escape(w), text.lower()) for w in words)
+
+
+def _count_ok(got: str, fig: dict, clause: str) -> bool:
     if isinstance(fig["value"], str):
         return got == fig["value"]
     n = int(got.replace(",", ""))
-    return n == fig["value"] or any(n == h["value"] and re.search(h["requires"], line)
+    return n == fig["value"] or any(n == h["value"] and re.search(h["requires"], clause)
                                     for h in fig.get("historical", []))
 
 
@@ -135,17 +151,17 @@ def scan_counts(rel: str, text: str, cfg: dict) -> list[str]:
     figs = cfg.get("canonical_counts", {}).get("figures", [])
     out: list[str] = []
     for i, line in enumerate(text.splitlines(), 1):
-        if _framed(line, words):
-            continue
         where = "%s:%d" % (rel, i)
         for f in figs:
-            if f.get("unless") and re.search(f["unless"], line):
-                continue
-            if f.get("forbidden") and re.search(f["forbidden"], line):
-                out.append("WORDING %s: %s phrasing /%s/; canonical: %s"
-                           % (where, f["key"], f["forbidden"], f["value"]))
+            for m in re.finditer(f.get("forbidden") or "(?!)", line):
+                if not _bounded(_clause(line, m.start(), m.end()), words):
+                    out.append("WORDING %s: %s phrasing /%s/; canonical: %s"
+                               % (where, f["key"], f["forbidden"], f["value"]))
             for m in re.finditer(f.get("pattern") or "(?!)", line):
-                if not _count_ok(m.group(1), f, line):
+                clause = _clause(line, m.start(), m.end())
+                if _bounded(clause, words) or (f.get("unless") and re.search(f["unless"], clause)):
+                    continue
+                if not _count_ok(m.group(1), f, clause):
                     out.append("COUNT %s: %s %s != canonical %s (as of %s)"
                                % (where, f["key"], m.group(1), f["value"], f["as_of"]))
     return out

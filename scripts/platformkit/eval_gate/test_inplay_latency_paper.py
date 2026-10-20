@@ -79,3 +79,28 @@ def test_committed_paper_word_screen():
     assert not re.search(banned, text, re.I)
     for figure in ("18.38", "0.119", "+54%", "78.11", "8.94", "54.57"):
         assert figure not in text
+
+
+def test_nights_are_unique_dates_and_games_bootstrap_once(tmp_path):
+    lat = tmp_path / "docs/evidence/forward/latency"
+    lat.mkdir(parents=True)
+    led = _ledger("2026-10-01", 17.0, 24.0, 30.0, 100, [(5, 10), (2, 10)])
+    led["pooled"] = [dict(led["pooled"][0], feed=f"feed{i}") for i in range(10)]  # ten feeds, one date
+    (lat / "2026-10-01_2026-10-01_latency_ledger.json").write_text(json.dumps(led))
+    summ = ilp.summarise(ilp.load_ledgers(tmp_path))
+    mlb = summ["mlb"]
+    assert mlb["nights_listed"] == 1 and mlb["nights_with_events"] == 1
+    assert mlb["verdict"] == "INSUFFICIENT"  # ten feeds on one date are not ten nights
+    assert ilp.summarise(ilp.load_ledgers(tmp_path), min_nights=1)["mlb"]["book_moved_first"]["games"] == 2
+
+
+def _summ(lo, hi):
+    return {"mlb": {"book_moved_first": {"lo": lo, "hi": hi}}}
+
+
+def test_interval_sentence_follows_the_interval():
+    assert ilp.interval_sentence(_summ(0.4498, 0.5165)) == (
+        "The interval contains 0.5, so neither ordering is established.")
+    assert "entirely above 0.5" in ilp.interval_sentence(_summ(1.0, 1.0))
+    assert "entirely below 0.5" in ilp.interval_sentence(_summ(0.1, 0.2))
+    assert "contains 0.5" not in ilp.interval_sentence(_summ(1.0, 1.0))

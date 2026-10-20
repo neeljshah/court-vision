@@ -75,19 +75,23 @@ def cluster_share(games: list[tuple]) -> dict:
 
 
 def summarise(recs: list[dict], min_nights: int = MIN_NIGHTS) -> dict:
-    """Per sport: nights listed, nights with events, n, and the spread of nightly quantiles."""
+    """Per sport: nights listed, nights with events, n, and the spread of nightly quantiles.
+
+    A night is a unique date (several feeds on one date are one night), and each game enters
+    the bootstrap once, keyed by (night, game_key), however many feeds carry its sport."""
     sports = {}
     for r in recs:
-        s = sports.setdefault(r["sport"], {"nights_listed": [], "nights_events": [], "n": 0,
-                                           "games": 0, "feeds": set(), "night_q": [], "bmf": []})
-        s["nights_listed"].append(r["night"])
+        s = sports.setdefault(r["sport"], {"nights_listed": set(), "nights_events": set(), "n": 0,
+                                           "games": 0, "feeds": set(), "night_q": [], "bmf": {}})
+        s["nights_listed"].add(r["night"])
         s["games"] += r["games"]
         s["feeds"].add(r["feed"])
         if r["n"] > 0:
-            s["nights_events"].append(r["night"])
+            s["nights_events"].add(r["night"])
             s["n"] += r["n"]
             s["night_q"].append([r[q] for q in QS])
-            s["bmf"].extend(r["bmf_games"])
+            for g in r["bmf_games"]:
+                s["bmf"].setdefault(g[:2], g)
     out = {}
     for sport, s in sorted(sports.items()):
         ok = len(s["nights_events"]) >= min_nights
@@ -99,7 +103,7 @@ def summarise(recs: list[dict], min_nights: int = MIN_NIGHTS) -> dict:
             for i, q in enumerate(QS):
                 row[q] = {"min": float(a[:, i].min()), "median": float(np.median(a[:, i])),
                           "max": float(a[:, i].max())}
-        row["book_moved_first"] = cluster_share(s["bmf"]) if ok else None
+        row["book_moved_first"] = cluster_share(list(s["bmf"].values())) if ok else None
         out[sport] = row
     return out
 
@@ -119,6 +123,28 @@ def staleness(root: Path) -> dict:
         s["stale_share"] = round(s["stale"] / tot, 4) if tot else None
         s["nights"] = len(s["nights"])
     return dict(sorted(out.items()))
+
+
+def interval_sentence(summ: dict) -> str:
+    """Read each POOLED sport's interval against 0.5 (never a fixed claim)."""
+    parts = []
+    for sp, s in summ.items():
+        b = s["book_moved_first"]
+        if not b or b["lo"] is None:
+            continue
+        if b["lo"] > 0.5:
+            parts.append((sp, "lies entirely above 0.5, so in this sample the book receipt moved first "
+                              "on more than half of the moves"))
+        elif b["hi"] < 0.5:
+            parts.append((sp, "lies entirely below 0.5, so in this sample the book receipt moved first "
+                              "on fewer than half of the moves"))
+        else:
+            parts.append((sp, "contains 0.5, so neither ordering is established"))
+    if not parts:
+        return "No sport is POOLED, so no interval is read."
+    if len(parts) == 1:
+        return f"The interval {parts[0][1]}."
+    return " ".join(f"The {sp} interval {txt}." for sp, txt in parts)
 
 
 def gap_nights(recs: list[dict]) -> list[str]:
@@ -158,7 +184,7 @@ def render_results(recs: list[dict], summ: dict, stale: dict, gaps: list[str]) -
         if b:
             L.append(f"| {sp} | {b['games']} | {b['num']} / {b['den']} | {b['share']} "
                      f"| [{b['lo']}, {b['hi']}] |")
-    L += ["", "The interval contains 0.5, so neither ordering is established. The book time is our own "
+    L += ["", interval_sentence(summ) + " The book time is our own "
           "snapshot receipt, not the venue's update time, so the complement is not evidence that our "
           "feed leads the venue. It is not an information advantage and not a pricing input."]
     L += ["", "Table 3. Live ticks by our receipt age at the S542 read-out's 15 s split "

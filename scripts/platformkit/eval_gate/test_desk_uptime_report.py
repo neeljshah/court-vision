@@ -36,3 +36,32 @@ def test_idempotent(tmp_path, monkeypatch):
     md.write_text("intro\n" + a + "outro\n")
     m.write(tmp_path)
     assert md.read_text() == "intro\n" + a + "outro\n"
+
+
+def _window(monkeypatch):
+    monkeypatch.setattr(m, "START", "2026-09-24")
+    monkeypatch.setattr(m, "END", "2026-09-26")
+    monkeypatch.setattr(m, "CAP", "2026-09-27T00:00:00Z")
+
+
+def test_check_recomputes_from_receipts(tmp_path, monkeypatch):
+    _window(monkeypatch)
+    m.write(_fixture(tmp_path))
+    assert m.check(tmp_path)
+    night = tmp_path / "docs/evidence/forward/nights/2026-09-26.json"
+    night.write_text(json.dumps({"status": "COMPLETE", "reasons": []}))  # new receipt: output stale
+    assert not m.check(tmp_path)
+    m.write(tmp_path)
+    assert m.check(tmp_path)
+
+
+def test_out_of_window_timestamps_ignored_and_listed(tmp_path, monkeypatch):
+    _window(monkeypatch)
+    f = _fixture(tmp_path) / "docs/evidence/forward/schedules"
+    (f / "2020-01-01_run.json").write_text(json.dumps({"completed_at": "2020-01-01T00:00:00Z"}))
+    (f / "2026-09-27_run.json").write_text(json.dumps({"completed_at": "2026-09-27T00:00:00Z"}))
+    r = m.write(tmp_path)
+    assert r["dark_spells"][0]["hours"] == 60.0 and len(r["dark_spells"]) == 1
+    assert r["ignored_out_of_window"] == ["2020-01-01T00:00Z", "2026-09-27T00:00Z"]
+    md = (tmp_path / "docs/evidence/DESK_UPTIME_2026-10-20.md").read_text()
+    assert "ignored out-of-window timestamps" in md and "2020-01-01T00:00Z" in md

@@ -12,6 +12,14 @@
   }
  ],
  "days": 25,
+ "ignored_out_of_window": [
+  "2026-09-22T03:03Z",
+  "2026-09-22T17:03Z",
+  "2026-10-19T15:59Z",
+  "2026-10-19T16:04Z",
+  "2026-10-19T16:08Z",
+  "2026-10-19T16:20Z"
+ ],
  "no_receipt_days": 6,
  "owner_sleeps_self_reported": [
   {
@@ -52,7 +60,7 @@
  "scored_partial": 14,
  "scored_share": 0.76,
  "served": 17,
- "stamps": 1151,
+ "stamps": 1149,
  "table": [
   {
    "attempt_file": false,

@@ -12,7 +12,7 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 START, END = "2026-09-24", "2026-10-18"
-CAP = "2026-10-19T00:00:00Z"
+CAP = "2026-10-19T00:00:00Z"  # END + 1 day midnight (exclusive upper bound)
 TS_KEYS = ("started_at", "completed_at", "fill_ts", "record_ts", "selected_at", "started_utc", "settlement_ts", "close_ts")
 SUBDIRS = ("schedules", "nights", "live_shadow", "paper_result")
 # Self-reported by the owner/desk sessions in .planning/NOW.md (gitignored, read 2026-10-20).
@@ -65,8 +65,9 @@ def collect(fwd):
             if ".superseded" in f.name or not ok(f):
                 continue
             stamps += [_t(m.group(2)) for m in _TS.finditer(f.read_text(encoding="utf-8"))]
-    cap = _t(CAP)
-    stamps = sorted({s for s in stamps if s <= cap})
+    lo, hi = _t(START + "T00:00:00Z"), _t(CAP)
+    ignored = sorted({s for s in stamps if not lo <= s < hi})
+    stamps = sorted({s for s in stamps if lo <= s < hi})
     gaps = sorted(((b - a).total_seconds() / 3600, a, b) for a, b in zip(stamps, stamps[1:]))[::-1]
     rows = []
     for d in _days():
@@ -97,6 +98,7 @@ def collect(fwd):
             "scored_partial": sum(r["night"] == "PARTIAL" for r in rows),
             "dark_spells": spells, "partial_reasons": dict(sorted(reasons.items())),
             "no_receipt_days": len(rows) - len(nt), "stamps": len(stamps),
+            "ignored_out_of_window": sorted({_iso(x) for x in ignored}),
             "owner_sleeps_self_reported": sleeps, "table": rows}
 
 
@@ -116,6 +118,8 @@ def render(r):
         L.append("- dark spell %d: %s to %s = %.1f h" % (i + 1, s["start"], s["end"], s["hours"]))
     L.append("- partial reasons on scored nights: " + (", ".join(
         "%s %d" % kv for kv in r["partial_reasons"].items()) or "none"))
+    L.append("- ignored out-of-window timestamps (outside %sT00:00Z to %s): %s" % (
+        r["window"][0], CAP[:16] + "Z", ", ".join(r["ignored_out_of_window"]) or "none"))
     L += ["", "Owner-reported sleep windows (self-reported, from .planning/NOW.md; not receipt-derived):", ""]
     L += ["- %s to %s = %.1f h" % (s["start"], s["end"], s["hours"]) for s in r["owner_sleeps_self_reported"]]
     return "\n".join(L)
@@ -137,11 +141,15 @@ def write(root):
 
 
 def check(root):
+    """Recompute from the (git-tracked) receipts and compare to the written md block + JSON."""
     root = Path(root)
     md = root / "docs/evidence/DESK_UPTIME_2026-10-20.md"
-    r = json.loads(md.with_suffix(".json").read_text(encoding="utf-8"))
+    if not md.is_file() or not md.with_suffix(".json").is_file():
+        return False
+    r = collect(root / "docs/evidence/forward")
+    want_json = json.dumps(r, indent=1, sort_keys=True) + "\n"
     m = re.search(re.escape(BEGIN) + r"\n(.*?)\n" + re.escape(FIN), md.read_text(encoding="utf-8"), re.S)
-    return bool(m) and m.group(1) == render(r)
+    return bool(m) and m.group(1) == render(r) and md.with_suffix(".json").read_text(encoding="utf-8") == want_json
 
 
 if __name__ == "__main__":
