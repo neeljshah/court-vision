@@ -15,6 +15,7 @@ import { findingMeta } from "@/lib/analytics/og";
 import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
 
 import { FindingUnavailable } from "@/components/analytics/findings/FindingUnavailable";
+import { FindingTemplate } from "@/components/analytics/findings/FindingTemplate";
 
 export const metadata: Metadata = {
   title: "Shrinkage",
@@ -137,9 +138,7 @@ export default function ShrinkagePage() {
   const sourceArtifact = (data.source_artifact as string | undefined) || "scripts/platformkit/analytics_showcase/out/mlb_shrinkage.json";
 
   return (
-    <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }}>
-      <p className="overline">Findings / Shrinkage</p>
-      <h1 style={h1}>When the leaderboard regresses to the mean</h1>
+    <FindingTemplate slug="shrinkage" artifact={data}>
       <p style={lede}>Published rates before and after empirical-Bayes shrinkage in a fixed 2022-2023 slice. Rates on either side of the pooled mean move toward it under the fitted prior.</p>
 
       <div style={noteBox}>
@@ -194,6 +193,6 @@ export default function ShrinkagePage() {
         Descriptive statistical exhibit only. The shrunk rate is a regularized estimate under a modeling
         assumption, not a validated forecast-quality finding.
       </p>
-    </div>
+    </FindingTemplate>
   );
 }

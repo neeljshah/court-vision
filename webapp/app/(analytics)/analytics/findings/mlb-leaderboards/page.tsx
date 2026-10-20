@@ -15,6 +15,7 @@ import { findingMeta } from "@/lib/analytics/og";
 import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
 
 import { FindingUnavailable } from "@/components/analytics/findings/FindingUnavailable";
+import { FindingTemplate } from "@/components/analytics/findings/FindingTemplate";
 
 export const metadata: Metadata = {
   title: "MLB Leaderboards",
@@ -100,9 +101,7 @@ export default function MlbLeaderboardsPage() {
   const sourceArtifact = (data.source_artifact as string | undefined) || "scripts/platformkit/analytics_showcase/out/mlb_descriptive_leaderboards.json";
 
   return (
-    <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }}>
-      <p className="overline">Findings / MLB leaderboards</p>
-      <h1 style={h1}>Descriptive MLB leaderboards, with the nulls attached</h1>
+    <FindingTemplate slug="mlb-leaderboards" artifact={data}>
       {headline ? <p style={lede}>{headline}</p> : null}
 
       {observation_window ? (
@@ -197,6 +196,6 @@ export default function MlbLeaderboardsPage() {
       <p style={{ ...lede, marginTop: 32 }}>
         Descriptive only, from a fixed 2022-2023 window. The tables report observed Statcast splits rather than a forecast.
       </p>
-    </div>
+    </FindingTemplate>
   );
 }

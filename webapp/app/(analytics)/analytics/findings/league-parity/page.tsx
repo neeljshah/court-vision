@@ -16,6 +16,7 @@ import { findingMeta } from "@/lib/analytics/og";
 import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
 
 import { FindingUnavailable } from "@/components/analytics/findings/FindingUnavailable";
+import { FindingTemplate } from "@/components/analytics/findings/FindingTemplate";
 
 export const metadata: Metadata = {
   title: "A Parity Ledger",
@@ -132,9 +133,7 @@ export default function LeagueParityPage() {
   const ext = data.extremes_descriptive;
 
   return (
-    <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }}>
-      <p className="overline">Findings / League parity</p>
-      <h1 style={h1}>How competitive is each season? A parity ledger</h1>
+    <FindingTemplate slug="league-parity" artifact={data}>
       <p style={lede}>
         {meth.unit ? meth.unit + ". " : ""}
         {meth.win_share_gini}
@@ -210,6 +209,6 @@ export default function LeagueParityPage() {
           verdict="descriptive_only"
         />
       </div>
-    </div>
+    </FindingTemplate>
   );
 }

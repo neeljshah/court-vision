@@ -14,6 +14,7 @@ import { findingMeta } from "@/lib/analytics/og";
 import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
 
 import { FindingUnavailable } from "@/components/analytics/findings/FindingUnavailable";
+import { FindingTemplate } from "@/components/analytics/findings/FindingTemplate";
 
 export const metadata: Metadata = {
   title: "NBA Momentum, Tested",
@@ -91,9 +92,7 @@ export default function NbaMomentumFindingsPage() {
   );
 
   return (
-    <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }}>
-      <p className="overline">Findings / NBA momentum</p>
-      <h1 style={h1}>NBA momentum, tested: what&rsquo;s real and what isn&rsquo;t</h1>
+    <FindingTemplate slug="nba-momentum" artifact={data}>
       <p style={lede}>{headline}</p>
       {method ? <p style={{ ...lede, fontSize: 15, marginTop: 12 }}>{method}</p> : null}
 
@@ -166,6 +165,6 @@ export default function NbaMomentumFindingsPage() {
         with equal weight: a carryover shape that fails to show a signal is as
         valid a result as one that confirms.
       </p>
-    </div>
+    </FindingTemplate>
   );
 }

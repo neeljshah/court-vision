@@ -13,6 +13,7 @@ import { findingMeta } from "@/lib/analytics/og";
 import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
 
 import { FindingUnavailable } from "@/components/analytics/findings/FindingUnavailable";
+import { FindingTemplate } from "@/components/analytics/findings/FindingTemplate";
 
 export const metadata: Metadata = {
   title: "How accurate were the market sources?",
@@ -141,9 +142,7 @@ export default function BookmakerAccuracyPage() {
   const win = data.observation_window;
 
   return (
-    <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }}>
-      <p className="overline">Findings / Grading the books</p>
-      <h1 style={h1}>How accurate were the market sources?</h1>
+    <FindingTemplate slug="bookmaker-accuracy" artifact={data}>
       <p style={lede}>{data.method}</p>
 
       <p style={headline}>{data.headline}</p>
@@ -209,6 +208,6 @@ export default function BookmakerAccuracyPage() {
           verdict="descriptive_only"
         />
       </div>
-    </div>
+    </FindingTemplate>
   );
 }

@@ -17,6 +17,7 @@ import { findingMeta } from "@/lib/analytics/og";
 import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
 
 import { FindingUnavailable } from "@/components/analytics/findings/FindingUnavailable";
+import { FindingTemplate } from "@/components/analytics/findings/FindingTemplate";
 
 export const metadata: Metadata = {
   title: "The Q4 Shift",
@@ -144,9 +145,7 @@ export default function Q4ShiftPage() {
   const sourceArtifact = (data.source_artifact as string | undefined) || "scripts/platformkit/analytics_showcase/out/nba_q4_shift.json";
 
   return (
-    <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }}>
-      <p className="overline">Findings / Q4 shift</p>
-      <h1 style={h1}>Observed Q4 rate shifts and their limits.</h1>
+    <FindingTemplate slug="q4-shift" artifact={data}>
       {headline ? <p style={lede}>{headline}</p> : null}
 
       {un_refusal_note ? (
@@ -214,6 +213,6 @@ export default function Q4ShiftPage() {
         Descriptive Q4-vs-Q1-3 per-36 splits only, from a fixed observation window &mdash; not
         a clutch metric, and not a forecast-quality measurement.
       </p>
-    </div>
+    </FindingTemplate>
   );
 }

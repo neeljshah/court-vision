@@ -3,6 +3,7 @@
 // link to the committed artifact on GitHub under master, so it is keyboard focusable by
 // nature; the full source path, date and status are in its title and accessible name.
 // Server-safe (no hooks), so server and client trees can both mount it.
+import Link from "next/link";
 import "./evidence.css";
 import { basename, dayOf, normalizeRepoPath, receiptHref, type ReceiptStatus } from "./kit";
 
@@ -24,6 +25,9 @@ export interface ReceiptChipProps {
   /** Glyph only (next to a FigureValue or an AsOfBadge); source, date and status stay in the title and accessible name. */
   compact?: boolean;
   className?: string;
+  /** Build-time "quoted on" list for this source (lib/quotedOn.server, passed by a server parent; no client fetch).
+   *  When given, the chip gains an expandable "quoted on N pages" list. Render it in flow content, not inside a <p>. */
+  quotedOn?: { label: string; href: string }[];
 }
 
 const DATE_WORD: Record<ReceiptDateKind, string> = { source: "as of", snapshot: "generated", published: "published" };
@@ -41,6 +45,25 @@ export function receiptText(props: ReceiptChipProps) {
 }
 
 export function ReceiptChip(props: ReceiptChipProps) {
+  const chip = <Chip {...props} />;
+  const q = props.quotedOn;
+  if (!q) return chip;
+  return (
+    <span className="ev-chip-quoted" data-testid="receipt-quoted-on">
+      {chip}
+      <details style={{ display: "inline-block", marginLeft: 8, verticalAlign: "top" }}>
+        <summary style={{ cursor: "pointer", fontSize: 12 }}>quoted on {q.length} {q.length === 1 ? "page" : "pages"}</summary>
+        {q.length ? (
+          <ul style={{ margin: "4px 0 0", paddingLeft: 18, fontSize: 12 }}>
+            {q.map((x) => <li key={x.href}>{x.href.startsWith("/") ? <Link href={x.href}>{x.label}</Link> : <a href={x.href}>{x.label}</a>}</li>)}
+          </ul>
+        ) : <span style={{ fontSize: 12 }}> no other page in this build.</span>}
+      </details>
+    </span>
+  );
+}
+
+function Chip(props: ReceiptChipProps) {
   const { path, status, dateText, href, title, label } = receiptText(props);
   const className = ["ev-chip", href ? "" : "ev-chip--nolink", props.className ?? ""].filter(Boolean).join(" ");
   const body = (

@@ -13,6 +13,7 @@ import { findingMeta } from "@/lib/analytics/og";
 import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
 
 import { FindingUnavailable } from "@/components/analytics/findings/FindingUnavailable";
+import { FindingTemplate } from "@/components/analytics/findings/FindingTemplate";
 
 export const metadata: Metadata = {
   title: "Greater Than The Sum Of Their Parts",
@@ -139,9 +140,7 @@ export default function LineupSynergyPage() {
   const win = data.observation_window;
 
   return (
-    <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }}>
-      <p className="overline">Findings / Lineup synergy</p>
-      <h1 style={h1}>Greater than the sum of their parts: a lineup-synergy ledger</h1>
+    <FindingTemplate slug="lineup-synergy" artifact={data}>
       <p style={lede}>{data.method}</p>
       {data.metric_definition ? <p style={{ ...lede, fontSize: 14.5, color: "var(--ink-3)" }}>{data.metric_definition}</p> : null}
 
@@ -188,6 +187,6 @@ export default function LineupSynergyPage() {
           verdict="descriptive_only"
         />
       </div>
-    </div>
+    </FindingTemplate>
   );
 }

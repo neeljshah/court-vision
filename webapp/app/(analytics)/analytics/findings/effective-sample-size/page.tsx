@@ -12,6 +12,7 @@ import { FindingTableRegion } from "@/components/analytics/findings/FindingTable
 import { FindingUnavailable } from "@/components/analytics/findings/FindingUnavailable";
 import { DataIntegrityNotice } from "@/components/analytics/DataIntegrityNotice";
 import { noticesForModules } from "@/lib/analytics/dataIntegrity";
+import { FindingTemplate } from "@/components/analytics/findings/FindingTemplate";
 
 export const metadata: Metadata = {
   title: "Effective Sample Size",
@@ -122,9 +123,7 @@ export default function EffectiveSampleSizePage() {
   const { formula, generated_at, corpora } = data;
 
   return (
-    <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }}>
-      <p className="overline">Findings / Effective Sample Size</p>
-      <h1 style={h1}>How independent is our data, really?</h1>
+    <FindingTemplate slug="effective-sample-size" artifact={data}>
       <p style={lede}>
         This historical ledger estimates row dependence with lag-1 residual autocorrelation.
         Its published anchor is a proxy, not a verified count of distinct games.
@@ -218,6 +217,6 @@ export default function EffectiveSampleSizePage() {
         These historical proxy values describe the joined corpus only. Distinct-game
         counts and replacement intervals require the pending segment-clean recomposition.
       </p>
-    </div>
+    </FindingTemplate>
   );
 }

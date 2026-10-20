@@ -13,6 +13,7 @@ import { findingMeta } from "@/lib/analytics/og";
 import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
 
 import { FindingUnavailable } from "@/components/analytics/findings/FindingUnavailable";
+import { FindingTemplate } from "@/components/analytics/findings/FindingTemplate";
 
 export const metadata: Metadata = {
   title: "Tennis: Momentum, Myths, and Altitude",
@@ -84,9 +85,7 @@ export default function TennisFindingsPage() {
   );
 
   return (
-    <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }}>
-      <p className="overline">Findings / Tennis</p>
-      <h1 style={h1}>Tennis: where momentum lives, and where it doesn&rsquo;t</h1>
+    <FindingTemplate slug="tennis" artifact={data}>
       <p style={lede}>{headline}</p>
       {method ? <p style={{ ...lede, fontSize: 15, marginTop: 12 }}>{method}</p> : null}
 
@@ -154,6 +153,6 @@ export default function TennisFindingsPage() {
         with equal weight: a myth that fails to show an effect is as valid a
         result as one that confirms.
       </p>
-    </div>
+    </FindingTemplate>
   );
 }

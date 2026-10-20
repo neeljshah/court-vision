@@ -16,6 +16,7 @@ import { findingMeta } from "@/lib/analytics/og";
 import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
 
 import { FindingUnavailable } from "@/components/analytics/findings/FindingUnavailable";
+import { FindingTemplate } from "@/components/analytics/findings/FindingTemplate";
 
 export const metadata: Metadata = {
   title: "The Life of a Forecast",
@@ -89,9 +90,7 @@ export default function ForecastLifePage() {
   const inGameSports = ["mlb", "soccer_intl"].filter((s) => checkpoints[s]);
 
   return (
-    <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }}>
-      <p className="overline">Findings / Life of a forecast</p>
-      <h1 style={h1}>The life of a forecast</h1>
+    <FindingTemplate slug="forecast-life" artifact={halfLife}>
       <p style={lede}>
         A published price reference absorbs information continuously, not all at once. This traces that process twice: how the
         pre-game line finishes moving before tip, and how in-game accuracy sharpens as the game resolves toward its
@@ -211,6 +210,6 @@ export default function ForecastLifePage() {
         The product measures calibration against the close. The Brier checkpoints show the model and reference
         values on the same published corpus.
       </p>
-    </div>
+    </FindingTemplate>
   );
 }

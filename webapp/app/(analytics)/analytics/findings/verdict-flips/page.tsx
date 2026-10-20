@@ -14,6 +14,7 @@ import { findingMeta } from "@/lib/analytics/og";
 import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
 
 import { FindingUnavailable } from "@/components/analytics/findings/FindingUnavailable";
+import { FindingTemplate } from "@/components/analytics/findings/FindingTemplate";
 
 export const metadata: Metadata = {
   title: "Verdict Flips",
@@ -68,9 +69,7 @@ export default function VerdictFlipsPage() {
     : 0;
 
   return (
-    <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }}>
-      <p className="overline">Findings / Verdict flips</p>
-      <h1 style={h1}>When we changed our mind</h1>
+    <FindingTemplate slug="verdict-flips" artifact={data}>
       <p style={lede}>{headline}</p>
 
       {summary ? (
@@ -134,6 +133,6 @@ export default function VerdictFlipsPage() {
       <div style={{ marginTop: 20 }}>
         <Receipt sourceArtifact={source_artifact || ""} asOf={generated_at || undefined} dateKind="snapshot" label="descriptive_only" verdict="descriptive_only" />
       </div>
-    </div>
+    </FindingTemplate>
   );
 }

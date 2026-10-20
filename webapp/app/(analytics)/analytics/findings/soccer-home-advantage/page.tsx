@@ -15,6 +15,7 @@ import { findingMeta } from "@/lib/analytics/og";
 import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
 
 import { FindingUnavailable } from "@/components/analytics/findings/FindingUnavailable";
+import { FindingTemplate } from "@/components/analytics/findings/FindingTemplate";
 
 export const metadata: Metadata = {
   title: "Soccer Home-Advantage Decomposition",
@@ -125,9 +126,7 @@ export default function SoccerHomeAdvantagePage() {
   const win = data.observation_window;
 
   return (
-    <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }}>
-      <p className="overline">Findings / Home advantage</p>
-      <h1 style={h1}>Home advantage in international football, and why the gap grew</h1>
+    <FindingTemplate slug="soccer-home-advantage" artifact={data}>
       <p style={lede}>
         {data.method} Window: {win?.first_date} to {win?.last_date}, n={win?.n_matches_played.toLocaleString()}{" "}
         matches played -- {win?.note}
@@ -285,6 +284,6 @@ export default function SoccerHomeAdvantagePage() {
           re-presented with their receipts.
         </p>
       ) : null}
-    </div>
+    </FindingTemplate>
   );
 }

@@ -13,6 +13,7 @@ import { findingMeta } from "@/lib/analytics/og";
 import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
 
 import { FindingUnavailable } from "@/components/analytics/findings/FindingUnavailable";
+import { FindingTemplate } from "@/components/analytics/findings/FindingTemplate";
 
 export const metadata: Metadata = {
   title: "Who Bends The Shot Chart",
@@ -148,9 +149,7 @@ export default function RimDeterrencePage() {
   const win = data.observation_window;
 
   return (
-    <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }}>
-      <p className="overline">Findings / Rim deterrence</p>
-      <h1 style={h1}>Who bends the shot chart: a rim-deterrence leaderboard</h1>
+    <FindingTemplate slug="rim-deterrence" artifact={data}>
       <p style={lede}>{data.method}</p>
       {data.metric_definition ? <p style={{ ...lede, fontSize: 14.5, color: "var(--ink-3)" }}>{data.metric_definition}</p> : null}
 
@@ -203,6 +202,6 @@ export default function RimDeterrencePage() {
           verdict="descriptive_only"
         />
       </div>
-    </div>
+    </FindingTemplate>
   );
 }
