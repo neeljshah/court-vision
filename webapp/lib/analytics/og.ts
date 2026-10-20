@@ -8,10 +8,21 @@
 //
 // openGraph.images overrides the layout's default card; twitter.images likewise.
 // The twitter card TYPE (summary_large_image) is inherited from the layout.
+import { existsSync } from "node:fs";
+import { join } from "node:path";
+
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH || "";
+const DEFAULT_CARD = "og-analytics.png";
+
+// Build-time (server pages only): a finding without a generated card falls back
+// to the site card rather than shipping an og:image URL that 404s.
+function cardFile(slug: string): string {
+  const file = `og-finding-${slug}.png`;
+  return existsSync(join(process.cwd(), "public", "brand", file)) ? file : DEFAULT_CARD;
+}
 
 export function findingMeta(slug: string) {
-  const img = `${BASE}/brand/og-finding-${slug}.png`;
+  const img = `${BASE}/brand/${cardFile(slug)}`;
   return {
     openGraph: { images: [{ url: img, width: 1200, height: 630, alt: "CourtVision Analytics finding" }] },
     twitter: { images: [img] },

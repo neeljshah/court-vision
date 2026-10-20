@@ -14,12 +14,13 @@ const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 // Nav pillars (SITE_PLAN_v2.md S1: 6 top-level surfaces, Scoreboard = home).
 //   Scoreboard  /            -- cross-sport calibration scoreboard landing.
 //   Atlas       /atlas       -- 1,549 entity cards.
-//   Evidence    /evidence    -- 22 evidence pages.
+//   Evidence    /evidence    -- the claim index (count comes from evidence_index.json).
 //   Labs        /lab         -- counterfactual + microstructure research.
 //   Receipts    /receipts    -- ledger + drill-down (already shipped).
 //   Use it      /use-it      -- MCP quickstart + tool table.
 //
-// Analytics / AI-Assistant / Settings: DO NOT exist; never add them.
+// AI-Assistant / Settings: DO NOT exist; never add them. The analytics product
+// (/analytics) is linked from the scoreboard hero and the footer, not this bar.
 // SIX pillars on the bar; the legacy live-app views (today/live/games/bets/
 // paper/models/records/system/how-it-works) collapse behind "More" so the
 // bar stays the honest research-product front door, not the old trading UI.
@@ -39,7 +40,7 @@ const MORE_LINKS = [
   { href: "/paper-trading", label: "Paper",        short: "Paper",  exact: false, also: ["/paper", "/records"] },
   { href: "/desk",          label: "Desk",         short: "Desk",   exact: false, also: [] as string[] },
   { href: "/bets",          label: "Bets",         short: "Bets",   exact: false, also: [] as string[] },
-  { href: "/models",        label: "Models",       short: "Models", exact: false, also: ["/progress"] },
+  { href: "/progress",      label: "Progress",     short: "Prog",   exact: false, also: [] as string[] },
   { href: "/system",        label: "System",       short: "System", exact: false, also: [] as string[] },
   { href: "/how-it-works",  label: "How it works", short: "How",    exact: false, also: [] as string[] },
 ] as const;

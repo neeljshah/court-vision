@@ -5,7 +5,8 @@ import { LabShell } from "@/components/lab/LabShell";
 import { Panel, PanelHead } from "@/components/ui/terminal";
 import Link from "next/link";
 
-const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
+// <Link> auto-prefixes basePath in the static export; never add it by hand here
+// (doing so produced /court-vision/court-vision/lab/... 404s).
 
 export default function LabPage() {
   return (
@@ -19,7 +20,7 @@ export default function LabPage() {
               state cell, model vs. market vs. realized outcome.
             </p>
             <Link
-              href={`${BASE_PATH}/lab/counterfactual`}
+              href="/lab/counterfactual"
               className="microlabel text-primary hover:underline"
             >
               Open counterfactual --&gt;
@@ -34,7 +35,7 @@ export default function LabPage() {
               arrival, market convergence, residual autocorrelation.
             </p>
             <Link
-              href={`${BASE_PATH}/lab/microstructure`}
+              href="/lab/microstructure"
               className="microlabel text-primary hover:underline"
             >
               Open microstructure --&gt;
