@@ -46,7 +46,7 @@ export function PerMarketClvStrips({
           stale={stale}
           right={
             <span className="font-data text-[9px] text-faint">
-              beat-the-close; calibration only
+              price taken vs the close; calibration only
             </span>
           }
         />

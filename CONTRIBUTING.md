@@ -8,6 +8,20 @@ This project combines computer vision, data engineering, statistical modeling, a
 
 ---
 
+## How this repository was built
+
+This repository was built by one person directing coding agents. The owner set the goals, the validation rules, and the acceptance bars; agents wrote most of the code, tests, and documentation, and a second agent reviewed each landed change against those bars. As measured on 2026-10-20, 24.8% of the 6,515 public commits carry an agent co-author trailer. The true agent-authored share is higher, because older and automated commits carry no trailer. One person directed, reviewed, and is accountable for every change; most lines were not hand-written, and nothing here claims otherwise. What the owner owns is the specification, the leak-free evaluation design, and the decisions to keep, reject, or retract results.
+
+Retractions are part of the audit trail, not something hidden. The full tree holds 157 retract or revert commits, and 23% of public commits mention fix, revert, or retract. Find them with `git log -i --grep="retract\|revert" --oneline`. The system is a calibrated forecaster, not a profit claim. Every number links to a committed artifact; start from [EVIDENCE.md](EVIDENCE.md).
+
+## Commit messages
+
+- The first line says what changed and why, in words a reader outside the project understands.
+- A register id (an `S` or `G` number such as `S317`) is only a pointer. Any commit that names one must follow it with a plain-English clause, for example `S317: verifier memo accepts the fill-realism check`, never the bare id.
+- Prefer `area(scope): what changed and the measured result`.
+- A `(PAPER ONLY)` tag at the end means the change touches paper-trading or calibration material only: no order was placed on any venue and nothing in it is a return figure.
+- Terms and ids are defined in [docs/GLOSSARY.md](docs/GLOSSARY.md).
+
 ## Development Setup
 
 ```bash

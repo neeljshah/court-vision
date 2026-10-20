@@ -134,7 +134,7 @@ export default function PaperTradingPage() {
         <span className="font-semibold text-foreground">Units convention:</span>{" "}
         Stakes are in <span className="font-mono font-semibold">UNITS</span>, not dollars.
         Quarter-Kelly sizing -- a stake can exceed 1.0u when the model is highly confident.
-        No dollar edge is claimed. CLV (beat-the-close) is the only honest calibration yardstick.
+        No dollar edge is claimed. CLV here means the price taken versus the close; no CLV reading exists as of 2026-10-19 (evidence packet section 5).
       </div>
 
       {/* BANKROLL + EQUITY CURVE -- "how much I would have made" in UNITS */}

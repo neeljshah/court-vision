@@ -113,7 +113,7 @@ export default function Home() {
   const nulls = sum("null");
   const ratio = confirmed > 0 ? (nulls / confirmed).toFixed(1) : "--";
   const strip: [string, string][] = [
-    [`${confirmed}`, "confirmed signals"],
+    [`${confirmed}`, "confirmed ledger findings (0 of 60 signal classes passed the gate)"],
     [`${nulls}`, "null results"],
     [`${sum("not_testable")}`, "not testable"],
     [`${ratio}x`, "nulls per confirm"],

@@ -238,7 +238,7 @@ export function PaperEquityPanel({ series, bankroll, loading }: PaperEquityPanel
             testId="paper-tally-clv"
             value={clv.text}
             valueCls={clv.cls}
-            sub="beat-the-close; calibration only"
+            sub="price taken vs the close; calibration only"
           />
         </div>
 
@@ -253,7 +253,7 @@ export function PaperEquityPanel({ series, bankroll, loading }: PaperEquityPanel
 
         {/* Honest footer */}
         <p className="mt-4 border-t border-slate-800 pt-3 font-mono text-[10px] text-faint">
-          PAPER simulation -- this is "how much you WOULD have made" in UNITS, not
+          PAPER simulation -- the units the simulated paper stakes would have settled to; not a return, not
           dollars. Executed: false. Real-money: DENY. No edge or profit is claimed;
           a flat/negative curve that tracks the efficient close is an honest result.
         </p>
