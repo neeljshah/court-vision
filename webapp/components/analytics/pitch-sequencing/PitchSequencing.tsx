@@ -51,7 +51,7 @@ export function PitchSequencing({ data }: { data: PitchSequencingData }) {
     <p className="ps-definition"><span className="mono">{selectedClass.id}</span>: {selectedClass.definition}</p>
     <p className="ps-coverage">Published axis coverage: {percent(selectedClass.coverage)}</p>
     <p className="ps-partition">Behind, even, and ahead are disjoint classes. Two-strike and three-ball are overlapping views, not additive classes.</p>
-    <Figure source="public/data/showcase/pitch_sequencing.json" asOf={data.asOf || "Published snapshot"} title="Previous pitch to next pitch" subtitle="Rows are the previous pitch type; columns are the next pitch type. Select a cell for its published details." note="Each probability uses the complete published row denominator. Rows can total below 100% because next-pitch types outside the displayed axis remain off-axis.">
+    <Figure source="public/data/showcase/pitch_sequencing.json" asOf={data.asOf || "Published snapshot"} denominator={`Class transitions: ${count(selectedClass.transitionsInClass)}; displayed-matrix transitions: ${count(selectedClass.transitionsInMatrix)}`} title="Previous pitch to next pitch" subtitle="Rows are the previous pitch type; columns are the next pitch type. Select a cell for its published details." note="Each probability uses the complete published row denominator. Rows can total below 100% because next-pitch types outside the displayed axis remain off-axis.">
       <p className="ps-scale-legend">Sequential scale: 0.0% to {percent(probabilityMaximum)}; hatched cells: below published floor.</p>
       <div className="ps-matrix-wrap">
         <svg className="ps-matrix" viewBox={`0 0 ${116 + data.pitchTypes.length * 76} ${98 + data.pitchTypes.length * 58}`} role="group" aria-label={`${selectedClass.id} pitch sequencing heatmap`} data-testid="pitch-sequencing-heatmap">
@@ -94,7 +94,7 @@ export function PitchSequencing({ data }: { data: PitchSequencingData }) {
       <p className="ps-detail-label">Selected transition</p>
       {activeCell && <><h2>{activeCell.from} to {activeCell.to}</h2>{activeCell.masked ? <p>This previous-pitch row is masked because its published denominator is below the floor of {count(data.rowMinN)} transitions.</p> : <dl><div><dt>Count</dt><dd>{count(activeCell.count)}</dd></div><div><dt>Row denominator</dt><dd>{count(activeCell.denominator)}</dd></div><div><dt>Conditional probability</dt><dd>{percent(activeCell.probability)}</dd></div></dl>}</>}
     </div>
-    <p className="ps-source-fields">Source fields: pitch_sequencing.json -&gt; pitch_types[], by_class[].prob_matrix[row][column], count_matrix[row][column], row_n_from[row], row_below_floor[row], coverage, and floors.row_min_n.</p>
+    <p className="ps-source-fields">Source fields: pitch_sequencing.json -&gt; pitch_types[], by_class[].prob_matrix[row][column], count_matrix[row][column], row_n_from[row], row_below_floor[row], n_transitions_in_class, n_in_matrix, coverage, and floors.row_min_n.</p>
   </section>;
 }
 

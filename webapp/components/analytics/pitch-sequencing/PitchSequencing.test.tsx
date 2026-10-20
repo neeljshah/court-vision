@@ -2,10 +2,32 @@ import { fireEvent, render, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
 import { PitchSequencing } from "./PitchSequencing";
 
-const data = { pitchTypes: ["FF", "SL"], rowMinN: 200, asOf: "2026-07-25", classes: [{ id: "all", definition: "all rows", overlapping: false, coverage: 0.9, rowNFrom: [10, 4], rowBelowFloor: [false, true], countMatrix: [[2, 3], [1, 1]], probabilityMatrix: [[0.2, 0.3], [0.25, 0.25]] }, { id: "two_strike", definition: "overlap", overlapping: true, coverage: 0.8, rowNFrom: [8, 3], rowBelowFloor: [false, false], countMatrix: [[4, 1], [1, 1]], probabilityMatrix: [[0.5, 0.125], [0.2, 0.2]] }] };
+const data = { pitchTypes: ["FF", "SL"], rowMinN: 200, asOf: "2026-07-25", classes: [{ id: "all", definition: "all rows", overlapping: false, coverage: 0.9, transitionsInClass: 1200, transitionsInMatrix: 1080, rowNFrom: [10, 4], rowBelowFloor: [false, true], countMatrix: [[2, 3], [1, 1]], probabilityMatrix: [[0.2, 0.3], [0.25, 0.25]] }, { id: "two_strike", definition: "overlap", overlapping: true, coverage: 0.8, transitionsInClass: 800, transitionsInMatrix: 640, rowNFrom: [8, 3], rowBelowFloor: [false, false], countMatrix: [[4, 1], [1, 1]], probabilityMatrix: [[0.5, 0.125], [0.2, 0.2]] }] };
 
 describe("PitchSequencing", () => {
   beforeEach(() => window.history.replaceState(null, "", "/analytics/pitch-sequencing"));
+  it("updates published class support independently of the selected row denominator", () => {
+    const { container } = render(<PitchSequencing data={data} />);
+    const caption = container.querySelector("figcaption")!;
+    expect(caption).toHaveTextContent("Class transitions: 1,200; displayed-matrix transitions: 1,080");
+    expect(caption).not.toHaveTextContent("n not published");
+    fireEvent.click(screen.getByRole("button", { name: "two_strike" }));
+    expect(caption).toHaveTextContent("Class transitions: 800; displayed-matrix transitions: 640");
+    fireEvent.click(screen.getByRole("button", { name: "Select FF to SL" }));
+    expect(caption).toHaveTextContent("Class transitions: 800; displayed-matrix transitions: 640");
+    expect(within(container.querySelector<HTMLElement>(".ps-detail")!).getByText("8")).toBeInTheDocument();
+    expect(within(container.querySelector<HTMLElement>(".ps-detail")!).getByText("12.5%")).toBeInTheDocument();
+  });
+
+  it("keeps missing class support separate from published zero", () => {
+    const partial = { ...data, classes: [{ ...data.classes[0], transitionsInClass: null, transitionsInMatrix: 0 }, { ...data.classes[1], transitionsInClass: 0, transitionsInMatrix: null }] };
+    const { container } = render(<PitchSequencing data={partial} />);
+    const caption = container.querySelector("figcaption")!;
+    expect(caption).toHaveTextContent("Class transitions: Not published; displayed-matrix transitions: 0");
+    fireEvent.click(screen.getByRole("button", { name: "two_strike" }));
+    expect(caption).toHaveTextContent("Class transitions: 0; displayed-matrix transitions: Not published");
+  });
+
   it("maps selected cells to their published row, column, count, and denominator", () => {
     render(<PitchSequencing data={data} />);
     fireEvent.click(screen.getByRole("button", { name: "FF to SL: 30.0%" }));

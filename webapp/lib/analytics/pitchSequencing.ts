@@ -5,6 +5,8 @@ export interface PitchSequencingClass {
   definition: string;
   overlapping: boolean;
   coverage: number | null;
+  transitionsInClass: number | null;
+  transitionsInMatrix: number | null;
   rowNFrom: Array<number | null>;
   rowBelowFloor: boolean[];
   countMatrix: Array<Array<number | null>>;
@@ -35,6 +37,10 @@ function numberOrNull(value: unknown): number | null {
   return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
 
+function countOrNull(value: unknown): number | null {
+  return typeof value === "number" && Number.isSafeInteger(value) && value >= 0 ? value : null;
+}
+
 function matrix(value: unknown, size: number): Array<Array<number | null>> {
   if (!Array.isArray(value)) return [];
   return value.slice(0, size).map(row => Array.isArray(row) ? row.slice(0, size).map(numberOrNull) : []);
@@ -49,6 +55,8 @@ function classFrom(value: unknown, size: number): PitchSequencingClass | null {
     definition: typeof raw.definition === "string" ? raw.definition : "Not published",
     overlapping: raw.overlapping === true,
     coverage: numberOrNull(raw.coverage),
+    transitionsInClass: countOrNull(raw.n_transitions_in_class),
+    transitionsInMatrix: countOrNull(raw.n_in_matrix),
     rowNFrom: Array.isArray(raw.row_n_from) ? raw.row_n_from.slice(0, size).map(numberOrNull) : [],
     rowBelowFloor: Array.isArray(raw.row_below_floor) ? raw.row_below_floor.slice(0, size).map(item => item === true) : [],
     countMatrix: matrix(raw.count_matrix, size),
