@@ -10,9 +10,9 @@ prereg seal 936fb8fb6d3d539e978773b8c75be2d6eddfd5b766f3a643287f68b701fd2121; ef
 
 | sport | verdict | games | ticks | mean delta | CI lo | CI hi | nights not read out | descriptive | note | label |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| mlb | INSUFFICIENT | 10 | 5921 | -0.009731332225819339132916305388 | -0.02850157690278429 | 0.012088190229987235 | 0 | True | MLB is INSUFFICIENT by declaration in this row | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
+| mlb | INSUFFICIENT | 11 | 6001 | -0.009601602751054208799532985202 | -0.028726328296626247 | 0.011967575241136445 | 0 | True | MLB is INSUFFICIENT by declaration in this row | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
 | nba | INSUFFICIENT | 8 | 2676 | -0.1180375266030255975792419321 | -0.17710353213661278 | -0.051361590094972834 | 0 | False | - | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
-| nfl | INSUFFICIENT | 2 | 1134 | 0E-8 | 0.0 | 0.0 | 0 | True | M2 is not defined for this sport (M2 = A) | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
+| nfl | INSUFFICIENT | 3 | 1948 | 0E-8 | 0.0 | 0.0 | 0 | True | M2 is not defined for this sport (M2 = A) | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
 | soccer | INSUFFICIENT | 5 | 1629 | 0E-8 | 0.0 | 0.0 | 0 | True | M2 is not defined for this sport (M2 = A) | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
 
 ## Nights dated on or after the effective date
@@ -29,6 +29,7 @@ prereg seal 936fb8fb6d3d539e978773b8c75be2d6eddfd5b766f3a643287f68b701fd2121; ef
 | 2026-10-09 | scored |
 | 2026-10-10 | scored |
 | 2026-10-12 | scored |
+| 2026-10-16 | scored |
 
 ## Entries
 
@@ -42,23 +43,24 @@ prereg seal 936fb8fb6d3d539e978773b8c75be2d6eddfd5b766f3a643287f68b701fd2121; ef
 2026-10-09: night LF sha256 40afcdcbc80f3059e575b5d2ab3f902e979cc63b77d4a2445ea33f612804f6b1; games 19
 2026-10-10: night LF sha256 9abc3a350e0c998e1a6df6f8bfc35de3f0f8601e60910c22e4ad7ea2bb9690f3; games 26
 2026-10-12: night LF sha256 2fc082eb11324b3829804376ed6323e8ce8fca5976f7dabeb3ee8d10c1bd3e1b; games 7
+2026-10-16: night LF sha256 abada2579648b41a3790af5ea68fa4ce0a158297fa6fe501ef5a9490330871c3; games 9
 
 ## Cumulative cells (non-empty)
 
 | sport | class | segment | age | ticks | games | mean A Brier | mean M2 Brier | mean M2 - A | CI lo | CI hi | label |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| mlb | live | early | fresh | 3458 | 10 | 0.3061220864661654135338345865 | 0.3061220864661654135338345865 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
-| mlb | live | early | stale | 1166 | 10 | 0.2729054245283018867924528302 | 0.2852595900510683633935226671 | 0.01235416552276647660106983653 | -0.004496170527507636 | 0.044061502545244095 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
-| mlb | live | early | all | 4624 | 10 | 0.2977460856401384083044982699 | 0.3008613445068221694889375915 | 0.003115258866683761184439322965 | -0.0011931914987943638 | 0.011054244580233633 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
-| mlb | live | middle | fresh | 834 | 10 | 0.2421062949640287769784172662 | 0.2421062949640287769784172662 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
+| mlb | live | early | fresh | 3659 | 11 | 0.3228819759497130363487291610 | 0.3228819759497130363487291610 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
+| mlb | live | early | stale | 1246 | 11 | 0.2804636637239165329052969502 | 0.2920246243977092389380797992 | 0.01156096067379270603278284863 | -0.004364842573148044 | 0.04184501830337053 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
+| mlb | live | early | all | 4905 | 11 | 0.3121066004077471967380224261 | 0.3150433908255954560075122167 | 0.002936790417848259269489791925 | -0.0011941109394145164 | 0.010555189500501695 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
+| mlb | live | middle | fresh | 1289 | 11 | 0.3170945888285492629945694337 | 0.3170945888285492629945694337 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
 | mlb | live | middle | stale | 3093 | 8 | 0.1760201665050113158745554478 | 0.1753805441531498561193066879 | -0.0006396223518614597552487594025 | -0.019068207404248062 | 0.018643073081358513 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
-| mlb | live | middle | all | 3927 | 10 | 0.1900552648332060096765979119 | 0.1895514828280347606256724181 | -0.0005037820051712490509254934637 | -0.014175151839150323 | 0.015671289725102216 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
-| mlb | live | late | fresh | 593 | 7 | 0.01446172006745362563237774030 | 0.01446172006745362563237774030 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
+| mlb | live | middle | all | 4382 | 11 | 0.2175183249657690552259242355 | 0.2170668525937226163799670438 | -0.0004514723720464388459571914267 | -0.013287441942235544 | 0.013508322669911817 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
+| mlb | live | late | fresh | 875 | 8 | 0.03403437142857142857142857143 | 0.03403437142857142857142857143 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
 | mlb | live | late | stale | 1662 | 7 | 0.07892435318892900120336943442 | 0.03677885188067718188937397079 | -0.04214550130825181931399546369 | -0.0923844643708062 | -0.009935199889378606 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
-| mlb | live | late | all | 2255 | 8 | 0.06197253880266075388026607539 | 0.03091008950141262807101531683 | -0.03106244930124812580925075860 | -0.06944960128041919 | -0.00550010788896916 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
-| mlb | live | all | fresh | 4885 | 10 | 0.2597876407369498464687819857 | 0.2597876407369498464687819857 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
-| mlb | live | all | stale | 5921 | 10 | 0.1678450219557507177841580814 | 0.1581136897299313786512417760 | -0.009731332225819339132916305388 | -0.02850157690278429 | 0.012088190229987235 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
-| mlb | live | all | all | 10806 | 10 | 0.2094089394780677401443642421 | 0.2040767889960136676840646445 | -0.005332150482054072460299596909 | -0.016357101951930218 | 0.006343223014437813 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
+| mlb | live | late | all | 2537 | 9 | 0.06344199842333464722112731573 | 0.03583229279688036117467068957 | -0.02760970562645428604645662619 | -0.06214506255302441 | -0.0038223518616198712 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
+| mlb | live | all | fresh | 5823 | 11 | 0.2781968315301391035548686244 | 0.2781968315301391035548686244 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
+| mlb | live | all | stale | 6001 | 11 | 0.1708149266788868521913014498 | 0.1612133239278326433917684645 | -0.009601602751054208799532985202 | -0.028726328296626247 | 0.011967575241136445 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
+| mlb | live | all | all | 11824 | 11 | 0.2236976086772665764546684709 | 0.2188245354271755491368405403 | -0.004873073250091027317827929990 | -0.01480996869386981 | 0.005717587458971075 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
 | mlb | pre_live | all | fresh | 74 | 7 | 0.3003760135135135135135135135 | 0.3003760135135135135135135135 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
 | mlb | pre_live | all | stale | 3963 | 8 | 0.2798383926318445622003532677 | 0.2798383926318445622003532677 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
 | mlb | pre_live | all | all | 4037 | 8 | 0.2802148563289571463958384939 | 0.2802148563289571463958384939 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
@@ -87,18 +89,18 @@ prereg seal 936fb8fb6d3d539e978773b8c75be2d6eddfd5b766f3a643287f68b701fd2121; ef
 | nba | pre_live | all | fresh | 463 | 9 | 0.3192295356371490280777537797 | 0.3192295356371490280777537797 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
 | nba | pre_live | all | stale | 2538 | 6 | 0.2291783589440504334121355398 | 0.2291783589440504334121355398 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
 | nba | pre_live | all | all | 3001 | 9 | 0.2430716261246251249583472176 | 0.2430716261246251249583472176 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
-| nfl | live | early | fresh | 606 | 2 | 0.3770966171617161716171617162 | 0.3770966171617161716171617162 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
+| nfl | live | early | fresh | 791 | 3 | 0.3584854298356510745891276865 | 0.3584854298356510745891276865 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
 | nfl | live | early | stale | 41 | 1 | 0.1226786585365853658536585366 | 0.1226786585365853658536585366 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
-| nfl | live | early | all | 647 | 2 | 0.3609743044822256568778979907 | 0.3609743044822256568778979907 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
-| nfl | live | middle | fresh | 76 | 2 | 0.5192917763157894736842105263 | 0.5192917763157894736842105263 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
-| nfl | live | middle | stale | 736 | 2 | 0.2309551630434782608695652174 | 0.2309551630434782608695652174 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
-| nfl | live | middle | all | 812 | 2 | 0.2579423337438423645320197044 | 0.2579423337438423645320197044 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
-| nfl | live | late | fresh | 4 | 1 | 0.00062500 | 0.00062500 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
-| nfl | live | late | stale | 357 | 1 | 0.006764495798319327731092436975 | 0.006764495798319327731092436975 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
-| nfl | live | late | all | 361 | 1 | 0.006696468144044321329639889197 | 0.006696468144044321329639889197 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
-| nfl | live | all | fresh | 686 | 2 | 0.3906548469387755102040816327 | 0.3906548469387755102040816327 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
-| nfl | live | all | stale | 1134 | 2 | 0.1564618606701940035273368607 | 0.1564618606701940035273368607 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
-| nfl | live | all | all | 1820 | 2 | 0.2447346016483516483516483516 | 0.2447346016483516483516483516 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
+| nfl | live | early | all | 832 | 3 | 0.3468651442307692307692307692 | 0.3468651442307692307692307692 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
+| nfl | live | middle | fresh | 160 | 3 | 0.3105746875 | 0.3105746875 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
+| nfl | live | middle | stale | 1104 | 3 | 0.1736364130434782608695652174 | 0.1736364130434782608695652174 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
+| nfl | live | middle | all | 1264 | 3 | 0.1909703718354430379746835443 | 0.1909703718354430379746835443 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
+| nfl | live | late | fresh | 8 | 2 | 0.05605000 | 0.05605000 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
+| nfl | live | late | stale | 803 | 2 | 0.03615202366127023661270236613 | 0.03615202366127023661270236613 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
+| nfl | live | late | all | 811 | 2 | 0.03634830456226880394574599260 | 0.03634830456226880394574599260 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
+| nfl | live | all | fresh | 959 | 3 | 0.3479690563086548488008342023 | 0.3479690563086548488008342023 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
+| nfl | live | all | stale | 1948 | 3 | 0.1158904004106776180698151951 | 0.1158904004106776180698151951 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
+| nfl | live | all | all | 2907 | 3 | 0.1924516081871345029239766082 | 0.1924516081871345029239766082 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
 | nfl | pre_live | all | fresh | 7 | 2 | 0.4292821428571428571428571429 | 0.4292821428571428571428571429 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
 | nfl | pre_live | all | stale | 8 | 1 | 0.64802500 | 0.64802500 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |
 | nfl | pre_live | all | all | 15 | 2 | 0.54594500 | 0.54594500 | 0E-8 | 0.0 | 0.0 | vs our own stale receipt copy of the venue mid; receipt age is ours, not the venue's |

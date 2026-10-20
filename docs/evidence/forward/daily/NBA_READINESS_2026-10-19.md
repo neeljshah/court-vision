@@ -97,3 +97,12 @@ the 10-21 D1 moves the pointer keeps BOS-DET and PHI-NYK, provided the receipt s
   (it never launched). v2 is armed until 2026-10-20T18:50Z. It gates on free RAM >= 2,000 MB, no
   paper_night / live_shadow process, and no open start-5 min..start+65 min window in any
   2026-10-*_maker_forward.json, and it stays out of 05:20Z-08:45Z.
+
+## Addendum 20:08Z: recorder RELAUNCHED
+
+Watcher v2 ran the recipe (relaunch_live_shadow_s780_2026-10-07.ps1 -Sports mlb,nba,nfl,soccer,tennis) at
+2026-10-19T20:06:42Z with 2,125 MB free. Its 20:04Z check had been blocked by the TOT-COV focus window, and the
+recipe launched once that window closed. Processes: launcher 4556, supervisor 25532, live_shadow_cli 18688.
+data/cache/live_shadow/_heartbeat.json ts 20:07:27Z: run_nonce 330a00f2, peak_rss_mib 67.1, write_errors 0,
+ticks 4. The recorder is now READY. The nba fit decision for 10-20 is still expected to be `fit_missing`
+(arm A plus mid only); it will show in the heartbeat once the nba games are live.

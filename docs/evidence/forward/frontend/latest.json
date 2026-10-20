@@ -1,7 +1,7 @@
 {
- "command": "python -m scripts.platformkit.frontend.desk_export --date 2026-10-12 --repo-root . --stage",
+ "command": "python -m scripts.platformkit.frontend.desk_export --date 2026-10-16 --repo-root . --stage",
  "coverage": {
-  "date": "2026-10-12",
+  "date": "2026-10-16",
   "listed_definition": "census schedule-feed games starting on D (games_seen - outside_utc_date); the inputs carry no count of venue-listed game events",
   "refusal_total": 0,
   "refusals": {},
@@ -10,6 +10,93 @@
    {
     "enabled": true,
     "listed": 2,
+    "qualified": {
+     "FAIL": 2,
+     "PASS": 0
+    },
+    "qualified_served": {
+     "FAIL": 2,
+     "PASS": 0
+    },
+    "scored_games": {
+     "A": 2,
+     "B": 0,
+     "B_lag": 2,
+     "C": 0,
+     "D": 0
+    },
+    "scored_ticks": {
+     "A": 1238,
+     "B": 0,
+     "B_lag": 1109,
+     "C": 0,
+     "D": 0
+    },
+    "selected": 2,
+    "served": 2,
+    "sport": "mlb"
+   },
+   {
+    "enabled": true,
+    "listed": 5,
+    "qualified": {
+     "FAIL": 5,
+     "PASS": 0
+    },
+    "qualified_served": {
+     "FAIL": 2,
+     "PASS": 0
+    },
+    "scored_games": {
+     "A": 0,
+     "B": 0,
+     "B_lag": 0,
+     "C": 0,
+     "D": 0
+    },
+    "scored_ticks": {
+     "A": 0,
+     "B": 0,
+     "B_lag": 0,
+     "C": 0,
+     "D": 0
+    },
+    "selected": 5,
+    "served": 2,
+    "sport": "nba"
+   },
+   {
+    "enabled": true,
+    "listed": 2,
+    "qualified": {
+     "FAIL": 2,
+     "PASS": 0
+    },
+    "qualified_served": {
+     "FAIL": 2,
+     "PASS": 0
+    },
+    "scored_games": {
+     "A": 0,
+     "B": 0,
+     "B_lag": 0,
+     "C": 0,
+     "D": 0
+    },
+    "scored_ticks": {
+     "A": 0,
+     "B": 0,
+     "B_lag": 0,
+     "C": 0,
+     "D": 0
+    },
+    "selected": 2,
+    "served": 2,
+    "sport": "ncaaf"
+   },
+   {
+    "enabled": true,
+    "listed": 1,
     "qualified": {
      "FAIL": 1,
      "PASS": 0
@@ -26,135 +113,48 @@
      "D": 0
     },
     "scored_ticks": {
-     "A": 1797,
+     "A": 1087,
      "B": 0,
-     "B_lag": 1797,
+     "B_lag": 1087,
      "C": 0,
      "D": 0
     },
     "selected": 1,
     "served": 1,
-    "sport": "mlb"
-   },
-   {
-    "enabled": true,
-    "listed": 5,
-    "qualified": {
-     "FAIL": 3,
-     "PASS": 0
-    },
-    "qualified_served": {
-     "FAIL": 3,
-     "PASS": 0
-    },
-    "scored_games": {
-     "A": 3,
-     "B": 0,
-     "B_lag": 3,
-     "C": 0,
-     "D": 0
-    },
-    "scored_ticks": {
-     "A": 4874,
-     "B": 0,
-     "B_lag": 4874,
-     "C": 0,
-     "D": 0
-    },
-    "selected": 3,
-    "served": 3,
-    "sport": "nba"
-   },
-   {
-    "enabled": true,
-    "listed": 0,
-    "qualified": {
-     "FAIL": 0,
-     "PASS": 0
-    },
-    "qualified_served": {
-     "FAIL": 0,
-     "PASS": 0
-    },
-    "scored_games": {
-     "A": 0,
-     "B": 0,
-     "B_lag": 0,
-     "C": 0,
-     "D": 0
-    },
-    "scored_ticks": {
-     "A": 0,
-     "B": 0,
-     "B_lag": 0,
-     "C": 0,
-     "D": 0
-    },
-    "selected": 0,
-    "served": 0,
-    "sport": "ncaaf"
-   },
-   {
-    "enabled": true,
-    "listed": 1,
-    "qualified": {
-     "FAIL": 0,
-     "PASS": 0
-    },
-    "qualified_served": {
-     "FAIL": 0,
-     "PASS": 0
-    },
-    "scored_games": {
-     "A": 0,
-     "B": 0,
-     "B_lag": 0,
-     "C": 0,
-     "D": 0
-    },
-    "scored_ticks": {
-     "A": 0,
-     "B": 0,
-     "B_lag": 0,
-     "C": 0,
-     "D": 0
-    },
-    "selected": 0,
-    "served": 0,
     "sport": "nfl"
    },
    {
     "enabled": true,
     "listed": 4,
     "qualified": {
-     "FAIL": 4,
-     "PASS": 0
-    },
-    "qualified_served": {
      "FAIL": 3,
      "PASS": 0
     },
+    "qualified_served": {
+     "FAIL": 2,
+     "PASS": 0
+    },
     "scored_games": {
-     "A": 3,
+     "A": 2,
      "B": 0,
-     "B_lag": 3,
+     "B_lag": 2,
      "C": 0,
      "D": 0
     },
     "scored_ticks": {
-     "A": 3953,
+     "A": 461,
      "B": 0,
-     "B_lag": 3863,
+     "B_lag": 365,
      "C": 0,
      "D": 0
     },
-    "selected": 4,
-    "served": 3,
+    "selected": 3,
+    "served": 2,
     "sport": "soccer"
    }
   ]
  },
- "date": "2026-10-12",
+ "date": "2026-10-16",
  "execution": {
   "exec_quality": {
    "census": {
@@ -212,86 +212,101 @@
   },
   "fill_realism": {
    "by_fill_basis": {
-    "through": 105,
-    "touch_queue": 11
+    "through": 54,
+    "touch_queue": 12
    },
    "by_side": {
-    "no": 80,
-    "yes": 36
+    "no": 39,
+    "yes": 27
    },
-   "date": "2026-10-12",
-   "fills_ttl30": 111,
-   "fills_ttl5": 35,
+   "date": "2026-10-16",
+   "fills_ttl30": 61,
+   "fills_ttl5": 24,
    "grid_table": [
     {
-     "fills_credited": 116,
-     "quotes_placed": 34542,
+     "fills_credited": 66,
+     "quotes_placed": 6366,
      "ttl_s": "30",
      "units": "1"
     },
     {
-     "fills_credited": 115,
-     "quotes_placed": 34542,
+     "fills_credited": 64,
+     "quotes_placed": 6366,
      "ttl_s": "30",
      "units": "2"
     },
     {
-     "fills_credited": 112,
-     "quotes_placed": 34542,
+     "fills_credited": 62,
+     "quotes_placed": 6366,
      "ttl_s": "30",
      "units": "4"
     },
     {
-     "fills_credited": 111,
-     "quotes_placed": 34542,
+     "fills_credited": 61,
+     "quotes_placed": 6366,
      "ttl_s": "30",
      "units": "8"
     },
     {
-     "fills_credited": 37,
-     "quotes_placed": 34542,
+     "fills_credited": 25,
+     "quotes_placed": 6366,
      "ttl_s": "5",
      "units": "1"
     },
     {
-     "fills_credited": 36,
-     "quotes_placed": 34542,
+     "fills_credited": 25,
+     "quotes_placed": 6366,
      "ttl_s": "5",
      "units": "2"
     },
     {
-     "fills_credited": 35,
-     "quotes_placed": 34542,
+     "fills_credited": 25,
+     "quotes_placed": 6366,
      "ttl_s": "5",
      "units": "4"
     },
     {
-     "fills_credited": 35,
-     "quotes_placed": 34542,
+     "fills_credited": 24,
+     "quotes_placed": 6366,
      "ttl_s": "5",
      "units": "8"
     }
    ],
    "markout_cents_by_horizon_s": {
     "120": {
-     "mean": 0.65,
-     "n": 27
+     "mean": 7.75,
+     "n": 6
     },
     "30": {
-     "mean": 0.14,
-     "n": 28
+     "mean": 1.14,
+     "n": 7
     },
     "300": {
-     "mean": -2.47,
-     "n": 37
+     "mean": 0.45,
+     "n": 21
     }
    },
-   "quote_life_expiry": 3058,
-   "quotes_placed": 34542,
-   "source": "docs/evidence/forward/fill_realism/2026-10-12.json"
+   "quote_life_expiry": 1002,
+   "quotes_placed": 6366,
+   "source": "docs/evidence/forward/fill_realism/2026-10-16.json"
   },
   "latency": {
    "pooled": [
+    {
+     "book_moved_first_share": 0.5255,
+     "feed": "statsapi_rest",
+     "first_mid_change_minus_event_s": {
+      "n": 314,
+      "p10": 1.5,
+      "p50": 14.5,
+      "p90": 103.0,
+      "p95": 159.5,
+      "p99": 239.5
+     },
+     "flagged_games": 0,
+     "games": 1,
+     "sport": "mlb"
+    },
     {
      "book_moved_first_share": null,
      "feed": "espn_scoreboard",
@@ -305,123 +320,138 @@
       "reason": "NO_EVENTS"
      },
      "flagged_games": 0,
-     "games": 1,
+     "games": 2,
      "sport": "nba"
     },
     {
-     "book_moved_first_share": 0.8085,
+     "book_moved_first_share": 0.8261,
      "feed": "espn_scoreboard",
      "first_mid_change_minus_event_s": {
-      "n": 47,
-      "p10": 1.0,
-      "p50": 6.0,
-      "p90": 61.5,
-      "p95": 241.0,
-      "p99": 287.0
+      "n": 46,
+      "p10": 4.0,
+      "p50": 7.0,
+      "p90": 54.0,
+      "p95": 88.0,
+      "p99": 264.0
      },
-     "flagged_games": 0,
+     "flagged_games": 1,
      "games": 1,
-     "sport": "ncaaf"
+     "sport": "nfl"
     }
    ],
-   "source": "docs/evidence/forward/latency/2026-10-10_2026-10-10_latency_ledger.json"
+   "source": "docs/evidence/forward/latency/2026-10-16_2026-10-16_latency_ledger.json"
   }
  },
- "generated_at_utc": "2026-10-13T21:52:05Z",
+ "generated_at_utc": "2026-10-20T14:46:02Z",
  "header": "PAPER DESK -- paper only, simulated maker quotes on the recorded Kalshi tape; not a verdict",
  "health": {
   "desk_status": {
    "capture:books": {
-    "decision": "capture_present",
-    "reason": "supervisor_found",
+    "decision": "capture_started",
+    "reason": "wmi_created",
     "subject": null,
-    "ts": "2026-10-13T21:26:30.996728Z"
+    "ts": "2026-10-20T14:37:28.801199Z"
    },
    "capture:polymarket": {
-    "decision": "capture_present",
-    "reason": "supervisor_found",
+    "decision": "capture_started",
+    "reason": "wmi_created",
     "subject": null,
-    "ts": "2026-10-13T21:26:30.996728Z"
+    "ts": "2026-10-20T14:37:28.801199Z"
    },
    "capture:state2": {
-    "decision": "capture_present",
-    "reason": "supervisor_found",
+    "decision": "capture_started",
+    "reason": "wmi_created",
     "subject": null,
-    "ts": "2026-10-13T21:26:30.996728Z"
+    "ts": "2026-10-20T14:37:28.801199Z"
    },
    "census": {
-    "decision": "census_not_due",
-    "reason": "observation_window_open",
-    "subject": "2026-10-12",
-    "ts": "2026-10-13T21:26:30.996728Z"
+    "decision": "census_complete",
+    "reason": "validated_pair",
+    "subject": "2026-10-16",
+    "ts": "2026-10-20T14:37:28.801199Z"
    },
    "heartbeat:books_root": {
-    "decision": "ran",
-    "reason": "due",
+    "decision": "degraded",
+    "reason": "watchdog_status",
     "subject": null,
-    "ts": "2026-10-13T21:26:30.996728Z"
+    "ts": "2026-10-20T14:37:28.801199Z"
    },
    "heartbeat:state_root": {
     "decision": "ran",
     "reason": "due",
     "subject": null,
-    "ts": "2026-10-13T21:26:30.996728Z"
+    "ts": "2026-10-20T14:37:28.801199Z"
+   },
+   "heartbeat_attention": {
+    "decision": "degraded",
+    "reason": "watchdog_status",
+    "subject": null,
+    "ts": "2026-10-20T14:37:28.801199Z"
    },
    "lock": {
     "decision": "lock_acquired",
     "reason": "lock_acquired",
     "subject": null,
-    "ts": "2026-10-13T21:26:30.996728Z"
+    "ts": "2026-10-20T14:37:28.801199Z"
    },
    "night": {
     "decision": "night_skipped",
     "reason": "exists_one_attempt_or_not_due",
-    "subject": "2026-10-12",
-    "ts": "2026-10-13T21:26:30.996728Z"
+    "subject": "2026-10-19",
+    "ts": "2026-10-20T00:26:30.772941Z"
    },
    "night_attention": {
     "decision": "night_skipped_no_schedule",
     "reason": "served_schedule_absent",
-    "subject": "2026-10-11",
-    "ts": "2026-10-13T00:26:30.374651Z"
+    "subject": "2026-10-18",
+    "ts": "2026-10-20T00:26:30.772941Z"
    },
    "schedule": {
-    "decision": "schedule_exists",
-    "reason": "five_artifacts_and_pointer_verified",
-    "subject": "2026-10-14",
-    "ts": "2026-10-13T21:26:30.996728Z"
+    "decision": "producer_stopped",
+    "reason": "ongoing_low_ram",
+    "subject": "2026-10-21",
+    "ts": "2026-10-20T14:37:28.801199Z"
    },
    "schedule_attention": {
-    "decision": "schedule_invalid",
-    "reason": "owner_intervention_required",
-    "subject": "2026-10-10",
-    "ts": "2026-10-10T01:47:48.600661Z"
+    "decision": "producer_stopped",
+    "reason": "ongoing_low_ram",
+    "subject": "2026-10-21",
+    "ts": "2026-10-20T14:37:28.801199Z"
    },
    "tick": {
-    "decision": "tick_ok",
-    "reason": "complete",
+    "decision": "refused",
+    "reason": "step_refusals",
     "subject": null,
-    "ts": "2026-10-13T21:26:30.996728Z"
+    "ts": "2026-10-20T14:37:28.801199Z"
+   },
+   "tick_attention": {
+    "decision": "refused",
+    "reason": "step_refusals",
+    "subject": null,
+    "ts": "2026-10-20T14:37:28.801199Z"
    }
   },
   "issues": {
    "by_status": {
-    "closed": 107,
-    "open": 26
+    "closed": 131,
+    "closed_pending_landing": 1,
+    "open": 40
    },
-   "open": 26,
+   "open": 41,
    "open_by_kind": {
-    "night_partial": 10,
-    "scan_input_unreadable": 1,
-    "schedule_missing": 1,
-    "step_killed": 13,
-    "step_refusal_key": 1
+    "night_missing": 1,
+    "night_partial": 12,
+    "scan_input_unreadable": 3,
+    "schedule_missing": 3,
+    "step_killed": 15,
+    "step_refusal_key": 5,
+    "tick_refused": 2
    },
    "open_by_severity": {
-    "P1": 24,
-    "P2": 2
+    "P1": 32,
+    "P2": 9
    },
-   "total": 133
+   "total": 172
   },
   "nights": [
    {
@@ -1298,152 +1328,179 @@
       "wall_s": 1638.8
      }
     ]
+   },
+   {
+    "date": "2026-10-13",
+    "reasons": [
+     "step_deadline_exceeded"
+    ],
+    "status": "PARTIAL",
+    "steps": [
+     {
+      "exit_code": 0,
+      "name": "qualification",
+      "peak_mb": 474,
+      "reason": null,
+      "step_status": "RAN",
+      "wall_s": 357.5
+     },
+     {
+      "exit_code": 0,
+      "name": "fill_realism",
+      "peak_mb": 344,
+      "reason": null,
+      "step_status": "RAN",
+      "wall_s": 224.7
+     },
+     {
+      "exit_code": 3,
+      "name": "week",
+      "peak_mb": 19,
+      "reason": null,
+      "step_status": "RAN",
+      "wall_s": 0.5
+     },
+     {
+      "exit_code": 15,
+      "name": "scoreboard",
+      "peak_mb": 343,
+      "reason": "step_deadline_exceeded",
+      "step_status": "KILLED",
+      "wall_s": 900.5
+     },
+     {
+      "exit_code": 0,
+      "name": "history",
+      "peak_mb": 133,
+      "reason": null,
+      "step_status": "RAN",
+      "wall_s": 34.0
+     },
+     {
+      "exit_code": 0,
+      "name": "e",
+      "peak_mb": 336,
+      "reason": null,
+      "step_status": "RAN",
+      "wall_s": 1184.2
+     }
+    ]
+   },
+   {
+    "date": "2026-10-14",
+    "reasons": [
+     "step_deadline_exceeded"
+    ],
+    "status": "PARTIAL",
+    "steps": [
+     {
+      "exit_code": 0,
+      "name": "qualification",
+      "peak_mb": 555,
+      "reason": null,
+      "step_status": "RAN",
+      "wall_s": 205.5
+     },
+     {
+      "exit_code": 0,
+      "name": "fill_realism",
+      "peak_mb": 319,
+      "reason": null,
+      "step_status": "RAN",
+      "wall_s": 102.0
+     },
+     {
+      "exit_code": 3,
+      "name": "week",
+      "peak_mb": 19,
+      "reason": null,
+      "step_status": "RAN",
+      "wall_s": 0.5
+     },
+     {
+      "exit_code": 15,
+      "name": "scoreboard",
+      "peak_mb": 369,
+      "reason": "step_deadline_exceeded",
+      "step_status": "KILLED",
+      "wall_s": 900.2
+     },
+     {
+      "exit_code": 0,
+      "name": "history",
+      "peak_mb": 113,
+      "reason": null,
+      "step_status": "RAN",
+      "wall_s": 5.6
+     },
+     {
+      "exit_code": 0,
+      "name": "e",
+      "peak_mb": 247,
+      "reason": null,
+      "step_status": "RAN",
+      "wall_s": 570.6
+     }
+    ]
+   },
+   {
+    "date": "2026-10-16",
+    "reasons": [],
+    "status": "COMPLETE",
+    "steps": [
+     {
+      "exit_code": 0,
+      "name": "qualification",
+      "peak_mb": 428,
+      "reason": null,
+      "step_status": "RAN",
+      "wall_s": 272.6
+     },
+     {
+      "exit_code": 0,
+      "name": "fill_realism",
+      "peak_mb": 352,
+      "reason": null,
+      "step_status": "RAN",
+      "wall_s": 233.4
+     },
+     {
+      "exit_code": 3,
+      "name": "week",
+      "peak_mb": 19,
+      "reason": null,
+      "step_status": "RAN",
+      "wall_s": 0.5
+     },
+     {
+      "exit_code": 0,
+      "name": "scoreboard",
+      "peak_mb": 136,
+      "reason": null,
+      "step_status": "RAN",
+      "wall_s": 25.7
+     },
+     {
+      "exit_code": 0,
+      "name": "history",
+      "peak_mb": 149,
+      "reason": null,
+      "step_status": "RAN",
+      "wall_s": 163.9
+     },
+     {
+      "exit_code": 0,
+      "name": "e",
+      "peak_mb": 312,
+      "reason": null,
+      "step_status": "RAN",
+      "wall_s": 773.4
+     }
+    ]
    }
   ]
  },
- "ingame": {
-  "arms": {
-   "mid": {
-    "fills": {
-     "through": {
-      "filled_quotes": 11,
-      "n": 17,
-      "qty": "11.00"
-     },
-     "touch_measured": 0,
-     "touch_queue_bound": {
-      "filled_quotes": 15,
-      "n": 17,
-      "qty": "15.00"
-     }
-    },
-    "markout_through": {
-     "300": {
-      "mean_prob_points": 0.0017,
-      "n": 9
-     },
-     "60": {
-      "mean_prob_points": -0.0055,
-      "n": 10
-     }
-    },
-    "n_games": 1,
-    "n_intervals": {
-     "no": 101,
-     "yes": 101
-    },
-    "n_rows": 558,
-    "queue_unknown": 197,
-    "quote_hours": 0.7949,
-    "verdict": "INSUFFICIENT"
-   },
-   "venue_prior_state_blend": {
-    "fills": {
-     "through": {
-      "filled_quotes": 0,
-      "n": 0,
-      "qty": "0"
-     },
-     "touch_measured": 0,
-     "touch_queue_bound": {
-      "filled_quotes": 0,
-      "n": 0,
-      "qty": "0"
-     }
-    },
-    "markout_through": {
-     "300": {
-      "mean_prob_points": null,
-      "n": 0
-     },
-     "60": {
-      "mean_prob_points": null,
-      "n": 0
-     }
-    },
-    "n_games": 0,
-    "n_intervals": {
-     "no": 0,
-     "yes": 0
-    },
-    "n_rows": 558,
-    "queue_unknown": 0,
-    "quote_hours": 0.0,
-    "verdict": "INSUFFICIENT"
-   }
-  },
-  "assumptions": {
-   "cancel_latency_s": "1",
-   "fee_schedule_version": "venue_fees:kalshi-maker:2026-09-01:0.0175",
-   "horizons_s": [
-    60,
-    300
-   ],
-   "inventory_policy": "independent_intent_zero",
-   "margin_s": "1800",
-   "max_wait_s": 30,
-   "ownership": "decision_instant_utc_day",
-   "queue_from_snapshot": "omitted_no_per_order_age_cap_in_landed_simulator",
-   "queue_passes": [
-    "queue_unknown_default",
-    "queue_ahead_1"
-   ],
-   "queue_priority_requote": "not_modelled",
-   "replay_threshold_s": 60,
-   "start_ownership": "superseded_by_ownership",
-   "submit_latency_s": "2",
-   "submit_rule": "live_emitted_clock_replay_decision_clock",
-   "time_base": "ns_after_2026-10-12T00:00:00Z"
-  },
-  "date": "2026-10-12",
-  "gap_s": 0.0,
-  "incomplete_tickers": 1,
-  "reason": "ticker_trade_incomplete",
-  "receipt_lag_s": {
-   "max": 9838.9,
-   "n": 4535,
-   "p50": 32.3,
-   "p90": null,
-   "p90_note": "the fills receipt carries median and max only"
-  },
-  "refusals": {
-   "books_prefiltered": 12467,
-   "duplicate_trade_identical": 0,
-   "mark_unstripped_refused:inconsistent_touch": 425
-  },
-  "section_refusals": {
-   "markout_refused:no_tick_in_window": 6,
-   "queue_unknown": 197
-  },
-  "sport_arms": {
-   "mlb": [
-    "mid",
-    "venue_prior_state_blend"
-   ],
-   "nba": [
-    "mid",
-    "scoreboard_b",
-    "scoreboard_c",
-    "nba_logistic_v1"
-   ],
-   "nfl": [
-    "mid",
-    "scoreboard_b",
-    "scoreboard_c"
-   ],
-   "soccer": [
-    "mid",
-    "scoreboard_b",
-    "scoreboard_c"
-   ],
-   "tennis": [
-    "mid",
-    "scoreboard_b"
-   ]
-  },
-  "status": "PROVISIONAL",
-  "unpaired_games": 1
- },
+ "ingame": null,
  "models": {
   "canonical_as_of": "2026-10-06",
   "canonical_source": "docs/evidence/CANONICAL_FIGURES.json",
@@ -1692,7 +1749,9 @@
    "D": "C restricted to ticks where the pregame model is present; unavailable until a prior model row exists"
   }
  },
- "reader_unknowns": {},
+ "reader_unknowns": {
+  "live_shadow_missing": 1
+ },
  "record": {
   "ledger": [
    {
@@ -1857,11 +1916,44 @@
      "fills_ttl5": 35,
      "quote_life_expiry": 3058,
      "quotes_placed": 34542
+    },
+    "fills_rows": 61
+   },
+   {
+    "date": "2026-10-13",
+    "fill_realism": {
+     "fills_ttl30": 139,
+     "fills_ttl5": 36,
+     "quote_life_expiry": 2143,
+     "quotes_placed": 19232
+    },
+    "fills_rows": 87
+   },
+   {
+    "date": "2026-10-14",
+    "fill_realism": {
+     "fills_ttl30": 105,
+     "fills_ttl5": 22,
+     "quote_life_expiry": 3555,
+     "quotes_placed": 13341
+    }
+   },
+   {
+    "date": "2026-10-16",
+    "fill_realism": {
+     "fills_ttl30": 61,
+     "fills_ttl5": 24,
+     "quote_life_expiry": 1002,
+     "quotes_placed": 6366
     }
    }
   ]
  },
  "refusals": [
+  {
+   "reason": "docs/evidence/forward/live_shadow/2026-10-16.json missing or unreadable",
+   "section": "ingame"
+  },
   {
    "reason": "docs/evidence/forward/markouts/ holds no receipt",
    "section": "execution.markouts"
@@ -1938,6 +2030,66 @@
      }
     }
    },
+   "ncaaf": {
+    "mid": {
+     "brier": {
+      "mean": null,
+      "n_games": 0,
+      "n_ticks": 0,
+      "verdict": "INSUFFICIENT"
+     },
+     "logloss": {
+      "mean": null,
+      "n_games": 0,
+      "n_ticks": 0,
+      "verdict": "INSUFFICIENT"
+     }
+    },
+    "outcome": {
+     "brier": {
+      "mean": null,
+      "n_games": 0,
+      "n_ticks": 0,
+      "verdict": "INSUFFICIENT"
+     },
+     "logloss": {
+      "mean": null,
+      "n_games": 0,
+      "n_ticks": 0,
+      "verdict": "INSUFFICIENT"
+     }
+    }
+   },
+   "nfl": {
+    "mid": {
+     "brier": {
+      "mean": null,
+      "n_games": 0,
+      "n_ticks": 0,
+      "verdict": "INSUFFICIENT"
+     },
+     "logloss": {
+      "mean": null,
+      "n_games": 0,
+      "n_ticks": 0,
+      "verdict": "INSUFFICIENT"
+     }
+    },
+    "outcome": {
+     "brier": {
+      "mean": null,
+      "n_games": 0,
+      "n_ticks": 0,
+      "verdict": "INSUFFICIENT"
+     },
+     "logloss": {
+      "mean": null,
+      "n_games": 0,
+      "n_ticks": 0,
+      "verdict": "INSUFFICIENT"
+     }
+    }
+   },
    "soccer": {
     "mid": {
      "brier": {
@@ -1969,34 +2121,34 @@
     }
    }
   },
-  "date": "2026-10-12",
-  "games": 7,
+  "date": "2026-10-16",
+  "games": 9,
   "reference_arm": "A",
   "refusal_counts": {
-   "future_records": 30285,
-   "mlb_inningstate_end": 131,
-   "mlb_inningstate_middle": 113,
-   "model_not_reconstructible:B": 10624,
-   "model_not_reconstructible:B_lag": 90,
-   "model_not_reconstructible:C": 10624,
-   "model_not_reconstructible:D": 10624,
-   "model_state_refused": 3674,
-   "served_games": 7,
-   "tick_refused:book_absent": 70,
-   "tick_refused:invalid_decimal": 469,
+   "mlb_inningstate_end": 101,
+   "mlb_inningstate_middle": 119,
+   "model_not_reconstructible:B": 2786,
+   "model_not_reconstructible:B_lag": 225,
+   "model_not_reconstructible:C": 2786,
+   "model_not_reconstructible:D": 2786,
+   "model_state_refused": 319,
+   "served_games": 9,
+   "shard_absent": 10,
+   "tick_refused:book_absent": 226,
+   "tick_refused:invalid_decimal": 3,
    "training_duplicate": 0,
-   "unsettled_games": 3
+   "unsettled_games": 7
   },
   "rows": [
    {
     "arm": "A",
-    "brier": 0.308,
+    "brier": null,
     "brier_minus_A": null,
-    "logloss": 0.8097,
+    "logloss": null,
     "logloss_minus_A": null,
-    "n_games": 1,
-    "n_ticks": 429,
-    "reason": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
     "segment": "pre-live",
     "sport": "mlb",
     "target": "outcome",
@@ -2046,96 +2198,96 @@
    },
    {
     "arm": "B_lag",
-    "brier": 0.308,
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "mlb",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C_minus_B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "mlb",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "A",
+    "brier": 0.0,
+    "brier_minus_A": null,
+    "logloss": 0.6931,
+    "logloss_minus_A": null,
+    "n_games": 1,
+    "n_ticks": 220,
+    "reason": null,
+    "segment": "pre-live",
+    "sport": "mlb",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "mlb",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "mlb",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "D",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "mlb",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B_lag",
+    "brier": 0.0,
     "brier_minus_A": 0.0,
-    "logloss": 0.8097,
+    "logloss": 0.6931,
     "logloss_minus_A": 0.0,
     "n_games": 1,
-    "n_ticks": 429,
-    "reason": null,
-    "segment": "pre-live",
-    "sport": "mlb",
-    "target": "outcome",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "C_minus_B",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
-    "segment": "pre-live",
-    "sport": "mlb",
-    "target": "outcome",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "A",
-    "brier": 0.0,
-    "brier_minus_A": null,
-    "logloss": 0.6871,
-    "logloss_minus_A": null,
-    "n_games": 1,
-    "n_ticks": 429,
-    "reason": null,
-    "segment": "pre-live",
-    "sport": "mlb",
-    "target": "mid",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "B",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
-    "segment": "pre-live",
-    "sport": "mlb",
-    "target": "mid",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "C",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
-    "segment": "pre-live",
-    "sport": "mlb",
-    "target": "mid",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "D",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
-    "segment": "pre-live",
-    "sport": "mlb",
-    "target": "mid",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "B_lag",
-    "brier": 0.0,
-    "brier_minus_A": 0.0,
-    "logloss": 0.6871,
-    "logloss_minus_A": 0.0,
-    "n_games": 1,
-    "n_ticks": 429,
+    "n_ticks": 173,
     "reason": null,
     "segment": "pre-live",
     "sport": "mlb",
@@ -2158,12 +2310,12 @@
    },
    {
     "arm": "A",
-    "brier": 0.3358,
+    "brier": 0.5484,
     "brier_minus_A": null,
-    "logloss": 0.8679,
+    "logloss": 1.4521,
     "logloss_minus_A": null,
     "n_games": 1,
-    "n_ticks": 639,
+    "n_ticks": 281,
     "reason": null,
     "segment": "early",
     "sport": "mlb",
@@ -2214,12 +2366,12 @@
    },
    {
     "arm": "B_lag",
-    "brier": 0.3356,
-    "brier_minus_A": -0.0002,
-    "logloss": 0.8676,
-    "logloss_minus_A": -0.0003,
+    "brier": 0.612,
+    "brier_minus_A": 0.0636,
+    "logloss": 1.6423,
+    "logloss_minus_A": 0.1902,
     "n_games": 1,
-    "n_ticks": 639,
+    "n_ticks": 199,
     "reason": null,
     "segment": "early",
     "sport": "mlb",
@@ -2244,10 +2396,10 @@
     "arm": "A",
     "brier": 0.0,
     "brier_minus_A": null,
-    "logloss": 0.677,
+    "logloss": 0.5423,
     "logloss_minus_A": null,
     "n_games": 1,
-    "n_ticks": 639,
+    "n_ticks": 281,
     "reason": null,
     "segment": "early",
     "sport": "mlb",
@@ -2293,510 +2445,6 @@
     "reason": "no_eligible_ticks",
     "segment": "early",
     "sport": "mlb",
-    "target": "mid",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "B_lag",
-    "brier": 0.0,
-    "brier_minus_A": 0.0,
-    "logloss": 0.6771,
-    "logloss_minus_A": 0.0001,
-    "n_games": 1,
-    "n_ticks": 639,
-    "reason": null,
-    "segment": "early",
-    "sport": "mlb",
-    "target": "mid",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "C_minus_B",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
-    "segment": "early",
-    "sport": "mlb",
-    "target": "mid",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "A",
-    "brier": 0.228,
-    "brier_minus_A": null,
-    "logloss": 0.6473,
-    "logloss_minus_A": null,
-    "n_games": 1,
-    "n_ticks": 420,
-    "reason": null,
-    "segment": "middle",
-    "sport": "mlb",
-    "target": "outcome",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "B",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
-    "segment": "middle",
-    "sport": "mlb",
-    "target": "outcome",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "C",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
-    "segment": "middle",
-    "sport": "mlb",
-    "target": "outcome",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "D",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
-    "segment": "middle",
-    "sport": "mlb",
-    "target": "outcome",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "B_lag",
-    "brier": 0.2945,
-    "brier_minus_A": 0.0665,
-    "logloss": 0.7831,
-    "logloss_minus_A": 0.1358,
-    "n_games": 1,
-    "n_ticks": 420,
-    "reason": null,
-    "segment": "middle",
-    "sport": "mlb",
-    "target": "outcome",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "C_minus_B",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
-    "segment": "middle",
-    "sport": "mlb",
-    "target": "outcome",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "A",
-    "brier": 0.0,
-    "brier_minus_A": null,
-    "logloss": 0.6704,
-    "logloss_minus_A": null,
-    "n_games": 1,
-    "n_ticks": 420,
-    "reason": null,
-    "segment": "middle",
-    "sport": "mlb",
-    "target": "mid",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "B",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
-    "segment": "middle",
-    "sport": "mlb",
-    "target": "mid",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "C",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
-    "segment": "middle",
-    "sport": "mlb",
-    "target": "mid",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "D",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
-    "segment": "middle",
-    "sport": "mlb",
-    "target": "mid",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "B_lag",
-    "brier": 0.0352,
-    "brier_minus_A": 0.0352,
-    "logloss": 0.7421,
-    "logloss_minus_A": 0.0717,
-    "n_games": 1,
-    "n_ticks": 420,
-    "reason": null,
-    "segment": "middle",
-    "sport": "mlb",
-    "target": "mid",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "C_minus_B",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
-    "segment": "middle",
-    "sport": "mlb",
-    "target": "mid",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "A",
-    "brier": 0.1957,
-    "brier_minus_A": null,
-    "logloss": 0.538,
-    "logloss_minus_A": null,
-    "n_games": 1,
-    "n_ticks": 309,
-    "reason": null,
-    "segment": "late",
-    "sport": "mlb",
-    "target": "outcome",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "B",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
-    "segment": "late",
-    "sport": "mlb",
-    "target": "outcome",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "C",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
-    "segment": "late",
-    "sport": "mlb",
-    "target": "outcome",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "D",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
-    "segment": "late",
-    "sport": "mlb",
-    "target": "outcome",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "B_lag",
-    "brier": 0.1747,
-    "brier_minus_A": -0.021,
-    "logloss": 0.5387,
-    "logloss_minus_A": 0.0007,
-    "n_games": 1,
-    "n_ticks": 309,
-    "reason": null,
-    "segment": "late",
-    "sport": "mlb",
-    "target": "outcome",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "C_minus_B",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
-    "segment": "late",
-    "sport": "mlb",
-    "target": "outcome",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "A",
-    "brier": 0.0,
-    "brier_minus_A": null,
-    "logloss": 0.5346,
-    "logloss_minus_A": null,
-    "n_games": 1,
-    "n_ticks": 309,
-    "reason": null,
-    "segment": "late",
-    "sport": "mlb",
-    "target": "mid",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "B",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
-    "segment": "late",
-    "sport": "mlb",
-    "target": "mid",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "C",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
-    "segment": "late",
-    "sport": "mlb",
-    "target": "mid",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "D",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
-    "segment": "late",
-    "sport": "mlb",
-    "target": "mid",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "B_lag",
-    "brier": 0.0881,
-    "brier_minus_A": 0.0881,
-    "logloss": 0.7437,
-    "logloss_minus_A": 0.2091,
-    "n_games": 1,
-    "n_ticks": 309,
-    "reason": null,
-    "segment": "late",
-    "sport": "mlb",
-    "target": "mid",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "C_minus_B",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
-    "segment": "late",
-    "sport": "mlb",
-    "target": "mid",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "A",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
-    "segment": "pre-live",
-    "sport": "nba",
-    "target": "outcome",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "B",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
-    "segment": "pre-live",
-    "sport": "nba",
-    "target": "outcome",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "C",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
-    "segment": "pre-live",
-    "sport": "nba",
-    "target": "outcome",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "D",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
-    "segment": "pre-live",
-    "sport": "nba",
-    "target": "outcome",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "B_lag",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
-    "segment": "pre-live",
-    "sport": "nba",
-    "target": "outcome",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "C_minus_B",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
-    "segment": "pre-live",
-    "sport": "nba",
-    "target": "outcome",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "A",
-    "brier": 0.0,
-    "brier_minus_A": null,
-    "logloss": 0.675,
-    "logloss_minus_A": null,
-    "n_games": 3,
-    "n_ticks": 3431,
-    "reason": null,
-    "segment": "pre-live",
-    "sport": "nba",
-    "target": "mid",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "B",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
-    "segment": "pre-live",
-    "sport": "nba",
-    "target": "mid",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "C",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
-    "segment": "pre-live",
-    "sport": "nba",
-    "target": "mid",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "D",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
-    "segment": "pre-live",
-    "sport": "nba",
     "target": "mid",
     "verdict": "INSUFFICIENT"
    },
@@ -2804,11 +2452,515 @@
     "arm": "B_lag",
     "brier": 0.0001,
     "brier_minus_A": 0.0001,
-    "logloss": 0.6752,
-    "logloss_minus_A": 0.0002,
-    "n_games": 3,
-    "n_ticks": 3431,
+    "logloss": 0.4933,
+    "logloss_minus_A": -0.049,
+    "n_games": 1,
+    "n_ticks": 199,
     "reason": null,
+    "segment": "early",
+    "sport": "mlb",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C_minus_B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "early",
+    "sport": "mlb",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "A",
+    "brier": 0.4545,
+    "brier_minus_A": null,
+    "logloss": 1.2074,
+    "logloss_minus_A": null,
+    "n_games": 1,
+    "n_ticks": 455,
+    "reason": null,
+    "segment": "middle",
+    "sport": "mlb",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "middle",
+    "sport": "mlb",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "middle",
+    "sport": "mlb",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "D",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "middle",
+    "sport": "mlb",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B_lag",
+    "brier": 0.4553,
+    "brier_minus_A": 0.0008,
+    "logloss": 1.2091,
+    "logloss_minus_A": 0.0017,
+    "n_games": 1,
+    "n_ticks": 455,
+    "reason": null,
+    "segment": "middle",
+    "sport": "mlb",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C_minus_B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "middle",
+    "sport": "mlb",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "A",
+    "brier": 0.0,
+    "brier_minus_A": null,
+    "logloss": 0.5698,
+    "logloss_minus_A": null,
+    "n_games": 1,
+    "n_ticks": 455,
+    "reason": null,
+    "segment": "middle",
+    "sport": "mlb",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "middle",
+    "sport": "mlb",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "middle",
+    "sport": "mlb",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "D",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "middle",
+    "sport": "mlb",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B_lag",
+    "brier": 0.0002,
+    "brier_minus_A": 0.0002,
+    "logloss": 0.5702,
+    "logloss_minus_A": 0.0004,
+    "n_games": 1,
+    "n_ticks": 455,
+    "reason": null,
+    "segment": "middle",
+    "sport": "mlb",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C_minus_B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "middle",
+    "sport": "mlb",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "A",
+    "brier": 0.0752,
+    "brier_minus_A": null,
+    "logloss": 0.2956,
+    "logloss_minus_A": null,
+    "n_games": 1,
+    "n_ticks": 282,
+    "reason": null,
+    "segment": "late",
+    "sport": "mlb",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "late",
+    "sport": "mlb",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "late",
+    "sport": "mlb",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "D",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "late",
+    "sport": "mlb",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B_lag",
+    "brier": 0.0757,
+    "brier_minus_A": 0.0005,
+    "logloss": 0.2968,
+    "logloss_minus_A": 0.0012,
+    "n_games": 1,
+    "n_ticks": 282,
+    "reason": null,
+    "segment": "late",
+    "sport": "mlb",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C_minus_B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "late",
+    "sport": "mlb",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "A",
+    "brier": 0.0,
+    "brier_minus_A": null,
+    "logloss": 0.5141,
+    "logloss_minus_A": null,
+    "n_games": 1,
+    "n_ticks": 282,
+    "reason": null,
+    "segment": "late",
+    "sport": "mlb",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "late",
+    "sport": "mlb",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "late",
+    "sport": "mlb",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "D",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "late",
+    "sport": "mlb",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B_lag",
+    "brier": 0.0003,
+    "brier_minus_A": 0.0003,
+    "logloss": 0.5149,
+    "logloss_minus_A": 0.0008,
+    "n_games": 1,
+    "n_ticks": 282,
+    "reason": null,
+    "segment": "late",
+    "sport": "mlb",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C_minus_B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "late",
+    "sport": "mlb",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "A",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "nba",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "nba",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "nba",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "D",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "nba",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B_lag",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "nba",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C_minus_B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "nba",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "A",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "nba",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "nba",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "nba",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "D",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "nba",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B_lag",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
     "segment": "pre-live",
     "sport": "nba",
     "target": "mid",
@@ -2914,13 +3066,13 @@
    },
    {
     "arm": "A",
-    "brier": 0.0,
+    "brier": null,
     "brier_minus_A": null,
-    "logloss": 0.6754,
+    "logloss": null,
     "logloss_minus_A": null,
-    "n_games": 3,
-    "n_ticks": 581,
-    "reason": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
     "segment": "early",
     "sport": "nba",
     "target": "mid",
@@ -2965,6 +3117,1350 @@
     "reason": "no_eligible_ticks",
     "segment": "early",
     "sport": "nba",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B_lag",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "early",
+    "sport": "nba",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C_minus_B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "early",
+    "sport": "nba",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "A",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "middle",
+    "sport": "nba",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "middle",
+    "sport": "nba",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "middle",
+    "sport": "nba",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "D",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "middle",
+    "sport": "nba",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B_lag",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "middle",
+    "sport": "nba",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C_minus_B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "middle",
+    "sport": "nba",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "A",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "middle",
+    "sport": "nba",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "middle",
+    "sport": "nba",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "middle",
+    "sport": "nba",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "D",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "middle",
+    "sport": "nba",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B_lag",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "middle",
+    "sport": "nba",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C_minus_B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "middle",
+    "sport": "nba",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "A",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "late",
+    "sport": "nba",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "late",
+    "sport": "nba",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "late",
+    "sport": "nba",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "D",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "late",
+    "sport": "nba",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B_lag",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "late",
+    "sport": "nba",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C_minus_B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "late",
+    "sport": "nba",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "A",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "late",
+    "sport": "nba",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "late",
+    "sport": "nba",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "late",
+    "sport": "nba",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "D",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "late",
+    "sport": "nba",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B_lag",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "late",
+    "sport": "nba",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C_minus_B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "late",
+    "sport": "nba",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "A",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "ncaaf",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "ncaaf",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "ncaaf",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "D",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "ncaaf",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B_lag",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "ncaaf",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C_minus_B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "ncaaf",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "A",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "ncaaf",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "ncaaf",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "ncaaf",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "D",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "ncaaf",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B_lag",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "ncaaf",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C_minus_B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "ncaaf",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "A",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "early",
+    "sport": "ncaaf",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "early",
+    "sport": "ncaaf",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "early",
+    "sport": "ncaaf",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "D",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "early",
+    "sport": "ncaaf",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B_lag",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "early",
+    "sport": "ncaaf",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C_minus_B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "early",
+    "sport": "ncaaf",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "A",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "early",
+    "sport": "ncaaf",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "early",
+    "sport": "ncaaf",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "early",
+    "sport": "ncaaf",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "D",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "early",
+    "sport": "ncaaf",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B_lag",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "early",
+    "sport": "ncaaf",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C_minus_B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "early",
+    "sport": "ncaaf",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "A",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "middle",
+    "sport": "ncaaf",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "middle",
+    "sport": "ncaaf",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "middle",
+    "sport": "ncaaf",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "D",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "middle",
+    "sport": "ncaaf",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B_lag",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "middle",
+    "sport": "ncaaf",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C_minus_B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "middle",
+    "sport": "ncaaf",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "A",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "middle",
+    "sport": "ncaaf",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "middle",
+    "sport": "ncaaf",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "middle",
+    "sport": "ncaaf",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "D",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "middle",
+    "sport": "ncaaf",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B_lag",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "middle",
+    "sport": "ncaaf",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C_minus_B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "middle",
+    "sport": "ncaaf",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "A",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "late",
+    "sport": "ncaaf",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "late",
+    "sport": "ncaaf",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "late",
+    "sport": "ncaaf",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "D",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "late",
+    "sport": "ncaaf",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B_lag",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "late",
+    "sport": "ncaaf",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C_minus_B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "late",
+    "sport": "ncaaf",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "A",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "late",
+    "sport": "ncaaf",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "late",
+    "sport": "ncaaf",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "late",
+    "sport": "ncaaf",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "D",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "late",
+    "sport": "ncaaf",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B_lag",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "late",
+    "sport": "ncaaf",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C_minus_B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "late",
+    "sport": "ncaaf",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "A",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "nfl",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "nfl",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "nfl",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "D",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "nfl",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B_lag",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "nfl",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C_minus_B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "nfl",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "A",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "nfl",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "nfl",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "nfl",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "D",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "nfl",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B_lag",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "nfl",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C_minus_B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "nfl",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "A",
+    "brier": 0.2975,
+    "brier_minus_A": null,
+    "logloss": 0.7899,
+    "logloss_minus_A": null,
+    "n_games": 1,
+    "n_ticks": 185,
+    "reason": null,
+    "segment": "early",
+    "sport": "nfl",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "early",
+    "sport": "nfl",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "early",
+    "sport": "nfl",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "D",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "early",
+    "sport": "nfl",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B_lag",
+    "brier": 0.2981,
+    "brier_minus_A": 0.0006,
+    "logloss": 0.791,
+    "logloss_minus_A": 0.0011,
+    "n_games": 1,
+    "n_ticks": 185,
+    "reason": null,
+    "segment": "early",
+    "sport": "nfl",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C_minus_B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "early",
+    "sport": "nfl",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "A",
+    "brier": 0.0,
+    "brier_minus_A": null,
+    "logloss": 0.6816,
+    "logloss_minus_A": null,
+    "n_games": 1,
+    "n_ticks": 185,
+    "reason": null,
+    "segment": "early",
+    "sport": "nfl",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "early",
+    "sport": "nfl",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "early",
+    "sport": "nfl",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "D",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "early",
+    "sport": "nfl",
     "target": "mid",
     "verdict": "INSUFFICIENT"
    },
@@ -2972,13 +4468,13 @@
     "arm": "B_lag",
     "brier": 0.0,
     "brier_minus_A": 0.0,
-    "logloss": 0.6755,
+    "logloss": 0.6817,
     "logloss_minus_A": 0.0001,
-    "n_games": 3,
-    "n_ticks": 581,
+    "n_games": 1,
+    "n_ticks": 185,
     "reason": null,
     "segment": "early",
-    "sport": "nba",
+    "sport": "nfl",
     "target": "mid",
     "verdict": "INSUFFICIENT"
    },
@@ -2992,21 +4488,21 @@
     "n_ticks": 0,
     "reason": "no_eligible_ticks",
     "segment": "early",
-    "sport": "nba",
+    "sport": "nfl",
     "target": "mid",
     "verdict": "INSUFFICIENT"
    },
    {
     "arm": "A",
-    "brier": null,
+    "brier": 0.0707,
     "brier_minus_A": null,
-    "logloss": null,
+    "logloss": 0.305,
     "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
+    "n_games": 1,
+    "n_ticks": 452,
+    "reason": null,
     "segment": "middle",
-    "sport": "nba",
+    "sport": "nfl",
     "target": "outcome",
     "verdict": "INSUFFICIENT"
    },
@@ -3020,7 +4516,7 @@
     "n_ticks": 0,
     "reason": "no_eligible_ticks",
     "segment": "middle",
-    "sport": "nba",
+    "sport": "nfl",
     "target": "outcome",
     "verdict": "INSUFFICIENT"
    },
@@ -3034,7 +4530,7 @@
     "n_ticks": 0,
     "reason": "no_eligible_ticks",
     "segment": "middle",
-    "sport": "nba",
+    "sport": "nfl",
     "target": "outcome",
     "verdict": "INSUFFICIENT"
    },
@@ -3048,21 +4544,21 @@
     "n_ticks": 0,
     "reason": "no_eligible_ticks",
     "segment": "middle",
-    "sport": "nba",
+    "sport": "nfl",
     "target": "outcome",
     "verdict": "INSUFFICIENT"
    },
    {
     "arm": "B_lag",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
+    "brier": 0.0757,
+    "brier_minus_A": 0.005,
+    "logloss": 0.3188,
+    "logloss_minus_A": 0.0138,
+    "n_games": 1,
+    "n_ticks": 452,
+    "reason": null,
     "segment": "middle",
-    "sport": "nba",
+    "sport": "nfl",
     "target": "outcome",
     "verdict": "INSUFFICIENT"
    },
@@ -3076,7 +4572,7 @@
     "n_ticks": 0,
     "reason": "no_eligible_ticks",
     "segment": "middle",
-    "sport": "nba",
+    "sport": "nfl",
     "target": "outcome",
     "verdict": "INSUFFICIENT"
    },
@@ -3084,13 +4580,13 @@
     "arm": "A",
     "brier": 0.0,
     "brier_minus_A": null,
-    "logloss": 0.661,
+    "logloss": 0.5677,
     "logloss_minus_A": null,
-    "n_games": 3,
-    "n_ticks": 644,
+    "n_games": 1,
+    "n_ticks": 452,
     "reason": null,
     "segment": "middle",
-    "sport": "nba",
+    "sport": "nfl",
     "target": "mid",
     "verdict": "INSUFFICIENT"
    },
@@ -3104,7 +4600,7 @@
     "n_ticks": 0,
     "reason": "no_eligible_ticks",
     "segment": "middle",
-    "sport": "nba",
+    "sport": "nfl",
     "target": "mid",
     "verdict": "INSUFFICIENT"
    },
@@ -3118,7 +4614,7 @@
     "n_ticks": 0,
     "reason": "no_eligible_ticks",
     "segment": "middle",
-    "sport": "nba",
+    "sport": "nfl",
     "target": "mid",
     "verdict": "INSUFFICIENT"
    },
@@ -3132,21 +4628,21 @@
     "n_ticks": 0,
     "reason": "no_eligible_ticks",
     "segment": "middle",
-    "sport": "nba",
+    "sport": "nfl",
     "target": "mid",
     "verdict": "INSUFFICIENT"
    },
    {
     "arm": "B_lag",
-    "brier": 0.0035,
-    "brier_minus_A": 0.0035,
-    "logloss": 0.6685,
-    "logloss_minus_A": 0.0075,
-    "n_games": 3,
-    "n_ticks": 644,
+    "brier": 0.0003,
+    "brier_minus_A": 0.0003,
+    "logloss": 0.5685,
+    "logloss_minus_A": 0.0008,
+    "n_games": 1,
+    "n_ticks": 452,
     "reason": null,
     "segment": "middle",
-    "sport": "nba",
+    "sport": "nfl",
     "target": "mid",
     "verdict": "INSUFFICIENT"
    },
@@ -3160,21 +4656,21 @@
     "n_ticks": 0,
     "reason": "no_eligible_ticks",
     "segment": "middle",
-    "sport": "nba",
+    "sport": "nfl",
     "target": "mid",
     "verdict": "INSUFFICIENT"
    },
    {
     "arm": "A",
-    "brier": null,
+    "brier": 0.0601,
     "brier_minus_A": null,
-    "logloss": null,
+    "logloss": 0.2674,
     "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
+    "n_games": 1,
+    "n_ticks": 450,
+    "reason": null,
     "segment": "late",
-    "sport": "nba",
+    "sport": "nfl",
     "target": "outcome",
     "verdict": "INSUFFICIENT"
    },
@@ -3188,7 +4684,7 @@
     "n_ticks": 0,
     "reason": "no_eligible_ticks",
     "segment": "late",
-    "sport": "nba",
+    "sport": "nfl",
     "target": "outcome",
     "verdict": "INSUFFICIENT"
    },
@@ -3202,7 +4698,7 @@
     "n_ticks": 0,
     "reason": "no_eligible_ticks",
     "segment": "late",
-    "sport": "nba",
+    "sport": "nfl",
     "target": "outcome",
     "verdict": "INSUFFICIENT"
    },
@@ -3216,21 +4712,21 @@
     "n_ticks": 0,
     "reason": "no_eligible_ticks",
     "segment": "late",
-    "sport": "nba",
+    "sport": "nfl",
     "target": "outcome",
     "verdict": "INSUFFICIENT"
    },
    {
     "arm": "B_lag",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
+    "brier": 0.0489,
+    "brier_minus_A": -0.0112,
+    "logloss": 0.2494,
+    "logloss_minus_A": -0.018,
+    "n_games": 1,
+    "n_ticks": 450,
+    "reason": null,
     "segment": "late",
-    "sport": "nba",
+    "sport": "nfl",
     "target": "outcome",
     "verdict": "INSUFFICIENT"
    },
@@ -3244,7 +4740,7 @@
     "n_ticks": 0,
     "reason": "no_eligible_ticks",
     "segment": "late",
-    "sport": "nba",
+    "sport": "nfl",
     "target": "outcome",
     "verdict": "INSUFFICIENT"
    },
@@ -3252,13 +4748,181 @@
     "arm": "A",
     "brier": 0.0,
     "brier_minus_A": null,
-    "logloss": 0.6266,
+    "logloss": 0.5146,
+    "logloss_minus_A": null,
+    "n_games": 1,
+    "n_ticks": 450,
+    "reason": null,
+    "segment": "late",
+    "sport": "nfl",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "late",
+    "sport": "nfl",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "late",
+    "sport": "nfl",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "D",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "late",
+    "sport": "nfl",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B_lag",
+    "brier": 0.0105,
+    "brier_minus_A": 0.0105,
+    "logloss": 0.5408,
+    "logloss_minus_A": 0.0262,
+    "n_games": 1,
+    "n_ticks": 450,
+    "reason": null,
+    "segment": "late",
+    "sport": "nfl",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C_minus_B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "late",
+    "sport": "nfl",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "A",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "soccer",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "soccer",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "soccer",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "D",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "soccer",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "B_lag",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "soccer",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "C_minus_B",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "pre-live",
+    "sport": "soccer",
+    "target": "outcome",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "A",
+    "brier": 0.0,
+    "brier_minus_A": null,
+    "logloss": 0.6424,
     "logloss_minus_A": null,
     "n_games": 2,
-    "n_ticks": 218,
+    "n_ticks": 461,
     "reason": null,
-    "segment": "late",
-    "sport": "nba",
+    "segment": "pre-live",
+    "sport": "soccer",
     "target": "mid",
     "verdict": "INSUFFICIENT"
    },
@@ -3271,8 +4935,8 @@
     "n_games": 0,
     "n_ticks": 0,
     "reason": "no_eligible_ticks",
-    "segment": "late",
-    "sport": "nba",
+    "segment": "pre-live",
+    "sport": "soccer",
     "target": "mid",
     "verdict": "INSUFFICIENT"
    },
@@ -3285,8 +4949,8 @@
     "n_games": 0,
     "n_ticks": 0,
     "reason": "no_eligible_ticks",
-    "segment": "late",
-    "sport": "nba",
+    "segment": "pre-live",
+    "sport": "soccer",
     "target": "mid",
     "verdict": "INSUFFICIENT"
    },
@@ -3299,187 +4963,19 @@
     "n_games": 0,
     "n_ticks": 0,
     "reason": "no_eligible_ticks",
-    "segment": "late",
-    "sport": "nba",
+    "segment": "pre-live",
+    "sport": "soccer",
     "target": "mid",
     "verdict": "INSUFFICIENT"
    },
    {
     "arm": "B_lag",
-    "brier": 0.0083,
-    "brier_minus_A": 0.0083,
-    "logloss": 0.6446,
-    "logloss_minus_A": 0.018,
+    "brier": 0.0,
+    "brier_minus_A": 0.0,
+    "logloss": 0.6424,
+    "logloss_minus_A": 0.0,
     "n_games": 2,
-    "n_ticks": 218,
-    "reason": null,
-    "segment": "late",
-    "sport": "nba",
-    "target": "mid",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "C_minus_B",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
-    "segment": "late",
-    "sport": "nba",
-    "target": "mid",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "A",
-    "brier": 0.433,
-    "brier_minus_A": null,
-    "logloss": 1.0845,
-    "logloss_minus_A": null,
-    "n_games": 3,
-    "n_ticks": 1937,
-    "reason": null,
-    "segment": "pre-live",
-    "sport": "soccer",
-    "target": "outcome",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "B",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
-    "segment": "pre-live",
-    "sport": "soccer",
-    "target": "outcome",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "C",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
-    "segment": "pre-live",
-    "sport": "soccer",
-    "target": "outcome",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "D",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
-    "segment": "pre-live",
-    "sport": "soccer",
-    "target": "outcome",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "B_lag",
-    "brier": 0.4372,
-    "brier_minus_A": 0.0042,
-    "logloss": 1.0927,
-    "logloss_minus_A": 0.0082,
-    "n_games": 3,
-    "n_ticks": 1847,
-    "reason": null,
-    "segment": "pre-live",
-    "sport": "soccer",
-    "target": "outcome",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "C_minus_B",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
-    "segment": "pre-live",
-    "sport": "soccer",
-    "target": "outcome",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "A",
-    "brier": 0.0,
-    "brier_minus_A": null,
-    "logloss": 0.6253,
-    "logloss_minus_A": null,
-    "n_games": 3,
-    "n_ticks": 1937,
-    "reason": null,
-    "segment": "pre-live",
-    "sport": "soccer",
-    "target": "mid",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "B",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
-    "segment": "pre-live",
-    "sport": "soccer",
-    "target": "mid",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "C",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
-    "segment": "pre-live",
-    "sport": "soccer",
-    "target": "mid",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "D",
-    "brier": null,
-    "brier_minus_A": null,
-    "logloss": null,
-    "logloss_minus_A": null,
-    "n_games": 0,
-    "n_ticks": 0,
-    "reason": "no_eligible_ticks",
-    "segment": "pre-live",
-    "sport": "soccer",
-    "target": "mid",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "B_lag",
-    "brier": 0.0,
-    "brier_minus_A": 0.0,
-    "logloss": 0.6246,
-    "logloss_minus_A": -0.0007,
-    "n_games": 3,
-    "n_ticks": 1847,
+    "n_ticks": 365,
     "reason": null,
     "segment": "pre-live",
     "sport": "soccer",
@@ -3502,13 +4998,13 @@
    },
    {
     "arm": "A",
-    "brier": 0.2555,
+    "brier": null,
     "brier_minus_A": null,
-    "logloss": 0.6713,
+    "logloss": null,
     "logloss_minus_A": null,
-    "n_games": 3,
-    "n_ticks": 517,
-    "reason": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
     "segment": "early",
     "sport": "soccer",
     "target": "outcome",
@@ -3558,13 +5054,13 @@
    },
    {
     "arm": "B_lag",
-    "brier": 0.2555,
-    "brier_minus_A": 0.0,
-    "logloss": 0.6713,
-    "logloss_minus_A": 0.0,
-    "n_games": 3,
-    "n_ticks": 517,
-    "reason": null,
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
     "segment": "early",
     "sport": "soccer",
     "target": "outcome",
@@ -3586,13 +5082,13 @@
    },
    {
     "arm": "A",
-    "brier": 0.0,
+    "brier": null,
     "brier_minus_A": null,
-    "logloss": 0.5446,
+    "logloss": null,
     "logloss_minus_A": null,
-    "n_games": 3,
-    "n_ticks": 517,
-    "reason": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
     "segment": "early",
     "sport": "soccer",
     "target": "mid",
@@ -3642,20 +5138,6 @@
    },
    {
     "arm": "B_lag",
-    "brier": 0.0,
-    "brier_minus_A": 0.0,
-    "logloss": 0.5446,
-    "logloss_minus_A": 0.0,
-    "n_games": 3,
-    "n_ticks": 517,
-    "reason": null,
-    "segment": "early",
-    "sport": "soccer",
-    "target": "mid",
-    "verdict": "INSUFFICIENT"
-   },
-   {
-    "arm": "C_minus_B",
     "brier": null,
     "brier_minus_A": null,
     "logloss": null,
@@ -3669,14 +5151,28 @@
     "verdict": "INSUFFICIENT"
    },
    {
-    "arm": "A",
-    "brier": 0.2547,
+    "arm": "C_minus_B",
+    "brier": null,
     "brier_minus_A": null,
-    "logloss": 0.6678,
+    "logloss": null,
     "logloss_minus_A": null,
-    "n_games": 3,
-    "n_ticks": 863,
-    "reason": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
+    "segment": "early",
+    "sport": "soccer",
+    "target": "mid",
+    "verdict": "INSUFFICIENT"
+   },
+   {
+    "arm": "A",
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
     "segment": "middle",
     "sport": "soccer",
     "target": "outcome",
@@ -3726,13 +5222,13 @@
    },
    {
     "arm": "B_lag",
-    "brier": 0.2545,
-    "brier_minus_A": -0.0002,
-    "logloss": 0.6675,
-    "logloss_minus_A": -0.0003,
-    "n_games": 3,
-    "n_ticks": 863,
-    "reason": null,
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
     "segment": "middle",
     "sport": "soccer",
     "target": "outcome",
@@ -3754,13 +5250,13 @@
    },
    {
     "arm": "A",
-    "brier": 0.0,
+    "brier": null,
     "brier_minus_A": null,
-    "logloss": 0.5101,
+    "logloss": null,
     "logloss_minus_A": null,
-    "n_games": 3,
-    "n_ticks": 863,
-    "reason": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
     "segment": "middle",
     "sport": "soccer",
     "target": "mid",
@@ -3810,13 +5306,13 @@
    },
    {
     "arm": "B_lag",
-    "brier": 0.0,
-    "brier_minus_A": 0.0,
-    "logloss": 0.5102,
-    "logloss_minus_A": 0.0001,
-    "n_games": 3,
-    "n_ticks": 863,
-    "reason": null,
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
     "segment": "middle",
     "sport": "soccer",
     "target": "mid",
@@ -3838,13 +5334,13 @@
    },
    {
     "arm": "A",
-    "brier": 0.23,
+    "brier": null,
     "brier_minus_A": null,
-    "logloss": 0.6106,
+    "logloss": null,
     "logloss_minus_A": null,
-    "n_games": 3,
-    "n_ticks": 636,
-    "reason": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
     "segment": "late",
     "sport": "soccer",
     "target": "outcome",
@@ -3894,13 +5390,13 @@
    },
    {
     "arm": "B_lag",
-    "brier": 0.2664,
-    "brier_minus_A": 0.0364,
-    "logloss": 0.6951,
-    "logloss_minus_A": 0.0845,
-    "n_games": 3,
-    "n_ticks": 636,
-    "reason": null,
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
     "segment": "late",
     "sport": "soccer",
     "target": "outcome",
@@ -3922,13 +5418,13 @@
    },
    {
     "arm": "A",
-    "brier": 0.0,
+    "brier": null,
     "brier_minus_A": null,
-    "logloss": 0.4781,
+    "logloss": null,
     "logloss_minus_A": null,
-    "n_games": 3,
-    "n_ticks": 636,
-    "reason": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
     "segment": "late",
     "sport": "soccer",
     "target": "mid",
@@ -3978,13 +5474,13 @@
    },
    {
     "arm": "B_lag",
-    "brier": 0.0179,
-    "brier_minus_A": 0.0179,
-    "logloss": 0.5191,
-    "logloss_minus_A": 0.041,
-    "n_games": 3,
-    "n_ticks": 636,
-    "reason": null,
+    "brier": null,
+    "brier_minus_A": null,
+    "logloss": null,
+    "logloss_minus_A": null,
+    "n_games": 0,
+    "n_ticks": 0,
+    "reason": "no_eligible_ticks",
     "segment": "late",
     "sport": "soccer",
     "target": "mid",
@@ -4006,18 +5502,18 @@
    }
   ],
   "scope": "SINGLE-WINDOW",
-  "ticks": 10624
+  "ticks": 2786
  },
  "sources": [
   {
-   "mtime_utc": "2026-10-13T21:48:05Z",
+   "mtime_utc": "2026-10-20T14:42:48Z",
    "path": "data/cache/paper_desk/issues/state.json",
-   "sha256": "738e90b81f4605e305506fcf3d9cdac43c5cda15f4b2c56c7efa8c9cac1e42b6"
+   "sha256": "404f0417fbaa151ca533bed54d93773f5aa5f4cf997f3c7f17eafacec092daf8"
   },
   {
-   "mtime_utc": "2026-10-13T21:26:32Z",
+   "mtime_utc": "2026-10-20T14:41:24Z",
    "path": "data/cache/paper_desk/status.json",
-   "sha256": "dedd8663a31104377e268adbdd97cc61683f6262b3f4f4d2b08b5d6344feb7fa"
+   "sha256": "f4ee11ca3231ba34e26f2b63f7fc96903fed773b2105ea4479c69fdc79b8c9ef"
   },
   {
    "mtime_utc": "2026-10-06T01:46:12Z",
@@ -4025,9 +5521,9 @@
    "sha256": "738260779d8846e44e6e0b0946d96431f0a92124872edd921496e88205092d46"
   },
   {
-   "mtime_utc": "2026-10-13T21:48:48Z",
-   "path": "docs/evidence/forward/coverage/2026-10-12.json",
-   "sha256": "709eaaf5d8fc8d04f6dcffc998bc69c05411dfb036d872537cdcb6e0534d2813"
+   "mtime_utc": "2026-10-20T14:43:30Z",
+   "path": "docs/evidence/forward/coverage/2026-10-16.json",
+   "sha256": "e4a45d0defa405aedc6406aeee6da4ff401545356da062ff8ca35bc4630f2349"
   },
   {
    "mtime_utc": "2026-09-30T02:30:25Z",
@@ -4085,6 +5581,21 @@
    "sha256": "8b0f515acc26dcf303e95833fda921b9d134b4f1e93bfaf2fc3a577aff929c62"
   },
   {
+   "mtime_utc": "2026-10-14T18:06:30Z",
+   "path": "docs/evidence/forward/fill_realism/2026-10-13.json",
+   "sha256": "0e61b05971f331cda06254c7884507d50b27d4e014e2d210e769778edf24f42e"
+  },
+  {
+   "mtime_utc": "2026-10-15T16:31:40Z",
+   "path": "docs/evidence/forward/fill_realism/2026-10-14.json",
+   "sha256": "26a73ad36f9314b4e12b82ccb42ae7b18d8e656e7fe41375a538e043e202d051"
+  },
+  {
+   "mtime_utc": "2026-10-19T16:08:23Z",
+   "path": "docs/evidence/forward/fill_realism/2026-10-16.json",
+   "sha256": "a8f87f14c5379b9c811f11bd1cb1eb173fde9c027f003dcd3c15b995d7a3656d"
+  },
+  {
    "mtime_utc": "2026-10-06T01:49:44Z",
    "path": "docs/evidence/forward/fills/2026-10-03.jsonl",
    "sha256": "5eda38b993863e31acf059006d6852f9d78228fdfb80a39754c46e4ed9f92385"
@@ -4115,14 +5626,29 @@
    "sha256": "4c46c206fd32d7a7bc57704356db6bc9aa88cb22a53498233a3536d331fa995b"
   },
   {
-   "mtime_utc": "2026-10-13T21:51:27Z",
-   "path": "docs/evidence/forward/latency/2026-10-10_2026-10-10_latency_ledger.json",
-   "sha256": "f35c4bbc7ec22ba974fda33cd0ada1f98bb202dee5f750a5c38aeb7d666ad9da"
+   "mtime_utc": "2026-10-15T15:46:07Z",
+   "path": "docs/evidence/forward/fills/2026-10-12.jsonl",
+   "sha256": "cb20a8323ae8c38531e1b63b9011d56356060488ccf4c0fe17d10bfe58630fb3"
   },
   {
-   "mtime_utc": "2026-10-13T21:52:05Z",
-   "path": "docs/evidence/forward/live_shadow/2026-10-12.json",
-   "sha256": "6f1660e689754f7c6c5983a8664e8fdd69aa971ad5bed38bbea0706fb146c57a"
+   "mtime_utc": "2026-10-15T15:46:07Z",
+   "path": "docs/evidence/forward/fills/2026-10-12.pairs.jsonl",
+   "sha256": "413d4da7e933184022d21af8de170cc23b1e0282075b386a001a08210f5c8b20"
+  },
+  {
+   "mtime_utc": "2026-10-19T15:22:37Z",
+   "path": "docs/evidence/forward/fills/2026-10-13.jsonl",
+   "sha256": "0ce0d36c52694c885c794dad03462ada5f623e3e15127620ec8dd30c79f50023"
+  },
+  {
+   "mtime_utc": "2026-10-19T15:22:37Z",
+   "path": "docs/evidence/forward/fills/2026-10-13.pairs.jsonl",
+   "sha256": "8bdfae1f96146f5f233c8bbe17d6c7906814abe27fb086594b89e03f903931f9"
+  },
+  {
+   "mtime_utc": "2026-10-19T15:21:11Z",
+   "path": "docs/evidence/forward/latency/2026-10-16_2026-10-16_latency_ledger.json",
+   "sha256": "482c8b41d5592d6b63adac2a5fa8417b6d14f6a12f6cab91eee478ae5154513b"
   },
   {
    "mtime_utc": "2026-09-28T15:13:06Z",
@@ -4205,6 +5731,21 @@
    "sha256": "a6f669c55f53f7e8949c42488bf1c829a983ba17cbf494c94b5c7edcab875bf8"
   },
   {
+   "mtime_utc": "2026-10-14T18:41:50Z",
+   "path": "docs/evidence/forward/nights/2026-10-13.json",
+   "sha256": "92068a8dcd52a0d6380948a2df716b205352c56b4af857d6060e15b739031be3"
+  },
+  {
+   "mtime_utc": "2026-10-15T16:56:47Z",
+   "path": "docs/evidence/forward/nights/2026-10-14.json",
+   "sha256": "cca32a54ed1bcdcb13100b9f114476cce5a7eb471e734ce7d4d4263ebbfa300c"
+  },
+  {
+   "mtime_utc": "2026-10-19T16:32:57Z",
+   "path": "docs/evidence/forward/nights/2026-10-16.json",
+   "sha256": "b50938410af7868c140f71eb5cc657801995c165fd5721f3acfb75a100112a39"
+  },
+  {
    "mtime_utc": "2026-10-06T01:49:45Z",
    "path": "docs/evidence/forward/paper_result/2026-10-03.json",
    "sha256": "60e2c339c719fb34cc49f06c68bd183f8aefbbe335fb9fef899210c60059aa60"
@@ -4230,9 +5771,9 @@
    "sha256": "5f9ac4ee7a4cadfb50870bcf24320292f037b534502cf4bccf567e207f7c48e6"
   },
   {
-   "mtime_utc": "2026-10-13T20:25:49Z",
-   "path": "docs/evidence/forward/scoreboard/2026-10-12.json",
-   "sha256": "2fc082eb11324b3829804376ed6323e8ce8fca5976f7dabeb3ee8d10c1bd3e1b"
+   "mtime_utc": "2026-10-19T16:08:49Z",
+   "path": "docs/evidence/forward/scoreboard/2026-10-16.json",
+   "sha256": "abada2579648b41a3790af5ea68fa4ce0a158297fa6fe501ef5a9490330871c3"
   }
  ]
 }
