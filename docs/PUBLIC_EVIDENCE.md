@@ -46,11 +46,11 @@ agentic loop that re-validates every stage. Each stage refines the one above it.
 
 ## The one-paragraph version
 
-End-to-end NBA intelligence system: 8,600+ commits since March 2026 in the full private repository,
-6,500+ in the public one (counted 2026-10-19; most are agent-authored under direction), human-architected
-over an agentic build pipeline. Broadcast video to court coordinates (CV pipeline on a consumer GPU, about
-$0.10-0.13 per game of compute; tracking paused since 2026-09-17, and the frozen audit accepted no game as
-coordinate-quality evidence, see [TRACKING.md](TRACKING.md)) → 151-file intelligence layer (`data/intelligence/`) → 7 prop models +
+End-to-end NBA intelligence system: 6,508 commits in the public repository from 2026-03-09 to 2026-10-19
+(most are agent-authored under direction; the private repository's audited count was 5,504 at 2026-09-07,
+[JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md) section 4), human-architected over an agentic build pipeline.
+Broadcast video to court coordinates (CV pipeline on a consumer GPU; tracking paused since 2026-09-17, and the
+frozen audit accepted no game as coordinate-quality evidence, see [TRACKING.md](TRACKING.md)) → 151-file intelligence layer (`data/intelligence/`) → 7 prop models +
 in-play snapshot heads → devig / sim / decision engines → calibrated predictions → 1,249-dossier
 intelligence layer + a self-improving agentic loop. **430 Python modules** across the full stack.
 
@@ -63,14 +63,14 @@ produce.
 
 ## Evidence by funnel stage
 
-### 1 · DATA — *defensible, the moat thesis*
+### 1 · DATA — *engineering lineage, paused; no measured forecast lift*
 
 - **Status: tracking paused since 2026-09-17; the frozen audit accepted no game as coordinate-quality
   evidence ([TRACKING.md](TRACKING.md)).** What was built:
 - Full broadcast-video → court-coordinate tracking pipeline on a single consumer RTX 4060:
   YOLOv8n → SIFT homography → from-scratch Kalman+Hungarian tracker → OSNet re-ID → EventDetector.
-  ~150 structured columns/game at **~$0.10–0.13/game** vs six-/seven-figure Sportradar/Second
-  Spectrum licensing.
+  ~150 structured columns per game on a single consumer GPU (the per-game cost estimate and its
+  derivation are in [CV_TRACKING.md](CV_TRACKING.md), not in the packet).
 - Resolves anonymous tracker slots to real NBA identities: **17,254 `cv_features` rows / 241 games /
   252 distinct player IDs** (`data/nba_ai.db`). ~10 documented sentinel-leak guards in the feature layer.
 - *Proof:* `src/pipeline/unified_pipeline.py`, `src/tracking/advanced_tracker.py`. Manifest:
@@ -78,7 +78,7 @@ produce.
 - *Honest caveat:* CV features carry **SHAP ≈ 0 in production today** (`cv_lift_report.json:
   has_cv_data: false`) — complete plumbing, credible thesis, **not yet a measured edge.**
 
-### 2 · SIGNALS — *real engineering, edge at open frontiers*
+### 2 · SIGNALS — *real engineering; no market-relative lift measured*
 
 - **151-file intelligence layer** (the full artifact set on disk: 151 files, `data/intelligence/`,
   dated 2026-06-02; no market-relative test): 291,625-pair player-vs-player matchup matrix from 2,214 raw
@@ -86,8 +86,8 @@ produce.
   1,249 per-player dossiers (28 statistical categories, archetype-labeled, scheme-tagged).
 - Self-improving discovery loop with a ship gate built to *refute*: expanding WF + null-shuffle
   (z ≥ 3) + ablation + BH-FDR. LLM-free signal proposer (`src/loop/discovery.py`) makes discovery
-  inexhaustible. Most candidates correctly rejected on point features; real frontier =
-  joint/in-game/freshness.
+  inexhaustible. Most candidates are correctly rejected on point features: 0 of 60 catalog classes
+  shipped ([JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md) section 4).
 - *Proof:* [INTELLIGENCE.md](INTELLIGENCE.md), `src/loop/gate.py`, `src/loop/discovery.py`.
 
 ### 3 · MODELS — *the honest core accuracy claim*
@@ -105,8 +105,8 @@ produce.
   static prior: **Brier 0.209 -> 0.159 (NBA), 0.241 -> 0.126 (MLB)**, real-corpus OOS,
   `edge_claimed=False` (a live book sees the score too).
   **Versus the contemporaneous market price the in-game models are BEHIND** (Gate A-0,
-  2026-09-14, paired ticks, game-clustered CI: MLB Brier 0.23768 vs 0.20665, delta +0.03103,
-  CI [0.01704, 0.04535], 227 games; soccer 0.22789 vs 0.14273, 51 games). The residual question
+  2026-09-14, paired ticks, game-clustered CI: MLB Brier 0.2377 vs 0.2067, delta +0.0310,
+  CI [0.0170, 0.0454], 227 games; soccer 0.2279 vs 0.1427, 51 games). The residual question
   -- whether the model adds anything once the price is the anchor -- is open. Decomposed
   honestly: a rating-blind score-only baseline already reaches 0.172 (NBA) / 0.128 (MLB);
   the model's own pregame prior adds the last ~0.014 (NBA) / ~0.001 (MLB).
@@ -119,8 +119,8 @@ produce.
   pricing + calibration harness. **Structure validated; no betting edge claimed.**
 - Shin (1992) devig (bisection) + multi-book scanner + cross-book arb over SSE; correlation-aware
   fractional Kelly; append-only shadow logger (passed + blocked) + nightly settlement.
-- 372-market intelligence stack (every stat/combo/DD/TD/longshot) with in-game re-pricing via
-  `--state`; CV_MIN_VAR validated (rank-remap fixes median-shift; seed-stable; cross-season).
+- A full-market pricing stack (every stat, combo, double-double, triple-double and longshot market
+  read off one simulation) with in-game re-pricing via `--state`.
 - *Proof:* `src/sim/`, `src/prediction/devig.py`, `shadow_logger.py`, `betting_portfolio.py`,
   `scripts/team_system/market_intelligence.py`.
 
@@ -145,14 +145,15 @@ produce.
   the forward paper series (since 2026-10-06) has no verdict yet (see JOB_EVIDENCE_PACKET section 5). **Zero real money placed, by design.**
 - Served over FastAPI **~99 endpoints / 12 routers** + 18-template trading desk + Next.js frontend.
 
-### 6 · INTELLIGENCE — *the apex*
+### 6 · INTELLIGENCE — *the descriptive layer*
 
 - **1,249 per-player dossiers** (28 categories, archetype-labeled) + **30 team scheme cards**;
   grounded AI chat surface (facts + routing index). The agentic loop that discovers/validates/
   ships/retires signals — and improves every stage above.
 - LLM scheme-prior layer (`CV_LLM_SCHEME`, default-OFF): LLM emits bounded leak-flagged
-  multipliers on existing sim knobs; sim computes every number. Ships **scouting-only** (signal
-  redundant with the sim: corr-with-residual +0.005 p=0.87).
+  multipliers on existing sim knobs; sim computes every number. Ships **scouting-only**: the
+  leak-free scheme signal was redundant with the sim and REJECTED for pricing (corr-with-residual
+  +0.005, p=0.87, recorded in the [CHANGELOG](../CHANGELOG.md) 0.18.0 entry).
 - *Proof:* [PLAYER_INTELLIGENCE.md](PLAYER_INTELLIGENCE.md), `src/sim/scheme_prior.py`,
   `.claude/commands/workday-loop.md`.
 
@@ -212,7 +213,7 @@ Full do-not-claim list with source-code root causes: **[JOB_EVIDENCE_PACKET.md](
 | The data/feature ceiling analysis | [CEILING.md](CEILING.md) |
 | CV pipeline deep-dive | [CV_TRACKING.md](CV_TRACKING.md) |
 
-*Last verified: 2026-10-19. Numbers reconciled to the leak-free audited figures in JOB_EVIDENCE_PACKET.md.
+*Last verified: 2026-10-20. Numbers reconciled to the leak-free audited figures in JOB_EVIDENCE_PACKET.md.
 Reconciliation note: the pregame Brier pair in section 5 was reconciled to the packet's 2026-09-14 correction
 (0.1735 vs 0.1666, n=372 scored, `MATCHES_CLOSE` under the 2026-09-24 recompute, underpowered; MLB and soccer `TRAILS_CLOSE`); the in-game gain in section 3 is labelled as versus a static prior,
 with the Gate A-0 result versus the contemporaneous market price stated alongside it.*
