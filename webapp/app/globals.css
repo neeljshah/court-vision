@@ -60,9 +60,9 @@
 
     /* Tier tokens (S=amber, A=green, B=slate-mid, C=slate-dark) */
     --tier-s:             37 74% 56%;
-    --tier-a:            147 46% 45%;
+    --tier-a:            147 46% 50%;   /* 5.1:1 as text on its own /20 tint (was 45% = 4.4:1) */
     --tier-b:            219 14% 60%;
-    --tier-c:            219 13% 41%;
+    --tier-c:            219 13% 55%;   /* matches --faint; 41% read 3.0:1 as text */
 
     /* Surface elevation steps */
     --surface-0:         222 27%  6%;
@@ -270,6 +270,18 @@
   }
   .prose-console li {
     margin-top: 0.3em;
+  }
+  /* Target size (WCAG 2.5.8): breadcrumb + microlabel links and table links get a
+     24px hit box; inline padding extends the target without moving text. */
+  nav[aria-label="Breadcrumb"] a,
+  a.microlabel {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.5rem;
+  }
+  main td a {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
   }
   /* Links in running text must not rely on color alone (WCAG 1.4.1). */
   .prose-console a {

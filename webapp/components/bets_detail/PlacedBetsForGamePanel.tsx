@@ -134,7 +134,7 @@ function PlacedBetRow({ r }: { r: PaperTrailRow }) {
     <tr className="text-sm hover:bg-surface-2" data-testid="placed-bet-row">
       <td className="py-1.5 px-3">
         <Link
-          href={`/paper/${betId}`}
+          href={`/paper/${encodeURIComponent(betId)}`}
           className="font-medium text-foreground underline-offset-2 hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
           aria-label={`Execution detail: ${selectionLabel(r)}`}
         >

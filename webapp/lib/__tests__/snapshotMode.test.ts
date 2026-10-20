@@ -210,3 +210,18 @@ describe("fetchHonest -- snapshot file whitelist", () => {
     expect(mod.snapshotHas("/api/anything")).toBe(true);
   });
 });
+
+describe("snapshotHasGame -- baked detail pages", () => {
+  it("links only the games the export contains, and everything when live", async () => {
+    vi.stubEnv("NEXT_PUBLIC_DATA_MODE", "snapshot");
+    vi.stubEnv("NEXT_PUBLIC_SNAPSHOT_GAMES", JSON.stringify(["mlb/KXMLBGAME-1", "soccer/9"]));
+    vi.resetModules();
+    const snap = await import("../fetchHonest");
+    expect(snap.snapshotHasGame("mlb", "KXMLBGAME-1")).toBe(true);
+    expect(snap.snapshotHasGame("mlb", "fd:35816158")).toBe(false);
+    vi.stubEnv("NEXT_PUBLIC_DATA_MODE", "");
+    vi.resetModules();
+    const live = await import("../fetchHonest");
+    expect(live.snapshotHasGame("mlb", "fd:35816158")).toBe(true);
+  });
+});

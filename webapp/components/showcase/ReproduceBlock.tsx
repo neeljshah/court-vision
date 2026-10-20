@@ -38,7 +38,7 @@ export function ReproduceBlock({
         <button
           type="button"
           onClick={copy}
-          className="border border-border px-2 py-px font-data text-[10px] text-faint hover:text-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          className="inline-flex min-h-6 items-center border border-border px-2 py-px font-data text-[10px] text-faint hover:text-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           aria-label="copy reproduce command"
         >
           {copied ? "copied" : "copy"}

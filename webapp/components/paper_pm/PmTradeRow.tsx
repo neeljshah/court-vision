@@ -52,6 +52,9 @@ export function toBetId(r: PaperTrailRow): string {
     r.side || "home",
     r.taken_book || "paper",
   ];
+  // The static export writes /paper/<this encoded id>/ verbatim, so links must
+  // encode it once more: the browser decodes one layer before the host looks
+  // the directory up (a single-encoded href 404s on GitHub Pages).
   return encodeURIComponent(parts.join("|"));
 }
 
@@ -78,7 +81,7 @@ export function PmTradeRow({ row, rank }: Props) {
         </td>
       ) : null}
       <td className="px-2 py-1.5">
-        <Link href={`/paper/${betId}`} className="hover:underline">
+        <Link href={`/paper/${encodeURIComponent(betId)}`} className="hover:underline">
           <span className="font-medium">{humanizeMatchup(row.matchup || row.game_id)}</span>
           <span className="ml-1.5 font-mono text-[10px] text-slate-600">
             {row.sport?.toUpperCase()}
@@ -122,7 +125,7 @@ export function PmTradeRow({ row, rank }: Props) {
       </td>
       <td className="px-2 py-1.5 text-right">
         <Link
-          href={`/paper/${betId}`}
+          href={`/paper/${encodeURIComponent(betId)}`}
           className="font-mono text-[10px] text-slate-500 hover:text-slate-300"
           aria-label={`View detail for ${row.matchup || row.game_id}`}
         >
