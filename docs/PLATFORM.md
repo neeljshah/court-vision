@@ -1,6 +1,6 @@
 # CourtVision Platform -- Domain-Agnostic, Calibrated Multi-Sport Forecasting Engine
 
-> **Status (2026-06-15): SHIPPED -- 4 sports live.** NBA, MLB, Soccer, and Tennis predictors are built and validated against real corpora. The product is one converged, calibrated prediction platform: a single win-prob per sport anchors a coherent pregame surface plus an in-game repricer, exposed through `domains/<sport>/predictor.py` and the unified `scripts/platformkit/predict_matchup.py` CLI. For the full product narrative read **[docs/PREDICTOR_PLATFORM.md](PREDICTOR_PLATFORM.md)**; for the honest, adversarially-audited numbers read **[docs/JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md)** (the single truth source).
+> **Status (2026-06-15): SHIPPED -- four sport adapters built.** NBA, MLB, Soccer, and Tennis predictors are built and validated against real corpora. The product is one converged, calibrated prediction platform: a single win-prob per sport anchors a coherent pregame surface plus an in-game repricer, exposed through `domains/<sport>/predictor.py` and the unified `scripts/platformkit/predict_matchup.py` CLI. For the full product narrative read **[docs/PREDICTOR_PLATFORM.md](PREDICTOR_PLATFORM.md)**; for the honest, adversarially-audited numbers read **[docs/JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md)** (the single truth source).
 
 ---
 
@@ -205,11 +205,11 @@ All numbers are calibration/sharpness (lower Brier/RMSE = sharper). They are NOT
 
 | Sport / market | Ours | Devigged close | Verdict |
 |---|---|---|---|
-| NBA moneyline (Brier) | 0.1735 | 0.1672 | MATCH (within noise) |
+| NBA moneyline (Brier) | 0.1735 | 0.1672 | MATCHES_CLOSE (CI includes 0; underpowered, n=372; recompute 2026-09-24) |
 | NBA total O/U (RMSE) | 19.17 | 18.11 | BEHIND (injury/lineup freshness) |
-| MLB moneyline (Brier) | 0.2429 | 0.2390 | MATCH (tiny deficit = pitcher-blindness) |
+| MLB moneyline (Brier) | 0.2429 | 0.2390 | TRAILS_CLOSE (95% CI [+0.0028, +0.0051]; recompute 2026-09-24) |
 | MLB total O/U (RMSE) | 4.72 | 4.44 | BEHIND (park/weather/SP freshness) |
-| Soccer O/U-2.5 (Brier) | 0.2465 | 0.2390 | MATCH (pooled Platt) |
+| Soccer O/U-2.5 (Brier) | 0.2465 | 0.2390 | TRAILS_CLOSE (95% CI [+0.0059, +0.0092]; recompute 2026-09-24) |
 | Tennis ATP ml (Brier) | 0.2177 | 0.2028 | BEHIND (ATP closes very efficient) |
 
 **In-game -- conditioning on realized state vs the static pregame line:**
@@ -223,8 +223,9 @@ prints no-improvement for NBA due to SYNTHETIC ANCHOR ARTIFACT; MLB/Soccer/Tenni
 | Soccer 1X2 (half-time) | 0.626 -> 0.502 ; O/U-2.5 0.264 -> 0.176 | reproduces on committed fixture |
 | Tennis (after set 1) | 0.219 -> 0.151 | reproduces on committed fixture |
 
-**The thesis:** pregame MATCHES the devigged close on team-strength markets and is BEHIND on
-totals/ATP ONLY by freshness data a box model cannot see. IN-GAME conditioning (a pregame
+**The thesis:** pregame matches the devigged close on NBA moneyline at an underpowered n and trails it
+by small, interval-resolved margins on MLB moneyline and soccer O/U 2.5; totals and ATP trail by more,
+by freshness data a box model cannot see. IN-GAME conditioning (a pregame
 intelligence prior fused with realized state) is sharper **versus a static pregame prior** --
 that is exactly what the table above measures, and it is a calibration result, not an edge.
 **Versus the contemporaneous market price the in-game models are BEHIND** (Gate A-0, measured
@@ -360,7 +361,7 @@ CourtVision began as an NBA broadcast-video computer-vision pipeline (YOLOv8 det
 
 ## What This Is Not
 
-No betting edge / ROI / profitable edge is claimed for any sport. The platform's own validation shows pregame markets are efficient: it MATCHES the devigged close on team-strength markets and is BEHIND on totals/ATP only by freshness data it cannot see. The retracted +18.38% ROI / endQ3-0.119 / +54% in-play numbers are documented measurement artifacts -- they appear ONLY in retraction context in [docs/JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md) and [docs/KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md), never as current.
+No betting edge / ROI / profitable edge is claimed for any sport. The platform's own validation shows pregame markets are efficient: it matches the devigged close on NBA moneyline (underpowered, n=372), trails it by small measurable margins on MLB moneyline and soccer O/U 2.5, and is BEHIND on totals/ATP by freshness data it cannot see. The retracted +18.38% ROI / endQ3-0.119 / +54% in-play numbers are documented measurement artifacts -- they appear ONLY in retraction context in [docs/JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md) and [docs/KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md), never as current.
 
 The value of the platform is two things: engineering compounding (shared infrastructure, shared discipline, shared agent loop across four sports) and the measured, calibrated in-game conditioning gain **versus a static pregame prior** -- which Gate A-0 measures as still BEHIND the contemporaneous market price. That is a calibration result, not an edge, and not a promised betting edge in any market.
 

@@ -112,7 +112,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ### Added
 - **Real-Vegas Gate 1 — 2024 playoffs** (4,337 bets, +4.19% ROI on L10 baseline vs DK/FD/MGM/BetRivers closing lines from reisneriv/NBA_Player_Props). Script: `scripts/run_gate1_playoffs2024.py`.
-- **Real-Vegas Gate 1 — 2025-26 regular season** (4,210 bets vs DK/FD/MGM closes from benashkar/nba_gambling, walk-forward prod-stack OOF predictor). Beat rate 54.37%, AST +7.22% ROI (60.25% beat) and FG3M +0.34% ROI (58.37% beat) emerge as real edges; PTS/REB lose to vig at sharp closes. Scripts: `scripts/run_gate1_2025_26_prod.py` (prod-stack) + `scripts/run_gate1_2025_26.py` (L10 baseline for comparison).
+- **Real-Vegas Gate 1 — 2025-26 regular season** (4,210 bets vs DK/FD/MGM closes from benashkar/nba_gambling, walk-forward prod-stack OOF predictor). Beat rate 54.37%, AST +7.22% ROI (60.25% beat) and FG3M +0.34% ROI (58.37% beat) were read as edges at the time (RETRACTED 2026-07-21 as regime-dependent; see the retraction note at the top of this file); PTS/REB lose to vig at sharp closes. Scripts: `scripts/run_gate1_2025_26_prod.py` (prod-stack) + `scripts/run_gate1_2025_26.py` (L10 baseline for comparison).
 - **NBA Stats game_id → date lookup** in `scripts/run_gate1.py` via `season_games_*.json` (NBA Stats format games can now join to date-keyed residuals).
 - **Synthetic CLV mode** in `scripts/run_gate1.py` (`--mode ledger --audit-only`) reads `pnl_ledger_clv_synthetic.csv` directly.
 - **`data/models/gate1_results_summary.json`** — consolidated machine-readable verification report.

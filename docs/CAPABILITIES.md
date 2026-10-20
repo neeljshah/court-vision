@@ -169,7 +169,7 @@ never a runtime dependency, so nothing on the live site depends on it.
 | Pre-registered thresholds | every constant carries its registration date, source measurement and sample size; a threshold moved after seeing its own result is treated as curve-fitting | PAPER | [thresholds.py](../scripts/platformkit/execution/thresholds.py) |
 | Venue fee model that fails closed | raises on a unit error rather than returning a zero fee, and names what it could not verify | PAPER | [venue_fees.py](../scripts/platformkit/execution/venue_fees.py) |
 | Circuit breaker on the median, not the flattering fat-tailed mean | pre-registered 2026-07-15 | PAPER | [circuit_breaker.py](../scripts/platformkit/execution/circuit_breaker.py) |
-| Paper maker that fills only on a through-trade, with fee-netted markout | markout at 30 s / 120 s / 300 s; no markout series collected yet | PAPER | [paper_maker.py](../scripts/platformkit/execution/paper_maker.py), [markout.py](../scripts/platformkit/execution/markout.py) |
+| Paper maker that fills only on a through-trade, with fee-netted markout | markout at 30 s / 120 s / 300 s; no markout series collected as of 2026-10-19 (fill realism runs counts-only, [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md) section 5) | PAPER | [paper_maker.py](../scripts/platformkit/execution/paper_maker.py), [markout.py](../scripts/platformkit/execution/markout.py) |
 | The paper audit publishes its own nulls | every logged paper position is `executed=False`; realized closing-line value is null wherever no independent close feed exists | PAPER | [execution-honesty.md](evidence/execution-honesty.md) |
 | A check-then-append race closed and proven | shared ledger lock plus `append_row_if_new`, proven by a test racing two real OS processes | PAPER | [test_clv_ledger_io.py](../scripts/platformkit/test_clv_ledger_io.py) |
 | Entry-timing study | 900 to 1,645 drift events per market across NBA and MLB moneyline, spread and total: no pre-close entry horizon improves on the contemporaneous price, so the policy is `last_pregame_tick` everywhere | RESEARCH, honest null | [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md) section 2G |
@@ -260,8 +260,8 @@ at [live: data-integrity finding](https://neeljshah.github.io/court-vision/analy
 
 - **No live trading.** CourtVision has never placed a real order and the order-lifecycle code has no
   reachable live path. Six gates are pre-registered ahead of their own measurement window in
-  [GO_LIVE_GATES.md](GO_LIVE_GATES.md); as of 2026-09-17 G6 has not started and zero weeks are
-  collected. The expected year-end outcome is "G6 not met, N weeks collected", and publishing that
+  [GO_LIVE_GATES.md](GO_LIVE_GATES.md); as of 2026-10-19 G6 has not started (zero weeks collected): the paper desk has
+  run since 2026-10-06, but no fee-netted markout series exists yet (packet section 5). The expected year-end outcome is "G6 not met, N weeks collected", and publishing that
   verdict on schedule is the deliverable.
 - **No edge claim.** Nothing on this page, the site, or in any artifact cited here asserts a dollar
   edge, ROI or profit. Six earlier headline figures were withdrawn as measurement artifacts, named

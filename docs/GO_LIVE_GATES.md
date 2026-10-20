@@ -38,4 +38,9 @@ evidence in hand, not a date.
 | G5 | open (human-only) |
 | G6 | not started -- zero weeks collected |
 
+**Update (appended 2026-10-19; the table above is left as written on 2026-09-17):** the forward paper
+desk has run since 2026-10-06 ([JOB_EVIDENCE_PACKET.md section 5](JOB_EVIDENCE_PACKET.md)). Its fill-realism
+step runs in counts-only mode with no markout series, so G3 is still partial and G6 has still not started
+(zero weeks collected). No gate status has changed.
+
 **Navigate:** [Evidence index](../EVIDENCE.md) - [README](../README.md) - [Doc map](INDEX.md)

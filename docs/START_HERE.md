@@ -32,7 +32,7 @@ The key moat: Second Spectrum sells spatial tracking to NBA teams at $1M+/yr. Th
 
 ## Current Stage (Important)
 
-CourtVision is in **post-Gate-1 validation** — pre-game stack shipped with real-closing-line proof; in-play stack live and walk-forward-validated; first real CLV reading begins October 2026 preseason.
+CourtVision is in **post-Gate-1 validation** — pre-game stack shipped with real-closing-line proof; in-play stack live and walk-forward-validated; the forward paper series has run since 2026-10-06 and has no verdict and no closing-line-value reading as of 2026-10-19 ([JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md) section 5).
 
 Where to skip the funnel:
 
@@ -159,13 +159,13 @@ python scripts/batch_season.py --season 2025-26
 | Metric | Value | Source |
 |--------|-------|--------|
 | Prop MAE @ q50 (leak-free, 20,354-row production-model chronological holdout) | PTS ~4.83 / REB ~1.92 / AST ~1.39 / FG3M ~0.89 | `scripts/verify_production_mae.py` (re-measured 2026-07-20) |
-| Win-prob accuracy / Brier (3-fold WF) | 0.709 / 0.188 | `data/models/win_prob_metrics.json` |
+| Win-prob accuracy / Brier (3-fold WF) | 0.709 / 0.193 | `data/models/win_prob_metrics.json` |
 | In-play endQ3 MAE lift vs pregame | ~46% pooled (~26% over naive carry-forward, WF) | leak-clean residual heads |
 | In-play endQ3 Brier (leak-free) | ~0.141 | after removing a Q4 feature leak (caught in self-audit) |
 | Betting vs **real** closing lines | break-even-minus-vig; AST edge RETRACTED 2026-07-21 (regime-dependent; no ROI edge claimed) — see JOB_EVIDENCE_PACKET | `scripts/run_gate1_full_analysis.py` → −2.00% unfiltered |
 | CV pipeline | 17,254 cv_features rows / 241 games / 252 players · ~$0.10–0.13/game | `data/nba_ai.db` |
 | DNP predictor AUC | 0.979 | committed metrics |
-| In-play L5-proxy backtest (n=55,073) | RETRACTED as a result (JOB_EVIDENCE_PACKET section 4): graded against an L5 line proxy, a model-quality ceiling only; no figure is quoted here | ⚠️ L5 proxy, first real CLV Oct 2026 |
+| In-play L5-proxy backtest (n=55,073) | RETRACTED as a result (JOB_EVIDENCE_PACKET section 4): graded against an L5 line proxy, a model-quality ceiling only; no figure is quoted here | ⚠️ L5 proxy; no closing-line-value reading exists as of 2026-10-19 |
 | Shots in training data | 221,866 | |
 
 **Retracted (artifacts the harness caught):** +18.38% ROI (market-follow grading bug → real break-even-minus-vig), endQ3 0.119 (Q4 leak → ~0.141), +54% in-play (L5 proxy). Full account: [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md).
@@ -180,9 +180,9 @@ python scripts/batch_season.py --season 2025-26
 | G | Full-game CV data collection (target 80 CLEAN) | 🟡 85 tracked / 7 full-feature — blocked behind ISSUE-022 `defender_distance=200.0` sentinel-vs-NULL |
 | **Gate 1** | Real-Vegas re-grade vs DK/FD/MGM/BetRivers closes (8,360 bets) | ✅ **RUN** — market efficient: **break-even-minus-vig** (−2.00% unfiltered); the earlier "+18.38% filtered" was a market-follow grading artifact, retracted |
 | In-play stack | endQ1/endQ2/endQ3 LGB + iter-68 v6_hp + iter-71 meta_blend | ✅ Shipped 2026-05-27 (CHANGELOG 0.17.0) |
-| Intelligence layer | 80 derived artifacts (player/scheme/lineup/quality/calibration) | ✅ Shipped — manifest at [INTELLIGENCE.md](INTELLIGENCE.md) |
+| Intelligence layer | 151 artifact files (player/scheme/lineup/quality/calibration) | ✅ Shipped — manifest at [INTELLIGENCE.md](INTELLIGENCE.md) |
 | Shadow-logged execution | Settlement engine + filter calibrator + decision-engine gates | ✅ Shipped 2026-05-27 |
-| Pinnacle real-close CLV | First reading on real Pinnacle closes | ⏳ Oct 2026 preseason (daemon collecting) |
+| Sharp-book closing-line CLV | First reading on real closes | ⏳ none as of 2026-10-19; the forward paper series (since 2026-10-06) computes no markout or CLV yet ([JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md) section 5) |
 | Live trading desk UI | `/scan` + `/clv` + `/parlays` + `/live/{game_id}` + SSE arbs | ✅ Shipped 2026-05-27 |
 
 For the full phase log see [ROADMAP.md](ROADMAP.md); for the forward strategic roadmap see ../ROADMAP.md *(private repository)*.

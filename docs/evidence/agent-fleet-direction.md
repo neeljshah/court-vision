@@ -1,9 +1,14 @@
 # Solo Human Architect, Directing an Agent Fleet -- how this system was actually built
 
-> This repo was built mostly by AI agents under one person's direction. About 91% of the
-> commits are authored by the agent identity (`GSD Executor`), and a reviewer can recount that
-> in one `git` command below. That is stated up front as the point, not buried as a
-> confession: the engineering judgment, the ship/reject gates, and the validation methodology
+> This repo was built mostly by AI agents under one person's direction. When this page was written
+> (recount 2026-07-22) about 91% of commits carried the agent identity (`GSD Executor`).
+> **Supersession note (2026-10-20):** a later history rewrite normalised every author to `Neel Shah`,
+> so that identity recount no longer reproduces (6,508 of 6,508 public commits read `Neel Shah` on
+> 2026-10-19). The still-derivable figure is the share of commits carrying a `Co-Authored-By: Claude`
+> trailer: 1,537 of 6,508 = 23.6% on the public history today, 1,333 of 5,504 = 24.2% at the packet's
+> 2026-09-07 audit ([JOB_EVIDENCE_PACKET.md section 4](../JOB_EVIDENCE_PACKET.md)). The large-majority
+> claim stands as the packet states it; the exact percentage does not. That is stated up front as the
+> point, not buried as a confession: the engineering judgment, the ship/reject gates, and the validation methodology
 > are the human's; the keystrokes are mostly the fleet's. The single truth-source for any
 > figure below is [docs/JOB_EVIDENCE_PACKET.md](../JOB_EVIDENCE_PACKET.md).
 
@@ -13,12 +18,12 @@
 
 One person -- [Neel Shah](https://neelshahportfolio.netlify.app) -- directed a fleet of Claude
 agents to build and validate a production sports-forecasting system across 3,200+ commits
-(Mar-Jul 2026). He did not hand-type those commits, and he does not claim to have. The role
+(Mar-Jul 2026 at this page's recount; 5,504 by the packet's 2026-09-07 audit). He did not hand-type those commits, and he does not claim to have. The role
 is architect and director: a planner model orchestrates cheaper executor models under hard,
 automated ship gates that the agents cannot override. The load-bearing human contributions
 are the ones a fleet cannot supply on its own -- the validation methodology, the ship/reject
 decisions, and the honesty rails that make an agent's output trustworthy. The share of
-agent-authored keystrokes (~91%, and rising) is the feature: it is what proves the workflow
+agent-authored keystrokes (the large majority) is the feature: it is what proves the workflow
 scaled without the human becoming the bottleneck.
 
 ---
@@ -62,7 +67,7 @@ overnight.
 
 | Claim | Committed artifact |
 |---|---|
-| ~91% of commits agent-authored; 3,200+ commits Mar-Jul 2026 | `git log` (recount command below); JOB_EVIDENCE_PACKET s4 |
+| The large majority of commits agent-authored; 3,200+ commits Mar-Jul 2026 at the 2026-07-22 recount, 5,504 at the 2026-09-07 audit | JOB_EVIDENCE_PACKET s4; the trailer count below still recounts, the identity count no longer does (see the note at the top) |
 | Fail-closed 5-criterion ship gate (walk-forward all-folds, permutation z>=3, ablation-vs-full, BH-FDR, held-out-once) | `src/loop/gate.py` |
 | LLM-free signal proposer | `src/loop/discovery.py` |
 | Orchestration / checkpoint-resume loop driver | `src/loop/orchestrator.py`, `scripts/loop/run_loop.py` |
@@ -84,6 +89,7 @@ git log --reverse --format='%as' | head -1   # first commit
 git log --format='%as' | head -1             # latest commit
 
 # Share of commits authored by the agent identity
+# (reads 0 since the author-normalising rewrite -- every author is `Neel Shah` now; kept for the record)
 git log --format='%an' | grep -c 'GSD Executor'
 
 # Commits carrying a Claude co-author trailer
@@ -97,7 +103,7 @@ python -m scripts.platformkit.reject_ledger show
 
 ![Agent-fleet build history: authorship split and round-the-clock commit cadence from git log](../img/agent_fleet_history.png)
 
-*Figure: the authorship split and the build cadence, straight from `git log` (recount 2026-07-22; 3,224 commits, 2026-03-09 to 2026-07-22). 95.75% of commits carry the `GSD Executor` agent identity and 67.9% carry a `Co-Authored-By: Claude` trailer; commits land across every hour and weekday rather than a 9-5 pattern -- consistent with one director running an agent fleet around the clock. This is a build-provenance measurement, not a claim about code quality or edge. The fresh git-log share (95.75%) runs a little above the ~91% recorded in JOB_EVIDENCE_PACKET s4 because it is a later recount over more commits; the packet stays the truth-source. Data: [`scripts/platformkit/analytics_showcase/out/agent_fleet_history.json`](../../scripts/platformkit/analytics_showcase/out/agent_fleet_history.json), reproduced by the recount commands above.*
+*Figure: the authorship split and the build cadence, straight from `git log` (recount 2026-07-22; 3,224 commits, 2026-03-09 to 2026-07-22; these figures predate the author-normalising rewrite, see the note at the top). 95.75% of commits carried the `GSD Executor` agent identity and 67.9% carry a `Co-Authored-By: Claude` trailer; commits land across every hour and weekday rather than a 9-5 pattern -- consistent with one director running an agent fleet around the clock. This is a build-provenance measurement, not a claim about code quality or edge. The fresh git-log share (95.75%) runs a little above the ~91% recorded in JOB_EVIDENCE_PACKET s4 because it is a later recount over more commits; the packet stays the truth-source. Data: [`scripts/platformkit/analytics_showcase/out/agent_fleet_history.json`](../../scripts/platformkit/analytics_showcase/out/agent_fleet_history.json), reproduced by the recount commands above.*
 
 The reject ledger is the honesty exhibit at scale: the count of candidates that did *not*
 survive the gate dwarfs the count that did, which is the expected shape of honest signal
@@ -114,7 +120,7 @@ executors in parallel without corrupting the repo, and gate every result behind 
 strict enough to reject your own best ideas. This repo is the artifact of exactly that skill.
 The human wrote the gate, the guardrails, and the methodology; the agents wrote the
 implementation; and the split is recorded in `git`, not asserted. For an AI-engineering or
-agent-orchestration role, the honest ~91% is the resume line, not the fine print.
+agent-orchestration role, the honest "large majority agent-authored" is the resume line, not the fine print.
 
 ---
 <!-- nav-footer -->

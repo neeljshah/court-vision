@@ -1,13 +1,14 @@
 # Hire Package -- Neel Shah
 
-> **A systems engineer (B.S. Data Science, University of Iowa, expected May 2027) who builds end-to-end CV -> ML -> full-stack -> agentic
-> systems, and builds the validation harnesses that prove what is real and reject what is not --
-> including catching his own inflated numbers.** Solo human architect / director of an agentic
-> build pipeline. B.S. Data Science, University of Iowa, expected May 2027; the work and the self-audit trail are the credential.
+> **A systems engineer with three years of data-science coursework at the University of Iowa, who builds
+> end-to-end CV -> ML -> full-stack -> agentic systems, and builds the validation harnesses that prove what
+> is real and reject what is not -- including catching his own inflated numbers.** Solo human architect /
+> director of an agentic build pipeline; the work and the self-audit trail are the credential.
 >
 > One-line: *I built a 4-sport calibrated forecasting platform AND the leak-free harnesses that
-> prove it matches efficient closing lines, measure a real in-game-conditioning calibration gain,
-> and REJECT every false edge -- catching my own overclaims before any recruiter could.*
+> prove it matches or trails efficient closing lines, measure an in-game-conditioning calibration gain
+> against a static prior, and REJECT every candidate signal -- catching my own overclaims before any
+> recruiter could.*
 
 Honesty truth-source (every number here reconciles to it; the retracted-figure list lives there,
 never here): [docs/JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md). Open gaps:
@@ -17,14 +18,15 @@ never here): [docs/JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md). Open gaps:
 
 ## 1. What I built (lead with the engineering)
 
-A single solo-built git history spanning computer vision, ML, a serving platform, and an
-agentic build/validation loop -- ~3 intensive months, 8,200+ tracked files, architected and
-directed by one person.
+A single git history spanning computer vision, ML, a serving platform, and an agentic
+build/validation loop -- about six months (2026-03-09 to 2026-09-07, 5,504 commits at the audit date;
+[JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md) section 4), architected and directed by one person,
+with most commits agent-authored under direction.
 
 ### Computer vision in production
 Broadcast NBA video -> court coordinates -> behavioral features, on a single consumer RTX 4060
-at ~$0.10/game (vs six-/seven-figure optical-tracking licensing). Implemented from primitives,
-not black-box wrappers:
+(paused since 2026-09-17; the frozen audit accepted no game as coordinate-quality evidence, see
+[TRACKING.md](TRACKING.md)). Implemented from primitives, not black-box wrappers:
 - **YOLOv8n** custom ball detector, exported PyTorch -> ONNX -> TensorRT.
 - **SIFT + RANSAC homography** for broadcast-frame-to-court rectification, hardened with an
   inlier gate, EMA smoothing, and drift re-anchoring for moving cameras / replays / scene cuts.
@@ -49,7 +51,7 @@ documented, not hidden. CV is the engineering lineage, not a claimed predictive 
   behind a sport-blind kernel + per-sport adapters (adding a sport is an adapter, not a rewrite).
 
 ### Full-stack + data platform
-- **FastAPI** serving layer (~99 endpoints across 11 active routers; REST + WebSocket + SSE).
+- **FastAPI** serving layer (~99 endpoints across 12 routers; REST + WebSocket + SSE).
 - A fleet of long-running daemons with a watchdog/registry supervisor; production alerting with
   rate limiting, dead-letter queue, and per-channel circuit breakers.
 - Dual-backend persistence (PostgreSQL-first, transparent SQLite fallback) with idempotent
@@ -71,23 +73,26 @@ This is the part a hiring manager actually wants. I do not just build models -- 
 instruments that try to refute them, and I report the negative result as the deliverable.
 
 ### A. The 4-sport market-efficiency proof (leak-free, real data)
-I ran a real-data edge hunt across **4 sports and 6 independent price corpora**. The honest,
-just-proven result: my own calibrated model **MATCHES the SHIN-devigged closing line within
-noise** on team-strength markets -- the realistic best case for an efficient market.
+I ran a real-data edge hunt across **4 sports and 6 independent price corpora**. The honest result
+(recomputed 2026-09-24 with game-clustered intervals): my own calibrated model is **indistinguishable
+from the devigged close on NBA moneyline at an underpowered n=372, and trails it by small,
+interval-resolved margins on MLB moneyline and soccer O/U 2.5**. Nothing beats the close.
 
 | Sport | Market | Metric | N | Our model | Close | Verdict |
 |---|---|---|---|---|---|---|
-| NBA | moneyline | Brier | 372 | 0.1735 | 0.1672 | MATCH |
-| MLB | moneyline | Brier | 13,992 | 0.2429 | 0.2390 | MATCH |
-| Soccer | O/U-2.5 | Brier | 7,558 | 0.2465 | 0.2390 | MATCH |
+| NBA | moneyline | Brier | 372 | 0.1735 | 0.1672 | MATCHES_CLOSE (CI includes 0; underpowered, MDE 0.0150) |
+| MLB | moneyline | Brier | 13,992 | 0.2429 | 0.2390 | TRAILS_CLOSE (95% CI [+0.0028, +0.0051]) |
+| Soccer | O/U-2.5 | Brier | 7,558 | 0.2465 | 0.2390 | TRAILS_CLOSE (95% CI [+0.0059, +0.0092]) |
 | NBA | total O/U | RMSE | 372 | 19.17 | 18.11 | BEHIND (freshness) |
 | MLB | total O/U | RMSE | 1,679 | 4.72 | 4.44 | BEHIND (freshness) |
 | Tennis (ATP) | match-win | Brier | 7,374 | 0.2177 | 0.2028 | BEHIND (freshness) |
 
-Totals / ATP trail ONLY by the freshness data the market prices (injuries, lineups, weather,
-park, starting pitcher) that a box model structurally cannot see -- a data/speed gap, not a
-model defect. Nothing beats the close pregame, and that is the correct outcome. Writeup:
-[docs/MARKET_EFFICIENCY_PROOF.md](MARKET_EFFICIENCY_PROOF.md).
+The NBA close above is the proportional-devig close printed on the proof page; the Shin-devigged
+close is 0.1666 (gap +0.0069, 95% CI [-0.0038, +0.0175]). Totals / ATP trail by more, by the
+freshness data the market prices (injuries, lineups, weather, park, starting pitcher) that a box
+model structurally cannot see. Nothing beats the close pregame, and that is the correct outcome. Writeup:
+[docs/MARKET_EFFICIENCY_PROOF.md](MARKET_EFFICIENCY_PROOF.md), intervals in the
+[2026-09-24 recompute memo](evidence/pregame/DM_RECOMPUTE_2026-09-24.md).
 
 ### B. Every candidate edge REJECTED -- and I caught my own overfits
 Every schedule / fatigue / form / h2h / totals / CLV candidate scored through the REAL leak-free
@@ -116,8 +121,10 @@ intelligence prior with the realized mid-game state sharpens the win-prob foreca
 - NBA win-prob Brier **0.209 -> 0.159** (real private corpus, leak-free OOS).
 - MLB win-prob Brier **0.241 -> 0.126**.
 
-This is FORECASTER QUALITY / calibration, **not a dollar edge** -- a live book also sees the
-score, so no DM-vs-close test applies and `edge_claimed = False`. Scoped honestly: the
+This is FORECASTER QUALITY / calibration against a STATIC prior, **not a dollar edge** -- a live
+book also sees the score, and against the contemporaneous Kalshi in-play price the in-game models
+are BEHIND (Gate A-0, 2026-09-14: MLB Brier 0.2377 vs 0.2067, 227 games); `edge_claimed = False`.
+Scoped honestly: the
 real-corpus OOS result is the win; on the committed synthetic fixture the NBA row prints
 no-improvement (a SYNTHETIC ANCHOR ARTIFACT, not a refutation), so MLB/Soccer/Tennis reproduce
 in <60s on a fresh clone while NBA is VALIDATION_PENDING without the private corpus.
@@ -138,28 +145,21 @@ Building the instrument that disproves your own hype is the senior-engineering s
 
 ---
 
-## 3. Reproduce it in under 60 seconds (fresh clone, offline)
+## 3. Reproduce it on a fresh public clone (about 5 minutes, no private data)
 
 ```
-pip install -r requirements-predictor.txt      # or: pip install -e .  -> cv-matchup CLI
-
-# the market-efficiency / self-audit REJECT scoreboard
-python -m scripts.platformkit.edge_hunt_scoreboard
-
-# pregame quality vs the devigged close (committed fixture)
-python -m scripts.platformkit.beat_the_close_scoreboard --corpus tests/fixtures/proof
-
-# in-game conditioning, conditional vs static (committed fixture)
-python -m scripts.platformkit.ingame_scoreboard --corpus tests/fixtures/proof
-
-# one calibrated matchup, pregame + in-game, with edge_claimed:false baked in
-python -m scripts.platformkit.predict_matchup --sport nba --home BOS --away LAL \
-    --elapsed 0 --home-score 0 --away-score 0
+pip install "numpy>=1.24" "pandas>=2.0" "matplotlib>=3.8" pytest
+python scripts/platformkit/analytics_showcase/check_all.py                 # 0 FAIL is the bar
+python -m scripts.platformkit.eval_gate.claim_consistency --repo-root .   # claim_consistency: 0 finding(s)
+python -m pytest scripts/platformkit/eval_gate/test_shin.py -q            # the Shin devig: 7 passed
 ```
 
-The fixture paths run the SAME code on a small committed sample so the methodology verifies
-end-to-end with no private data; the canonical full-corpus numbers live in `vault/_Edge_Maps/`
-and reproduce on the private corpora. Proof-module index: [docs/PROOFS.md](PROOFS.md).
+The engine-side scoreboards (`edge_hunt_scoreboard`, `beat_the_close_scoreboard`, `ingame_scoreboard`,
+`predict_matchup`) and their committed fixtures live in the private repository and are not runnable
+from this tree; their recorded outputs are transcribed in
+[MARKET_EFFICIENCY_PROOF.md](MARKET_EFFICIENCY_PROOF.md) and [INGAME_PROOF.md](INGAME_PROOF.md). The full
+public command list is [REPRODUCE.md](../REPRODUCE.md) and [QUANT_BRIEF.md section 6](QUANT_BRIEF.md);
+proof-module index: [docs/PROOFS.md](PROOFS.md).
 
 ---
 

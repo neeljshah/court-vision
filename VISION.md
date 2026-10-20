@@ -169,9 +169,9 @@ More detail: [docs/PLATFORM.md](docs/PLATFORM.md)
 The honest answer is that the platform is at an early proving stage. Several things need
 to land before the vision is validated:
 
-**1. A demonstrated forward-captured edge.** The first real Pinnacle closing-line CLV
-reading happens in October 2026, when preseason lines are available for fresh data. Until
-then, the strongest evidence is the methodology — the harnesses, the gate, the documented
+**1. A forward-captured calibration record.** The forward paper series has run since 2026-10-06
+and, as of 2026-10-19, has no verdict and no closing-line-value reading
+(docs/JOB_EVIDENCE_PACKET.md section 5). Until it does, the strongest evidence is the methodology — the harnesses, the gate, the documented
 self-corrections — not a P&L number. That's the honest position and worth defending.
 
 **2. CV features that actually move the model.** Today, CV-derived features show SHAP ≈ 0
@@ -207,7 +207,7 @@ That methodology is rare and it's more durable than any single model's MAE. The 
 numbers are competitive with published benchmarks — that's the baseline. The self-caught
 leaks, the retracted headlines, the honest limitations file — those are the differentiator.
 
-A system that publishes a fake +18.38% ROI is easy to build. A system that catches the
+A system that publishes a fake +18.38% ROI (a figure this project retracted; see docs/JOB_EVIDENCE_PACKET.md section 4) is easy to build. A system that catches the
 artifact, root-causes it to specific lines of code, documents it publicly, and retires the
 inflated claim is harder. That's what CourtVision is.
 

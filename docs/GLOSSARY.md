@@ -107,9 +107,10 @@
 - **Keyless source** -- a feed usable without an API key (ESPN site API, MLB StatsAPI, Sackmann,
   football-data); preferred for resilience and zero cost.
 - **Kalshi / Polymarket** -- regulated / on-chain **prediction markets** (low-/no-vig: the fair
-  price *is* the tradeable price, so a proven calibration edge converts directly).
+  price *is* the tradeable price). The system quotes them paper-only; no calibration advantage
+  against them has been shown.
 - **DFS feeds (Underdog / PrizePicks / FanDuel / DraftKings)** -- daily-fantasy / sportsbook prop
-  lines; the soft-prop pockets where edge can plausibly exist.
+  lines; the prop lines the system prices against. No edge is claimed on them.
 - **As-of-stamped** -- every data row carries the timestamp at which it was known, so features can be
   rebuilt leak-free for any historical moment.
 - **Crosswalk** -- a mapping between id systems that disagree (ESPN event_id != NBA-stats game_id;

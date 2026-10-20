@@ -1,6 +1,6 @@
 # Known Limitations
 
-Concrete operational state of CourtVision as of **2026-06-11**. This file is kept honest so
+Concrete operational state of CourtVision as of **2026-06-11** (forward-record lines updated 2026-10-20). This file is kept honest so
 that the README and ARCHITECTURE don't have to litter their headline sections with caveats.
 Audit trail of fixes: [`../CHANGELOG.md`](../CHANGELOG.md). Live operational state:
 `CLAUDE-state.md` *(private repository)*.
@@ -20,7 +20,7 @@ written here and the inflated one was retired.
 |---|---|---|
 | **+18.38% ROI vs real closing lines** | Market-follow grading artifact: grader bets the market's own devigged direction, never reads the model; priced at flat -110 fiction; filters in-sample tuned | Break-even-minus-vig overall (~-2% to -5%); every candidate edge, including assists, was ultimately rejected or retracted (AST RETRACTED 2026-07-21 as regime-dependent); no ROI edge claimed |
 | **endQ3 Brier 0.1191 "Pinnacle-class"** | Two features computed from Q4 data (`halftime_pace_shift`, `trailing_team_q4_usg_hhi`) cause the model to peek at the quarter it predicts; cited source file actually reads 0.1354 | Leak-free ~0.141 after removing the Q4-derived features |
-| **+54%/78% in-play ROI on 55,073 bets** | Settled against an L5 rolling-average line proxy, not real sharp closes | L5-proxy model-quality ceiling only; no realized-ROI estimate quoted (first real CLV Oct 2026) |
+| **+54%/78% in-play ROI on 55,073 bets** | Settled against an L5 rolling-average line proxy, not real sharp closes | L5-proxy model-quality ceiling only; no realized-ROI estimate quoted (no closing-line-value reading exists as of 2026-10-19; [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md) section 5) |
 | **Full-season spread/total edge** | Full-season WF backtest (truncation-invariance proven): CLV ≈ 0 (corr-with-outcome = 0.001; explains 0.13%/0.29% of the move) | Market is efficient on closing lines; every candidate edge, including assists, was ultimately rejected or retracted — no ROI edge claimed |
 | **In-series win-prob edge** | PBP Finals replay (G1–G3): pooled win-prob Brier **0.34–0.40** (worse than a coin flip) | No pregame edge in playoffs; NYK/SAS coin flip at ~47–50% |
 
@@ -30,12 +30,13 @@ Full proof artifacts and source-code root causes: **[JOB_EVIDENCE_PACKET.md](JOB
 
 ## Validation gaps
 
-### Sharp-book CLV — first reading October 2026
+### Sharp-book CLV — no reading yet (as of 2026-10-19)
 
 No historical Pinnacle closing-line archive exists publicly. The Pinnacle scraper daemon
-(`scripts/pinnacle_scraper.py`) accumulates closes from Oct 2026 onward; the first real
-sharp-book CLV reading is therefore ~4 months out. Until that gate runs, no real-money
-execution is justified.
+(`scripts/pinnacle_scraper.py`) accumulates closes from Oct 2026 onward. The forward paper series
+has run since 2026-10-06 and, as of 2026-10-19, computes no closing-line value and no fee-netted
+markout ([JOB_EVIDENCE_PACKET.md section 5](JOB_EVIDENCE_PACKET.md)). Until that reading exists, no
+real-money execution is justified.
 
 What exists at real closes (partial-season, DK/FD/MGM/BetRivers archives via public repos):
 8,360+ walk-forward bets — sufficient for the current honest read (break-even-minus-vig) but
@@ -46,7 +47,7 @@ not a multi-season sample. Consolidated report: `data/models/gate1_results_summa
 The 55,073-bet in-play backtest settles against an **L5 rolling-average line proxy**, not real
 Pinnacle/DK closes. L5 lines are softer than sharp closes, so the paper figure is a
 model-quality ceiling, not a deployment forecast. No realized-ROI estimate is quoted:
-nothing counts until it is graded against real closing lines (first real CLV Oct 2026).
+nothing counts until it is graded against real closing lines (no such reading exists as of 2026-10-19).
 
 ### Market efficiency (the honest finding)
 
