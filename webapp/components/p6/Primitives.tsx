@@ -41,7 +41,7 @@ export function Unavailable({ reason }: { reason?: string }) {
     >
       <span className="font-mono text-stale">unavailable</span>
       {reason ? (
-        <span className="text-xs text-muted-foreground">{reason}</span>
+        <span className="text-xs text-foreground">{reason}</span>
       ) : null}
     </div>
   );

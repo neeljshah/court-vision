@@ -9,9 +9,16 @@ export function QuotedOnList({ artifact }: { artifact: string }) {
     <div data-testid="quoted-on">
       <p><code>{artifact}</code> is quoted on:</p>
       {items.length ? (
-        <ul>
+        <ul style={{ display: "flex", flexWrap: "wrap", gap: "4px 12px", listStyle: "none", padding: 0 }}>
           {items.map((q) => (
-            <li key={q.href}>{q.href.startsWith("/") ? <Link href={q.href}>{q.label}</Link> : <a href={q.href}>{q.label}</a>}</li>
+            // 24px minimum touch target (axe target-size); the list is a chip row, not prose.
+            <li key={q.href} style={{ minHeight: 24, display: "inline-flex", alignItems: "center" }}>
+              {q.href.startsWith("/") ? (
+                <Link href={q.href} style={{ padding: "4px 0", textDecoration: "underline" }}>{q.label}</Link>
+              ) : (
+                <a href={q.href} style={{ padding: "4px 0", textDecoration: "underline" }}>{q.label}</a>
+              )}
+            </li>
           ))}
         </ul>
       ) : (

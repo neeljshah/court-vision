@@ -25,7 +25,7 @@ export default async function GamesPage() {
     <main className="mx-auto flex max-w-7xl flex-col gap-4 p-6">
       <header className="flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-xl font-semibold tracking-tight">
-          Games{" "}
+          Games <span className="font-data text-xs text-warning">PAPER ONLY</span>{" "}
           <span className="font-data text-sm text-muted-foreground">
             {isSnapshotMode ? "published snapshot" : "today's slate"}
           </span>

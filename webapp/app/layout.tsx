@@ -56,7 +56,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body>
         <a href="#main-content" className={s.skip}>Skip to main content</a>
         {asOf && (
-          <div className={s.banner} role="note">
+          <div className={s.banner} role="region" aria-label="Snapshot notice">
             Read-only snapshot: {asOf}. No live data; paper units only.
           </div>
         )}

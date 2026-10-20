@@ -10,8 +10,8 @@ export function HomeForwardStatus({ desk }: { desk: Desk | null }) {
   return (
     <div className="metric border border-border bg-card p-3 text-sm" data-testid="forward-status">
       <p className="m-0 text-foreground">
-        A prospective, receipt-backed paper series has run since 2026-10-06. It has no calibration
-        verdict yet.
+        PAPER ONLY: a prospective, receipt-backed series has run since 2026-10-06. It has no
+        calibration verdict yet.
       </p>
       <div className="mt-1 font-data text-xs text-muted-foreground">
         <span data-role="verdict" className="border border-border px-1.5 text-foreground">INSUFFICIENT</span>{" "}
@@ -28,7 +28,7 @@ export function HomeForwardStatus({ desk }: { desk: Desk | null }) {
         ) : (
           <span data-role="n">desk export not staged on this clone</span>
         )}{" "}
-        &middot; <Link href="/desk/" className="text-primary hover:underline">night receipts</Link>
+        &middot; <Link href="/desk/" className="text-primary underline underline-offset-2 hover:no-underline">night receipts</Link>
       </div>
     </div>
   );

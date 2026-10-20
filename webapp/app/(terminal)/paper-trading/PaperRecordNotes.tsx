@@ -35,7 +35,7 @@ export function PaperOnlyBanner() {
       className="mb-5 rounded-lg border border-warning/50 bg-warning/10 px-4 py-2.5 text-[12px] text-warning"
     >
       <span className="font-semibold">Real-money: DENY.</span>{" "}
-      Paper mode only. No real money placed. No order path exists. Calibration record only.
+      PAPER ONLY (paper mode). No real money placed. No order path exists. Calibration record only.
     </div>
   );
 }

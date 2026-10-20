@@ -11,6 +11,9 @@ const EVIDENCE_LINKS: Array<{ label: string; href: string; external?: boolean }>
   { label: "Reproduce", href: githubDoc("REPRODUCE.md"), external: true },
   { label: "Retraction record", href: "/evidence/retractions/" },
   { label: "Model cards", href: githubDoc("docs/evidence/model_cards/INDEX.json"), external: true },
+  { label: "Methodology", href: "/methodology/" },
+  { label: "Desk health", href: "/desk/health/" },
+  { label: "Findings", href: "/analytics/findings/" },
   { label: "About", href: "/about/" },
 ];
 

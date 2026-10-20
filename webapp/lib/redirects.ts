@@ -27,7 +27,7 @@ export const REDIRECTS: Record<string, Redirect> = {
   "/lab/": { to: "/analytics/lab/", label: "Research: measurement lab" },
   "/lab/counterfactual/": { to: "/analytics/state-reliability/", label: "Calibration: state reliability" },
   "/lab/microstructure/": { to: "/analytics/lab/", label: "Research: measurement lab" },
-  "/analytics/": { to: "/", label: "Today" },
+  "/analytics/": { to: "/", label: "Today (home)" },
   "/use-it/": { to: "/about/", label: "About" },
 };
 

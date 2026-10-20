@@ -9,6 +9,7 @@ import { readFileSync } from "node:fs";
  * Plain paths pass through; an unresolvable entry returns null.
  */
 export function resolvePage(entry, manifest) {
+  if (typeof entry === "string" && entry.startsWith("trail:fills:")) return resolveFillPage(entry);
   if (typeof entry !== "string" || !entry.startsWith("manifest:")) return entry;
   const [, key, index] = entry.split(":");
   const list = manifest && Array.isArray(manifest[key]) ? manifest[key] : [];
@@ -16,6 +17,20 @@ export function resolvePage(entry, manifest) {
   if (typeof id !== "string") return null;
   if (key === "bet_ids") return `/paper/${encodeURIComponent(id).replace(/\./g, "%2E")}/`;
   return null;
+}
+
+/** "trail:fills:N" -> the Nth baked paper fill's detail page. The exported directory is the
+ *  once-encoded fill id (components/paper_pm/paperIds.ts fillParam); the page path carries one
+ *  more layer because measurePage decodes once, exactly like the live href. */
+export function resolveFillPage(entry, path = "public/demo-data/api_paper_trail_limit_400.json") {
+  const index = Number(entry.split(":")[2]) || 0;
+  let rows = [];
+  try { rows = JSON.parse(readFileSync(path, "utf8")).trail ?? []; } catch { return null; }
+  const r = rows[index];
+  if (!r) return null;
+  const fillId = [r.sport || "unknown", r.game_id || "unknown", r.side || "unknown", r.ts || "unknown",
+    r.stake_units ?? "unknown"].join("|");
+  return `/paper/${encodeURIComponent(encodeURIComponent(fillId))}/`;
 }
 
 /** The baked demo manifest, or null outside snapshot mode. */

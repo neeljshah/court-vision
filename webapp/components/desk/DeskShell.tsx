@@ -9,7 +9,7 @@ import { ghBlob } from "./deskExtras.server";
 import { ReceiptChip } from "@/components/showcase/ReceiptChip";
 
 export const PAPER_HEADER =
-  "PAPER DESK -- paper only, simulated maker quotes on the recorded Kalshi tape; not a verdict";
+  "PAPER DESK -- PAPER ONLY, simulated maker quotes on the recorded Kalshi tape; not a verdict";
 
 const TABS = [
   { href: "/desk", label: "Record" },
@@ -88,7 +88,7 @@ export function DeskShell({ desk, title, active, children }: {
     // (axe landmark-no-duplicate-main / landmark-main-is-top-level).
     <div className="mx-auto flex max-w-6xl flex-col gap-5 p-4 sm:p-6">
       <header>
-        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{desk?.header ?? PAPER_HEADER}</p>
+        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{(desk?.header ?? PAPER_HEADER).replace(/paper only/i, "PAPER ONLY")}</p>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight text-foreground">{title}</h1>
         <p className="mt-1 font-data text-xs text-faint">
           {desk ? `export ${desk.date}, generated ${desk.generated_at_utc}; ${desk.refusals.length} refusal(s)` :

@@ -1,53 +1,53 @@
 {
-  "$comment": "Gzip byte ceilings per exported page (module scripts, stylesheets, HTML) = the 2026-10-20 after-measurement + 10% rounded up to the KB; see perf/README.md. The paper trade page is resolved from demo-data/manifest.json at run time.",
+  "$comment": "Gzip byte ceilings per exported page (module scripts, stylesheets, HTML) = the 2026-10-20 21:5xZ CI measurement of the unified site (webapp-qa run 39502127175, public tip becd8d740) + 10% rounded up to the KB; see perf/README.md. The paper fill page (trail:fills:0) is resolved from demo-data/api_paper_trail_limit_400.json at run time; its ceiling is carried over until the first CI measurement.",
   "basePath": "/court-vision",
   "pages": {
     "/": {
-      "jsGz": 157696,
-      "cssGz": 12288,
+      "jsGz": 159744,
+      "cssGz": 16384,
       "htmlGz": 19456
     },
     "/desk/": {
-      "jsGz": 157696,
-      "cssGz": 12288,
-      "htmlGz": 16384
+      "jsGz": 159744,
+      "cssGz": 16384,
+      "htmlGz": 25600
     },
     "/paper-trading/": {
-      "jsGz": 162816,
-      "cssGz": 12288,
-      "htmlGz": 9216
+      "jsGz": 202752,
+      "cssGz": 16384,
+      "htmlGz": 10240
     },
     "/analytics/": {
-      "jsGz": 130048,
-      "cssGz": 14336,
-      "htmlGz": 103424
+      "jsGz": 115712,
+      "cssGz": 8192,
+      "htmlGz": 6144
     },
     "/analytics/calibration/": {
-      "jsGz": 125952,
-      "cssGz": 10240,
-      "htmlGz": 22528
+      "jsGz": 168960,
+      "cssGz": 14336,
+      "htmlGz": 31744
     },
     "/analytics/papers/": {
-      "jsGz": 113664,
-      "cssGz": 8192,
+      "jsGz": 117760,
+      "cssGz": 10240,
       "htmlGz": 38912
     },
     "/analytics/findings/shrinkage/": {
-      "jsGz": 122880,
-      "cssGz": 7168,
-      "htmlGz": 20480
+      "jsGz": 128000,
+      "cssGz": 10240,
+      "htmlGz": 21504
     },
     "/analytics/state-reliability/": {
-      "jsGz": 125952,
-      "cssGz": 10240,
-      "htmlGz": 17408
+      "jsGz": 130048,
+      "cssGz": 12288,
+      "htmlGz": 15360
     },
     "/analytics/m/agent_fleet_history/": {
-      "jsGz": 119808,
-      "cssGz": 9216,
-      "htmlGz": 12288
+      "jsGz": 126976,
+      "cssGz": 10240,
+      "htmlGz": 11264
     },
-    "manifest:bet_ids:0": {
+    "trail:fills:0": {
       "jsGz": 139264,
       "cssGz": 12288,
       "htmlGz": 6144
