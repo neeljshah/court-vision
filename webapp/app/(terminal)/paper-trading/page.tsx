@@ -9,6 +9,8 @@
 // UNITS/prob only. NO '$'. Real-money DENY. stale-never-green LiveBadge.
 
 import { useCallback, useMemo, useState } from "react";
+import Link from "next/link";
+import { isSnapshotMode } from "@/lib/fetchHonest";
 import type { PaperTrailRow } from "@/lib/p5api";
 import { useLiveData } from "@/lib/useLiveData";
 import { Panel, Badge, Unavailable } from "@/components/p6/Primitives";
@@ -81,6 +83,12 @@ export default function PaperTradingPage() {
       <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-xl font-semibold text-foreground">Paper Trading Center</h1>
+          {isSnapshotMode && (
+            <p className="mt-1 text-[12px] text-amber-400">
+              This page needs the live paper service, which the static snapshot does not include. The forward
+              paper record (nights, coverage, fills) is on the <Link href="/desk/" className="underline">desk page</Link>.
+            </p>
+          )}
           <p className="mt-0.5 text-[12px] text-muted-foreground">
             Real settled book (primary) + Kalshi / Polymarket trail (secondary).
             Units and probability only. No dollars.

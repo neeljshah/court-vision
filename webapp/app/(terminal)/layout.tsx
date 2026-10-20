@@ -6,6 +6,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { AppShell, THEME_INIT_SCRIPT } from "@/components/AppShell";
 import { isSnapshotMode } from "@/lib/fetchHonest";
+import { loadDesk } from "@/lib/desk.server";
 
 // Demo banner: static-export builds serve a frozen sample snapshot, not live
 // data -- read generated_at straight off the baked manifest (build-time only,
@@ -49,6 +50,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   const generatedAt = demoGeneratedAt();
+  const deskDate = isSnapshotMode ? loadDesk()?.date ?? null : null;
   return (
     // Start dark by default; the ThemeScript below will override if the user
     // has previously chosen light mode. The "dark" class here prevents FOWT
@@ -65,7 +67,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         {isSnapshotMode && (
           <div className="border-b border-warning bg-warning/10 px-4 py-1 text-center font-mono text-[11px] uppercase tracking-wide text-warning">
             Demo -- read-only snapshot of the live system
-            {generatedAt ? ` as of ${generatedAt}` : ""}; no live data, paper
+            {generatedAt ? ` (model data as of ${generatedAt})` : ""}
+            {deskDate ? `; paper desk record through ${deskDate}` : ""}; no live data, paper
             units only.
           </div>
         )}
