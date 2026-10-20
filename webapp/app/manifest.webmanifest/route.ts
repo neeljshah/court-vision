@@ -10,7 +10,7 @@ export function GET() {
     name: "CourtVision Board",
     short_name: "CV Board",
     description: "Calibrated sports forecasts vs book prices. Paper intent logging only.",
-    start_url: `${BASE_PATH}/`,
+    start_url: `${BASE_PATH}/games/`,
     scope: `${BASE_PATH}/`,
     display: "standalone",
     background_color: "#0C0F15",
