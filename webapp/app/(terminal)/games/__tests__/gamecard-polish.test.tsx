@@ -156,7 +156,7 @@ describe("GameCard -- tier + units chip for a real bet", () => {
 
   it("renders an aria-label on the bet chip span for screen readers", () => {
     render(<GameCard sport="nba" rec={predRec()} edge={betEdge("B", 1.5)} />);
-    const chipWrap = screen.getByLabelText(/best bet: tier B/i);
+    const chipWrap = screen.getByLabelText(/paper candidate: tier B/i);
     expect(chipWrap).toBeInTheDocument();
   });
 

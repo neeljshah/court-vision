@@ -55,6 +55,12 @@
   .menuButton { display: inline-flex; }
 }
 
+@media (max-width: 359px) {
+  .row { padding: 0 8px; gap: 6px; }
+  .brand { margin-right: 0; }
+  .kbd { display: none; }
+}
+
 .header a:focus-visible, .header button:focus-visible, .footer a:focus-visible,
 .crumbs a:focus-visible, .notFound a:focus-visible {
   outline: 2px solid var(--sh-focus); outline-offset: 2px;

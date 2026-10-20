@@ -51,7 +51,7 @@ describe("Games decision availability", () => {
     expect(screen.getByText("decision unavailable")).toBeInTheDocument();
     expect(screen.getByText(/Decision unavailable means no usable decision was received/)).toBeVisible();
     expect(screen.queryByText(/below floor|^no bet reported$/i)).toBeNull();
-    expect(screen.queryByLabelText(/best bet: tier/i)).toBeNull();
+    expect(screen.queryByLabelText(/paper candidate: tier/i)).toBeNull();
   });
 
   it.each([
@@ -65,12 +65,12 @@ describe("Games decision availability", () => {
   ])("clears an old selection on failure and recovers from %j", async (failure) => {
     bestbets.mockResolvedValue({ status: "ok", games: [selected] });
     await act(async () => { render(<SlateCards />); });
-    expect(screen.getByLabelText("best bet: tier B, 1.00 units")).toBeInTheDocument();
+    expect(screen.getByLabelText("paper candidate: tier B, 1.00 units")).toBeInTheDocument();
 
     bestbets.mockResolvedValue(failure);
     await act(async () => { await vi.advanceTimersByTimeAsync(120_000); });
     expect(screen.getByText("decision unavailable")).toBeInTheDocument();
-    expect(screen.queryByLabelText(/best bet: tier/i)).toBeNull();
+    expect(screen.queryByLabelText(/paper candidate: tier/i)).toBeNull();
     expect(screen.queryByText(/below floor|^no bet reported$/i)).toBeNull();
 
     bestbets.mockResolvedValue({ status: "ok", games: [{ ...selected, best_bets: [] }] });
@@ -90,9 +90,9 @@ describe("Games decision availability", () => {
 
     bestbets.mockResolvedValue({ status: "ok", games: [selected] });
     await act(async () => { await vi.advanceTimersByTimeAsync(120_000); });
-    expect(screen.getByLabelText("best bet: tier B, 1.00 units")).toBeInTheDocument();
+    expect(screen.getByLabelText("paper candidate: tier B, 1.00 units")).toBeInTheDocument();
     await act(async () => { finishOld({ status: "unavailable", reason: "request aborted" }); });
-    expect(screen.getByLabelText("best bet: tier B, 1.00 units")).toBeInTheDocument();
+    expect(screen.getByLabelText("paper candidate: tier B, 1.00 units")).toBeInTheDocument();
     expect(screen.queryByText("decision unavailable")).toBeNull();
   });
 });

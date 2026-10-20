@@ -126,7 +126,7 @@ describe("BestBetsBoard timestamp provenance", () => {
     );
     expect(screen.getByTestId("auto-refresh-label")).toHaveTextContent("auto-refreshing every ~30s");
     expect(screen.getByTestId("next-refresh-countdown")).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Refresh best bets now" }));
+    fireEvent.click(screen.getByRole("button", { name: "Refresh paper candidates now" }));
     expect(refresh).toHaveBeenCalledOnce();
   });
 

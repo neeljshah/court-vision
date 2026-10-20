@@ -1,5 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, within } from "@testing-library/react";
+import { act, render, screen, fireEvent, within } from "@testing-library/react";
+import { hydrateRoot, type Root } from "react-dom/client";
+import { renderToString } from "react-dom/server";
 
 let pathname = "/";
 vi.mock("next/navigation", () => ({ usePathname: () => pathname }));
@@ -79,5 +81,27 @@ describe("SiteHeader", () => {
     expect(document.documentElement.classList.contains("dark")).toBe(true);
     expect(localStorage.getItem("cv-theme")).toBe("dark");
     expect(toggle).toHaveAttribute("aria-pressed", "true");
+  });
+
+  it.each(["dark", "light"])("hydrates after the head script applies the %s theme", async (theme) => {
+    const container = document.createElement("div");
+    container.innerHTML = renderToString(<SiteHeader />);
+    document.body.appendChild(container);
+    document.documentElement.setAttribute("data-theme", theme);
+    const onRecoverableError = vi.fn();
+    let root: Root | undefined;
+    try {
+      await act(async () => {
+        root = hydrateRoot(container, <SiteHeader />, { onRecoverableError });
+      });
+      expect(onRecoverableError).not.toHaveBeenCalled();
+      const toggle = within(container).getByRole("button", {
+        name: theme === "dark" ? "Switch to light theme" : "Switch to dark theme",
+      });
+      expect(toggle).toHaveAttribute("aria-pressed", String(theme === "dark"));
+    } finally {
+      await act(async () => root?.unmount());
+      container.remove();
+    }
   });
 });

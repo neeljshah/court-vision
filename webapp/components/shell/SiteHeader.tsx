@@ -31,14 +31,14 @@ function NavItems({ current, onNavigate }: { current: string | null; onNavigate?
 }
 
 function ThemeToggle() {
-  const [dark, setDark] = useState(
-    () => typeof document !== "undefined" && document.documentElement.getAttribute("data-theme") === "dark",
-  );
+  const [dark, setDark] = useState(false);
+  useEffect(() => {
+    setDark(document.documentElement.getAttribute("data-theme") === "dark");
+  }, []);
   return (
     <button
       type="button"
       className={s.tool}
-      suppressHydrationWarning
       aria-pressed={dark}
       aria-label={dark ? "Switch to light theme" : "Switch to dark theme"}
       onClick={() => {

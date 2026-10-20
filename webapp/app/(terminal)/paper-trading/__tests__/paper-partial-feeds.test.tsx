@@ -39,6 +39,7 @@ function mocks() {
 
 async function summariesLoaded() {
   await waitFor(() => {
+    expect(screen.getByTestId("paper-balance-headline")).toHaveTextContent("101.00");
     expect(screen.getByTestId("paper-tally-clv")).toHaveTextContent(CLV_UNAVAILABLE);
     expect(screen.getByTestId("clv-mean-clv")).toHaveTextContent(CLV_UNAVAILABLE);
   });
