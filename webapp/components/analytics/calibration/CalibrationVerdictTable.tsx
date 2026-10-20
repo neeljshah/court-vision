@@ -23,7 +23,7 @@ export function CalibrationVerdictTable({ figures }: { figures: CanonicalFigure[
   const rows = verdictRows(figures);
   if (!rows.length) return <p>docs/evidence/CANONICAL_FIGURES.json is not staged on this clone.</p>;
   return (
-    <div className="calibration-table-wrap" role="region" aria-label="Verdict table" data-scroll-region tabIndex={0}>
+    <div className="calibration-table-wrap" role="region" aria-label="Verdict table, scrollable" data-scroll-region tabIndex={0}>
       <table className="calibration-table">
         <caption>Model against the market reference, Brier (lower is better)</caption>
         <thead>

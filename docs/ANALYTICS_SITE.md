@@ -1,6 +1,6 @@
 # The Analytics Site -- a Reviewer's Map
 
-**Live site:** https://neeljshah.github.io/court-vision/analytics/
+**Live site:** https://neeljshah.github.io/court-vision/
 
 CourtVision Analytics is a static, dated snapshot that publishes descriptive
 measurements of forecast calibration against real outcomes and devigged
@@ -25,7 +25,7 @@ All URLs verified `200` on 2026-09-17 with
 
 | Page | What it shows | Source artifact(s) | Generator module |
 |---|---|---|---|
-| [Overview](https://neeljshah.github.io/court-vision/analytics/) | Landing dashboard: module counts, headline calibration example, paper index | [`webapp/public/data/showcase/`](../webapp/public/data/showcase) (all modules) + [`calibration_stability.json`](../webapp/public/data/showcase/calibration_stability.json) | `scripts/platformkit/analytics_showcase/*.py` (all showcase modules) |
+| [Overview](https://neeljshah.github.io/court-vision/) | Landing dashboard: module counts, headline calibration example, paper index | [`webapp/public/data/showcase/`](../webapp/public/data/showcase) (all modules) + [`calibration_stability.json`](../webapp/public/data/showcase/calibration_stability.json) | `scripts/platformkit/analytics_showcase/*.py` (all showcase modules) |
 | [Papers](https://neeljshah.github.io/court-vision/analytics/papers/) | Index of published research papers, one per calibration/measurement question | [`webapp/public/data/papers/`](../webapp/public/data/papers) (29 files) | authored papers, evidence-checked against `out/*.json` by `check-paper-evidence.mjs` |
 | [Papers / one paper](https://neeljshah.github.io/court-vision/analytics/papers/how-to-read-a-courtvision-paper/) | A single paper's sections with inline evidence citations | [`how-to-read-a-courtvision-paper.json`](../webapp/public/data/papers/how-to-read-a-courtvision-paper.json) | n/a (authored; evidence resolved at build time) |
 | [Calibration](https://neeljshah.github.io/court-vision/analytics/calibration/) | Reliability bins (mean predicted vs. observed) with bootstrap CIs, model vs. market | [`calibration_stability.json`](../webapp/public/data/showcase/calibration_stability.json) | `scripts/platformkit/analytics_showcase/calibration_stability.py` |

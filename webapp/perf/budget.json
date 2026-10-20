@@ -1,5 +1,5 @@
 {
-  "$comment": "Gzip byte ceilings per exported page (module scripts, stylesheets, HTML) = the 2026-10-20 21:5xZ CI measurement of the unified site (webapp-qa run 39502127175, public tip becd8d740) + 10% rounded up to the KB; see perf/README.md. The paper fill page (trail:fills:0) is resolved from demo-data/api_paper_trail_limit_400.json at run time; its ceiling is carried over until the first CI measurement.",
+  "$comment": "Gzip byte ceilings per exported page (module scripts, stylesheets, HTML) = the 2026-10-20 21:5xZ CI measurement of the unified site (webapp-qa run 39502127175, public tip becd8d740) + 10% rounded up to the KB; see perf/README.md. The paper fill page (trail:fills:0) is resolved from demo-data/api_paper_trail_limit_400.json at run time; measured in CI run 39506767551 (+10%).",
   "basePath": "/court-vision",
   "pages": {
     "/": {
@@ -48,9 +48,9 @@
       "htmlGz": 11264
     },
     "trail:fills:0": {
-      "jsGz": 139264,
+      "jsGz": 140288,
       "cssGz": 12288,
-      "htmlGz": 6144
+      "htmlGz": 7168
     }
   },
   "images": {

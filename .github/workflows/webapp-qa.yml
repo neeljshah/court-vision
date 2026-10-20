@@ -128,15 +128,16 @@ jobs:
           retention-days: 7
           if-no-files-found: ignore
 
-      # enable after re-measuring perf/budget.json and a11y-pages.json on the restructured shell
-      # - name: Performance budget -- gzip JS/CSS/HTML per page + image caps (hard gate)
-      #   run: |
-      #     node --test scripts/perf-budget.test.mjs scripts/a11y-gate.test.mjs
-      #     node scripts/perf-budget.mjs out perf/budget.json
+      # Re-enabled 2026-10-20 22:3xZ after re-measuring on the unified shell (qa run 39506767551:
+      # every page inside budget.json + 10%; axe 0 serious/critical, 6 advisory moderate).
+      - name: Performance budget -- gzip JS/CSS/HTML per page + image caps (hard gate)
+        run: |
+          node --test scripts/perf-budget.test.mjs scripts/a11y-gate.test.mjs
+          node scripts/perf-budget.mjs out perf/budget.json
 
-      # - name: Accessibility gate -- axe-core, zero serious/critical in both themes (hard gate)
-      #   # ubuntu-latest ships Google Chrome; playwright-core drives it (no browser download).
-      #   run: node scripts/a11y-gate.mjs out perf/a11y-pages.json
+      - name: Accessibility gate -- axe-core, zero serious/critical in both themes (hard gate)
+        # ubuntu-latest ships Google Chrome; playwright-core drives it (no browser download).
+        run: node scripts/a11y-gate.mjs out perf/a11y-pages.json
 
       - name: Page-count tripwire (hard gate)
         run: |

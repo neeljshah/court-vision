@@ -100,7 +100,7 @@ export default function BetDetailPageClient() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8">
-      <nav aria-label="breadcrumb" className="mb-5">
+      <nav aria-label="Fill detail links" className="mb-5">
         <ol className="flex items-center gap-2 text-[12px] text-muted-foreground">
           <li>
             <Link href="/paper-trading/" className="hover:text-foreground">

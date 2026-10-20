@@ -22,7 +22,7 @@ calibration result. Nothing here is a betting-edge claim.
 [EVIDENCE.md](EVIDENCE.md) and the audited [evidence packet](docs/JOB_EVIDENCE_PACKET.md). A fresh clone
 re-verifies the site's committed artifacts in about five minutes (the "Verify it yourself" section below).
 
-### [Open the live analytics site -> neeljshah.github.io/court-vision/analytics](https://neeljshah.github.io/court-vision/analytics/)
+### [Open the live analytics site -> neeljshah.github.io/court-vision/](https://neeljshah.github.io/court-vision/)
 
 **Reading this as a trading desk or quant team?** Start with the one-page
 [desk brief](docs/QUANT_BRIEF.md): pricing quality against the devigged close and the live market,
@@ -32,7 +32,7 @@ what exists and what it is evidence of, and what is not shown.
 [![Honesty gate + webapp QA](https://github.com/neeljshah/court-vision/actions/workflows/webapp-qa.yml/badge.svg)](https://github.com/neeljshah/court-vision/actions/workflows/webapp-qa.yml)
 [![Proof harness](https://github.com/neeljshah/court-vision/actions/workflows/proof.yml/badge.svg)](https://github.com/neeljshah/court-vision/actions/workflows/proof.yml)
 
-[![CourtVision analytics: how forecasts compare with outcomes](docs/img/analytics_home.png)](https://neeljshah.github.io/court-vision/analytics/)
+[![CourtVision analytics: how forecasts compare with outcomes](docs/img/analytics_home.png)](https://neeljshah.github.io/court-vision/)
 
 ## Results at a glance
 

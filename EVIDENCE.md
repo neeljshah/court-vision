@@ -3,7 +3,7 @@
 Every claim this project makes, in one table: the number, the verdict, the file that proves it,
 the command that re-checks it, and the live page that shows it.
 
-**Live analytics site:** https://neeljshah.github.io/court-vision/analytics/
+**Live analytics site:** https://neeljshah.github.io/court-vision/
 
 Ground rules for this page:
 
@@ -70,7 +70,7 @@ Verdict vocabulary: `MATCHES_CLOSE` / `TRAILS_CLOSE` / `MARKET_SHARPER` / `MODEL
 |---|---|---|---|---|
 | Derived intelligence layer between raw data and models | 151 files, manifest per sport | `DESCRIPTIVE` | [docs/INTELLIGENCE.md](docs/INTELLIGENCE.md), [docs/evidence/intelligence/](docs/evidence/intelligence/) | recorded |
 | Fact-claims corpus, generated vs re-verified split | 103,048 generated; 101,864 recompute from their declared source and formula (provenance, not predictive accuracy) | `DESCRIPTIVE` | [claims_corpus_meta.json](scripts/platformkit/analytics_showcase/out/claims_corpus_meta.json) | `python -m scripts.platformkit.analytics_showcase.claims_corpus_meta --check` |
-| Entity atlas | 1,549 entity cards | `DESCRIPTIVE` | [webapp/public/data/showcase/](webapp/public/data/showcase/) | [live site](https://neeljshah.github.io/court-vision/analytics/) |
+| Entity atlas | 1,549 entity cards | `DESCRIPTIVE` | [webapp/public/data/showcase/](webapp/public/data/showcase/) | [live site](https://neeljshah.github.io/court-vision/) |
 
 ## E. The analytics site
 

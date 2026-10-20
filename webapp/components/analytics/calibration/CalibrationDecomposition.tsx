@@ -26,7 +26,7 @@ const pct = (v: number | null) => `${Math.round((v ?? 0) * 100)}%`;
 
 export function CalibrationDecomposition({ series }: { series: ReliabilitySeries[] }) {
   return (
-    <div className="calibration-table-wrap" role="region" aria-label="Brier decomposition" data-scroll-region tabIndex={0}>
+    <div className="calibration-table-wrap" role="region" aria-label="Brier decomposition, scrollable" data-scroll-region tabIndex={0}>
       <table className="calibration-table">
         <caption>Brier decomposition by sport and series (lower Brier is better; uninformative baseline 0.2500)</caption>
         <thead>

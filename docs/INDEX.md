@@ -18,7 +18,7 @@
 
 | You are a... | Read in this order |
 |--------------|--------------------|
-| **Recruiter / quant reviewer** | [QUANT_BRIEF (one page, desk terms)](QUANT_BRIEF.md) -> [README](../README.md) -> [EVIDENCE index](../EVIDENCE.md) -> [CAPABILITIES (the whole system on one page)](CAPABILITIES.md) -> [live analytics site](https://neeljshah.github.io/court-vision/analytics/) ([site guide](ANALYTICS_SITE.md)) -> [JOB_EVIDENCE_PACKET](JOB_EVIDENCE_PACKET.md) -> [PREDICTOR_PLATFORM](PREDICTOR_PLATFORM.md) -> [PROOFS](PROOFS.md) -> [KNOWN_LIMITATIONS](KNOWN_LIMITATIONS.md) |
+| **Recruiter / quant reviewer** | [QUANT_BRIEF (one page, desk terms)](QUANT_BRIEF.md) -> [README](../README.md) -> [EVIDENCE index](../EVIDENCE.md) -> [CAPABILITIES (the whole system on one page)](CAPABILITIES.md) -> [live analytics site](https://neeljshah.github.io/court-vision/) ([site guide](ANALYTICS_SITE.md)) -> [JOB_EVIDENCE_PACKET](JOB_EVIDENCE_PACKET.md) -> [PREDICTOR_PLATFORM](PREDICTOR_PLATFORM.md) -> [PROOFS](PROOFS.md) -> [KNOWN_LIMITATIONS](KNOWN_LIMITATIONS.md) |
 | **Engineer / architect** | [ARCHITECTURE](../ARCHITECTURE.md) -> [PLATFORM](PLATFORM.md) -> [architecture/system-overview](architecture/system-overview.md) -> [ML_MODELS](ML_MODELS.md) -> [API](API.md) |
 | **Quant / methodology** | [quant-methodology](quant-methodology.md) -> [backtest-methodology](backtest-methodology.md) -> [research/validation-methodology](research/validation-methodology.md) -> [MARKET_EFFICIENCY_PROOF](MARKET_EFFICIENCY_PROOF.md) |
 | **Market-efficiency researcher** | [MARKET_EFFICIENCY_PROOF](MARKET_EFFICIENCY_PROOF.md) -> [quant-methodology](quant-methodology.md) -> [JOB_EVIDENCE_PACKET](JOB_EVIDENCE_PACKET.md) -> [KNOWN_LIMITATIONS](KNOWN_LIMITATIONS.md) |
@@ -56,7 +56,7 @@ reprice. Follow the links to go as deep as you want at any stage.
 ## Full document tree
 
 ### Front door / orientation
-- **[CourtVision Analytics -- the Reading Room](https://neeljshah.github.io/court-vision/analytics)** -- **the flagship product** (live): 77 analytics modules, 1,549 entity atlas cards, 6 prior-art-gated novel stats, Scout AI in 3 honest tiers, every number carrying its artifact path
+- **[CourtVision Analytics -- the Reading Room](https://neeljshah.github.io/court-vision/)** -- **the flagship product** (live): 77 analytics modules, 1,549 entity atlas cards, 6 prior-art-gated novel stats, Scout AI in 3 honest tiers, every number carrying its artifact path
 - [The quant terminal](https://neeljshah.github.io/court-vision) -- product 2, the dense operator surface (scoreboard, evidence spine, receipts drill, labs)
 - [INDEX](INDEX.md) -- this exhaustive documentation map
 - [docs/README](README.md) -- the shorter landing page GitHub shows for the docs directory

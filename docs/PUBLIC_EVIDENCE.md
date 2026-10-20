@@ -2,7 +2,7 @@
 
 > **See it first, then read this.** The flagship product is **CourtVision Analytics — the Reading
 > Room**, live at
-> **[neeljshah.github.io/court-vision/analytics](https://neeljshah.github.io/court-vision/analytics)**:
+> **[neeljshah.github.io/court-vision/](https://neeljshah.github.io/court-vision/)**:
 > 77 published source modules, 17 findings and 1,549 entity atlas cards, 6 prior-art-gated novel stats (one published
 > as an honest null), Scout AI in three honest tiers, and a self-grading claim ledger — every
 > number on the page carrying the artifact path it was read from. The dense quant terminal is
