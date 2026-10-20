@@ -45,7 +45,8 @@
     --warning:            37 74% 56%;   /* amber = stale/warning           */
     --warning-foreground: 222 27%  6%;
 
-    --danger:              3 70% 59%;   /* #E0554D direction down          */
+    --danger:              3 70% 62%;   /* #E2615A direction down -- 4.7:1 on its
+                                           own /10 tint over --card (59% read 4.3) */
     --danger-foreground:   0 0% 100%;
 
     --info:              206 73% 56%;   /* #3E9BE0 market blue             */
@@ -86,7 +87,9 @@
     --popover:            45 33% 98%;
     --popover-foreground: 222 16% 13%;
 
-    --primary:            38 80% 39%;   /* #B37B14 deep amber              */
+    --primary:            38 80% 30%;   /* #8A5D0F deep amber -- 5.1:1 on page,
+                                           5.6:1 on card, 5.5:1 for card-ink on it
+                                           (39% read 3.3-3.6:1; axe 2026-10-20) */
     --primary-foreground: 45 33% 98%;
 
     --secondary:          42 25% 92%;   /* #F0EDE6                         */
@@ -96,25 +99,30 @@
     --accent:             42 25% 89%;
     --accent-foreground: 222 16% 13%;
 
-    --destructive:         4 58% 48%;   /* #C23A32                         */
+    --destructive:         4 58% 42%;   /* tracks --danger                 */
     --border:             40 17% 82%;   /* #D8D3C8                         */
     --input:              40 17% 82%;
-    --ring:               38 80% 39%;
+    --ring:               38 80% 30%;
 
-    --success:           147 60% 31%;   /* #1F7D4D                         */
-    --warning:            38 80% 32%;   /* contrast-fixed (was 39%)        */
-    --danger:              4 58% 48%;
+    --success:           147 60% 23%;   /* #175E37 -- 6.9:1 on page, 4.9:1 on its
+                                           own /20 tint over --secondary (31% read
+                                           3.7-4.3:1; 25% still read 4.44 there) */
+    --warning:            38 80% 28%;   /* #81570E -- 4.9:1 on its own /10 tint
+                                           over the page (32% read 4.07:1)   */
+    --danger:              4 58% 42%;   /* #A9352D -- 5.4:1 on its /10 tint
+                                           (48% read 4.4:1)                 */
     --info:              207 69% 44%;   /* #2278BD                         */
 
     --s-model:            37 86% 36%;   /* #A96C0D                         */
     --s-market:          207 69% 44%;   /* #2278BD                         */
-    --stale:              38 80% 32%;   /* contrast-fixed                  */
-    --faint:             219 10% 44%;   /* contrast-fixed (was 64%)        */
+    --stale:              38 80% 28%;   /* tracks --warning                */
+    --faint:             219 10% 40%;   /* #5C6370 -- 5.4:1 on page, 4.7:1 on
+                                           the warning tint (44% read 4.07:1) */
 
-    --tier-s:             38 80% 32%;   /* contrast-fixed                  */
-    --tier-a:            147 60% 31%;
+    --tier-s:             38 80% 28%;   /* tracks --warning                */
+    --tier-a:            147 60% 23%;   /* tracks --success                */
     --tier-b:            222 10% 42%;
-    --tier-c:            219 10% 44%;   /* contrast-fixed                  */
+    --tier-c:            219 10% 40%;   /* tracks --faint                  */
 
     --surface-0:          40 24% 94%;
     --surface-1:          45 33% 98%;
@@ -177,10 +185,18 @@
   }
 }
 
-/* Reduced-motion: freeze shimmer for users who prefer it */
+/* Reduced-motion: freeze shimmer and collapse every transition/animation
+   (tailwindcss-animate dialog fades, hover color transitions, pulse) for users
+   who ask for it. Scroll snaps to its target instead of smooth-scrolling. */
 @media (prefers-reduced-motion: reduce) {
   @keyframes skeleton-shimmer {
     0%, 100% { background-position: 0 0; }
+  }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
@@ -326,3 +342,54 @@
   .bg-surface-2 { background-color: hsl(var(--surface-2)); }
   .bg-surface-3 { background-color: hsl(var(--surface-3)); }
 }
+
+/* ------------------------------------------------------------------ */
+/* Legacy Tailwind palette utilities -> tokens (contrast floor)         */
+/* ------------------------------------------------------------------ */
+/* The paper-trading / records / p6 panels predate the token system and
+   still use hardcoded dark-theme utilities (text-slate-400, text-amber-400,
+   bg-amber-950/30, ...). On the light theme those read 1.3-2.5:1 and on the
+   dark theme text-slate-500/600 read 2.4-4.1:1 (axe color-contrast, 2026-10-20:
+   37 dark + 192 light nodes on /paper-trading alone). Rather than re-skin
+   every panel, each legacy utility is pinned to the token that carries the
+   same meaning; this block sits after @tailwind utilities with a theme
+   prefix, so it wins the cascade without !important. Remove a line here only
+   when its utility is gone from the tree. */
+.dark .text-slate-500,
+.dark .text-slate-600 { color: hsl(var(--muted-foreground)); }         /* 5.6:1 on --card */
+
+:root:not(.dark) .text-slate-50,
+:root:not(.dark) .text-slate-100,
+:root:not(.dark) .text-slate-200,
+:root:not(.dark) .text-slate-700 { color: hsl(var(--foreground)); }
+:root:not(.dark) .text-slate-300,
+:root:not(.dark) .text-slate-400,
+:root:not(.dark) .text-slate-500,
+:root:not(.dark) .text-slate-600 { color: hsl(var(--muted-foreground)); } /* 5.0:1 on page */
+:root:not(.dark) .text-amber-200,
+:root:not(.dark) .text-amber-300,
+:root:not(.dark) .text-amber-400,
+:root:not(.dark) .text-amber-500,
+:root:not(.dark) .text-amber-600,
+:root:not(.dark) [class*="text-amber-"] { color: hsl(var(--warning)); }
+:root:not(.dark) .text-emerald-400,
+:root:not(.dark) .text-emerald-500,
+:root:not(.dark) .text-green-400 { color: hsl(var(--success)); }
+:root:not(.dark) .text-rose-400,
+:root:not(.dark) .text-rose-500,
+:root:not(.dark) .text-red-400,
+:root:not(.dark) .text-red-500 { color: hsl(var(--danger)); }
+:root:not(.dark) [class*="text-sky-"] { color: hsl(var(--info)); }
+:root:not(.dark) [class*="bg-amber-950"],
+:root:not(.dark) [class*="bg-amber-900"] { background-color: hsl(var(--warning) / 0.12); }
+:root:not(.dark) [class*="bg-red-950"],
+:root:not(.dark) [class*="bg-rose-950"] { background-color: hsl(var(--danger) / 0.10); }
+:root:not(.dark) .bg-green-950 { background-color: hsl(var(--success) / 0.12); }
+:root:not(.dark) [class*="bg-slate-900"],
+:root:not(.dark) [class*="bg-slate-800"],
+:root:not(.dark) [class*="bg-slate-700"] { background-color: hsl(var(--surface-2)); }
+:root:not(.dark) .bg-slate-600,
+:root:not(.dark) [class*="bg-slate-500"] { background-color: hsl(var(--surface-3)); }
+:root:not(.dark) [class*="border-slate-"] { border-color: hsl(var(--border)); }
+:root:not(.dark) [class*="border-amber-"] { border-color: hsl(var(--warning) / 0.5); }
+:root:not(.dark) [class*="border-red-"] { border-color: hsl(var(--danger) / 0.5); }

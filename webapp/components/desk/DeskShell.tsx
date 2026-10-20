@@ -40,7 +40,12 @@ export function T({ head, rows }: { head: string[]; rows: ReactNode[][] }) {
       <table className="w-full font-data text-xs">
         <thead>
           <tr className="border-b border-border text-left text-faint">
-            {head.map((h) => <th key={h} className="px-3 py-1 font-normal">{h}</th>)}
+            {head.map((h, i) => (
+              <th key={`${h}-${i}`} scope="col" className="px-3 py-1 font-normal">
+                {/* A blank column header still needs a screen-reader name (axe empty-table-header). */}
+                {h || <span className="sr-only">note</span>}
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody>
@@ -79,6 +84,8 @@ export function DeskShell({ desk, title, active, children }: {
   desk: Desk | null; title: string; active: string; children: ReactNode;
 }) {
   return (
+    // A <div>, not a second <main>: AppShell already renders the page's main landmark
+    // (axe landmark-no-duplicate-main / landmark-main-is-top-level).
     <div className="mx-auto flex max-w-6xl flex-col gap-5 p-4 sm:p-6">
       <header>
         <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{desk?.header ?? PAPER_HEADER}</p>

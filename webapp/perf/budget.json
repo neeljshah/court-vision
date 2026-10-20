@@ -1,0 +1,76 @@
+{
+  "$comment": "Gzip byte ceilings per exported page (module scripts, stylesheets, HTML) = the 2026-10-20 after-measurement + 10% rounded up to the KB; see perf/README.md. The paper trade page is resolved from demo-data/manifest.json at run time.",
+  "basePath": "/court-vision",
+  "pages": {
+    "/": {
+      "jsGz": 157696,
+      "cssGz": 12288,
+      "htmlGz": 19456
+    },
+    "/desk/": {
+      "jsGz": 157696,
+      "cssGz": 12288,
+      "htmlGz": 16384
+    },
+    "/paper-trading/": {
+      "jsGz": 162816,
+      "cssGz": 12288,
+      "htmlGz": 9216
+    },
+    "/analytics/": {
+      "jsGz": 130048,
+      "cssGz": 14336,
+      "htmlGz": 103424
+    },
+    "/analytics/calibration/": {
+      "jsGz": 125952,
+      "cssGz": 10240,
+      "htmlGz": 22528
+    },
+    "/analytics/papers/": {
+      "jsGz": 113664,
+      "cssGz": 8192,
+      "htmlGz": 38912
+    },
+    "/analytics/findings/shrinkage/": {
+      "jsGz": 122880,
+      "cssGz": 7168,
+      "htmlGz": 20480
+    },
+    "/analytics/state-reliability/": {
+      "jsGz": 125952,
+      "cssGz": 10240,
+      "htmlGz": 17408
+    },
+    "/analytics/m/agent_fleet_history/": {
+      "jsGz": 119808,
+      "cssGz": 9216,
+      "htmlGz": 12288
+    },
+    "manifest:bet_ids:0": {
+      "jsGz": 139264,
+      "cssGz": 12288,
+      "htmlGz": 6144
+    }
+  },
+  "images": {
+    "img/showcase": {
+      "maxBytes": 81920,
+      "$comment": "largest quantized chart is 45 KB; a re-staged RGBA chart is 80-190 KB"
+    },
+    "brand": {
+      "maxBytes": 81920,
+      "exempt": [
+        "courtvision-logo.png",
+        "courtvision-logo-transparent.png",
+        "courtvision-research-fields.webp",
+        "courtvision-emblem.webp",
+        "logo-on-light.png",
+        "logo-on-dark.png",
+        "logo-square-dark.png",
+        "logo-square-light.png"
+      ],
+      "$comment": "icons and social cards; the exempt files are README/press assets no page loads"
+    }
+  }
+}

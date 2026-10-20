@@ -258,6 +258,8 @@ export default function PaperTradingPage() {
       </Panel>
 
       <JulySnapshotBox>
+        {/* Hold the unavailable-feeds notice slot during the first poll so the panel below does not jump (CLS). */}
+        {loading && !data && <div className="mb-4 min-h-12" aria-busy="true" />}
         {partialError && (
           <div role="status" aria-label="Unavailable paper data" className="mb-4 text-[12px] text-warning">
             Available summaries remain visible. Unavailable data:
