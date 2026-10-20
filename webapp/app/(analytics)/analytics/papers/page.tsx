@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import PapersIndex from "@/components/analytics/papers/PapersIndex";
 import { loadPapers } from "@/lib/analytics/papers.server";
+import { toPaperCard } from "@/lib/analytics/papers";
 import "./papers.css";
 
 export const metadata: Metadata = {
@@ -9,5 +10,7 @@ export const metadata: Metadata = {
 };
 
 export default function PapersIndexPage() {
-  return <PapersIndex papers={loadPapers()} />;
+  // Cards, not full papers: PapersIndex is a client component, so its props are
+  // serialised into the exported HTML twice; the full bodies were 676 KB of it.
+  return <PapersIndex papers={loadPapers().map(toPaperCard)} />;
 }

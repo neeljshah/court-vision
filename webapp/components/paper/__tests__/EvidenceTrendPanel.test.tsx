@@ -85,7 +85,8 @@ describe("EvidenceTrendPanel", () => {
     render(<EvidenceTrendPanel />);
     const row = await screen.findByTestId("evidence-trend-row-moneyline");
     expect(row).toHaveTextContent("+1.50%");
-    expect(row.querySelector(".recharts-responsive-container")).toBeTruthy();
+    // Sparkline is a dependency-free inline SVG (no recharts container) since 2026-10-20.
+    expect(row.querySelector('svg[role="img"]')).toBeTruthy();
     expect(screen.queryByTestId("evidence-trend-market-short-moneyline")).toBeNull();
   });
 });

@@ -3,6 +3,11 @@
 // showcase record list (1,637 destinations). cmdk supplies the dialog + keyboard
 // nav; MiniSearch supplies fuzzy/prefix scoring. The 410KB record JSON is
 // lazy-fetched on first open, never bundled. DESIGN_ANALYTICS palette request.
+//
+// This is the implementation module. CommandPalette.tsx is the thin shell the
+// layout renders: it owns the shortcut/trigger listeners and dynamic-imports this
+// file (cmdk + MiniSearch, ~60 KB raw) on the first open, so no analytics page
+// pays for the palette until a reader asks for it.
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { Command } from "cmdk";
@@ -35,9 +40,9 @@ const SCOPES: Array<{ value: "all" | Rec["type"]; label: string }> = [
 
 type LoadState = "idle" | "loading" | "ready" | "error";
 
-export function CommandPalette() {
+export function CommandPalette({ initialOpen = false }: { initialOpen?: boolean }) {
   const router = useRouter();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(initialOpen);
   const [query, setQuery] = useState("");
   const [loadState, setLoadState] = useState<LoadState>("idle");
   const [scope, setScope] = useState<"all" | Rec["type"]>("all");
@@ -101,6 +106,13 @@ export function CommandPalette() {
     setOpen(true);
     load();
   }, [load]);
+
+  // Mounted already open (the lazy shell forwarded a Cmd+K / "/" / button press):
+  // start the index fetch that opening normally triggers.
+  useEffect(() => {
+    if (initialOpen) load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const onKeydown = (e: KeyboardEvent) => {

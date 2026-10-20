@@ -19,7 +19,17 @@ import { RecordsFilters, type RecordsFiltersState } from "@/components/records/R
 import { RecordsPager }         from "@/components/records/RecordsPager";
 import { RecordsSummaryStrip }  from "@/components/records/RecordsSummaryStrip";
 import { RecordsClvStrip }      from "@/components/records/RecordsClvStrip";
-import { RecordsClvSeries }     from "@/components/records/RecordsClvSeries";
+import dynamic from "next/dynamic";
+// The CLV series chart carries recharts (~373 KB raw); load it after the page
+// shell so the ledger is interactive first. The placeholder reserves the same
+// 100px the chart draws into, so nothing below it shifts when it lands.
+const RecordsClvSeries = dynamic(
+  () => import("@/components/records/RecordsClvSeries").then((m) => m.RecordsClvSeries),
+  {
+    ssr: false,
+    loading: () => <div className="h-[100px] w-full animate-pulse bg-surface-2" aria-busy="true" aria-label="CLV series loading" />,
+  },
+);
 import { RecordsRollup }        from "@/components/records/RecordsRollup";
 
 const PAGE_SIZE     = 50;

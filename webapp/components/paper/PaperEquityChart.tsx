@@ -22,17 +22,12 @@ import {
 import type { PnlSeriesPoint } from "@/lib/types";
 
 // ---------------------------------------------------------------------------
-// Formatters (exported -- shared with PaperEquityPanel).
+// Formatters live in equityFormat.ts (no recharts) and are re-exported here so
+// existing imports keep working; PaperEquityPanel imports the light module.
 // ---------------------------------------------------------------------------
 
-export function fmtUnits(v: number): string {
-  return v.toFixed(2);
-}
-
-export function fmtSignedUnits(v: number): string {
-  const sign = v >= 0 ? "+" : "";
-  return `${sign}${v.toFixed(2)}`;
-}
+import { fmtUnits, fmtSignedUnits } from "./equityFormat";
+export { fmtUnits, fmtSignedUnits };
 
 // ---------------------------------------------------------------------------
 // Tooltip
@@ -122,6 +117,27 @@ export interface PaperEquityChartProps {
   loading?: boolean;
 }
 
+/**
+ * Loading placeholder with the rendered chart's exact footprint (18px label row,
+ * 140px plot, 16px note = 174px), so swapping it for the chart shifts nothing
+ * below the panel. Also used by PaperEquityPanel while this module's recharts
+ * chunk is still downloading.
+ */
+export function EquityChartSkeleton() {
+  return (
+    <div
+      data-testid="paper-equity-loading"
+      className="w-full"
+      aria-busy="true"
+      aria-label="equity curve loading"
+    >
+      <div className="mb-1 h-[18px]" />
+      <div className="h-[140px] w-full animate-pulse rounded bg-slate-800/40" role="presentation" />
+      <div className="mt-1 h-4" />
+    </div>
+  );
+}
+
 export function PaperEquityChart({
   points,
   startUnits,
@@ -134,16 +150,7 @@ export function PaperEquityChart({
   );
 
   if (loading && (!points || points.length === 0)) {
-    return (
-      <div
-        data-testid="paper-equity-loading"
-        className="flex items-center justify-center py-8"
-        aria-busy="true"
-        aria-label="equity curve loading"
-      >
-        <div className="h-[140px] w-full animate-pulse rounded bg-slate-800/40" role="presentation" />
-      </div>
-    );
+    return <EquityChartSkeleton />;
   }
 
   if (!points || points.length === 0) {
