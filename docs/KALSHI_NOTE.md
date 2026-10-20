@@ -60,7 +60,7 @@ files were kept after segmentation.
   ([cumulative/2026-10-04.md](evidence/forward/cumulative/2026-10-04.md)).
 - Six go-live gates were pre-registered on 2026-09-17 ([GO_LIVE_GATES.md](GO_LIVE_GATES.md)); gate G6
   needs at least eight consecutive weeks of shadow maker quoting with a fee-netted markout whose
-  game-clustered 95% interval excludes zero, on at least two independent market families. It has not started, so the desk stays paper.
+  game-clustered 95% interval excludes zero, on at least two independent market families. It has zero qualifying weeks as of 2026-10-19 (fill realism is counts-only; no markout series exists), so the desk stays paper.
 
 ## 5. What is not claimed
 
