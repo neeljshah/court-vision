@@ -107,7 +107,7 @@ export function PmGradedTable({ rows, loading, error }: PmGradedTableProps) {
 
   if (displayRows.length === 0) {
     return (
-      <div className="rounded-lg border border-slate-800 bg-bg-subtle/40 px-4 py-10 text-center text-sm text-muted-foreground">
+      <div className="rounded-lg border border-border bg-bg-subtle/40 px-4 py-10 text-center text-sm text-muted-foreground">
         {rows.length === 0
           ? "No graded PM trades yet."
           : `All ${rows.length} PM trades were dropped (missing required fields).`}
@@ -118,13 +118,13 @@ export function PmGradedTable({ rows, loading, error }: PmGradedTableProps) {
   return (
     <div className="flex flex-col gap-3">
       {droppedCount > 0 ? (
-        <p className="text-[11px] text-warning">
+        <p className="text-[12px] text-warning">
           {droppedCount} row{droppedCount !== 1 ? "s" : ""} dropped (missing
           required fields -- not fabricated).
         </p>
       ) : null}
 
-      <ScrollArea className="h-[480px] w-full rounded-lg border border-slate-800">
+      <ScrollArea className="h-[480px] w-full rounded-lg border border-border">
         <table
           className="min-w-full text-left"
           role="grid"
@@ -134,8 +134,8 @@ export function PmGradedTable({ rows, loading, error }: PmGradedTableProps) {
             PM paper trail -- units and probability only, no dollar amounts.
             All trades are paper-only (executed=false).
           </caption>
-          <thead className="sticky top-0 z-10 bg-bg-panel text-[10px] uppercase tracking-wide text-muted-foreground">
-            <tr className="border-b border-slate-800">
+          <thead className="sticky top-0 z-10 bg-bg-panel text-[12px] uppercase tracking-wide text-muted-foreground">
+            <tr className="border-b border-border">
               <th className="px-2 py-2">Venue</th>
               <th className="px-2 py-2">Market</th>
               <th className="px-2 py-2">Tier</th>
@@ -154,17 +154,17 @@ export function PmGradedTable({ rows, loading, error }: PmGradedTableProps) {
                   key={row.bet_id}
                   className="border-b border-border text-[12px] text-foreground transition-colors hover:bg-surface-2"
                 >
-                  <td className="px-2 py-1.5 font-mono text-[11px] text-muted-foreground">
+                  <td className="px-2 py-1.5 font-mono text-[12px] text-muted-foreground">
                     {row.venue}
                   </td>
-                  <td className="px-2 py-1.5 font-mono text-[11px] text-muted-foreground">
+                  <td className="px-2 py-1.5 font-mono text-[12px] text-muted-foreground">
                     {row.market_id || EMPTY_CELL}
                   </td>
                   <td className="px-2 py-1.5">
                     {row.tier ? (
                       <span
                         className={cn(
-                          "inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-mono uppercase",
+                          "inline-flex items-center rounded-full border px-2 py-0.5 text-[12px] font-mono uppercase",
                           tierBadgeClass(row.tier),
                         )}
                       >
@@ -211,7 +211,7 @@ export function PmGradedTable({ rows, loading, error }: PmGradedTableProps) {
         </table>
       </ScrollArea>
 
-      <p className="text-[11px] text-faint">
+      <p className="text-[12px] text-faint">
         Paper mode -- stakes are units (no $). CLV (better-number-than-close) is
         the only honest calibration yardstick. No edge is claimed.
         "no-close" = INSUFFICIENT_DATA (closing line not captured).

@@ -43,9 +43,10 @@ export default function HowItWorksPage() {
         </h1>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
           One pipeline turns raw game data into a single calibrated prediction per
-          market, then re-validates every stage. Markets are efficient; the honest,
-          defensible win is matching the devigged close within noise -- plus a measured
-          in-game calibration edge.{" "}
+          market, then re-validates every stage. Markets are efficient: pregame, the model
+          trails the devigged close on MLB moneyline and soccer O/U 2.5 and matches it only on
+          the underpowered NBA sample; in-game conditioning improves calibration against a
+          static pregame prior, not against the live market.{" "}
           <span className="text-foreground">No dollar edge is claimed.</span>
         </p>
       </header>

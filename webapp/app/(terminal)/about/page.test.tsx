@@ -7,9 +7,9 @@ describe("About page", () => {
     render(<AboutPage />);
     expect(screen.getByRole("link", { name: "neeljshah22@gmail.com" })).toHaveAttribute("href", "mailto:neeljshah22@gmail.com");
     expect(screen.getByRole("heading", { name: "What this is not" })).toBeTruthy();
-    expect(screen.getByRole("link", { name: "How it works" })).toHaveAttribute("href", "/how-it-works/");
+    expect(screen.getByRole("link", { name: "How it works" })).toHaveAttribute("href", expect.stringMatching(/^\/how-it-works\/?$/));
     expect(screen.getByRole("link", { name: "Glossary" })).toBeTruthy();
-    expect(screen.getByRole("link", { name: "retraction record" })).toHaveAttribute("href", "/evidence/retractions/");
+    expect(screen.getByRole("link", { name: "retraction record" })).toHaveAttribute("href", expect.stringMatching(/^\/evidence\/retractions\/?$/));
   });
 
   it("uses no banned or degree wording", () => {

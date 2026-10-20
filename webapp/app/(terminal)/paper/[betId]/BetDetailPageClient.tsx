@@ -20,30 +20,11 @@ import { api, isUnavailable, type PaperTrailRow, type PaperTrail } from "@/lib/p
 import type { Unavailable } from "@/lib/types";
 import { useLiveData } from "@/lib/useLiveData";
 import { ExecutionDetail } from "@/components/paper_pm/ExecutionDetail";
-import { toBetId } from "@/components/paper_pm/PmTradeRow";
+import { findFill, canonicalId } from "@/components/paper_pm/paperIds";
+import { isSnapshotMode } from "@/lib/fetchHonest";
 import { ExecutionTrail } from "@/components/execution/ExecutionTrail";
 import { paperRowToExecutionTrail } from "@/components/paper_pm/paperTrailAdapter";
 import { humanizeMatchup } from "@/lib/betdesc";
-
-// ---------------------------------------------------------------------------
-// matchRow -- find the row matching the URL betId.
-// toBetId encodes sport|game_id|market|side|book.
-// ---------------------------------------------------------------------------
-
-function matchRow(rows: PaperTrailRow[], betId: string): PaperTrailRow | null {
-  const target = decodeURIComponent(betId);
-  // try exact match first
-  for (const r of rows) {
-    if (decodeURIComponent(toBetId(r)) === target) return r;
-  }
-  // fallback: the betId prefix (sport|game_id) matches
-  const prefix = target.split("|").slice(0, 2).join("|");
-  for (const r of rows) {
-    const id = decodeURIComponent(toBetId(r));
-    if (id.startsWith(prefix)) return r;
-  }
-  return null;
-}
 
 // ---------------------------------------------------------------------------
 // fmtAge -- compact human-readable last-updated age label.
@@ -71,7 +52,7 @@ export default function BetDetailPageClient() {
   // Fetcher: GET the full trail (returns trail or unavailable sentinel).
   const fetcher = useCallback(
     async (signal: AbortSignal): Promise<PaperTrail | Unavailable> => {
-      const t = await api.getPaperTrail({ limit: 2000 }, signal);
+      const t = await api.getPaperTrail({ limit: 400 }, signal);
       if (isUnavailable(t)) {
         return {
           status: "unavailable",
@@ -95,7 +76,7 @@ export default function BetDetailPageClient() {
   // Resolve the row from last-good trail (retained across failed polls by useLiveData).
   const row = useMemo<PaperTrailRow | null>(() => {
     if (!betId || !data) return null;
-    return matchRow(data.trail, betId);
+    return findFill(data.trail, betId);
   }, [data, betId]);
 
   // Show loading placeholder only during the very first fetch (no last-good data yet).
@@ -109,7 +90,7 @@ export default function BetDetailPageClient() {
     if (showLoading) return null;
     if (data === null && error) return error;
     if (data !== null && !row) {
-      return `trade not found: ${decodeURIComponent(betId)}`;
+      return `trade not found: ${canonicalId(betId)}`;
     }
     return null;
   })();
@@ -120,15 +101,15 @@ export default function BetDetailPageClient() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-8">
       <nav aria-label="breadcrumb" className="mb-5">
-        <ol className="flex items-center gap-2 text-[11px] text-slate-500">
+        <ol className="flex items-center gap-2 text-[12px] text-muted-foreground">
           <li>
-            <Link href="/paper" className="hover:text-slate-300">
-              PM trail
+            <Link href="/paper-trading/" className="hover:text-foreground">
+              Paper record
             </Link>
           </li>
           <li aria-hidden="true">/</li>
-          <li className="font-mono text-slate-400">
-            {row ? humanizeMatchup(row.matchup || row.game_id) : decodeURIComponent(betId)}
+          <li className="font-mono text-muted-foreground">
+            {row ? humanizeMatchup(row.matchup || row.game_id) : canonicalId(betId)}
           </li>
         </ol>
       </nav>
@@ -143,12 +124,12 @@ export default function BetDetailPageClient() {
         <span
           data-testid="bet-detail-last-updated"
           className={[
-            "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-mono",
+            "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[12px] font-mono",
             isStaleOrErr
-              ? "border-amber-800/50 bg-amber-950/40 text-amber-400"
+              ? "border-warning/50 bg-warning/10 text-warning"
               : ageSec !== null
-              ? "border-slate-700 bg-slate-800/40 text-slate-500"
-              : "border-slate-700/50 bg-slate-800/20 text-slate-600",
+              ? "border-border bg-surface-2 text-muted-foreground"
+              : "border-border bg-surface-2 text-faint",
           ].join(" ")}
           role="status"
           aria-live="polite"
@@ -170,18 +151,18 @@ export default function BetDetailPageClient() {
           {/* Amber dot -- stale or error-with-last-good */}
           {isStaleOrErr && (
             <span
-              className="h-2 w-2 shrink-0 rounded-full bg-amber-500"
+              className="h-2 w-2 shrink-0 rounded-full bg-warning"
               aria-hidden="true"
             />
           )}
           {/* Neutral dot -- checking (no data yet, no error) */}
           {ageSec === null && !isStaleOrErr && (
             <span
-              className="h-2 w-2 shrink-0 rounded-full bg-slate-600"
+              className="h-2 w-2 shrink-0 rounded-full bg-surface-2"
               aria-hidden="true"
             />
           )}
-          <span>{fmtAge(ageSec, isStaleOrErr)}</span>
+          <span>{isSnapshotMode ? `as of ${(data as { as_of?: string } | null)?.as_of?.slice(0, 10) ?? "not stated"}` : fmtAge(ageSec, isStaleOrErr)}</span>
         </span>
       </div>
 
@@ -220,7 +201,7 @@ export default function BetDetailPageClient() {
       <div className="mt-6">
         <Link
           href="/paper"
-          className="font-mono text-[11px] text-slate-500 hover:text-slate-300"
+          className="font-mono text-[12px] text-muted-foreground hover:text-foreground"
         >
           &larr; back to PM trail
         </Link>

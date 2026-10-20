@@ -1,88 +1,82 @@
-import { describe, it, expect, vi, afterEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { describe, it, expect, vi } from "vitest";
+import { render, screen, within } from "@testing-library/react";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { PACKET_VERDICTS, BANNED_COPY, RETRACTED_TOKENS } from "@/lib/packetVerdicts";
 
-// Home (/) deep-render tests -- the calibration scoreboard front page.
-// Honesty rails: calibration/sharpness only; paper-only / no-edge sentences
-// present; NO dollar figure, ROI, or P&L framing in the rendered output.
-// Row-level scoreboard assertions live in home.scoreboard.test.tsx.
+// Home (/) -- the first-screen contract (DESIGN_PRINCIPLES P2.1-P2.4).
 
 vi.mock("next/link", () => ({
   default: ({ href, children, ...rest }: { href: string; children: React.ReactNode }) => (
-    <a href={href} {...rest}>
-      {children}
-    </a>
+    <a href={href} {...rest}>{children}</a>
   ),
 }));
-vi.mock("@/lib/atlas.server", () => ({ listPacks: () => [] }));
 
 import Home from "../page";
 
-describe("Home (/) -- the calibration scoreboard front page", () => {
-  afterEach(() => vi.restoreAllMocks());
+const canon = JSON.parse(readFileSync(join(process.cwd(), "../docs/evidence/CANONICAL_FIGURES.json"), "utf-8"));
 
-  it("renders the hero headline and the no-edge framing", () => {
+describe("Home (/) first screen", () => {
+  it("states the one-sentence what-this-is", () => {
     render(<Home />);
-    expect(screen.getByRole("heading", { level: 1 }).textContent).toMatch(/calibrated sports predictor/i);
-    expect(screen.getAllByText(/No edge is\s+claimed anywhere/i).length).toBeGreaterThan(0);
-    expect(screen.getByText(/calibration, not profit/i)).toBeTruthy();
-    expect(screen.getByText(/What you will not find here/i)).toBeTruthy();
-    expect(screen.getByText(/No ROI, profit, or betting-edge claim/i)).toBeTruthy();
+    expect(screen.getByRole("heading", { level: 1 }).textContent).toMatch(
+      /calibrated sports forecaster that publishes its own scorecard against the market/i);
   });
 
-  it("renders the two primary CTAs linking evidence and analytics", () => {
-    render(<Home />);
-    expect(screen.getByRole("link", { name: /^read the evidence/i }).getAttribute("href")).toBe("/evidence");
-    expect(screen.getByRole("link", { name: /open the analytics site/i }).getAttribute("href")).toBe("/analytics");
-  });
-
-  it("renders the honest reading and the confirmed-findings tile with the 0-of-60 qualifier", () => {
-    render(<Home />);
-    expect(screen.getByText(/match, do not beat/i)).toBeTruthy();
-    expect(screen.getByText(/Both readings are true/i)).toBeTruthy();
-    expect(
-      screen.getByText(/confirmed ledger findings \(0 of 60 signal classes passed the gate\)/i),
-    ).toBeTruthy();
-  });
-
-  it("links every live-app section", () => {
-    render(<Home />);
-    for (const label of ["games", "records", "paper trading", "system", "how it works", "methodology"]) {
-      expect(screen.getAllByRole("link", { name: new RegExp(`^${label}$`, "i") }).length).toBeGreaterThan(0);
-    }
-  });
-
-  it("renders NO dollar money-figure anywhere in the Home output", () => {
+  it("headline verdict rows come from CANONICAL_FIGURES, largest n first, each a full metric block", () => {
     const { container } = render(<Home />);
-    const txt = container.textContent ?? "";
-    // Ban a dollar VALUE (a $ followed by a number), plus ROI/P&L framing
-    // outside the explicit "No ROI, ..." negation sentence.
-    expect(/\$\s*\d/.test(txt)).toBe(false);
-    expect(/\d\s*(dollars?|usd)\b/i.test(txt)).toBe(false);
-    expect(/\bROI\b/.test(txt.replace(/No ROI, profit, or betting-edge claim/, ""))).toBe(false);
-    expect(/\bP&L\b|\bPnL\b/i.test(txt)).toBe(false);
+    const blocks = [...container.querySelectorAll("li.metric")] as HTMLElement[];
+    expect(blocks.map((b) => b.dataset.key)).toEqual([
+      "mlb_ml_pregame_vs_close", "soccer_ou25_pregame_vs_close", "nba_ml_pregame_vs_close_shin"]);
+    for (const b of blocks) {
+      const f = canon.figures.find((x: { key: string }) => x.key === b.dataset.key);
+      for (const role of ["verdict", "n", "interval", "asof", "receipt"]) {
+        expect(b.querySelector(`[data-role="${role}"]`), `${f.key} ${role}`).not.toBeNull();
+      }
+      expect(b.querySelector('[data-role="verdict"]')!.textContent).toBe(f.verdict);
+      expect(b.textContent).toContain(f.model.toFixed(4));
+      expect(b.textContent).toContain(f.as_of);
+      expect(b.textContent).toMatch(/lower is better/);
+    }
+    // NBA: 0.1735 vs 0.1666 at n=372, MATCHES_CLOSE + UNDERPOWERED qualifier.
+    expect(blocks[2].textContent).toMatch(/0\.1735 model vs 0\.1666 close/);
+    expect(blocks[2].textContent).toMatch(/n = 372/);
+    expect(blocks[2].querySelector('[data-role="qualifier"]')!.textContent).toBe("UNDERPOWERED");
   });
 
-  // Focus ring: primary CTAs and cards carry an explicit ring; every other
-  // link is covered by the global :focus-visible rule in globals.css.
-  it("primary CTAs and Door cards carry focus-visible ring classes", () => {
-    render(<Home />);
-    const ring = [
-      screen.getByRole("link", { name: /^read the evidence/i }),
-      screen.getByRole("link", { name: /open the analytics site/i }),
-    ];
-    for (const link of ring) {
-      expect(link.className).toMatch(/focus-visible:outline-none/);
-      expect(link.className).toMatch(/focus-visible:ring-2/);
-      expect(link.className).toMatch(/focus-visible:ring-ring/);
+  it("every verdict slot in the first screen uses a packet word", () => {
+    const { container } = render(<Home />);
+    const first = container.querySelector("section")!;
+    for (const el of first.querySelectorAll('[data-role="verdict"], [data-role="qualifier"]')) {
+      expect(PACKET_VERDICTS as readonly string[]).toContain(el.textContent);
     }
   });
 
-  it("every other link is covered by the global :focus-visible rule", () => {
-    const css = readFileSync(join(__dirname, "../../globals.css"), "utf8");
-    expect(css).toMatch(/:focus-visible\s*\{[^}]*outline:\s*2px solid/);
+  it("shows the forward series status with a receipt, and the what-this-is-not block", () => {
     render(<Home />);
-    expect(screen.getAllByRole("link").length).toBeGreaterThan(8);
+    const fwd = screen.getByTestId("forward-status");
+    expect(fwd.textContent).toMatch(/run since 2026-10-06\. It has no calibration\s+verdict yet/);
+    expect(within(fwd).getByRole("button", { name: /show receipt/ })).toBeTruthy();
+    expect(screen.getByTestId("not-claimed").textContent).toMatch(/paper units only/);
+  });
+
+  it("has exactly two primary actions and a byline with contact", () => {
+    render(<Home />);
+    const evidence = screen.getByRole("link", { name: "Read the evidence" });
+    const board = screen.getByRole("link", { name: "See today's board" });
+    expect(evidence.getAttribute("href")).toBe("/evidence/");
+    expect(board.getAttribute("href")).toBe("/games/");
+    const primary = screen.getAllByRole("link").filter((a) => /\bbg-primary\b/.test(a.className));
+    expect(primary).toHaveLength(2);
+    expect(within(screen.getByTestId("byline")).getByRole("link", { name: /@/ }).getAttribute("href"))
+      .toMatch(/^mailto:/);
+  });
+
+  it("no banned copy or retracted figure outside the what-this-is-not block", () => {
+    const { container } = render(<Home />);
+    container.querySelector('[data-testid="not-claimed"]')!.remove();
+    const txt = container.textContent ?? "";
+    expect(BANNED_COPY.test(txt)).toBe(false);
+    for (const t of RETRACTED_TOKENS) expect(txt).not.toContain(t);
   });
 });

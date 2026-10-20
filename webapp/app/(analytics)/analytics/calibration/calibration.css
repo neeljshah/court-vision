@@ -51,3 +51,13 @@
 .calibration-note { max-width: 790px; margin-top: 16px !important; padding-left: 14px; border-left: 2px solid var(--signal); }
 .calibration-receipt { margin-top: 22px; }
 @media (max-width: 680px) { .calibration-page { padding: 34px 16px 48px; } .cr-shell { margin-left: -2px; margin-right: -2px; padding: 17px; } .cr-controls { align-items: stretch; flex-direction: column; } .cr-controls select, .cr-toggle, .cr-toggle button { min-height: 44px; } .cr-toggle { width: fit-content; } .cr-worked-examples { grid-template-columns: 1fr; }.calibration-title { font-size: 2.35rem; } }
+/* Validated chart palette (lib/palette.ts, PALETTE_2026-10-20.md); dark is its own step. */
+.calibration-page { --series-1: #2a78d6; --series-2: #eb6834; --series-3: #1baf7a; --series-4: #eda100; --series-5: #e87ba4; --series-6: #6250d6; }
+html[data-theme="dark"] .calibration-page { --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70; --series-4: #c98500; --series-5: #d55181; --series-6: #9085e9; }
+.cal-status { margin-top: 10px; color: var(--ink-2); font-size: 14px; }
+.cal-verdict { display: inline-block; border: 1px solid var(--rule-strong); padding: 0 6px; color: var(--ink); font-family: var(--font-mono); font-size: 12px; }
+.cal-limits { margin-top: 42px; padding: 18px 22px; border: 1px solid var(--rule); border-radius: var(--radius-panel); background: var(--paper-raised); color: var(--ink-2); font-size: 14px; line-height: 1.6; }
+.cal-limits ul { margin: 8px 0 0 18px; list-style: disc; }
+.cal-hist svg { display: block; width: 100%; max-width: 620px; color: var(--ink-3); font-family: var(--font-mono); font-size: 11px; }
+.cr-view { margin-left: auto; }
+.cr-direct { font-family: var(--font-sans); font-size: 12px; fill: var(--ink-2); }

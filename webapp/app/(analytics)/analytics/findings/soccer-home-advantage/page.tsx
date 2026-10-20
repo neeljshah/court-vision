@@ -1,7 +1,7 @@
 // Soccer home-advantage decomposition -- venue vs neutral, via the neutral-site
 // control. Home advantage is real, and the true-home/neutral gap GREW over
-// time, but not because true-home edge rose (it is flat) -- it grew because
-// the neutral-venue edge COLLAPSED, consistent with genuinely neutral
+// time, but not because the true-home advantage rose (it is flat) -- it grew because
+// the neutral-venue advantage COLLAPSED, consistent with genuinely neutral
 // tournament sites replacing quasi-home neutral games in the modern era.
 // Server component, static export, no client JS -- reads the staged exhibit
 // via the shared loadArtifact() reader and renders every number verbatim,
@@ -238,7 +238,7 @@ export default function SoccerHomeAdvantagePage() {
               </tbody>
             </table></FindingTableRegion>
           <p style={{ ...noteBox, marginTop: 16 }}>
-            The true-home edge is biggest in Qualifiers ({data.by_tournament_type.find((b) => b.bucket === "Qualifiers")?.effect_goal_diff}).
+            The true-home advantage is largest in Qualifiers ({data.by_tournament_type.find((b) => b.bucket === "Qualifiers")?.effect_goal_diff}).
             Neutral games concentrate in Finals &amp; continental play (
             {data.by_tournament_type.find((b) => b.bucket === "Finals & continental")?.neutral_n.toLocaleString()} of{" "}
             {neutral.n.toLocaleString()} neutral matches).

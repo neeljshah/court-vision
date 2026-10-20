@@ -168,7 +168,7 @@ describe("/paper-trading -- WS3 venue summary wired", () => {
     await renderPage();
     await waitFor(() => expect(screen.getAllByTestId("venue-tile").length).toBe(1));
     const tile = screen.getByTestId("venue-tile");
-    expect(tile.textContent).toContain("INSUFFICIENT_DATA");
+    expect(tile.textContent).toContain(CLV_UNAVAILABLE);
   });
 });
 
@@ -223,11 +223,9 @@ describe("/paper-trading -- WS3 per-venue counts and units", () => {
     await renderPage();
     await waitFor(() => expect(screen.getByTestId("venue-tile")).toBeInTheDocument());
     const tile = screen.getByTestId("venue-tile");
-    expect(tile.textContent).toContain("INSUFFICIENT_DATA");
+    expect(tile.textContent).toContain(CLV_UNAVAILABLE);
     // CLV cell must not show a raw "0.0%" (zero percent) in place of INSUFFICIENT_DATA.
     // The regex anchors to avoid false-match on "60.0%" model_prob.
-    // The CLV label is "CLV (n=0)" -- confirm clv_sample_n=0 wording.
-    expect(tile.textContent).toContain("CLV (n=0)");
     // No dollar-value pattern ($ followed by digit)
     expect(tile.textContent ?? "").not.toMatch(/\$\s?\d/);
   });

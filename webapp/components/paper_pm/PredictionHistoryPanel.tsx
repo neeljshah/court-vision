@@ -37,11 +37,11 @@ function outcomeLabel(row: PaperPredictionRow): string {
 }
 
 function outcomeCls(row: PaperPredictionRow): string {
-  if (!row.outcome) return "text-slate-500 italic";
+  if (!row.outcome) return "text-muted-foreground italic";
   switch (row.outcome.toLowerCase()) {
     case "win":  return "text-success";
     case "loss": return "text-danger";
-    default:     return "text-slate-400";
+    default:     return "text-muted-foreground";
   }
 }
 
@@ -50,11 +50,11 @@ function PredictionHistoryRow({ row }: { row: PaperPredictionRow }) {
   const unitsStr   = row.stake_units   != null ? `${row.stake_units.toFixed(2)}u`            : EMPTY_CELL;
   const marketStr  = row.market_prob   != null ? `${(row.market_prob * 100).toFixed(1)}%`   : EMPTY_CELL;
   const edgeStr    = row.edge_vs_market != null ? fmtPct(row.edge_vs_market)                 : EMPTY_CELL;
-  const tierCls    = row.tier ? tierClass(row.tier) : "bg-slate-800 text-slate-400 border-slate-700";
+  const tierCls    = row.tier ? tierClass(row.tier) : "bg-surface-2 text-muted-foreground border-border";
   const edgeCls    =
     row.edge_vs_market != null && row.edge_vs_market > 0 ? "text-success"
     : row.edge_vs_market != null && row.edge_vs_market < 0 ? "text-danger"
-    : "text-slate-500";
+    : "text-muted-foreground";
   // final_score is the real game result string (e.g. "110-104") from the API.
   // null when the game is not yet settled -- shown as "pending" in the outcome cell.
   const scoreStr   = row.final_score ?? EMPTY_CELL;
@@ -62,35 +62,35 @@ function PredictionHistoryRow({ row }: { row: PaperPredictionRow }) {
   return (
     <tr
       data-testid="prediction-row"
-      className="border-b border-slate-800/60 text-[11px] hover:bg-slate-800/20 transition-colors"
+      className="border-b border-border text-[12px] hover:bg-surface-2 transition-colors"
     >
-      <td className="py-2 pr-3 pl-2 font-mono text-slate-200">
+      <td className="py-2 pr-3 pl-2 font-mono text-foreground">
         {humanizeMatchup(row.matchup)}
-        {row.sport ? <span className="ml-1 text-slate-600 uppercase text-[9px]">{row.sport}</span> : null}
+        {row.sport ? <span className="ml-1 text-faint uppercase text-[12px]">{row.sport}</span> : null}
       </td>
-      <td className="py-2 pr-3 font-mono text-slate-400">
+      <td className="py-2 pr-3 font-mono text-muted-foreground">
         {describeBetShort(row)}
       </td>
-      <td className="py-2 pr-3 font-mono tabular-nums text-slate-200">{probStr}</td>
-      <td className="py-2 pr-3 font-mono tabular-nums text-slate-500">{marketStr}</td>
+      <td className="py-2 pr-3 font-mono tabular-nums text-foreground">{probStr}</td>
+      <td className="py-2 pr-3 font-mono tabular-nums text-muted-foreground">{marketStr}</td>
       <td className={`py-2 pr-3 font-mono tabular-nums ${edgeCls}`}>{edgeStr}</td>
       <td className="py-2 pr-3">
         {row.tier ? (
           <span
             data-testid="pred-tier"
-            className={`inline-flex items-center rounded border px-1.5 py-0.5 text-[9px] font-mono font-semibold uppercase ${tierCls}`}
+            className={`inline-flex items-center rounded border px-1.5 py-0.5 text-[12px] font-mono font-semibold uppercase ${tierCls}`}
           >
             {row.tier}
           </span>
         ) : (
-          <span className="text-slate-600 font-mono">{EMPTY_CELL}</span>
+          <span className="text-faint font-mono">{EMPTY_CELL}</span>
         )}
       </td>
-      <td className="py-2 pr-3 font-mono tabular-nums text-slate-300">{unitsStr}</td>
+      <td className="py-2 pr-3 font-mono tabular-nums text-foreground">{unitsStr}</td>
       {/* final_score: real reported result string, never fabricated */}
       <td
         data-testid="pred-final-score"
-        className="py-2 pr-3 font-mono tabular-nums text-slate-400"
+        className="py-2 pr-3 font-mono tabular-nums text-muted-foreground"
       >
         {scoreStr}
       </td>
@@ -143,7 +143,7 @@ export function PredictionHistoryPanel() {
       {isStale && !showSkeleton ? (
         <p
           data-testid="pred-history-stale"
-          className="mb-2 text-[10px] font-mono text-amber-400"
+          className="mb-2 text-[12px] font-mono text-warning"
         >
           stale: {ageSec != null ? `${ageSec}s ago` : "checking"}
         </p>
@@ -154,7 +154,7 @@ export function PredictionHistoryPanel() {
       ) : showSkeleton ? (
         <div className="space-y-2" aria-busy="true" aria-label="loading prediction history">
           {[0, 1, 2].map((i) => (
-            <div key={i} className="h-7 w-full animate-pulse rounded bg-slate-800/50" role="presentation" />
+            <div key={i} className="h-7 w-full animate-pulse rounded bg-surface-2" role="presentation" />
           ))}
         </div>
       ) : isEmpty ? (
@@ -164,8 +164,8 @@ export function PredictionHistoryPanel() {
           className="py-6 text-center"
           aria-label="no prediction records yet"
         >
-          <p className="text-[12px] text-slate-500">None settled yet</p>
-          <p className="mt-1 text-[11px] text-slate-600">
+          <p className="text-[12px] text-muted-foreground">None settled yet</p>
+          <p className="mt-1 text-[12px] text-faint">
             Graded records appear here as predictions settle. Calibration only
             -- no edge is claimed. Units only, never dollars.
           </p>
@@ -178,7 +178,7 @@ export function PredictionHistoryPanel() {
         >
           <table className="w-full min-w-[640px]">
             <thead>
-              <tr className="border-b border-slate-800 text-[9px] uppercase tracking-wide text-slate-600">
+              <tr className="border-b border-border text-[12px] uppercase tracking-wide text-faint">
                 <th className="pb-1.5 pr-3 pl-2 text-left font-medium">Matchup</th>
                 <th className="pb-1.5 pr-3 text-left font-medium">Market / Side</th>
                 <th className="pb-1.5 pr-3 text-left font-medium">Model %</th>
@@ -199,7 +199,7 @@ export function PredictionHistoryPanel() {
               ))}
             </tbody>
           </table>
-          <p className="mt-2 text-[10px] text-slate-600">
+          <p className="mt-2 text-[12px] text-faint">
             Units = Kelly-sized stake, never dollars. Divergence = model probability
             minus devigged market probability. Score = real final score (pending when
             not yet settled). No edge is claimed.

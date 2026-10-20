@@ -42,31 +42,31 @@ export function ExecutionQualityPanel({
         <PanelHead title="Execution quality" asOf={asOf} stale={stale} />
         <div className="flex flex-wrap items-end gap-6 px-4 py-3">
           <div className="flex flex-col gap-0.5">
-            <span className="microlabel">gated placements</span>
+            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">gated placements</span>
             <Num className="text-sm font-semibold text-foreground">
               {q ? q.n_gated : 0}
             </Num>
           </div>
           <div className="flex flex-col gap-0.5">
-            <span className="microlabel">ungated placements</span>
+            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">ungated placements</span>
             <Num className="text-sm font-semibold text-muted-foreground">
               {q ? q.n_ungated : 0}
             </Num>
           </div>
           <div className="flex max-w-md flex-col gap-0.5" data-testid="exec-quality-clv-unavailable">
-            <span className="microlabel">expected CLV</span>
+            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">expected CLV</span>
             <Unavailable reason={CLV_UNAVAILABLE} />
           </div>
           <div className="flex flex-col gap-0.5">
-            <span className="microlabel">median latency</span>
+            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">median latency</span>
             <Num className="text-sm font-semibold text-foreground">
               {fmtMs(q?.median_placement_latency_ms ?? null)}
             </Num>
           </div>
           {t ? (
             <div className="flex flex-col gap-0.5">
-              <span className="microlabel">gate thresholds</span>
-              <span className="font-data text-[10px] text-muted-foreground">
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">gate thresholds</span>
+              <span className="font-data text-[12px] text-muted-foreground">
                 max drift {fmtPctSigned(t.ingame_max_drift_pct)} / max spread{" "}
                 {t.ingame_max_spread_bp.toFixed(0)}bp
               </span>
@@ -74,7 +74,7 @@ export function ExecutionQualityPanel({
           ) : null}
         </div>
         {noGated ? (
-          <p className="px-4 pb-3 text-[11px] text-faint">
+          <p className="px-4 pb-3 text-[12px] text-faint">
             No gated placements yet -- expected-CLV gating and latency stamping
             apply to newly placed in-game/prop bets only.
           </p>

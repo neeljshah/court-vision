@@ -31,7 +31,7 @@ type StatCellProps = { label: string; children: React.ReactNode };
 function StatCell({ label, children }: StatCellProps) {
   return (
     <div className="flex flex-col gap-0.5">
-      <span className="microlabel">
+      <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
         {label}
       </span>
       <span className="font-data text-[12px] text-foreground">{children}</span>
@@ -159,7 +159,7 @@ export function VenueSummary({ rows, loading, error }: Props) {
           <VenueTile key={stats.venue} stats={stats} />
         ))}
       </div>
-      <p className="mt-3 text-[11px] text-faint">
+      <p className="mt-3 text-[12px] text-faint">
         One tile per venue the system executed on -- best available price per market.
         Paper mode -- stakes are units (no $). CLV (better-number-than-close) is
         the only honest calibration yardstick; shown as INSUFFICIENT_DATA when no

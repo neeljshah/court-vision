@@ -55,13 +55,13 @@ export function RealizedIngameClvPanel({
           asOf={asOf}
           stale={stale}
           right={
-            <span className="font-data text-[9px] text-faint">
+            <span className="font-data text-[12px] text-faint">
               probability points; not closing-line value
             </span>
           }
         />
         {sports.length === 0 || totalGraded === 0 ? (
-          <p className="px-4 py-3 text-[11px] text-faint">
+          <p className="px-4 py-3 text-[12px] text-faint">
             No in-game placements gradeable yet -- this measures the market
             move a fixed horizon after placement, separate from CLV.
           </p>
@@ -77,7 +77,7 @@ export function RealizedIngameClvPanel({
                     (h) => (
                       <th
                         key={h}
-                        className="py-1.5 px-3 font-data text-[9px] uppercase tracking-wider text-faint"
+                        className="py-1.5 px-3 font-data text-[12px] uppercase tracking-wider text-faint"
                       >
                         {h}
                       </th>
@@ -96,26 +96,26 @@ export function RealizedIngameClvPanel({
                         key={`${sport}-${h}`}
                         className="border-b border-border last:border-0 hover:bg-surface-2"
                       >
-                        <td className="py-1.5 px-3 font-data text-[11px] text-foreground">
+                        <td className="py-1.5 px-3 font-data text-[12px] text-foreground">
                           {sport}
                         </td>
-                        <td className="py-1.5 px-3 font-data text-[11px] text-muted-foreground">
+                        <td className="py-1.5 px-3 font-data text-[12px] text-muted-foreground">
                           {HORIZON_LABELS[h] ?? h}
                         </td>
                         <td className="py-1.5 px-3">
-                          <Num className={`text-[11px] ${ppClass(stat.median_pp)}`}>
+                          <Num className={`text-[12px] ${ppClass(stat.median_pp)}`}>
                             {fmtPp(stat.median_pp)}
                           </Num>
                         </td>
                         <td className="py-1.5 px-3">
-                          <Num className="text-[11px] text-muted-foreground">
+                          <Num className="text-[12px] text-muted-foreground">
                             {stat.pct_favorable != null
                               ? `${stat.pct_favorable.toFixed(0)}%`
                               : EMPTY_CELL}
                           </Num>
                         </td>
                         <td className="py-1.5 px-3">
-                          <Num className="text-[11px] text-faint">{stat.n}</Num>
+                          <Num className="text-[12px] text-faint">{stat.n}</Num>
                         </td>
                       </tr>
                     );

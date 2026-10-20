@@ -340,7 +340,7 @@ describe("PanelErrorBoundary (f) -- tone invariants: no red, no green on error f
       </PanelErrorBoundary>,
     );
     const fallback = container.querySelector('[data-honest-state="panel-error"]');
-    expect(fallback?.className).toContain("amber");
+    expect(fallback?.className).toContain("warning");
   });
 
   it("healthy state output contains no error fallback classes", () => {

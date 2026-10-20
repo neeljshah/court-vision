@@ -23,7 +23,7 @@ export default function PaperTradingLoading() {
         {Array.from({ length: 7 }).map((_, i) => (
           <div
             key={i}
-            className="rounded-lg border border-slate-800 bg-bg-subtle px-3 py-3"
+            className="rounded-lg border border-border bg-bg-subtle px-3 py-3"
           >
             <div className="skeleton-shimmer h-3 w-12 rounded" />
             <div className="skeleton-shimmer mt-2 h-7 w-10 rounded" />
@@ -35,8 +35,8 @@ export default function PaperTradingLoading() {
       <div className="skeleton-shimmer mb-5 h-12 w-full rounded-lg" />
 
       {/* Trade trail panel skeleton */}
-      <div className="rounded-xl border border-slate-800 bg-bg-panel">
-        <div className="flex items-center justify-between border-b border-slate-800 px-4 py-2.5">
+      <div className="rounded-xl border border-border bg-bg-panel">
+        <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
           <div className="skeleton-shimmer h-3 w-24 rounded" />
           <div className="skeleton-shimmer h-6 w-32 rounded-full" />
         </div>

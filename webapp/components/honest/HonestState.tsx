@@ -35,26 +35,26 @@ type Variant = "unavailable" | "empty" | "stale" | "degraded";
 const TONE: Record<Variant, { box: string; label: string; word: string }> = {
   // Unavailable -> amber (the existing p6 Unavailable tone; a real failure).
   unavailable: {
-    box: "border-amber-900/40 bg-amber-950/20",
-    label: "text-amber-400",
+    box: "border-warning/50 bg-warning/10",
+    label: "text-warning",
     word: "unavailable",
   },
   // Empty -> neutral slate (not an error -- there is just nothing yet).
   empty: {
-    box: "border-slate-800 bg-surface-1/40",
+    box: "border-border bg-surface-1/40",
     label: "text-muted-foreground",
     word: "nothing here yet",
   },
   // Stale -> amber (last-good shown, but explicitly NOT green/fresh).
   stale: {
-    box: "border-amber-900/40 bg-amber-950/15",
-    label: "text-amber-400",
+    box: "border-warning/50 bg-warning/10",
+    label: "text-warning",
     word: "stale",
   },
   // Degraded -> amber (a fallback path is active; honest, not a failure).
   degraded: {
-    box: "border-amber-900/30 bg-amber-950/10",
-    label: "text-amber-400",
+    box: "border-warning/50 bg-warning/10",
+    label: "text-warning",
     word: "degraded",
   },
 };

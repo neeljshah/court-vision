@@ -23,7 +23,7 @@ import { cn } from "@/lib/utils";
 import { EMPTY_CELL, tierBadgeClass } from "@/lib/tokens";
 import { Badge, Unavailable } from "@/components/p6/Primitives";
 import { ClvInline } from "./ClvInline";
-import { humanizeMatchup, describeBetShort } from "@/lib/betdesc";
+import { describeBetShort } from "@/lib/betdesc"; import { FillLink } from "./FillLink";
 import { TallyTile, deriveSettledTally } from "./settledTallyHelpers";
 import { OpenPositions } from "./OpenPositions";
 import type { PaperTrailRow } from "@/lib/p5api";
@@ -85,27 +85,27 @@ function SettledTableRow({ row }: { row: PaperTrailRow }) {
   return (
     <tr
       className={cn(
-        "border-b border-slate-800/60 text-[12px] text-slate-300 transition-colors hover:bg-slate-800/30",
+        "border-b border-border text-[12px] text-foreground transition-colors hover:bg-surface-2",
         !isSettled && "opacity-60",
       )}
       data-result={res}
     >
       <td className="px-2 py-1.5">
-        <span className="font-medium">{humanizeMatchup(row.matchup || row.game_id)}</span>
-        <span className="ml-1.5 font-mono text-[10px] text-slate-500">
+        <FillLink row={row} />
+        <span className="ml-1.5 font-mono text-[12px] text-muted-foreground">
           {row.sport?.toUpperCase()}
         </span>
         {row.prop_player ? (
-          <span className="block font-mono text-[10px] text-sky-400/80" data-testid="settled-prop-selection">
+          <span className="block font-mono text-[12px] text-info" data-testid="settled-prop-selection">
             {row.prop_player}
             {row.prop_stat ? ` · ${row.prop_stat}` : ""}
           </span>
         ) : null}
       </td>
-      <td className="px-2 py-1.5 font-mono text-[11px] text-slate-400">
+      <td className="px-2 py-1.5 font-mono text-[12px] text-muted-foreground">
         {row.market_type || EMPTY_CELL}
       </td>
-      <td className="px-2 py-1.5 font-mono text-[11px] text-slate-400">
+      <td className="px-2 py-1.5 font-mono text-[12px] text-muted-foreground">
         {row.prop_side
           ? `${row.prop_side}${row.line != null ? ` ${row.line}` : ""}`
           : describeBetShort(row)}
@@ -114,30 +114,30 @@ function SettledTableRow({ row }: { row: PaperTrailRow }) {
         {row.tier ? (
           <span
             className={cn(
-              "inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-mono uppercase",
+              "inline-flex items-center rounded-full border px-2 py-0.5 text-[12px] font-mono uppercase",
               tierBadgeClass(row.tier),
             )}
           >
             {row.tier}
           </span>
         ) : (
-          <span className="text-slate-600">{EMPTY_CELL}</span>
+          <span className="text-faint">{EMPTY_CELL}</span>
         )}
       </td>
-      <td className="px-2 py-1.5 text-right font-mono tabular-nums text-slate-300">
+      <td className="px-2 py-1.5 text-right font-mono tabular-nums text-foreground">
         {fmtProb(row.model_prob)}
       </td>
-      <td className="px-2 py-1.5 text-right font-mono tabular-nums text-slate-300">
+      <td className="px-2 py-1.5 text-right font-mono tabular-nums text-foreground">
         {fmtDec(row.taken_decimal)}
       </td>
       <td
-        className="px-2 py-1.5 font-mono text-[11px] text-slate-400"
+        className="px-2 py-1.5 font-mono text-[12px] text-muted-foreground"
         data-testid="taken-book-cell"
       >
         {row.taken_book || EMPTY_CELL}
       </td>
       <td
-        className="px-2 py-1.5 text-right font-mono tabular-nums text-slate-400"
+        className="px-2 py-1.5 text-right font-mono tabular-nums text-muted-foreground"
         data-testid="model-ev-cell"
       >
         {fmtEv(row.model_ev)}
@@ -146,7 +146,7 @@ function SettledTableRow({ row }: { row: PaperTrailRow }) {
         <ClvInline row={row} />
       </td>
       <td
-        className="px-2 py-1.5 font-mono text-[10px] text-slate-500"
+        className="px-2 py-1.5 font-mono text-[12px] text-muted-foreground"
         data-testid="clv-status-cell"
       >
         {row.clv_status ?? EMPTY_CELL}
@@ -156,7 +156,7 @@ function SettledTableRow({ row }: { row: PaperTrailRow }) {
           <span data-testid="result-label">{res}</span>
         </Badge>
       </td>
-      <td className="px-2 py-1.5 text-right font-mono tabular-nums text-slate-300">
+      <td className="px-2 py-1.5 text-right font-mono tabular-nums text-foreground">
         {fmtUnits(row.stake_units)}
       </td>
     </tr>
@@ -229,11 +229,11 @@ export function PaperTrailSettled({
           testId="settled-tally-settled" loading={loading && rows.length === 0} />
         <TallyTile label="Win" value={loading ? EMPTY_CELL : String(tally.nWin)}
           testId="settled-tally-win"
-          valueClass={tally.nWin > 0 ? "text-success" : "text-slate-100"}
+          valueClass={tally.nWin > 0 ? "text-success" : "text-foreground"}
           loading={loading && rows.length === 0} />
         <TallyTile label="Loss" value={loading ? EMPTY_CELL : String(tally.nLoss)}
           testId="settled-tally-loss"
-          valueClass={tally.nLoss > 0 ? "text-danger" : "text-slate-100"}
+          valueClass={tally.nLoss > 0 ? "text-danger" : "text-foreground"}
           loading={loading && rows.length === 0} />
         <TallyTile label="Push" value={loading ? EMPTY_CELL : String(tally.nPush)}
           testId="settled-tally-push" loading={loading && rows.length === 0} />
@@ -247,7 +247,7 @@ export function PaperTrailSettled({
       {settledRows.length === 0 && !loading ? (
         <div
           data-testid="no-settled-records"
-          className="rounded-lg border border-slate-800 bg-bg-subtle/40 px-4 py-8 text-center text-sm text-slate-500"
+          className="rounded-lg border border-border bg-bg-subtle/40 px-4 py-8 text-center text-sm text-muted-foreground"
         >
           No settled records yet. CLV populates as paper bets grade against the
           close. No edge is claimed.
@@ -257,14 +257,14 @@ export function PaperTrailSettled({
         {isTruncated && (
           <p
             data-testid="settled-cap-note"
-            className="text-[11px] text-amber-400"
+            className="text-[12px] text-warning"
           >
             Showing {settledRows.length} most recent of {trueSettledTotal} settled
             records (server page cap). Full record: {trueSettledTotal} settled,{" "}
             {tallyOverride?.nOpen ?? tally.nOpen} open.
           </p>
         )}
-        <ScrollArea className="h-[480px] w-full rounded-lg border border-slate-800">
+        <ScrollArea className="h-[480px] w-full rounded-lg border border-border">
           <table
             className="min-w-full text-left"
             role="grid"
@@ -275,8 +275,8 @@ export function PaperTrailSettled({
               Settled paper book -- units and probability only, no dollar amounts.
               All trades are paper-only (executed=false).
             </caption>
-            <thead className="sticky top-0 z-10 bg-bg-panel text-[10px] uppercase tracking-wide text-slate-400">
-              <tr className="border-b border-slate-800">
+            <thead className="sticky top-0 z-10 bg-bg-panel text-[12px] uppercase tracking-wide text-muted-foreground">
+              <tr className="border-b border-border">
                 <th scope="col" className="px-2 py-2">Matchup</th>
                 <th scope="col" className="px-2 py-2">Market</th>
                 <th scope="col" className="px-2 py-2">Side</th>
@@ -307,7 +307,7 @@ export function PaperTrailSettled({
           possibly server-capped `rows` so placed-but-unsettled bets always show. */}
       {!settledOnly && <OpenPositions rows={openRows ?? rows} loading={loading} />}
 
-      <p className="text-[11px] text-slate-600">
+      <p className="text-[12px] text-faint">
         Paper mode -- stakes are units (no $). CLV (better-number-than-close) is
         the only honest calibration yardstick. No edge is claimed.
       </p>

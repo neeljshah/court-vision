@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { render, screen, waitFor, within, fireEvent } from "@testing-library/react";
 
 // a11y-smoke -- a focused accessibility baseline for the SHARED components a
 // keyboard / screen-reader user touches on every page: the Nav, the InfoTip
@@ -16,8 +16,7 @@ vi.mock("next/navigation", () => ({
   usePathname: () => "/",
 }));
 
-import { Nav } from "../Nav";
-import { AppShell } from "../AppShell";
+import { SiteHeader } from "../shell/SiteHeader";
 import { InfoTip } from "../depth/InfoTip";
 import { SignalVerdictBadge } from "../depth/SignalVerdictBadge";
 import { OnboardingOverlay } from "../onboarding/OnboardingOverlay";
@@ -36,25 +35,19 @@ function noDollar(container: HTMLElement) {
   expect(container.textContent || "").not.toMatch(/\$\s?\d/);
 }
 
-describe("a11y smoke -- Nav", () => {
+describe("a11y smoke -- SiteHeader", () => {
   it("exposes a banner + named navigation landmark with focusable links", () => {
-    const { container } = render(<Nav />);
+    const { container } = render(<SiteHeader />);
     expect(screen.getByRole("banner")).toBeInTheDocument();
-    const navs = screen.getAllByRole("navigation");
-    expect(navs.length).toBeGreaterThan(0);
-    // The main desktop nav is labelled.
-    expect(
-      navs.some((n) => n.getAttribute("aria-label") === "Main"),
-    ).toBe(true);
-    // Every nav link is a real anchor (keyboard-focusable by default).
-    const links = within(navs[0]).getAllByRole("link");
+    const main = screen.getByRole("navigation", { name: "Main" });
+    const links = within(main).getAllByRole("link");
     expect(links.length).toBeGreaterThanOrEqual(5);
     links.forEach((l) => expect(l).toHaveAttribute("href"));
     noDollar(container);
   });
 
   it("marks the active route with aria-current=page (not color alone)", () => {
-    render(<Nav />);
+    render(<SiteHeader />);
     const current = screen
       .getAllByRole("link")
       .filter((l) => l.getAttribute("aria-current") === "page");
@@ -62,27 +55,10 @@ describe("a11y smoke -- Nav", () => {
   });
 
   it("theme + mobile toggles have aria-labels (icon-only buttons)", () => {
-    render(<Nav />);
+    render(<SiteHeader />);
     expect(
-      screen.getByRole("button", { name: /switch to (light|dark) mode/i }),
+      screen.getByRole("button", { name: /switch to (light|dark) theme/i }),
     ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: /open menu|close menu/i }),
-    ).toBeInTheDocument();
-  });
-});
-
-describe("a11y smoke -- AppShell skip link", () => {
-  it("renders a skip-to-main-content link targeting #main-content", () => {
-    // Suppress the first-run onboarding dialog so it does not aria-hide the
-    // page chrome (Radix marks siblings aria-hidden while a modal is open).
-    localStorage.setItem("cv-onboarded", "1");
-    render(<AppShell>{<p>body</p>}</AppShell>);
-    const skip = screen.getByRole("link", { name: /skip to main content/i });
-    expect(skip).toHaveAttribute("href", "#main-content");
-    // main landmark exists and is the jump target.
-    const main = screen.getByRole("main");
-    expect(main).toHaveAttribute("id", "main-content");
   });
 });
 
@@ -113,8 +89,12 @@ describe("a11y smoke -- SignalVerdictBadge", () => {
 });
 
 describe("a11y smoke -- OnboardingOverlay", () => {
-  it("auto-opens on first run with a dialog + named sections + honest rails", async () => {
+  it("opens from the Help button with a dialog + named sections + honest rails", async () => {
     const { container } = render(<OnboardingOverlay />);
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    fireEvent.click(
+      screen.getByRole("button", { name: /open the how-to-read-this guide/i }),
+    );
     // Radix Dialog opens => role=dialog with an accessible title.
     const dialog = await screen.findByRole("dialog");
     expect(

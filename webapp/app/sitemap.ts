@@ -1,43 +1,61 @@
-// Build-time sitemap for the public analytics site. Static export emits this as
-// /court-vision/sitemap.xml. Includes the public search index plus primary hubs.
-// URLs are absolute (origin + basePath), because a project-site sitemap under a
-// subpath must spell out the full https URL for crawlers to resolve it.
+// Build-time sitemap for the unified site. Static export emits /court-vision/sitemap.xml.
+// Lists every kept section route plus the search index, research and paper pages; drops
+// every retired route (lib/redirects.ts: stub pages and retired dynamic families) and any
+// root whose page.tsx does not exist in this build. URLs are absolute (origin + basePath).
 import type { MetadataRoute } from "next";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { getResearchAnalyses } from "@/lib/analytics/researchData";
 import { loadPapers } from "@/lib/analytics/papers.server";
+import { resolveRedirect } from "@/lib/redirects";
 
 export const dynamic = "force-static";
 
 const ORIGIN = process.env.NEXT_PUBLIC_SITE_URL || "https://neeljshah.github.io";
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
+// Section roots in nav order: Today, Desk, Calibration, Research, Evidence, About.
+const ROOTS = [
+  "/", "/games",
+  "/desk", "/desk/health", "/paper-trading",
+  "/analytics/calibration", "/analytics/state-reliability", "/analytics/forecaster", "/analytics/compare",
+  "/analytics/score-decomposition", "/analytics/residual-anatomy", "/analytics/observation-dependence",
+  "/analytics/cross-sport-comparability", "/analytics/state-contrasts",
+  "/analytics/papers", "/analytics/findings", "/analytics/novel", "/analytics/lab", "/analytics/players",
+  "/analytics/browse", "/analytics/pitch-sequencing", "/analytics/blowout-timing", "/analytics/count-context",
+  "/evidence", "/evidence/retractions", "/receipts",
+  "/about", "/how-it-works", "/methodology",
+];
+
+/** True when a static page.tsx backs this route in either route group. */
+function exists(route: string): boolean {
+  const rel = route === "/" ? "" : route.slice(1);
+  return ["(terminal)", "(analytics)"].some((g) => existsSync(join(process.cwd(), "app", g, rel, "page.tsx")));
+}
+
+/** Kept = not a redirect stub and not inside a retired dynamic family. */
+const isKept = (h: string) => resolveRedirect(h) === null;
+
 export default function sitemap(): MetadataRoute.Sitemap {
   let hrefs: string[] = [];
   try {
     const raw = readFileSync(join(process.cwd(), "public", "data", "showcase", "search_records.json"), "utf-8");
-    hrefs = (JSON.parse(raw).records as Array<{ href: string }>).map((r) => r.href);
+    hrefs = (JSON.parse(raw).records as Array<{ href: string }>).map((r) => r.href.replace(/\/+$/, ""));
   } catch {
-    // Missing index -> still emit the flagship roots rather than an empty sitemap.
-    hrefs = [];
+    hrefs = []; // missing index: still emit the section roots
   }
-  // The home + hub roots always belong in, even if the index failed to load.
-  const roots = ["/analytics", "/analytics/ask", "/analytics/lab", "/analytics/compare", "/analytics/evidence", "/analytics/findings", "/analytics/findings/ingame-join-integrity", "/analytics/players", "/analytics/browse", "/analytics/calibration", "/analytics/state-reliability", "/analytics/pitch-sequencing", "/analytics/score-decomposition", "/analytics/observation-dependence", "/analytics/residual-anatomy", "/analytics/blowout-timing", "/analytics/state-contrasts", "/analytics/cross-sport-comparability", "/analytics/count-context", "/analytics/papers"];
+  const research = getResearchAnalyses().map((a) => `/analytics/research/${a.id}`);
+  const papers = loadPapers().map((p) => `/analytics/papers/${p.slug}`);
   const seen = new Set<string>();
   const urls: MetadataRoute.Sitemap = [];
-  const research = getResearchAnalyses().map(a => `/analytics/research/${a.id}`);
-  const papers = loadPapers().map(p => `/analytics/papers/${p.slug}`);
-  for (const h of [...roots, ...hrefs, ...research, ...papers]) {
-    if (seen.has(h)) continue;
+  for (const h of [...ROOTS.filter(exists), ...hrefs, ...research, ...papers]) {
+    if (seen.has(h) || !isKept(h)) continue;
     seen.add(h);
-    // next.config has trailingSlash:true, so the canonical exported page is
-    // /analytics/ (with slash). Emit the slashed form so crawlers index the
-    // canonical URL directly instead of following a Pages redirect.
     urls.push({
-      url: `${ORIGIN}${BASE}${h}/`,
+      // trailingSlash: true -> the canonical exported page ends in "/".
+      url: `${ORIGIN}${BASE}${h === "/" ? "/" : `${h}/`}`,
       changeFrequency: "weekly",
-      priority: h === "/analytics" ? 1 : h.startsWith("/analytics/findings") ? 0.8 : 0.6,
+      priority: h === "/" ? 1 : ROOTS.includes(h) ? 0.8 : 0.6,
     });
   }
   return urls;

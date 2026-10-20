@@ -81,6 +81,7 @@ vi.mock("@/components/bets/SortControls", () => ({
 // Import AFTER mocks
 // ---------------------------------------------------------------------------
 import { BestBetsBoard } from "@/components/bets/BestBetsBoard";
+import { CLV_UNAVAILABLE } from "@/lib/clvUnavailable";
 
 // ---------------------------------------------------------------------------
 // Fixtures
@@ -411,11 +412,9 @@ describe("bets_page (3) -- no $ or fabricated-edge fields, units + CLV only", ()
     render(<BestBetsBoard />);
     await act(async () => { await Promise.resolve(); });
     // CLV is null -> BetCard shows INSUFFICIENT_DATA
-    expect(screen.getByText(/INSUFFICIENT_DATA/)).toBeInTheDocument();
+    expect(screen.getAllByTitle(CLV_UNAVAILABLE).length).toBeGreaterThan(0);
     // Must NOT be styled green
-    const clvEl = Array.from(document.querySelectorAll("*")).find(
-      (el) => el.textContent?.includes("INSUFFICIENT_DATA"),
-    );
+    const clvEl = screen.getAllByTitle(CLV_UNAVAILABLE)[0];
     expect(clvEl?.className ?? "").not.toMatch(/text-green/);
     expect(clvEl?.className ?? "").not.toMatch(/text-tier-a/);
   });

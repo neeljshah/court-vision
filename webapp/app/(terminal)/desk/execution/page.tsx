@@ -50,7 +50,7 @@ export default function DeskExecutionPage() {
           <>
             <T head={["TTL s", "units", "quotes placed", "fills credited"]}
               rows={fr.grid_table.map((g) => [g.ttl_s, g.units, g.quotes_placed ?? "-", g.fills_credited ?? "-"])} />
-            <p className="px-3 py-2 font-data text-[11px] text-faint">
+            <p className="px-3 py-2 font-data text-[12px] text-faint">
               by side {JSON.stringify(fr.by_side)}; by fill basis {JSON.stringify(fr.by_fill_basis)};
               quote-life expiries {fr.quote_life_expiry ?? "-"}
             </p>
@@ -81,10 +81,10 @@ export default function DeskExecutionPage() {
       <Section title="Execution-quality receipt" source={eq?.source}>
         {eq ? (
           <div className="px-3 py-2 text-[12px]">
-            <p className="font-data text-[11px] text-faint">
+            <p className="font-data text-[12px] text-faint">
               days {(eq.days ?? []).join(", ")}; estimand {eq.estimand_version ?? "-"}; census {JSON.stringify(eq.census)}
             </p>
-            <p className="microlabel mt-2">not verified</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mt-2">not verified</p>
             <ul className="list-disc pl-5 text-[12px] text-muted-foreground">
               {(eq.not_verified ?? []).map((x) => <li key={x}>{x}</li>)}
             </ul>

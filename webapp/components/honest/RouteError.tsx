@@ -27,7 +27,7 @@ export function RouteError({
 
   return (
     <div className="mx-auto flex min-h-[40vh] max-w-2xl flex-col items-center justify-center gap-4 p-8 text-center">
-      <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-amber-400">
+      <span className="font-mono text-[12px] uppercase tracking-[0.2em] text-warning">
         {section} unavailable
       </span>
       <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
@@ -37,7 +37,7 @@ export function RouteError({
       </p>
       <button
         onClick={reset}
-        className="rounded-md border border-slate-700 px-4 py-2 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500"
+        className="rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         Try again
       </button>

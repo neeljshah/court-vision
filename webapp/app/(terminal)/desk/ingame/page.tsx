@@ -72,7 +72,7 @@ export default function DeskIngamePage() {
                 v.markout_through["60"] ? `${fmt(v.markout_through["60"].mean_prob_points)} (${v.markout_through["60"].n})` : "-",
                 v.markout_through["300"] ? `${fmt(v.markout_through["300"].mean_prob_points)} (${v.markout_through["300"].n})` : "-",
                 v.verdict ?? "-"])} />
-            <p className="px-3 py-2 text-[11px] text-faint">
+            <p className="px-3 py-2 text-[12px] text-faint">
               Markouts in probability points per contract (through-fills). Receipt reason: {ig.reason ?? "-"};
               incomplete tickers {ig.incomplete_tickers}; unpaired games {ig.unpaired_games ?? "-"}.
             </p>

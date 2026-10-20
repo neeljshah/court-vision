@@ -482,7 +482,7 @@ describe("BestBetsBoard -- honesty-critical board logic", () => {
 
     // The refresh button must exist with an accessible label
     await waitFor(() => {
-      const btn = screen.getByRole("button", { name: /refresh best bets now/i });
+      const btn = screen.getByRole("button", { name: /refresh paper candidates now/i });
       expect(btn).toBeTruthy();
     });
   });
@@ -500,7 +500,7 @@ describe("BestBetsBoard -- honesty-critical board logic", () => {
 
     // Wait for initial load to settle and button to be enabled
     await waitFor(() => {
-      const btn = screen.getByRole("button", { name: /refresh best bets now/i });
+      const btn = screen.getByRole("button", { name: /refresh paper candidates now/i });
       expect(btn).toBeTruthy();
       expect((btn as HTMLButtonElement).disabled).toBe(false);
     });
@@ -508,7 +508,7 @@ describe("BestBetsBoard -- honesty-critical board logic", () => {
     const callsBefore = mockFn.mock.calls.length;
 
     // Click the manual refresh button
-    fireEvent.click(screen.getByRole("button", { name: /refresh best bets now/i }));
+    fireEvent.click(screen.getByRole("button", { name: /refresh paper candidates now/i }));
 
     // Fetch must be re-invoked (each sport triggers a call)
     await waitFor(() => {
@@ -762,11 +762,11 @@ describe("Sport bets board (/bets/[sport]) -- P0 acceptance tests", () => {
     const { container } = render(<SportBetsPage />);
 
     await waitFor(() => {
-      expect(screen.queryAllByText(/INSUFFICIENT_DATA/i).length).toBeGreaterThan(0);
+      expect(screen.queryAllByTitle(CLV_UNAVAILABLE).length).toBeGreaterThan(0);
     });
 
     // The INSUFFICIENT_DATA element must NOT carry any green class
-    const insEl = screen.queryAllByText(/INSUFFICIENT_DATA/i)[0];
+    const insEl = screen.queryAllByTitle(CLV_UNAVAILABLE)[0];
     const cls = insEl?.className ?? "";
     expect(cls).not.toMatch(/green|tier-a/);
   });

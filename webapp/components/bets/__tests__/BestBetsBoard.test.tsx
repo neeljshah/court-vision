@@ -280,7 +280,7 @@ describe("BestBetsBoard (g) -- refresh button calls hook refresh()", () => {
     setLiveDataState({ isLoading: false, data: {}, ageSec: 5, lastUpdatedAt: Date.now(), refresh: refreshSpy });
     render(<BestBetsBoard />);
     await act(async () => { await Promise.resolve(); });
-    const btn = screen.getByRole("button", { name: /refresh best bets now/i });
+    const btn = screen.getByRole("button", { name: /refresh paper candidates now/i });
     fireEvent.click(btn);
     expect(refreshSpy).toHaveBeenCalledTimes(1);
   });
@@ -289,7 +289,7 @@ describe("BestBetsBoard (g) -- refresh button calls hook refresh()", () => {
     setLiveDataState({ isLoading: true, data: null });
     render(<BestBetsBoard />);
     await act(async () => { await Promise.resolve(); });
-    const btn = screen.getByRole("button", { name: /refresh best bets now/i });
+    const btn = screen.getByRole("button", { name: /refresh paper candidates now/i });
     expect(btn).toHaveProperty("disabled", true);
   });
 });

@@ -77,7 +77,7 @@ describe("VerdictTally -- ship / reject / insufficient + SHIP framing", () => {
     // ship=2 (soccer+tennis), reject=5, insufficient=1
     expect(screen.getAllByText("2").length).toBeGreaterThan(0);
     expect(screen.getByText("5")).toBeTruthy();
-    expect(screen.getAllByText("SHIP").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("CALIBRATION SURVIVOR -- NOT SHIPPED").length).toBeGreaterThan(0);
     // SHIP carries the calibration-only / vs_close UNPROVEN framing
     expect(
       screen.getAllByText(/calibration-only, vs_close UNPROVEN/).length,

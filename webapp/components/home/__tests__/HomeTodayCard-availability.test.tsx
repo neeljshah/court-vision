@@ -4,7 +4,7 @@ import { api } from "@/lib/p5api";
 import * as honestFetch from "@/lib/fetchHonest";
 import type { PnlSeries } from "@/lib/types";
 import { getPaperToday, type TodayBet } from "@/lib/paperToday";
-import pnlJson from "@/public/demo-data/api_paper_pnl_series.json";
+import pnlJson from "@/test/fixtures/july_2026/api_paper_pnl_series.json";
 import { HomeTodayCard } from "../HomeTodayCard";
 
 afterEach(() => { cleanup(); vi.restoreAllMocks(); });

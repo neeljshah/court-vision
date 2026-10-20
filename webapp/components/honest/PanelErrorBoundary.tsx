@@ -127,13 +127,13 @@ export class PanelErrorBoundary extends Component<
           data-honest-state="panel-error"
           data-panel-label={label}
           className={cn(
-            "flex flex-col gap-2 rounded-lg border border-amber-900/40",
-            "bg-amber-950/20 px-3 py-3 text-sm",
+            "flex flex-col gap-2 rounded-lg border border-warning/50",
+            "bg-warning/10 px-3 py-3 text-sm",
             className,
           )}
         >
           {/* State label -- matches HonestState tone palette; amber, never green */}
-          <span className="font-mono text-xs uppercase tracking-wide text-amber-400">
+          <span className="font-mono text-xs uppercase tracking-wide text-warning">
             panel error
           </span>
 
@@ -149,10 +149,10 @@ export class PanelErrorBoundary extends Component<
               onClick={this.handleReset}
               aria-label={`Retry ${label} panel`}
               className={cn(
-                "mt-1 self-start rounded border border-amber-800/50 bg-amber-950/30",
-                "px-2 py-0.5 font-mono text-xs text-amber-400",
-                "hover:bg-amber-900/30 transition-colors",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600",
+                "mt-1 self-start rounded border border-warning/50 bg-warning/10",
+                "px-2 py-0.5 font-mono text-xs text-warning",
+                "hover:bg-warning/10 transition-colors",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-warning",
               )}
             >
               retry

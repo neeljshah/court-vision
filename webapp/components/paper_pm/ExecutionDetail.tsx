@@ -47,11 +47,11 @@ function DetailRow({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex items-start justify-between border-b border-slate-800/60 py-2.5 last:border-0">
-      <span className="text-[11px] uppercase tracking-wide text-slate-500">
+    <div className="flex items-start justify-between border-b border-border py-2.5 last:border-0">
+      <span className="text-[12px] uppercase tracking-wide text-muted-foreground">
         {label}
       </span>
-      <span className="text-right text-[12px] text-slate-200">{children}</span>
+      <span className="text-right text-[12px] text-foreground">{children}</span>
     </div>
   );
 }
@@ -66,7 +66,7 @@ export function ExecutionDetail({ row, loading, error }: Props) {
   if (loading) {
     return (
       <Panel title="Execution detail">
-        <p className="text-sm text-slate-500">loading...</p>
+        <p className="text-sm text-muted-foreground">loading...</p>
       </Panel>
     );
   }
@@ -111,7 +111,7 @@ export function ExecutionDetail({ row, loading, error }: Props) {
       <div className="space-y-0">
         {/* Selection: matchup + market + side (the traded position) */}
         <DetailRow label="Selection">
-          <span data-testid="detail-selection" className="font-mono text-slate-100">
+          <span data-testid="detail-selection" className="font-mono text-foreground">
             {`${humanizeMatchup(row.matchup || row.game_id)} / ${describeBet(row)}`}
           </span>
         </DetailRow>
@@ -128,7 +128,7 @@ export function ExecutionDetail({ row, loading, error }: Props) {
             <span
               data-testid="detail-tier"
               className={cn(
-                "inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-mono uppercase",
+                "inline-flex items-center rounded-full border px-2 py-0.5 text-[12px] font-mono uppercase",
                 tierBadgeClass(row.tier),
               )}
             >
@@ -155,7 +155,7 @@ export function ExecutionDetail({ row, loading, error }: Props) {
         <DetailRow label="Market probability">
           <span data-testid="detail-market-prob" className="font-mono">
             {row.market_prob != null ? fmtProb(row.market_prob) : (
-              <span className="text-[11px] text-amber-600">INSUFFICIENT_DATA</span>
+              <span className="text-[12px] text-warning">INSUFFICIENT_DATA</span>
             )}
           </span>
         </DetailRow>
@@ -180,7 +180,7 @@ export function ExecutionDetail({ row, loading, error }: Props) {
         </DetailRow>
         {row.settled_at ? (
           <DetailRow label="Settled at">
-            <span className="font-mono text-slate-400">
+            <span className="font-mono text-muted-foreground">
               {fmtTs(row.settled_at)}
             </span>
           </DetailRow>
@@ -190,7 +190,7 @@ export function ExecutionDetail({ row, loading, error }: Props) {
         <DetailRow label="CLV (beat close?)">
           <span data-testid="detail-clv">
             {row.clv_unavailable || row.clv_status === "no_close" ? (
-              <span className="font-mono text-[11px] text-amber-600">
+              <span className="font-mono text-[12px] text-warning">
                 INSUFFICIENT_DATA
               </span>
             ) : (
@@ -199,19 +199,19 @@ export function ExecutionDetail({ row, loading, error }: Props) {
           </span>
         </DetailRow>
         <DetailRow label="CLV status">
-          <span data-testid="detail-clv-status" className="font-mono text-[11px] text-slate-400">
+          <span data-testid="detail-clv-status" className="font-mono text-[12px] text-muted-foreground">
             {row.clv_status || "no_close"}
           </span>
         </DetailRow>
         {row.clv_note ? (
           <DetailRow label="CLV note">
-            <span className="text-[11px] text-slate-500">{row.clv_note}</span>
+            <span className="text-[12px] text-muted-foreground">{row.clv_note}</span>
           </DetailRow>
         ) : null}
 
         {/* Channel -- always "paper" for this trail */}
         <DetailRow label="Channel">
-          <span data-testid="detail-channel" className="font-mono text-[11px] text-slate-400">
+          <span data-testid="detail-channel" className="font-mono text-[12px] text-muted-foreground">
             {row.channel ?? "paper"}
           </span>
         </DetailRow>
@@ -220,7 +220,7 @@ export function ExecutionDetail({ row, loading, error }: Props) {
         <DetailRow label="Executed (real money)">
           <span
             data-testid="detail-executed"
-            className="font-mono text-[11px] text-slate-600"
+            className="font-mono text-[12px] text-faint"
           >
             false (paper only)
           </span>
@@ -228,7 +228,7 @@ export function ExecutionDetail({ row, loading, error }: Props) {
 
         {/* Placed timestamp */}
         <DetailRow label="Placed at">
-          <span className="font-mono text-slate-400">{fmtTs(row.ts)}</span>
+          <span className="font-mono text-muted-foreground">{fmtTs(row.ts)}</span>
         </DetailRow>
       </div>
 
@@ -237,15 +237,15 @@ export function ExecutionDetail({ row, loading, error }: Props) {
         data-testid="detail-real-money-deny"
         role="alert"
         aria-label="Real-money: DENY. Paper only -- no real money is placed."
-        className="mt-4 flex items-center gap-2 rounded-lg border border-red-900/40 bg-red-950/20 px-3 py-2 text-[11px]"
+        className="mt-4 flex items-center gap-2 rounded-lg border border-danger/40 bg-danger/10 px-3 py-2 text-[12px]"
       >
-        <span className="font-mono font-semibold text-red-400">REAL-MONEY: DENY</span>
-        <span className="text-slate-400">
+        <span className="font-mono font-semibold text-danger">REAL-MONEY: DENY</span>
+        <span className="text-muted-foreground">
           Paper only -- no real money is placed. Execution is always false.
         </span>
       </div>
 
-      <p className="mt-4 text-[11px] leading-relaxed text-slate-600">
+      <p className="mt-4 text-[12px] leading-relaxed text-faint">
         Paper only. Stakes are units -- there is no dollar column. Model EV is a
         probability ratio (p * decimal_odds - 1), never a dollar amount. Fair odds
         = 1 / model_prob (unitless price ratio, not a $ payout). CLV is the only

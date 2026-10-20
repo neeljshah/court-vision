@@ -18,6 +18,7 @@
 // Source-level scan: every source file in the owned set is read as utf-8 bytes
 // and scanned for codepoints > U+007F.  This is the hard gate.
 
+import { CLV_UNAVAILABLE } from "@/lib/clvUnavailable";
 import { describe, it, expect, vi } from "vitest";
 import { render } from "@testing-library/react";
 import { readFileSync } from "node:fs";
@@ -96,7 +97,7 @@ describe("WS-A ASCII rail -- source file scan (zero non-ASCII bytes)", () => {
 
   const ownedFiles = [
     join(webappRoot, "components", "TopBets.tsx"),
-    join(webappRoot, "app", "games", "GameCard.tsx"),
+    join(webappRoot, "app", "(terminal)", "games", "GameCard.tsx"),
     join(webappRoot, "components", "p6", "ClvScoreboard.tsx"),
     join(webappRoot, "components", "p6", "GameReport.tsx"),
     join(webappRoot, "components", "p6", "PaperBetDialog.tsx"),
@@ -161,8 +162,8 @@ describe("WS-A ASCII rail -- ClvScoreboard empty/null state (no em-dash)", () =>
     );
     const text = container.textContent ?? "";
     expect(text).not.toMatch(BANNED_LITERAL_GLYPHS);
-    // '--' placeholder must appear (was previously the em-dash U+2014)
-    expect(text).toMatch(/--/);
+    // the CLV placeholder is now the single site-wide CLV sentence (lib/clvUnavailable.ts)
+    expect(text).toContain(CLV_UNAVAILABLE);
   });
 });
 

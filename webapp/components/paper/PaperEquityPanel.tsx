@@ -40,7 +40,7 @@ function Tile({
   testId?: string;
 }) {
   return (
-    <div className="rounded-lg border border-slate-800 bg-bg-subtle px-3 py-3">
+    <div className="rounded-lg border border-border bg-bg-subtle px-3 py-3">
       <div className="text-xs uppercase tracking-wide text-muted-foreground">{label}</div>
       <div
         className={`mt-1 font-mono text-lg tabular-nums ${valueCls ?? "text-foreground"}`}
@@ -86,7 +86,7 @@ function DailyStrip({ daily }: { daily: PnlSeries["daily"] }) {
             title={`${d.day}: ${fmtSignedUnits(d.daily_units)}u`}
           >
             <span
-              className={`block w-3 rounded-sm ${up ? "bg-emerald-600/70" : "bg-rose-600/70"}`}
+              className={`block w-3 rounded-sm ${up ? "bg-success/70" : "bg-danger/70"}`}
               style={{ height: `${h}px` }}
               aria-hidden="true"
             />
@@ -132,13 +132,13 @@ export function PaperEquityPanel({ series, bankroll, loading }: PaperEquityPanel
     <section
       data-testid="paper-equity-panel"
       aria-label="Paper bankroll and equity curve"
-      className="mb-6 rounded-xl border border-slate-800 bg-bg-panel"
+      className="mb-6 rounded-xl border border-border bg-bg-panel"
     >
-      <header className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 px-4 py-2.5">
+      <header className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-4 py-2.5">
         <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
           Paper equity -- July 2026 model snapshot
         </h2>
-        <span className="font-mono text-xs text-amber-400" data-testid="paper-equity-snapshot-label">
+        <span className="font-mono text-xs text-warning" data-testid="paper-equity-snapshot-label">
           {JULY_SNAPSHOT_LABEL}
         </span>
       </header>
@@ -150,7 +150,7 @@ export function PaperEquityPanel({ series, bankroll, loading }: PaperEquityPanel
           data-testid="paper-balance-headline"
         >
           {loading && currentUnits == null ? (
-            <div className="h-8 w-48 animate-pulse rounded bg-slate-700/40" aria-busy="true" />
+            <div className="h-8 w-48 animate-pulse rounded bg-surface-2" aria-busy="true" />
           ) : currentUnits != null && startUnits != null ? (
             <>
               <span className="font-mono text-3xl font-semibold tabular-nums text-foreground">
@@ -164,9 +164,9 @@ export function PaperEquityPanel({ series, bankroll, loading }: PaperEquityPanel
                   data-testid="paper-net-units"
                   className={`font-mono text-sm font-semibold tabular-nums ${
                     netUnits > 0
-                      ? "text-emerald-400"
+                      ? "text-success"
                       : netUnits < 0
-                        ? "text-rose-400"
+                        ? "text-danger"
                         : "text-foreground"
                   }`}
                 >
@@ -228,7 +228,7 @@ export function PaperEquityPanel({ series, bankroll, loading }: PaperEquityPanel
         </div>
 
         {/* Honest footer */}
-        <p className="mt-4 border-t border-slate-800 pt-3 font-mono text-xs text-faint">
+        <p className="mt-4 border-t border-border pt-3 font-mono text-xs text-faint">
           PAPER simulation -- the units the simulated paper stakes would have settled to; not a return, not
           dollars. Executed: false. Real-money: DENY. No edge or profit is claimed;
           a flat/negative curve that tracks the efficient close is an honest result.

@@ -1,78 +1,118 @@
+// /analytics/calibration/ -- the T2 calibration page (DESIGN_PRINCIPLES section 3): header with
+// status line; verdict table (CANONICAL_FIGURES); reliability diagrams with game-cluster
+// intervals; Brier decomposition; sharpness; coverage; inspector links; summary by market;
+// common footer (Limitations, Reproduce, Source path, Change log). Build-time only.
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CalibrationReliability } from "@/components/analytics/calibration/CalibrationReliability";
+import { CalibrationVerdictTable, verdictRows, VERDICT_ALIAS } from "@/components/analytics/calibration/CalibrationVerdictTable";
+import { CalibrationDecomposition, CalibrationSharpness } from "@/components/analytics/calibration/CalibrationDecomposition";
 import { InspectorReadingTrail } from "@/components/analytics/InspectorReadingTrail";
 import { Receipt } from "@/components/analytics/Receipt";
+import { ReceiptChip } from "@/components/showcase/ReceiptChip";
+import { QuotedOnList } from "@/components/analytics/QuotedOnList";
 import { loadCalibrationReliability } from "@/lib/analytics/calibrationReliability";
 import { snapshot } from "@/lib/analytics/labHelpers";
+import { canonicalFigures, CANONICAL_PATH } from "@/lib/canonicalFigures.server";
 import "./calibration.css";
 
 export const metadata: Metadata = {
-  title: "Calibration reliability",
-  description: "Inspect published reliability bins, their observed-frequency intervals, and model-to-market calibration summaries.",
+  title: "Calibration",
+  description: "Calibration against the market by sport, market and checkpoint: verdicts, reliability bins with game-cluster intervals, Brier decomposition and sharpness.",
 };
 
 type MarketType = {
-  description?: string;
-  scored?: boolean;
-  n_rows?: number;
-  model_brier?: number | null;
-  market_brier?: number | null;
-  model_ece?: number | null;
-  market_ece?: number | null;
+  description?: string; scored?: boolean; n_rows?: number;
+  model_brier?: number | null; market_brier?: number | null; model_ece?: number | null; market_ece?: number | null;
 };
 type MarketArtifact = { market_types?: Record<string, MarketType> };
 
-function sportFor(id: string): string {
-  return id.startsWith("mlb_") ? "MLB" : id.startsWith("soccer_") ? "International soccer" : id;
-}
-
-function score(value: number | null | undefined): string {
-  return typeof value === "number" && Number.isFinite(value) ? value.toString() : "Not scored";
-}
-
-function lowerBrier(row: MarketType): string {
-  if (!row.scored || row.model_brier == null || row.market_brier == null) return "No resolved outcome label";
-  if (row.market_brier < row.model_brier) return "Market has lower Brier";
-  if (row.market_brier > row.model_brier) return "Model has lower Brier";
-  return "Equal published Brier";
-}
+const sportFor = (id: string) => (id.startsWith("mlb_") ? "MLB" : id.startsWith("soccer_") ? "International soccer" : id);
+const score = (v: number | null | undefined) => (typeof v === "number" && Number.isFinite(v) ? v.toFixed(4) : "Not scored");
 
 export default function CalibrationPage() {
   const series = loadCalibrationReliability();
   const meta = series[0]?.meta;
-  const marketData = snapshot<MarketArtifact>("calibration_by_market_type");
-  const markets = Object.entries(marketData.market_types || {});
+  const markets = Object.entries(snapshot<MarketArtifact>("calibration_by_market_type").market_types || {});
   const ci = meta?.ciPct || [null, null];
+  const rows = verdictRows(canonicalFigures());
+  const trails = rows.filter((f) => (VERDICT_ALIAS[f.verdict] ?? f.verdict) === "TRAILS_CLOSE").length;
+  const asOf = rows.map((f) => f.as_of).sort().pop() ?? null;
+  const sports = Array.from(new Set(series.map((s) => s.sport)));
 
   return <div className="calibration-page">
-    <p className="calibration-kicker">Measurement / Calibration</p>
-    <h1 className="calibration-title">Inspect every reliability bin.</h1>
-    <p className="calibration-intro">A reliability bin groups forecasts within a published probability range, then compares their mean forecast with the observed frequency. The diagonal is the calibrated reference; a point away from it shows the direction and size of that bin&apos;s published gap.</p>
-    <p className="calibration-intro">Aggregate reliability bins are a different object from state-conditioned reliability: these bins group forecasts by probability range, while the state inspector also groups by game phase. See <Link href="/analytics/state-reliability">state-conditioned reliability</Link> for that separate published grid.</p>
-    <p className="calibration-intro">Observed-frequency intervals use {meta?.nBoot?.toLocaleString("en-US") || "unpublished"} bootstrap resamples clustered by {meta?.clusterUnit || "the published cluster unit"}, with a {ci[0] ?? "unpublished"}% to {ci[1] ?? "unpublished"}% interval. The {meta?.minGamesPerBinFloor ?? "unpublished"}-game floor applies to the eligibility and significance summaries. Published bins below the floor remain visible and are flagged low-n; n counts ticks, not games.</p>
-    <InspectorReadingTrail id="calibration" />
-    <section className="calibration-definitions" aria-labelledby="calibration-definitions-title">
-      <h2 id="calibration-definitions-title">Three different properties</h2>
-      <dl>
-        <div><dt>Brier score</dt><dd>The mean squared error of the forecast probability against the 0/1 outcome. Lower is better; it combines calibration and resolution.</dd></div>
-        <div><dt>Calibration error</dt><dd>ECE and the reliability curve measure how far observed frequency sits from the forecast in each bin. This page shows the published reliability bins and ECE summaries.</dd></div>
-        <div><dt>Sharpness</dt><dd>How far forecasts sit from the base rate. Sharpness is different from Brier and calibration error, and this page does not show a sharpness measure.</dd></div>
-      </dl>
+    <h1 className="calibration-title">Calibration against the market</h1>
+    <p className="calibration-intro">The model trails the market reference on most rows and matches the devigged close only where the sample is too small to tell; every row below shows its n, interval and as-of date.</p>
+    <p className="cal-status" data-testid="status-line">
+      Status: <span className="cal-verdict">TRAILS_CLOSE</span> on {trails} of {rows.length} rows &middot; as of {asOf ?? "not staged"}
+      <ReceiptChip sourceArtifact={CANONICAL_PATH} asOf={asOf} verified="edge_claimed:false" verdict="TRAILS_CLOSE" />
+    </p>
+
+    <section className="calibration-section" aria-labelledby="verdicts-h">
+      <h2 id="verdicts-h">Verdict table</h2>
+      <p>Brier is the mean squared error of the probability; lower is better. The 0.2500 baseline is a constant 50% forecast.</p>
+      <CalibrationVerdictTable figures={canonicalFigures()} />
     </section>
-    <section className="calibration-section">
-      <h2>Reliability curves with uncertainty</h2>
-      <p>Exact fields: calibration_stability.json -&gt; sports[sport].sides[side].bins[] -&gt; mean_p, mean_y, mean_y_ci, gap, gap_ci, n, n_games, and low_n.</p>
+
+    <section className="calibration-section" aria-labelledby="reliability-h">
+      <h2 id="reliability-h">Reliability diagrams with game-cluster intervals</h2>
+      <p>Each point is one probability bin: mean forecast against observed frequency, with the diagonal as the calibrated reference. Intervals use {meta?.nBoot?.toLocaleString("en-US") || "unpublished"} bootstrap resamples clustered by {meta?.clusterUnit || "the published cluster unit"} ({ci[0] ?? "?"}% to {ci[1] ?? "?"}%). Bins under the {meta?.minGamesPerBinFloor ?? "published"}-game floor are hollow and marked below floor. n counts ticks; the table gives games per bin.</p>
+      <InspectorReadingTrail id="calibration" />
       <CalibrationReliability series={series} />
-      <p>These reliability curves cover MLB and international soccer only. See <Link href="/analytics/research/calibration-by-game-checkpoint">calibration by game checkpoint</Link> for checkpoint evidence from other published corpora.</p>
     </section>
-    <section className="calibration-section">
-      <h2>Summary by market</h2>
-      <p>Published Brier and expected calibration error scores, where resolved outcomes are available. Lower Brier means lower average squared probability error.</p>
+
+    <section className="calibration-section" aria-labelledby="decomp-h">
+      <h2 id="decomp-h">Brier decomposition</h2>
+      <p>Brier = reliability - resolution + uncertainty, computed from the published bins. Within-bin spread is not published, so the binned total sits near, not on, the published Brier.</p>
+      <CalibrationDecomposition series={series} />
+    </section>
+
+    <section className="calibration-section" aria-labelledby="sharp-h">
+      <h2 id="sharp-h">Sharpness</h2>
+      <p>How forecasts spread across the probability bins. A sharper forecaster puts more forecasts near 0% and 100%; sharpness is only useful when the bins above stay calibrated.</p>
+      {sports.map((s) => <CalibrationSharpness key={s} series={series} sport={s} />)}
+    </section>
+
+    <section className="calibration-section" aria-labelledby="coverage-h">
+      <h2 id="coverage-h">Coverage</h2>
+      <p data-testid="coverage">Coverage of interval forecasts: <span className="cal-verdict">NOT_TESTABLE</span> in this snapshot. The rows above are binary probabilities; no nominal-level interval forecasts are published here, so no empirical coverage is printed.</p>
+    </section>
+
+    <section className="calibration-section" aria-labelledby="inspect-h">
+      <h2 id="inspect-h">Inspectors</h2>
+      <ul>
+        <li><Link href="/analytics/state-reliability/">State-conditioned reliability</Link>: the same bins split by game phase.</li>
+        <li><Link href="/analytics/research/calibration-by-game-checkpoint/">Calibration by game checkpoint</Link>: checkpoint evidence from other corpora.</li>
+        <li><Link href="/analytics/forecaster/">Forecaster</Link> and <Link href="/analytics/compare/">compare</Link>: one forecast against the market reference.</li>
+        <li>Each row of the reliability table has an Inspect bin control that opens that bin&apos;s worked example.</li>
+      </ul>
+    </section>
+
+    <section className="calibration-section" aria-labelledby="market-h">
+      <h2 id="market-h">Summary by market</h2>
+      <p>Published Brier (lower is better) and expected calibration error, where resolved outcomes exist.</p>
       <div className="calibration-table-wrap" role="region" aria-label="Calibration summary by market" data-scroll-region tabIndex={0}>
-        <table className="calibration-table"><thead><tr><th>Sport</th><th>Market</th><th>Model Brier</th><th>Market Brier</th><th>Model ECE</th><th>Market ECE</th><th>n</th><th>Published comparison</th></tr></thead><tbody>{markets.map(([id, row]) => <tr key={id}><td>{sportFor(id)}</td><td>{row.description || id}</td><td>{score(row.model_brier)}</td><td>{score(row.market_brier)}</td><td>{score(row.model_ece)}</td><td>{score(row.market_ece)}</td><td>{typeof row.n_rows === "number" ? row.n_rows.toLocaleString("en-US") : "Not published"}</td><td>{lowerBrier(row)}</td></tr>)}</tbody></table>
+        <table className="calibration-table"><thead><tr><th>Sport</th><th>Market</th><th>Model Brier (lower is better)</th><th>Market Brier</th><th>Baseline Brier</th><th>Model ECE</th><th>Market ECE</th><th>n rows</th></tr></thead>
+          <tbody>{markets.map(([id, row]) => <tr key={id}><td>{sportFor(id)}</td><td>{row.description || id}</td><td>{score(row.model_brier)}</td><td>{score(row.market_brier)}</td><td>0.2500</td><td>{score(row.model_ece)}</td><td>{score(row.market_ece)}</td><td>{typeof row.n_rows === "number" ? row.n_rows.toLocaleString("en-US") : "Not published"}</td></tr>)}</tbody></table>
       </div>
-      <p className="calibration-note">The scored MLB and international soccer rows publish lower market Brier values. The total row remains unscored because its source has no resolved outcome label.</p>
+    </section>
+
+    <section className="cal-limits" aria-labelledby="limits-h">
+      <h2 id="limits-h">Limitations</h2>
+      <ul>
+        <li>Sample and independence: reliability n counts ticks; ticks within a game are not independent, which is why intervals are clustered by game.</li>
+        <li>Scope: reliability bins cover MLB and international soccer only; the pregame verdicts come from one recompute memo dated 2026-09-24.</li>
+        <li>What this does not establish: a calibrated forecast that trails or matches the market is not a reason to trade against it.</li>
+      </ul>
+      <h3>Reproduce</h3>
+      <p><code>python scripts/platformkit/analytics_showcase/check_all.py</code></p>
+      <h3>Source path</h3>
+      <p><code>{CANONICAL_PATH}</code>; <code>webapp/public/data/showcase/calibration_stability.json</code>; <code>docs/evidence/pregame/DM_RECOMPUTE_2026-09-24.md</code></p>
+      <h3>Quoted on</h3>
+      <QuotedOnList artifact="docs/evidence/pregame/DM_RECOMPUTE_2026-09-24.md" />
+      <QuotedOnList artifact="calibration_stability.json" />
+      <h3>Change log</h3>
+      <p>2026-10-20: rebuilt to the T2 template (verdict table, decomposition, sharpness, coverage; validated palette).</p>
     </section>
     <div className="calibration-receipt"><Receipt sourceArtifact="public/data/showcase/calibration_stability.json" asOf={meta?.asOf || undefined} label="descriptive_only" verdict="descriptive_only" /></div>
   </div>;

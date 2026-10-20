@@ -32,7 +32,7 @@ export default function PaperTradingError({
       <div
         role="alert"
         aria-label="Real money is DENIED -- paper mode only"
-        className="rounded-lg border border-amber-900/50 bg-amber-950/20 px-4 py-2 text-[11px] text-amber-400"
+        className="rounded-lg border border-warning/50 bg-warning/10 px-4 py-2 text-[12px] text-warning"
       >
         Real-money: DENY. Paper mode only.
       </div>

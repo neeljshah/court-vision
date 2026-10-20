@@ -133,7 +133,7 @@ export function PmTrailTable({ rows, loading, error, rankMode }: Props) {
 
   if (rows.length === 0) {
     return (
-      <div className="rounded-lg border border-slate-800 bg-bg-subtle/40 px-4 py-10 text-center text-sm text-muted-foreground">
+      <div className="rounded-lg border border-border bg-bg-subtle/40 px-4 py-10 text-center text-sm text-muted-foreground">
         No paper trades in the PM trail yet.
       </div>
     );
@@ -152,7 +152,7 @@ export function PmTrailTable({ rows, loading, error, rankMode }: Props) {
       />
 
       <div className="flex items-center justify-between">
-        <span className="font-mono text-[10px] text-faint">
+        <span className="font-mono text-[12px] text-faint">
           {filtered.length} of {rows.length} trades
         </span>
         {rankMode ? (
@@ -160,7 +160,7 @@ export function PmTrailTable({ rows, loading, error, rankMode }: Props) {
         ) : null}
       </div>
 
-      <ScrollArea className="h-[560px] w-full rounded-lg border border-slate-800">
+      <ScrollArea className="h-[560px] w-full rounded-lg border border-border">
         <table
           className="min-w-full text-left"
           role="grid"
@@ -169,8 +169,8 @@ export function PmTrailTable({ rows, loading, error, rankMode }: Props) {
           <caption className="sr-only">
             PM paper trail -- units and probability only, no dollar amounts.
           </caption>
-          <thead className="sticky top-0 z-10 bg-bg-panel text-[10px] uppercase tracking-wide text-muted-foreground">
-            <tr className="border-b border-slate-800">
+          <thead className="sticky top-0 z-10 bg-bg-panel text-[12px] uppercase tracking-wide text-muted-foreground">
+            <tr className="border-b border-border">
               {rankMode ? (
                 <th className="px-2 py-2 text-right">#</th>
               ) : null}
@@ -208,7 +208,7 @@ export function PmTrailTable({ rows, loading, error, rankMode }: Props) {
         </table>
       </ScrollArea>
 
-      <p className="text-[11px] text-faint">
+      <p className="text-[12px] text-faint">
         Paper mode -- stakes are units (no $). CLV (better-number-than-close) is
         the only honest calibration yardstick. No edge is claimed.
       </p>

@@ -96,9 +96,9 @@ function UnavailablePanel({
     <div
       role="alert"
       data-honest-state="unavailable"
-      className="flex flex-col gap-2 rounded-lg border border-amber-900/40 bg-amber-950/20 px-3 py-3 text-sm"
+      className="flex flex-col gap-2 rounded-lg border border-warning/50 bg-warning/10 px-3 py-3 text-sm"
     >
-      <span className="font-mono text-xs uppercase tracking-wide text-amber-400">
+      <span className="font-mono text-xs uppercase tracking-wide text-warning">
         unavailable
       </span>
       <span className="text-xs text-muted-foreground">{error}</span>
@@ -107,9 +107,9 @@ function UnavailablePanel({
           type="button"
           onClick={onRetry}
           className={cn(
-            "mt-1 self-start rounded border border-amber-800/50 bg-amber-950/30",
-            "px-2 py-0.5 font-mono text-xs text-amber-400",
-            "hover:bg-amber-900/30 transition-colors",
+            "mt-1 self-start rounded border border-warning/50 bg-warning/10",
+            "px-2 py-0.5 font-mono text-xs text-warning",
+            "hover:bg-warning/10 transition-colors",
           )}
           aria-label="Retry loading data"
         >
@@ -126,7 +126,7 @@ function DefaultEmpty() {
     <div
       role="status"
       data-honest-state="empty"
-      className="rounded-lg border border-slate-800 bg-surface-1/40 px-3 py-3 text-sm text-muted-foreground"
+      className="rounded-lg border border-border bg-surface-1/40 px-3 py-3 text-sm text-muted-foreground"
     >
       Nothing here yet.
     </div>
@@ -143,12 +143,12 @@ function StaleBadge({ ageSec }: { ageSec: number | null }) {
       aria-live="polite"
       data-honest-state="stale"
       className={cn(
-        "inline-flex items-center gap-1 rounded-full border border-amber-800/50",
-        "bg-amber-950/40 px-2 py-0.5 font-mono text-[10px] text-amber-400",
+        "inline-flex items-center gap-1 rounded-full border border-warning/50",
+        "bg-warning/10 px-2 py-0.5 font-mono text-[12px] text-warning",
       )}
     >
       <span
-        className="h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500"
+        className="h-1.5 w-1.5 shrink-0 rounded-full bg-warning"
         aria-hidden="true"
       />
       {label}

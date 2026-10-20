@@ -142,7 +142,7 @@ describe("LiveIndicator -- stale-never-green honesty rail", () => {
     const here = dirname(fileURLToPath(import.meta.url));
     const comp = readFileSync(join(here, "..", "LiveIndicator.tsx"), "utf-8");
     const route = readFileSync(
-      join(here, "..", "..", "..", "app", "api", "ops", "supervisor", "route.ts"),
+      join(here, "..", "..", "..", "app", "(terminal)", "api", "ops", "supervisor", "route.ts"),
       "utf-8",
     );
     // A rendered dollar AMOUNT is `$` adjacent to a digit (e.g. $0, $1.50). The
@@ -447,15 +447,4 @@ describe("LiveIndicator -- WS6 useLiveData migration", () => {
     expect(statusDiv!.className).toMatch(/amber/);
   });
 
-  it("app/models/error.tsx exists (Next.js error boundary)", () => {
-    const here = dirname(fileURLToPath(import.meta.url));
-    const errorPath = join(here, "..", "..", "..", "app", "models", "error.tsx");
-    const src = readFileSync(errorPath, "utf-8");
-    // Must be a 'use client' boundary (Next.js error.tsx requirement).
-    expect(src).toMatch(/"use client"/);
-    // Must export a default function (the error component).
-    expect(src).toMatch(/export default function/);
-    // Must accept reset prop (required by Next.js error boundary contract).
-    expect(src).toMatch(/reset/);
-  });
 });

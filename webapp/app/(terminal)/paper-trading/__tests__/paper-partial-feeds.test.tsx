@@ -3,8 +3,8 @@ import { CLV_UNAVAILABLE } from "@/lib/clvUnavailable";
 import { act, cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import { api } from "@/lib/p5api";
 import type { ClvScoreboard, PaperTrailRow, PmTrailRow, PnlSeries } from "@/lib/types";
-import clv from "@/public/demo-data/api_paper_clv.json";
-import pnlJson from "@/public/demo-data/api_paper_pnl_series.json";
+import clv from "@/test/fixtures/july_2026/api_paper_clv.json";
+import pnlJson from "@/test/fixtures/july_2026/api_paper_pnl_series.json";
 import PaperTradingPage from "../page";
 
 afterEach(() => { cleanup(); vi.restoreAllMocks(); });

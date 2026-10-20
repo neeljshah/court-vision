@@ -47,4 +47,17 @@ describe("CalibrationReliability", () => {
     render(<CalibrationReliability series={exactBinSeries} />);
     expect(await screen.findByRole("heading", { name: "50% to 60% probability bin" })).toBeInTheDocument();
   });
+
+  it("draws on the validated palette with direct labels, hover targets and a table toggle", async () => {
+    window.history.replaceState(null, "", "/analytics/calibration");
+    render(<CalibrationReliability series={series} />);
+    const svg = await screen.findByTestId("reliability-diagram");
+    const strokes = [...svg.querySelectorAll("path")].map(p => p.getAttribute("stroke"));
+    expect(strokes).toEqual(["var(--series-1)", "var(--series-2)"]);
+    expect(within(svg).getByText("Model")).toBeInTheDocument();
+    expect(screen.getAllByTestId("cr-hit")[0].querySelector("title")?.textContent).toMatch(/5 games/);
+    fireEvent.click(screen.getByRole("button", { name: "Show as table" }));
+    expect(screen.queryByTestId("reliability-diagram")).not.toBeInTheDocument();
+    expect(screen.getByRole("table", { name: /published reliability bins/i })).toBeInTheDocument();
+  });
 });

@@ -16,7 +16,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { EMPTY_CELL, tierBadgeClass } from "@/lib/tokens";
-import { humanizeMatchup, describeBetShort } from "@/lib/betdesc";
+import { describeBetShort } from "@/lib/betdesc"; import { FillLink } from "./FillLink";
 import type { PaperTrailRow } from "@/lib/p5api";
 
 // ---------------------------------------------------------------------------
@@ -48,25 +48,25 @@ function OpenPositionRow({ row }: { row: PaperTrailRow }) {
 
   return (
     <tr
-      className="border-b border-slate-800/60 text-[12px] text-slate-300 transition-colors hover:bg-slate-800/20"
+      className="border-b border-border text-[12px] text-foreground transition-colors hover:bg-surface-2"
       data-testid="open-position-row"
     >
       <td className="px-2 py-1.5">
-        <span className="font-medium">{humanizeMatchup(row.matchup || row.game_id)}</span>
-        <span className="ml-1.5 font-mono text-[10px] text-slate-500">
+        <FillLink row={row} />
+        <span className="ml-1.5 font-mono text-[12px] text-muted-foreground">
           {row.sport?.toUpperCase()}
         </span>
         {row.prop_player ? (
-          <span className="block font-mono text-[10px] text-sky-400/80" data-testid="open-prop-selection">
+          <span className="block font-mono text-[12px] text-info" data-testid="open-prop-selection">
             {row.prop_player}
             {row.prop_stat ? ` · ${row.prop_stat}` : ""}
           </span>
         ) : null}
       </td>
-      <td className="px-2 py-1.5 font-mono text-[11px] text-slate-400">
+      <td className="px-2 py-1.5 font-mono text-[12px] text-muted-foreground">
         {row.market_type || EMPTY_CELL}
       </td>
-      <td className="px-2 py-1.5 font-mono text-[11px] text-slate-400">
+      <td className="px-2 py-1.5 font-mono text-[12px] text-muted-foreground">
         {row.prop_side
           ? `${row.prop_side}${row.line != null ? ` ${row.line}` : ""}`
           : describeBetShort(row)}
@@ -75,33 +75,33 @@ function OpenPositionRow({ row }: { row: PaperTrailRow }) {
         {row.tier ? (
           <span
             className={cn(
-              "inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-mono uppercase",
+              "inline-flex items-center rounded-full border px-2 py-0.5 text-[12px] font-mono uppercase",
               tierBadgeClass(row.tier),
             )}
           >
             {row.tier}
           </span>
         ) : (
-          <span className="text-slate-600">{EMPTY_CELL}</span>
+          <span className="text-faint">{EMPTY_CELL}</span>
         )}
       </td>
-      <td className="px-2 py-1.5 text-right font-mono tabular-nums text-slate-300">
+      <td className="px-2 py-1.5 text-right font-mono tabular-nums text-foreground">
         {fmtProb(row.model_prob)}
       </td>
-      <td className="px-2 py-1.5 text-right font-mono tabular-nums text-slate-300">
+      <td className="px-2 py-1.5 text-right font-mono tabular-nums text-foreground">
         {fmtDec(row.taken_decimal)}
       </td>
-      <td className="px-2 py-1.5 font-mono text-[10px] text-slate-400" data-testid="open-taken-book">
+      <td className="px-2 py-1.5 font-mono text-[12px] text-muted-foreground" data-testid="open-taken-book">
         {row.taken_book || EMPTY_CELL}
       </td>
-      <td className="px-2 py-1.5 font-mono text-[11px] text-amber-400">
+      <td className="px-2 py-1.5 font-mono text-[12px] text-warning">
         pending
       </td>
       <td className="px-2 py-1.5 text-right font-mono tabular-nums">
         <span
           className={cn(
             "tabular-nums",
-            isLargeStake ? "text-amber-300" : "text-slate-300",
+            isLargeStake ? "text-warning" : "text-foreground",
           )}
           data-testid="open-stake-units"
         >
@@ -109,7 +109,7 @@ function OpenPositionRow({ row }: { row: PaperTrailRow }) {
         </span>
         {isLargeStake && (
           <span
-            className="ml-1.5 font-mono text-[9px] text-amber-500/80"
+            className="ml-1.5 font-mono text-[12px] text-warning"
             data-testid="quarter-kelly-clarifier"
             title="Quarter-Kelly sizing -- stake exceeds 1.0 unit. Units are not dollars."
           >
@@ -162,7 +162,7 @@ export function OpenPositions({ rows, loading, error }: OpenPositionsProps) {
     return (
       <div
         data-testid="open-positions-error"
-        className="rounded-lg border border-amber-900/40 bg-amber-950/20 px-4 py-3 text-sm text-amber-400"
+        className="rounded-lg border border-warning/50 bg-warning/10 px-4 py-3 text-sm text-warning"
       >
         {error}
       </div>
@@ -173,10 +173,10 @@ export function OpenPositions({ rows, loading, error }: OpenPositionsProps) {
     return (
       <div
         data-testid="open-positions-empty"
-        className="rounded-lg border border-slate-800 bg-bg-subtle/40 px-4 py-6 text-center text-sm text-slate-500"
+        className="rounded-lg border border-border bg-bg-subtle/40 px-4 py-6 text-center text-sm text-muted-foreground"
       >
-        <p className="font-medium text-slate-400">No open positions right now.</p>
-        <p className="mt-1 text-xs text-slate-600">
+        <p className="font-medium text-muted-foreground">No open positions right now.</p>
+        <p className="mt-1 text-xs text-faint">
           Open bets appear here once the system places paper trades.
           Paper mode only -- no real money. No edge is claimed.
         </p>
@@ -191,12 +191,12 @@ export function OpenPositions({ rows, loading, error }: OpenPositionsProps) {
       aria-label="Open paper positions"
     >
       {/* Units convention clarifier */}
-      <p className="text-[11px] text-slate-500">
-        Stakes shown in <span className="font-semibold text-slate-300">UNITS</span> (not dollars).
+      <p className="text-[12px] text-muted-foreground">
+        Stakes shown in <span className="font-semibold text-foreground">UNITS</span> (not dollars).
         Quarter-Kelly sizing -- a stake can exceed 1.0u when the model is highly confident.
         {hasLargeStake && (
           <span
-            className="ml-1 font-mono text-amber-400"
+            className="ml-1 font-mono text-warning"
             data-testid="large-stake-unit-note"
           >
             {" "}qK = quarter-Kelly stake &gt;1.0u
@@ -204,7 +204,7 @@ export function OpenPositions({ rows, loading, error }: OpenPositionsProps) {
         )}
       </p>
 
-      <ScrollArea className="h-[280px] w-full rounded-lg border border-slate-800">
+      <ScrollArea className="h-[280px] w-full rounded-lg border border-border">
         <table
           className="min-w-full text-left"
           role="grid"
@@ -215,8 +215,8 @@ export function OpenPositions({ rows, loading, error }: OpenPositionsProps) {
             Open paper positions -- pending grading. Units (no dollars).
             Executed is always false (paper only).
           </caption>
-          <thead className="sticky top-0 z-10 bg-bg-panel text-[10px] uppercase tracking-wide text-slate-400">
-            <tr className="border-b border-slate-800">
+          <thead className="sticky top-0 z-10 bg-bg-panel text-[12px] uppercase tracking-wide text-muted-foreground">
+            <tr className="border-b border-border">
               <th scope="col" className="px-2 py-2">Matchup</th>
               <th scope="col" className="px-2 py-2">Market</th>
               <th scope="col" className="px-2 py-2">Side</th>
@@ -236,7 +236,7 @@ export function OpenPositions({ rows, loading, error }: OpenPositionsProps) {
         </table>
       </ScrollArea>
 
-      <p className="text-[11px] text-slate-600">
+      <p className="text-[12px] text-faint">
         Paper mode -- stakes are units (no $). Real-money: DENY. No edge is claimed.
       </p>
     </div>

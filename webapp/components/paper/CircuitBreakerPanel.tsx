@@ -37,13 +37,13 @@ export function CircuitBreakerPanel({
           asOf={asOf}
           stale={stale}
           right={
-            <span className="font-data text-[9px] text-faint">
+            <span className="font-data text-[12px] text-faint">
               volume follows measured CLV
             </span>
           }
         />
         {marketTypes.length === 0 ? (
-          <p className="px-4 py-3 text-[11px] text-faint">
+          <p className="px-4 py-3 text-[12px] text-faint">
             No markets to gate yet -- breaker state populates once bets are
             placed per market.
           </p>
@@ -60,17 +60,17 @@ export function CircuitBreakerPanel({
                   )}
                 >
                   <div className="flex items-center justify-between gap-3">
-                    <span className="font-data text-[11px] text-foreground">{mt}</span>
+                    <span className="font-data text-[12px] text-foreground">{mt}</span>
                     <span
                       className={cn(
-                        "border px-1.5 py-px text-[9px] font-bold tracking-wider",
+                        "border px-1.5 py-px text-[12px] font-bold tracking-wider",
                         stateClass(e.state),
                       )}
                     >
                       {e.state}
                     </span>
                   </div>
-                  <div className="flex gap-3 font-data text-[10px] text-faint">
+                  <div className="flex gap-3 font-data text-[12px] text-faint">
                     <span>
                       cap/day <Num>{e.cap_per_day ?? EMPTY_CELL}</Num>
                     </span>

@@ -19,7 +19,7 @@ export function PaperTradingDoneSummary({ summary, loading, error }: {
   ] as const;
   return (
     <section data-testid="done-settled-summary" aria-label="Done and settled summary" className="mb-5 mt-6">
-      <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+      <h2 className="mb-3 text-[12px] font-semibold uppercase tracking-widest text-muted-foreground">
         Done / settled summary
       </h2>
       {!loading && !summary && <Unavailable reason={error ?? "Paper history unavailable"} />}

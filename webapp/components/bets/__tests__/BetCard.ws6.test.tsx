@@ -12,6 +12,7 @@
 //
 // Uses real BetCard component; mocks next/link only.
 
+import { CLV_UNAVAILABLE } from "@/lib/clvUnavailable";
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { BetCard, type BetCardData } from "../BetCard";
@@ -213,14 +214,12 @@ describe("WS6 -- tipoff display", () => {
 describe("WS6 -- CLV INSUFFICIENT_DATA shown honestly", () => {
   it("clv=null renders INSUFFICIENT_DATA text", () => {
     render(<BetCard card={makeMLBCard({ clv: null })} />);
-    expect(screen.getByText(/INSUFFICIENT_DATA/)).toBeInTheDocument();
+    expect(screen.getAllByTitle(CLV_UNAVAILABLE).length).toBeGreaterThan(0);
   });
 
   it("CLV INSUFFICIENT_DATA text is amber-colored (not green)", () => {
     const { container } = render(<BetCard card={makeMLBCard({ clv: null })} />);
-    const clvEl = Array.from(container.querySelectorAll("*")).find(
-      (el) => el.textContent?.includes("INSUFFICIENT_DATA"),
-    );
+    const clvEl = container.querySelector(`[title="${CLV_UNAVAILABLE.replace(/"/g, "&quot;")}"]`);
     expect(clvEl?.className ?? "").not.toMatch(/text-green/);
     expect(clvEl?.className ?? "").not.toMatch(/text-tier-a/);
   });

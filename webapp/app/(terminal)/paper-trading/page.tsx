@@ -1,6 +1,8 @@
 "use client";
 
-// /paper-trading -- WS2 paper-trading center.
+// /paper-trading -- "Paper record": the forward paper book (29 fills), settled rows first.
+// The July 2026 model-snapshot panels sit last, boxed and labelled; their slugs are
+// sentinels since export_forward_record.py --with-sentinels (2026-10-20).
 // PRIMARY: /api/paper/trail (all rows: settled+open). Settled book shows
 //   outcome / model_prob / model_ev / taken_book / CLV / units columns.
 // OPEN: trail rows filtered client-side (status=open||!graded).
@@ -9,7 +11,6 @@
 // UNITS/prob only. NO '$'. Real-money DENY. stale-never-green LiveBadge.
 
 import { useCallback, useMemo, useState } from "react";
-import Link from "next/link";
 import { isSnapshotMode } from "@/lib/fetchHonest";
 import type { PaperTrailRow } from "@/lib/p5api";
 import { useLiveData } from "@/lib/useLiveData";
@@ -24,6 +25,7 @@ import { PanelErrorBoundary } from "@/components/p6/PanelErrorBoundary";
 import { cn } from "@/lib/utils";
 import { PaperTradingTally } from "./PaperTradingTally";
 import { PaperTradingDoneSummary } from "./PaperTradingDoneSummary";
+import { PaperRecordIntro, PaperOnlyBanner, UnitsClarifier, JulySnapshotBox } from "./PaperRecordNotes";
 import {
   deriveTally, deriveDoneSummary, toPaperTrailRows, mergeVenueRows,
   EMPTY_CELL, fetchPaperCombined, type CombinedPayload,
@@ -77,24 +79,17 @@ export default function PaperTradingPage() {
   const isPmEmpty = !loading && pmTrail !== null && totalPm === 0;
   const doneSummary = trail ? deriveDoneSummary(trailRows) : null;
 
+  const trailMeta = (trail ?? {}) as { as_of?: string; last_night?: string };
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
       {/* Header */}
       <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-xl font-semibold text-foreground">Paper Trading Center</h1>
-          {isSnapshotMode && (
-            <p className="mt-1 text-[12px] text-warning">
-              Static snapshot: the settled book below is the forward paper record (paper maker fills, four ledger
-              nights: 2026-10-03, 10-04, 10-05 and 10-08; 29 fills, counts and units only, no return figure;
-              in-game rows: stake_units = contracts); the equity, CLV and bankroll
-              panels show the July model snapshot or are unavailable. The full forward record (nights, coverage,
-              fills) is on the <Link href="/desk/" className="underline">desk page</Link>.
-            </p>
-          )}
+          <h1 className="text-xl font-semibold text-foreground">Paper record</h1>
+          <PaperRecordIntro asOf={trailMeta.as_of ?? null} lastNight={trailMeta.last_night ?? null} />
           <p className="mt-0.5 text-[12px] text-muted-foreground">
-            Real settled book (primary) + Kalshi / Polymarket trail (secondary).
-            Units and probability only. No dollars.
+            Settled book first, then open fills and the venue breakdown. Units and probability only. No dollars.
             {!loading && pmTrail !== null && (
               <span
                 data-testid="pm-total-count"
@@ -110,51 +105,44 @@ export default function PaperTradingPage() {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <span data-testid="live-badge-placeholder">
-            <LiveBadge ageSec={partialError ? null : ageSec} isStale={isStale}
-              error={error ?? partialError} isLoading={loading} />
+            {isSnapshotMode ? (
+              <span className="font-data text-[12px] text-faint">
+                as of {trailMeta.as_of ? trailMeta.as_of.slice(0, 10) : "not stated"}
+              </span>
+            ) : (
+              <LiveBadge ageSec={partialError ? null : ageSec} isStale={isStale}
+                error={error ?? partialError} isLoading={loading} />
+            )}
           </span>
           <Badge tone="amber">paper mode</Badge>
         </div>
       </div>
 
-      {/* Real-money DENY banner */}
-      <div
-        role="alert"
-        data-testid="real-money-deny-banner"
-        aria-label="Real money is DENIED -- paper mode only"
-        className="mb-5 rounded-lg border border-amber-900/50 bg-amber-950/20 px-4 py-2.5 text-[11px] text-amber-400"
-      >
-        <span className="font-semibold">Real-money: DENY.</span>{" "}
-        Paper mode only. No real money placed. Calibrated decision-support only.
-        No dollar edge is claimed.
-      </div>
+      <PaperOnlyBanner />
+      <UnitsClarifier />
 
-      {/* Unit convention clarifier */}
-      <div
-        data-testid="unit-convention-clarifier"
-        className="mb-5 rounded-lg border border-slate-800 bg-bg-subtle/60 px-4 py-2.5 text-[11px] text-muted-foreground"
+      {/* PRIMARY: the 29-fill forward record, settled rows first */}
+      <Panel
+        title="Settled book (real paper record)"
+        right={
+          <span className="font-mono text-[12px] text-muted-foreground">
+            {loading
+              ? "loading"
+              : !trail ? "unavailable"
+              : `${trailRows.filter((r) => r.graded && r.status !== "open").length} settled / ${trailRows.length} total`}
+          </span>
+        }
       >
-        <span className="font-semibold text-foreground">Units convention:</span>{" "}
-        Stakes are in <span className="font-mono font-semibold">UNITS</span>, not dollars.
-        Quarter-Kelly sizing -- a stake can exceed 1.0u when the model is highly confident.
-        No dollar edge is claimed. CLV here means the price taken versus the close; no CLV reading exists as of 2026-10-19 (evidence packet section 5).
-      </div>
+        <PanelErrorBoundary label="settled book">
+          {trailError && !trail ? (
+            <Unavailable reason={trailError} />
+          ) : (
+            <PaperTrailSettled rows={viewRows} loading={loading && !trail} error={trailError} settledOnly />
+          )}
+        </PanelErrorBoundary>
+      </Panel>
 
-      {/* BANKROLL + EQUITY CURVE -- "how much I would have made" in UNITS */}
-      {partialError && (
-        <div role="status" aria-label="Unavailable paper data" className="mb-4 text-xs text-amber-400">
-          Available summaries remain visible. Unavailable data:
-          <ul>{([
-            ["trail", "Trade history"], ["pmTrail", "PM trade history"],
-            ["clv", "CLV summary"], ["pnl", "Equity history"], ["bankroll", "Bankroll"],
-          ] as const).filter(([key]) => feedErrors[key]).map(([key, label]) => (
-            <li key={key}>{label}: {feedErrors[key]}</li>
-          ))}</ul>
-        </div>
-      )}
-      <PanelErrorBoundary label="bankroll and equity curve">
-        <PaperEquityPanel series={pnl} bankroll={bankroll} loading={loading && !data} />
-      </PanelErrorBoundary>
+      <PaperTradingDoneSummary summary={doneSummary} loading={loading} error={trailError} />
 
       <PaperTradingTally tally={tally} clv={clv} loading={loading} />
 
@@ -177,9 +165,9 @@ export default function PaperTradingPage() {
             disabled={!trail}
             onClick={() => setScope(key)}
             className={cn(
-              "rounded-full border px-3 py-1 text-[11px] font-mono transition-colors",
+              "rounded-full border px-3 py-1 text-[12px] font-mono transition-colors",
               scope === key
-                ? "border-amber-500/70 bg-amber-950/40 text-amber-300"
+                ? "border-warning/50 bg-warning/10 text-warning"
                 : "border-border text-muted-foreground hover:bg-surface-2"
             )}
           >
@@ -195,7 +183,7 @@ export default function PaperTradingPage() {
       >
         <h2
           aria-label="Open paper positions"
-          className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground"
+          className="mb-3 text-[12px] font-semibold uppercase tracking-widest text-muted-foreground"
         >
           Open positions ({doneSummary?.nOpen ?? EMPTY_CELL})
           {scope !== "all" ? ` -- ${scope === "wc" ? "World Cup" : "in-game"}` : ""}
@@ -205,30 +193,6 @@ export default function PaperTradingPage() {
         </PanelErrorBoundary>
       </section>
 
-      {/* PRIMARY: settled book -- outcome/model_prob/model_ev/taken_book/CLV/units */}
-      <Panel
-        title="Settled book (real paper record)"
-        right={
-          <span className="font-mono text-[10px] text-muted-foreground">
-            {loading
-              ? "loading"
-              : !trail ? "unavailable"
-              : `${trailRows.filter((r) => r.graded && r.status !== "open").length} settled / ${trailRows.length} total`}
-          </span>
-        }
-      >
-        <PanelErrorBoundary label="settled book">
-          {trailError && !trail ? (
-            <Unavailable reason={trailError} />
-          ) : (
-            <PaperTrailSettled rows={viewRows} loading={loading && !trail} error={trailError} settledOnly />
-          )}
-        </PanelErrorBoundary>
-      </Panel>
-
-      {/* DONE / SETTLED summary strip */}
-      <PaperTradingDoneSummary summary={doneSummary} loading={loading} error={trailError} />
-
       {/* Per-venue execution breakdown -- real trail across every venue (sportsbooks +
           DFS prop books + Kalshi/Polymarket + live in-game). venueRows = mergeVenueRows. */}
       <section
@@ -236,12 +200,11 @@ export default function PaperTradingPage() {
         aria-label="Per-venue paper trading summary"
         className="mb-5 mt-2"
       >
-        <h2 className="mb-1 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+        <h2 className="mb-1 text-[12px] font-semibold uppercase tracking-widest text-muted-foreground">
           Per-venue breakdown{scope !== "all" ? ` -- ${scope === "wc" ? "World Cup" : "in-game"}` : ""}
         </h2>
-        <p className="mb-3 text-[11px] text-faint">
-          Where each paper bet executed -- best available price per market across
-          sportsbooks, DFS prop books, Kalshi / Polymarket, and live in-game. Units only.
+        <p className="mb-3 text-[12px] text-faint">
+          Where each paper fill was recorded, by venue. Units only.
         </p>
         <PanelErrorBoundary label="venue summary">
           <VenueSummary rows={venueRows} loading={loading && !data} error={trailError ?? pmError ?? null} />
@@ -254,7 +217,7 @@ export default function PaperTradingPage() {
           data-testid="no-paper-trades"
           role="status"
           aria-label="No live PM game markets right now"
-          className="mb-4 rounded-lg border border-slate-800 bg-bg-subtle/40 px-4 py-6 text-center text-sm text-muted-foreground"
+          className="mb-4 rounded-lg border border-border bg-bg-subtle/40 px-4 py-6 text-center text-sm text-muted-foreground"
         >
           <p data-testid="pm-empty-pm-game-markets" className="font-medium text-muted-foreground">
             No live PM game markets right now.
@@ -273,13 +236,13 @@ export default function PaperTradingPage() {
           <button
             type="button"
             onClick={() => setRankMode((v) => !v)}
-            className={`h-6 rounded-full border px-3 text-[10px] font-mono uppercase tracking-wide transition-colors ${
+            className={`h-6 rounded-full border px-3 text-[12px] font-mono uppercase tracking-wide transition-colors ${
               rankMode
-                ? "border-amber-700 bg-amber-950/40 text-amber-400"
-                : "border-slate-700 text-muted-foreground hover:text-foreground"
+                ? "border-warning/50 bg-warning/10 text-warning"
+                : "border-border text-muted-foreground hover:text-foreground"
             }`}
           >
-            {rankMode ? "ranked: best first" : "rank by best trades"}
+            {rankMode ? "ranked by tier" : "rank by tier"}
           </button>
         }
       >
@@ -294,9 +257,25 @@ export default function PaperTradingPage() {
         )}
       </Panel>
 
-      <p className="mt-4 text-[11px] text-faint">
-        Paper mode -- stakes are units (no dollars). CLV (better-number-than-close) is
-        the only honest calibration yardstick. No edge is claimed.
+      <JulySnapshotBox>
+        {partialError && (
+          <div role="status" aria-label="Unavailable paper data" className="mb-4 text-[12px] text-warning">
+            Available summaries remain visible. Unavailable data:
+            <ul>{([
+              ["trail", "Trade history"], ["pmTrail", "PM trade history"],
+              ["clv", "CLV summary"], ["pnl", "Equity history"], ["bankroll", "Bankroll"],
+            ] as const).filter(([key]) => feedErrors[key]).map(([key, label]) => (
+              <li key={key}>{label}: {feedErrors[key]}</li>
+            ))}</ul>
+          </div>
+        )}
+        <PanelErrorBoundary label="bankroll and equity curve">
+          <PaperEquityPanel series={pnl} bankroll={bankroll} loading={loading && !data} />
+        </PanelErrorBoundary>
+      </JulySnapshotBox>
+
+      <p className="mt-4 text-[12px] text-faint">
+        Paper mode -- stakes are units (no dollars). No edge is claimed.
       </p>
     </div>
   );

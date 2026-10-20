@@ -74,12 +74,12 @@ export function PmTradeRow({ row, rank }: Props) {
   return (
     <tr
       className={cn(
-        "border-b border-slate-800/60 text-[12px] text-slate-300 transition-colors hover:bg-slate-800/30",
+        "border-b border-border text-[12px] text-foreground transition-colors hover:bg-surface-2",
         voided && "text-muted-foreground",
       )}
     >
       {rank != null ? (
-        <td className="px-2 py-1.5 text-right font-mono text-[10px] text-slate-600">
+        <td className="px-2 py-1.5 text-right font-mono text-[12px] text-faint">
           {rank}
         </td>
       ) : null}
@@ -87,43 +87,43 @@ export function PmTradeRow({ row, rank }: Props) {
         {published ? (
           <Link href={paperDetailHref(betId)} className="hover:underline">
             <span className="font-medium">{humanizeMatchup(row.matchup || row.game_id)}</span>
-            <span className="ml-1.5 font-mono text-[10px] text-slate-600">
+            <span className="ml-1.5 font-mono text-[12px] text-faint">
               {row.sport?.toUpperCase()}
             </span>
           </Link>
         ) : (
           <span title="Detail page is not included in this snapshot">
             <span className="font-medium">{humanizeMatchup(row.matchup || row.game_id)}</span>
-            <span className="ml-1.5 font-mono text-[10px] text-slate-600">
+            <span className="ml-1.5 font-mono text-[12px] text-faint">
               {row.sport?.toUpperCase()}
             </span>
           </span>
         )}
       </td>
-      <td className="px-2 py-1.5 font-mono text-[11px] text-slate-400">
+      <td className="px-2 py-1.5 font-mono text-[12px] text-muted-foreground">
         {row.market_type || EMPTY_CELL}
       </td>
-      <td className="px-2 py-1.5 font-mono text-[11px] text-slate-400">
+      <td className="px-2 py-1.5 font-mono text-[12px] text-muted-foreground">
         {describeBetShort(row)}
       </td>
       <td className="px-2 py-1.5">
         {row.tier ? (
           <span
             className={cn(
-              "inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-mono uppercase",
+              "inline-flex items-center rounded-full border px-2 py-0.5 text-[12px] font-mono uppercase",
               tierBadgeClass(row.tier),
             )}
           >
             {row.tier}
           </span>
         ) : (
-          <span className="text-slate-600">{EMPTY_CELL}</span>
+          <span className="text-faint">{EMPTY_CELL}</span>
         )}
       </td>
-      <td className="px-2 py-1.5 text-right font-mono tabular-nums text-slate-300">
+      <td className="px-2 py-1.5 text-right font-mono tabular-nums text-foreground">
         {fmtProb(row.model_prob)}
       </td>
-      <td className="px-2 py-1.5 text-right font-mono tabular-nums text-slate-300">
+      <td className="px-2 py-1.5 text-right font-mono tabular-nums text-foreground">
         {fmtDec(row.taken_decimal)}
       </td>
       <td className="px-2 py-1.5 text-right">
@@ -132,20 +132,20 @@ export function PmTradeRow({ row, rank }: Props) {
       <td className="px-2 py-1.5">
         <Badge tone={RESULT_TONE[res]}>{res}</Badge>
       </td>
-      <td className="px-2 py-1.5 text-right font-mono tabular-nums text-slate-300">
+      <td className="px-2 py-1.5 text-right font-mono tabular-nums text-foreground">
         {fmtUnits(row.stake_units)}
       </td>
       <td className="px-2 py-1.5 text-right">
         {published ? (
           <Link
             href={paperDetailHref(betId)}
-            className="font-mono text-[10px] text-slate-500 hover:text-slate-300"
+            className="font-mono text-[12px] text-muted-foreground hover:text-foreground"
             aria-label={`View detail for ${row.matchup || row.game_id}`}
           >
             detail &rsaquo;
           </Link>
         ) : (
-          <span className="font-mono text-[10px] text-slate-600" title="Detail page is not included in this snapshot">
+          <span className="font-mono text-[12px] text-faint" title="Detail page is not included in this snapshot">
             no detail
           </span>
         )}

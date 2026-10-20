@@ -380,35 +380,18 @@ describe("WS4 -- InGamePanel: INSUFFICIENT_DATA honesty (source check)", () => {
 // ClvFeedbackPanel: vs_close UNPROVEN rendering
 // ---------------------------------------------------------------------------
 describe("WS4 -- ClvFeedbackPanel: CLV honesty (render)", () => {
-  it("renders UNPROVEN badge (not 'proven'/green) when vs_close_proven is false", async () => {
+  it("shows only the one CLV-unavailable sentence, never a CLV figure or a 'proven' badge", async () => {
     vi.useRealTimers();
-
     const fetchHonestMod = await import("@/lib/fetchHonest");
     const spy = vi.spyOn(fetchHonestMod, "fetchHonest").mockImplementation(
       async (url: string) => {
         if (url.includes("/api/quant/clv")) {
           return {
             status: "ok",
-            clv: {
-              n_bets: 12,
-              mean_clv_pct: 0.04,
-              pct_beat_close: 0.58,
-              by_sport: {},
-              clv_is_proxy: false,
-              vs_close_proven: false, // NEVER fabricate proven
-            },
+            clv: { n_bets: 12, mean_clv_pct: 0.04, pct_beat_close: 0.58, by_sport: {},
+              clv_is_proxy: false, vs_close_proven: false },
             edge_claimed: false,
             real_money_enabled: false,
-            honest_note: "units only",
-          };
-        }
-        if (url.includes("/api/improve/timeline")) {
-          return {
-            status: "ok",
-            cycles: [],
-            n_promoted: 0,
-            enabled: false,
-            edge_claimed: false,
           };
         }
         return { status: "unavailable", reason: "not matched" };
@@ -416,60 +399,14 @@ describe("WS4 -- ClvFeedbackPanel: CLV honesty (render)", () => {
     );
 
     const { ClvFeedbackPanel } = await import("../ClvFeedbackPanel");
-    render(<ClvFeedbackPanel />);
+    const { CLV_UNAVAILABLE } = await import("@/lib/clvUnavailable");
+    const { container } = render(<ClvFeedbackPanel />);
 
-    await waitFor(() => {
-      // Should show UNPROVEN badge.
-      expect(screen.queryByText("UNPROVEN")).toBeTruthy();
-    }, { timeout: 5000 });
-
-    // Must NOT show a "proven" badge (green).
+    expect(screen.getByTestId("clv-feedback-unavailable").textContent).toContain(CLV_UNAVAILABLE);
     expect(screen.queryByText("proven")).toBeNull();
-
-    spy.mockRestore();
-    vi.useFakeTimers();
-  });
-
-  it("shows no graded-bets message when n_bets is 0", async () => {
-    vi.useRealTimers();
-
-    const fetchHonestMod = await import("@/lib/fetchHonest");
-    const spy = vi.spyOn(fetchHonestMod, "fetchHonest").mockImplementation(
-      async (url: string) => {
-        if (url.includes("/api/quant/clv")) {
-          return {
-            status: "ok",
-            clv: {
-              n_bets: 0,
-              mean_clv_pct: null,
-              pct_beat_close: null,
-              by_sport: {},
-              clv_is_proxy: false,
-              vs_close_proven: false,
-            },
-            edge_claimed: false,
-            real_money_enabled: false,
-          };
-        }
-        if (url.includes("/api/improve/timeline")) {
-          return {
-            status: "ok",
-            cycles: [],
-            n_promoted: 0,
-            enabled: false,
-            edge_claimed: false,
-          };
-        }
-        return { status: "unavailable", reason: "not matched" };
-      },
-    );
-
-    const { ClvFeedbackPanel } = await import("../ClvFeedbackPanel");
-    render(<ClvFeedbackPanel />);
-
-    await waitFor(() => {
-      expect(screen.queryByText(/No graded-vs-close bets yet/i)).toBeTruthy();
-    }, { timeout: 5000 });
+    // The feed's figures (n_bets 12, 4%, 58%) never reach the DOM.
+    expect(container.textContent).not.toMatch(/58|4\.0%/);
+    expect(container.textContent).toMatch(/UNPROVEN/);
 
     spy.mockRestore();
     vi.useFakeTimers();
@@ -514,75 +451,6 @@ describe("WS4 -- ClvScoreboardLive: freshness badge + poll indicator", () => {
 // ---------------------------------------------------------------------------
 // useLiveData contract: failed poll keeps last-good data (structural + render)
 // ---------------------------------------------------------------------------
-describe("WS4 -- useLiveData: failed poll keeps last-good data", () => {
-  it("ClvFeedbackPanel keeps n_bets visible after a failed second poll", async () => {
-    vi.useRealTimers();
-
-    let callCount = 0;
-    const fetchHonestMod = await import("@/lib/fetchHonest");
-    const spy = vi.spyOn(fetchHonestMod, "fetchHonest").mockImplementation(
-      async (url: string) => {
-        if (url.includes("/api/quant/clv")) {
-          callCount++;
-          if (callCount === 1) {
-            // First call: good data with n_bets = 9.
-            return {
-              status: "ok",
-              clv: {
-                n_bets: 9,
-                mean_clv_pct: 0.03,
-                pct_beat_close: 0.55,
-                by_sport: {},
-                clv_is_proxy: false,
-                vs_close_proven: false,
-              },
-              edge_claimed: false,
-              real_money_enabled: false,
-            };
-          }
-          // Subsequent calls: unavailable sentinel (failed poll).
-          return { status: "unavailable", reason: "feed error" };
-        }
-        if (url.includes("/api/improve/timeline")) {
-          return {
-            status: "ok",
-            cycles: [],
-            n_promoted: 0,
-            enabled: false,
-            edge_claimed: false,
-          };
-        }
-        return { status: "unavailable", reason: "not matched" };
-      },
-    );
-
-    const { ClvFeedbackPanel } = await import("../ClvFeedbackPanel");
-    render(<ClvFeedbackPanel />);
-
-    // Wait for first good data (n_bets=9 is rendered in the "graded bets" column).
-    await waitFor(() => {
-      expect(screen.queryByText("9")).toBeTruthy();
-    }, { timeout: 5000 });
-
-    // Now trigger a second poll (advance useLiveData interval).
-    // useLiveData's interval is 20 s; advance past it so the interval fires.
-    vi.useFakeTimers();
-    act(() => {
-      vi.advanceTimersByTime(22_000);
-    });
-    vi.useRealTimers();
-
-    // Wait a tick for any async resolution.
-    await new Promise((r) => setTimeout(r, 50));
-
-    // Last-good data (n_bets=9) must still be visible -- failed poll does NOT wipe it.
-    expect(screen.queryByText("9")).toBeTruthy();
-
-    spy.mockRestore();
-    vi.useFakeTimers();
-  });
-});
-
 // ---------------------------------------------------------------------------
 // useLiveData contract: fetch pauses when document.hidden (structural check)
 // ---------------------------------------------------------------------------

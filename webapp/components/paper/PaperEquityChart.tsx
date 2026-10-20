@@ -63,20 +63,20 @@ function EquityTooltip({
   return (
     <div
       data-testid="paper-equity-tooltip"
-      className="rounded border border-slate-700 bg-slate-900 px-3 py-2 text-[11px] font-mono text-slate-300"
+      className="rounded border border-border bg-surface-2 px-3 py-2 text-[12px] font-mono text-foreground"
     >
-      <div className="mb-1 text-[10px] text-muted-foreground">{pt.day ?? pt.ts ?? "unknown"}</div>
+      <div className="mb-1 text-[12px] text-muted-foreground">{pt.day ?? pt.ts ?? "unknown"}</div>
       <div>
         balance:{" "}
         <span className="text-foreground">{fmtUnits(pt.balance_units)}u</span>
       </div>
       <div>
         net:{" "}
-        <span className={net >= 0 ? "text-emerald-400" : "text-rose-400"}>
+        <span className={net >= 0 ? "text-success" : "text-danger"}>
           {fmtSignedUnits(net)}u
         </span>
       </div>
-      <div className="text-[9px] text-faint">
+      <div className="text-[12px] text-faint">
         {pt.n_bets} bets / {pt.n_win}W-{pt.n_loss}L
       </div>
     </div>
@@ -96,15 +96,15 @@ function EmptyCurve({ honestNote }: { honestNote?: string }) {
       <span className="font-mono text-[13px] font-semibold text-faint">
         no equity curve yet
       </span>
-      <span className="font-mono text-[11px] text-faint max-w-sm">
+      <span className="font-mono text-[12px] text-faint max-w-sm">
         the curve appears once paper bets are placed and graded
       </span>
       {honestNote ? (
-        <span className="font-mono text-[9px] text-faint mt-1 max-w-md">
+        <span className="font-mono text-[12px] text-faint mt-1 max-w-md">
           {honestNote.length > 100 ? honestNote.slice(0, 100) + "..." : honestNote}
         </span>
       ) : null}
-      <span className="font-mono text-[9px] text-faint mt-1">
+      <span className="font-mono text-[12px] text-faint mt-1">
         UNITS only -- no dollars; no edge claimed
       </span>
     </div>
@@ -141,7 +141,7 @@ export function PaperEquityChart({
         aria-busy="true"
         aria-label="equity curve loading"
       >
-        <div className="h-[140px] w-full animate-pulse rounded bg-slate-800/40" role="presentation" />
+        <div className="h-[140px] w-full animate-pulse rounded bg-surface-2" role="presentation" />
       </div>
     );
   }
@@ -152,12 +152,12 @@ export function PaperEquityChart({
 
   const lastBalance = chartData[chartData.length - 1]?.balance_units ?? startUnits ?? 0;
   const up = startUnits == null ? true : lastBalance >= startUnits;
-  const lineColor = up ? "#34d399" : "#f87171"; // emerald-400 / rose-400
+  const lineColor = up ? "hsl(var(--success))" : "hsl(var(--danger))";
 
   return (
     <div data-testid="paper-equity-chart" className="w-full">
       <div className="mb-1 flex items-center justify-between">
-        <span className="font-mono text-[9px] uppercase tracking-widest text-faint">
+        <span className="font-mono text-[12px] uppercase tracking-widest text-faint">
           cumulative bankroll (units)
         </span>
         <span
@@ -180,7 +180,7 @@ export function PaperEquityChart({
           {startUnits != null && (
             <ReferenceLine
               y={startUnits}
-              stroke="#475569"
+              stroke="hsl(var(--muted-foreground))"
               strokeDasharray="3 3"
               strokeWidth={1}
             />
@@ -198,7 +198,7 @@ export function PaperEquityChart({
         </AreaChart>
       </ResponsiveContainer>
       <div className="mt-1">
-        <span className="font-mono text-[9px] text-faint">
+        <span className="font-mono text-[12px] text-faint">
           {points.length} points -- dashed line = starting bankroll. UNITS only; no $.
         </span>
       </div>

@@ -643,11 +643,11 @@ describe("WS2-8 -- done-settled-summary real trail counts", () => {
 // ---------------------------------------------------------------------------
 
 describe("WS2-misc -- structural requirements", () => {
-  it("page title says 'Paper Trading Center' (updated from old title)", async () => {
+  it("page title says 'Paper record' (renamed from Paper Trading Center, 2026-10-20)", async () => {
     mockPending();
     const { container } = await renderPage();
     const h1 = container.querySelector("h1");
-    expect(h1?.textContent).toMatch(/paper trading/i);
+    expect(h1?.textContent).toBe("Paper record");
   });
 
   it("unit-convention-clarifier block is present (explains UNITS not dollars)", async () => {

@@ -2,8 +2,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { api } from "@/lib/p5api";
 import type { ClvScoreboard } from "@/lib/types";
 import { fetchPaperCombined } from "../paperTradingHelpers";
-import clv from "@/public/demo-data/api_paper_clv.json";
-import pnl from "@/public/demo-data/api_paper_pnl_series.json";
+import clv from "@/test/fixtures/july_2026/api_paper_clv.json";
+import pnl from "@/test/fixtures/july_2026/api_paper_pnl_series.json";
 
 afterEach(() => vi.restoreAllMocks());
 

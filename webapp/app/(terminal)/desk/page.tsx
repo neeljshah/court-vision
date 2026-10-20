@@ -1,92 +1,99 @@
-// /desk -- the paper record: ledger per night (counts only), the in-game
-// scoreboard per arm with the venue mid (arm A) as the reference, and coverage.
-// Build-time read of webapp/public/data/desk/latest.json via desk.server.
+// /desk -- the Record hub (template T6): the three dates, a status card, the sealed
+// scoreboard folded to one row per (sport, arm), coverage, refusals, the
+// qualification census summary, the night receipts on GitHub, and what this is not.
+// Build-time read of webapp/public/data/desk/latest.json via desk.server plus the
+// committed uptime receipt. PAPER ONLY: counts and losses, never a money figure.
 
-import { loadDesk, refusalsFor, fmt } from "@/lib/desk.server";
+import Link from "next/link";
+import { loadDesk, refusalsFor } from "@/lib/desk.server";
 import { DeskShell, NotAvailable, Section, T } from "@/components/desk/DeskShell";
-import { DeltaBars } from "@/components/charts/DeltaBars";
-import { Num } from "@/components/ui/terminal";
+import { ScoreboardCompact } from "@/components/desk/ScoreboardCompact";
+import { StatusCard, CensusSummary, DeskNotClaimed } from "@/components/desk/DeskStatus";
+import { CENSUS, CENSUS_SRC, ghBlob, loadUptime } from "@/components/desk/deskExtras.server";
 
 export const metadata = {
-  title: "Paper desk",
-  description: "Paper only, simulated maker quotes on the recorded Kalshi tape; not a verdict.",
+  title: "Paper desk record",
+  description: "Paper only: simulated maker quotes on the recorded Kalshi tape; nights, scoreboard cells, coverage. Not a verdict.",
 };
 
 const SRC = "docs/evidence/forward";
 
 export default function DeskRecordPage() {
   const desk = loadDesk();
+  const uptime = loadUptime();
   const rec = desk?.record ?? null;
   const sb = desk?.scoreboard ?? null;
   const cov = desk?.coverage ?? null;
-  const sports = sb ? Array.from(new Set(sb.rows.map((r) => r.sport))) : [];
+  const nights = [...(desk?.health?.nights ?? [])].reverse();
+  const refusalRows: [string, string, number][] = [
+    ...Object.entries(sb?.refusal_counts ?? {}).map(([k, v]) => ["scoreboard", k, v] as [string, string, number]),
+    ...Object.entries(cov?.refusals ?? {}).map(([k, v]) => ["coverage", k, v] as [string, string, number]),
+  ];
 
   return (
-    <DeskShell desk={desk} title="Paper record" active="/desk">
-      <Section title="Ledger per night (counts only)" asOf={desk?.date} source={`${SRC}/paper_result/LEDGER.jsonl`}>
-        {rec ? (
-          <T head={["night", "quote life s", "fills", "settled", "unsettled", "contracts", "note"]}
-            rows={rec.ledger.map((r) => [r.date, r.quote_life_s ?? "-", <Num key="f">{r.fills ?? "-"}</Num>,
-              r.settled_fills ?? "-", r.unsettled_fills ?? "-", r.contracts ?? "-", r.note ?? ""])} />
-        ) : <NotAvailable refusals={refusalsFor(desk, "record")} />}
+    <DeskShell desk={desk} title="Paper desk record" active="/desk">
+      <Section title="Status" asOf={desk?.date} source="webapp/public/data/desk/latest.json">
+        <StatusCard desk={desk} uptime={uptime} />
       </Section>
 
-      <Section title="Fill realism and fills receipts per night" asOf={desk?.date} source={`${SRC}/fill_realism/`}>
-        {rec ? (
-          <T head={["night", "quotes placed", "fills TTL 30 s", "fills TTL 5 s", "fills rows", "reconciled"]}
-            rows={rec.nights.map((n) => [n.date, n.fill_realism?.quotes_placed ?? "not available",
-              n.fill_realism?.fills_ttl30 ?? "-", n.fill_realism?.fills_ttl5 ?? "-", n.fills_rows ?? "-",
-              n.reconciled ? Object.entries(n.reconciled).map(([k, v]) => `${k}s:${v}`).join(" ") : "-"])} />
-        ) : <NotAvailable refusals={refusalsFor(desk, "record")} />}
-      </Section>
-
-      <Section title="In-game scoreboard per arm (reference: arm A = venue mid)" asOf={sb?.date}
+      <Section title="In-game scoreboard, one row per sport and arm" asOf={sb?.date} verdict="INSUFFICIENT"
         source={sb ? `${SRC}/scoreboard/${sb.date}.json` : null}>
-        {sb ? (
-          <div className="flex flex-col gap-4 py-2">
-            <p className="px-3 text-[12px] text-muted-foreground">
-              Brier and log loss per arm on the outcome target; the delta column is the arm minus arm A on the
-              same segment (negative = lower loss than the mid). Every cell carries its verdict; with few games
-              they read INSUFFICIENT. Scope {sb.scope ?? "-"}; {sb.games} games, {sb.ticks} ticks.
-            </p>
-            {sports.map((s) => (
-              <div key={s}>
-                <p className="microlabel px-3">{s}</p>
-                <T head={["segment", "arm", "Brier", "log loss", "Brier - A", "", "ticks", "games", "verdict"]}
-                  rows={sb.rows.filter((r) => r.sport === s && r.target === "outcome").map((r) => [
-                    r.segment, r.arm, fmt(r.brier), fmt(r.logloss), fmt(r.brier_minus_A),
-                    r.brier_minus_A == null ? (r.reason ?? "") :
-                      <DeltaBars key="d" delta={r.brier_minus_A} ci={[r.brier_minus_A, r.brier_minus_A]}
-                        verdict={r.verdict ?? "INSUFFICIENT"} />,
-                    r.n_ticks ?? "-", r.n_games ?? "-", r.verdict ?? "-"])} />
-              </div>
-            ))}
-            <div className="px-3">
-              <p className="microlabel">scoreboard refusal counts</p>
-              <p className="font-data text-[11px] text-faint">
-                {Object.entries(sb.refusal_counts).map(([k, v]) => `${k}=${v}`).join("  ") || "none"}
-              </p>
-            </div>
-          </div>
-        ) : <NotAvailable refusals={refusalsFor(desk, "scoreboard")} />}
+        {sb ? <ScoreboardCompact sb={sb} arms={desk?.models?.scoreboard_arms ?? null} />
+          : <NotAvailable refusals={refusalsFor(desk, "scoreboard")} />}
       </Section>
 
       <Section title="Coverage per sport" asOf={cov?.date} source={cov ? `${SRC}/coverage/${cov.date}.json` : null}>
         {cov ? (
           <>
-            <T head={["sport", "listed", "selected", "served", "qualified PASS / FAIL", "scored ticks (A)"]}
+            <T head={["sport", "listed", "selected", "served", "qualified PASS / FAIL", "scored ticks (arm A)"]}
               rows={cov.sports.map((s) => [s.sport, s.listed ?? "-", s.selected ?? "-", s.served ?? "-",
                 s.qualified ? `${s.qualified.PASS ?? "-"} / ${s.qualified.FAIL ?? "-"}` : "-",
                 s.scored_ticks?.A ?? "-"])} />
-            <p className="px-3 py-2 text-[11px] text-faint">{cov.listed_definition}</p>
+            <p className="px-3 py-2 text-xs text-faint">{cov.listed_definition}</p>
           </>
         ) : <NotAvailable refusals={refusalsFor(desk, "coverage")} />}
       </Section>
 
-      <Section title="Refusals in this export" asOf={desk?.date}>
-        {desk && desk.refusals.length === 0 ? <p className="px-3 py-2 text-[12px]">none</p> :
-          <NotAvailable refusals={desk ? desk.refusals : refusalsFor(null, "desk")} />}
+      <Section title="Qualification census: why no game qualifies" asOf={CENSUS.asOf} source={CENSUS_SRC}
+        verdict="INSUFFICIENT">
+        <CensusSummary />
       </Section>
+
+      <Section title="Ledger per night (counts only)" asOf={desk?.date} source={`${SRC}/paper_result/LEDGER.jsonl`}>
+        {rec ? (
+          <T head={["night", "quote life s", "fills", "settled", "unsettled", "contracts", "note"]}
+            rows={rec.ledger.map((r) => [r.date, r.quote_life_s ?? "-", r.fills ?? "-",
+              r.settled_fills ?? "-", r.unsettled_fills ?? "-", r.contracts ?? "-", r.note ?? ""])} />
+        ) : <NotAvailable refusals={refusalsFor(desk, "record")} />}
+        <p className="px-3 py-2 text-xs text-muted-foreground">
+          The fills themselves are on the <Link href="/paper-trading/" className="underline">paper record</Link>.
+        </p>
+      </Section>
+
+      <Section title="Refusals in this export" asOf={desk?.date} source="webapp/public/data/desk/latest.json">
+        <p className="px-3 pt-2 text-xs text-muted-foreground">
+          A refusal is a tick, game or section the scorer declined to use, with the receipt&apos;s reason code.
+          Refused rows are counted, never dropped silently.
+        </p>
+        {refusalRows.length ? <T head={["stage", "reason code", "count"]} rows={refusalRows} />
+          : <p className="px-3 py-2 text-xs">No scoreboard or coverage refusals in this export.</p>}
+        {desk && desk.refusals.length > 0 && <NotAvailable refusals={desk.refusals} />}
+      </Section>
+
+      <Section title="Night receipts on GitHub" asOf={desk?.date} source={`${SRC}/nights/`}>
+        {nights.length ? (
+          <ul className="grid gap-1 px-3 py-2 text-xs sm:grid-cols-2" data-testid="night-receipt-links">
+            {nights.map((n) => (
+              <li key={n.date}>
+                <a className="font-data underline" href={ghBlob(`${SRC}/nights/${n.date}.json`)}>nights/{n.date}.json</a>{" "}
+                <span className="text-muted-foreground">{n.status ?? "status not stated"}</span>
+              </li>
+            ))}
+          </ul>
+        ) : <NotAvailable refusals={refusalsFor(desk, "health")} />}
+      </Section>
+
+      <DeskNotClaimed />
     </DeskShell>
   );
 }

@@ -26,11 +26,11 @@ export default function DeskModelsPage() {
       {m ? m.cards.map((c) => (
         <Section key={c.sport} title={`${c.sport} model card`} asOf={m.canonical_as_of} source={m.canonical_source}>
           <div className="flex flex-col gap-2 px-3 py-2 text-[12px]">
-            <p><span className="microlabel">pregame</span> <span className="text-muted-foreground">{c.pregame}</span></p>
-            <p><span className="microlabel">in-game daily fit</span>{" "}
+            <p><span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">pregame</span> <span className="text-muted-foreground">{c.pregame}</span></p>
+            <p><span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">in-game daily fit</span>{" "}
               <span className="text-muted-foreground">{c.daily_fit ? "yes" : "no"}: {c.fit_note}</span></p>
             <div>
-              <span className="microlabel">live paper quote arms</span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">live paper quote arms</span>
               {c.ingame_live_arms ? (
                 <ul className="list-disc pl-5 text-muted-foreground">
                   {c.ingame_live_arms.map((a) => <li key={a.arm}><span className="font-data">{a.arm}</span>: {a.what ?? "-"}</li>)}
@@ -50,7 +50,7 @@ export default function DeskModelsPage() {
               reason: "no canonical calibration figure for this sport in CANONICAL_FIGURES.json" }]} />
           )}
           {c.figures.map((f) => f.licenses ? (
-            <p key={f.key} className="px-3 pb-2 text-[11px] text-faint">{f.licenses} (source {f.source})</p>
+            <p key={f.key} className="px-3 pb-2 text-[12px] text-faint">{f.licenses} (source {f.source})</p>
           ) : null)}
         </Section>
       )) : (

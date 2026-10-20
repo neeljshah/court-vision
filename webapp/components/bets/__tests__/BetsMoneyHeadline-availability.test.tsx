@@ -2,9 +2,9 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { act, cleanup, render, screen, waitFor } from "@testing-library/react";
 import { api } from "@/lib/p5api";
 import type { ClvScoreboard, PaperBankroll, PnlSeries } from "@/lib/types";
-import pnlJson from "@/public/demo-data/api_paper_pnl_series.json";
-import bankJson from "@/public/demo-data/api_paper_bankroll.json";
-import clvJson from "@/public/demo-data/api_paper_clv.json";
+import pnlJson from "@/test/fixtures/july_2026/api_paper_pnl_series.json";
+import bankJson from "@/test/fixtures/july_2026/api_paper_bankroll.json";
+import clvJson from "@/test/fixtures/july_2026/api_paper_clv.json";
 import { BetsMoneyHeadline } from "../BetsMoneyHeadline";
 import { CLV_UNAVAILABLE } from "@/lib/clvUnavailable";
 

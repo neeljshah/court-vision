@@ -576,24 +576,23 @@ describe("BetCard ws1-a11y -- divergence column header says 'Calibrated divergen
   });
 });
 
-describe("BetCard ws1-a11y -- CLV null = INSUFFICIENT_DATA, never greened", () => {
-  it("null CLV renders INSUFFICIENT_DATA text (not green)", () => {
+describe("BetCard ws1-a11y -- CLV is the one unavailable sentence, never greened", () => {
+  it("null CLV renders 'CLV: unavailable' (not green)", () => {
     const { container } = render(<BetCard card={makeCard({ clv: null })} />);
     const clvEl = Array.from(container.querySelectorAll("*")).find(
-      (el) => el.textContent?.includes("INSUFFICIENT_DATA"),
+      (el) => el.children.length === 0 && el.textContent?.includes("CLV: unavailable"),
     );
     expect(clvEl).toBeDefined();
     const cls = clvEl?.className ?? "";
-    // Must NOT be styled green
     expect(cls).not.toMatch(/text-green/);
     expect(cls).not.toMatch(/bg-green/);
     expect(cls).not.toMatch(/text-tier-a/);
   });
 
-  it("null CLV aria-label mentions INSUFFICIENT_DATA", () => {
+  it("CLV aria-label carries the CLV_UNAVAILABLE sentence", () => {
     const { container } = render(<BetCard card={makeCard({ clv: null })} />);
     const clvEl = Array.from(container.querySelectorAll("[aria-label]")).find(
-      (el) => (el.getAttribute("aria-label") ?? "").includes("INSUFFICIENT_DATA"),
+      (el) => (el.getAttribute("aria-label") ?? "").includes(CLV_UNAVAILABLE),
     );
     expect(clvEl).toBeDefined();
   });

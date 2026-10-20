@@ -40,13 +40,13 @@ export function ClvInline({ row, showStatus }: Props) {
     // pending / no-close / void -- NEVER render a 0-fill value.
     const label =
       row.status === "open" ? "pending" : row.clv_unavailable ? "no-close" : EMPTY_CELL;
-    return <Num className="text-[11px] text-faint">{label}</Num>;
+    return <Num className="text-[12px] text-faint">{label}</Num>;
   }
 
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 text-[11px]",
+        "inline-flex items-center gap-1 text-[12px]",
         clvCellClass(row.clv_pct),
       )}
     >
@@ -57,7 +57,7 @@ export function ClvInline({ row, showStatus }: Props) {
       ) : null}
       <Num>{fmtPct(row.clv_pct as number)}</Num>
       {showStatus && row.clv_status ? (
-        <span className="text-[10px] text-faint">
+        <span className="text-[12px] text-faint">
           ({row.clv_status})
         </span>
       ) : null}

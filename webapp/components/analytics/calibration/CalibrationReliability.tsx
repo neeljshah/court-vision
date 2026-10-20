@@ -2,13 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { linePath, linear, type Pt } from "@/components/analytics/charts/scale";
+import { SERIES_VAR } from "@/lib/palette";
 import type { ReliabilityBin, ReliabilitySeries, ReliabilitySide } from "@/lib/analytics/calibrationReliability";
 
 type SeriesChoice = ReliabilitySide | "both";
 type BinRange = { lo: number; hi: number } | null;
 const sides: ReliabilitySide[] = ["model", "market"];
 const labels: Record<ReliabilitySide, string> = { model: "Model", market: "Market" };
-const colors: Record<ReliabilitySide, string> = { model: "var(--accent)", market: "var(--signal)" };
+// Validated palette (PALETTE_2026-10-20.md): model = slot 1, market = slot 2, both themes.
+const colors: Record<ReliabilitySide, string> = { model: SERIES_VAR.model, market: SERIES_VAR.market };
 const PAD = { left: 48, right: 18, top: 24, bottom: 44 };
 const TICKS = [0, 0.25, 0.5, 0.75, 1];
 
@@ -68,6 +70,7 @@ export function CalibrationReliability({ series }: { series: ReliabilitySeries[]
   const [choice, setChoice] = useState<SeriesChoice>("both");
   const [binRange, setBinRange] = useState<BinRange>(null);
   const [restored, setRestored] = useState(false);
+  const [view, setView] = useState<"chart" | "table">("chart");
 
   useEffect(() => {
     const restore = () => {
@@ -107,10 +110,11 @@ export function CalibrationReliability({ series }: { series: ReliabilitySeries[]
     <div className="cr-controls">
       <label>Sport<select aria-label="Reliability sport" value={sport} onChange={event => setSport(event.target.value)}>{sports.map(item => <option key={item} value={item}>{sportLabel(item)}</option>)}</select></label>
       <div className="cr-toggle" aria-label="Reliability series">{(["both", ...sides] as SeriesChoice[]).map(item => <button key={item} type="button" aria-pressed={choice === item} onClick={() => setChoice(item)}>{item === "both" ? "Both" : labels[item]}</button>)}</div>
+      <div className="cr-toggle cr-view" aria-label="Chart or table view">{(["chart", "table"] as const).map(v => <button key={v} type="button" aria-pressed={view === v} onClick={() => setView(v)}>{v === "chart" ? "Chart" : "Show as table"}</button>)}</div>
     </div>
     {corpus && <p className="cr-corpus"><strong>{sportLabel(sport)}:</strong> {count(corpus.nRows)} ticks from {count(corpus.nGames)} games; ticks are not independent games.{corpus.lowPower ? " This corpus is flagged low power." : ""}</p>}
     <div className="cr-legend"><span><i className="cr-diagonal" />Perfect calibration</span>{selected.map(item => <span key={item.side}><i style={{ background: colors[item.side] }} />{labels[item.side]}</span>)}<span><i className="cr-hollow" />Low-n bin</span></div>
-    <div className="cr-chart-wrap" role="region" aria-label="Reliability diagram (scrollable)" tabIndex={0}>
+    {view === "chart" && <div className="cr-chart-wrap" role="region" aria-label="Reliability diagram (scrollable)" tabIndex={0}>
       <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label={`${sportLabel(sport)} reliability diagram`} data-testid="reliability-diagram">
         <line x1={PAD.left} x2={PAD.left + plot} y1={PAD.top + plot} y2={PAD.top} className="cr-reference" />
         {TICKS.map(tick => <g key={tick}>
@@ -124,19 +128,21 @@ export function CalibrationReliability({ series }: { series: ReliabilitySeries[]
         {selected.map(item => {
           const points: Pt[] = item.bins.filter(validPoint).map(bin => ({ x: bin.meanP, y: bin.meanY }));
           return <g key={item.side} className={`cr-series cr-${item.side}`}>
-            <path d={linePath(points, sx, sy)} fill="none" stroke={colors[item.side]} strokeWidth="2" />
+            <path d={linePath(points, sx, sy)} fill="none" stroke={colors[item.side]} strokeWidth="2" strokeDasharray={item.side === "market" ? "6 3" : undefined} />
+            {points.length > 0 && <text className="cr-direct" x={sx(points[points.length - 1].x) + 8} y={sy(points[points.length - 1].y) + (item.side === "market" ? 14 : -6)}>{labels[item.side]}</text>}
             {item.bins.filter(validPoint).map((bin, index) => {
               const [low, high] = bin.meanYCi;
               const hasCi = low !== null && high !== null;
               return <g key={index} opacity={0.45 + 0.55 * Math.sqrt((bin.n || 0) / maxN)}>
                 {hasCi && <><line x1={sx(bin.meanP)} x2={sx(bin.meanP)} y1={sy(low)} y2={sy(high)} stroke={colors[item.side]} strokeWidth="1.25" /><line x1={sx(bin.meanP) - 4} x2={sx(bin.meanP) + 4} y1={sy(low)} y2={sy(low)} stroke={colors[item.side]} /><line x1={sx(bin.meanP) - 4} x2={sx(bin.meanP) + 4} y1={sy(high)} y2={sy(high)} stroke={colors[item.side]} /></>}
-                <circle cx={sx(bin.meanP)} cy={sy(bin.meanY)} r={radius(bin.n)} fill={bin.lowN ? "var(--paper-raised)" : colors[item.side]} stroke={colors[item.side]} strokeWidth={bin.lowN ? 2 : 1}><title>{`${labels[item.side]} ${percent(bin.meanP)} forecast, ${percent(bin.meanY)} observed, ${percentagePoints(bin.gap)} gap, ${count(bin.n)} ticks`}</title></circle>
+                <circle cx={sx(bin.meanP)} cy={sy(bin.meanY)} r={radius(bin.n)} fill={bin.lowN ? "var(--paper-raised)" : colors[item.side]} stroke={colors[item.side]} strokeWidth={bin.lowN ? 2 : 1}></circle>
+                <circle cx={sx(bin.meanP)} cy={sy(bin.meanY)} r={14} fill="transparent" data-testid="cr-hit"><title>{`${labels[item.side]} ${percent(bin.meanP)} forecast, ${percent(bin.meanY)} observed (interval ${interval(bin.meanYCi)}), ${percentagePoints(bin.gap)} gap, ${count(bin.n)} ticks from ${count(bin.nGames)} games${bin.lowN ? ", below floor" : ""}`}</title></circle>
               </g>;
             })}
           </g>;
         })}
       </svg>
-    </div>
+    </div>}
     <div className="cr-worked-examples" aria-live="polite">
       {selected.map(item => {
         const bin = item.bins.find(candidate => matchesBinRange(candidate, binRange)) || item.bins[0];
@@ -150,7 +156,7 @@ export function CalibrationReliability({ series }: { series: ReliabilitySeries[]
       })}
     </div>
     <div className="cr-table-wrap" role="region" aria-label="Reliability bins" data-scroll-region tabIndex={0}>
-      <table className="cr-table"><caption>Published reliability bins for {sportLabel(sport)}</caption><thead><tr><th>Series</th><th>Bin range</th><th>Mean forecast</th><th>Observed</th><th>Gap (pp)</th><th>Gap CI (pp)</th><th>n ticks</th><th>n games</th><th>Low n</th></tr></thead><tbody>{selected.flatMap(item => item.bins.map((bin, index) => <tr key={`${item.side}-${index}`}><td><span className={`cr-series-key cr-${item.side}`} />{labels[item.side]}</td><td>{percent(bin.binLo, 0)} to {percent(bin.binHi, 0)}</td><td>{percent(bin.meanP)}</td><td>{percent(bin.meanY)}</td><td>{percentagePoints(bin.gap)}</td><td>{gapInterval(bin.gapCi)}</td><td>{count(bin.n)}</td><td>{count(bin.nGames)}</td><td>{bin.lowN ? "Yes" : "No"}</td></tr>))}</tbody></table>
+      <table className="cr-table"><caption>Published reliability bins for {sportLabel(sport)}</caption><thead><tr><th>Series</th><th>Bin range</th><th>Mean forecast</th><th>Observed</th><th>Gap (pp)</th><th>Gap CI (pp)</th><th>n ticks</th><th>n games</th><th>Low n</th><th>Inspect</th></tr></thead><tbody>{selected.flatMap(item => item.bins.map((bin, index) => <tr key={`${item.side}-${index}`}><td><span className={`cr-series-key cr-${item.side}`} />{labels[item.side]}</td><td>{percent(bin.binLo, 0)} to {percent(bin.binHi, 0)}</td><td>{percent(bin.meanP)}</td><td>{percent(bin.meanY)}</td><td>{percentagePoints(bin.gap)}</td><td>{gapInterval(bin.gapCi)}</td><td>{count(bin.n)}</td><td>{count(bin.nGames)}</td><td>{bin.lowN ? "Below floor" : "No"}</td><td><button type="button" className="cr-inspect" onClick={() => setBinRange({ lo: bin.binLo ?? 0, hi: bin.binHi ?? 0 })}>Inspect bin</button></td></tr>))}</tbody></table>
     </div>
   </section>;
 }

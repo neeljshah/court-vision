@@ -76,11 +76,11 @@ export function StatTile({
   note?: string;
 }) {
   return (
-    <div className="rounded-lg border border-slate-800 bg-bg-subtle px-3 py-3">
-      <div className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</div>
+    <div className="rounded-lg border border-border bg-bg-subtle px-3 py-3">
+      <div className="text-[12px] uppercase tracking-wide text-muted-foreground">{label}</div>
       {loading ? (
         <div
-          className="mt-1 h-7 w-14 animate-pulse rounded bg-slate-700/50"
+          className="mt-1 h-7 w-14 animate-pulse rounded bg-surface-2"
           role="presentation"
           aria-busy="true"
           aria-label={`${label} loading`}
@@ -94,7 +94,7 @@ export function StatTile({
             {value}
           </div>
           {note ? (
-            <div className="mt-0.5 font-mono text-[9px] text-muted-foreground">{note}</div>
+            <div className="mt-0.5 font-mono text-[12px] text-muted-foreground">{note}</div>
           ) : null}
         </>
       )}

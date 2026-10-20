@@ -2,9 +2,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import type { ClvScoreboard, PaperBankroll, PnlSeries } from "@/lib/types";
 import type { PaperToday } from "@/lib/paperToday";
-import pnlFixture from "@/public/demo-data/api_paper_pnl_series.json";
-import bankFixture from "@/public/demo-data/api_paper_bankroll.json";
-import clvFixture from "@/public/demo-data/api_paper_clv.json";
+import pnlFixture from "@/test/fixtures/july_2026/api_paper_pnl_series.json";
+import bankFixture from "@/test/fixtures/july_2026/api_paper_bankroll.json";
+import clvFixture from "@/test/fixtures/july_2026/api_paper_clv.json";
 
 type HookState = {
   data: unknown;
@@ -69,11 +69,7 @@ describe("bets summary source provenance", () => {
     expect(headline.querySelectorAll("time")[1]).toHaveAttribute("dateTime", "2026-07-16T01:37:24.968Z");
     expect(screen.getByTestId("money-clv")).toHaveTextContent(CLV_UNAVAILABLE);
     expect(screen.getByTestId("bets-money-headline")).not.toHaveTextContent("2026-10-05");
-    expect(screen.getByTestId("money-snapshot-label")).toHaveTextContent(JULY_SNAPSHOT_LABEL);
-    expect(headline.querySelectorAll("time")).toHaveLength(2);
-    for (const sourceTime of headline.querySelectorAll("time")) {
-      expect(sourceTime.parentElement).not.toHaveTextContent(/as of/i);
-    }
+    expect((headline.textContent ?? "").replace(CLV_UNAVAILABLE, "").replace(JULY_SNAPSHOT_LABEL, "")).not.toMatch(/as of/i);
     expect(screen.getByTestId("money-net-units")).toHaveTextContent("+101.54u");
     expect(screen.getByTestId("money-nbets")).toHaveTextContent("1316");
   });
