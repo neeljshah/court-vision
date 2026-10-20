@@ -3,9 +3,10 @@ import { join } from "node:path";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
 import { ResidualAnatomy } from "./ResidualAnatomy";
-import type { ResidualAnatomyData } from "@/lib/analytics/residualAnatomy";
+import { buildResidualAnatomy, type ResidualAnatomyData } from "@/lib/analytics/residualAnatomy";
 
 const data: ResidualAnatomyData = {
+  asOf: null,
   exclusions: [],
   sports: [
     { sport: "mlb", nFiles: 2, nRecords: 12, nSkipped: 3, timeBuckets: ["early", "late"], probBuckets: ["0-.2", ".2-.4"], grid: [], rankings: { byVolume: [], byPerRowError: [] }, segments: [] },
@@ -28,6 +29,24 @@ for (const sport of data.sports) {
 
 describe("ResidualAnatomy", () => {
   beforeEach(() => window.history.replaceState(null, "", "/analytics/residual-anatomy"));
+  it("shows the public artifact's source date without inventing an observation window", () => {
+    const published = JSON.parse(readFileSync(join(process.cwd(), "public", "data", "showcase", "residual_anatomy.json"), "utf8"));
+    render(<ResidualAnatomy data={buildResidualAnatomy(published)} />);
+    const receipt = screen.getByRole("button", { name: "Receipt: descriptive_only for Source as of 2026-09-16" });
+    expect(receipt).toHaveTextContent("Source as of 2026-09-16");
+    fireEvent.click(receipt);
+    expect(screen.getByRole("link", { name: "public/data/showcase/residual_anatomy.json" })).toBeInTheDocument();
+    expect(screen.queryByText("Date not published.")).not.toBeInTheDocument();
+    expect(screen.queryByText(/Observation window/i)).not.toBeInTheDocument();
+  });
+
+  it.each([null, "not-a-date"])("keeps missing or invalid source dates unavailable: %s", asOf => {
+    render(<ResidualAnatomy data={{ ...data, asOf }} />);
+    fireEvent.click(screen.getByRole("button", { name: "Receipt: descriptive_only for residual_anatomy.json" }));
+    expect(screen.getByText("Date not published.")).toBeInTheDocument();
+    expect(screen.queryByText(/Source as of/)).not.toBeInTheDocument();
+  });
+
   it("renders a grid and published counts for each sport", () => {
     render(<ResidualAnatomy data={data} />);
     expect(screen.getByRole("region", { name: "MLB residual grid" })).toBeInTheDocument();

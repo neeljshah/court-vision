@@ -32,6 +32,7 @@ export interface ResidualSport {
 }
 
 export interface ResidualAnatomyData {
+  asOf: string | null;
   sports: ResidualSport[];
   exclusions: Array<{ sport: string; reason: string }>;
 }
@@ -123,6 +124,7 @@ export function buildResidualAnatomy(value: unknown): ResidualAnatomyData {
     return sport && reason ? [{ sport, reason }] : [];
   }) : [];
   return {
+    asOf: text(root?.as_of),
     sports: sports ? Object.entries(sports).flatMap(([sport, entry]) => {
       const parsed = buildSport(sport, entry);
       return parsed ? [parsed] : [];
