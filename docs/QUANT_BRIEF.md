@@ -112,8 +112,9 @@ not started). All numbers come from
   and B_lag cells so far, every cell INSUFFICIENT); the fitted arms B / C / D are in warmup until about 20
   regular-season games settle, so opening-week quotes are the mid and arm A only. No NBA-specific
   pre-registration document exists.
-- **Gate G6** (eight weeks of fee-netted shadow markout) has still not started. Qualified decisions
-  are 0 on every sport.
+- **Gate G6** (eight weeks of fee-netted shadow markout) has zero qualifying weeks as of 2026-10-19: the
+  desk runs, but fill realism is counts-only and no markout series exists. Qualified decisions are 0 on
+  every sport.
 
 ## 3. What is not shown -- read before the call
 
@@ -132,7 +133,7 @@ not started). All numbers come from
   shadow maker quoting, fee-netted markout positive with a game-clustered 95 percent interval
   excluding zero, on at least two independent market families, with a pre-registered single-game and single-week
   concentration check and a calendar-half sign-flip reject. Gate G6 itself (eight weeks of fee-netted
-  shadow markout) has not started. The fee-aware paper sizing policy returns
+  shadow markout) has zero qualifying weeks as of 2026-10-19. The fee-aware paper sizing policy returns
   zero because every cell is refused (the in-game result is underpowered, the second corpus is
   unsealed); it has no caller ([S400 memo](evidence/harness/S400_paper_sizing_2026-09-22.md)).
 - **No live order path exists.** No real order has ever been placed.
@@ -146,7 +147,8 @@ not started). All numbers come from
   sealed 2026-10-07, which covers every served sport (arm A and B_lag cells so far; every cell below
   the 30-game floor). The NBA-specific draft ([S382 draft r1](evidence/ingame/S382_NBA_PREREG_DRAFT_r1_2026-09-21.md))
   was not sealed on its own.
-- The G6 maker-quoting series (eight weeks, fee-netted markout) has not started. When it does, its verdict is published on
+- The G6 maker-quoting series (eight weeks, fee-netted markout) has zero qualifying weeks as of 2026-10-19: a
+  markout series needs qualified tape, and 0 of 31 judged games have qualified. Its verdict is published on
   schedule whether or not the gate is met; the pre-registered expected year-end outcome is
   "G6 not met, N weeks collected" ([GO_LIVE_GATES.md](GO_LIVE_GATES.md)).
 
@@ -160,8 +162,8 @@ them on a fresh clone.
 ## 6. Five-minute verification (public clone, no private data)
 
 Run from the repository root of a fresh clone with Python 3.10+, numpy and pytest. Each command was
-run on 2026-10-06 against a copy of the public allowlist (`scripts/hooks/public_allowlist.txt`) and
-finished in under 15 seconds; the expected output is beside it.
+re-run on 2026-10-20 on a fresh public clone (and on 2026-10-06 against a copy of the public allowlist,
+`scripts/hooks/public_allowlist.txt`); each finished in under 20 seconds, and the expected output is beside it.
 
 | # | Command | Expected | What it checks |
 |---|---|---|---|
