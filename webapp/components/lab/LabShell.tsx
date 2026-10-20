@@ -5,7 +5,7 @@
 
 import Link from "next/link";
 
-const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
+// <Link> auto-prefixes basePath in the static export; never add it by hand here.
 
 const TABS = [
   { href: "/lab/counterfactual", label: "Counterfactual" },
@@ -37,7 +37,7 @@ export function LabShell({
           return (
             <Link
               key={tab.href}
-              href={`${BASE_PATH}${tab.href}`}
+              href={tab.href}
               className={
                 "microlabel px-3 py-2 border-b-2 -mb-px " +
                 (isActive
