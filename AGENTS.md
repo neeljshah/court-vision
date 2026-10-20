@@ -12,7 +12,7 @@ The public repository holds only the paths allowed by `scripts/hooks/public_allo
 
 ## What this repo is
 
-**CourtVision** — end-to-end NBA intelligence platform, built solo by [Neel Shah](https://neelshahportfolio.netlify.app). The system takes raw broadcast video, converts it to court-coordinate tracking data at ~$0.10/game, feeds that into a prediction + decision stack, and wraps everything in an agentic self-improving loop.
+**CourtVision** — end-to-end NBA intelligence platform, architected and directed solo by [Neel Shah](https://neelshahportfolio.netlify.app) over an agentic build pipeline (most commits are agent-authored under direction). The system takes raw broadcast video, converts it to court-coordinate tracking data at ~$0.10/game, feeds that into a prediction + decision stack, and wraps everything in an agentic self-improving loop.
 
 **Architecture direction (June 2026):** a domain-agnostic, multi-sport engine where sport-agnostic machinery (validation, calibration, Monte Carlo sim, Kelly/devig, agent loop) lives in a shared `kernel/`, and each sport is an adapter in `domains/<sport>/`. About 38% of the current codebase is already kernel-quality. See [docs/PLATFORM.md](docs/PLATFORM.md).
 
@@ -27,7 +27,7 @@ Stack: YOLOv8n → SIFT homography → Kalman+Hungarian → OSNet re-ID 512-dim 
 1. **[docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md)** — honest, adversarially-audited account of every claim. Canonical truth source. Read this before forming any opinion about system capabilities.
 2. **[README.md](README.md)** — dense long-form: architecture, methodology, walk-forward tables, reproducibility.
 3. **[docs/PLATFORM.md](docs/PLATFORM.md)** — multi-sport kernel/adapter architecture direction.
-4. **[docs/INTELLIGENCE.md](docs/INTELLIGENCE.md)** — manifest of the 80 derived artifacts between CV tracking and the prediction models.
+4. **[docs/INTELLIGENCE.md](docs/INTELLIGENCE.md)** — manifest of the 151 artifact files between CV tracking and the prediction models.
 
 **Skip on first pass:** `docs/architecture/*` and walking `src/prediction/` (~130 modules). Only ~12 of those modules are runtime load-bearing — the list is in [README.md](README.md).
 
@@ -39,7 +39,7 @@ Stack: YOLOv8n → SIFT homography → Kalman+Hungarian → OSNet re-ID 512-dim 
 - **Prop MAE:** PTS ~4.83 / REB ~1.92 / AST ~1.39 / FG3M ~0.89 (walk-forward, re-measured 2026-07-20 on the grown corpus; earlier smaller-corpus figures were 4.58/1.90/1.34/0.88)
 - **Win-prob:** 0.709 accuracy / 0.193 Brier (walk-forward, leak-free)
 - **Betting vs real closes:** market is efficient — break-even-minus-vig overall; no dollar/ROI edge is claimed (the earlier "AST ~+4–5%" durable-edge claim is RETRACTED 2026-07-21 — regime-dependent, broke in playoffs)
-- **In-play backtest 78%/+54%** is an L5-proxy ceiling, not realized edge; first real CLV October 2026; zero real money placed
+- **In-play backtest 78%/+54%** is an L5-proxy ceiling, not realized edge; no closing-line-value reading exists as of 2026-10-19 (forward paper series since 2026-10-06, packet section 5); zero real money placed
 
 **Retracted numbers — do not repeat as current wins:**
 - +18.38% pre-game ROI (market-follow grading artifact)
