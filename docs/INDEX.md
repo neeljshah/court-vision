@@ -21,7 +21,7 @@
 | **Recruiter / quant reviewer** | [QUANT_BRIEF (one page, desk terms)](QUANT_BRIEF.md) -> [README](../README.md) -> [EVIDENCE index](../EVIDENCE.md) -> [CAPABILITIES (the whole system on one page)](CAPABILITIES.md) -> [live analytics site](https://neeljshah.github.io/court-vision/analytics/) ([site guide](ANALYTICS_SITE.md)) -> [JOB_EVIDENCE_PACKET](JOB_EVIDENCE_PACKET.md) -> [PREDICTOR_PLATFORM](PREDICTOR_PLATFORM.md) -> [PROOFS](PROOFS.md) -> [KNOWN_LIMITATIONS](KNOWN_LIMITATIONS.md) |
 | **Engineer / architect** | [ARCHITECTURE](../ARCHITECTURE.md) -> [PLATFORM](PLATFORM.md) -> [architecture/system-overview](architecture/system-overview.md) -> [ML_MODELS](ML_MODELS.md) -> [API](API.md) |
 | **Quant / methodology** | [quant-methodology](quant-methodology.md) -> [backtest-methodology](backtest-methodology.md) -> [research/validation-methodology](research/validation-methodology.md) -> [MARKET_EFFICIENCY_PROOF](MARKET_EFFICIENCY_PROOF.md) |
-| **Edge researcher** | [MARKET_EFFICIENCY_PROOF](MARKET_EFFICIENCY_PROOF.md) -> [quant-methodology](quant-methodology.md) -> [JOB_EVIDENCE_PACKET](JOB_EVIDENCE_PACKET.md) -> [KNOWN_LIMITATIONS](KNOWN_LIMITATIONS.md) |
+| **Market-efficiency researcher** | [MARKET_EFFICIENCY_PROOF](MARKET_EFFICIENCY_PROOF.md) -> [quant-methodology](quant-methodology.md) -> [JOB_EVIDENCE_PACKET](JOB_EVIDENCE_PACKET.md) -> [KNOWN_LIMITATIONS](KNOWN_LIMITATIONS.md) |
 | **Operator / deployer** | [PRODUCTION_RUNBOOK](PRODUCTION_RUNBOOK.md) -> operations/data-pipeline *(private repository)* -> [LIVE_OPERATOR_RUNBOOK](LIVE_OPERATOR_RUNBOOK.md) -> [DEPLOY_RAILWAY](DEPLOY_RAILWAY.md) |
 | **Curious how AI built it** | [BUILT_WITH_CLAUDE](BUILT_WITH_CLAUDE.md) |
 | **Want the long-form tour** | [SYSTEM_TOUR](SYSTEM_TOUR.md) (the pre-2026-09-17 README, kept whole) |
@@ -43,7 +43,7 @@ reprice. Follow the links to go as deep as you want at any stage.
 
 | Stage | What happens | Go deep |
 |-------|--------------|---------|
-| **1. DATA** | Keyless, leak-free, as-of-stamped ingest across 5 sports (ESPN, MLB StatsAPI, Sackmann, football-data) + prediction markets (Kalshi, Polymarket) + DFS prop feeds (Underdog, PrizePicks, FanDuel, DraftKings) | [DATA](DATA.md) - [data_schema](data_schema.md) - operations/data-pipeline *(private repository)* |
+| **1. DATA** | Keyless, leak-free, as-of-stamped ingest across four sports (ESPN, MLB StatsAPI, Sackmann, football-data) + prediction markets (Kalshi, Polymarket) + DFS prop feeds (Underdog, PrizePicks, FanDuel, DraftKings) | [DATA](DATA.md) - [data_schema](data_schema.md) - operations/data-pipeline *(private repository)* |
 | **2. SIGNALS** | Leak-safe per-entity features + priors: team ratings (Elo / EW-Poisson / serve-hold), per-player per-exposure rates, ~190-feature NBA prop stack, 48 atlases, playstyle archetypes | [signal-inventory](signal-inventory.md) - [models/feature-inventory](models/feature-inventory.md) - [INTELLIGENCE](INTELLIGENCE.md) - [PLAYER_INTELLIGENCE](PLAYER_INTELLIGENCE.md) |
 | **3. MODELS** | One calibrated win-probability per sport (the anchor) + per-player count distributions (Poisson / Negative-Binomial, dispersion-calibrated) | [ML_MODELS](ML_MODELS.md) - [models/model-registry](models/model-registry.md) - [models/calibration](models/calibration.md) |
 | **4. ENGINES** | JointDistribution (coherent score matrix) + possession Monte-Carlo sim (emergent teammate correlation) + the live repricer (conditions on realized state) | [architecture/possession-simulator](architecture/possession-simulator.md) - [LIVE_ENGINE_V2](LIVE_ENGINE_V2.md) |
@@ -56,7 +56,7 @@ reprice. Follow the links to go as deep as you want at any stage.
 ## Full document tree
 
 ### Front door / orientation
-- **[CourtVision Analytics -- the Reading Room](https://neeljshah.github.io/court-vision/analytics)** -- **the flagship product** (live): 54 analytics modules, 1,549 entity atlas cards, 6 prior-art-gated novel stats, Scout AI in 3 honest tiers, every number carrying its artifact path
+- **[CourtVision Analytics -- the Reading Room](https://neeljshah.github.io/court-vision/analytics)** -- **the flagship product** (live): 77 analytics modules, 1,549 entity atlas cards, 6 prior-art-gated novel stats, Scout AI in 3 honest tiers, every number carrying its artifact path
 - [The quant terminal](https://neeljshah.github.io/court-vision) -- product 2, the dense operator surface (scoreboard, evidence spine, receipts drill, labs)
 - [INDEX](INDEX.md) -- this exhaustive documentation map
 - [docs/README](README.md) -- the shorter landing page GitHub shows for the docs directory
@@ -93,7 +93,7 @@ reprice. Follow the links to go as deep as you want at any stage.
 - [evidence/SESSION_2026-09-01_INDEX](evidence/SESSION_2026-09-01_INDEX.md) -- public-safe session index: tracking audit, harness hardening, and paper-execution receipts
 - [evidence/retraction-story](evidence/retraction-story.md) -- the flagship: the instruments that refuted my own headline numbers
 - [evidence/ingame-conditioning](evidence/ingame-conditioning.md) -- the one measured calibration win, market-comparison losses stated plainly
-- [evidence/agent-fleet-direction](evidence/agent-fleet-direction.md) -- directing an agent fleet under fail-closed gates (~91% agent-authored, disclosed)
+- [evidence/agent-fleet-direction](evidence/agent-fleet-direction.md) -- directing an agent fleet under fail-closed gates (the large majority agent-authored, disclosed)
 - [evidence/devig-stack](evidence/devig-stack.md) -- four devig methods from scratch; the Shin-devigged close as the honest yardstick
 - [evidence/leak-instruments](evidence/leak-instruments.md) -- the leakage-catching instruments (walk-forward guard, truncation invariance, multi-corpus gate, ship gate)
 - [evidence/cross-corpus-replication](evidence/cross-corpus-replication.md) -- the two-corpora discipline: one corpus is an anecdote, two is a finding; replicated claims shown both directions, single-fold artifacts kept and labelled FAILED_REPLICATION
@@ -151,7 +151,7 @@ reprice. Follow the links to go as deep as you want at any stage.
 - [models/feature-inventory](models/feature-inventory.md) -- ~190-feature stack, per-feature WF result
 - [models/BUILD_PROMPT](models/BUILD_PROMPT.md) -- the model-builder prompts
 - [signal-inventory](signal-inventory.md) -- 48 atlases + trained-signal catalog
-- [INTELLIGENCE](INTELLIGENCE.md) -- 80-artifact intelligence-layer manifest
+- [INTELLIGENCE](INTELLIGENCE.md) -- 151-file intelligence-layer manifest
 - [PLAYER_INTELLIGENCE](PLAYER_INTELLIGENCE.md) -- per-player dossier showcase
 - [MEMORY_GRAPH](MEMORY_GRAPH.md) -- the knowledge-graph structure
 
