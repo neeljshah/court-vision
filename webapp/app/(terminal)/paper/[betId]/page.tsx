@@ -13,7 +13,7 @@ import BetDetailPageClient from "./BetDetailPageClient";
 // Static export pre-renders every path; live/dev builds render any id on demand.
 export const dynamicParams = process.env.NEXT_PUBLIC_DATA_MODE !== "snapshot";
 
-export function bakedFillParams(file = join(process.cwd(), "public/demo-data/api_paper_trail_limit_400.json")): string[] {
+function bakedFillParams(file = join(process.cwd(), "public/demo-data/api_paper_trail_limit_400.json")): string[] {
   try {
     const rows = (JSON.parse(readFileSync(file, "utf-8")).trail ?? []) as PaperTrailRow[];
     return rows.map(fillParam);
