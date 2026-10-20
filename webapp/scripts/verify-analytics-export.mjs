@@ -40,6 +40,26 @@ const BUDGETS = new Map([
   ["/analytics/browse/", 100_000],
 ]);
 const ASSET_EXTENSIONS = /\.(?:json|png|jpe?g|webp|gif|svg|avif|ico)$/i;
+// Exact retired analytics routes from lib/redirects.ts; all other routes stay required.
+const RETIRED_ROUTES = new Map([["/analytics/", "/"], ["/analytics/findings/retraction/", "/evidence/retractions/"]]);
+
+function attribute(tag, name) {
+  return tag.match(new RegExp(`\\b${name}\\s*=\\s*["']([^"']*)["']`, "i"))?.[1] ?? null;
+}
+
+function verifyRetired(route, destination, sitemap, failures) {
+  const file = routeFile(route);
+  if (!file) { failures.push(`retired route missing ${route}`); return; }
+  if (!routeFile(destination)) failures.push(`retired route ${route} targets missing route ${destination}`);
+  const expected = `${BASE_PATH}${destination}`;
+  const locations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match => htmlEntities(match[1]));
+  const targetLocations = locations.filter(location => { try { return new URL(location).pathname === expected; } catch { return false; } });
+  const html = readFileSync(file, "utf8");
+  const canonicals = [...html.matchAll(/<link\b[^>]*>/gi)].map(match => match[0]).filter(tag => attribute(tag, "rel") === "canonical").map(tag => attribute(tag, "href"));
+  if (canonicals.length !== 1 || !(canonicals[0] === expected || targetLocations.includes(htmlEntities(canonicals[0] || "")))) failures.push(`retired route ${route} canonical must target ${destination}`);
+  const refreshes = [...html.matchAll(/<meta\b[^>]*>/gi)].map(match => match[0]).filter(tag => attribute(tag, "http-equiv")?.toLowerCase() === "refresh").map(tag => attribute(tag, "content"));
+  if (refreshes.length !== 1 || htmlEntities(refreshes[0] || "") !== `0; url=${expected}`) failures.push(`retired route ${route} refresh must target ${destination}`);
+}
 
 function normalizeBase(value) {
   const clean = String(value || "").trim();
@@ -230,7 +250,12 @@ export function verifyExport(out, basePath = BASE_PATH) {
   const requiredRoutes = [...new Set([...REQUIRED_ROUTES, ...derived.map((record) => `${record.href.replace(/\/$/, "")}/`)])];
   const sitemapFile = join(OUT, "sitemap.xml");
   const sitemap = existsSync(sitemapFile) ? readFileSync(sitemapFile, "utf8") : "";
-  for (const route of new Set([...requiredRoutes, ...indexedRoutes])) if (!sitemap.includes(`${BASE_PATH}${route}</loc>`)) failures.push(`sitemap is missing ${route}`);
+  const sitemapPaths = new Set([...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].flatMap(match => { try { return [new URL(htmlEntities(match[1])).pathname]; } catch { return []; } }));
+  for (const route of new Set([...requiredRoutes, ...indexedRoutes, ...RETIRED_ROUTES.keys()])) {
+    const destination = RETIRED_ROUTES.get(route) || route;
+    if (!sitemapPaths.has(`${BASE_PATH}${destination}`)) failures.push(`sitemap is missing ${destination}`);
+  }
+  for (const [route, destination] of RETIRED_ROUTES) verifyRetired(route, destination, sitemap, failures);
   for (const route of indexedRoutes) if (!routeFile(route)) failures.push(`search index references missing route ${safePath(route)}`);
   for (const route of requiredRoutes) if (!routeFile(route)) failures.push(`required route missing ${route}`);
   const htmlFiles = analyticsHtmlFiles();

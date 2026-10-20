@@ -23,7 +23,7 @@ const ROOTS = [
   "/analytics/cross-sport-comparability", "/analytics/state-contrasts",
   "/analytics/papers", "/analytics/findings", "/analytics/novel", "/analytics/lab", "/analytics/players",
   "/analytics/browse", "/analytics/pitch-sequencing", "/analytics/blowout-timing", "/analytics/count-context",
-  "/evidence", "/evidence/retractions", "/receipts",
+  "/analytics/evidence", "/evidence", "/evidence/retractions", "/receipts",
   "/about", "/how-it-works", "/methodology",
 ];
 

@@ -6,7 +6,7 @@ describe("sitemap", () => {
   const paths = sitemap().map((u) => u.url.replace(/^https?:\/\/[^/]+/, "").replace(/^\/court-vision/, ""));
 
   it("lists every kept section root", () => {
-    for (const p of ["/", "/games/", "/desk/", "/analytics/calibration/", "/analytics/papers/", "/evidence/", "/evidence/retractions/", "/about/"]) {
+    for (const p of ["/", "/games/", "/desk/", "/analytics/calibration/", "/analytics/papers/", "/analytics/evidence/", "/evidence/", "/evidence/retractions/", "/about/"]) {
       expect(paths).toContain(p);
     }
   });
