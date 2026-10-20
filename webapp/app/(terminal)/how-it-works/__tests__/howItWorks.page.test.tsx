@@ -79,7 +79,7 @@ describe("How-it-works page -- composes the honest sections", () => {
     const navLinks = Array.from(links).filter(
       (a) =>
         a.getAttribute("href") === "/games" ||
-        a.getAttribute("href") === "/system",
+        a.getAttribute("href") === "/desk/health/",
     );
     expect(navLinks).toHaveLength(2);
     for (const link of navLinks) {

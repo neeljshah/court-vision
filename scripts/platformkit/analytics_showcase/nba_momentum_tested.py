@@ -123,7 +123,7 @@ def compose():
                      "trouble shifts, rest-differential margin) come back null."),
         "method": ("Our own preregistered NBA tests, surfaced verbatim from the committed "
                    "forward-claim scoreboard. A verdict is a leak-free accuracy/effect finding "
-                   "vs an internal baseline -- never a advantage. A NULL is not 'streaks do "
+                   "vs an internal baseline -- never a market-relative or money claim. A NULL is not 'streaks do "
                    "not exist'; it is 'this shape carried no measurable signal past the "
                    "baseline'."),
         "source_artifact": "scripts/platformkit/analytics_showcase/out/fwd_claim_scoreboard.json",

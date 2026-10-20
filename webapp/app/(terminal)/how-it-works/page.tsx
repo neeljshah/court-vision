@@ -72,7 +72,7 @@ export default function HowItWorksPage() {
           See it on live Games
         </Link>
         <Link
-          href="/system"
+          href="/desk/health/"
           className="rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
         >
           Inspect the System

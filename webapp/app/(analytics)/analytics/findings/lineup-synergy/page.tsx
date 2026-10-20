@@ -1,5 +1,5 @@
 // Lineup-synergy ledger -- a descriptive five-man metric: does the lineup's
-// observed net rating beat what its members' individual on/off numbers would
+// observed net rating ran above what its members' individual on/off numbers would
 // predict? The Grizzlies' Jackson-Morant-Bane-Edey-Wells five topped 2024-25
 // at +24.32 net-per-48 above expected, but this is a single season, a small-
 // minutes floor, and the "expected" baseline is itself roster-confounded.
@@ -18,7 +18,7 @@ import { FindingTemplate } from "@/components/analytics/findings/FindingTemplate
 export const metadata: Metadata = {
   title: "Greater Than The Sum Of Their Parts",
   description:
-    "Descriptive-only exhibit: a five-man lineup-synergy ledger from real NBA on/off stint data -- which units beat what their individual parts predict, with the single-season and small-minutes confounds made explicit.",
+    "Descriptive-only exhibit: a five-man lineup-synergy ledger from real NBA on/off stint data -- which units scored above what their individual parts predict, with the single-season and small-minutes confounds made explicit.",
   ...findingMeta("lineup-synergy"),
 };
 
@@ -150,7 +150,7 @@ export default function LineupSynergyPage() {
         {data.season} -- n qualified (all 5 members individually qualified) = {data.n_qualified?.toLocaleString()}
       </p>
 
-      <LineupTable title="Top synergy: outperformed their parts" rows={data.top} note={data.min_floor_note} />
+      <LineupTable title="Top synergy: scored above their parts" rows={data.top} note={data.min_floor_note} />
       {data.bottom ? <LineupTable title="Bottom synergy: underperformed their parts" rows={data.bottom} /> : null}
 
       {data.confounds ? (

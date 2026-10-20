@@ -304,7 +304,7 @@
    "slug": "retraction-story",
    "bucket": "Self-refutation & honesty",
    "title": "The Retraction Story -- I built the instruments that refuted my own headline numbers",
-   "claim": "The same person who built this system also built the instruments that refuted his own flagship numbers -- and documented the negative results in writing rather than quietly deleting them. The product is a calibrated predictor, not a advantage-claim product. The strongest signal in the repo is not any metric; it is the self-refutation trail.",
+   "claim": "The same person who built this system also built the instruments that refuted his own flagship numbers -- and documented the negative results in writing rather than quietly deleting them. The product is a calibrated predictor, not a market-relative or money claim-claim product. The strongest signal in the repo is not any metric; it is the self-refutation trail.",
    "strongest_receipt": {
     "source": "scripts/platformkit/analytics_showcase/out/honesty_exhibit.json",
     "label": "nulls (351) outnumber confirms (168) 2.1x -- we publish our nulls"

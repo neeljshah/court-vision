@@ -19,5 +19,5 @@ it("retries only when the reader requests it", () => {
 
 it("keeps an analytics escape route available if retry cannot recover", () => {
   render(<AnalyticsError error={new Error("render failed")} reset={vi.fn()} />);
-  expect(screen.getByRole("link", { name: "Back to Analytics home" })).toHaveAttribute("href", "/analytics");
+  expect(screen.getByRole("link", { name: "Back to home" })).toHaveAttribute("href", "/");
 });

@@ -53,10 +53,10 @@ STORY_SPECS = [
 STORY_SUMMARIES = {
     "momentum_grain": ("Momentum is real at the point grain (CONFIRMED_LOCAL, n=456383) but the "
                         "same idea dies once you zoom out to game grain: whether a player holds "
-                        "serve after breaking is NULL_LOCAL, confirmed null on both split halves."),
+                        "serve after breaking is NULL, confirmed null on both split halves."),
     "tiebreak_myths": ("Two popular tiebreak beliefs -- that some players have a persistent "
                         "tiebreak-clutch skill, and that serving first in the breaker matters -- "
-                        "both come back NULL_LOCAL."),
+                        "both come back NULL."),
     "altitude_travel": ("Altitude suppresses serve ace rate and long travel suppresses win "
                          "probability, both CONFIRMED_LOCAL; the altitude effect was independently "
                          "REPLICATED on two disjoint year slices (2015-2020 and 2021-2025)."),
@@ -117,7 +117,7 @@ def compose():
                      "(altitude replicated across two disjoint year slices)."),
         "method": ("These are our own preregistered tennis tests, surfaced verbatim from the "
                    "committed forward-claim scoreboard. A CONFIRMED_LOCAL/REPLICATED/NULL_LOCAL "
-                   'verdict is an accuracy/effect finding, not a advantage.'),
+                   'verdict is an accuracy/effect finding, not a market-relative or money claim.'),
         "source_artifact": "scripts/platformkit/analytics_showcase/out/fwd_claim_scoreboard.json",
         "stories": stories,
         "confounds": [

@@ -30,7 +30,7 @@ METHOD = (
 )
 METRIC_DEFINITION = (
     "synergy_residual = net_per48 - expected_net_per48; positive means the "
-    "five-man unit outperforms the sum of its individual parts, negative "
+    "five-man unit scores above the sum of its individual parts, negative "
     "means it underperforms."
 )
 CONFOUNDS = [

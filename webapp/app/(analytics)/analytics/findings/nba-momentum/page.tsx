@@ -124,7 +124,7 @@ export default function NbaMomentumFindingsPage() {
                       <span style={gloss}>{c.reading}</span>
                     </th>
                     <td style={td} className="mono">
-                      <span style={{ color: verdictColor(c.verdict), fontWeight: 600 }}>{c.verdict}</span>
+                      <span style={{ color: verdictColor(c.verdict), fontWeight: 600 }}>{c.verdict.replace("NULL_LOCAL", "NULL")}</span>
                     </td>
                     <td style={td}>{c.n.toLocaleString()}</td>
                     <td style={td}>{c.effect ?? "—"}</td>
@@ -139,11 +139,11 @@ export default function NbaMomentumFindingsPage() {
       {structuralClaim && biggestNull ? (
         <p style={{ ...callout, maxWidth: 760 }}>
           <strong style={{ color: "var(--ink)" }}>How to read this &mdash; </strong>
-          structural fatigue holds up ({humanize(structuralClaim.hypothesis)}, {structuralClaim.verdict} on n=
+          structural fatigue holds up ({humanize(structuralClaim.hypothesis)}, {structuralClaim.verdict.replace("NULL_LOCAL", "NULL")} on n=
           {structuralClaim.n.toLocaleString()}, effect {structuralClaim.effect}), but the individual
           hot/cold carryover shape does not: even at n={biggestNull.n.toLocaleString()}, the largest
           sample in this whole exhibit, {humanize(biggestNull.hypothesis).toLowerCase()} comes back{" "}
-          {biggestNull.verdict} &mdash; no signal past our baseline, not proof the shape never happens.
+          {biggestNull.verdict.replace("NULL_LOCAL", "NULL")} &mdash; no signal past our baseline, not proof the shape never happens.
         </p>
       ) : null}
 

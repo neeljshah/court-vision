@@ -10,7 +10,6 @@ import { quotedOn } from "@/lib/quotedOn.server";
 import { isPacketVerdict, type PacketVerdict } from "@/lib/packetVerdicts";
 import { FINDING_SPECS, type FindingSpec } from "./findingSpecs";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 type R = Record<string, any>;
 
 export const FINDING_BLOCKS = [

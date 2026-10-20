@@ -27,9 +27,9 @@ export default function AnalyticsError({ reset }: {
         <button type="button" onClick={reset} style={{ ...action, cursor: "pointer",
           border: "1px solid transparent", color: "var(--accent-ink-on)", background: "var(--accent)",
         }}>Try again</button>
-        <Link href="/analytics" prefetch={false} style={{ ...action,
+        <Link href="/" prefetch={false} style={{ ...action,
           color: "var(--accent)", border: "1px solid var(--rule-strong)",
-        }}>Back to Analytics home</Link>
+        }}>Back to home</Link>
       </div>
     </section>
   );

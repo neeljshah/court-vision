@@ -7,9 +7,9 @@ const require = createRequire(import.meta.url);
 const DESTINATIONS = [
   ["Home", "/"],
   ["Games", "/games"],
-  ["Risk", "/risk"],
-  ["Progress", "/progress"],
-  ["System", "/system"],
+  ["Desk", "/desk"],
+  ["Paper record", "/paper-trading"],
+  ["Desk health", "/desk/health"],
   ["How it works", "/how-it-works"],
 ] as const;
 

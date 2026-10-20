@@ -31,10 +31,10 @@ export default async function GamesPage() {
           </span>
         </h1>
         <Link
-          href="/p6"
+          href="/desk/"
           className="border border-border bg-surface-1 px-3 py-1.5 font-data text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
         >
-          Dashboard &rarr;
+          Desk &rarr;
         </Link>
       </header>
 

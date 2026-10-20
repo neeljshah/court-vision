@@ -3,7 +3,6 @@
 // verdict is read from the artifact at build time; the text here never retypes a published number.
 // Verdict slots take only packet labels (lib/packetVerdicts); artifact words outside that set are
 // dropped, and a finding with none renders "no packet verdict" rather than inventing one.
-/* eslint-disable @typescript-eslint/no-explicit-any */
 type R = Record<string, any>;
 
 export type FindingSpec = {

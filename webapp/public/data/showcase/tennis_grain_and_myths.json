@@ -3,13 +3,13 @@
  "descriptive_only": true,
  "edge_claimed": false,
  "headline": "Tennis momentum is real point-to-point but dies at the game grain; two tiebreak myths are null; altitude and travel effects are confirmed (altitude replicated across two disjoint year slices).",
- "method": "These are our own preregistered tennis tests, surfaced verbatim from the committed forward-claim scoreboard. A CONFIRMED_LOCAL/REPLICATED/NULL_LOCAL verdict is an accuracy/effect finding, not a advantage.",
+ "method": "These are our own preregistered tennis tests, surfaced verbatim from the committed forward-claim scoreboard. A CONFIRMED_LOCAL/REPLICATED/NULL verdict is an accuracy/effect finding, not a market-relative or money claim.",
  "source_artifact": "scripts/platformkit/analytics_showcase/out/fwd_claim_scoreboard.json",
  "stories": [
   {
    "key": "momentum_grain",
    "title": "Momentum has a grain limit",
-   "summary": "Momentum is real at the point grain (CONFIRMED_LOCAL, n=456383) but the same idea dies once you zoom out to game grain: whether a player holds serve after breaking is NULL_LOCAL, confirmed null on both split halves.",
+   "summary": "Momentum is real at the point grain (CONFIRMED_LOCAL, n=456383) but the same idea dies once you zoom out to game grain: whether a player holds serve after breaking is NULL, confirmed null on both split halves.",
    "claims": [
     {
      "hypothesis": "point_to_point_momentum",
@@ -48,7 +48,7 @@
   {
    "key": "tiebreak_myths",
    "title": "Two tiebreak myths, both null",
-   "summary": "Two popular tiebreak beliefs -- that some players have a persistent tiebreak-clutch skill, and that serving first in the breaker matters -- both come back NULL_LOCAL.",
+   "summary": "Two popular tiebreak beliefs -- that some players have a persistent tiebreak-clutch skill, and that serving first in the breaker matters -- both come back NULL.",
    "claims": [
     {
      "hypothesis": "tiebreak_skill_persistence_partial",

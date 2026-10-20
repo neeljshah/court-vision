@@ -17,6 +17,7 @@ import { describe, it, expect, vi, afterEach } from "vitest";
 import { CLV_UNAVAILABLE } from "@/lib/clvUnavailable";
 import { render, screen, waitFor } from "@testing-library/react";
 
+vi.mock("@/components/paper/PaperEquityChart", () => import("./equityChartStub"));
 vi.mock("next/link", () => ({
   default: ({ href, children, ...rest }: { href: string; children: React.ReactNode }) => (
     <a href={href} {...rest}>{children}</a>

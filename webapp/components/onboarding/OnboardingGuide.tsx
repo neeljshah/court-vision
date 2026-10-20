@@ -36,25 +36,25 @@ const PAGE_GUIDE: { href: string; label: string; purpose: string }[] = [
       "market surface, validated signals, and (when live) an in-game number.",
   },
   {
-    href: "/risk",
-    label: "Risk",
+    href: "/desk",
+    label: "Desk",
     purpose:
-      "Descriptive portfolio risk in UNITS (not dollars): joint exposure, capped " +
-      "sizing, risk-of-ruin as a descriptor -- never money advice.",
+      "The paper desk (PAPER ONLY): tonight's priced games, exposure in UNITS " +
+      "(not dollars), and the recorder's status -- never money advice.",
   },
   {
-    href: "/progress",
-    label: "Progress",
+    href: "/paper-trading",
+    label: "Paper record",
     purpose:
-      "The honest 'getting better' view: validation coverage, gate verdicts, and " +
-      "backlog over time. The model is STATIC -- this is NOT a live accuracy climb.",
+      "Every paper fill with its receipt, graded against the close where a close " +
+      "exists. Calibration is the claim; there is no profit claim.",
   },
   {
-    href: "/system",
-    label: "System",
+    href: "/desk/health",
+    label: "Desk health",
     purpose:
-      "The full gate-verdict ledger (every signal tested, leak-free), the backlog, " +
-      "and CLV over time. A REJECT is a SUCCESS, not a failure.",
+      "The gate-verdict ledger (every signal tested, leak-free), freshness, and " +
+      "the night's refusals. A REJECT is a SUCCESS, not a failure.",
   },
   {
     href: "/how-it-works",

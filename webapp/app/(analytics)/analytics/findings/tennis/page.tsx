@@ -113,7 +113,7 @@ export default function TennisFindingsPage() {
                       <span style={gloss}>{c.reading}</span>
                     </th>
                     <td style={td} className="mono">
-                      <span style={{ color: verdictColor(c.verdict), fontWeight: 600 }}>{c.verdict}</span>
+                      <span style={{ color: verdictColor(c.verdict), fontWeight: 600 }}>{c.verdict.replace("NULL_LOCAL", "NULL")}</span>
                     </td>
                     <td style={td}>{c.n.toLocaleString()}</td>
                     <td style={td}>{c.effect}</td>
@@ -126,9 +126,9 @@ export default function TennisFindingsPage() {
           {si === 0 && pointClaim && gameClaim ? (
             <p style={callout}>
               <strong style={{ color: "var(--ink)" }}>How to read this &mdash; </strong>
-              momentum is real point-to-point ({pointClaim.verdict} on n=
+              momentum is real point-to-point ({pointClaim.verdict.replace("NULL_LOCAL", "NULL")} on n=
               {pointClaim.n.toLocaleString()}) but goes null the moment you zoom out to the
-              game grain (post-break hold rate, {gameClaim.verdict} on n=
+              game grain (post-break hold rate, {gameClaim.verdict.replace("NULL_LOCAL", "NULL")} on n=
               {gameClaim.n.toLocaleString()}). Same idea, different grain, opposite verdict.
             </p>
           ) : null}
