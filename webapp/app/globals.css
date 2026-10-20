@@ -104,8 +104,9 @@
     --input:              40 17% 82%;
     --ring:               38 80% 30%;
 
-    --success:           147 60% 25%;   /* #19663C -- 6.2:1 on page, 5.4:1 on its
-                                           own /15 tint (31% read 3.7-4.3:1) */
+    --success:           147 60% 23%;   /* #175E37 -- 6.9:1 on page, 4.9:1 on its
+                                           own /20 tint over --secondary (31% read
+                                           3.7-4.3:1; 25% still read 4.44 there) */
     --warning:            38 80% 28%;   /* #81570E -- 4.9:1 on its own /10 tint
                                            over the page (32% read 4.07:1)   */
     --danger:              4 58% 42%;   /* #A9352D -- 5.4:1 on its /10 tint
@@ -119,7 +120,7 @@
                                            the warning tint (44% read 4.07:1) */
 
     --tier-s:             38 80% 28%;   /* tracks --warning                */
-    --tier-a:            147 60% 25%;   /* tracks --success                */
+    --tier-a:            147 60% 23%;   /* tracks --success                */
     --tier-b:            222 10% 42%;
     --tier-c:            219 10% 40%;   /* tracks --faint                  */
 

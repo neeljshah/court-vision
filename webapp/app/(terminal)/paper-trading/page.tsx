@@ -141,6 +141,10 @@ export default function PaperTradingPage() {
       </div>
 
       {/* BANKROLL + EQUITY CURVE -- "how much I would have made" in UNITS */}
+      {/* While the first poll is in flight, hold the three-line slot the
+          unavailable-feeds notice takes (the snapshot always has one), so the
+          panels below do not jump when it lands (CLS 0.25-0.40 before). */}
+      {loading && !data && <div className="mb-4 min-h-12" aria-busy="true" />}
       {partialError && (
         <div role="status" aria-label="Unavailable paper data" className="mb-4 text-xs text-amber-400">
           Available summaries remain visible. Unavailable data:
