@@ -123,7 +123,7 @@ export function ResidualAnatomy({ data }: { data: ResidualAnatomyData }) {
     })}
     <p className="ra-source-fields">Source fields: residual_anatomy.json -&gt; sports[sport].segments[] -&gt; time_bucket, prob_bucket, n, mean_abs_residual, total_abs_residual_mass; sports[sport] -&gt; n_records, n_skipped.</p>
     {data.exclusions.length > 0 && <p className="ra-exclusions">Excluded corpora: {data.exclusions.map(item => `${item.sport}: ${item.reason}`).join("; ")}</p>}
-    <div className="ra-receipt"><Receipt sourceArtifact="public/data/showcase/residual_anatomy.json" label="descriptive_only" verdict="descriptive_only" /></div>
+    <div className="ra-receipt"><Receipt sourceArtifact="public/data/showcase/residual_anatomy.json" asOf={data.asOf} dateKind="source" label="descriptive_only" verdict="descriptive_only" /></div>
   </section>;
 }
 

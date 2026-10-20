@@ -27,8 +27,22 @@ const fixture = {
 describe("buildResidualAnatomy", () => {
   it("parses all 38 published segments across sports", () => {
     const data = buildResidualAnatomy(source);
+    expect(data.asOf).toBe("2026-09-16");
     expect(data.sports.reduce((total, sport) => total + sport.segments.length, 0)).toBe(38);
     expect(data.sports.map(sport => sport.sport)).toEqual(["mlb", "soccer_intl"]);
+  });
+
+  it("leaves a missing publication date null", () => {
+    expect(buildResidualAnatomy(fixture).asOf).toBeNull();
+  });
+
+  it.each([null, 20260916, false, {}, [], ""])("leaves a non-text or empty publication date null: %s", asOf => {
+    expect(buildResidualAnatomy({ ...fixture, as_of: asOf }).asOf).toBeNull();
+  });
+
+  it("preserves the published timestamp text without normalizing it", () => {
+    const asOf = "2026-09-16T11:13:31.944905+00:00";
+    expect(buildResidualAnatomy({ ...fixture, as_of: asOf }).asOf).toBe(asOf);
   });
 
   it("orders valid probability bins numerically while preserving unknown labels and grid cells", () => {
