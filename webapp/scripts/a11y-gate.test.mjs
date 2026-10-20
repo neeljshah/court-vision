@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { triage, formatViolation } from "./a11y-gate.mjs";
+import { triage, formatViolation, countByImpact } from "./a11y-gate.mjs";
 import { resolvePage } from "./perf-pages.mjs";
 import { resolveFile } from "./serve-export.mjs";
 
@@ -53,4 +53,8 @@ test("resolvePage expands manifest bet ids with the site's double encoding and p
   assert.equal(resolvePage("manifest:bet_ids:0", manifest), "/paper/mlb%257Cmlb%257CTB%2520Rays%257C2026-07-03T21%253A00%253A45%2E173950%252B00%253A00%257Cprop/");
   assert.equal(resolvePage("manifest:bet_ids:5", manifest), null);
   assert.equal(resolvePage("manifest:bet_ids:0", null), null);
+});
+
+test("countByImpact tallies each impact level", () => {
+  assert.deepEqual(countByImpact([{ impact: "serious" }, { impact: "serious" }, { impact: "minor" }, { impact: null }]), { critical: 0, serious: 2, moderate: 0, minor: 1 });
 });

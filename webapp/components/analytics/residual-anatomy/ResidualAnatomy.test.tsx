@@ -32,7 +32,7 @@ describe("ResidualAnatomy", () => {
   it("shows the public artifact's source date without inventing an observation window", () => {
     const published = JSON.parse(readFileSync(join(process.cwd(), "public", "data", "showcase", "residual_anatomy.json"), "utf8"));
     render(<ResidualAnatomy data={buildResidualAnatomy(published)} />);
-    const receipt = screen.getByRole("button", { name: "Receipt: descriptive_only for Source as of 2026-09-16" });
+    const receipt = screen.getByRole("button", { name: "descriptive only Source as of 2026-09-16 -- receipt: descriptive_only" });
     expect(receipt).toHaveTextContent("Source as of 2026-09-16");
     fireEvent.click(receipt);
     expect(screen.getByRole("link", { name: "public/data/showcase/residual_anatomy.json" })).toBeInTheDocument();
@@ -42,7 +42,7 @@ describe("ResidualAnatomy", () => {
 
   it.each([null, "not-a-date"])("keeps missing or invalid source dates unavailable: %s", asOf => {
     render(<ResidualAnatomy data={{ ...data, asOf }} />);
-    fireEvent.click(screen.getByRole("button", { name: "Receipt: descriptive_only for residual_anatomy.json" }));
+    fireEvent.click(screen.getByRole("button", { name: "descriptive only residual_anatomy.json -- receipt: descriptive_only" }));
     expect(screen.getByText("Date not published.")).toBeInTheDocument();
     expect(screen.queryByText(/Source as of/)).not.toBeInTheDocument();
   });

@@ -58,7 +58,7 @@ describe("Scout soccer clean-sheet answers", () => {
     render(<AskBox entries={entries} tours={[]} />);
     for (const query of ["Arsenal clean sheets today", "Arsenal home clean sheets", "Arsenal does not keep clean sheets"]) {
       const result = ask(query);
-      if (query.includes("today")) expect(result.getByRole("button", { name: /^Receipt: NO_DATA/ })).toBeInTheDocument();
+      if (query.includes("today")) expect(result.getByRole("button", { name: /-- receipt: NO_DATA$/ })).toBeInTheDocument();
       else expect(result.queryByLabelText("Cited answer")).not.toBeInTheDocument();
       expect(screen.getByRole("region", { name: "Scout answer" })).not.toHaveTextContent("published clean-sheet rate is");
     }

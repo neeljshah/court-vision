@@ -54,3 +54,27 @@ node scripts/perf-budget.mjs out perf/budget.json
 A11Y_CHROME=/path/to/chrome node scripts/a11y-gate.mjs out perf/a11y-pages.json
 node scripts/serve-export.mjs out 4173   # then point Lighthouse at http://127.0.0.1:4173/court-vision/
 ```
+
+## Re-measuring (after a shell restructure)
+
+`budget.json` and `a11y-pages.json` go stale when the shell changes. The `webapp QA` workflow
+runs two non-blocking report steps after the build, so no local build is needed:
+
+1. Push (or run **workflow_dispatch** on) the branch; open the run in the Actions tab.
+2. The run summary already shows both Markdown tables. For the raw numbers, download the
+   `perf-report` artifact (`perf-report.md` + `perf-report.json`: gzip bytes of HTML / JS / CSS
+   per page, plus the largest images) and the `a11y-report` artifact (`a11y-report.md` +
+   `a11y-report.json`: critical / serious / moderate / minor counts per page per theme and the
+   violation list). Artifacts expire after 7 days. If the a11y report says "skipped", the runner
+   had no Chrome; set `A11Y_CHROME` and re-run.
+3. Set `budget.json`: for every page, `jsGz` / `cssGz` / `htmlGz` = measured gzip bytes + 10%,
+   with at least 2 KB (2048 bytes) of headroom, rounded up to the KB. Image caps = the largest
+   optimised image in each directory plus headroom. Drop pages that report "not exported" or fix
+   their entry.
+4. Set `a11y-pages.json` to the pages you want gated. Fix or consciously accept every serious or
+   critical row first; the gate fails on any of those.
+5. Uncomment the two gate steps in `.github/workflows/webapp-qa.yml` in the same pull request,
+   and note here what the final numbers were.
+
+Locally: `node scripts/perf-budget.mjs out perf/budget.json --report` and
+`node scripts/a11y-gate.mjs out perf/a11y-pages.json --report` print the same output.

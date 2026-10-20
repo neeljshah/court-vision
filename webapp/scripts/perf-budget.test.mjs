@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { pageAssets, measurePage, oversizedImages, checkBudget } from "./perf-budget.mjs";
+import { pageAssets, measurePage, oversizedImages, checkBudget, reportBudget, reportMarkdown } from "./perf-budget.mjs";
 
 const HTML = `<html><head>
 <link rel="stylesheet" href="/cv/_next/static/css/a.css" data-precedence="next"/>
@@ -69,4 +69,16 @@ test("checkBudget passes within budget and names every breach", () => {
   assert.match(red.failures[1], /not exported/);
   assert.match(red.failures[2], /cannot be resolved from the demo manifest/);
   assert.match(red.failures[3], /big\.png.*exceeds image cap/);
+});
+
+test("reportBudget measures every page and image without judging, and flags unexported pages", () => {
+  const root = exportDir();
+  const r = reportBudget({ basePath: "/cv", pages: { "/page/": { jsGz: 1 }, "/missing/": {} }, images: { img: { maxBytes: 1 } } }, join(root, "out"), join(root, "public"));
+  assert.equal(r.pages.length, 2);
+  assert.ok(r.pages[0].jsGz > 0 && r.pages[0].htmlGz > 0);
+  assert.equal(r.pages[1].missing, true);
+  assert.deepEqual(r.images.map((i) => i.size), [2000, 100]);
+  const md = reportMarkdown(r);
+  assert.match(md, /\| \/page\/ \|/);
+  assert.match(md, /not exported/);
 });

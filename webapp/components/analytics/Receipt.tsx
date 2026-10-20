@@ -161,11 +161,12 @@ export function Receipt(r: ReceiptData) {
             : { textDecoration: "underline dotted", textDecorationColor: "var(--rule-strong)", textUnderlineOffset: 2 }),
         }}
         aria-expanded={open}
-        aria-label={`Receipt: ${r.label || r.verdict} for ${resting}`}
         onClick={() => (mode === "pinned" ? setMode("closed") : openPop("pinned"))}
       >
         <VerdictDot verdict={r.verdict} />
         {resting}
+        {/* Name computed from content so it contains the visible text (label-content-name-mismatch). */}
+        <span className="sr-only">{` -- receipt: ${r.label || r.verdict}`}</span>
       </button>
       {open ? (
         <span

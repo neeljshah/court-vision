@@ -34,7 +34,7 @@ it("keeps historical counts labeled as proxies and links their ledger receipt", 
   expect(screen.getByText(/this count cannot establish how many distinct games/i)).toBeInTheDocument();
   expect(screen.queryByText(/independent information of at most/i)).not.toBeInTheDocument();
 
-  fireEvent.click(screen.getByRole("button", { name: /Receipt: descriptive_only/ }));
+  fireEvent.click(screen.getByRole("button", { name: /-- receipt: descriptive_only/ }));
   expect(screen.getByRole("link", { name: "webapp/public/data/showcase/ess_ledger.json" }))
     .toHaveAttribute("href", expect.stringMatching(/\/data\/showcase\/ess_ledger\.json$/));
 });

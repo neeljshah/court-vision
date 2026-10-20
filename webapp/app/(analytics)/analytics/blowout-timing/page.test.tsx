@@ -21,7 +21,7 @@ describe("BlowoutTimingPage", () => {
   it("passes the same source date to the page receipt and both sport captions", () => {
     vi.mocked(loadBlowoutTiming).mockReturnValue(buildBlowoutTiming(published));
     render(<BlowoutTimingPage />);
-    const receipt = screen.getByRole("button", { name: "Receipt: descriptive_only for Source as of 2026-09-17" });
+    const receipt = screen.getByRole("button", { name: "descriptive only Source as of 2026-09-17 -- receipt: descriptive_only" });
     expect(receipt).toHaveTextContent("Source as of 2026-09-17");
     expect(screen.getAllByText("Source as of 2026-09-17")).toHaveLength(3);
   });

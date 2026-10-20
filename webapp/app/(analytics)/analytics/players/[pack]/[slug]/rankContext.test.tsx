@@ -19,7 +19,7 @@ describe("entity rank context", () => {
     expect(note).toHaveTextContent("six divisions without team league or match dates");
     expect(note).toHaveTextContent("like-for-like comparisons are unverified");
     expect(note).not.toHaveTextContent("compatible published cohort");
-    expect(within(note).getByRole("button")).toHaveAccessibleName("Receipt: descriptive_only for entity_percentiles.json");
+    expect(within(note).getByRole("button")).toHaveAccessibleName("descriptive only entity_percentiles.json -- receipt: descriptive_only");
     fireEvent.click(within(note).getByRole("button"));
     expect(within(note).getByRole("link", { name: "webapp/public/data/showcase/entity_percentiles.json" }))
       .toHaveAttribute("href", "/data/showcase/entity_percentiles.json");

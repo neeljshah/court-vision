@@ -55,7 +55,7 @@ describe("Scout timing answers rendered from the committed corpus", () => {
   it("preserves missing NBA coverage as a sourced NO_DATA answer", () => {
     render(<AskBox entries={entries} tours={[]} />);
     const result = ask("Why is there no NBA Live-Clock Fraction?");
-    expect(result.getByRole("button", { name: /^Receipt: NO_DATA/ })).toBeInTheDocument();
+    expect(result.getByRole("button", { name: /-- receipt: NO_DATA$/ })).toBeInTheDocument();
     expect(result.getByLabelText("Cited answer")).toHaveTextContent("not_buildable");
     expectSource(lcf);
   });

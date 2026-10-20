@@ -17,8 +17,8 @@ describe("VerdictFlipCases", () => {
       expect(card.getByRole("link", { name: "View full ledger history" })).toHaveAttribute(
         "href", `/analytics/the-loop#${claimFamilyId(flip)}`,
       );
-      expect(card.getByLabelText(/Receipt: case anatomy artifact/i)).toBeInTheDocument();
-      expect(card.getByLabelText(/Receipt: upstream scoreboard/i)).toBeInTheDocument();
+      expect(card.getByRole("button", { name: /receipt: case anatomy artifact/i })).toBeInTheDocument();
+      expect(card.getByRole("button", { name: /receipt: upstream scoreboard/i })).toBeInTheDocument();
     });
   });
 

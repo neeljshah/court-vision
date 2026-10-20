@@ -42,5 +42,5 @@ it("qualifies interval assumptions while preserving every published bucket", () 
       ]);
     });
   }
-  expect(screen.getByRole("button", { name: "Receipt: descriptive_only for Snapshot generated 2026-07-25" })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "descriptive only Snapshot generated 2026-07-25 -- receipt: descriptive_only" })).toBeInTheDocument();
 });

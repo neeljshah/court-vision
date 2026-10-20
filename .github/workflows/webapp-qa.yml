@@ -88,6 +88,46 @@ jobs:
           fi
           echo "Honesty gate GREEN: no retracted figures leaked into shipped HTML."
 
+      # Non-blocking measurement for re-setting the budgets (see webapp/perf/README.md, "Re-measuring").
+      - name: Performance report (non-blocking)
+        continue-on-error: true
+        run: |
+          mkdir -p report
+          node scripts/perf-budget.mjs out perf/budget.json --report | tee report/perf-report.md
+          awk '/^```json/{f=1;next} /^```/{f=0} f' report/perf-report.md > report/perf-report.json
+          cat report/perf-report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload perf-report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: perf-report
+          path: webapp/report/perf-report.*
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: Accessibility report (non-blocking; skipped when Chrome is absent)
+        continue-on-error: true
+        run: |
+          mkdir -p report
+          # Same Chrome logic as the gate: A11Y_CHROME if set, else the runner's Google Chrome (channel "chrome").
+          if [ -z "$A11Y_CHROME" ] && ! command -v google-chrome >/dev/null 2>&1; then
+            echo "a11y report skipped: no Chrome found and A11Y_CHROME is unset" | tee report/a11y-report.md
+          else
+            node scripts/a11y-gate.mjs out perf/a11y-pages.json --report | tee report/a11y-report.md
+            awk '/^```json/{f=1;next} /^```/{f=0} f' report/a11y-report.md > report/a11y-report.json
+          fi
+          cat report/a11y-report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload a11y-report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a11y-report
+          path: webapp/report/a11y-report.*
+          retention-days: 7
+          if-no-files-found: ignore
+
       # enable after re-measuring perf/budget.json and a11y-pages.json on the restructured shell
       # - name: Performance budget -- gzip JS/CSS/HTML per page + image caps (hard gate)
       #   run: |

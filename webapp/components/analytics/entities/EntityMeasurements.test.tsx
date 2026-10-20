@@ -53,7 +53,7 @@ it("names all three published CH distributions and gives each a local source rec
   for (const label of ["Pitch share by count leverage", "Pitch share by count state", "Pitch outcome mix"]) {
     const table = screen.getByRole("table", { name: `${label} distribution` });
     const section = table.closest("section")!;
-    const receipt = within(section).getByRole("button", { name: new RegExp(`Receipt: ${label} distribution`) });
+    const receipt = within(section).getByRole("button", { name: new RegExp(`receipt: ${label} distribution`) });
     fireEvent.click(receipt);
     expect(section).toHaveTextContent(sourceArtifact);
     expect(section).toHaveTextContent("2025-09-28");
@@ -71,7 +71,7 @@ it("names velocity and calibration bucket tables and keeps their receipts scoped
   for (const label of ["velocity percentiles by pitch type", "Calibration by time bucket"]) {
     const table = screen.getByRole("table", { name: label });
     const section = table.closest("section")!;
-    const receipt = within(section).getByRole("button", { name: new RegExp(`Receipt: ${label} table`) });
+    const receipt = within(section).getByRole("button", { name: new RegExp(`receipt: ${label} table`) });
     fireEvent.click(receipt);
     expect(section).toHaveTextContent(sourceArtifact);
     expect(section).toHaveTextContent("2026-09-16");
@@ -83,7 +83,7 @@ it("names velocity and calibration bucket tables and keeps their receipts scoped
 it("keeps the published-date fallback when a section has no as-of value", () => {
   render(<EntityMeasurements {...props} />);
   const section = screen.getByRole("table", { name: "velocity percentiles by pitch type" }).closest("section")!;
-  fireEvent.click(within(section).getByRole("button", { name: /Receipt: velocity percentiles by pitch type table/ }));
+  fireEvent.click(within(section).getByRole("button", { name: /receipt: velocity percentiles by pitch type table/ }));
   expect(section).toHaveTextContent("Date not published.");
 });
 

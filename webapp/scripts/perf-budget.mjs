@@ -7,7 +7,8 @@
 // the page's ceilings. Also caps image files under public/ so an unoptimised
 // re-staged chart or icon cannot slip back in. Exits 1 on any breach.
 //
-//   node scripts/perf-budget.mjs [outDir=out] [budgetFile=perf/budget.json]
+//   node scripts/perf-budget.mjs [outDir=out] [budgetFile=perf/budget.json] [--report]
+//   --report: print a Markdown table + JSON of every measurement, never fail.
 //
 // Ceilings are set from perf/AFTER_2026-10-20.md with ~10% headroom; raise one
 // only with a perf/ note that says what the bytes buy.
@@ -109,11 +110,48 @@ export function checkBudget(budget, outDir, publicDir, manifest = null) {
   return { failures, rows };
 }
 
+/** Report mode: measures every page in the budget file (and every image) with no pass/fail. */
+export function reportBudget(budget, outDir, publicDir, manifest = null) {
+  const pages = [];
+  for (const entry of Object.keys(budget.pages)) {
+    const page = resolvePage(entry, manifest);
+    if (!page) { pages.push({ page: entry, missing: true }); continue; }
+    const m = measurePage(outDir, budget.basePath, page);
+    pages.push(m.missing === true ? { page, missing: true } : { page, htmlGz: m.htmlGz, jsGz: m.jsGz, cssGz: m.cssGz, jsFiles: m.jsFiles, cssFiles: m.cssFiles });
+  }
+  const images = [];
+  for (const subdir of Object.keys(budget.images || {})) {
+    const dir = join(publicDir, subdir);
+    if (!existsSync(dir)) continue;
+    for (const f of walk(dir)) {
+      if ([".png", ".webp", ".jpg", ".jpeg", ".avif", ".gif"].includes(extname(f).toLowerCase())) images.push({ file: f.split("\\").join("/"), size: statSync(f).size });
+    }
+  }
+  images.sort((a, b) => b.size - a.size);
+  return { pages, images };
+}
+
+export function reportMarkdown({ pages, images }) {
+  const kb = (n) => (n / 1024).toFixed(1);
+  const lines = ["| page | html gz KB | js gz KB | css gz KB | js files |", "|---|---|---|---|---|"];
+  for (const r of pages) lines.push(r.missing ? `| ${r.page} | not exported | | | |` : `| ${r.page} | ${kb(r.htmlGz)} | ${kb(r.jsGz)} | ${kb(r.cssGz)} | ${r.jsFiles} |`);
+  lines.push("", "| largest images | KB |", "|---|---|");
+  for (const i of images.slice(0, 10)) lines.push(`| ${i.file} | ${kb(i.size)} |`);
+  return lines.join("\n");
+}
+
 const isMain = process.argv[1] && import.meta.url.endsWith(process.argv[1].split("/").pop());
 if (isMain) {
-  const outDir = process.argv[2] || "out";
-  const budgetFile = process.argv[3] || "perf/budget.json";
+  const args = process.argv.slice(2).filter((a) => a !== "--report");
+  const outDir = args[0] || "out";
+  const budgetFile = args[1] || "perf/budget.json";
   const budget = JSON.parse(readFileSync(budgetFile, "utf8"));
+  if (process.argv.includes("--report")) {
+    const report = reportBudget(budget, outDir, "public", readManifest());
+    console.log(reportMarkdown(report));
+    console.log("\n```json\n" + JSON.stringify(report) + "\n```");
+    process.exit(0);
+  }
   const { failures, rows } = checkBudget(budget, outDir, "public", readManifest());
   for (const r of rows) {
     if (r.missing === true) continue;

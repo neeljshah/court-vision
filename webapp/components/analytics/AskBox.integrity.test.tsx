@@ -28,7 +28,7 @@ describe("AskBox integrity warnings", () => {
     const notices = screen.getAllByLabelText(/^Data integrity/);
     const stale = screen.getByText(staleText);
 
-    expect(screen.getByRole("button", { name: /^Receipt: CITED/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /-- receipt: CITED$/ })).toBeInTheDocument();
     expect(notices).toHaveLength(1);
     expect(notices.map(notice => notice.getAttribute("data-status"))).toEqual(["regenerated"]);
     expect(screen.getAllByText("calibration_stability")).toHaveLength(1);
@@ -40,6 +40,6 @@ describe("AskBox integrity warnings", () => {
   it("does not show a warning for an unaffected cited answer", () => {
     ask({ ...affected, a: { ...affected.a, source_artifact: "webapp/public/data/showcase/site_manifest.json" } });
     expect(screen.queryByLabelText(/^Data integrity/)).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /^Receipt: CITED/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /-- receipt: CITED$/ })).toBeInTheDocument();
   });
 });
