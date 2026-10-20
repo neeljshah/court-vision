@@ -46,3 +46,6 @@
 .footer a { color: var(--ink); text-underline-offset: 3px; }
 .empty { margin-top: 24px; border: 1px dashed var(--rule-strong); border-radius: var(--radius-card); color: var(--ink-3); padding: 20px; }
 @media (max-width: 620px) { .header, .details { grid-template-columns: 1fr; } .header { align-items: start; flex-direction: column; } .header > p { max-width: none; text-align: left; } .matrix { grid-template-columns: 86px repeat(3, minmax(0, 1fr)); gap: 4px; } .axis { margin-left: 90px; } .cell { min-height: 70px; padding: 8px; } .cell span { font-size: 11px; } .corner, .columnLabel, .rowLabel { font-size: 10px; } .compare { grid-template-columns: 1fr; } .compare small { grid-column: auto; } }
+
+/* Links inside running text must not rely on color alone (WCAG 1.4.1). */
+.footer a { text-decoration: underline; text-underline-offset: 2px; }

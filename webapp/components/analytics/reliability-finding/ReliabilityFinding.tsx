@@ -17,7 +17,7 @@ export function ReliabilityFinding({ sports }: { sports: ReliabilityFindingSport
     {sports.map(sport => <section className="rf-sport" key={sport.sport} aria-labelledby={`${sport.sport}-heading`}>
       <h2 id={`${sport.sport}-heading`}>{sportLabel(sport.sport)}</h2>
       <p className="rf-denominator">Published denominators: {count(sport.nRows)} rows; each source has its own n below.</p>
-      <div className="rf-table-wrap" role="region" aria-label={`${sportLabel(sport.sport)} reliability measurements`} data-scroll-region>
+      <div className="rf-table-wrap" role="region" aria-label={`${sportLabel(sport.sport)} reliability measurements`} data-scroll-region tabIndex={0}>
         <table className="rf-table"><caption>{sportLabel(sport.sport)} published decomposition audit</caption><thead><tr><th>Source</th><th>Direct Brier</th><th>Reconstructed Brier</th><th>Remainder (derived)</th><th>n rows</th><th>n</th><th>Reliability vs resolution</th></tr></thead><tbody>{sport.measurements.map(item => <tr key={item.source}>
           <td>{sourceLabel(item.source)}</td><td>{decimal(item.brier)}</td><td>{decimal(item.reconstructedBrier)}</td><td>{decimal(item.remainder)}</td><td>{count(sport.nRows)}</td><td>{count(item.n)}</td><td>Reliability is {item.reliabilityComparison} than resolution ({decimal(item.reliability)} vs {decimal(item.resolution)}).</td>
         </tr>)}</tbody></table>

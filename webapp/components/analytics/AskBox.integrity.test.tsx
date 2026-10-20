@@ -25,7 +25,7 @@ function ask(entry: AskEntry) {
 describe("AskBox integrity warnings", () => {
   it("keeps the citation receipt and shows the finding before stale answer text", () => {
     ask(affected);
-    const notices = screen.getAllByLabelText("Data integrity");
+    const notices = screen.getAllByLabelText(/^Data integrity/);
     const stale = screen.getByText(staleText);
 
     expect(screen.getByRole("button", { name: /^Receipt: CITED/ })).toBeInTheDocument();
@@ -39,7 +39,7 @@ describe("AskBox integrity warnings", () => {
 
   it("does not show a warning for an unaffected cited answer", () => {
     ask({ ...affected, a: { ...affected.a, source_artifact: "webapp/public/data/showcase/site_manifest.json" } });
-    expect(screen.queryByLabelText("Data integrity")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/^Data integrity/)).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: /^Receipt: CITED/ })).toBeInTheDocument();
   });
 });

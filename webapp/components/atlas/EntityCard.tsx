@@ -10,12 +10,10 @@ import { Panel, Num } from "@/components/ui/terminal";
 import { ReceiptChip, type ReceiptChipProps } from "@/components/showcase/ReceiptChip";
 import type { EntityCardProps } from "@/lib/atlas.server";
 
-// next/image / <a> do not auto-prefix basePath in export mode -- prefix by hand
-// (same landmine Nav.tsx documents). The card PNGs live at docs/img/atlas/... in
-// the repo; the gate must stage them into webapp/public/docs/img/atlas/ for this
-// link to resolve. ponytail: broken only until assets are staged -- a build
-// concern flagged to the gate, not a runtime branch here.
-const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
+// The card PNGs are tracked in the public repo at docs/img/atlas/... but are not
+// staged into webapp/public (35 MB of images), so the card link points at the
+// committed file on GitHub instead of a same-origin path that 404s on the site.
+const REPO_BLOB = "https://github.com/neeljshah/court-vision/blob/master/";
 
 // Humanize a snake_case key_number into a readable, ASCII microlabel:
 // career_pts_per36 -> "career pts / 36", career_fg3_pct -> "career fg3 %".
@@ -115,13 +113,13 @@ export function EntityCard({
   return (
     <Panel>
       <div className="flex items-baseline justify-between border-b border-border px-3.5 py-2">
-        <span className="font-semibold text-foreground">
+        <h1 className="text-base font-semibold text-foreground">
           {entity}
           <span className="microlabel ml-2 normal-case tracking-normal">
             {label}
             {idEntry ? ` -- ${idEntry[0]} ${idEntry[1]}` : ""}
           </span>
-        </span>
+        </h1>
         {asOf && <span className="microlabel text-faint">as of {asOf}</span>}
       </div>
 
@@ -144,11 +142,12 @@ export function EntityCard({
         {floors && <span className="microlabel">sample floor -- {floors}</span>}
         {pngHref && (
           <a
-            href={`${BASE_PATH}/${pngHref}`}
-            download
+            href={`${REPO_BLOB}${pngHref}`}
+            target="_blank"
+            rel="noopener noreferrer"
             className="font-data text-xs text-faint hover:text-primary"
           >
-            download card PNG -&gt; {pngHref}
+            card PNG on GitHub -&gt; {pngHref}
           </a>
         )}
       </div>

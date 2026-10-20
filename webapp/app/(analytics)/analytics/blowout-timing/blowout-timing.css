@@ -24,7 +24,7 @@
 .bt-range-track { overflow: visible; }
 .bt-range-bar { position: absolute; top: 2px; height: 5px; border-radius: var(--radius-pill); background: var(--signal); }
 .bt-median-dot { position: absolute; top: -3px; width: 15px; height: 15px; margin-left: -7px; border: 2px solid var(--paper-raised); border-radius: 50%; background: var(--ink); outline: 1px solid var(--rule-strong); }
-.bt-is-masked { color: var(--ink-3); opacity: .62; }
+.bt-is-masked { color: var(--ink-3); opacity: 1; } /* was .62: masked rows read 3.7:1 in dark mode */
 .bt-is-masked .bt-threshold, .bt-is-masked .bt-value { color: var(--ink-3); }
 .bt-count-only { grid-column: 3; }
 .bt-mask-reason { grid-column: 2 / -1; color: var(--ink-3); font-size: 12px; line-height: 1.45; }

@@ -28,4 +28,4 @@
 
 .artifacts li { margin-top: 2px; }
 
-.link { display: inline-block; margin-top: 10px; font-size: 13px; }
+.link { display: inline-block; margin-top: 10px; padding: 2px 0; font-size: 13px; }

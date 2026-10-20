@@ -74,7 +74,7 @@ function TimingPanel({ sport }: { sport: BlowoutTimingSport }) {
 
 function CompactRows({ sport }: { sport: BlowoutTimingSport }) {
   return <div className="bt-compact-rows bt-mobile-visible" role="list" aria-label={`${sportLabel(sport.sport)} compact threshold details`}>
-    {sport.thresholds.map(row => <article className={`bt-compact-row${row.masked ? " bt-is-masked" : ""}`} key={row.threshold} role="listitem" data-masked={row.masked || undefined}>
+    {sport.thresholds.map(row => <div className={`bt-compact-row${row.masked ? " bt-is-masked" : ""}`} key={row.threshold} role="listitem" data-masked={row.masked || undefined}>
       <ThresholdLabel row={row} unit={sport.unit} />
       <p className="bt-compact-support">Conditional support <span className="mono">{row.nGamesDecided.toLocaleString()} / {row.nGamesTotal.toLocaleString()}</span></p>
       <dl className="bt-compact-quartiles">
@@ -83,7 +83,7 @@ function CompactRows({ sport }: { sport: BlowoutTimingSport }) {
         <div><dt>p75</dt><dd>{clock(row.p75, sport.clockField)}</dd></div>
       </dl>
       {row.masked && <p className="bt-compact-mask-reason">{row.maskReason}</p>}
-    </article>)}
+    </div>)}
   </div>;
 }
 

@@ -140,7 +140,7 @@ const Glyph = React.forwardRef<
     type="button"
     aria-label="show receipt: source, as-of, verification"
     className={cn(
-      "ml-1 inline-flex items-center border px-1 align-[1px] font-data text-[10px] leading-tight",
+      "ml-1 inline-flex min-h-6 min-w-6 items-center justify-center border px-1 align-middle font-data text-[10px] leading-tight",
       "focus:outline-none focus-visible:ring-1 focus-visible:ring-ring",
       amber ? "border-stale/60 text-stale" : "border-border text-faint",
       className

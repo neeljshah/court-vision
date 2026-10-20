@@ -108,7 +108,7 @@ export function ResidualAnatomy({ data }: { data: ResidualAnatomyData }) {
         <dl><div><dt>n_records</dt><dd>{count(sport.nRecords)}</dd></div><div><dt>n_skipped</dt><dd>{count(sport.nSkipped)}</dd></div></dl>
       </header>
       <div className="ra-selected-view">
-      <div className="ra-grid-wrap" role="region" aria-label={`${sportLabel(sport.sport)} residual grid`} data-scroll-region>
+      <div className="ra-grid-wrap" role="region" aria-label={`${sportLabel(sport.sport)} residual grid`} data-scroll-region tabIndex={0}>
         <p className="ra-scale-legend">Sequential scale: 0 to {view.metric === "n" ? count(metricMaximum) : view.metric === "meanAbsResidual" ? residual(metricMaximum) : mass(metricMaximum)} for {selectedMetric}; blank cells: no published segment.</p>
         <table className="ra-grid"><caption>{sportLabel(sport.sport)} time bucket by probability bucket. Blank cells have no published segment.</caption><thead><tr><th scope="col">Time bucket</th>{sport.probBuckets.map(bucket => <th scope="col" key={bucket}>{bucket}</th>)}</tr></thead><tbody>{sport.grid.map(row => <tr key={row.timeBucket}><th scope="row">{row.timeBucket}</th>{row.cells.map((segment, index) => {
           const selected = segment?.sport === view.sport && segment.timeBucket === view.time && segment.probBucket === view.prob;

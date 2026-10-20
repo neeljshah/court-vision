@@ -76,7 +76,7 @@ export function PitchSequencing({ data }: { data: PitchSequencingData }) {
         </svg>
       </div>
     </Figure>
-    <div className="ps-table-wrap" role="region" aria-label={`${selectedClass.id} pitch sequencing table`} data-scroll-region>
+    <div className="ps-table-wrap" role="region" aria-label={`${selectedClass.id} pitch sequencing table`} data-scroll-region tabIndex={0}>
       <table className="ps-table">
         <caption>{selectedClass.id} conditional pitch sequencing probabilities</caption>
         <thead><tr><th scope="col">Previous pitch</th><th scope="col">Published row denominator</th>{data.pitchTypes.map(type => <th scope="col" key={type}>{type}</th>)}</tr></thead>
@@ -92,7 +92,7 @@ export function PitchSequencing({ data }: { data: PitchSequencingData }) {
     </div>
     <div className="ps-detail" aria-live="polite">
       <p className="ps-detail-label">Selected transition</p>
-      {activeCell && <><h3>{activeCell.from} to {activeCell.to}</h3>{activeCell.masked ? <p>This previous-pitch row is masked because its published denominator is below the floor of {count(data.rowMinN)} transitions.</p> : <dl><div><dt>Count</dt><dd>{count(activeCell.count)}</dd></div><div><dt>Row denominator</dt><dd>{count(activeCell.denominator)}</dd></div><div><dt>Conditional probability</dt><dd>{percent(activeCell.probability)}</dd></div></dl>}</>}
+      {activeCell && <><h2>{activeCell.from} to {activeCell.to}</h2>{activeCell.masked ? <p>This previous-pitch row is masked because its published denominator is below the floor of {count(data.rowMinN)} transitions.</p> : <dl><div><dt>Count</dt><dd>{count(activeCell.count)}</dd></div><div><dt>Row denominator</dt><dd>{count(activeCell.denominator)}</dd></div><div><dt>Conditional probability</dt><dd>{percent(activeCell.probability)}</dd></div></dl>}</>}
     </div>
     <p className="ps-source-fields">Source fields: pitch_sequencing.json -&gt; pitch_types[], by_class[].prob_matrix[row][column], count_matrix[row][column], row_n_from[row], row_below_floor[row], coverage, and floors.row_min_n.</p>
   </section>;

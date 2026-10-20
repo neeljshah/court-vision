@@ -13,8 +13,13 @@
 // never invented prose. All image srcs resolve to the staged public tree
 // (img/showcase/<basename>); no C:/Users path can appear.
 
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { rewriteEvidenceLinks } from "@/lib/evidenceLinks";
+
+// Claim prose renders plain <a>, so site-internal links need the export basePath.
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
+const SHOWCASE_IMG_DIR = join(process.cwd(), "public", "img", "showcase");
 
 const SHOWCASE_DIR = join(process.cwd(), "public", "data", "showcase");
 // docs/evidence sits at the repo root, one level up from the webapp cwd.
@@ -249,7 +254,9 @@ function parseFigures(body: string): ClaimFigure[] {
   figs.forEach((f, i) => {
     if (caps[i]) f.caption = caps[i];
   });
-  return figs;
+  // Only figures actually staged under public/img/showcase ship; an unstaged
+  // image would render as a broken <img> on the public site.
+  return figs.filter((f) => existsSync(join(SHOWCASE_IMG_DIR, f.src.split("/").pop() || "")));
 }
 
 function parseReproduce(section: string): string {
@@ -301,6 +308,8 @@ export function buildClaimPage(slug: string): ClaimPageProps | null {
     md = "";
   }
   if (!md) return raw ? pendingPage(raw) : null;
+  // The md is written for GitHub; rewrite its relative links for the static site.
+  md = rewriteEvidenceLinks(md, new Set([...listClaimSlugs(), RETRACTION_SLUG]), BASE_PATH);
 
   const cut = md.indexOf("<!-- nav-footer -->");
   const body = cut >= 0 ? md.slice(0, cut) : md;

@@ -149,7 +149,7 @@ export function CalibrationReliability({ series }: { series: ReliabilitySeries[]
         </article>;
       })}
     </div>
-    <div className="cr-table-wrap" role="region" aria-label="Reliability bins" data-scroll-region>
+    <div className="cr-table-wrap" role="region" aria-label="Reliability bins" data-scroll-region tabIndex={0}>
       <table className="cr-table"><caption>Published reliability bins for {sportLabel(sport)}</caption><thead><tr><th>Series</th><th>Bin range</th><th>Mean forecast</th><th>Observed</th><th>Gap (pp)</th><th>Gap CI (pp)</th><th>n ticks</th><th>n games</th><th>Low n</th></tr></thead><tbody>{selected.flatMap(item => item.bins.map((bin, index) => <tr key={`${item.side}-${index}`}><td><span className={`cr-series-key cr-${item.side}`} />{labels[item.side]}</td><td>{percent(bin.binLo, 0)} to {percent(bin.binHi, 0)}</td><td>{percent(bin.meanP)}</td><td>{percent(bin.meanY)}</td><td>{percentagePoints(bin.gap)}</td><td>{gapInterval(bin.gapCi)}</td><td>{count(bin.n)}</td><td>{count(bin.nGames)}</td><td>{bin.lowN ? "Yes" : "No"}</td></tr>))}</tbody></table>
     </div>
   </section>;

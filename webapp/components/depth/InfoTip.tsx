@@ -52,7 +52,7 @@ export function InfoTip({ term, text, label, ariaLabel, className }: InfoTipProp
             type="button"
             aria-label={aria}
             className={cn(
-              "inline-flex items-center gap-1 text-faint " +
+              "inline-flex min-h-6 min-w-6 items-center justify-center gap-1 text-faint " +
                 "hover:text-foreground focus:outline-none focus-visible:ring-2 " +
                 "focus-visible:ring-ring align-middle",
               className

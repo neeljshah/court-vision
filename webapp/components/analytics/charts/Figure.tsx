@@ -133,7 +133,7 @@ export function Figure({
       {/* overflow-x: charts are fixed-viewBox SVGs; on a narrow screen let them
           scroll at a legible min-width (Grid/Bars set it) instead of scaling
           their own text down to microtype. */}
-      <div role="region" aria-label={title || "Chart data"} data-scroll-region style={{ ...scrollFrame, marginTop: title || subtitle || eyebrow ? 16 : 0 }}>{children}</div>
+      <div role="region" aria-label={title || "Chart data"} data-scroll-region tabIndex={0} style={{ ...scrollFrame, marginTop: title || subtitle || eyebrow ? 16 : 0 }}>{children}</div>
       {note && (
         <div
           style={{

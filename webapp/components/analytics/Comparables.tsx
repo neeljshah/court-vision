@@ -23,7 +23,7 @@ export function Comparables({ pack, fieldsUsed, similar, antipode }: Comparables
   const fieldsList = fieldsUsed.map(humanize).join(", ");
   return (
     <div style={{ background: "var(--paper-raised)", border: "1px solid var(--rule)", borderRadius: 10, padding: 18, boxShadow: "var(--shadow-card)", marginBottom: 20 }}>
-      <h3 className="serif" style={{ fontWeight: 500, fontSize: 20, marginBottom: 10 }}>Most similar in this pack</h3>
+      <h2 className="serif" style={{ fontWeight: 500, fontSize: 20, marginBottom: 10 }}>Most similar in this pack</h2>
       {similar.slice(0, 5).map((item) => (
         <Link
           key={item.slug}
@@ -36,7 +36,7 @@ export function Comparables({ pack, fieldsUsed, similar, antipode }: Comparables
       ))}
       <div style={{ marginTop: 10, fontSize: 13, color: "var(--ink-3)" }}>
         Least alike:{" "}
-        <Link href={`/analytics/players/${pack}/${antipode.slug}`}>{antipode.name}</Link>{" "}
+        <Link href={`/analytics/players/${pack}/${antipode.slug}`} style={{ textDecoration: "underline", textUnderlineOffset: 2 }}>{antipode.name}</Link>{" "}
         <span className="mono">{antipode.score}</span>
       </div>
       <p style={{ marginTop: 10, fontSize: 12.5, color: "var(--ink-3)", lineHeight: 1.5 }}>

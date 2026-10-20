@@ -4,15 +4,19 @@
 import { buildClaimIndex } from "@/lib/evidence.server";
 import { ClaimIndex } from "@/components/evidence/ClaimIndex";
 
+// Counts come from the staged evidence_index.json so the description cannot
+// drift from the page (it once said 22 while the index held 23).
+const INDEX = buildClaimIndex();
+
 export const metadata = {
   title: "Evidence",
   description:
-    "The 22 evidence claims, grouped into 4 buckets, each with its strongest receipt. " +
+    `The ${INDEX.claimCount} evidence claims, grouped into ${INDEX.buckets.length} buckets, each with its strongest receipt. ` +
     "Calibration and engineering evidence only -- no dollar edge claimed.",
 };
 
 export default function EvidencePage() {
-  const index = buildClaimIndex();
+  const index = INDEX;
 
   return (
     <main className="mx-auto flex max-w-5xl flex-col gap-6 p-6">

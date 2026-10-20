@@ -4,7 +4,7 @@ import EffectiveSampleSizePage from "./page";
 
 it("labels the ledger as the joined-corpus revision 1 measurement and carries the under-review notice", () => {
   render(<EffectiveSampleSizePage />);
-  const notice = screen.getByRole("complementary", { name: "Data integrity" });
+  const notice = screen.getByRole("complementary", { name: /^Data integrity/ });
   expect(notice).toHaveAttribute("data-status", "under-review");
   expect(within(notice).getByText("ess_ledger")).toBeInTheDocument();
   expect(within(notice).getByText(/residual_autocorrelation/)).toBeInTheDocument();

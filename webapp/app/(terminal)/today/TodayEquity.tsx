@@ -42,7 +42,7 @@ export function TodayEquity() {
       </h2>
       <PaperEquityPanel series={pnl} bankroll={bankroll} loading={isLoading && pnl === null} />
       <p className="mb-8 mt-1 text-center font-data text-[10px] text-faint">
-        This is a PAPER track record / hypothesis -- units, not dollars. CLV
+        This is a PAPER record / hypothesis -- units, not dollars. CLV
         (beat-the-close) is the yardstick (INSUFFICIENT_DATA at small-N), not a
         realized profit. Real-money: DENY. No edge is claimed.
       </p>

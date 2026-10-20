@@ -168,7 +168,7 @@ const STYLES = `
 .pl-tbl td{padding:10px 14px;border-bottom:1px solid var(--rule);color:var(--ink-2);white-space:nowrap}
 .pl-tbl td.num{font-family:var(--font-mono);font-feature-settings:'tnum' 1;color:var(--ink)}
 .pl-tbl tbody tr:hover td{background:var(--paper-tint)}
-.pl-tbl a{font-weight:500}
+.pl-tbl a{font-weight:500;display:inline-block;padding:4px 0;margin:-4px 0}
 /* pin the Entity column so scrolling right to read stats never loses the name.
    opaque bg covers the columns sliding under it; a hairline marks the pinned edge. */
 .pl-tbl th:first-child,.pl-tbl td:first-child{position:sticky;left:0;z-index:1;background:var(--paper-raised);box-shadow:1px 0 0 var(--rule)}

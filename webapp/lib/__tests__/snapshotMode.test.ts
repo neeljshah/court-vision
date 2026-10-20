@@ -169,3 +169,44 @@ describe("fetchHonest -- snapshot mode redirect", () => {
     expect(result.status).toBe("unavailable");
   });
 });
+
+describe("fetchHonest -- snapshot file whitelist", () => {
+  const realFetch = global.fetch;
+  afterEach(() => {
+    global.fetch = realFetch;
+    vi.restoreAllMocks();
+  });
+
+  it("skips the network for a GET whose baked file was never exported", async () => {
+    vi.stubEnv("NEXT_PUBLIC_DATA_MODE", "snapshot");
+    vi.stubEnv("NEXT_PUBLIC_SNAPSHOT_FILES", JSON.stringify(["api_report_nba.json"]));
+    vi.resetModules();
+    const mod = await import("../fetchHonest");
+    const seen: string[] = [];
+    global.fetch = vi.fn((url: string) => {
+      seen.push(url);
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        headers: new Headers({ "content-type": "application/json" }),
+        json: () => Promise.resolve({ ok: true }),
+      } as unknown as Response);
+    }) as unknown as typeof fetch;
+    expect(mod.snapshotHas("/p5/api/report/nba")).toBe(true);
+    expect(mod.snapshotHas("/api/bestbets/nba")).toBe(false);
+    const missing = await mod.fetchHonest<{ ok: boolean }>("/api/bestbets/nba");
+    expect(missing).toEqual({ status: "unavailable", reason: "not in the published snapshot" });
+    expect(seen).toEqual([]);
+    const present = await mod.fetchHonest<{ ok: boolean }>("/p5/api/report/nba");
+    expect(present).toEqual({ ok: true });
+    expect(seen).toEqual(["/demo-data/api_report_nba.json"]);
+  });
+
+  it("filters nothing when no file list was inlined", async () => {
+    vi.stubEnv("NEXT_PUBLIC_DATA_MODE", "snapshot");
+    vi.stubEnv("NEXT_PUBLIC_SNAPSHOT_FILES", "");
+    vi.resetModules();
+    const mod = await import("../fetchHonest");
+    expect(mod.snapshotHas("/api/anything")).toBe(true);
+  });
+});

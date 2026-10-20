@@ -42,7 +42,7 @@ function cellTone(row: ReturnType<typeof stateReliabilityRow>, metric: StateReli
 function SourceGrid({ sport, source, metric }: { sport: StateReliabilitySport; source: StateReliabilitySource; metric: StateReliabilityMetric }) {
   const label = sources.find(item => item.id === source)?.label || source;
   return <section className="sr-grid-panel" aria-label={`${label} state grid`}>
-    <h3>{label}</h3>
+    <h2>{label}</h2>
     <div className="sr-grid-wrap" role="region" aria-label={`${label} state grid, scrolls horizontally`} tabIndex={0} data-scroll-region>
       <table className="sr-grid-table">
         <caption>{label} by time and probability bucket for {sportLabel(sport.sport)}</caption>

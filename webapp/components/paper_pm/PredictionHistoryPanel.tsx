@@ -131,7 +131,7 @@ export function PredictionHistoryPanel() {
 
   return (
     <Panel
-      title="Model Track Record"
+      title="Model Paper Record"
       right={
         <div className="flex items-center gap-2">
           {/* AgeBadge: amber when stale, slate otherwise. NEVER green. */}

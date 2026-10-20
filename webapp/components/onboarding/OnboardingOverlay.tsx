@@ -1,12 +1,12 @@
 "use client";
 
-// OnboardingOverlay -- a lightweight first-run "what is this & how to read it"
-// guide PLUS a persistent Help affordance.
+// OnboardingOverlay -- a "what is this & how to read it" guide behind a
+// persistent Help affordance.
 //
-// First visit: the dialog auto-opens once (localStorage flag cv-onboarded), so a
-// new reader gets the honest framing + a one-line purpose for every page before
-// they explore. After that it stays dismissed, but a small fixed "?" Help button
-// (bottom-right) re-opens it any time.
+// It no longer auto-opens on a first visit: a modal over the landing page meant
+// a cold visitor saw the guide instead of the scoreboard, its headline result
+// and the evidence / analytics doors (QA pass 2026-10-20). The small fixed "?"
+// Help button (bottom-right) opens it any time.
 //
 // It is DISMISSIBLE and NON-BLOCKING: Radix Dialog traps focus while open,
 // closes on Escape / overlay-click / the Close button, and never gates the app.
@@ -15,7 +15,7 @@
 //
 // ASCII only. <= 300 LOC.
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import {
   Dialog,
@@ -26,7 +26,6 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
-const STORAGE_KEY = "cv-onboarded";
 
 // One honest line of "what this page is for" per product area. These mirror the
 // Nav links so a reader can map the tour to the menu. No numbers, no $.
@@ -117,39 +116,11 @@ function HelpButton({ onClick }: { onClick: () => void }) {
 
 export function OnboardingOverlay() {
   const [open, setOpen] = useState(false);
-  const [ready, setReady] = useState(false);
-
-  // First-run detection -- only after mount (localStorage is client-only).
-  useEffect(() => {
-    let seen = true;
-    try {
-      seen = localStorage.getItem(STORAGE_KEY) === "1";
-    } catch {
-      seen = true;
-    }
-    if (!seen) setOpen(true);
-    setReady(true);
-  }, []);
-
-  // Persist the "seen" flag the first time the guide closes, so it never
-  // auto-opens again (but the Help button can always re-open it).
-  const handleOpenChange = (next: boolean) => {
-    setOpen(next);
-    if (!next) {
-      try {
-        localStorage.setItem(STORAGE_KEY, "1");
-      } catch {
-        /* ignore -- non-blocking */
-      }
-    }
-  };
-
-  if (!ready) return null;
 
   return (
     <>
       <HelpButton onClick={() => setOpen(true)} />
-      <Dialog open={open} onOpenChange={handleOpenChange}>
+      <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-h-[85vh] max-w-2xl overflow-y-auto rounded-none border-border bg-card shadow-none">
           <DialogHeader>
             <DialogTitle className="microlabel text-foreground">
@@ -186,7 +157,7 @@ export function OnboardingOverlay() {
                 <li key={p.href}>
                   <Link
                     href={p.href}
-                    onClick={() => handleOpenChange(false)}
+                    onClick={() => setOpen(false)}
                     className={cn(
                       "block border border-border px-2.5 py-2 text-xs transition-colors",
                       "hover:bg-surface-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",

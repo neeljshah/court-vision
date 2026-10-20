@@ -11,14 +11,14 @@ export default function NotFound() {
         404 -- not found
       </span>
       <p className="max-w-sm text-sm text-muted-foreground">
-        This page or game does not exist. The slate may have changed or the
-        link is outdated.
+        This page does not exist or the link is out of date. Nothing here is
+        fabricated to fill the gap.
       </p>
       <Link
-        href="/p6"
+        href="/"
         className="rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
-        Back to dashboard
+        Back to the scoreboard
       </Link>
     </div>
   );

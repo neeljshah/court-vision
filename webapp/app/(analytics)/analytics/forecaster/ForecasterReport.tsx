@@ -75,7 +75,7 @@ export function ForecasterReport({ data }: { data: ForecasterArms }) {
       <section style={sec}>
         <div style={eye}>Three-arm measurement</div>
         <h2 style={h2}>Published state-transition summary.</h2>
-        <div aria-label="In-game conditioning measurements" data-scroll-region role="region" style={{ marginTop: 20, overflowX: "auto" }}>
+        <div aria-label="In-game conditioning measurements" data-scroll-region tabIndex={0} role="region" style={{ marginTop: 20, overflowX: "auto" }}>
           <table style={{ borderCollapse: "collapse", minWidth: 720, width: "100%" }}>
             <thead><tr><th scope="col" style={th}>Sport</th><th scope="col" style={th}>Static</th><th scope="col" style={th}>Score-only</th><th scope="col" style={th}>Combined</th><th scope="col" style={th}>Mechanical share</th><th scope="col" style={th}>Model-prior share</th><th scope="col" style={th}>Receipt</th></tr></thead>
             <tbody>{data.arms.map((arm, index) => <tr key={`${arm.sport}-${index}`}><th scope="row" style={{ ...td, color: "var(--ink)", fontWeight: 600 }}>{arm.sport || "not published"}</th><td style={td}>{display(arm.static_brier)}</td><td style={td}>{display(arm.score_only_brier)}</td><td style={td}>{display(arm.combined_brier)}</td><td style={td}>{display(arm.mechanical_share, 0)}</td><td style={td}>{display(arm.model_prior_share, 0)}</td><td style={td}><ReceiptLink path={`arms/${index}`} /></td></tr>)}</tbody>

@@ -31,6 +31,9 @@ async function renderGuide(basePath: string) {
   }));
   const { OnboardingOverlay } = await import("./OnboardingOverlay");
   render(<OnboardingOverlay />);
+  // The guide never auto-opens (it would cover the landing page); open it from Help.
+  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: /open the how-to-read-this guide/i }));
   const dialog = await screen.findByRole("dialog");
   return within(dialog).getAllByRole("link");
 }
@@ -51,12 +54,11 @@ describe("OnboardingOverlay page guide", () => {
     });
   });
 
-  it("closes on a guide link and remembers that the guide was seen", async () => {
+  it("closes on a guide link and reopens from the Help button", async () => {
     const links = await renderGuide("/court-vision");
     links[1].addEventListener("click", (event) => event.preventDefault(), { capture: true });
     fireEvent.click(links[1]);
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
-    expect(localStorage.getItem("cv-onboarded")).toBe("1");
     fireEvent.click(screen.getByRole("button", { name: /open the how-to-read-this guide/i }));
     expect(await screen.findByRole("dialog")).toBeInTheDocument();
   });

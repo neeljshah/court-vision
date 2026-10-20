@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { isSnapshotMode } from "./fetchHonest";
 
 // StreamMode now includes an explicit "disconnected" state: live (sse) AND the
 // poll fallback have BOTH failed to yield data. A panel must render an honest
@@ -104,7 +105,9 @@ export function useStream<T>(opts: {
       };
     };
 
-    if (sseUrl && typeof EventSource !== "undefined") startSse();
+    // Snapshot export has no backend: an EventSource would only log a failed
+    // request, so go straight to the poll path (which reads the baked file).
+    if (sseUrl && typeof EventSource !== "undefined" && !isSnapshotMode) startSse();
     else startPolling();
 
     return () => {

@@ -187,7 +187,7 @@ export default function AnalyticsRootLayout({ children }: { children: ReactNode 
                 terminal (own theme, full reload). The up-right glyph marks it as
                 leaving this product, not in-product navigation. */}
             <Link href="/" className="a-xlink" target="_blank" rel="noopener">
-              Looking for the live quant terminal? Open CourtVision Terminal &#8599;
+              Looking for the calibration scoreboard and terminal demo? Open CourtVision Terminal &#8599;
             </Link>
           </div>
         </footer>
