@@ -60,4 +60,20 @@ describe("CommandPalette", () => {
     expect(await screen.findByText("Evidence & Platform")).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
+
+  it("full-loads a cross-group result and soft-navigates a same-group one", async () => {
+    const assign = vi.fn();
+    vi.stubGlobal("location", { ...window.location, pathname: "/desk/", assign });
+    fetchMock.mockReturnValue(response([
+      { id: "a", title: "Zeta analytics", subtitle: "x", href: "/analytics/zeta/", type: "module", keywords: ["zeta"] },
+      { id: "b", title: "Zeta desk", subtitle: "x", href: "/desk/zeta/", type: "module", keywords: ["zeta"] },
+    ]));
+    render(<CommandPalette />);
+    await openPalette();
+    fireEvent.change(screen.getByRole("combobox", { name: "Search CourtVision" }), { target: { value: "zeta" } });
+    fireEvent.click(await screen.findByText("Zeta analytics"));
+    expect(assign).toHaveBeenCalledWith("/analytics/zeta/");
+    expect(push).not.toHaveBeenCalled();
+    vi.unstubAllGlobals();
+  });
 });

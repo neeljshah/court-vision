@@ -11,7 +11,7 @@ describe("SiteFooter", () => {
     for (const name of ["Evidence packet", "Receipts", "Reproduce", "Retraction record", "Model cards"]) {
       expect(screen.getByRole("link", { name })).toBeTruthy();
     }
-    expect(screen.getByRole("link", { name: "Retraction record" })).toHaveAttribute("href", "/evidence/retractions/");
+    expect(screen.getByRole("link", { name: "Retraction record" })).toHaveAttribute("href", expect.stringMatching(/^\/evidence\/retractions\/?$/));
     expect(document.body.textContent).toContain("model data as of 2026-07-16; paper desk record through 2026-10-16");
   });
 

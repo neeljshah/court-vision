@@ -20,7 +20,7 @@ describe("Breadcrumbs", () => {
     const nav = screen.getByRole("navigation", { name: "Breadcrumb" });
     const items = within(nav).getAllByRole("listitem").map((li) => li.textContent);
     expect(items).toEqual(["Home", "Research", "Findings", "Nba momentum"]);
-    expect(within(nav).getByRole("link", { name: "Research" })).toHaveAttribute("href", "/analytics/papers/");
+    expect(within(nav).getByRole("link", { name: "Research" })).toHaveAttribute("href", expect.stringMatching(/^\/analytics\/papers\/?$/));
     expect(within(nav).getByText("Nba momentum")).toHaveAttribute("aria-current", "page");
   });
 

@@ -20,8 +20,10 @@ describe("SiteHeader", () => {
     render(<SiteHeader />);
     const links = within(screen.getByRole("navigation", { name: "Main" })).getAllByRole("link");
     expect(links.map((l) => l.textContent)).toEqual(ORDER);
-    expect(links.map((l) => l.getAttribute("href"))).toEqual([
-      "/", "/desk/", "/analytics/calibration/", "/analytics/papers/", "/evidence/", "/about/",
+    // next/link drops the trailing slash in jsdom; the export adds it (trailingSlash: true)
+    const norm = (h: string | null) => (h ?? "").replace(/\/+$/, "") || "/";
+    expect(links.map((l) => norm(l.getAttribute("href")))).toEqual([
+      "/", "/desk", "/analytics/calibration", "/analytics/papers", "/evidence", "/about",
     ]);
   });
 
@@ -64,7 +66,7 @@ describe("SiteHeader", () => {
     render(<SiteHeader />);
     fireEvent.click(screen.getByRole("button", { name: /search the site/i }));
     expect(spy).toHaveBeenCalledTimes(1);
-    expect(screen.getByRole("link", { name: "Ask Scout" })).toHaveAttribute("href", "/analytics/ask/");
+    expect(screen.getByRole("link", { name: "Ask Scout" })).toHaveAttribute("href", expect.stringMatching(/^\/analytics\/ask\/?$/));
     window.removeEventListener("cv-open-palette", spy);
   });
 

@@ -7,9 +7,7 @@
 // ponytail: router.push() calls (the CommandPalette) still soft-navigate; retire this when
 // the two token sets are merged into one stylesheet.
 import { useEffect } from "react";
-import { normalizePath } from "./nav";
-
-const group = (path: string) => (/^\/analytics(\/|$)/.test(normalizePath(path)) ? "analytics" : "site");
+import { group } from "./nav";
 
 export function CrossGroupNav() {
   useEffect(() => {

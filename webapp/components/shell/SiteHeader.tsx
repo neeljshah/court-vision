@@ -31,14 +31,14 @@ function NavItems({ current, onNavigate }: { current: string | null; onNavigate?
 }
 
 function ThemeToggle() {
-  const [dark, setDark] = useState(false);
-  useEffect(() => {
-    setDark(document.documentElement.getAttribute("data-theme") === "dark");
-  }, []);
+  const [dark, setDark] = useState(
+    () => typeof document !== "undefined" && document.documentElement.getAttribute("data-theme") === "dark",
+  );
   return (
     <button
       type="button"
       className={s.tool}
+      suppressHydrationWarning
       aria-pressed={dark}
       aria-label={dark ? "Switch to light theme" : "Switch to dark theme"}
       onClick={() => {
@@ -61,9 +61,11 @@ function ThemeToggle() {
 }
 
 export function SiteHeader() {
-  const current = sectionFor(usePathname())?.href ?? null;
   const [open, setOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const pathname = usePathname();
+  const current = sectionFor(pathname)?.href ?? null;
+  useEffect(() => setOpen(false), [pathname]);
 
   useEffect(() => {
     if (!open) return;

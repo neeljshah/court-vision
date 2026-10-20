@@ -31,6 +31,10 @@ export function normalizePath(raw: string | null | undefined): string {
   return p || "/";
 }
 
+/** Route group: /analytics pages load analytics.css, everything else globals.css. */
+export const group = (path: string): "analytics" | "site" =>
+  /^\/analytics(\/|$)/.test(normalizePath(path)) ? "analytics" : "site";
+
 export function sectionFor(raw: string | null | undefined): Section | null {
   const p = normalizePath(raw);
   if (p === "/") return SITE_NAV[0];

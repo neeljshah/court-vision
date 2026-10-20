@@ -6,6 +6,7 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { Command } from "cmdk";
+import { group } from "@/components/shell/nav";
 import MiniSearch from "minisearch";
 
 interface Rec {
@@ -142,7 +143,9 @@ export function CommandPalette() {
   const select = (r: Rec) => {
     setOpen(false);
     setQuery("");
-    router.push(r.href);
+    // Cross-group jumps need a full load so globals.css and analytics.css never coexist.
+    if (group(r.href) !== group(window.location.pathname)) window.location.assign(BASE_PATH + r.href);
+    else router.push(r.href);
   };
 
   const grouped = GROUP_ORDER.map((g) => ({
