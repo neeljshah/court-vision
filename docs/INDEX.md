@@ -90,6 +90,7 @@ reprice. Follow the links to go as deep as you want at any stage.
 
 ### Evidence pages (claim -> receipt -> reproduce, one per claim family)
 - [evidence/README](evidence/README.md) -- **the evidence hub**: all pages grouped (honesty / calibration-market / engineering / frontier), each with its strongest receipt, plus the one-command `check_all.py` proof
+- [evidence/model_cards](evidence/model_cards/INDEX.json) -- one model card per forecaster a public number comes from (intended use, data, validation, measured result, limits, artifact sha256); checked by `python -m scripts.platformkit.eval_gate.model_card_check`
 - [evidence/SESSION_2026-09-01_INDEX](evidence/SESSION_2026-09-01_INDEX.md) -- public-safe session index: tracking audit, harness hardening, and paper-execution receipts
 - [evidence/retraction-story](evidence/retraction-story.md) -- the flagship: the instruments that refuted my own headline numbers
 - [evidence/ingame-conditioning](evidence/ingame-conditioning.md) -- the one measured calibration win, market-comparison losses stated plainly

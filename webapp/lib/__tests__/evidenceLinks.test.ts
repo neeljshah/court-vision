@@ -21,6 +21,10 @@ describe("resolveEvidenceHref", () => {
     expect(resolveEvidenceHref("../../scripts/platformkit/analytics_showcase/out/", slugs)).toBe(`${GH}/tree/master/scripts/platformkit/analytics_showcase/out/`);
   });
 
+  it("keeps the #fragment on a directory link", () => {
+    expect(resolveEvidenceHref("../../docs/#section", slugs)).toBe(`${GH}/tree/master/docs/#section`);
+  });
+
   it("leaves absolute URLs, site-absolute paths, anchors and mailto alone", () => {
     for (const href of ["https://example.org/x", "/evidence/retraction-story", "#receipts", "mailto:neeljshah22@gmail.com"]) {
       expect(resolveEvidenceHref(href, slugs)).toBe(href);

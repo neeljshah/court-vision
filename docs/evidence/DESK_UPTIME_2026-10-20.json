@@ -1,0 +1,293 @@
+{
+ "dark_spells": [
+  {
+   "end": "2026-09-28T15:07Z",
+   "hours": 73.2,
+   "start": "2026-09-25T13:56Z"
+  },
+  {
+   "end": "2026-10-12T13:36Z",
+   "hours": 71.4,
+   "start": "2026-10-09T14:11Z"
+  }
+ ],
+ "days": 25,
+ "no_receipt_days": 6,
+ "owner_sleeps_self_reported": [
+  {
+   "end": "2026-10-08T14:24:00Z",
+   "hours": 12.4,
+   "start": "2026-10-08T01:57:00Z"
+  },
+  {
+   "end": "2026-10-12T13:26:00Z",
+   "hours": 59.5,
+   "start": "2026-10-10T01:56:00Z"
+  },
+  {
+   "end": "2026-10-13T20:01:00Z",
+   "hours": 19.1,
+   "start": "2026-10-13T00:56:00Z"
+  },
+  {
+   "end": "2026-10-14T15:30:00Z",
+   "hours": 12.1,
+   "start": "2026-10-14T03:26:00Z"
+  },
+  {
+   "end": "2026-10-19T14:40:00Z",
+   "hours": 62.2,
+   "start": "2026-10-17T00:26:00Z"
+  }
+ ],
+ "partial_reasons": {
+  "ceiling_exceeded": 2,
+  "child_nonzero_exit": 3,
+  "free_ram_below_floor": 4,
+  "step_deadline_exceeded": 8
+ },
+ "scheduled": 17,
+ "scored": 19,
+ "scored_complete": 5,
+ "scored_partial": 14,
+ "scored_share": 0.76,
+ "served": 17,
+ "stamps": 1151,
+ "table": [
+  {
+   "attempt_file": false,
+   "date": "2026-09-24",
+   "night": "PARTIAL",
+   "reasons": [
+    "ceiling_exceeded"
+   ],
+   "scheduled": true,
+   "served": 4
+  },
+  {
+   "attempt_file": false,
+   "date": "2026-09-25",
+   "night": "PARTIAL",
+   "reasons": [
+    "free_ram_below_floor"
+   ],
+   "scheduled": true,
+   "served": 3
+  },
+  {
+   "attempt_file": false,
+   "date": "2026-09-26",
+   "night": "PARTIAL",
+   "reasons": [
+    "free_ram_below_floor"
+   ],
+   "scheduled": true,
+   "served": 6
+  },
+  {
+   "attempt_file": false,
+   "date": "2026-09-27",
+   "night": null,
+   "reasons": [],
+   "scheduled": false,
+   "served": 0
+  },
+  {
+   "attempt_file": false,
+   "date": "2026-09-28",
+   "night": null,
+   "reasons": [],
+   "scheduled": false,
+   "served": 0
+  },
+  {
+   "attempt_file": false,
+   "date": "2026-09-29",
+   "night": "PARTIAL",
+   "reasons": [
+    "child_nonzero_exit"
+   ],
+   "scheduled": true,
+   "served": 3
+  },
+  {
+   "attempt_file": false,
+   "date": "2026-09-30",
+   "night": "PARTIAL",
+   "reasons": [
+    "step_deadline_exceeded"
+   ],
+   "scheduled": true,
+   "served": 3
+  },
+  {
+   "attempt_file": false,
+   "date": "2026-10-01",
+   "night": "PARTIAL",
+   "reasons": [
+    "free_ram_below_floor",
+    "step_deadline_exceeded"
+   ],
+   "scheduled": true,
+   "served": 2
+  },
+  {
+   "attempt_file": false,
+   "date": "2026-10-02",
+   "night": "COMPLETE",
+   "reasons": [],
+   "scheduled": true,
+   "served": 2
+  },
+  {
+   "attempt_file": false,
+   "date": "2026-10-03",
+   "night": "PARTIAL",
+   "reasons": [
+    "child_nonzero_exit",
+    "free_ram_below_floor"
+   ],
+   "scheduled": true,
+   "served": 3
+  },
+  {
+   "attempt_file": false,
+   "date": "2026-10-04",
+   "night": "COMPLETE",
+   "reasons": [],
+   "scheduled": true,
+   "served": 5
+  },
+  {
+   "attempt_file": true,
+   "date": "2026-10-05",
+   "night": "COMPLETE",
+   "reasons": [],
+   "scheduled": true,
+   "served": 1
+  },
+  {
+   "attempt_file": true,
+   "date": "2026-10-06",
+   "night": "PARTIAL",
+   "reasons": [
+    "step_deadline_exceeded"
+   ],
+   "scheduled": true,
+   "served": 3
+  },
+  {
+   "attempt_file": true,
+   "date": "2026-10-07",
+   "night": "PARTIAL",
+   "reasons": [
+    "step_deadline_exceeded"
+   ],
+   "scheduled": true,
+   "served": 7
+  },
+  {
+   "attempt_file": true,
+   "date": "2026-10-08",
+   "night": "PARTIAL",
+   "reasons": [
+    "ceiling_exceeded",
+    "step_deadline_exceeded"
+   ],
+   "scheduled": true,
+   "served": 19
+  },
+  {
+   "attempt_file": true,
+   "date": "2026-10-09",
+   "night": "PARTIAL",
+   "reasons": [
+    "step_deadline_exceeded"
+   ],
+   "scheduled": true,
+   "served": 19
+  },
+  {
+   "attempt_file": true,
+   "date": "2026-10-10",
+   "night": "PARTIAL",
+   "reasons": [
+    "child_nonzero_exit"
+   ],
+   "scheduled": true,
+   "served": 26
+  },
+  {
+   "attempt_file": false,
+   "date": "2026-10-11",
+   "night": null,
+   "reasons": [],
+   "scheduled": false,
+   "served": 0
+  },
+  {
+   "attempt_file": false,
+   "date": "2026-10-12",
+   "night": "COMPLETE",
+   "reasons": [],
+   "scheduled": true,
+   "served": 7
+  },
+  {
+   "attempt_file": false,
+   "date": "2026-10-13",
+   "night": "PARTIAL",
+   "reasons": [
+    "step_deadline_exceeded"
+   ],
+   "scheduled": true,
+   "served": 9
+  },
+  {
+   "attempt_file": false,
+   "date": "2026-10-14",
+   "night": "PARTIAL",
+   "reasons": [
+    "step_deadline_exceeded"
+   ],
+   "scheduled": false,
+   "served": 0
+  },
+  {
+   "attempt_file": false,
+   "date": "2026-10-15",
+   "night": null,
+   "reasons": [],
+   "scheduled": false,
+   "served": 0
+  },
+  {
+   "attempt_file": false,
+   "date": "2026-10-16",
+   "night": "COMPLETE",
+   "reasons": [],
+   "scheduled": false,
+   "served": 0
+  },
+  {
+   "attempt_file": false,
+   "date": "2026-10-17",
+   "night": null,
+   "reasons": [],
+   "scheduled": false,
+   "served": 0
+  },
+  {
+   "attempt_file": false,
+   "date": "2026-10-18",
+   "night": null,
+   "reasons": [],
+   "scheduled": false,
+   "served": 0
+  }
+ ],
+ "window": [
+  "2026-09-24",
+  "2026-10-18"
+ ]
+}

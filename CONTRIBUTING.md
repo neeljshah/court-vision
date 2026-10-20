@@ -14,6 +14,8 @@ This repository was built by one person directing coding agents. The owner set t
 
 Retractions are part of the audit trail, not something hidden. The full tree holds 157 retract or revert commits, and 23% of public commits mention fix, revert, or retract. Find them with `git log -i --grep="retract\|revert" --oneline`. The system is a calibrated forecaster, not a profit claim. Every number links to a committed artifact; start from [EVIDENCE.md](EVIDENCE.md).
 
+Note: some non-master branches and older commits predate the public/private split (2026-09-17) and still contain earlier engine and working files; the maintained public tree is `master`, and the full engine lives in a private repository.
+
 ## Commit messages
 
 - The first line says what changed and why, in words a reader outside the project understands.

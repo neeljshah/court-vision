@@ -34,7 +34,7 @@ export function resolveEvidenceHref(
   const sibling = /^([a-z0-9][a-z0-9-]*)\.md$/i.exec(path);
   if (sibling && claimSlugs.has(sibling[1])) return `${basePath}/evidence/${sibling[1]}/${hash}`;
   const repoPath = repoPathFor(path);
-  if (path.endsWith("/")) return `${REPO}/tree/${BRANCH}/${repoPath}/`;
+  if (path.endsWith("/")) return `${REPO}/tree/${BRANCH}/${repoPath}/${hash}`;
   return `${REPO}/blob/${BRANCH}/${repoPath}${hash}`;
 }
 

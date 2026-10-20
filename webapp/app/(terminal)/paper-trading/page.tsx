@@ -84,7 +84,7 @@ export default function PaperTradingPage() {
         <div>
           <h1 className="text-xl font-semibold text-foreground">Paper Trading Center</h1>
           {isSnapshotMode && (
-            <p className="mt-1 text-[12px] text-amber-400">
+            <p className="mt-1 text-[12px] text-warning">
               Static snapshot: the settled book below is the forward paper record (paper maker fills, four ledger
               nights: 2026-10-03, 10-04, 10-05 and 10-08; 29 fills, counts and units only, no return figure;
               in-game rows: stake_units = contracts); the equity, CLV and bankroll

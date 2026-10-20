@@ -1,0 +1,63 @@
+{
+ "schema": "model_cards/v1",
+ "register_row": "S674",
+ "as_of": "2026-10-20",
+ "purpose": "Inventory of every forecaster a public number comes from; checked by scripts/platformkit/eval_gate/model_card_check.py. Calibration documentation only; paper only.",
+ "sha256_basis": "raw bytes, or CRLF->LF normalized bytes (the git-blob basis the PREREG seals pin)",
+ "absent_artifact_rule": "an artifact path absent from this clone (data/, private engine files) is skipped, not failed",
+ "required_sections": ["Name and version", "Intended use", "Not intended use", "Inputs and leak guard", "Training data and period", "Validation protocol", "Measured performance", "Calibration diagnostics", "Known failure modes and limitations", "Artifacts", "Retraction and supersession history", "Owner and last verified"],
+ "cards": [
+  {"id": "nba_pregame_mov_elo", "card": "nba_pregame_mov_elo.md", "name": "NBA pregame moneyline win probability (MOV-Elo)", "verdict": "MATCHES_CLOSE (underpowered)", "as_of": "2026-10-20", "artifacts": [
+   {"path": "scripts/platformkit/proof_nba/ml_accuracy.py", "bytes": 5994, "sha256": "edb843b52f8b937f7159da9223cd3fdd0242d40e69ecc45309c777709c317d83", "as_of": "2026-10-20"},
+   {"path": "data/cache/kalshi_complete/own_lines_backtest_nba.json", "bytes": 720, "sha256": "abd45a467175f494fc08d788c601974f934f7eba6cab764899cf3f10f4132707", "as_of": "2026-10-20"},
+   {"path": "docs/evidence/pregame/DM_RECOMPUTE_2026-09-24.md", "bytes": 9115, "sha256": "9428dbe523831ae4f80165340ee5a2c8ff5f35c74d6110cf744dd05b1427d45e", "as_of": "2026-10-20"}
+  ]},
+  {"id": "nba_pregame_totals", "card": "nba_pregame_totals.md", "name": "NBA pregame game total (EW points model)", "verdict": "BEHIND (freshness)", "as_of": "2026-10-20", "artifacts": [
+   {"path": "scripts/platformkit/proof_nba/asof_box_accuracy.py", "bytes": 11998, "sha256": "538111865fe0a417f2b6b391a6879d47053aeec47e2d473e9e6358b2de2bb6b1", "as_of": "2026-10-20"}
+  ]},
+  {"id": "mlb_pregame_elo", "card": "mlb_pregame_elo.md", "name": "MLB pregame moneyline win probability (MOV-Elo)", "verdict": "TRAILS_CLOSE", "as_of": "2026-10-20", "artifacts": [
+   {"path": "scripts/platformkit/proof_mlb/beat_the_close_ml.py", "bytes": 8229, "sha256": "66b32c1fae1dbe1d8dc1fd2c02a1ac1e4a6b88eb11a5b4cb9c3ae377f7435d9c", "as_of": "2026-10-20"}
+  ]},
+  {"id": "mlb_pregame_totals", "card": "mlb_pregame_totals.md", "name": "MLB pregame total runs (run-rate model)", "verdict": "BEHIND (freshness)", "as_of": "2026-10-20", "artifacts": [
+   {"path": "scripts/platformkit/proof_mlb/beat_the_close_total.py", "bytes": 7511, "sha256": "a223475cbce07f6aec121a4fb5257b1f4e807b51df66358e839ba4c712c25f34", "as_of": "2026-10-20"},
+   {"path": "scripts/platformkit/benchmarks/crps_market/last_run_mlb.json", "bytes": 789, "sha256": "b9510fd80c166947e9e7b75426320f9ed57543ba80d6d4c006ba384ad3fca47f", "as_of": "2026-10-20"}
+  ]},
+  {"id": "soccer_pregame_ou25", "card": "soccer_pregame_ou25.md", "name": "Soccer pregame O/U 2.5 (Poisson + pooled Platt)", "verdict": "TRAILS_CLOSE", "as_of": "2026-10-20", "artifacts": [
+   {"path": "scripts/platformkit/proof_soccer/beat_the_close_ou.py", "bytes": 8544, "sha256": "8868780e8fe1b8e71f936300cc1969630e7d95bb3a5a805e157bc917d29608e7", "as_of": "2026-10-20"}
+  ]},
+  {"id": "atp_pregame_elo", "card": "atp_pregame_elo.md", "name": "ATP pregame match-win probability (Elo + Platt)", "verdict": "BEHIND (freshness)", "as_of": "2026-10-20", "artifacts": [
+   {"path": "scripts/platformkit/proof_tennis/beat_the_close_ml.py", "bytes": 6901, "sha256": "0e0b9d6216e9ecbab124cb5ee2c8f3a6a569eba797c03f29ebf65f3e12331e6a", "as_of": "2026-10-20"}
+  ]},
+  {"id": "nba_winprob_nnls_stack", "card": "nba_winprob_nnls_stack.md", "name": "NBA win-probability stack (5-way NNLS)", "verdict": "no market baseline in artifact", "as_of": "2026-10-20", "artifacts": [
+   {"path": "results/winprob_walk_forward_results.json", "bytes": 2130, "sha256": "5bbc429d6b779860bbad069620423b38e37c2558b33981bcdcfd7883b79adcf8", "as_of": "2026-10-20"}
+  ]},
+  {"id": "nba_player_props", "card": "nba_player_props.md", "name": "NBA player props (per-stat production models)", "verdict": "accuracy only, no market comparison", "as_of": "2026-10-20", "artifacts": [
+   {"path": "scripts/verify_production_mae.py", "bytes": 7086, "sha256": "269a2ac6fbb3c90411b7e77e6e444b3ff938c644b95a2386adab05febeed1f79", "as_of": "2026-10-20"},
+   {"path": "data/models/_meta.json", "bytes": 14541, "sha256": "f9d36fd1e833d516b3085fe9af82aa66af8f7feeef1997e5764dad5ee8535c6a", "as_of": "2026-10-20"},
+   {"path": "data/models/meta_weights_pergame.json", "bytes": 803, "sha256": "ef7798ce3977eb2efdcb05dcbfff1d3db81b1569bab4df96615d9d4b8e13de60", "as_of": "2026-10-20"}
+  ]},
+  {"id": "ingame_conditioning", "card": "ingame_conditioning.md", "name": "In-game win-probability conditioning forecasters", "verdict": "MARKET_SHARPER_PROVISIONAL / BEHIND / UNDERPOWERED vs market; one MODEL_SHARPER_PROVISIONAL small-sample retrospective diagnostic; sharper than a static prior only (not a market comparison)", "as_of": "2026-10-20", "artifacts": [
+   {"path": "scripts/platformkit/benchmarks/crps_market/last_run_ingame_nba_winprob_ALLGAMES_v3.json", "bytes": 2448, "sha256": "ceef48992bd68ac86b74e6b3633f9c1fd91c1af315df7ea495de60cf15d17b8f", "as_of": "2026-10-20"},
+   {"path": "scripts/platformkit/benchmarks/crps_market/last_run_ingame_mlb.json", "bytes": 5911, "sha256": "7e9dd1c5243630c3b4d0f3da85030ed068109751ad62a522e42210215c895a47", "as_of": "2026-10-20"},
+   {"path": "scripts/platformkit/benchmarks/crps_market/last_run_ingame_soccer.json", "bytes": 1617, "sha256": "60c1fcecefe986483b73b583d448521819fe7ff9fc728ee764c591f8154038e6", "as_of": "2026-10-20"},
+   {"path": "docs/evidence/ingame/GATE_A0_2026-09-14.md", "bytes": 2672, "sha256": "d64ad35513316f9b51689bdfb941bbfe732d86aad4bf8650a8c0e0b9f518de87", "as_of": "2026-10-20"},
+   {"path": "scripts/platformkit/proof_nba/ingame_accuracy.py", "bytes": 15415, "sha256": "a668daf18c47251eba553a42b443e985ed40b75868f6fa7c2ed8b2497d5950e6", "as_of": "2026-10-20"},
+   {"path": "scripts/platformkit/proof_mlb/ingame_accuracy.py", "bytes": 15196, "sha256": "8bc2baf1588cb5adb19e5ba01f2079e0dff8ee266c7f5d5c7d202b1c852caae6", "as_of": "2026-10-20"}
+  ]},
+  {"id": "forward_desk_arms", "card": "forward_desk_arms.md", "name": "Forward paper desk arms A, B, B_lag, C, D (PREREG_2026-10-07)", "verdict": "INSUFFICIENT", "as_of": "2026-10-20", "artifacts": [
+   {"path": "docs/evidence/forward/scoreboard/PREREG_2026-10-07.json", "bytes": 2180, "sha256": "806fa58a3517d28b4f320e89c26f32a73ad6d1a5fe1f153aa5bf0aa9db7f85ea", "as_of": "2026-10-20"},
+   {"path": "scripts/platformkit/eval_gate/walkforward.py", "bytes": 8250, "sha256": "6a59fbc9446bf07846eb7f7e0198e46c96911143444e488224467c7c744f4fc9", "as_of": "2026-10-20"},
+   {"path": "scripts/platformkit/execution/ingame_scoreboard.py", "bytes": null, "sha256": "821ab4f66ecaabe0716ee4d8cc1ec7109d47264b6ad3ae874e46c97c4fbd301c", "as_of": "2026-10-20"},
+   {"path": "scripts/platformkit/execution/ingame_scoreboard_rules.py", "bytes": null, "sha256": "a2228bffbcc0ba80903b72d3891cbb8b8b71ae3336a2c78571e9af51e5a5e002", "as_of": "2026-10-20"},
+   {"path": "scripts/platformkit/ingame/baseline_four_arm.py", "bytes": null, "sha256": "df1739348bb5d2f4823cb59489d4d4b99942eb34922d89247af568f11a76be48", "as_of": "2026-10-20"},
+   {"path": "scripts/platformkit/ingame/baseline_four_arm_eligibility.py", "bytes": null, "sha256": "3a21ddd0f627087e245c15a5d1a07e795544d796f31e3c88d0125e5536817e20", "as_of": "2026-10-20"},
+   {"path": "scripts/platformkit/ingame/baseline_four_arm_features.py", "bytes": null, "sha256": "79a9331477c50e224e783c565db44bd8a1293fe2cfab1273a968ac60cedaf959", "as_of": "2026-10-20"},
+   {"path": "scripts/platformkit/ingame/baseline_four_arm_features_nfl.py", "bytes": null, "sha256": "117561dba781a8ba0b344fe657712023ebdb5aaf8b16cc3760bd2d66125af7c1", "as_of": "2026-10-20"}
+  ]},
+  {"id": "m2_anchor_projection", "card": "m2_anchor_projection.md", "name": "M2 market-anchored state projection (S542 / PREREG_M2)", "verdict": "ACCEPT_STALENESS_BACKSTOP_ONLY (replay); forward INSUFFICIENT", "as_of": "2026-10-20", "artifacts": [
+   {"path": "docs/evidence/harness/S542_prereg.json", "bytes": 3345, "sha256": "36ade6ced3c044cf34b2eb18d147b14d3b1f8616374f3afadc18aa36cdd62489", "as_of": "2026-10-20"},
+   {"path": "docs/evidence/harness/S542_anchor_projection_replay_2026-09-29.json", "bytes": 35315, "sha256": "e7b4366332313011b563512dbe87ddb053f5169d6d563985796d366029cae3a9", "as_of": "2026-10-20"},
+   {"path": "docs/evidence/forward/model2/PREREG_M2.json", "bytes": 4660, "sha256": "1bf7f6b9c3d5bb50188fe1e5021939c64b3126aea1111ac32262414510dbad3d", "as_of": "2026-10-20"}
+  ]}
+ ]
+}

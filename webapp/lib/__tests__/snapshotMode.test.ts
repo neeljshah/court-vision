@@ -240,3 +240,17 @@ describe("snapshotHasBet -- baked paper detail pages", () => {
     expect(live.snapshotHasBet("anything")).toBe(true);
   });
 });
+
+describe("systemApi.artifacts in snapshot mode", () => {
+  it("fetches the exported route under the base path (no dead demo-data slug)", async () => {
+    vi.stubEnv("NEXT_PUBLIC_DATA_MODE", "snapshot");
+    vi.stubEnv("NEXT_PUBLIC_BASE_PATH", "/court-vision");
+    vi.resetModules();
+    const f = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ status: "ok" }) });
+    vi.stubGlobal("fetch", f);
+    const { systemApi } = await import("../../components/system/systemApi");
+    await systemApi.artifacts();
+    expect(f.mock.calls[0][0]).toBe("/court-vision/system/funnel-artifacts");
+    vi.unstubAllGlobals();
+  });
+});

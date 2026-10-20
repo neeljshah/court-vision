@@ -1,0 +1,830 @@
+{
+ "as_of": "2026-10-16",
+ "gap_nights": [
+  "2026-09-27",
+  "2026-09-28",
+  "2026-10-11"
+ ],
+ "inputs": [
+  {
+   "path": "docs/evidence/forward/latency/2026-09-24_2026-09-24_latency_ledger.json",
+   "sha256_lf": "99b917db1390c41cec68fb65ac8957b057cb6fa66e82a671ce98d485f6e8dcb0"
+  },
+  {
+   "path": "docs/evidence/forward/latency/2026-09-25_2026-09-25_latency_ledger.json",
+   "sha256_lf": "9b0e945fbf0d7b854c47fb6761c8c51e4db9c6d51d7896c002352db8313d4ff9"
+  },
+  {
+   "path": "docs/evidence/forward/latency/2026-09-26_2026-09-26_latency_ledger.json",
+   "sha256_lf": "551bac23a57f4a9109bc5f2c341369bf5ae7f3bc98cae95453a56399779b9a1a"
+  },
+  {
+   "path": "docs/evidence/forward/latency/2026-09-29_2026-09-29_latency_ledger.json",
+   "sha256_lf": "5382961bcdf4c5f3bf03f8a133052146083bdc7674a904a6f777b12aa39321c4"
+  },
+  {
+   "path": "docs/evidence/forward/latency/2026-09-30_2026-09-30_latency_ledger.json",
+   "sha256_lf": "732a9662305ba3e3838e4e0de1ea0642fed7fe0459971dfb1899586b97bad159"
+  },
+  {
+   "path": "docs/evidence/forward/latency/2026-10-01_2026-10-01_latency_ledger.json",
+   "sha256_lf": "6c802fac65b7f4d8cbec4b7f421c16c9cc02207d03e651e3ceba3e79a171269a"
+  },
+  {
+   "path": "docs/evidence/forward/latency/2026-10-02_2026-10-02_latency_ledger.json",
+   "sha256_lf": "5fe85c4f7f8dcb17bb904407eb5d53013dd8b766dfddf16ee10068e0f778462a"
+  },
+  {
+   "path": "docs/evidence/forward/latency/2026-10-03_2026-10-03_latency_ledger.json",
+   "sha256_lf": "0a1632d701109dee7ad3bec93e60d6980447695417c9f145f45cabf525de0dc2"
+  },
+  {
+   "path": "docs/evidence/forward/latency/2026-10-04_2026-10-04_latency_ledger.json",
+   "sha256_lf": "e6d09a9cca018c2b8d4934714fb93968ad9fb0be0801f7393903827e68ae4e74"
+  },
+  {
+   "path": "docs/evidence/forward/latency/2026-10-05_2026-10-05_latency_ledger.json",
+   "sha256_lf": "d05f59467531295679d93697f6ce595501bddfa0797de338b39edfeb46b9dbc2"
+  },
+  {
+   "path": "docs/evidence/forward/latency/2026-10-06_2026-10-06_latency_ledger.json",
+   "sha256_lf": "eec378143437c9d1a3cdc3f4727fdb0197de87beecf4305acdc89a77d49b2f8e"
+  },
+  {
+   "path": "docs/evidence/forward/latency/2026-10-07_2026-10-07_latency_ledger.json",
+   "sha256_lf": "efdd87daa2f7d7dd2e6791031274da635202b1b8574d3a88a0342d357d56bef5"
+  },
+  {
+   "path": "docs/evidence/forward/latency/2026-10-08_2026-10-08_latency_ledger.json",
+   "sha256_lf": "4f29f480d07fe59c2b46126b33790942dc72769ed4591dbb8e0db1676b9399ff"
+  },
+  {
+   "path": "docs/evidence/forward/latency/2026-10-09_2026-10-09_latency_ledger.json",
+   "sha256_lf": "89525ef2a3e1f8321c5868ff6771f79c6b90503de5c9a7ebe629f531b29243a2"
+  },
+  {
+   "path": "docs/evidence/forward/latency/2026-10-10_2026-10-10_latency_ledger.json",
+   "sha256_lf": "f35c4bbc7ec22ba974fda33cd0ada1f98bb202dee5f750a5c38aeb7d666ad9da"
+  },
+  {
+   "path": "docs/evidence/forward/latency/2026-10-12_2026-10-12_latency_ledger.json",
+   "sha256_lf": "78ab542a871bb06a085da795e3d2116bad1241dac520c12d58d566407335f388"
+  },
+  {
+   "path": "docs/evidence/forward/latency/2026-10-13_2026-10-13_latency_ledger.json",
+   "sha256_lf": "0e52de9cdd47c5dfe4d30bc95fd3ee56e1399c34198fa8918a8ff798023f17b9"
+  },
+  {
+   "path": "docs/evidence/forward/latency/2026-10-14_2026-10-14_latency_ledger.json",
+   "sha256_lf": "32a8df4892949b2b8c40d434739748816854c91171ace6a67b7357433898077f"
+  },
+  {
+   "path": "docs/evidence/forward/latency/2026-10-15_2026-10-15_latency_ledger.json",
+   "sha256_lf": "e14a8369636d3f8777a07ba660a8a95211d79cfc952a140688fdec3106482841"
+  },
+  {
+   "path": "docs/evidence/forward/latency/2026-10-16_2026-10-16_latency_ledger.json",
+   "sha256_lf": "482c8b41d5592d6b63adac2a5fa8417b6d14f6a12f6cab91eee478ae5154513b"
+  },
+  {
+   "path": "docs/evidence/forward/model2/m2/2026-10-02.json",
+   "sha256_lf": "2f384eb126750788ef5a116c54ad9e049f8ac3e3ae6694bac2db4c86f35be784"
+  },
+  {
+   "path": "docs/evidence/forward/model2/m2/2026-10-03.json",
+   "sha256_lf": "caf77a4e0869eafdae3832083bed8724b155be3c9e424619c1bc9124c3f3b8e0"
+  },
+  {
+   "path": "docs/evidence/forward/model2/m2/2026-10-04.json",
+   "sha256_lf": "d04956025a4012effff25c78909737cc47f812f60ddbf4b5559291f05e0c2dd9"
+  },
+  {
+   "path": "docs/evidence/forward/model2/m2/2026-10-05.json",
+   "sha256_lf": "5a35b8b8132f404b04a594ceb72e43f943172548cfb3b2936629fdd1323973da"
+  },
+  {
+   "path": "docs/evidence/forward/model2/m2/2026-10-06.json",
+   "sha256_lf": "89e10276e043cecd4c8f800a2a96825ff957d5b4715ee9950b2db5e59e66b543"
+  },
+  {
+   "path": "docs/evidence/forward/model2/m2/2026-10-07.json",
+   "sha256_lf": "7b95bb218829c0525ad41ae138d3ca3f33745d47985ea07fb215db8ef3611351"
+  },
+  {
+   "path": "docs/evidence/forward/model2/m2/2026-10-08.json",
+   "sha256_lf": "a40187874692ce2b42d06af08bb4cef3dba131b8aa03987fde0ebc0364bc47b1"
+  },
+  {
+   "path": "docs/evidence/forward/model2/m2/2026-10-09.json",
+   "sha256_lf": "85dccf8de774f63a1f96c4b3af59aa8f896a5012e73706b074b6f1dfafe84fad"
+  },
+  {
+   "path": "docs/evidence/forward/model2/m2/2026-10-10.json",
+   "sha256_lf": "9cbb2db82d6bcedf041858df317021847a7eed56081c9ded01e4353e82d8d051"
+  },
+  {
+   "path": "docs/evidence/forward/model2/m2/2026-10-12.json",
+   "sha256_lf": "73a6d10e1103811fb9e083dba699e3a5cdc70649e30624c521e8262c58e166c3"
+  },
+  {
+   "path": "docs/evidence/forward/model2/m2/2026-10-16.json",
+   "sha256_lf": "001639d62556f7033b0e3e46a49d10ad332207aa8a09150ffb4c536bbbd26873"
+  }
+ ],
+ "min_nights": 10,
+ "per_night": [
+  {
+   "feed": "statsapi_rest",
+   "flagged_games": 0,
+   "games": 9,
+   "n": 1132,
+   "night": "2026-09-24",
+   "offset_journal": false,
+   "p50": 22.5,
+   "p90": 37.5,
+   "p99": 58.5,
+   "reason": null,
+   "sport": "mlb",
+   "underpowered_games": 0
+  },
+  {
+   "feed": "statsapi_rest",
+   "flagged_games": 0,
+   "games": 20,
+   "n": 2069,
+   "night": "2026-09-25",
+   "offset_journal": false,
+   "p50": 23.0,
+   "p90": 36.5,
+   "p99": 54.5,
+   "reason": null,
+   "sport": "mlb",
+   "underpowered_games": 3
+  },
+  {
+   "feed": "statsapi_rest",
+   "flagged_games": 0,
+   "games": 15,
+   "n": 1352,
+   "night": "2026-09-26",
+   "offset_journal": false,
+   "p50": 24.0,
+   "p90": 40.0,
+   "p99": 59.5,
+   "reason": null,
+   "sport": "mlb",
+   "underpowered_games": 3
+  },
+  {
+   "feed": "statsapi_rest",
+   "flagged_games": 0,
+   "games": 3,
+   "n": 652,
+   "night": "2026-09-29",
+   "offset_journal": false,
+   "p50": 19.0,
+   "p90": 26.5,
+   "p99": 34.0,
+   "reason": null,
+   "sport": "mlb",
+   "underpowered_games": 1
+  },
+  {
+   "feed": "espn_scoreboard",
+   "flagged_games": 0,
+   "games": 1,
+   "n": 0,
+   "night": "2026-09-29",
+   "offset_journal": false,
+   "p50": null,
+   "p90": null,
+   "p99": null,
+   "reason": "NO_SOURCE_CLOCK",
+   "sport": "nfl",
+   "underpowered_games": 1
+  },
+  {
+   "feed": "statsapi_rest",
+   "flagged_games": 0,
+   "games": 6,
+   "n": 1484,
+   "night": "2026-09-30",
+   "offset_journal": false,
+   "p50": 19.5,
+   "p90": 27.5,
+   "p99": 34.0,
+   "reason": null,
+   "sport": "mlb",
+   "underpowered_games": 1
+  },
+  {
+   "feed": "statsapi_rest",
+   "flagged_games": 0,
+   "games": 4,
+   "n": 244,
+   "night": "2026-10-01",
+   "offset_journal": false,
+   "p50": 18.5,
+   "p90": 26.5,
+   "p99": 34.0,
+   "reason": null,
+   "sport": "mlb",
+   "underpowered_games": 2
+  },
+  {
+   "feed": "statsapi_rest",
+   "flagged_games": 0,
+   "games": 1,
+   "n": 0,
+   "night": "2026-10-02",
+   "offset_journal": false,
+   "p50": null,
+   "p90": null,
+   "p99": null,
+   "reason": "NO_EVENTS",
+   "sport": "mlb",
+   "underpowered_games": 1
+  },
+  {
+   "feed": "statsapi_rest",
+   "flagged_games": 0,
+   "games": 2,
+   "n": 573,
+   "night": "2026-10-03",
+   "offset_journal": false,
+   "p50": 18.5,
+   "p90": 26.5,
+   "p99": 38.5,
+   "reason": null,
+   "sport": "mlb",
+   "underpowered_games": 0
+  },
+  {
+   "feed": "espn_scoreboard",
+   "flagged_games": 0,
+   "games": 8,
+   "n": 195,
+   "night": "2026-10-04",
+   "offset_journal": false,
+   "p50": 39.5,
+   "p90": 57.5,
+   "p99": 106.5,
+   "reason": null,
+   "sport": "nfl",
+   "underpowered_games": 8
+  },
+  {
+   "feed": "statsapi_rest",
+   "flagged_games": 0,
+   "games": 2,
+   "n": 341,
+   "night": "2026-10-05",
+   "offset_journal": false,
+   "p50": 18.5,
+   "p90": 25.0,
+   "p99": 31.0,
+   "reason": null,
+   "sport": "mlb",
+   "underpowered_games": 1
+  },
+  {
+   "feed": "statsapi_rest",
+   "flagged_games": 0,
+   "games": 3,
+   "n": 580,
+   "night": "2026-10-06",
+   "offset_journal": false,
+   "p50": 18.0,
+   "p90": 25.0,
+   "p99": 31.5,
+   "reason": null,
+   "sport": "mlb",
+   "underpowered_games": 1
+  },
+  {
+   "feed": "espn_scoreboard",
+   "flagged_games": 0,
+   "games": 1,
+   "n": 179,
+   "night": "2026-10-06",
+   "offset_journal": false,
+   "p50": 36.5,
+   "p90": 50.5,
+   "p99": 76.5,
+   "reason": null,
+   "sport": "nfl",
+   "underpowered_games": 0
+  },
+  {
+   "feed": "statsapi_rest",
+   "flagged_games": 0,
+   "games": 5,
+   "n": 1087,
+   "night": "2026-10-07",
+   "offset_journal": false,
+   "p50": 19.0,
+   "p90": 28.0,
+   "p99": 36.0,
+   "reason": null,
+   "sport": "mlb",
+   "underpowered_games": 1
+  },
+  {
+   "feed": "espn_scoreboard",
+   "flagged_games": 0,
+   "games": 5,
+   "n": 0,
+   "night": "2026-10-07",
+   "offset_journal": false,
+   "p50": null,
+   "p90": null,
+   "p99": null,
+   "reason": "NO_EVENTS",
+   "sport": "nba",
+   "underpowered_games": 5
+  },
+  {
+   "feed": "statsapi_rest",
+   "flagged_games": 0,
+   "games": 4,
+   "n": 337,
+   "night": "2026-10-08",
+   "offset_journal": false,
+   "p50": 17.5,
+   "p90": 24.0,
+   "p99": 30.0,
+   "reason": null,
+   "sport": "mlb",
+   "underpowered_games": 2
+  },
+  {
+   "feed": "espn_scoreboard",
+   "flagged_games": 0,
+   "games": 8,
+   "n": 0,
+   "night": "2026-10-08",
+   "offset_journal": false,
+   "p50": null,
+   "p90": null,
+   "p99": null,
+   "reason": "NO_EVENTS",
+   "sport": "nba",
+   "underpowered_games": 8
+  },
+  {
+   "feed": "espn_scoreboard",
+   "flagged_games": 0,
+   "games": 4,
+   "n": 0,
+   "night": "2026-10-08",
+   "offset_journal": false,
+   "p50": null,
+   "p90": null,
+   "p99": null,
+   "reason": "NO_EVENTS",
+   "sport": "tennis",
+   "underpowered_games": 4
+  },
+  {
+   "feed": "statsapi_rest",
+   "flagged_games": 0,
+   "games": 1,
+   "n": 272,
+   "night": "2026-10-09",
+   "offset_journal": false,
+   "p50": 19.5,
+   "p90": 27.5,
+   "p99": 33.5,
+   "reason": null,
+   "sport": "mlb",
+   "underpowered_games": 0
+  },
+  {
+   "feed": "espn_scoreboard",
+   "flagged_games": 0,
+   "games": 6,
+   "n": 0,
+   "night": "2026-10-09",
+   "offset_journal": false,
+   "p50": null,
+   "p90": null,
+   "p99": null,
+   "reason": "NO_EVENTS",
+   "sport": "nba",
+   "underpowered_games": 6
+  },
+  {
+   "feed": "espn_scoreboard",
+   "flagged_games": 0,
+   "games": 1,
+   "n": 108,
+   "night": "2026-10-09",
+   "offset_journal": false,
+   "p50": 41.5,
+   "p90": 53.5,
+   "p99": 61.5,
+   "reason": null,
+   "sport": "nfl",
+   "underpowered_games": 0
+  },
+  {
+   "feed": "espn_scoreboard",
+   "flagged_games": 0,
+   "games": 3,
+   "n": 0,
+   "night": "2026-10-09",
+   "offset_journal": false,
+   "p50": null,
+   "p90": null,
+   "p99": null,
+   "reason": "NO_EVENTS",
+   "sport": "soccer",
+   "underpowered_games": 3
+  },
+  {
+   "feed": "espn_scoreboard",
+   "flagged_games": 0,
+   "games": 8,
+   "n": 0,
+   "night": "2026-10-09",
+   "offset_journal": false,
+   "p50": null,
+   "p90": null,
+   "p99": null,
+   "reason": "NO_EVENTS",
+   "sport": "tennis",
+   "underpowered_games": 8
+  },
+  {
+   "feed": "espn_scoreboard",
+   "flagged_games": 0,
+   "games": 1,
+   "n": 0,
+   "night": "2026-10-10",
+   "offset_journal": false,
+   "p50": null,
+   "p90": null,
+   "p99": null,
+   "reason": "NO_EVENTS",
+   "sport": "nba",
+   "underpowered_games": 1
+  },
+  {
+   "feed": "espn_scoreboard",
+   "flagged_games": 0,
+   "games": 1,
+   "n": 47,
+   "night": "2026-10-10",
+   "offset_journal": false,
+   "p50": 35.5,
+   "p90": 45.5,
+   "p99": 57.0,
+   "reason": null,
+   "sport": "ncaaf",
+   "underpowered_games": 0
+  },
+  {
+   "feed": "statsapi_rest",
+   "flagged_games": 0,
+   "games": 2,
+   "n": 327,
+   "night": "2026-10-12",
+   "offset_journal": false,
+   "p50": 17.5,
+   "p90": 24.5,
+   "p99": 29.0,
+   "reason": null,
+   "sport": "mlb",
+   "underpowered_games": 1
+  },
+  {
+   "feed": "espn_scoreboard",
+   "flagged_games": 0,
+   "games": 4,
+   "n": 0,
+   "night": "2026-10-12",
+   "offset_journal": false,
+   "p50": null,
+   "p90": null,
+   "p99": null,
+   "reason": "NO_EVENTS",
+   "sport": "nba",
+   "underpowered_games": 4
+  },
+  {
+   "feed": "espn_scoreboard",
+   "flagged_games": 0,
+   "games": 4,
+   "n": 0,
+   "night": "2026-10-12",
+   "offset_journal": false,
+   "p50": null,
+   "p90": null,
+   "p99": null,
+   "reason": "NO_EVENTS",
+   "sport": "soccer",
+   "underpowered_games": 4
+  },
+  {
+   "feed": "statsapi_rest",
+   "flagged_games": 0,
+   "games": 3,
+   "n": 190,
+   "night": "2026-10-13",
+   "offset_journal": false,
+   "p50": 17.5,
+   "p90": 25.0,
+   "p99": 31.5,
+   "reason": null,
+   "sport": "mlb",
+   "underpowered_games": 1
+  },
+  {
+   "feed": "espn_scoreboard",
+   "flagged_games": 0,
+   "games": 5,
+   "n": 0,
+   "night": "2026-10-13",
+   "offset_journal": false,
+   "p50": null,
+   "p90": null,
+   "p99": null,
+   "reason": "NO_EVENTS",
+   "sport": "nba",
+   "underpowered_games": 5
+  },
+  {
+   "feed": "espn_scoreboard",
+   "flagged_games": 0,
+   "games": 1,
+   "n": 60,
+   "night": "2026-10-13",
+   "offset_journal": false,
+   "p50": 40.0,
+   "p90": 50.0,
+   "p99": 71.0,
+   "reason": null,
+   "sport": "nfl",
+   "underpowered_games": 0
+  },
+  {
+   "feed": "espn_scoreboard",
+   "flagged_games": 0,
+   "games": 7,
+   "n": 0,
+   "night": "2026-10-13",
+   "offset_journal": false,
+   "p50": null,
+   "p90": null,
+   "p99": null,
+   "reason": "NO_EVENTS",
+   "sport": "soccer",
+   "underpowered_games": 7
+  },
+  {
+   "feed": "statsapi_rest",
+   "flagged_games": 0,
+   "games": 2,
+   "n": 334,
+   "night": "2026-10-14",
+   "offset_journal": false,
+   "p50": 17.0,
+   "p90": 24.5,
+   "p99": 30.0,
+   "reason": null,
+   "sport": "mlb",
+   "underpowered_games": 1
+  },
+  {
+   "feed": "espn_scoreboard",
+   "flagged_games": 0,
+   "games": 7,
+   "n": 0,
+   "night": "2026-10-14",
+   "offset_journal": false,
+   "p50": null,
+   "p90": null,
+   "p99": null,
+   "reason": "NO_EVENTS",
+   "sport": "nba",
+   "underpowered_games": 7
+  },
+  {
+   "feed": "statsapi_rest",
+   "flagged_games": 0,
+   "games": 3,
+   "n": 354,
+   "night": "2026-10-15",
+   "offset_journal": false,
+   "p50": 17.5,
+   "p90": 25.5,
+   "p99": 30.0,
+   "reason": null,
+   "sport": "mlb",
+   "underpowered_games": 1
+  },
+  {
+   "feed": "espn_scoreboard",
+   "flagged_games": 0,
+   "games": 7,
+   "n": 0,
+   "night": "2026-10-15",
+   "offset_journal": false,
+   "p50": null,
+   "p90": null,
+   "p99": null,
+   "reason": "NO_EVENTS",
+   "sport": "nba",
+   "underpowered_games": 7
+  },
+  {
+   "feed": "statsapi_rest",
+   "flagged_games": 0,
+   "games": 1,
+   "n": 382,
+   "night": "2026-10-16",
+   "offset_journal": false,
+   "p50": 17.0,
+   "p90": 23.5,
+   "p99": 31.0,
+   "reason": null,
+   "sport": "mlb",
+   "underpowered_games": 0
+  },
+  {
+   "feed": "espn_scoreboard",
+   "flagged_games": 0,
+   "games": 2,
+   "n": 0,
+   "night": "2026-10-16",
+   "offset_journal": false,
+   "p50": null,
+   "p90": null,
+   "p99": null,
+   "reason": "NO_EVENTS",
+   "sport": "nba",
+   "underpowered_games": 2
+  },
+  {
+   "feed": "espn_scoreboard",
+   "flagged_games": 1,
+   "games": 1,
+   "n": 191,
+   "night": "2026-10-16",
+   "offset_journal": false,
+   "p50": 40.5,
+   "p90": 54.0,
+   "p99": 85.5,
+   "reason": null,
+   "sport": "nfl",
+   "underpowered_games": 0
+  }
+ ],
+ "per_sport": {
+  "mlb": {
+   "book_moved_first": {
+    "den": 3388,
+    "games": 30,
+    "hi": 0.5165,
+    "lo": 0.4498,
+    "num": 1637,
+    "share": 0.4832
+   },
+   "events_n": 11710,
+   "feeds": [
+    "statsapi_rest"
+   ],
+   "games_listed": 86,
+   "nights_listed": 18,
+   "nights_with_events": 17,
+   "p50": {
+    "max": 24.0,
+    "median": 18.5,
+    "min": 17.0
+   },
+   "p90": {
+    "max": 40.0,
+    "median": 26.5,
+    "min": 23.5
+   },
+   "p99": {
+    "max": 59.5,
+    "median": 33.5,
+    "min": 29.0
+   },
+   "verdict": "POOLED"
+  },
+  "nba": {
+   "book_moved_first": null,
+   "events_n": 0,
+   "feeds": [
+    "espn_scoreboard"
+   ],
+   "games_listed": 45,
+   "nights_listed": 9,
+   "nights_with_events": 0,
+   "verdict": "INSUFFICIENT"
+  },
+  "ncaaf": {
+   "book_moved_first": null,
+   "events_n": 47,
+   "feeds": [
+    "espn_scoreboard"
+   ],
+   "games_listed": 1,
+   "nights_listed": 1,
+   "nights_with_events": 1,
+   "p50": {
+    "max": 35.5,
+    "median": 35.5,
+    "min": 35.5
+   },
+   "p90": {
+    "max": 45.5,
+    "median": 45.5,
+    "min": 45.5
+   },
+   "p99": {
+    "max": 57.0,
+    "median": 57.0,
+    "min": 57.0
+   },
+   "verdict": "INSUFFICIENT"
+  },
+  "nfl": {
+   "book_moved_first": null,
+   "events_n": 733,
+   "feeds": [
+    "espn_scoreboard"
+   ],
+   "games_listed": 13,
+   "nights_listed": 6,
+   "nights_with_events": 5,
+   "p50": {
+    "max": 41.5,
+    "median": 40.0,
+    "min": 36.5
+   },
+   "p90": {
+    "max": 57.5,
+    "median": 53.5,
+    "min": 50.0
+   },
+   "p99": {
+    "max": 106.5,
+    "median": 76.5,
+    "min": 61.5
+   },
+   "verdict": "INSUFFICIENT"
+  },
+  "soccer": {
+   "book_moved_first": null,
+   "events_n": 0,
+   "feeds": [
+    "espn_scoreboard"
+   ],
+   "games_listed": 14,
+   "nights_listed": 3,
+   "nights_with_events": 0,
+   "verdict": "INSUFFICIENT"
+  },
+  "tennis": {
+   "book_moved_first": null,
+   "events_n": 0,
+   "feeds": [
+    "espn_scoreboard"
+   ],
+   "games_listed": 12,
+   "nights_listed": 2,
+   "nights_with_events": 0,
+   "verdict": "INSUFFICIENT"
+  }
+ },
+ "schema": "inplay_latency_paper_v1",
+ "staleness_15s": {
+  "mlb": {
+   "fresh": 5823,
+   "nights": 9,
+   "stale": 6001,
+   "stale_share": 0.5075
+  },
+  "nba": {
+   "fresh": 2205,
+   "nights": 3,
+   "stale": 2676,
+   "stale_share": 0.5482
+  },
+  "nfl": {
+   "fresh": 959,
+   "nights": 3,
+   "stale": 1948,
+   "stale_share": 0.6701
+  },
+  "soccer": {
+   "fresh": 1752,
+   "nights": 2,
+   "stale": 1629,
+   "stale_share": 0.4818
+  }
+ }
+}

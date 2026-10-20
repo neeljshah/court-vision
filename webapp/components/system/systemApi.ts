@@ -137,9 +137,10 @@ export interface FunnelArtifacts {
 
 // Same-origin Next route (no P5_BASE) -- always reachable when the page renders.
 async function getLocalJson<T>(path: string, signal?: AbortSignal): Promise<T | Unavailable> {
-  if (isSnapshotMode) return fetchHonest<T>(path, { signal });
+  // Snapshot: the route handler is exported as a static file under the base path.
+  const url = isSnapshotMode ? `${process.env.NEXT_PUBLIC_BASE_PATH || ""}${path}` : path;
   try {
-    const r = await fetch(path, { signal, cache: "no-store" });
+    const r = await fetch(url, { signal, cache: "no-store" });
     if (!r.ok) return { status: "unavailable", reason: `HTTP ${r.status}` };
     return (await r.json()) as T;
   } catch (e) {

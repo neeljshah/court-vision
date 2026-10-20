@@ -136,7 +136,7 @@ export default function Home() {
         </p>
         <div className="mt-4 flex flex-wrap items-center gap-3">
           <Link href="/evidence"
-            className="inline-flex min-h-[44px] items-center border border-primary bg-primary px-4 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            className="inline-flex min-h-[44px] items-center border border-primary bg-primary px-4 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 [:root:not(.dark)_&]:border-[#8F6010] [:root:not(.dark)_&]:bg-[#8F6010] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             Read the evidence -&gt;
           </Link>
