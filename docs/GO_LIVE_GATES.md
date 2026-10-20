@@ -36,6 +36,11 @@ evidence in hand, not a date.
 | G3 | started -- the paper maker now fills only on a through-trade and a fee-netted markout function exists ([paper_maker.py](../scripts/platformkit/execution/paper_maker.py), [markout.py](../scripts/platformkit/execution/markout.py)); no markout series has been collected |
 | G4 | started -- the in-play breaker and the API kill switch now fail closed and are breach-tested; exposure and notional caps are not built |
 | G5 | open (human-only) |
-| G6 | not started -- zero weeks collected |
+| G6 | zero weeks collected |
+
+**Update (appended 2026-10-19; the table above is left as written on 2026-09-17):** the forward paper
+desk has run since 2026-10-06 ([JOB_EVIDENCE_PACKET.md section 5](JOB_EVIDENCE_PACKET.md)). Its fill-realism
+step runs in counts-only mode with no markout series, so G3 is still partial and G6 still has zero
+qualifying weeks. No gate status has changed.
 
 **Navigate:** [Evidence index](../EVIDENCE.md) - [README](../README.md) - [Doc map](INDEX.md)
