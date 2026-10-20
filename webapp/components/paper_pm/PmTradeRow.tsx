@@ -55,7 +55,10 @@ export function toBetId(r: PaperTrailRow): string {
   ];
   // The static export writes /paper/<this encoded id>/ verbatim, so links must
   // encode it once more: the browser decodes one layer before the host looks
-  // the directory up (a single-encoded href 404s on GitHub Pages).
+  // the directory up (a single-encoded href 404s on GitHub Pages). Links also
+  // end with "/": Next skips its trailing-slash rewrite when the last segment
+  // contains a dot (these ids do), and the host redirect it relied on re-encodes
+  // the path.
   return encodeURIComponent(parts.join("|"));
 }
 
@@ -85,7 +88,7 @@ export function PmTradeRow({ row, rank }: Props) {
       ) : null}
       <td className="px-2 py-1.5">
         {published ? (
-          <Link href={`/paper/${encodeURIComponent(betId)}`} className="hover:underline">
+          <Link href={`/paper/${encodeURIComponent(betId)}/`} className="hover:underline">
             <span className="font-medium">{humanizeMatchup(row.matchup || row.game_id)}</span>
             <span className="ml-1.5 font-mono text-[10px] text-slate-600">
               {row.sport?.toUpperCase()}
@@ -138,7 +141,7 @@ export function PmTradeRow({ row, rank }: Props) {
       <td className="px-2 py-1.5 text-right">
         {published ? (
           <Link
-            href={`/paper/${encodeURIComponent(betId)}`}
+            href={`/paper/${encodeURIComponent(betId)}/`}
             className="font-mono text-[10px] text-slate-500 hover:text-slate-300"
             aria-label={`View detail for ${row.matchup || row.game_id}`}
           >
