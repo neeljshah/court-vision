@@ -4,6 +4,7 @@
 // UNITS / probability only -- there is NO dollar column or $ field here.
 
 import Link from "next/link";
+import { snapshotHasBet } from "@/lib/fetchHonest";
 import { cn } from "@/lib/utils";
 import { fmtPct } from "@/lib/utils";
 import { EMPTY_CELL, tierBadgeClass } from "@/lib/tokens";
@@ -67,6 +68,8 @@ export function PmTradeRow({ row, rank }: Props) {
   const res = deriveResult(row);
   const voided = res === "void";
   const betId = toBetId(row);
+  // Snapshot export: only the bets in manifest.bet_ids have a detail page.
+  const published = snapshotHasBet(betId);
 
   return (
     <tr
@@ -81,12 +84,21 @@ export function PmTradeRow({ row, rank }: Props) {
         </td>
       ) : null}
       <td className="px-2 py-1.5">
-        <Link href={`/paper/${encodeURIComponent(betId)}`} className="hover:underline">
-          <span className="font-medium">{humanizeMatchup(row.matchup || row.game_id)}</span>
-          <span className="ml-1.5 font-mono text-[10px] text-slate-600">
-            {row.sport?.toUpperCase()}
+        {published ? (
+          <Link href={`/paper/${encodeURIComponent(betId)}`} className="hover:underline">
+            <span className="font-medium">{humanizeMatchup(row.matchup || row.game_id)}</span>
+            <span className="ml-1.5 font-mono text-[10px] text-slate-600">
+              {row.sport?.toUpperCase()}
+            </span>
+          </Link>
+        ) : (
+          <span title="Detail page is not included in this snapshot">
+            <span className="font-medium">{humanizeMatchup(row.matchup || row.game_id)}</span>
+            <span className="ml-1.5 font-mono text-[10px] text-slate-600">
+              {row.sport?.toUpperCase()}
+            </span>
           </span>
-        </Link>
+        )}
       </td>
       <td className="px-2 py-1.5 font-mono text-[11px] text-slate-400">
         {row.market_type || EMPTY_CELL}
@@ -124,13 +136,19 @@ export function PmTradeRow({ row, rank }: Props) {
         {fmtUnits(row.stake_units)}
       </td>
       <td className="px-2 py-1.5 text-right">
-        <Link
-          href={`/paper/${encodeURIComponent(betId)}`}
-          className="font-mono text-[10px] text-slate-500 hover:text-slate-300"
-          aria-label={`View detail for ${row.matchup || row.game_id}`}
-        >
-          detail &rsaquo;
-        </Link>
+        {published ? (
+          <Link
+            href={`/paper/${encodeURIComponent(betId)}`}
+            className="font-mono text-[10px] text-slate-500 hover:text-slate-300"
+            aria-label={`View detail for ${row.matchup || row.game_id}`}
+          >
+            detail &rsaquo;
+          </Link>
+        ) : (
+          <span className="font-mono text-[10px] text-slate-600" title="Detail page is not included in this snapshot">
+            no detail
+          </span>
+        )}
       </td>
     </tr>
   );
