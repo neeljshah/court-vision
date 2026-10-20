@@ -60,7 +60,7 @@ a.ev-chip:hover .ev-chip__asof,
 a.ev-chip:hover .ev-chip__status { color: var(--ev-link); }
 .ev-chip:focus-visible { outline: 2px solid var(--ev-focus); outline-offset: 2px; }
 .ev-chip__glyph { font-weight: 700; }
-.ev-chip__src { overflow: hidden; text-overflow: ellipsis; max-width: 26ch; }
+.ev-chip__src { overflow: hidden; text-overflow: ellipsis; max-width: 34ch; }
 .ev-chip__asof,
 .ev-chip__status { color: var(--ev-ink-2); }
 .ev-chip[data-status="validation_pending"] {
@@ -133,7 +133,7 @@ a.ev-chip:hover .ev-chip__status { color: var(--ev-link); }
   text-transform: uppercase;
   color: var(--ev-ink-2);
 }
-.ev-notclaimed ul { margin: 0; padding-left: 1.1em; }
+.ev-notclaimed ul { margin: 0; padding-left: 1.1em; list-style: disc; }
 .ev-notclaimed li { margin: 2px 0; }
 .ev-notclaimed__extra { margin: 6px 0 0; }
 .ev-notclaimed__foot {
