@@ -10,8 +10,6 @@ import BetDetailPageClient from "./BetDetailPageClient";
 // Static export pre-renders every path; live/dev builds render any id on demand.
 export const dynamicParams = process.env.NEXT_PUBLIC_DATA_MODE !== "snapshot";
 
-}
-
 export async function generateStaticParams() {
   const ids = bakedFillParams();
   // output:'export' errors on 0 static paths -- a placeholder renders the honest "not found".

@@ -6,15 +6,17 @@ import type { PaperTrailRow } from "@/lib/p5api";
 import { paperDetailHref } from "@/lib/paperLinks";
 import { fillParam, findFill, canonicalId } from "../paperIds";
 import { bakedFillParams } from "@/components/paper_pm/bakedFillParams.server";
+import { generateStaticParams } from "@/app/(terminal)/paper/[betId]/page";
 
 const rows = (trail as unknown as { trail: PaperTrailRow[] }).trail;
 
 describe("forward fill ids", () => {
-  it("the baked trail has 29 fills with 29 distinct ids, and the page exports exactly those", () => {
+  it("the baked trail has 29 fills with 29 distinct ids, and the page exports exactly those", async () => {
     const params = rows.map(fillParam);
     expect(rows.length).toBe(29);
     expect(new Set(params).size).toBe(29);
     expect(bakedFillParams()).toEqual(params);
+    expect(await generateStaticParams()).toEqual(params.map(betId => ({ betId })));
   });
 
   it("link -> directory -> param -> lookup returns the same fill for every row", () => {
