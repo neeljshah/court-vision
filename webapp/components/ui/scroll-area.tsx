@@ -14,7 +14,9 @@ const ScrollArea = React.forwardRef<
     className={cn("relative overflow-hidden", className)}
     {...props}
   >
-    <ScrollAreaPrimitive.Viewport className="h-full w-full rounded-[inherit]">
+    {/* tabIndex: a scrollable viewport must be keyboard reachable (WCAG 2.1.1; axe
+        scrollable-region-focusable). Focus ring comes from the global :focus-visible rule. */}
+    <ScrollAreaPrimitive.Viewport className="h-full w-full rounded-[inherit]" tabIndex={0}>
       {children}
     </ScrollAreaPrimitive.Viewport>
     <ScrollBar />

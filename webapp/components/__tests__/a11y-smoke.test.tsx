@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 
 // a11y-smoke -- a focused accessibility baseline for the SHARED components a
 // keyboard / screen-reader user touches on every page: the Nav, the InfoTip
@@ -113,9 +113,11 @@ describe("a11y smoke -- SignalVerdictBadge", () => {
 });
 
 describe("a11y smoke -- OnboardingOverlay", () => {
-  it("auto-opens on first run with a dialog + named sections + honest rails", async () => {
+  it("opens from the Help button with a dialog + named sections + honest rails", async () => {
     const { container } = render(<OnboardingOverlay />);
-    // Radix Dialog opens => role=dialog with an accessible title.
+    // The guide no longer auto-opens (it would cover the landing page); the Help
+    // button loads the dialog module on demand, so wait for the role to appear.
+    fireEvent.click(screen.getByRole("button", { name: /open the how-to-read-this guide/i }));
     const dialog = await screen.findByRole("dialog");
     expect(
       within(dialog).getByText(/what is this & how to read it/i),

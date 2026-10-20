@@ -65,7 +65,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       </head>
       <body className="min-h-screen bg-background text-foreground antialiased">
         {isSnapshotMode && (
-          <div className="border-b border-warning bg-warning/10 px-4 py-1 text-center font-mono text-[11px] uppercase tracking-wide text-warning">
+          // A named region: axe "region" flags content outside every landmark, and the
+          // banner precedes AppShell's <main>. Copy unchanged.
+          <div
+            role="region"
+            aria-label="Demo snapshot notice"
+            className="border-b border-warning bg-warning/10 px-4 py-1 text-center font-mono text-[11px] uppercase tracking-wide text-warning"
+          >
             Demo -- read-only snapshot of the live system
             {generatedAt ? ` (model data as of ${generatedAt})` : ""}
             {deskDate ? `; paper desk record through ${deskDate}` : ""}; no live data, paper

@@ -111,9 +111,11 @@ export function ExecutionDetail({ row, loading, error }: Props) {
       <div className="space-y-0">
         {/* Selection: matchup + market + side (the traded position) */}
         <DetailRow label="Selection">
-          <span data-testid="detail-selection" className="font-mono text-slate-100">
+          {/* The traded position is the page's title: an <h1> at the same size and
+              weight (the page had no level-one heading; axe page-has-heading-one). */}
+          <h1 data-testid="detail-selection" className="font-mono text-base font-normal text-slate-100">
             {`${humanizeMatchup(row.matchup || row.game_id)} / ${describeBet(row)}`}
-          </span>
+          </h1>
         </DetailRow>
         <DetailRow label="Matchup">{humanizeMatchup(row.matchup || row.game_id)}</DetailRow>
         <DetailRow label="Sport">

@@ -48,7 +48,8 @@ describe("analytics workspace interactions", () => {
   });
   it("changes pitch measurements without mixing denominators", () => {
     render(<Workspace data={data} calibrationExample={null} {...launchCounts} />);
-    fireEvent.click(screen.getByRole("button", { name: "Inspect Changeup" }));
+    // The button's name is its visible text plus the hidden pitch name ("CH 12.3% Changeup").
+    fireEvent.click(screen.getByRole("button", { name: /Changeup/ }));
     const panel = screen.getByRole("heading", { name: "Inside the pitch corpus" }).closest("section")!;
     expect(within(panel).getByText("71,270 pitches in mix")).toBeInTheDocument();
     expect(within(panel).getByText("86.3")).toBeInTheDocument();

@@ -161,11 +161,14 @@ export function Receipt(r: ReceiptData) {
             : { textDecoration: "underline dotted", textDecorationColor: "var(--rule-strong)", textUnderlineOffset: 2 }),
         }}
         aria-expanded={open}
-        aria-label={`Receipt: ${r.label || r.verdict} for ${resting}`}
         onClick={() => (mode === "pinned" ? setMode("closed") : openPop("pinned"))}
       >
         <VerdictDot verdict={r.verdict} />
         {resting}
+        {/* The name is computed from content (dot label + stamp) so it always contains the
+            visible text -- an aria-label that reordered the words tripped the
+            label-content-name-mismatch audit. The hidden suffix keeps "receipt" in the name. */}
+        <span className="sr-only">{` -- receipt: ${r.label || r.verdict}`}</span>
       </button>
       {open ? (
         <span
