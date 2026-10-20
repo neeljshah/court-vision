@@ -5,7 +5,8 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import type { Desk, Refusal } from "@/lib/desk.server";
 import { Panel, PanelHead } from "@/components/ui/terminal";
-import { ReceiptChip } from "@/components/showcase/ReceiptChip";
+import { AsOfBadge } from "@/components/evidence/AsOfBadge";
+import { ReceiptChip } from "@/components/evidence/ReceiptChip";
 
 export const PAPER_HEADER =
   "PAPER DESK -- paper only, simulated maker quotes on the recorded Kalshi tape; not a verdict";
@@ -61,8 +62,9 @@ export function Section({ title, asOf, source, children }: {
     <Panel>
       <PanelHead
         title={title}
-        asOf={asOf ?? null}
-        right={source ? <ReceiptChip sourceArtifact={source} asOf={asOf ?? null} verified="descriptive_only" /> : null}
+        right={source
+          ? <ReceiptChip source={source} asOf={asOf ?? null} status="descriptive_only" />
+          : asOf != null ? <AsOfBadge asOf={asOf} /> : null}
       />
       {children}
     </Panel>

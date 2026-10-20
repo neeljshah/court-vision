@@ -10,7 +10,7 @@ import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { loadArtifact, type Artifact } from "@/lib/showcase.server";
-import { Receipt } from "@/components/analytics/Receipt";
+import { ReceiptChip } from "@/components/evidence/ReceiptChip";
 import { findingMeta } from "@/lib/analytics/og";
 
 import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
@@ -191,19 +191,17 @@ export default function ForecastLifePage() {
       </div>
 
       <div style={{ marginTop: 20, display: "flex", flexWrap: "wrap", gap: 16 }}>
-        <Receipt
-          sourceArtifact="scripts/platformkit/analytics_showcase/out/novel_line_half_life.json"
+        <ReceiptChip
+          source="scripts/platformkit/analytics_showcase/out/novel_line_half_life.json"
           asOf={halfLife.as_of || halfLife.generated_at || undefined}
-          dateKind={halfLife.as_of ? "source" : halfLife.generated_at ? "snapshot" : undefined}
-          label="descriptive_only"
-          verdict="descriptive_only"
+          kind={halfLife.as_of ? "source" : halfLife.generated_at ? "snapshot" : undefined}
+          status="descriptive_only"
         />
-        <Receipt
-          sourceArtifact="scripts/platformkit/analytics_showcase/out/info_arrival_curve.json"
+        <ReceiptChip
+          source="scripts/platformkit/analytics_showcase/out/info_arrival_curve.json"
           asOf={arrival.as_of || arrival.generated_at || undefined}
-          dateKind={arrival.as_of ? "source" : arrival.generated_at ? "snapshot" : undefined}
-          label="descriptive_only"
-          verdict="descriptive_only"
+          kind={arrival.as_of ? "source" : arrival.generated_at ? "snapshot" : undefined}
+          status="descriptive_only"
         />
       </div>
 

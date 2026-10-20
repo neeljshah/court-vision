@@ -7,7 +7,7 @@
 import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import { loadArtifact, type Artifact } from "@/lib/showcase.server";
-import { Receipt } from "@/components/analytics/Receipt";
+import { ReceiptChip } from "@/components/evidence/ReceiptChip";
 import { VerdictFlipCases, type VerdictFlipCase } from "@/components/analytics/verdict-flips/VerdictFlipCases";
 import { findingMeta } from "@/lib/analytics/og";
 
@@ -132,7 +132,7 @@ export default function VerdictFlipsPage() {
       ) : null}
 
       <div style={{ marginTop: 20 }}>
-        <Receipt sourceArtifact={source_artifact || ""} asOf={generated_at || undefined} dateKind="snapshot" label="descriptive_only" verdict="descriptive_only" />
+        <ReceiptChip source={source_artifact || ""} asOf={generated_at || undefined} kind="snapshot" status="descriptive_only" />
       </div>
     </div>
   );

@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { CalibrationReliability } from "@/components/analytics/calibration/CalibrationReliability";
 import { InspectorReadingTrail } from "@/components/analytics/InspectorReadingTrail";
-import { Receipt } from "@/components/analytics/Receipt";
+import { ReceiptChip } from "@/components/evidence/ReceiptChip";
+import { Term } from "@/components/evidence/Term";
 import { loadCalibrationReliability } from "@/lib/analytics/calibrationReliability";
 import { snapshot } from "@/lib/analytics/labHelpers";
 import "./calibration.css";
@@ -55,8 +56,8 @@ export default function CalibrationPage() {
     <section className="calibration-definitions" aria-labelledby="calibration-definitions-title">
       <h2 id="calibration-definitions-title">Three different properties</h2>
       <dl>
-        <div><dt>Brier score</dt><dd>The mean squared error of the forecast probability against the 0/1 outcome. Lower is better; it combines calibration and resolution.</dd></div>
-        <div><dt>Calibration error</dt><dd>ECE and the reliability curve measure how far observed frequency sits from the forecast in each bin. This page shows the published reliability bins and ECE summaries.</dd></div>
+        <div><dt><Term id="brier">Brier score</Term></dt><dd>The mean squared error of the forecast probability against the 0/1 outcome. Lower is better; it combines calibration and resolution.</dd></div>
+        <div><dt><Term id="calibration-vs-resolution">Calibration error</Term></dt><dd>ECE and the reliability curve measure how far observed frequency sits from the forecast in each bin. This page shows the published reliability bins and ECE summaries.</dd></div>
         <div><dt>Sharpness</dt><dd>How far forecasts sit from the base rate. Sharpness is different from Brier and calibration error, and this page does not show a sharpness measure.</dd></div>
       </dl>
     </section>
@@ -74,6 +75,6 @@ export default function CalibrationPage() {
       </div>
       <p className="calibration-note">The scored MLB and international soccer rows publish lower market Brier values. The total row remains unscored because its source has no resolved outcome label.</p>
     </section>
-    <div className="calibration-receipt"><Receipt sourceArtifact="public/data/showcase/calibration_stability.json" asOf={meta?.asOf || undefined} label="descriptive_only" verdict="descriptive_only" /></div>
+    <div className="calibration-receipt"><ReceiptChip source="public/data/showcase/calibration_stability.json" asOf={meta?.asOf ?? null} status="descriptive_only" /></div>
   </div>;
 }

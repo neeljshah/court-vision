@@ -9,6 +9,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Panel, PanelHead } from "@/components/ui/terminal";
 import { ReceiptChip } from "@/components/showcase/ReceiptChip";
+import { AsOfBadge } from "@/components/evidence/AsOfBadge";
+import { ReceiptChip as EvidenceReceipt } from "@/components/evidence/ReceiptChip";
+import { VerdictLabel, toPacketVerdict } from "@/components/evidence/VerdictLabel";
 import { DeltaBars } from "@/components/charts/DeltaBars";
 import { loadArtifact } from "@/lib/showcase.server";
 import { listPacks } from "@/lib/atlas.server";
@@ -101,6 +104,7 @@ export default function Home() {
   const rows = board?.rows ?? [];
   const asOf = board?.generated_at ?? null;
   const win = rows.find((r) => r.checkpoint === "total_runs|end_inning_7");
+  const winVerdict = win ? toPacketVerdict(win.verdict) : null;
   const mlbAll = brier?.sports?.mlb?.grains?.all;
 
   const packs = listPacks();
@@ -157,15 +161,13 @@ export default function Home() {
           {win ? (
             <>
               <div className="mt-2 font-data text-3xl font-semibold text-success tabular">
-                {fmt(win.paired_delta_mean)} CRPS
-                <ReceiptChip sourceArtifact={win.source} asOf={asOf} verified="edge_claimed:false"
-                  verdict={win.verdict} n={win.n} ci={win.paired_delta_95ci} />
+                {fmt(win.paired_delta_mean)} CRPS{" "}
+                <EvidenceReceipt compact source={win.source} asOf={asOf} status="edge_claimed:false"
+                  note={`n = ${win.n}, 95% CI [${fmt(win.paired_delta_95ci[0])}, ${fmt(win.paired_delta_95ci[1])}]`} />
               </div>
-              <div className="mt-1 font-data text-[11px] text-faint">
-                as of {day(asOf) ?? "date not published"} &middot; n = {win.n} &middot; {win.verdict.replace(/_/g, " ")}
-              </div>
-              <div className="font-data text-[11px] text-faint">
-                small-sample retrospective diagnostic; not evidence of market outperformance
+              <div className="mt-1 flex flex-wrap items-baseline gap-x-2 gap-y-1 font-data text-[11px] text-faint">
+                <AsOfBadge asOf={asOf} /> &middot; n = {win.n} &middot;{" "}
+                {winVerdict ? <VerdictLabel verdict={winVerdict} /> : win.verdict.replace(/_/g, " ")}
               </div>
               <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
                 Model total-runs forecast is sharper than the market&apos;s at end of
@@ -187,16 +189,16 @@ export default function Home() {
             {mlbAll && (
               <>
                 {" "}Model Brier {mlbAll.brier_model.toFixed(4)} vs market{" "}
-                {mlbAll.brier_market.toFixed(4)} on MLB (n={mlbAll.n.toLocaleString()})
-                <ReceiptChip sourceArtifact="scripts/platformkit/analytics_showcase/out/brier_skill_scores.json"
-                  asOf={brier?.generated_at ?? null} verified="descriptive_only" />
+                {mlbAll.brier_market.toFixed(4)} on MLB (n={mlbAll.n.toLocaleString()}){" "}
+                <EvidenceReceipt compact source="scripts/platformkit/analytics_showcase/out/brier_skill_scores.json"
+                  asOf={brier?.generated_at ?? null} status="descriptive_only" />
                 ; NBA end-Q1 favors the market too.
               </>
             )}{" "}
             Both readings are true. We publish both.
           </p>
-          <div className="mt-2 font-data text-[11px] text-faint">
-            as of {day(brier?.generated_at ?? asOf) ?? "date not published"} &middot; pregame: matches or trails the devigged close on every market tested
+          <div className="mt-2 flex flex-wrap items-baseline gap-x-2 gap-y-1 font-data text-[11px] text-faint">
+            <AsOfBadge asOf={brier?.generated_at ?? asOf} /> &middot; pregame: matches or trails the devigged close on every market tested
           </div>
         </div>
       </div>
@@ -257,8 +259,8 @@ export default function Home() {
         <>
           <p className="mt-6 flex items-baseline gap-2 text-sm text-muted-foreground">
             <span className="text-foreground">{honesty.headline}</span>
-            <ReceiptChip sourceArtifact="scripts/platformkit/analytics_showcase/out/honesty_exhibit.json"
-              asOf={honesty.generated_at} verified="descriptive_only" />
+            <EvidenceReceipt compact source="scripts/platformkit/analytics_showcase/out/honesty_exhibit.json"
+              asOf={honesty.generated_at} status="descriptive_only" />
           </p>
           <div className="mt-2 grid grid-cols-2 gap-px border border-border bg-border md:grid-cols-4">
             {strip.map(([k, l]) => (

@@ -22,6 +22,8 @@ import { OpenPositions } from "@/components/paper_pm/OpenPositions";
 import { VenueSummary } from "@/components/paper_pm/VenueSummary";
 import { PanelErrorBoundary } from "@/components/p6/PanelErrorBoundary";
 import { cn } from "@/lib/utils";
+import { FigureValue } from "@/components/evidence/FigureValue";
+import { NotClaimed } from "@/components/evidence/NotClaimed";
 import { PaperTradingTally } from "./PaperTradingTally";
 import { PaperTradingDoneSummary } from "./PaperTradingDoneSummary";
 import {
@@ -137,7 +139,8 @@ export default function PaperTradingPage() {
         <span className="font-semibold text-foreground">Units convention:</span>{" "}
         Stakes are in <span className="font-mono font-semibold">UNITS</span>, not dollars.
         Quarter-Kelly sizing -- a stake can exceed 1.0u when the model is highly confident.
-        No dollar edge is claimed. CLV here means the price taken versus the close; no CLV reading exists as of 2026-10-19 (evidence packet section 5).
+        No dollar edge is claimed. CLV here means the price taken versus the close; the forward CLV gate (G6){" "}
+        <FigureValue k="g6_status" asOf={false} />.
       </div>
 
       {/* BANKROLL + EQUITY CURVE -- "how much I would have made" in UNITS */}
@@ -294,10 +297,12 @@ export default function PaperTradingPage() {
         )}
       </Panel>
 
-      <p className="mt-4 text-[11px] text-faint">
-        Paper mode -- stakes are units (no dollars). CLV (better-number-than-close) is
-        the only honest calibration yardstick. No edge is claimed.
-      </p>
+      <div className="mt-4">
+        <NotClaimed>
+          Paper mode -- stakes are units (no dollars). CLV (better-number-than-close) is the only honest
+          calibration yardstick. No edge is claimed.
+        </NotClaimed>
+      </div>
     </div>
   );
 }

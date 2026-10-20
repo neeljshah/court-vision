@@ -2,9 +2,31 @@
 // in-game arms quote live, whether a daily fit exists, and the canonical
 // calibration figures with their as_of and source path. Build-time read.
 
-import { loadDesk, refusalsFor, fmt } from "@/lib/desk.server";
+import type { ReactNode } from "react";
+import { loadDesk, refusalsFor, fmt, type Figure } from "@/lib/desk.server";
 import { DeskShell, NotAvailable, Section, T } from "@/components/desk/DeskShell";
-import { ReceiptChip } from "@/components/showcase/ReceiptChip";
+import { AsOfBadge } from "@/components/evidence/AsOfBadge";
+import { FigureValue, FigureVerdict } from "@/components/evidence/FigureValue";
+import { ReceiptChip } from "@/components/evidence/ReceiptChip";
+import { COMPARISON_FIGURES, isComparisonFigureKey } from "@/lib/figures";
+
+// A desk-export figure whose key is canonical renders from lib/figures.ts (the generated
+// copy of CANONICAL_FIGURES.json), so the desk's own copy of the number cannot drift from
+// the packet; an unknown key falls back to the export's values with the same receipt.
+function figureRow(f: Figure): ReactNode[] {
+  if (isComparisonFigureKey(f.key)) {
+    const k = f.key;
+    const canon = COMPARISON_FIGURES[k];
+    const cell = (field: "model" | "close" | "gap" | "ci95" | "n") =>
+      <FigureValue key={field} k={k} field={field} asOf={false} receipt={false} />;
+    return [canon.market ?? k, canon.metric ?? "-", cell("model"), cell("close"), cell("gap"), cell("ci95"), cell("n"),
+      <FigureVerdict key="v" k={k} />, <AsOfBadge key="d" asOf={canon.as_of} />,
+      <ReceiptChip key="r" compact source={canon.source} asOf={canon.as_of} status="edge_claimed:false" />];
+  }
+  return [f.market ?? f.key, f.metric ?? "-", fmt(f.model ?? null), fmt(f.close ?? null), fmt(f.gap ?? null),
+    f.ci95 ? `[${f.ci95[0]}, ${f.ci95[1]}]` : "-", f.n ?? "-", f.verdict ?? "-", <AsOfBadge key="d" asOf={f.as_of} />,
+    f.source ? <ReceiptChip key="r" compact source={f.source} asOf={f.as_of ?? null} status="descriptive_only" /> : "-"];
+}
 
 export const metadata = {
   title: "Desk models",
@@ -40,18 +62,18 @@ export default function DeskModelsPage() {
           </div>
           {c.figures.length ? (
             <T head={["figure", "metric", "model", "reference", "gap", "95% CI", "n", "verdict", "as of", ""]}
-              rows={c.figures.map((f) => [f.market ?? f.key, f.metric ?? "-", fmt(f.model ?? null),
-                fmt(f.close ?? null), fmt(f.gap ?? null), f.ci95 ? `[${f.ci95[0]}, ${f.ci95[1]}]` : "-",
-                f.n ?? "-", f.verdict ?? "-", f.as_of ?? "-",
-                f.source ? <ReceiptChip key="r" sourceArtifact={f.source} asOf={f.as_of ?? null}
-                  verified="descriptive_only" verdict={f.verdict ?? null} /> : "-"])} />
+              rows={c.figures.map(figureRow)} />
           ) : (
             <NotAvailable refusals={[{ section: `models.${c.sport}.figures`,
               reason: "no canonical calibration figure for this sport in CANONICAL_FIGURES.json" }]} />
           )}
-          {c.figures.map((f) => f.licenses ? (
-            <p key={f.key} className="px-3 pb-2 text-[11px] text-faint">{f.licenses} (source {f.source})</p>
-          ) : null)}
+          {c.figures.map((f) => {
+            const licenses = isComparisonFigureKey(f.key) ? COMPARISON_FIGURES[f.key].licenses : f.licenses;
+            const source = isComparisonFigureKey(f.key) ? COMPARISON_FIGURES[f.key].source : f.source;
+            return licenses ? (
+              <p key={f.key} className="px-3 pb-2 text-[11px] text-faint">{licenses} (source {source})</p>
+            ) : null;
+          })}
         </Section>
       )) : (
         <Section title="Model cards"><NotAvailable refusals={refusalsFor(desk, "models")} /></Section>

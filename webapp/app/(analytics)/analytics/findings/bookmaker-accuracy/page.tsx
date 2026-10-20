@@ -7,7 +7,7 @@
 import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import { loadArtifact, type Artifact } from "@/lib/showcase.server";
-import { Receipt } from "@/components/analytics/Receipt";
+import { ReceiptChip } from "@/components/evidence/ReceiptChip";
 import { findingMeta } from "@/lib/analytics/og";
 
 import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
@@ -201,12 +201,11 @@ export default function BookmakerAccuracyPage() {
       ) : null}
 
       <div style={{ marginTop: 20 }}>
-        <Receipt
-          sourceArtifact="scripts/platformkit/analytics_showcase/out/bookmaker_accuracy.json"
+        <ReceiptChip
+          source="scripts/platformkit/analytics_showcase/out/bookmaker_accuracy.json"
           asOf={data.generated_at || undefined}
-          dateKind="snapshot"
-          label="descriptive_only"
-          verdict="descriptive_only"
+          kind="snapshot"
+          status="descriptive_only"
         />
       </div>
     </div>

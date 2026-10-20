@@ -11,7 +11,7 @@ import {
 } from "@/lib/figures";
 import { AsOfBadge } from "./AsOfBadge";
 import { ReceiptChip } from "./ReceiptChip";
-import { VerdictLabel, toPacketVerdict } from "./VerdictLabel";
+import { VerdictLabel, toPacketVerdict, type PacketVerdict } from "./VerdictLabel";
 import { formatFigureField, isRepoPath } from "./kit";
 
 type Common = {
@@ -26,7 +26,9 @@ type Common = {
   className?: string;
 };
 
-export type ComparisonField<K extends ComparisonFigureKey> = Exclude<keyof (typeof COMPARISON_FIGURES)[K], "kind" | "key">;
+/** The fields of one comparison figure; for the union key, any field some comparison figure carries. */
+export type ComparisonField<K extends ComparisonFigureKey = ComparisonFigureKey> =
+  K extends ComparisonFigureKey ? Exclude<keyof (typeof COMPARISON_FIGURES)[K], "kind" | "key"> : never;
 
 export type FigureValueProps<K extends ComparisonFigureKey = ComparisonFigureKey> =
   | ({ k: CountFigureKey; field?: undefined } & Common)
@@ -44,13 +46,24 @@ export function figureText<K extends ComparisonFigureKey>(props: FigureValueProp
   return props.format ? props.format(raw) : formatFigureField(field, raw);
 }
 
+/** A comparison figure's packet verdict (null when the artifact word is not a packet label) and its MDE. */
+export function figureVerdict(k: ComparisonFigureKey): { verdict: PacketVerdict | null; mde: number | null } {
+  const fig = COMPARISON_FIGURES[k];
+  return { verdict: toPacketVerdict(fig.verdict), mde: "mde" in fig && typeof fig.mde === "number" ? fig.mde : null };
+}
+
+/** The verdict label of a comparison figure, qualified by the packet; a non-packet word renders as plain text. */
+export function FigureVerdict({ k }: { k: ComparisonFigureKey }) {
+  const { verdict, mde } = figureVerdict(k);
+  return verdict ? <VerdictLabel verdict={verdict} mde={mde} /> : <span data-figure-key={k}>{COMPARISON_FIGURES[k].verdict}</span>;
+}
+
 export function FigureValue<K extends ComparisonFigureKey>(props: FigureValueProps<K>) {
   const fig = FIGURES[props.k] as CanonicalFigure;
   const field = props.field ? String(props.field) : "value";
   const text = figureText(props);
   const receipt = figureReceipt(fig);
-  const verdict = props.verdict && isComparisonFigureKey(props.k) ? toPacketVerdict(COMPARISON_FIGURES[props.k].verdict) : null;
-  const mde = "mde" in fig && typeof fig.mde === "number" ? fig.mde : null;
+  const { verdict, mde } = props.verdict && isComparisonFigureKey(props.k) ? figureVerdict(props.k) : { verdict: null, mde: null };
   const status = fig.kind === "comparison" ? "edge_claimed:false" : "descriptive_only";
   return (
     <span className={["ev-figure", props.className ?? ""].filter(Boolean).join(" ")} data-figure-key={fig.key} data-figure-field={field}>

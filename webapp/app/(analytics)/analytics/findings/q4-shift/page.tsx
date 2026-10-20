@@ -11,7 +11,7 @@ import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { loadArtifact, type Artifact } from "@/lib/showcase.server";
-import { Receipt } from "@/components/analytics/Receipt";
+import { ReceiptChip } from "@/components/evidence/ReceiptChip";
 import { findingMeta } from "@/lib/analytics/og";
 
 import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
@@ -207,7 +207,7 @@ export default function Q4ShiftPage() {
       ) : null}
 
       <div style={{ marginTop: 24 }}>
-        <Receipt sourceArtifact={sourceArtifact} asOf={generated_at || undefined} dateKind="snapshot" label="descriptive_only" verdict="descriptive_only" />
+        <ReceiptChip source={sourceArtifact} asOf={generated_at || undefined} kind="snapshot" status="descriptive_only" />
       </div>
 
       <p style={{ ...lede, marginTop: 32 }}>

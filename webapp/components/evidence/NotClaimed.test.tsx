@@ -8,7 +8,9 @@ describe("NotClaimed", () => {
     const aside = screen.getByRole("complementary", { name: "What this is not" });
     const items = within(aside).getAllByRole("listitem").map((li) => li.textContent);
     expect(items).toEqual([...NOT_CLAIMED_LINES]);
-    expect(aside.textContent).toMatch(/No edge, ROI or profit claim/);
+    expect(aside.textContent).toMatch(/No edge, profit or return-on-investment claim/);
+    // The terminal pages ban the bare ROI token outside a negation; the block spells it out.
+    expect(aside.textContent).not.toMatch(/\bROI\b/);
     expect(aside.textContent).toMatch(/Paper only\. No real-money order/);
     const receipt = within(aside).getByRole("link");
     expect(receipt).toHaveAttribute("href", "https://github.com/neeljshah/court-vision/blob/master/docs/JOB_EVIDENCE_PACKET.md");

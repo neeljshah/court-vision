@@ -10,7 +10,7 @@
 import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import { loadArtifact, type Artifact } from "@/lib/showcase.server";
-import { Receipt } from "@/components/analytics/Receipt";
+import { ReceiptChip } from "@/components/evidence/ReceiptChip";
 import { findingMeta } from "@/lib/analytics/og";
 
 import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
@@ -202,12 +202,11 @@ export default function LeagueParityPage() {
       </div>
 
       <div style={{ marginTop: 20 }}>
-        <Receipt
-          sourceArtifact="scripts/platformkit/analytics_showcase/out/league_parity_index.json"
+        <ReceiptChip
+          source="scripts/platformkit/analytics_showcase/out/league_parity_index.json"
           asOf={data.generated_at || data.as_of || undefined}
-          dateKind={data.generated_at ? "snapshot" : data.as_of ? "source" : undefined}
-          label="descriptive_only"
-          verdict="descriptive_only"
+          kind={data.generated_at ? "snapshot" : data.as_of ? "source" : undefined}
+          status="descriptive_only"
         />
       </div>
     </div>

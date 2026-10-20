@@ -11,7 +11,7 @@ import { PACKET_PATH } from "./kit";
 
 export const NOT_CLAIMED_LINES = [
   "Paper only. No real-money order has been placed; real money stays human-gated behind a forward closing-line-value record.",
-  "No edge, ROI or profit claim. Every figure is a calibration or execution-quality measurement against the devigged close, not a track record.",
+  "No edge, profit or return-on-investment claim. Every figure is a calibration or execution-quality measurement against the devigged close, not a track record.",
   "Retracted headline figures are listed in the evidence packet with their corrections and are never quoted as current.",
 ] as const;
 

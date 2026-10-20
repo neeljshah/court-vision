@@ -1,7 +1,7 @@
 // index.ts -- the evidence kit's public surface. Every page renders a number, its as-of
 // date, its source path and its verdict label through these, never ad hoc.
 export { AsOfBadge, asOfText } from "./AsOfBadge";
-export { FigureValue, figureText, figureReceipt } from "./FigureValue";
+export { FigureValue, FigureVerdict, figureText, figureReceipt, figureVerdict } from "./FigureValue";
 export { NotClaimed, NOT_CLAIMED_LINES } from "./NotClaimed";
 export { ReceiptChip, receiptText, type ReceiptChipProps } from "./ReceiptChip";
 export { Term } from "./Term";

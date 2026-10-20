@@ -7,6 +7,7 @@ import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { findingsIndex } from "@/lib/analytics/findingsIndex";
+import { AsOfBadge } from "@/components/evidence/AsOfBadge";
 
 export const metadata: Metadata = {
   title: "Findings",
@@ -64,7 +65,7 @@ export default function FindingsIndexPage() {
             </div>
             <p style={{ margin: 0, fontSize: 14.5, lineHeight: 1.6, color: "var(--ink-2)" }}>{f.dek}</p>
             <p className="mono" style={{ marginTop: 12, fontSize: 12, color: "var(--ink-3)" }}>
-              as of {f.asOf || "date not published"} / {f.sport}
+              <AsOfBadge asOf={f.asOf} /> / {f.sport}
             </p>
             <p className="mono" style={{ marginTop: 4, fontSize: 12, color: "var(--ink-3)" }}>{f.artifactStatus}</p>
           </Link>
