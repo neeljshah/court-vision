@@ -14,10 +14,22 @@ describe("dossier coverage panel", () => {
 
   it("states the artifact limitation and renders the published histogram", () => {
     render(<Coverage data={data} sport="nba" />);
-    const histogram = screen.getByRole("img", { name: "Categories filled histogram" });
+    const histogram = screen.getByRole("list", { name: "Categories filled histogram" });
     expect(within(histogram).getByText("82 dossiers (6.6%)")).toBeInTheDocument();
     expect(screen.getByText("Pace Fit")).toBeInTheDocument();
     expect(screen.getByText("The artifact does not define how the published completeness score is derived.")).toBeInTheDocument();
+  });
+
+  it("exposes each histogram bin with its category count, dossier count and share", () => {
+    render(<Coverage data={data} sport="nba" />);
+    const histogram = screen.getByRole("list", { name: "Categories filled histogram" });
+    const bins = within(histogram).getAllByRole("listitem");
+    expect(bins).toHaveLength(data.coverage.histogram.length);
+    data.coverage.histogram.forEach((bin, index) => {
+      expect(within(bins[index]).getByText(`${bin.categoriesFilled} categories`)).toBeVisible();
+      expect(within(bins[index]).getByText(`${bin.dossiers.toLocaleString("en-US")} dossiers (${(bin.share * 100).toFixed(1)}%)`)).toBeVisible();
+    });
+    expect(screen.queryByRole("img", { name: "Categories filled histogram" })).not.toBeInTheDocument();
   });
 
   it("provides a route to entity profiles when coverage is unavailable", () => {
