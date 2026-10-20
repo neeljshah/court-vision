@@ -90,7 +90,7 @@ REB 1.92, AST 1.39, FG3M 0.89. Accuracy only; no market comparison exists for th
 
 The forward paper series has run daily since 2026-10-06 (the 2026-10-05 version of this page said it had
 not started). All numbers come from
-[JOB_EVIDENCE_PACKET.md section 5](JOB_EVIDENCE_PACKET.md#5-forward-paper-record-2026-10-06--2026-10-18-as-of-2026-10-19), which carries the receipt paths under
+[JOB_EVIDENCE_PACKET.md section 5](JOB_EVIDENCE_PACKET.md#5-forward-paper-record-2026-10-06--2026-10-16-as-of-2026-10-19), which carries the receipt paths under
 `docs/evidence/forward/`. PAPER ONLY.
 
 - **Served:** 113 Kalshi in-game games on prospective schedules over 2026-10-06 to 2026-10-16 (mlb 15,

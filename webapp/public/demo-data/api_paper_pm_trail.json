@@ -1,0 +1,12 @@
+{
+ "as_of": "2026-10-09T06:00:00Z",
+ "executed": false,
+ "generated_at_utc": "2026-10-09T20:11:36Z",
+ "last_night": "2026-10-08",
+ "reason": "These simulated fills carry no model probability, so the model-vs-price trail cannot be built.",
+ "source_artifact": [
+  "docs/evidence/forward/paper_result/LEDGER.jsonl"
+ ],
+ "status": "unavailable",
+ "through": "2026-10-16"
+}

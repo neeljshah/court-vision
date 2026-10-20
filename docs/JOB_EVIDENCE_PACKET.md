@@ -301,7 +301,7 @@ during the audit. Last reconciled: 2026-06-11.*
 
 ---
 
-## 5. Forward paper record 2026-10-06 .. 2026-10-18 (as of 2026-10-19)
+## 5. Forward paper record 2026-10-06 .. 2026-10-16 (as of 2026-10-19)
 
 PAPER ONLY. No order was placed, nothing here is a return figure, and every number below is
 transcribed from a receipt under `docs/evidence/forward/` (path beside it; committed unless noted).

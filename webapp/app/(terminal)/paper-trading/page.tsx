@@ -85,8 +85,11 @@ export default function PaperTradingPage() {
           <h1 className="text-xl font-semibold text-foreground">Paper Trading Center</h1>
           {isSnapshotMode && (
             <p className="mt-1 text-[12px] text-amber-400">
-              This page needs the live paper service, which the static snapshot does not include. The forward
-              paper record (nights, coverage, fills) is on the <Link href="/desk/" className="underline">desk page</Link>.
+              Static snapshot: the settled book below is the forward paper record (paper maker fills, four ledger
+              nights: 2026-10-03, 10-04, 10-05 and 10-08; 29 fills, counts and units only, no return figure;
+              in-game rows: stake_units = contracts); the equity, CLV and bankroll
+              panels show the July model snapshot or are unavailable. The full forward record (nights, coverage,
+              fills) is on the <Link href="/desk/" className="underline">desk page</Link>.
             </p>
           )}
           <p className="mt-0.5 text-[12px] text-muted-foreground">

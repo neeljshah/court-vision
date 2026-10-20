@@ -164,6 +164,9 @@ export default function Home() {
               <div className="mt-1 font-data text-[11px] text-faint">
                 as of {day(asOf) ?? "date not published"} &middot; n = {win.n} &middot; {win.verdict.replace(/_/g, " ")}
               </div>
+              <div className="font-data text-[11px] text-faint">
+                small-sample retrospective diagnostic; not evidence of market outperformance
+              </div>
               <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
                 Model total-runs forecast is sharper than the market&apos;s at end of
                 inning 7 (n={win.n}, 95% CI [{fmt(win.paired_delta_95ci[0])},{" "}

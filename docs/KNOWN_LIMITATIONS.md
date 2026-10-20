@@ -1,6 +1,6 @@
 # Known Limitations
 
-Concrete operational state of CourtVision as of **2026-06-11** (forward-record lines updated 2026-10-20). This file is kept honest so
+Concrete operational state of CourtVision as of **2026-10-20**. Changelog 2026-10-20: stale 2026-06 operational statements re-dated or corrected (daemon count, polarity-bug CLV estimate, scraper status, CV counts); sections not re-measured since 2026-06-11 are marked as such. This file is kept honest so
 that the README and ARCHITECTURE don't have to litter their headline sections with caveats.
 Audit trail of fixes: [`../CHANGELOG.md`](../CHANGELOG.md). Live operational state:
 `CLAUDE-state.md` *(private repository)*.
@@ -33,7 +33,7 @@ Full proof artifacts and source-code root causes: **[JOB_EVIDENCE_PACKET.md](JOB
 ### Sharp-book CLV — no reading yet (as of 2026-10-19)
 
 No historical Pinnacle closing-line archive exists publicly. The Pinnacle scraper daemon
-(`scripts/pinnacle_scraper.py`) accumulates closes from Oct 2026 onward. The forward paper series
+(`scripts/pinnacle_scraper.py`) was built to accumulate closes from Oct 2026; no Pinnacle-close reading exists as of 2026-10-19. The forward paper series
 has run since 2026-10-06 and, as of 2026-10-19, computes no closing-line value and no fee-netted
 markout ([JOB_EVIDENCE_PACKET.md section 5](JOB_EVIDENCE_PACKET.md)). Until that reading exists, no
 real-money execution is justified.
@@ -72,7 +72,7 @@ are validated on **structure**, not profit:
 
 ## Data coverage limits
 
-### CV coverage
+### CV coverage (counts as of 2026-06-11; CV paused since 2026-09-17, see README)
 
 - **~85 games tracked** in `data/tracking/` (YOLOv8 + SIFT + OSNet output)
 - **7 games with full feature extraction** (defender_distance / spacing / fatigue end-to-end)
@@ -88,11 +88,11 @@ Every CV feature carries **SHAP importance ≈ 0.0** in production prop models t
 (`cv_lift_report.json: has_cv_data: false`). The plumbing is complete; the lift is unproven.
 Do not claim a CV predictive edge until the 80-game retrain clears.
 
-### Sportsbook scraper coverage
+### Sportsbook scraper coverage (status as of 2026-06-11; not re-verified)
 
 | Book | Live scraper status |
 |------|---------------------|
-| Pinnacle | Running (closes accumulate from Oct 2026) |
+| Pinnacle | Built; no close reading as of 2026-10-19 |
 | Bovada | Running |
 | FanDuel | Running |
 | PrizePicks | Running |
@@ -134,12 +134,12 @@ not yet trained on enough real-close data to apply asymmetrically per stat.
 matchup); `_SIM_CACHE` freezes the first noisy result; corr(sim_win_prob, home_won) = **−0.194**.
 
 - **v1 LGB models learned to flip internally during training** → fine in production.
-- **v2/v3 in-play heads blend 85% raw inverted signal × 15% model output** → silent ROI bug.
-- **Estimated CLV impact when patched: +1.5pp to +3.5pp.**
+- **v2/v3 in-play heads blend 85% raw inverted signal × 15% model output** (2026-05-27 audit) → a defect in the in-play heads' inputs. It is not the measurement artifact retracted in packet section 4 (the +18.38% pregame figure was a market-follow artifact).
+- **CLV impact of a patch: not measured.** No closing-line-value reading exists as of 2026-10-19 ([JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md) section 5); the earlier unmeasured estimate was removed 2026-10-20.
 - **Why unpatched:** patch requires coordinated v1-LGB retrain cascade, gated behind that work.
 - Full audit: `vault/Models/Polarity Bug Audit 2026-05-27.md` (local-only vault).
 
-Surfacing this publicly because it's a real, measurable, unfixed bug that affects in-play CLV.
+Surfacing this publicly because it is a real, unfixed bug in the in-play heads' inputs (as of the 2026-05-27 audit; not re-checked since).
 
 ### AST candidate edge RETRACTED (2026-07-21)
 
@@ -183,8 +183,8 @@ max-loss risk on correlated slates.
 
 ### Daemon stability
 
-Of the 28 production daemons (`scripts/daemon_registry.json`), **multiple go red intermittently** (Railway deploy in rollback
-loop at last check; scraper heartbeats go stale on IP rotation events). Architecture is
+Of the 9 long-running daemons under a watchdog (README.md Engine row, as of 2026-10-19; audited in [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md) section 4), **some went red intermittently at the last check in 2026-06** (Railway deploy in rollback
+loop; scraper heartbeats go stale on IP rotation events; not re-measured since). Architecture is
 production-ready in source; deployment ops surface is a known weakness.
 
 Known fragile services:
@@ -196,7 +196,7 @@ Known fragile services:
 
 ### Test surface gaps
 
-- **~7,400 tests collected**; ~97–98% pass locally with a documented tail.
+- **About 7,400 tests collected** (README Engine row, as of 2026-10-19); the ~97–98% local pass rate is a 2026-06-11 figure, not re-run.
 - Critical-path: 48/48 pass (gate1, devig, kelly, clv, calibration). In-play subset: 63/63 pass.
 - Some suites fail transiently on Windows (cp1252 encoding) and RunPod (missing pyarrow on
   fresh pods). Not prediction-critical.
@@ -228,7 +228,7 @@ When discussing CourtVision publicly:
 
 ---
 
-*Last verified: 2026-06-11. Audit trail: [`../CHANGELOG.md`](../CHANGELOG.md).*
+*Last verified: 2026-06-11 (header, retraction table and Sharp-book CLV section re-dated 2026-10-20). Audit trail: [`../CHANGELOG.md`](../CHANGELOG.md).*
 
 
 ---

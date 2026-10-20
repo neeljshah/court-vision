@@ -95,7 +95,7 @@ Read this section with its caveat: these rows show *discipline*, not a working t
 The execution modules below are published as readable source; their wider import closure lives in the
 private tree, so they are not runnable from this repository.
 The forward paper series has run since 2026-10-06 (last row below and
-[JOB_EVIDENCE_PACKET.md section 5](docs/JOB_EVIDENCE_PACKET.md#5-forward-paper-record-2026-10-06--2026-10-18-as-of-2026-10-19)); it has no
+[JOB_EVIDENCE_PACKET.md section 5](docs/JOB_EVIDENCE_PACKET.md#5-forward-paper-record-2026-10-06--2026-10-16-as-of-2026-10-19)); it has no
 calibration verdict as of 2026-10-19, and it skips days when the host laptop is off. The in-game models trail the live
 market reference (section C). Both facts are part of the record.
 

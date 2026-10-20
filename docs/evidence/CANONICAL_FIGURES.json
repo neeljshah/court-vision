@@ -11,7 +11,8 @@
     "docs/PUBLIC_EVIDENCE.md",
     "docs/MARKET_EFFICIENCY_PROOF.md",
     "docs/CLV_AND_MARKOUT.md",
-    "docs/KALSHI_NOTE.md"
+    "docs/KALSHI_NOTE.md",
+    "AGENTS.md"
   ],
   "surface_roots": ["README.md", "EVIDENCE.md", "docs"],
   "exclude_prefixes": ["docs/research/", "docs/strategy/", "docs/evidence/tracking/"],
@@ -38,6 +39,47 @@
       "why": "MLB moneyline and soccer O/U 2.5 TRAIL the close with 95% CIs above zero (DM_RECOMPUTE_2026-09-24); 'within noise' holds only for NBA moneyline, which is underpowered."
     }
   ],
+  "canonical_counts": {
+    "why": "Build-volume, site-size, forward-window and G6-status figures that drifted across the public pages (docs/research/R20g_recruiter_scan_audit_2026-10-19.md fix 5; settled in docs/research/PR5_REVIEW_2026-10-20.md). Checked only on count_surfaces; a line with a framing word is exempt.",
+    "count_surfaces": [
+      "README.md", "EVIDENCE.md", "docs/PUBLIC_EVIDENCE.md", "docs/QUANT_BRIEF.md",
+      "docs/JOB_EVIDENCE_PACKET.md", "docs/INDEX.md", "docs/CAPABILITIES.md",
+      "docs/HIRE_PACKAGE.md", "docs/START_HERE.md", "AGENTS.md"
+    ],
+    "figures": [
+      {
+        "key": "public_commit_count", "value": 6508, "as_of": "2026-10-19",
+        "pattern": "(?<![\\d,.])(\\d[\\d,]*)\\+? commits\\b",
+        "source": "git rev-list --count origin/master in the public clone at merge base 6a3520ffe (2026-10-19); docs/research/PR5_REVIEW_2026-10-20.md",
+        "historical": [
+          {"value": 5504, "as_of": "2026-09-07", "requires": "(?i)\\bMar\\b|2026-09-07|audit date",
+           "source": "docs/JOB_EVIDENCE_PACKET.md section 4 (lines 276-277): the Mar-Sep 2026 audit count; allowed only on a line that dates it"}
+        ]
+      },
+      {
+        "key": "published_module_count", "value": 77, "as_of": "2026-10-19",
+        "pattern": "(?<![\\d,.~])(\\d+) (?:published source |analytics |measurement )?modules\\b",
+        "unless": "(?i)recorded-analytics inventory",
+        "unless_why": "docs/INDEX.md lists a separate 23-module recorded-analytics inventory (evidence/analytical-depth.md); approximate '~N modules' codebase sizes are excluded by the pattern.",
+        "source": "module_count in webapp/public/data/showcase/site_manifest.json (copy of scripts/platformkit/analytics_showcase/out/site_manifest.json)"
+      },
+      {
+        "key": "titled_findings_count", "value": 17, "as_of": "2026-10-19",
+        "pattern": "(?<![\\d,.])(\\d+) (?:titled |published )?findings\\b",
+        "source": "count of finding pages: ls -d 'webapp/app/(analytics)/analytics/findings'/*/ | wc -l"
+      },
+      {
+        "key": "forward_window_end", "value": "2026-10-16", "as_of": "2026-10-19",
+        "pattern": "2026-10-06\\s*(?:to|through|\\.\\.|--?|\u2013)\\s*(2026-10-\\d{2})",
+        "source": "docs/JOB_EVIDENCE_PACKET.md section 5: last served night 2026-10-16 (no schedule on 10-17 or 10-18); window starts 2026-10-06"
+      },
+      {
+        "key": "g6_status", "value": "has not started as of 2026-10-19 (zero weeks collected)", "as_of": "2026-10-19",
+        "forbidden": "(?i)zero qualifying weeks",
+        "source": "docs/GO_LIVE_GATES.md G6 row ('not started -- zero weeks collected'); docs/research/PR5_REVIEW_2026-10-20.md"
+      }
+    ]
+  },
   "figures": [
     {
       "key": "mlb_ml_pregame_vs_close",

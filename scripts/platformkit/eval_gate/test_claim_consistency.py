@@ -83,3 +83,68 @@ def test_full_default_surface_is_clean():
     assert not [s for s in surf if s.startswith(("docs/research/", "docs/strategy/"))]
     assert len(surf) > 100
     assert check(ROOT) == []
+
+
+# --- canonical_counts (commits, modules, findings, forward window, G6 wording) ---
+from scripts.platformkit.eval_gate.claim_consistency import explain, scan_counts  # noqa: E402
+
+
+def test_commit_count_drift_caught_and_dated_history_passes():
+    assert _kinds(scan_counts("c.md", "built with 6,800+ commits since March", CFG)) == ["COUNT"]
+    assert scan_counts("c.md", "holds 6,508 commits from 2026-03-09 to 2026-10-19", CFG) == []
+    assert scan_counts("c.md", "5,504 commits, Mar-Sep 2026", CFG) == []  # dated audit count
+    assert _kinds(scan_counts("c.md", "5,504 commits in the repo", CFG)) == ["COUNT"]
+    assert scan_counts("c.md", "the 8,600+ commits figure was retracted", CFG) == []
+
+
+def test_module_count_drift_caught():
+    assert _kinds(scan_counts("m.md", "74 analytics modules", CFG)) == ["COUNT"]
+    assert _kinds(scan_counts("m.md", "54 published source modules", CFG)) == ["COUNT"]
+    assert scan_counts("m.md", "77 measurement modules and ~130 modules of research code", CFG) == []
+
+
+def test_findings_count_drift_caught():
+    assert _kinds(scan_counts("f.md", "29 papers, 18 findings", CFG)) == ["COUNT"]
+    assert scan_counts("f.md", "17 titled findings", CFG) == []
+
+
+def test_forward_window_drift_caught():
+    assert _kinds(scan_counts("w.md", "## 5. Forward paper record 2026-10-06 .. 2026-10-18", CFG)) == ["COUNT"]
+    assert _kinds(scan_counts("w.md", "(PACKET.md#5-forward-paper-record-2026-10-06--2026-10-18-as-of)", CFG)) == ["COUNT"]
+    assert scan_counts("w.md", "Forward paper record 2026-10-06 to 2026-10-16", CFG) == []
+
+
+def test_g6_zero_qualifying_weeks_is_forbidden():
+    assert _kinds(scan_counts("g.md", "G6 has zero qualifying weeks as of 2026-10-19", CFG)) == ["WORDING"]
+    assert scan_counts("g.md", "G6 has not started as of 2026-10-19 (zero weeks collected)", CFG) == []
+
+
+def test_count_check_runs_only_on_count_surfaces(tmp_path):
+    planted = tmp_path / "other.md"
+    planted.write_text("6,800+ commits\n", encoding="utf-8")
+    assert check(ROOT, [str(planted)], defaults=False) == []  # not a count surface
+    assert "AGENTS.md" in CFG["surfaces"]  # retracted-figure scan covers AGENTS.md too
+
+
+def test_counts_match_their_sources():
+    by = {f["key"]: f for f in CFG["canonical_counts"]["figures"]}
+    for f in by.values():
+        assert f["source"] and re.match(r"\d{4}-\d{2}-\d{2}$", f["as_of"]), f["key"]
+    import json
+    man = json.loads((ROOT / "webapp/public/data/showcase/site_manifest.json").read_text(encoding="utf-8"))
+    assert man["module_count"] == by["published_module_count"]["value"]
+    pages = list((ROOT / "webapp/app/(analytics)/analytics/findings").glob("*/page.tsx"))
+    assert len(pages) == by["titled_findings_count"]["value"]
+
+
+def test_explain_prints_every_figure_with_source(capsys):
+    lines = explain(CFG)
+    keys = [f["key"] for f in CFG["canonical_counts"]["figures"] + CFG["figures"]]
+    assert all(any(l.startswith(k + " = ") and " <- " in l for l in lines) for k in keys)
+    assert main(["--repo-root", str(ROOT), "--explain"]) == 0
+    assert "public_commit_count = 6508" in capsys.readouterr().out
+
+
+def test_real_repo_is_green(capsys):
+    assert main(["--repo-root", str(ROOT)]) == 0
+    assert "claim_consistency: 0 finding(s)" in capsys.readouterr().out

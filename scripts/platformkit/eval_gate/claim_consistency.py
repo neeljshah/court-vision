@@ -12,9 +12,21 @@ surface_roots (minus local-only trees and dated harness memos before the cutoff)
              and none in the markdown heading above it.
   LANGUAGE   a strict-language surface (the methods pages) carries a forbidden token.
   MISSING    a listed surface does not exist.
+  COUNT      on a canonical_counts.count_surfaces page (no framing word on the line): a commit
+             count, published-module count, findings count or forward-window end date that
+             differs from canonical_counts (a dated historical value passes only on a line that
+             matches its `requires` pattern).
+  WORDING    a canonical_counts `forbidden` phrase (G6 "zero qualifying weeks"; the record says
+             G6 has not started).
+
+Updating a canonical count: re-run the command or read the artifact named in its `source`
+(e.g. `git rev-list --count origin/master` in the public clone; module_count in the site
+manifest; the findings page count), set `value` and `as_of` to the run date, move the old value
+under `historical` with its own as_of and a `requires` regex only if pages may keep citing it
+dated, then fix every page this gate flags. `--explain` prints each figure with its source.
 
 Exit 0 when clean, 1 with a counted list. Calibration language only; no figure is computed here.
-CLI: python -m scripts.platformkit.eval_gate.claim_consistency --repo-root . [extra paths ...]
+CLI: python -m scripts.platformkit.eval_gate.claim_consistency --repo-root . [--explain] [extra ...]
 Test: python -m pytest scripts/platformkit/eval_gate/test_claim_consistency.py -q
 """
 from __future__ import annotations
@@ -109,6 +121,50 @@ def scan_text(rel: str, text: str, cfg: dict, strict: bool = False) -> list[str]
     return out
 
 
+def _count_ok(got: str, fig: dict, line: str) -> bool:
+    if isinstance(fig["value"], str):
+        return got == fig["value"]
+    n = int(got.replace(",", ""))
+    return n == fig["value"] or any(n == h["value"] and re.search(h["requires"], line)
+                                    for h in fig.get("historical", []))
+
+
+def scan_counts(rel: str, text: str, cfg: dict) -> list[str]:
+    """COUNT / WORDING findings for canonical_counts figures on one count surface."""
+    words = cfg.get("framing_words", [])
+    figs = cfg.get("canonical_counts", {}).get("figures", [])
+    out: list[str] = []
+    for i, line in enumerate(text.splitlines(), 1):
+        if _framed(line, words):
+            continue
+        where = "%s:%d" % (rel, i)
+        for f in figs:
+            if f.get("unless") and re.search(f["unless"], line):
+                continue
+            if f.get("forbidden") and re.search(f["forbidden"], line):
+                out.append("WORDING %s: %s phrasing /%s/; canonical: %s"
+                           % (where, f["key"], f["forbidden"], f["value"]))
+            for m in re.finditer(f.get("pattern") or "(?!)", line):
+                if not _count_ok(m.group(1), f, line):
+                    out.append("COUNT %s: %s %s != canonical %s (as of %s)"
+                               % (where, f["key"], m.group(1), f["value"], f["as_of"]))
+    return out
+
+
+def explain(cfg: dict) -> list[str]:
+    """One line per canonical figure: key, value, as_of, source (to re-derive it)."""
+    out = []
+    for f in cfg.get("canonical_counts", {}).get("figures", []):
+        out.append("%s = %s (as of %s) <- %s" % (f["key"], f["value"], f["as_of"], f["source"]))
+        out += ["  historical %s (as of %s) <- %s" % (h["value"], h["as_of"], h["source"])
+                for h in f.get("historical", [])]
+    for f in cfg.get("figures", []):
+        val = f.get("gap", f.get("ttl_30_fills_credited"))
+        out.append("%s = %s %s (as of %s) <- %s"
+                   % (f["key"], val, f.get("verdict", ""), f["as_of"], f["source"]))
+    return out
+
+
 def default_surfaces(repo_root: Path, cfg: dict) -> list[str]:
     """Tracked markdown under the configured roots, minus local-only trees and old dated memos."""
     roots = cfg.get("surface_roots", [])
@@ -136,6 +192,7 @@ def check(repo_root: Path, extra: list[str] | None = None,
           figures_path: Path | None = None, defaults: bool = True) -> list[str]:
     cfg = load(repo_root, figures_path)
     strict = set(cfg.get("strict_language_surfaces", []))
+    counted = set(cfg.get("canonical_counts", {}).get("count_surfaces", []))
     out: list[str] = []
     base = default_surfaces(repo_root, cfg) if defaults else []
     for rel in base + list(extra or []):
@@ -143,8 +200,10 @@ def check(repo_root: Path, extra: list[str] | None = None,
         if not path.is_file():
             out.append("MISSING %s" % rel)
             continue
-        out += scan_text(rel, path.read_text(encoding="utf-8", errors="replace"), cfg,
-                         strict=rel in strict)
+        text = path.read_text(encoding="utf-8", errors="replace")
+        out += scan_text(rel, text, cfg, strict=rel in strict)
+        if rel in counted:
+            out += scan_counts(rel, text, cfg)
     return out
 
 
@@ -152,9 +211,14 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--repo-root", default=".")
     ap.add_argument("--figures", default=None, help="alternate figures JSON path")
+    ap.add_argument("--explain", action="store_true", help="print each canonical figure + source")
     ap.add_argument("extra", nargs="*", help="extra surface paths (repo-relative or absolute)")
     args = ap.parse_args(argv)
     root = Path(args.repo_root).resolve()
+    if args.explain:
+        for line in explain(load(root, Path(args.figures) if args.figures else None)):
+            print(line.encode("ascii", "replace").decode("ascii"))
+        return 0
     findings = check(root, args.extra, Path(args.figures) if args.figures else None)
     for f in findings:
         print(f.encode("ascii", "replace").decode("ascii"))
