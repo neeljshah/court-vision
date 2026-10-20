@@ -26,7 +26,7 @@ level deeper into a specific layer of the system.
 | **Platformkit** | The `scripts/platformkit/` toolkit -- CLIs, gates, ledgers, proof harnesses | [docs/platformkit/](platformkit/) -- start at [README.md](platformkit/README.md) |
 | **Domains** | Per-sport adapters (`domains/<sport>/`) -- NBA, MLB, soccer, tennis, WNBA, ... | [docs/domains/](domains/) -- start at [README.md](domains/README.md) |
 | **Models** | Model registry, calibration methodology, feature inventory, signal factory | [docs/models/](models/) -- start at [README.md](models/README.md) |
-| **In-play** | The live/in-game conditioning layer -- the one measured, calibrated edge | [LIVE_ENGINE_V2.md](LIVE_ENGINE_V2.md) |
+| **In-play** | The live/in-game conditioning layer -- the one measured, calibrated gain (against a static prior; behind the live market) | [LIVE_ENGINE_V2.md](LIVE_ENGINE_V2.md) |
 | **Execution** | Line-shopping, devig, sizing, paper-trading, CLV grading | [EXECUTION_GUIDE.md](EXECUTION_GUIDE.md) - [BETTING.md](BETTING.md) - [architecture/execution-engine.md](architecture/execution-engine.md) |
 | **Ops** | Daemons, supervisor, deployment, runbooks | [PRODUCTION_RUNBOOK.md](PRODUCTION_RUNBOOK.md) |
 | **Data** | Ingestion pipelines, corpora, freshness SLAs, the data census | [DATA.md](DATA.md) - [DATA_DEPTH.md](DATA_DEPTH.md) |
