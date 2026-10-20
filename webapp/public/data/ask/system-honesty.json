@@ -86,9 +86,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "An in-play backtest once posted eye-catching accuracy and return figures on 55,073 recorded positions, but those were settled against a soft L5 rolling-average line proxy, not real sharp closing lines. That makes it a model-quality ceiling, not a tradeable or realized result, so both figures were retracted. The first real closing-line-value reading is not expected until October 2026.",
-    "source_artifact": "docs/KNOWN_LIMITATIONS.md",
-    "as_of": "2026-06-11"
+    "answer": "An in-play backtest once posted eye-catching accuracy and return figures on 55,073 recorded positions, but those were settled against a soft L5 rolling-average line proxy, not real sharp closing lines. That makes it a model-quality ceiling, not a tradeable or realized result, so both figures were retracted. A prospective, receipt-backed paper series has run since 2026-10-06; as of 2026-10-19 no scored cell has reached its sealed 30-game floor, so there is no closing-line-value reading yet.",
+    "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
+    "as_of": "2026-10-19"
    },
    "tags": [
     "retraction",
@@ -770,9 +770,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Zero real money has been placed, by design. It is gated behind a sharp-market-source closing-line-value reading that cannot start until October 2026, plus CV-depth and deployment-stability work. Until that gate runs, no real-money execution is considered justified.",
-    "source_artifact": "docs/KNOWN_LIMITATIONS.md",
-    "as_of": "2026-06-11"
+    "answer": "Zero real money has been placed, by design. It is gated behind a sharp-market closing-line-value reading from the forward paper series (running since 2026-10-06; as of 2026-10-19 no scored cell has reached its sealed 30-game floor and no game has passed qualification), plus CV-depth and deployment-stability work. Until that gate passes, no real-money execution is considered justified.",
+    "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
+    "as_of": "2026-10-19"
    },
    "tags": [
     "no-real-money",

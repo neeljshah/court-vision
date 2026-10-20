@@ -12,6 +12,7 @@ import { ReceiptChip } from "@/components/showcase/ReceiptChip";
 import { DeltaBars } from "@/components/charts/DeltaBars";
 import { loadArtifact } from "@/lib/showcase.server";
 import { listPacks } from "@/lib/atlas.server";
+import { buildClaimIndex } from "@/lib/evidence.server";
 
 export const metadata: Metadata = {
   title: "Calibration Scoreboard",
@@ -35,6 +36,8 @@ type HSport = { confirmed: number; null: number; not_testable: number; failed_re
 type Honesty = { generated_at: string; headline: string; sports: HSport[] };
 
 const fmt = (v: number) => (v >= 0 ? "+" : "") + v.toFixed(4);
+// Artifacts stamp full ISO timestamps; the page shows the calendar day.
+const day = (s: string | null | undefined) => (s ? s.slice(0, 10) : null);
 
 const LABS = [
   {
@@ -102,6 +105,7 @@ export default function Home() {
 
   const packs = listPacks();
   const atlasTotal = packs.reduce((s, p) => s + p.count, 0);
+  const claimCount = buildClaimIndex().claimCount;
 
   const H = honesty?.sports ?? [];
   const sum = (k: keyof Honesty["sports"][number]) => H.reduce((s, x) => s + (x[k] || 0), 0);
@@ -117,8 +121,11 @@ export default function Home() {
 
   return (
     <div className="mx-auto max-w-[1200px] px-6 pb-16">
-      <section className="pt-11 pb-3">
-        <h1 className="max-w-3xl text-2xl font-semibold leading-tight tracking-tight text-foreground sm:text-3xl">
+      <section className="pt-8 pb-3 sm:pt-11">
+        <p className="microlabel">
+          CourtVision -- forecast calibration platform for NBA, MLB, soccer, and tennis -- built by Neel Shah
+        </p>
+        <h1 className="mt-2 max-w-3xl text-2xl font-semibold leading-tight tracking-tight text-foreground sm:text-3xl">
           A calibrated sports predictor that publishes its own scorecard against a
           sharp market -- losses, nulls, and retractions included.
         </h1>
@@ -127,7 +134,19 @@ export default function Home() {
           its receipt: source path, as-of date, and verification status. No edge is
           claimed anywhere.
         </p>
-        <span className="mt-3 inline-flex items-center gap-2 border border-border px-2.5 py-1 font-data text-[11px] text-faint">
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          <Link href="/evidence"
+            className="inline-flex min-h-[44px] items-center border border-primary bg-primary px-4 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          >
+            Read the evidence -&gt;
+          </Link>
+          <Link href="/analytics"
+            className="inline-flex min-h-[44px] items-center border border-border px-4 text-sm font-semibold text-foreground transition-colors hover:border-primary/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            Open the analytics site -&gt;
+          </Link>
+        </div>
+        <span className="mt-4 inline-flex items-center gap-2 border border-border px-2.5 py-1 font-data text-[11px] text-faint">
           POSITIONING <b className="text-foreground">calibration, not profit</b> &middot; edge_claimed: false on every artifact
         </span>
       </section>
@@ -141,6 +160,9 @@ export default function Home() {
                 {fmt(win.paired_delta_mean)} CRPS
                 <ReceiptChip sourceArtifact={win.source} asOf={asOf} verified="edge_claimed:false"
                   verdict={win.verdict} n={win.n} ci={win.paired_delta_95ci} />
+              </div>
+              <div className="mt-1 font-data text-[11px] text-faint">
+                as of {day(asOf)} &middot; n = {win.n} &middot; {win.verdict.replace(/_/g, " ")}
               </div>
               <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
                 Model total-runs forecast is sharper than the market&apos;s at end of
@@ -170,12 +192,15 @@ export default function Home() {
             )}{" "}
             Both readings are true. We publish both.
           </p>
+          <div className="mt-2 font-data text-[11px] text-faint">
+            as of {day(brier?.generated_at ?? asOf) ?? "date not published"} &middot; pregame: matches or trails the devigged close on every market tested
+          </div>
         </div>
       </div>
 
       <h2 className="mt-9 microlabel">Cross-sport calibration scoreboard</h2>
       <Panel className="mt-2">
-        <PanelHead title="model vs market -- paired Brier / CRPS delta, 95% CI, verdict" asOf={asOf ?? undefined} />
+        <PanelHead title="model vs market -- paired Brier / CRPS delta, 95% CI, verdict" asOf={day(asOf) ?? undefined} />
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-[13.5px]">
             <thead>
@@ -250,7 +275,7 @@ export default function Home() {
           stat={atlasTotal.toLocaleString()} go="enter the atlas" />
         <Door href="/evidence" kicker="spine 2 -- interrogate" title="Evidence Explorer"
           body="Claim pages, each with its strongest receipt and a reproduce-on-a-fresh-clone block. Includes the retraction story: headline numbers this system refuted about itself."
-          stat="23" go="read the evidence" />
+          stat={claimCount ? String(claimCount) : undefined} go="read the evidence" />
       </div>
 
       <h2 className="mt-9 microlabel">Research labs</h2>

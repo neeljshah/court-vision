@@ -253,10 +253,10 @@ describe("PredictionHistoryPanel -- data present (ws5 acceptance #1)", () => {
     expect(screen.getByTestId("pred-tier")).toHaveTextContent("A");
   });
 
-  it("renders 'Model Track Record' as the panel title", () => {
+  it("renders 'Model Paper Record' as the panel title", () => {
     setState({ data: okPayload([makeRow()]), isLoading: false });
     render(<PredictionHistoryPanel />);
-    expect(screen.getByTestId("panel-title")).toHaveTextContent("Model Track Record");
+    expect(screen.getByTestId("panel-title")).toHaveTextContent("Model Paper Record");
   });
 
   it("renders data-testid=pred-history-table when rows are present", () => {
