@@ -1,0 +1,15 @@
+{
+  "basePath": "/court-vision",
+  "pages": [
+    "/",
+    "/desk/",
+    "/paper-trading/",
+    "/analytics/",
+    "/analytics/calibration/",
+    "/analytics/papers/",
+    "/analytics/findings/shrinkage/",
+    "/analytics/state-reliability/",
+    "/analytics/m/agent_fleet_history/",
+    "manifest:bet_ids:0"
+  ]
+}

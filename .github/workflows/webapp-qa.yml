@@ -13,6 +13,12 @@
 #                                endQ3 value from an honest one.
 #   * page-count tripwire      -- guards against a template refactor silently
 #                                deleting thousands of exported pages.
+#   * performance budget      -- fails when a listed page's gzip JS / CSS / HTML
+#                                exceeds webapp/perf/budget.json, or an image under
+#                                public/img/showcase or public/brand exceeds its cap
+#                                (ceilings = the 2026-10-20 after-measurement + ~10%).
+#   * accessibility gate      -- axe-core on the same pages in both themes; any
+#                                serious/critical violation fails (moderate/minor warn).
 # lint and test are reported but non-blocking: the repo carries known pre-existing
 # lint warnings and ~16 terminal-app test failures unrelated to the analytics site;
 # making them hard gates would fail red on day one and train everyone to ignore it.
@@ -79,6 +85,15 @@ jobs:
             exit 1
           fi
           echo "Honesty gate GREEN: no retracted figures leaked into shipped HTML."
+
+      - name: Performance budget -- gzip JS/CSS/HTML per page + image caps (hard gate)
+        run: |
+          node --test scripts/perf-budget.test.mjs scripts/a11y-gate.test.mjs
+          node scripts/perf-budget.mjs out perf/budget.json
+
+      - name: Accessibility gate -- axe-core, zero serious/critical in both themes (hard gate)
+        # ubuntu-latest ships Google Chrome; playwright-core drives it (no browser download).
+        run: node scripts/a11y-gate.mjs out perf/a11y-pages.json
 
       - name: Page-count tripwire (hard gate)
         run: |
