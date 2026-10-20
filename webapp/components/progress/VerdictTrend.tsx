@@ -82,7 +82,7 @@ export function VerdictTrend({
             <span>{pts[0].date_et}</span>
             <span>{last?.date_et}</span>
           </div>
-          <p className="text-[11px] leading-relaxed text-amber-600/80">
+          <p className="text-[11px] leading-relaxed text-stale">
             This line is COVERAGE / verdicts recorded -- NOT a live accuracy or
             edge climb. The model is STATIC until a human enables the
             self-improve gate.

@@ -288,6 +288,8 @@
     color: hsl(var(--primary));
     text-decoration: underline;
     text-underline-offset: 2px;
+    padding-top: 0.25rem; /* 24px hit box for inline links (WCAG 2.5.8) */
+    padding-bottom: 0.25rem;
   }
   .prose-console hr {
     border: 0;

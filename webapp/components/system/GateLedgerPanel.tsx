@@ -224,7 +224,7 @@ export function GateLedgerPanel() {
                       <span className="block max-w-[16rem] truncate">{r.deciding_stat}</span>
                     </td>
                     <td className="py-2 pr-3 font-mono text-[11px] text-muted-foreground">{r.corpora || "--"}</td>
-                    <td className="py-2 font-mono text-[10px] text-amber-600/80">
+                    <td className="py-2 font-mono text-[10px] text-stale">
                       {r.vs_close.startsWith("UNPROVEN") ? "UNPROVEN" : r.vs_close}
                     </td>
                   </tr>

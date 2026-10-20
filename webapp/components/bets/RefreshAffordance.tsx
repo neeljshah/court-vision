@@ -127,7 +127,7 @@ export function RefreshAffordance({
         </>
       )}
       <button type="button" aria-label={isSnapshotMode ? "Reload published snapshot" : "Refresh best bets now"} disabled={loading} onClick={onRefresh}
-        className={cn("inline-flex items-center gap-1 border px-2 py-0.5",
+        className={cn("inline-flex min-h-6 items-center gap-1 border px-2 py-0.5",
           "font-data text-[10px] uppercase tracking-wide transition-colors",
           "border-border bg-transparent text-muted-foreground",
           "hover:border-primary hover:text-foreground focus-visible:outline-none",

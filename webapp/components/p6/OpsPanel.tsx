@@ -181,7 +181,7 @@ export function OpsPanel() {
           {opsData.notes && opsData.notes.length > 0 ? (
             <ul className="mt-2 space-y-0.5">
               {opsData.notes.map((n, i) => (
-                <li key={i} className="text-[11px] text-amber-500/80">{n}</li>
+                <li key={i} className="text-[11px] text-stale">{n}</li>
               ))}
             </ul>
           ) : null}
@@ -212,7 +212,8 @@ export function OpsPanel() {
             ))}
           </div>
         ) : autData ? (
-          <dl className="space-y-1.5 text-xs">
+          <div className="space-y-1.5 text-xs">
+          <dl className="space-y-1.5">
             <div className="flex items-center justify-between">
               <dt className="text-muted-foreground">loop liveness</dt>
               <dd>
@@ -228,11 +229,12 @@ export function OpsPanel() {
             {autData.idle_reason ? (
               <div>
                 <dt className="sr-only">idle reason</dt>
-                <dd className="border border-border bg-surface-1 px-2 py-1.5 text-[11px] text-amber-500/80">
+                <dd className="border border-border bg-surface-1 px-2 py-1.5 text-[11px] text-stale">
                   {autData.idle_reason}
                 </dd>
               </div>
             ) : null}
+          </dl>
             {autData.generated_at != null ? (
               <p className="font-mono text-[10px] text-faint">
                 autonomy snapshot:{" "}
@@ -244,11 +246,11 @@ export function OpsPanel() {
             {autData.notes && autData.notes.length > 0 ? (
               <ul className="space-y-0.5">
                 {autData.notes.map((n, i) => (
-                  <li key={i} className="text-[11px] text-amber-500/80">{n}</li>
+                  <li key={i} className="text-[11px] text-stale">{n}</li>
                 ))}
               </ul>
             ) : null}
-          </dl>
+          </div>
         ) : null}
       </div>
     </Panel>

@@ -132,7 +132,7 @@ export function GameView({
           <div className="flex items-center gap-3">
             <Link
               href="/games"
-              className="rounded-sm font-data text-xs text-faint transition-colors hover:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
+              className="inline-flex min-h-6 items-center rounded-sm font-data text-xs text-faint transition-colors hover:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
             >
               &larr; games
             </Link>

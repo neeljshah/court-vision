@@ -219,7 +219,7 @@ function QuantRow({
       <td className="py-1.5 px-3">
         <Num className="text-[10px] text-muted-foreground">{pct(v.devigged_close)}</Num>
         {v.clv_is_proxy ? (
-          <span className="ml-1 text-[8px] text-amber-600/80">proxy</span>
+          <span className="ml-1 text-[10px] text-stale">proxy</span>
         ) : null}
       </td>
       <td className="py-1.5 px-3">

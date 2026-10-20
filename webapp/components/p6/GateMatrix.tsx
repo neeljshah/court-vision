@@ -119,7 +119,7 @@ function GateRow({
         </span>
       </td>
       <td className="py-1.5 px-3">
-        <span className="font-mono text-[10px] text-amber-600/80">
+        <span className="font-mono text-[10px] text-stale">
           {row.vs_close || "UNPROVEN"}
         </span>
       </td>
