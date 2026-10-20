@@ -2,11 +2,25 @@
 
 **Calibrated multi-sport forecasting, audited in public -- with the rejects and retractions left in.**
 
-**Built:** a four-sport forecasting system (NBA broadcast-video tracking, now paused; a FastAPI serving layer; a
-leak-guarded walk-forward harness) and a public analytics site. **Measured:** Brier score against the devigged
-closing line and the live market, on held-out games, with intervals. **Result:** the model matches or trails the
-close and is never ahead of it; 0 of 60 candidate signal classes passed the gate; a paper-only forward series has
-run since 2026-10-06 and has no verdict yet.
+**What it is.** A four-sport forecasting system (NBA, MLB, soccer, tennis): a leak-guarded walk-forward
+harness, one calibrated win probability per sport, a possession-level Monte Carlo, an in-game repricer, a
+paper-only execution layer and a public analytics site. NBA broadcast-video tracking is the origin lineage and
+is paused. The engine runs in a private repository; this repository is the evidence surface.
+
+**Who it is for.** Quant research, pricing and sports-analytics teams, and ML or data hiring managers who want
+to see a forecasting system measured against the market with its negative results kept in.
+
+**Headline results.** Measured as Brier score against the devigged closing line and the live market, on
+held-out games, with intervals. The pregame model matches the close on NBA moneyline at an underpowered n=372
+and trails it by small, measurable margins on MLB moneyline and soccer totals (recomputed 2026-09-24). It never
+beats the close. Conditioning on the realized game state sharpens the forecast against a static prior, and the
+live market is sharper still (Gate A-0, 2026-09-14). 0 of 60 candidate signal classes passed the gate. A
+paper-only forward series has run since 2026-10-06 and has no verdict as of 2026-10-19. Everything here is a
+calibration result. Nothing here is a betting-edge claim.
+
+**How it is proven, and where to reproduce.** Every number traces to a committed artifact through
+[EVIDENCE.md](EVIDENCE.md) and the audited [evidence packet](docs/JOB_EVIDENCE_PACKET.md). A fresh clone
+re-verifies the site's committed artifacts in about five minutes (the "Verify it yourself" section below).
 
 ### [Open the live analytics site -> neeljshah.github.io/court-vision/analytics](https://neeljshah.github.io/court-vision/analytics/)
 
@@ -20,25 +34,21 @@ what exists and what it is evidence of, and what is not shown.
 
 [![CourtVision analytics: how forecasts compare with outcomes](docs/img/analytics_home.png)](https://neeljshah.github.io/court-vision/analytics/)
 
-CourtVision is an NBA-origin forecasting and decision-research system covering NBA, MLB, soccer
-and tennis. Its central result is deliberately unglamorous: **against real closing lines the
-market is efficient.** The pregame model lands within noise of the devigged close on NBA moneyline and trails it by small, measurable margins on MLB moneyline and soccer totals; conditioning
-on the realized game state sharpens the forecast against a static prior, and the live market has
-that state too. Everything here is a calibration result. Nothing here is a betting-edge claim.
-
 ## Results at a glance
+
+The central result is deliberately unglamorous: **against real closing lines the market is efficient.**
 
 Every row links to its proof in **[EVIDENCE.md](EVIDENCE.md)** (claim -> number -> verdict ->
 artifact -> reproduce command).
 
 | Question | What the record says | Verdict |
 |---|---|---|
-| Does the pregame model beat the closing line? | NBA held-out Brier 0.1735 vs 0.1666 for the devigged close (n=372 scored, CI includes 0, underpowered); MLB moneyline and soccer O/U trail by 0.0039 and 0.0076 Brier with intervals excluding 0; totals and ATP trail by more | matches or trails the close -- never beats it |
+| Does the pregame model beat the closing line? | NBA held-out Brier 0.1735 vs 0.1666 for the devigged close (n=372 scored, CI includes 0, underpowered); MLB moneyline and soccer O/U trail by 0.0039 and 0.0076 Brier with intervals excluding 0; totals and ATP trail by more (recomputed 2026-09-24) | matches or trails the close -- never beats it |
 | Does in-game state help? | vs a static pregame prior: NBA Brier 0.209 to 0.159, MLB 0.241 to 0.126 | sharper than static |
 | Does it beat the live market? | NBA end-Q1: market sharper (n=1,592). Later checkpoints: underpowered. Kalshi paired ticks (2026-09-14): model behind | no -- and the page says so |
 | How many discovered signals shipped? | 0 of 60 candidate classes; 513 recorded reject / defer verdicts | the gate rejects, by design |
 | What got retracted? | six headline figures, each root-caused to a leak or a grading artifact by the project's own harnesses | [the retraction record](docs/evidence/retraction-story.md) |
-| Player-prop accuracy | PTS MAE 4.83, REB 1.92, AST 1.39 on a 20,354-row chronological holdout | accuracy only |
+| Player-prop accuracy | PTS MAE 4.83, REB 1.92, AST 1.39 on a 20,354-row chronological holdout (re-measured 2026-07-20) | accuracy only |
 
 Brier: mean squared error of a probability forecast, lower is better. Devigged close: the closing market price with
 the bookmaker margin removed.
@@ -48,8 +58,9 @@ the system also built the instruments that caught his own overclaims, and publis
 
 ## How far it goes
 
-One person directing an agentic build pipeline: 8,600+ commits since March 2026 in the full private repository,
-6,500+ in this public one (counted 2026-10-19; most are agent-authored under direction). Counts below are read
+One person directing an agentic build pipeline. This public repository holds 6,508 commits from 2026-03-09 to
+2026-10-19 (`git rev-list --count master`), most of them agent-authored under direction; the audited count in the
+private repository was 5,504 at 2026-09-07 (packet section 4) and has grown since. Counts below are read
 from committed artifacts or the audited [evidence packet](docs/JOB_EVIDENCE_PACKET.md); the layer-by-layer
 map is **[docs/CAPABILITIES.md](docs/CAPABILITIES.md)**.
 
