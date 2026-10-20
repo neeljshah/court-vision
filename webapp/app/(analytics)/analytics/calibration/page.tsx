@@ -69,7 +69,7 @@ export default function CalibrationPage() {
     <section className="calibration-section">
       <h2>Summary by market</h2>
       <p>Published Brier and expected calibration error scores, where resolved outcomes are available. Lower Brier means lower average squared probability error.</p>
-      <div className="calibration-table-wrap" role="region" aria-label="Calibration summary by market" data-scroll-region>
+      <div className="calibration-table-wrap" role="region" aria-label="Calibration summary by market" data-scroll-region tabIndex={0}>
         <table className="calibration-table"><thead><tr><th>Sport</th><th>Market</th><th>Model Brier</th><th>Market Brier</th><th>Model ECE</th><th>Market ECE</th><th>n</th><th>Published comparison</th></tr></thead><tbody>{markets.map(([id, row]) => <tr key={id}><td>{sportFor(id)}</td><td>{row.description || id}</td><td>{score(row.model_brier)}</td><td>{score(row.market_brier)}</td><td>{score(row.model_ece)}</td><td>{score(row.market_ece)}</td><td>{typeof row.n_rows === "number" ? row.n_rows.toLocaleString("en-US") : "Not published"}</td><td>{lowerBrier(row)}</td></tr>)}</tbody></table>
       </div>
       <p className="calibration-note">The scored MLB and international soccer rows publish lower market Brier values. The total row remains unscored because its source has no resolved outcome label.</p>

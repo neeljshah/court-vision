@@ -56,7 +56,7 @@ export function ScoreDecomposition({ sports, asOf = null }: { sports: Decomposit
     <Figure source="public/data/showcase/murphy_decomposition.json" asOf={asOf} title="Binned Murphy components" subtitle="Each group preserves a separate published model or market population. Resolution is shown as a component; the audit table keeps its subtraction explicit." denominator={sports.map(item => `${sportLabel(item.sport)} ${sample(item.nRows, "n rows")}`).join("; ")}>
       <ComponentChart sports={sports} />
     </Figure>
-    <div className="sd-table-wrap" role="region" aria-label="Brier reconstruction audit" data-scroll-region>
+    <div className="sd-table-wrap" role="region" aria-label="Brier reconstruction audit" data-scroll-region tabIndex={0}>
       <table className="sd-table">
         <caption>Published Brier reconstruction audit</caption>
         <thead><tr>

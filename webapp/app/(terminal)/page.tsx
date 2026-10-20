@@ -302,7 +302,7 @@ export default function Home() {
       <div className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-border pt-4 text-[12px] text-faint">
         <span className="microlabel">live app</span>
         {LIVE_LINKS.map(([href, label]) => (
-          <Link key={href} href={href} className="hover:text-foreground">{label}</Link>
+          <Link key={href} href={href} className="inline-flex min-h-6 items-center hover:text-foreground">{label}</Link>
         ))}
       </div>
 

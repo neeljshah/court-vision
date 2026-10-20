@@ -46,7 +46,7 @@ export function ObservationDependence({ sports, asOf, dateKind = "source" }: { s
     <section className="od-summary" aria-labelledby="od-summary-title">
       <h2 id="od-summary-title">Published-series summary</h2>
       <p>Formula: median is the middle value after sorting each side&apos;s published array; share above 0.9 = count(rho &gt; 0.9) / eligible series. Each side remains a separate population.</p>
-      <div role="region" aria-label="Observation dependence summary" data-scroll-region className="od-table-wrap">
+      <div role="region" aria-label="Observation dependence summary" data-scroll-region tabIndex={0} className="od-table-wrap">
         <table><thead><tr><th scope="col">Sport</th><th scope="col">Side</th><th scope="col">Eligible series</th><th scope="col">Median autocorr</th><th scope="col">Share above 0.9</th><th scope="col">Skipped</th></tr></thead><tbody>
           {sports.flatMap((sport) => sport.sides.map((side) => <tr key={`${sport.sport}-${side.side}`}><th scope="row">{sportLabel(sport.sport)}</th><td>{side.side === "model" ? "Model" : "Market"}</td><td>{side.nGames.toLocaleString()}</td><td>{side.median?.toFixed(4) ?? "Not published"}</td><td>{percent(side.shareAbovePointNine)}</td><td>{skipped(side)}</td></tr>))}
         </tbody></table>

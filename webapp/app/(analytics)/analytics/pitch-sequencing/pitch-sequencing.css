@@ -26,7 +26,7 @@
 .ps-matrix g[role="button"]:focus .ps-cell { stroke: var(--accent); stroke-width: 2.5; }
 .ps-selected { stroke: var(--ink); stroke-width: 2.5; }
 .ps-detail { margin-top: 24px; border: 1px solid var(--rule); border-radius: var(--radius-card); background: var(--paper-raised); padding: 18px 20px; }
-.ps-detail h3 { margin-top: 3px; color: var(--ink); font-family: var(--font-display); font-size: 1.4rem; font-weight: 500; }
+.ps-detail h2 { margin-top: 3px; color: var(--ink); font-family: var(--font-display); font-size: 1.4rem; font-weight: 500; }
 .ps-detail p { margin-top: 8px; color: var(--ink-2); font-size: 14px; }
 .ps-detail dl { display: flex; flex-wrap: wrap; gap: 24px; margin-top: 14px; }
 .ps-detail dt { color: var(--ink-3); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }

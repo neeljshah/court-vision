@@ -34,6 +34,28 @@ export const isSnapshotMode = process.env.NEXT_PUBLIC_DATA_MODE === "snapshot";
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 const P5_BASE = process.env.NEXT_PUBLIC_P5_BASE || "/p5";
 
+// Build-time list of the baked files (next.config.mjs reads public/demo-data and
+// inlines it). When present, a GET whose file was never exported resolves to the
+// honest sentinel without a network round-trip -- the demo never logs a 404 for
+// an endpoint the exporter did not cover. Absent (live build, or the directory
+// could not be read) -> no filtering, plain fetch as before.
+const SNAPSHOT_FILES: ReadonlySet<string> | null = (() => {
+  const raw = process.env.NEXT_PUBLIC_SNAPSHOT_FILES;
+  if (!raw) return null;
+  try {
+    const names = JSON.parse(raw) as unknown;
+    return Array.isArray(names) ? new Set(names.filter((n): n is string => typeof n === "string")) : null;
+  } catch {
+    return null;
+  }
+})();
+
+/** True when the snapshot build baked a file for this GET (or has no file list). */
+export function snapshotHas(url: string): boolean {
+  if (!SNAPSHOT_FILES) return true;
+  return SNAPSHOT_FILES.has(snapshotPath(url).split("/").pop() || "");
+}
+
 export function snapshotPath(url: string): string {
   // Keep the query string in the slug -- several endpoints (board/slate,
   // produce/status) differ ONLY by ?sport=, so dropping it would collide
@@ -155,6 +177,9 @@ export async function fetchHonest<T>(
   // Snapshot mode: GET-only demo build, redirect to the baked static file.
   // POSTs (placePaper etc.) have no snapshot equivalent -- fall through to the
   // live URL, which 404s and degrades to Unavailable, same as any dead backend.
+  if (isSnapshotMode && o.body === undefined && !snapshotHas(url)) {
+    return unavailable("not in the published snapshot");
+  }
   const targetUrl = isSnapshotMode && o.body === undefined ? snapshotPath(url) : url;
   let lastReason = "fetch failed";
   for (let i = 0; i <= o.retries; i++) {

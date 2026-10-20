@@ -55,7 +55,8 @@
     --s-model:            36 77% 45%;   /* #C9821A our model series        */
     --s-market:          206 73% 56%;   /* #3E9BE0 market series           */
     --stale:              37 74% 56%;   /* amber                           */
-    --faint:             219 13% 41%;   /* #5A6375 faint ink               */
+    --faint:             219 13% 55%;   /* #7D889B faint ink -- 5.0:1 on --card,
+                                           4.6:1 on --surface-2 (was 41% = 3.0:1) */
 
     /* Tier tokens (S=amber, A=green, B=slate-mid, C=slate-dark) */
     --tier-s:             37 74% 56%;
@@ -269,6 +270,12 @@
   }
   .prose-console li {
     margin-top: 0.3em;
+  }
+  /* Links in running text must not rely on color alone (WCAG 1.4.1). */
+  .prose-console a {
+    color: hsl(var(--primary));
+    text-decoration: underline;
+    text-underline-offset: 2px;
   }
   .prose-console hr {
     border: 0;

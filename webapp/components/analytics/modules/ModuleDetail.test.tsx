@@ -90,9 +90,9 @@ describe("ModuleDetail", () => {
 
   it("mounts the integrity notice only for affected artifacts", () => {
     const { rerender } = render(<ModuleDetail mod={{ ...mod, id: "state_conditioned_calibration" }} out={out} subtitle="Published state measurements." insight={null} />);
-    expect(screen.getAllByRole("complementary", { name: "Data integrity" })[0]).toHaveTextContent("state_conditioned_calibration");
+    expect(screen.getAllByRole("complementary", { name: /^Data integrity/ })[0]).toHaveTextContent("state_conditioned_calibration");
     rerender(<ModuleDetail mod={{ ...mod, id: "novel_rest_asymmetry" }} out={out} subtitle="Rest differential frequencies." insight={null} />);
-    expect(screen.queryByRole("complementary", { name: "Data integrity" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("complementary", { name: /^Data integrity/ })).not.toBeInTheDocument();
   });
 
   it("mounts paper backlinks in the existing related reading area", () => {

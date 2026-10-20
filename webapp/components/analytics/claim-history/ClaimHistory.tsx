@@ -32,7 +32,7 @@ function FamilyHistory({ family }: { family: ClaimHistoryFamily }) {
   const label = claimFamilyLabel(family);
   return <div className="ch-history">
     <p className="ch-order-note">History remains in the published source order. Undated runs are not sorted as though they had a date.</p>
-    <div className="ch-scroll" data-scroll-region>
+    <div className="ch-scroll" data-scroll-region tabIndex={0} role="region" aria-label={`Rerun history for ${label}, scrolls horizontally`}>
       <table aria-label={`Rerun history for ${label}`}>
         <thead><tr><th>Verdict</th><th>Status</th><th>Run date</th><th>Corpus</th><th>n</th><th>Published effect</th></tr></thead>
         <tbody>{family.history.map((run, index) => <tr key={`${run.verdict}-${run.status}-${index}`}>

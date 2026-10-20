@@ -113,13 +113,13 @@ export function EntityCard({
   return (
     <Panel>
       <div className="flex items-baseline justify-between border-b border-border px-3.5 py-2">
-        <span className="font-semibold text-foreground">
+        <h1 className="text-base font-semibold text-foreground">
           {entity}
           <span className="microlabel ml-2 normal-case tracking-normal">
             {label}
             {idEntry ? ` -- ${idEntry[0]} ${idEntry[1]}` : ""}
           </span>
-        </span>
+        </h1>
         {asOf && <span className="microlabel text-faint">as of {asOf}</span>}
       </div>
 

@@ -97,7 +97,7 @@ export function StateContrasts({ sports }: { sports: StateContrastSport[] }) {
         </article>)}
         </div>
         <button className="sc-full-table-control" type="button" aria-expanded={showFullTable} onClick={() => setShowFullTable(open => !open)}>Full table</button>
-        <div className={`sc-table-wrap${showFullTable ? " sc-full-table-open" : ""}`} role="region" aria-label={`${sportLabel(selectedSport.sport)} state contrasts`} data-scroll-region>
+        <div className={`sc-table-wrap${showFullTable ? " sc-full-table-open" : ""}`} role="region" aria-label={`${sportLabel(selectedSport.sport)} state contrasts`} data-scroll-region tabIndex={0}>
         <table className="sc-table">
           <caption>Published contrasts from {selectedPair.fromTime} to {selectedPair.toTime}. Both state populations remain visible.</caption>
           <thead><tr><th scope="col">From state</th><th scope="col">Outcome frequency</th><th scope="col">Forecast observations</th><th scope="col">To state</th><th scope="col">Outcome frequency</th><th scope="col">Forecast observations</th><th scope="col">Difference</th><th scope="col">Minimum support</th></tr></thead>

@@ -28,8 +28,8 @@ export function ClaimIndex({ data }: { data: ClaimIndexData }) {
                       </div>
                     )}
                   </div>
-                  <div className="flex shrink-0 items-center gap-1 pt-0.5">
-                    <span className="hidden font-data text-[11px] text-faint sm:inline">
+                  <div className="flex min-w-0 shrink items-center gap-1 pt-0.5">
+                    <span className="hidden max-w-[32ch] truncate font-data text-[11px] text-faint sm:inline">
                       {c.receipt.label}
                     </span>
                     <ReceiptChip
