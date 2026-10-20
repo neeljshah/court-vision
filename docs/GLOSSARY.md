@@ -50,6 +50,18 @@
   across bins (lower = better calibrated).
 - **RMSE / MAE** -- root-mean-squared / mean-absolute error for point forecasts (e.g. totals, props).
 - **CRPS / pinball loss** -- proper scores for full predictive distributions / quantiles.
+- **Devigged close** -- the closing line with the vig removed, i.e. the market's fair probability
+  at the final pre-game price; the comparison forecaster for every pregame-vs-close row (see
+  Devig / Shin devig and Closing line).
+- **MDE (minimum detectable effect)** -- the smallest Brier gap a row's 95% interval could have
+  resolved, 1.429 x the interval half-width (DM_RECOMPUTE_2026-09-24); a row whose measured gap
+  is below its MDE is underpowered, so MATCHES_CLOSE (underpowered) means "not resolved", not
+  parity.
+- **Calibration vs resolution (Murphy decomposition)** -- Brier splits into reliability (the
+  calibration error: how far observed frequency sits from the forecast in each bin, fixable by
+  recalibrating) and resolution (how much the forecasts separate outcomes: information that
+  recalibrating cannot manufacture). A market can lead on resolution while both forecasters are
+  calibrated.
 
 ## Modeling vocabulary
 

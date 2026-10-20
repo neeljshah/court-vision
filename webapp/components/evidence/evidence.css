@@ -1,0 +1,187 @@
+/* evidence.css -- the shared evidence kit: ReceiptChip, AsOfBadge, VerdictLabel,
+   FigureValue, NotClaimed and Term. ONE visual style for both halves of the site
+   and both themes. The kit owns its colours (every ink/surface pair below is at
+   least 6:1, checked with the WCAG relative-luminance formula), reads the font
+   tokens of whichever half it is mounted in, and switches to dark on the
+   terminal's html.dark or the analytics site's html[data-theme="dark"]. Only
+   ev- prefixed classes; no Tailwind utilities, no half-specific colour token. */
+
+:root {
+  --ev-ink: #2B3744;
+  --ev-ink-2: #4A5A68;
+  --ev-surface: #EEF1F4;
+  --ev-surface-raised: #FFFFFF;
+  --ev-rule: #B9C4CE;
+  --ev-link: #1A56B0;
+  --ev-focus: #1A56B0;
+  --ev-caution-ink: #6B4700;
+  --ev-caution-surface: #F7EBD0;
+  --ev-down-ink: #8F3422;
+  --ev-font-mono: var(--font-data, var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace));
+  --ev-font-sans: var(--font-sans, system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif);
+}
+
+:root.dark,
+:root[data-theme="dark"] {
+  --ev-ink: #C9D4DE;
+  --ev-ink-2: #A9B7C4;
+  --ev-surface: #1C2733;
+  --ev-surface-raised: #17242F;
+  --ev-rule: #3E5062;
+  --ev-link: #8DB6FF;
+  --ev-focus: #8DB6FF;
+  --ev-caution-ink: #F2CC78;
+  --ev-caution-surface: #3B2F12;
+  --ev-down-ink: #EFA08F;
+}
+
+/* ReceiptChip: source basename . as-of . verification status, linking to the
+   committed artifact on GitHub (master). A link, so it is keyboard focusable. */
+.ev-chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.45em;
+  max-width: 100%;
+  margin: 0;
+  padding: 1px 6px 1px 5px;
+  border: 1px solid var(--ev-rule);
+  border-radius: 3px;
+  background: var(--ev-surface);
+  color: var(--ev-ink);
+  font: 500 11px/1.5 var(--ev-font-mono);
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  vertical-align: baseline;
+  white-space: nowrap;
+}
+a.ev-chip { cursor: pointer; }
+a.ev-chip:hover { border-color: var(--ev-link); color: var(--ev-link); }
+a.ev-chip:hover .ev-chip__asof,
+a.ev-chip:hover .ev-chip__status { color: var(--ev-link); }
+.ev-chip:focus-visible { outline: 2px solid var(--ev-focus); outline-offset: 2px; }
+.ev-chip__glyph { font-weight: 700; }
+.ev-chip__src { overflow: hidden; text-overflow: ellipsis; max-width: 26ch; }
+.ev-chip__asof,
+.ev-chip__status { color: var(--ev-ink-2); }
+.ev-chip[data-status="validation_pending"] {
+  border-color: transparent;
+  background: var(--ev-caution-surface);
+  color: var(--ev-caution-ink);
+}
+.ev-chip[data-status="validation_pending"] .ev-chip__asof,
+.ev-chip[data-status="validation_pending"] .ev-chip__status { color: var(--ev-caution-ink); }
+
+/* AsOfBadge: the one way an as-of date is written. */
+.ev-asof {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35em;
+  font: 500 11px/1.5 var(--ev-font-mono);
+  color: var(--ev-ink-2);
+  white-space: nowrap;
+  vertical-align: baseline;
+}
+.ev-asof--missing,
+.ev-asof--stale { color: var(--ev-caution-ink); }
+.ev-asof--missing { padding: 0 5px; border-radius: 3px; background: var(--ev-caution-surface); }
+
+/* VerdictLabel: only the packet's label set, qualifier attached. */
+.ev-verdict {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5em;
+  padding: 1px 6px;
+  border: 1px solid var(--ev-rule);
+  border-radius: 3px;
+  background: var(--ev-surface);
+  color: var(--ev-ink);
+  font: 600 10.5px/1.5 var(--ev-font-mono);
+  letter-spacing: 0.06em;
+  vertical-align: baseline;
+}
+.ev-verdict__q { font-weight: 500; letter-spacing: 0; color: var(--ev-ink-2); }
+.ev-verdict[data-verdict="TRAILS_CLOSE"],
+.ev-verdict[data-verdict="BEHIND"] { color: var(--ev-down-ink); }
+.ev-verdict[data-verdict="INSUFFICIENT"] {
+  border-color: transparent;
+  background: var(--ev-caution-surface);
+  color: var(--ev-caution-ink);
+}
+.ev-verdict[data-verdict="INSUFFICIENT"] .ev-verdict__q { color: var(--ev-caution-ink); }
+.ev-verdict[data-verdict="MODEL_SHARPER_PROVISIONAL"] { border-style: dashed; }
+
+/* FigureValue: the value inherits its context's size and colour; the badges do not. */
+.ev-figure { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 0.45em; max-width: 100%; }
+.ev-figure__value { font-family: var(--ev-font-mono); font-variant-numeric: tabular-nums; }
+
+/* NotClaimed: the standard "what this is not" block. */
+.ev-notclaimed {
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--ev-rule);
+  border-left: 3px solid var(--ev-caution-ink);
+  border-radius: 3px;
+  background: var(--ev-surface);
+  color: var(--ev-ink);
+  font: 400 13px/1.55 var(--ev-font-sans);
+  max-width: 72ch;
+}
+.ev-notclaimed__title {
+  margin: 0 0 6px;
+  font: 700 10.5px/1.5 var(--ev-font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ev-ink-2);
+}
+.ev-notclaimed ul { margin: 0; padding-left: 1.1em; }
+.ev-notclaimed li { margin: 2px 0; }
+.ev-notclaimed__extra { margin: 6px 0 0; }
+.ev-notclaimed__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5em;
+  margin: 8px 0 0;
+  font: 500 11px/1.5 var(--ev-font-mono);
+  color: var(--ev-ink-2);
+}
+
+/* Term: a glossary tooltip on hover / focus, text copied verbatim from docs/GLOSSARY.md. */
+.ev-term { position: relative; display: inline-block; }
+.ev-term__word {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: help;
+  text-decoration: underline dotted;
+  text-decoration-color: var(--ev-rule);
+  text-underline-offset: 2px;
+}
+.ev-term__word:focus-visible { outline: 2px solid var(--ev-focus); outline-offset: 2px; border-radius: 2px; }
+.ev-term__tip {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 6px);
+  z-index: 50;
+  width: min(320px, calc(100vw - 32px));
+  padding: 10px 12px;
+  border: 1px solid var(--ev-rule);
+  border-radius: 4px;
+  background: var(--ev-surface-raised);
+  color: var(--ev-ink);
+  font: 400 12.5px/1.5 var(--ev-font-sans);
+  text-align: left;
+  white-space: normal;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+.ev-term:hover .ev-term__tip,
+.ev-term:focus-within .ev-term__tip { visibility: visible; opacity: 1; }
+.ev-term__tip b { font-weight: 700; }
+@media (prefers-reduced-motion: reduce) { .ev-term__tip { transition: none; } }
+@media print { .ev-term__tip { display: none; } }

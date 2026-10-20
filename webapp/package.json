@@ -4,6 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "gen:figures": "node scripts/gen-figures.mjs",
+    "check:figures": "node scripts/gen-figures.mjs --check",
+    "prebuild": "node scripts/gen-figures.mjs",
     "build": "next build",
     "start": "next start -p 3000",
     "lint": "next lint",
