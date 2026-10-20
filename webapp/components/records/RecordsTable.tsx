@@ -9,6 +9,7 @@
 
 import type { PaperPredictionRow } from "@/lib/types";
 import { snapshotHasBet } from "@/lib/fetchHonest";
+import { paperDetailHref } from "@/lib/paperLinks";
 import { tierClass } from "@/lib/utils";
 import { EMPTY_CELL } from "@/lib/tokens";
 import { humanizeMatchup, describeBetShort } from "@/lib/betdesc";
@@ -121,7 +122,7 @@ function RecordsRow({ row }: { row: PaperPredictionRow }) {
   // If game_id is absent, no link is rendered (matchup shown as plain text).
   const betId = buildPaperBetId(row);
   // Snapshot export: only the bets in manifest.bet_ids have a detail page.
-  const detailHref = betId && snapshotHasBet(betId) ? `/paper/${encodeURIComponent(betId)}/` : null;
+  const detailHref = betId && snapshotHasBet(betId) ? paperDetailHref(betId) : null;
 
   return (
     <tr

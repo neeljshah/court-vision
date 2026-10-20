@@ -23,6 +23,7 @@ import * as React from "react";
 import { useCallback, useMemo } from "react";
 import Link from "next/link";
 import { snapshotHasBet } from "@/lib/fetchHonest";
+import { paperDetailHref } from "@/lib/paperLinks";
 import { cn } from "@/lib/utils";
 import { tierBadgeClass, EMPTY_CELL } from "@/lib/tokens";
 import { Badge } from "@/components/p6/Primitives";
@@ -135,7 +136,7 @@ function PlacedBetRow({ r }: { r: PaperTrailRow }) {
     <tr className="text-sm hover:bg-surface-2" data-testid="placed-bet-row">
       <td className="py-1.5 px-3">
         {snapshotHasBet(betId) ? <Link
-          href={`/paper/${encodeURIComponent(betId)}/`}
+          href={paperDetailHref(betId)}
           className="font-medium text-foreground underline-offset-2 hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
           aria-label={`Execution detail: ${selectionLabel(r)}`}
         >
