@@ -178,6 +178,55 @@ without any additional tooling.
 
 ---
 
+## 8. Evidence kit (both halves render a number the same way)
+
+Every page of the site -- the terminal half (home scoreboard, paper desk, paper
+trading, games, records, labs) and the analytics half (calibration, findings,
+papers, inspectors) -- renders a number, its as-of date, its source path and its
+verdict label through one set of components in
+[`webapp/components/evidence/`](../webapp/components/evidence). They own their
+colours (every ink/surface pair is at least 6:1 in both themes), read the font
+tokens of whichever half mounts them, and switch to dark on the terminal's
+`html.dark` or the analytics site's `html[data-theme="dark"]`.
+
+**The rule: a canonical figure comes only from `webapp/lib/figures.ts`.** That
+module is GENERATED from [`docs/evidence/CANONICAL_FIGURES.json`](evidence/CANONICAL_FIGURES.json)
+(the set `scripts/platformkit/eval_gate/claim_consistency.py` checks the public
+pages against) by [`webapp/scripts/gen-figures.mjs`](../webapp/scripts/gen-figures.mjs).
+`npm run build` regenerates it (`prebuild`), `npm run check:figures` reports a
+stale copy, and the build fails loudly when the JSON is missing or malformed. A
+page never retypes a commit count, module count, findings count, forward-window
+date, G6 status or pregame-vs-close number: it renders `<FigureValue k="..."/>`
+by key, and TypeScript refuses an unknown key. Change the number in the JSON,
+regenerate, and every page follows.
+
+| Component | Renders | Notes |
+|---|---|---|
+| `ReceiptChip` | `R` glyph + source basename + `as of YYYY-MM-DD` + verification status | A link to the artifact's GitHub blob under `master` (keyboard focusable; the full path, date and status are its title and accessible name). A bare published artifact name links to the exported JSON; a non-path source (a command) is shown in full as not published, with no dead link. No date renders `validation_pending`, never a default green. `compact` = glyph only. |
+| `AsOfBadge` | `as of YYYY-MM-DD` as a `<time>`; `generated` for an artifact stamp; `window A to B`; `date not published` (caution) for a placeholder; visible `STALE` suffix | The one way an as-of is written. |
+| `VerdictLabel` | One of the packet's 17 labels in `webapp/lib/packetVerdicts.ts` (TRAILS_CLOSE, MATCHES_CLOSE, UNDERPOWERED, INSUFFICIENT, PROVISIONAL, MODEL_SHARPER_PROVISIONAL, MARKET_SHARPER_PROVISIONAL, BEHIND, CONFIRMED_LOCAL, NULL, NOT_TESTABLE, REJECT, FAILED_REPLICATION, REPLICATED, RETRACTED, SUPERSEDED, CORRECTED), each with a meaning (title) and, where the packet attaches one, a qualifier (`MATCHES_CLOSE` is always `underpowered`, with the MDE when known). Neutral styling: no win/loss colour; the provisional family has a dashed border. | Any other string is refused at the type level and throws at render; `toPacketVerdict()` narrows a runtime string or returns null. TRAILS_CLOSE is pregame (vs the devigged close); BEHIND is in-game (vs the Kalshi in-play mid). |
+| `FigureValue` | A canonical figure by key: a count's value, or one field of a comparison row (`model`, `close`, `gap`, `ci95`, `n`, `dm_p`, `mde`), with its `AsOfBadge` and a compact `ReceiptChip` to the source memo (or to the JSON with the derivation in the title); `verdict` adds the `VerdictLabel` | One format per field: gaps signed to 4 places, scores to 4 places, counts with separators, intervals `[-0.0038, +0.0175]`. `FigureVerdict` renders a row's label alone. |
+| `NotClaimed` | The standard "what this is not" block: paper only / no real-money order / no edge, profit or return-on-investment claim / retractions never quoted as current, plus the receipt to `docs/JOB_EVIDENCE_PACKET.md` | Terminal pages only; the analytics half's copy rule bans those words even negated. One page-specific sentence may follow the standard lines. |
+| `Term` | A glossary tooltip (hover or focus) for Brier, devigged close, CRPS, Diebold-Mariano, MDE, calibration vs resolution | Text copied verbatim from [`GLOSSARY.md`](GLOSSARY.md); `glossary.test.ts` reads that file and fails when an entry drifts. |
+
+Wired so far: the home scoreboard tiles and their as-of lines
+(`app/(terminal)/page.tsx`), every desk `Section` head
+(`components/desk/DeskShell.tsx`) and the desk model cards' canonical figure
+rows (`app/(terminal)/desk/model-cards/page.tsx`, which now render from
+`figures.ts` rather than the desk export's copy), the paper-trading note (the G6
+status is `<FigureValue k="g6_status"/>`) and its closing block (`NotClaimed`),
+the calibration page's receipt and definitions (`Term`), the findings index
+as-of lines and thirteen findings pages' receipt stamps. The home scoreboard
+TABLE rows and two findings pages (favorite-longshot, effective-sample-size)
+still mount the older half-specific receipt components because existing tests
+pin their popovers; they are the next substitution.
+
+Verify locally (from `webapp/`): `npm run check:figures`, then
+`npx vitest run components/evidence lib/figures.test.ts lib/figures.gen.test.ts`.
+The deploy workflow runs the same files one per process.
+
+---
+
 ## 7. Known limits (honest)
 
 - **Static snapshot, not live.** The site has no backend and no runtime

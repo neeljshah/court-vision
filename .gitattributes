@@ -81,3 +81,4 @@ tests/platformkit/ingame/fixtures/s531_* text eol=lf
 tests/platformkit/ingame/fixtures/s534_*.json text eol=lf
 tests/platformkit/execution/fixtures/s518_nba/** text eol=lf
 tests/platformkit/execution/fixtures/s518_nba/nba_logistic_prior_v1.json -text
+webapp/scripts/gen-figures.mjs text eol=lf

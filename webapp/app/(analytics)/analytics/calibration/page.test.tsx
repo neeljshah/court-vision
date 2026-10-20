@@ -10,7 +10,7 @@ describe("/analytics/calibration/ (T2)", () => {
     const h2 = screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent);
     const want = ["Verdict table", "Reliability diagrams with game-cluster intervals", "Brier decomposition", "Sharpness", "Coverage", "Inspectors", "Summary by market", "Limitations"];
     expect(h2.filter((t) => want.includes(t ?? ""))).toEqual(want);
-    expect(screen.getByTestId("status-line")).toHaveTextContent(/TRAILS_CLOSE on \d+ of \d+ rows/);
+    expect(screen.getByTestId("status-line")).toHaveTextContent(/TRAILS_CLOSE on \d+ of \d+ pregame rows, BEHIND on \d+ of \d+ in-play rows/);
   });
 
   it("every verdict-table row is a full metric block with a packet verdict", () => {
@@ -25,6 +25,10 @@ describe("/analytics/calibration/ (T2)", () => {
       expect(r.textContent).toContain("0.2500");
       expect(r.textContent).toMatch(/lower is better/);
     }
+    // In-play rows print the packet word BEHIND verbatim next to their reference; no alias to TRAILS_CLOSE.
+    const inplay = rows.filter((r) => r.textContent!.includes("Kalshi in-play mid"));
+    expect(inplay.length).toBeGreaterThan(0);
+    for (const r of inplay) expect(r.querySelector('[data-role="verdict"]')!.textContent).toBe("BEHIND");
   });
 
   it("prints a Limitations block with at least three bullets and no banned copy", () => {

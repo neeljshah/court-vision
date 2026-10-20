@@ -5,7 +5,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CalibrationReliability } from "@/components/analytics/calibration/CalibrationReliability";
-import { CalibrationVerdictTable, verdictRows, VERDICT_ALIAS } from "@/components/analytics/calibration/CalibrationVerdictTable";
+import { VerdictLabel } from "@/components/evidence";
+import { CalibrationVerdictTable, verdictRows } from "@/components/analytics/calibration/CalibrationVerdictTable";
 import { CalibrationDecomposition, CalibrationSharpness } from "@/components/analytics/calibration/CalibrationDecomposition";
 import { InspectorReadingTrail } from "@/components/analytics/InspectorReadingTrail";
 import { Receipt } from "@/components/analytics/Receipt";
@@ -36,7 +37,9 @@ export default function CalibrationPage() {
   const markets = Object.entries(snapshot<MarketArtifact>("calibration_by_market_type").market_types || {});
   const ci = meta?.ciPct || [null, null];
   const rows = verdictRows(canonicalFigures());
-  const trails = rows.filter((f) => (VERDICT_ALIAS[f.verdict] ?? f.verdict) === "TRAILS_CLOSE").length;
+  const pregame = rows.filter((f) => f.n_unit !== "games");
+  const trails = pregame.filter((f) => f.verdict === "TRAILS_CLOSE").length;
+  const behind = rows.filter((f) => f.verdict === "BEHIND").length;
   const asOf = rows.map((f) => f.as_of).sort().pop() ?? null;
   const sports = Array.from(new Set(series.map((s) => s.sport)));
 
@@ -44,7 +47,8 @@ export default function CalibrationPage() {
     <h1 className="calibration-title">Calibration against the market</h1>
     <p className="calibration-intro">The model trails the market reference on most rows and matches the devigged close only where the sample is too small to tell; every row below shows its n, interval and as-of date.</p>
     <p className="cal-status" data-testid="status-line">
-      Status: <span className="cal-verdict">TRAILS_CLOSE</span> on {trails} of {rows.length} rows &middot; as of {asOf ?? "not staged"}
+      Status: <VerdictLabel verdict="TRAILS_CLOSE" qualifier={false} /> on {trails} of {pregame.length} pregame rows,{" "}
+      <VerdictLabel verdict="BEHIND" qualifier={false} /> on {behind} of {rows.length - pregame.length} in-play rows &middot; as of {asOf ?? "not staged"}
       <ReceiptChip sourceArtifact={CANONICAL_PATH} asOf={asOf} verified="edge_claimed:false" verdict="TRAILS_CLOSE" />
     </p>
 
@@ -75,7 +79,7 @@ export default function CalibrationPage() {
 
     <section className="calibration-section" aria-labelledby="coverage-h">
       <h2 id="coverage-h">Coverage</h2>
-      <p data-testid="coverage">Coverage of interval forecasts: <span className="cal-verdict">NOT_TESTABLE</span> in this snapshot. The rows above are binary probabilities; no nominal-level interval forecasts are published here, so no empirical coverage is printed.</p>
+      <p data-testid="coverage">Coverage of interval forecasts: <VerdictLabel verdict="NOT_TESTABLE" qualifier={false} /> in this snapshot. The rows above are binary probabilities; no nominal-level interval forecasts are published here, so no empirical coverage is printed.</p>
     </section>
 
     <section className="calibration-section" aria-labelledby="inspect-h">

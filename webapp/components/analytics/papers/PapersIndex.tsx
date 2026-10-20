@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  excerpt, filterPapers, paperHref, paperKeywords, paperSports, readingMinutes, SPORT_LABELS, type Paper,
+  cardArtifacts, cardMinutes, excerpt, filterPapers, paperHref, paperKeywords, paperSports, SPORT_LABELS, type PaperListItem,
 } from "@/lib/analytics/papers";
 import { paperViewSearch, readPaperViewState, type PaperViewState } from "@/lib/analytics/paperViewState";
 
@@ -12,7 +12,9 @@ const START_HERE_SLUGS = [
   "how-proposed-signals-survive-testing",
 ];
 
-export default function PapersIndex({ papers }: { papers: Paper[] }) {
+// Accepts full papers (tests, live mode) or PaperCard projections (the static page
+// passes cards so the serialised props stay small -- see lib/analytics/papers.ts).
+export default function PapersIndex({ papers }: { papers: PaperListItem[] }) {
   const [viewState, setViewState] = useState<PaperViewState>({ sport: "any", keyword: "any" });
   const [ready, setReady] = useState(false);
   const sports = paperSports(papers);
@@ -103,8 +105,8 @@ export default function PapersIndex({ papers }: { papers: Paper[] }) {
               {visible.map(paper => (
                 <Link key={paper.slug} href={paperHref(paper.slug)} className="paper-card" prefetch={false}>
                   <span className="mono paper-card-meta">
-                    {paper.date} &middot; {SPORT_LABELS[paper.sport]} &middot; {readingMinutes(paper)} min &middot;{" "}
-                    {paper.evidence.length} {paper.evidence.length === 1 ? "artifact" : "artifacts"}
+                    {paper.date} &middot; {SPORT_LABELS[paper.sport]} &middot; {cardMinutes(paper)} min &middot;{" "}
+                    {cardArtifacts(paper)} {cardArtifacts(paper) === 1 ? "artifact" : "artifacts"}
                   </span>
                   <h2 className="serif">{paper.title}</h2>
                   <p className="paper-card-sub">{paper.subtitle}</p>

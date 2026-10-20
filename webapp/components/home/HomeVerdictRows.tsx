@@ -2,13 +2,14 @@
 // Every block carries verdict word, n, interval, as-of and a receipt chip (P2.4); rows come
 // from CANONICAL_FIGURES.json via lib/canonicalFigures.server, largest n first (P2.3).
 import { ReceiptChip } from "@/components/showcase/ReceiptChip";
+import { VerdictLabel, type PacketVerdict } from "@/components/evidence";
 import type { CanonicalFigure } from "@/lib/canonicalFigures.server";
 
 const f4 = (v: number) => (v >= 0 ? "+" : "") + v.toFixed(4);
 const SPORT: Record<string, string> = { mlb: "MLB", nba: "NBA", soccer: "Soccer" };
 
 /** Packet qualifier: NBA moneyline matches the close only because it is underpowered. */
-function qualifier(f: CanonicalFigure): string | null {
+function qualifier(f: CanonicalFigure): PacketVerdict | null {
   if (f.verdict !== "MATCHES_CLOSE" || f.mde == null || f.ci95 == null) return null;
   return f.ci95[1] - f.ci95[0] > f.mde ? "UNDERPOWERED" : null;
 }
@@ -27,14 +28,9 @@ export function HomeVerdictRows({ figures }: { figures: CanonicalFigure[] }) {
               {SPORT[f.sport] ?? f.sport} {f.market}, pregame vs devigged close
             </div>
             <div className="mt-1 flex flex-wrap items-baseline gap-x-2">
-              <span data-role="verdict" className="border border-border px-1.5 font-data text-xs text-foreground">
-                {f.verdict}
-              </span>
-              {q && (
-                <span data-role="qualifier" className="border border-border px-1.5 font-data text-xs text-foreground">
-                  {q}
-                </span>
-              )}
+              {/* VerdictLabel throws on a non-packet word, so a stray artifact verdict fails the build. */}
+              <span data-role="verdict"><VerdictLabel verdict={f.verdict as PacketVerdict} qualifier={false} /></span>
+              {q && <span data-role="qualifier"><VerdictLabel verdict={q} qualifier={false} /></span>}
             </div>
             <div className="mt-1 font-data text-sm tabular text-foreground">
               Brier {f.model?.toFixed(4)} model vs {f.close?.toFixed(4)} close

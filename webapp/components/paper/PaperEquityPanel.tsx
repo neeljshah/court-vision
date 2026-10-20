@@ -17,10 +17,29 @@
 //   - Unavailable -> honest empty state, never a fabricated curve.
 //   - ASCII only. Under 300 LOC (chart split into PaperEquityChart.tsx).
 
+import dynamic from "next/dynamic";
 import type { PnlSeries, PaperBankroll } from "@/lib/types";
-import { PaperEquityChart, fmtUnits, fmtSignedUnits } from "./PaperEquityChart";
+import { fmtUnits, fmtSignedUnits } from "./equityFormat";
 import { Unavailable } from "@/components/p6/Primitives";
 import { CLV_UNAVAILABLE, JULY_SNAPSHOT_LABEL } from "@/lib/clvUnavailable";
+
+// The chart is the only recharts consumer on /paper-trading (373 KB raw chunk);
+// load it after the panel shell, into a placeholder with the chart's exact
+// height so the hand-over shifts nothing. The skeleton markup is inlined here
+// (not imported from PaperEquityChart) so this module stays recharts-free.
+const PaperEquityChart = dynamic(
+  () => import("./PaperEquityChart").then((m) => m.PaperEquityChart),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-full" aria-busy="true" aria-label="equity curve loading">
+        <div className="mb-1 h-[18px]" />
+        <div className="h-[140px] w-full animate-pulse rounded bg-surface-2" role="presentation" />
+        <div className="mt-1 h-4" />
+      </div>
+    ),
+  },
+);
 
 // ---------------------------------------------------------------------------
 // Tile
@@ -150,7 +169,7 @@ export function PaperEquityPanel({ series, bankroll, loading }: PaperEquityPanel
           data-testid="paper-balance-headline"
         >
           {loading && currentUnits == null ? (
-            <div className="h-8 w-48 animate-pulse rounded bg-surface-2" aria-busy="true" />
+            <div className="h-9 w-48 animate-pulse rounded bg-surface-2" aria-busy="true" />
           ) : currentUnits != null && startUnits != null ? (
             <>
               <span className="font-mono text-3xl font-semibold tabular-nums text-foreground">
@@ -181,8 +200,8 @@ export function PaperEquityPanel({ series, bankroll, loading }: PaperEquityPanel
           )}
         </div>
 
-        {/* Equity curve */}
-        <div className="mb-4">
+        {/* Equity curve -- min-h reserves the drawn chart's footprint (CLS) */}
+        <div className="mb-4 min-h-[174px]">
           {isUnavail && !loading ? <Unavailable reason="Equity history unavailable" /> : <PaperEquityChart
             points={isUnavail ? null : series!.points}
             startUnits={startUnits}
@@ -223,8 +242,10 @@ export function PaperEquityPanel({ series, bankroll, loading }: PaperEquityPanel
           <span className="mb-2 block font-mono text-xs uppercase tracking-widest text-muted-foreground">
             Day units (last 14 days)
           </span>
-          {isUnavail ? <p className="font-mono text-xs text-faint">{loading ? "Loading daily units" : "Daily units unavailable"}</p>
-            : <DailyStrip daily={series!.daily ?? []} />}
+          <div className="min-h-[56px]">
+            {isUnavail ? <p className="font-mono text-xs text-faint">{loading ? "Loading daily units" : "Daily units unavailable"}</p>
+              : <DailyStrip daily={series!.daily ?? []} />}
+          </div>
         </div>
 
         {/* Honest footer */}

@@ -2,9 +2,9 @@
 // centered on zero. One row per call; the scoreboard maps its rows over it.
 //
 // Sign conventions differ across the scoreboard (Brier vs CRPS, and which side
-// is "good" flips by metric), so the bar is NOT read by raw sign. It is colored
-// by the row's recorded VERDICT and the exact signed value is always printed by
-// the caller. The bar shows magnitude; the whisker shows the 95% CI. A whisker
+// is "good" flips by metric), so the bar is NOT read by raw sign. It is drawn in
+// one neutral hue (no win/loss colour, DESIGN_PRINCIPLES P4.7); direction is the
+// signed value the caller always prints next to it. The bar shows magnitude; the whisker shows the 95% CI. A whisker
 // that straddles the centered zero line is the visual for "not distinguishable"
 // (UNDERPOWERED) -- DESIGN sec.4: the honest whisker crossing zero is the point.
 //
@@ -18,12 +18,6 @@ export interface DeltaBarsProps {
   verdict: string;
   width?: number;
   height?: number;
-}
-
-function verdictColor(v: string): string {
-  if (v.startsWith("MODEL_SHARPER")) return "hsl(var(--success))";
-  if (v.startsWith("MARKET_SHARPER")) return "hsl(var(--danger))";
-  return "hsl(var(--faint))";
 }
 
 export function DeltaBars({
@@ -41,7 +35,7 @@ export function DeltaBars({
   const half = cx - 5;
   const x = (v: number) => cx + (v / ext) * half;
   const midY = height / 2;
-  const color = verdictColor(verdict);
+  const color = "hsl(var(--muted-foreground))";
   const barX0 = Math.min(cx, x(delta));
   const barW = Math.max(Math.abs(x(delta) - cx), 0.5);
 

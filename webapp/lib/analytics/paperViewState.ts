@@ -2,7 +2,7 @@ import { paperKeywords, paperSports, type Paper, type PaperSport } from "./paper
 
 export type PaperViewState = { sport: PaperSport | "any"; keyword: string };
 
-export function readPaperViewState(search: string, papers: Paper[]): PaperViewState {
+export function readPaperViewState(search: string, papers: Array<Pick<Paper, "sport" | "keywords">>): PaperViewState {
   const params = new URLSearchParams(search);
   const sport = params.get("sport") as PaperSport;
   const keyword = params.get("keyword") || "any";

@@ -6,6 +6,7 @@
 
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { ReceiptChip } from "@/components/evidence";
 
 export const LEDGER_SRC = "docs/evidence/forward/paper_result/LEDGER.jsonl";
 
@@ -17,9 +18,9 @@ export function PaperRecordIntro({ asOf, lastNight }: { asOf: string | null; las
       ledger. 29 fills over four ledger nights (2026-10-03, 10-04, 10-05 and 10-08); counts, contracts and
       probabilities only. stake_units = contracts per fill. Not a verdict on the model.{" "}
       <span className="font-data text-foreground">
-        Fills through night {lastNight ?? "not stated"}; ledger as of {asOf ? asOf.slice(0, 10) : "not stated"};
-        source {LEDGER_SRC}.
+        Fills through night {lastNight ?? "not stated"}; ledger as of {asOf ? asOf.slice(0, 10) : "not stated"}.
       </span>{" "}
+      <ReceiptChip source={LEDGER_SRC} asOf={asOf} status="descriptive_only" />{" "}
       Nights, coverage and the scoreboard are on the <Link href="/desk/" className="underline">desk record</Link>.
     </p>
   );

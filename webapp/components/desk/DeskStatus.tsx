@@ -4,6 +4,7 @@
 
 import type { Desk } from "@/lib/desk.server";
 import { ReceiptChip } from "@/components/showcase/ReceiptChip";
+import { ReceiptChip as KitReceiptChip } from "@/components/evidence";
 import {
   CENSUS, CENSUS_SRC, UPTIME_SRC, ghBlob, minutesBetween, type Uptime,
 } from "./deskExtras.server";
@@ -84,8 +85,8 @@ export function CensusSummary() {
         ))}
       </ul>
       <p className="text-faint">
-        {CENSUS.causes.map((c) => c.n).join(" + ")} = {CENSUS.served}; PASS {CENSUS.pass}. As of {CENSUS.asOf};{" "}
-        <a className="underline" href={ghBlob(CENSUS_SRC)}>{CENSUS_SRC}</a>.
+        {CENSUS.causes.map((c) => c.n).join(" + ")} = {CENSUS.served}; PASS {CENSUS.pass}.{" "}
+        <KitReceiptChip source={CENSUS_SRC} asOf={CENSUS.asOf} status="descriptive_only" />
       </p>
     </div>
   );

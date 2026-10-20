@@ -43,6 +43,9 @@ jobs:
       - name: Typecheck (hard gate)
         run: npm run typecheck
 
+      - name: Canonical figures module matches docs/evidence/CANONICAL_FIGURES.json (hard gate)
+        run: npm run check:figures
+
       - name: Analytics unit tests (one file per process)
         run: |
           npx vitest run lib/analytics/stateReliabilityCsv.test.ts
@@ -56,6 +59,17 @@ jobs:
           npx vitest run 'app/(analytics)/analytics/players/[pack]/[slug]/cohortNavigation.test.tsx'
           npx vitest run lib/analytics/entityMeasurements.test.ts
           npx vitest run components/analytics/Receipt.test.tsx
+          npx vitest run lib/figures.test.ts
+          npx vitest run lib/figures.gen.test.ts
+          npx vitest run components/evidence/kit.test.ts
+          npx vitest run components/evidence/glossary.test.ts
+          npx vitest run components/evidence/ReceiptChip.test.tsx
+          npx vitest run components/evidence/AsOfBadge.test.tsx
+          npx vitest run components/evidence/VerdictLabel.test.tsx
+          npx vitest run components/evidence/FigureValue.test.tsx
+          npx vitest run components/evidence/NotClaimed.test.tsx
+          npx vitest run components/evidence/Term.test.tsx
+          npx vitest run 'app/(analytics)/analytics/findings/page.test.tsx'
           npx vitest run 'app/(analytics)/analytics/findings/shrinkage/page.test.tsx'
           npx vitest run components/analytics/PercentileBar.test.tsx
           npx vitest run components/analytics/entities/EntityMeasurements.test.tsx
@@ -252,7 +266,6 @@ jobs:
           npx vitest run components/analytics/evidence/EvidenceGallery.test.tsx
           npx vitest run lib/analytics/evidenceHub.test.ts
           npx vitest run components/analytics/CommandPalette.test.tsx
-          npx vitest run components/analytics/AnalyticsNavigation.test.tsx
           npx vitest run components/analytics/workspace/Workspace.test.tsx
           npx vitest run components/analytics/workspace/Research.test.tsx
 

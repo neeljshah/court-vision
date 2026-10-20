@@ -70,7 +70,10 @@ describe("/paper-trading -- Paper record", () => {
       const intro = screen.getByTestId("paper-record-intro").textContent ?? "";
       expect(intro).toMatch(/ledger as of 2026-10-09/);
       expect(intro).toMatch(/night 2026-10-08/);
-      expect(intro).toMatch(/paper_result\/LEDGER\.jsonl/);
+      // the evidence-kit receipt chip shows the basename; the full path is its accessible name
+      expect(intro).toMatch(/LEDGER\.jsonl/);
+      expect(screen.getByTestId("paper-record-intro").querySelector("a.ev-chip")!.getAttribute("aria-label"))
+        .toMatch(/paper_result\/LEDGER\.jsonl/);
     });
   });
 

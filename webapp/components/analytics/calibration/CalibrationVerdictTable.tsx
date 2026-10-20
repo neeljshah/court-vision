@@ -2,15 +2,12 @@
 // checkpoint with n games, n rows, Brier model / market / 0.25 baseline, gap with interval and
 // the packet verdict. Rows come from docs/evidence/CANONICAL_FIGURES.json, largest n first.
 import { ReceiptChip } from "@/components/showcase/ReceiptChip";
+import { VerdictLabel, type PacketVerdict } from "@/components/evidence";
 import type { CanonicalFigure } from "@/lib/canonicalFigures.server";
 
 const f4 = (v: number | undefined) => (v == null ? "not published" : v.toFixed(4));
 const s4 = (v: number) => (v >= 0 ? "+" : "") + v.toFixed(4);
 const SPORT: Record<string, string> = { mlb: "MLB", nba: "NBA", soccer: "Soccer", soccer_intl: "International soccer" };
-
-// ponytail: CANONICAL_FIGURES records the in-game rows as BEHIND the contemporaneous Kalshi mid;
-// the verdict slot takes packet words only, so it reads TRAILS_CLOSE with the reference named.
-export const VERDICT_ALIAS: Record<string, string> = { BEHIND: "TRAILS_CLOSE" };
 
 export const isVerdictRow = (f: CanonicalFigure) => f.metric === "Brier" && f.model != null && f.close != null;
 
@@ -39,7 +36,9 @@ export function CalibrationVerdictTable({ figures }: { figures: CanonicalFigure[
         <tbody>
           {rows.map((f) => {
             const ingame = f.n_unit === "games";
-            const verdict = VERDICT_ALIAS[f.verdict] ?? f.verdict;
+            // BEHIND (in-play, vs the Kalshi mid) and TRAILS_CLOSE (pregame, vs the devigged close) are
+            // both packet words and print verbatim; VerdictLabel throws on anything else.
+            const verdict = f.verdict as PacketVerdict;
             return (
               <tr key={f.key} className="metric" data-key={f.key}>
                 <td>{SPORT[f.sport] ?? f.sport}</td>
@@ -56,8 +55,8 @@ export function CalibrationVerdictTable({ figures }: { figures: CanonicalFigure[
                   {f.ci95 ? `[${s4(f.ci95[0])}, ${s4(f.ci95[1])}]` : "no interval"}
                 </td>
                 <td>
-                  <span className="cal-verdict" data-role="verdict">{verdict}</span>
-                  {underpowered(f) && <> <span className="cal-verdict" data-role="qualifier">UNDERPOWERED</span></>}
+                  <span data-role="verdict"><VerdictLabel verdict={verdict} qualifier={false} /></span>
+                  {underpowered(f) && <> <span data-role="qualifier"><VerdictLabel verdict="UNDERPOWERED" qualifier={false} /></span></>}
                 </td>
                 <td>
                   <span data-role="asof">{f.as_of}</span>

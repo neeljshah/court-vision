@@ -181,17 +181,45 @@ export function excerpt(text: string, limit = 220): string {
   return `${cut.slice(0, cut.lastIndexOf(" ")).trimEnd()}...`;
 }
 
-export function paperKeywords(papers: Paper[]): string[] {
+/**
+ * What the papers index prints per card. The index is a client component, so
+ * everything passed to it is serialised twice into the page (HTML + RSC flight
+ * data); the full Paper (every section, table and figure) made /analytics/papers/
+ * a 719 KB document for a list of titles. The card keeps the printed fields plus
+ * the two derived counts, and drops the body.
+ */
+export type PaperCard = Pick<Paper, "slug" | "title" | "subtitle" | "date" | "sport" | "keywords" | "abstract"> & {
+  minutes: number;
+  artifacts: number;
+};
+
+/** Either shape works for the index helpers below; the card is the lighter one. */
+export type PaperListItem = Paper | PaperCard;
+
+export function toPaperCard(paper: Paper): PaperCard {
+  const { slug, title, subtitle, date, sport, keywords, abstract } = paper;
+  return { slug, title, subtitle, date, sport, keywords, abstract, minutes: readingMinutes(paper), artifacts: paper.evidence.length };
+}
+
+export function cardMinutes(item: PaperListItem): number {
+  return "minutes" in item ? item.minutes : readingMinutes(item);
+}
+
+export function cardArtifacts(item: PaperListItem): number {
+  return "artifacts" in item ? item.artifacts : item.evidence.length;
+}
+
+export function paperKeywords(papers: Array<Pick<Paper, "keywords">>): string[] {
   return [...new Set(papers.flatMap(paper => paper.keywords))].sort((left, right) => left.localeCompare(right));
 }
 
-export function paperSports(papers: Paper[]): PaperSport[] {
+export function paperSports(papers: Array<Pick<Paper, "sport">>): PaperSport[] {
   const order: PaperSport[] = ["all", "nba", "mlb", "soccer_intl", "tennis"];
   const present = new Set(papers.map(paper => paper.sport));
   return order.filter(sport => present.has(sport));
 }
 
-export function filterPapers(papers: Paper[], sport: string, keyword: string): Paper[] {
+export function filterPapers<T extends Pick<Paper, "sport" | "keywords">>(papers: T[], sport: string, keyword: string): T[] {
   return papers.filter(paper => (sport === "any" || paper.sport === sport) && (keyword === "any" || paper.keywords.includes(keyword)));
 }
 
