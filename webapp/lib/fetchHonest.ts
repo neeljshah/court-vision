@@ -62,6 +62,25 @@ const SNAPSHOT_GAMES: ReadonlySet<string> | null = (() => {
   }
 })();
 
+// Paper-trade detail pages the export contains (manifest.bet_ids: the encoded
+// ids exactly as the trade rows build them).
+const SNAPSHOT_BETS: ReadonlySet<string> | null = (() => {
+  const raw = process.env.NEXT_PUBLIC_SNAPSHOT_BETS;
+  if (!raw) return null;
+  try {
+    const bets = JSON.parse(raw) as unknown;
+    return Array.isArray(bets) ? new Set(bets.filter((b): b is string => typeof b === "string")) : null;
+  } catch {
+    return null;
+  }
+})();
+
+/** True when a /paper/<betId> detail page exists for this encoded id (always true live). */
+export function snapshotHasBet(betId: string): boolean {
+  if (!isSnapshotMode || !SNAPSHOT_BETS) return true;
+  return SNAPSHOT_BETS.has(betId);
+}
+
 /** True when a /games or /p6 detail page exists for this game (always true live). */
 export function snapshotHasGame(sport: string, gameId: string): boolean {
   if (!isSnapshotMode || !SNAPSHOT_GAMES) return true;

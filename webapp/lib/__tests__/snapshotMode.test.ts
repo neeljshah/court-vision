@@ -225,3 +225,18 @@ describe("snapshotHasGame -- baked detail pages", () => {
     expect(live.snapshotHasGame("mlb", "fd:35816158")).toBe(true);
   });
 });
+
+describe("snapshotHasBet -- baked paper detail pages", () => {
+  it("links only the bet ids the export contains, and everything when live", async () => {
+    vi.stubEnv("NEXT_PUBLIC_DATA_MODE", "snapshot");
+    vi.stubEnv("NEXT_PUBLIC_SNAPSHOT_BETS", JSON.stringify(["mlb%7Cmlb%7CA%7C2026%7Cmoneyline%7Chome%7Ckalshi"]));
+    vi.resetModules();
+    const snap = await import("../fetchHonest");
+    expect(snap.snapshotHasBet("mlb%7Cmlb%7CA%7C2026%7Cmoneyline%7Chome%7Ckalshi")).toBe(true);
+    expect(snap.snapshotHasBet("mlb%7Cmlb%7CB%7C2026%7Cmoneyline%7Chome%7Ckalshi")).toBe(false);
+    vi.stubEnv("NEXT_PUBLIC_DATA_MODE", "");
+    vi.resetModules();
+    const live = await import("../fetchHonest");
+    expect(live.snapshotHasBet("anything")).toBe(true);
+  });
+});

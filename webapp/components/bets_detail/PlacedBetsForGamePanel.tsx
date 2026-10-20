@@ -22,6 +22,8 @@
 import * as React from "react";
 import { useCallback, useMemo } from "react";
 import Link from "next/link";
+import { snapshotHasBet } from "@/lib/fetchHonest";
+import { paperDetailHref } from "@/lib/paperLinks";
 import { cn } from "@/lib/utils";
 import { tierBadgeClass, EMPTY_CELL } from "@/lib/tokens";
 import { Badge } from "@/components/p6/Primitives";
@@ -133,13 +135,17 @@ function PlacedBetRow({ r }: { r: PaperTrailRow }) {
   return (
     <tr className="text-sm hover:bg-surface-2" data-testid="placed-bet-row">
       <td className="py-1.5 px-3">
-        <Link
-          href={`/paper/${encodeURIComponent(betId)}`}
+        {snapshotHasBet(betId) ? <Link
+          href={paperDetailHref(betId)}
           className="font-medium text-foreground underline-offset-2 hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
           aria-label={`Execution detail: ${selectionLabel(r)}`}
         >
           {selectionLabel(r)}
-        </Link>
+        </Link> : (
+          <span className="font-medium text-foreground" title="Detail page is not included in this snapshot">
+            {selectionLabel(r)}
+          </span>
+        )}
         <div className="font-data text-[10px] text-faint">
           {r.taken_book}
           {r.taken_decimal != null ? ` @ ${r.taken_decimal.toFixed(2)}` : ""}

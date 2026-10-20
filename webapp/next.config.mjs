@@ -24,17 +24,23 @@ const SNAPSHOT_FILES = snapshotFiles();
 // The games whose detail pages the export actually contains (manifest.games is
 // what generateStaticParams builds). Client lists link only those; the rest
 // render as plain cards instead of links that would 404.
-function snapshotGames() {
-  if (!SNAPSHOT) return null;
+function readManifest() {
   try {
-    const manifest = JSON.parse(readFileSync(new URL('./public/demo-data/manifest.json', import.meta.url), 'utf8'));
-    const games = (manifest.games || []).map((g) => `${g.sport}/${g.game_id}`);
-    return games.length ? JSON.stringify(games) : null;
+    return JSON.parse(readFileSync(new URL('./public/demo-data/manifest.json', import.meta.url), 'utf8'));
   } catch {
     return null;
   }
 }
-const SNAPSHOT_GAMES = snapshotGames();
+const MANIFEST = SNAPSHOT ? readManifest() : null;
+const SNAPSHOT_GAMES = (() => {
+  const games = (MANIFEST?.games || []).map((g) => `${g.sport}/${g.game_id}`);
+  return games.length ? JSON.stringify(games) : null;
+})();
+// Same for the paper-trade detail pages (/paper/<bet id>, built from manifest.bet_ids).
+const SNAPSHOT_BETS = (() => {
+  const bets = (MANIFEST?.bet_ids || []).filter((b) => typeof b === 'string');
+  return bets.length ? JSON.stringify(bets) : null;
+})();
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -45,6 +51,7 @@ const nextConfig = {
   env: {
     ...(SNAPSHOT_FILES ? { NEXT_PUBLIC_SNAPSHOT_FILES: SNAPSHOT_FILES } : {}),
     ...(SNAPSHOT_GAMES ? { NEXT_PUBLIC_SNAPSHOT_GAMES: SNAPSHOT_GAMES } : {}),
+    ...(SNAPSHOT_BETS ? { NEXT_PUBLIC_SNAPSHOT_BETS: SNAPSHOT_BETS } : {}),
   },
   ...(SNAPSHOT
     ? {
