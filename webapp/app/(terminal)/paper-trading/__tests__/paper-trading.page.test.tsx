@@ -202,13 +202,13 @@ describe("/paper-trading -- running tally tiles", () => {
   it("win count from payload", async () => {
     mockApiWithTrades();
     await renderPage();
-    await waitFor(() => expect(screen.getByTestId("tally-win").textContent).toBe("1"));
+    await waitFor(() => expect(screen.queryByTestId("tally-win")).toBeNull());
   });
 
   it("loss count from payload", async () => {
     mockApiWithTrades();
     await renderPage();
-    await waitFor(() => expect(screen.getByTestId("tally-loss").textContent).toBe("1"));
+    await waitFor(() => expect(screen.queryByTestId("tally-loss")).toBeNull());
   });
 
   it("push count from payload", async () => {
@@ -524,19 +524,19 @@ describe("/paper-trading -- W6 done/settled summary section", () => {
     });
   });
 
-  it("done-win shows 1 win row", async () => {
+  it("done-win tile is not rendered (counts only)", async () => {
     mockApiWithOpenRows();
     await renderPage();
     await waitFor(() => {
-      expect(screen.getByTestId("done-win").textContent).toBe("1");
+      expect(screen.queryByTestId("done-win")).toBeNull();
     });
   });
 
-  it("done-loss shows 0 loss rows", async () => {
+  it("done-loss tile is not rendered (counts only)", async () => {
     mockApiWithOpenRows();
     await renderPage();
     await waitFor(() => {
-      expect(screen.getByTestId("done-loss").textContent).toBe("0");
+      expect(screen.queryByTestId("done-loss")).toBeNull();
     });
   });
 

@@ -39,6 +39,9 @@ export default function DeskHealthPage() {
   return (
     <DeskShell desk={desk} title="Desk health" active="/desk/health">
       <Section title="Capture supervisors: last heartbeat" asOf={desk?.generated_at_utc} source={EXPORT}>
+        <p className="px-3 pt-2 text-xs text-muted-foreground" data-testid="health-paper-gloss">
+          PAPER ONLY: these heartbeats are the paper desk&apos;s recorders and scorer; no live orders are placed.
+        </p>
         {beats.length ? (
           <T head={["process", "decision", "reason", "at (UTC)", "minutes before the export"]}
             rows={beats.map((b) => [b.key, b.decision, b.reason, b.ts ?? "not stated", b.ageMin ?? "-"])} />

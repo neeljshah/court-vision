@@ -12,6 +12,7 @@ import { fillParam, findFill } from "@/components/paper_pm/paperIds";
 import { fillMeta } from "@/lib/seo/families";
 import { isSnapshotMode } from "@/lib/fetchHonest";
 import BetDetailPageClient from "./BetDetailPageClient";
+import { fillTitle } from "./fillTitle";
 
 // Static export pre-renders every path; live/dev builds render any id on demand.
 export const dynamicParams = process.env.NEXT_PUBLIC_DATA_MODE !== "snapshot";
@@ -27,8 +28,9 @@ export async function generateStaticParams() {
 export function generateMetadata({ params }: { params: { betId: string } }): Metadata {
   const row = findFill(bakedFillRows(), params.betId);
   if (!row) return { title: "Paper fill", description: "One forward paper fill from the paper record. Paper units only; calibration record." };
-  return fillMeta({ param: fillParam(row), sport: row.sport, gameId: row.game_id, matchup: row.matchup, side: row.side, ts: row.ts,
+  const meta = fillMeta({ param: fillParam(row), sport: row.sport, gameId: row.game_id, matchup: row.matchup, side: row.side, ts: row.ts,
     book: row.taken_book, marketType: row.market_type, status: row.status, stakeUnits: row.stake_units });
+  return { ...meta, title: fillTitle(row) };
 }
 
 export default function BetDetailPage({ params }: { params: { betId: string } }) {

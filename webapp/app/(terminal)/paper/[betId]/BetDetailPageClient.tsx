@@ -29,7 +29,7 @@ import { PaperOnlyBanner } from "@/components/paper/PaperOnlyBanner";
 import { isSnapshotMode } from "@/lib/fetchHonest";
 import { ExecutionTrail } from "@/components/execution/ExecutionTrail";
 import { paperRowToExecutionTrail } from "@/components/paper_pm/paperTrailAdapter";
-import { humanizeMatchup } from "@/lib/betdesc";
+import { fillTitle } from "./fillTitle";
 
 // ---------------------------------------------------------------------------
 // fmtAge -- compact human-readable last-updated age label.
@@ -120,10 +120,14 @@ export default function BetDetailPageClient({ initial }: { initial?: FillSeed })
             </Link>
           </li>
           <li aria-hidden="true">/</li>
-          <li className="font-mono text-muted-foreground">
-            {row ? humanizeMatchup(row.matchup || row.game_id) : canonicalId(betId)}
+          <li className="font-mono text-muted-foreground" data-testid="fill-title">
+            {row ? fillTitle(row) : canonicalId(betId)}
           </li>
         </ol>
+        {/* The raw fill key stays visible as the receipt chip; the title is derived from the row. */}
+        <span data-testid="fill-raw-key" className="mt-1 inline-block border border-border px-2 py-0.5 font-mono text-[11px] text-faint">
+          key {canonicalId(betId)}
+        </span>
       </nav>
 
       <PaperOnlyBanner />

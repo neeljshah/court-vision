@@ -51,6 +51,32 @@ type MechanismSurvival = {
   by_sport?: Record<string, { n: number; n_testable: number; n_confirmed: number; survival_rate: number }>;
 };
 
+// Plain-word labels; the raw artifact key stays in each header's title attribute.
+const SPORT_NAME: Record<string, string> = { nba: "NBA", basketball_nba: "NBA", mlb: "MLB", soccer: "Soccer", tennis: "Tennis", interaction_factory: "Interaction factory (automated pairings)" };
+const sportName = (k: string) => SPORT_NAME[k] ?? k;
+const PACKET_URL = "https://github.com/neeljshah/court-vision/blob/master/docs/JOB_EVIDENCE_PACKET.md";
+const GRAVEYARD_LEAD =
+  "Every idea we tested is kept here, including the ones that failed. A 'confirmed' hypothesis held up in its own test; that is not the same as shipping, and none of the 60 candidate signal classes has passed the full market-relative gate.";
+
+type Survival = { n: number; n_testable: number; n_confirmed: number; survival_rate: number };
+/** nba and basketball_nba are the same sport under two ledger keys: one row, counts summed. */
+function mergeSports(bySport: Record<string, Survival>): [string, Survival][] {
+  const out = new Map<string, Survival>();
+  for (const [k, v] of Object.entries(bySport)) {
+    const name = sportName(k);
+    const prev = out.get(name);
+    if (!prev) { out.set(name, { ...v }); continue; }
+    const m = { n: prev.n + v.n, n_testable: prev.n_testable + v.n_testable, n_confirmed: prev.n_confirmed + v.n_confirmed, survival_rate: 0 };
+    m.survival_rate = m.n_testable ? m.n_confirmed / m.n_testable : 0;
+    out.set(name, m);
+  }
+  return [...out.entries()];
+}
+
+function Th({ label, raw, right = true }: { label: string; raw: string; right?: boolean }) {
+  return <th className={`microlabel px-3 py-1.5${right ? " text-right" : ""}`} title={raw}>{label}</th>;
+}
+
 function Bar({ share }: { share: number }) {
   return (
     <div className="h-1.5 w-full bg-surface-2">
@@ -71,6 +97,7 @@ export default function GraveyardPage() {
   const verdictRows = Object.entries(rejects?.verdicts_by_type ?? {}).sort((a, b) => b[1] - a[1]);
   const reasonRows = Object.entries(rejects?.rejects_by_reason_category ?? {}).sort((a, b) => b[1] - a[1]);
   const reasonMax = reasonRows.length ? reasonRows[0][1] : 1;
+  const asOf = [honestyChip.asOf, rejectChip.asOf, survivalChip.asOf].find(Boolean)?.slice(0, 10) ?? null;
 
   return (
     <main className="mx-auto flex max-w-5xl flex-col gap-6 p-6">
@@ -79,6 +106,11 @@ export default function GraveyardPage() {
         <h1 className="mt-2 text-2xl font-semibold tracking-tight text-foreground">
           The graveyard
         </h1>
+        <p className="mt-1 font-data text-[11px] text-faint" data-role="asof">as of {asOf ?? "not dated in the staged artifacts"}</p>
+        <p className="mt-2 text-sm leading-relaxed text-foreground" data-role="lead">
+          {GRAVEYARD_LEAD}{" "}
+          <a href={PACKET_URL} className="underline">Source: evidence packet, section 4 (corrected 2026-09-03)</a>.
+        </p>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
           {honesty?.headline ??
             "Every killed signal is recorded here at the same size as anything shipped. A REJECT or NULL is honest market-efficiency evidence, not a failure."}
@@ -91,18 +123,18 @@ export default function GraveyardPage() {
           <table className="w-full border-collapse text-sm">
             <thead>
               <tr className="border-b border-border text-left">
-                <th className="microlabel px-3 py-1.5">sport</th>
-                <th className="microlabel px-3 py-1.5 text-right">total</th>
-                <th className="microlabel px-3 py-1.5 text-right">confirmed</th>
-                <th className="microlabel px-3 py-1.5 text-right">null</th>
-                <th className="microlabel px-3 py-1.5 text-right">not testable</th>
-                <th className="microlabel px-3 py-1.5 text-right">failed replication</th>
+                <Th label="Sport" raw="sport" right={false} />
+                <Th label="Ideas tested" raw="total" />
+                <Th label="Held up in its own test" raw="confirmed" />
+                <Th label="No effect found" raw="null" />
+                <Th label="Could not be tested" raw="not_testable" />
+                <Th label="Did not hold up when re-run" raw="failed_replication" />
               </tr>
             </thead>
             <tbody>
               {(honesty?.sports ?? []).map((s) => (
                 <tr key={s.sport} className="border-b border-border hover:bg-surface-2">
-                  <td className="px-3 py-1.5 font-data">{s.sport}</td>
+                  <td className="px-3 py-1.5 font-data" title={s.sport}>{sportName(s.sport)}</td>
                   <td className="px-3 py-1.5 text-right"><Num>{s.total}</Num></td>
                   <td className="px-3 py-1.5 text-right text-up"><Num>{s.confirmed}</Num></td>
                   <td className="px-3 py-1.5 text-right text-down"><Num>{s.null}</Num></td>
@@ -156,7 +188,10 @@ export default function GraveyardPage() {
               {verdictRows.map(([verdict, count]) => (
                 <tr key={verdict} className="border-b border-border">
                   <td className="px-3 py-1.5 font-mono text-[11px] font-bold text-foreground">
-                    {isGateStatus(verdict) ? <GateStatus token={verdict} />
+                    {isGateStatus(verdict) ? <><GateStatus token={verdict} />{verdict === "SHIP" && (
+                      <span data-role="ship-gloss" className="ml-2 font-sans font-normal text-muted-foreground">
+                        ({count} = verdict rows across all reruns that passed every gate; not signals shipped)
+                      </span>)}</>
                       : isPacketVerdict(verdict) ? <VerdictLabel verdict={verdict} qualifier={false} />
                       : verdict}
                   </td>
@@ -191,15 +226,15 @@ export default function GraveyardPage() {
             <table className="w-full border-collapse text-sm">
               <thead>
                 <tr className="border-b border-border text-left">
-                  <th className="microlabel px-3 py-1.5">sport</th>
-                  <th className="microlabel px-3 py-1.5 text-right">n</th>
-                  <th className="microlabel px-3 py-1.5 text-right">testable</th>
-                  <th className="microlabel px-3 py-1.5 text-right">confirmed</th>
-                  <th className="microlabel px-3 py-1.5 text-right">survival</th>
+                  <Th label="Sport" raw="sport" right={false} />
+                  <Th label="Hypotheses" raw="n" />
+                  <Th label="Could be tested" raw="n_testable" />
+                  <Th label="Held up in its own test" raw="n_confirmed" />
+                  <Th label="Share that held up" raw="survival_rate" />
                 </tr>
               </thead>
               <tbody>
-                {Object.entries(survival.by_sport).map(([sport, s]) => (
+                {mergeSports(survival.by_sport).map(([sport, s]) => (
                   <tr key={sport} className="border-b border-border hover:bg-surface-2">
                     <td className="px-3 py-1.5 font-data">{sport}</td>
                     <td className="px-3 py-1.5 text-right"><Num>{s.n}</Num></td>

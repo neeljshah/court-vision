@@ -3,7 +3,7 @@
 // PaperTrailSettled -- renders the REAL settled book from /api/paper/trail.
 //
 // PRIMARY paper record display: settled (win/loss/push) rows first,
-// then open rows. Shows a win/loss/push tally strip at the top.
+// then open rows. Shows a counts-only tally strip at the top (no win/loss tiles).
 //
 // HONESTY RAILS:
 //   - UNITS only, NO $ or dollar-amount field anywhere.
@@ -28,7 +28,6 @@ import { TallyTile, deriveSettledTally } from "./settledTallyHelpers";
 import { OpenPositions } from "./OpenPositions";
 import type { PaperTrailRow } from "@/lib/p5api";
 
-// Re-export for backward compat (tests import deriveSettledTally from here).
 export { deriveSettledTally } from "./settledTallyHelpers";
 export type { SettledTally } from "./settledTallyHelpers";
 
@@ -46,13 +45,6 @@ function fmtDec(d: number | null): string {
 
 function fmtUnits(u: number | null): string {
   return u != null ? `${u.toFixed(2)}u` : EMPTY_CELL;
-}
-
-/** Format model_ev (probability-space EV, not a $ amount). Sign-prefixed. */
-function fmtEv(ev: number | null): string {
-  if (ev == null) return EMPTY_CELL;
-  const sign = ev >= 0 ? "+" : "";
-  return `${sign}${(ev * 100).toFixed(1)}%`;
 }
 
 type ResultLabel = "win" | "loss" | "push" | "void" | "pending";
@@ -79,7 +71,13 @@ const RESULT_TONE: Record<ResultLabel, ResultTone> = {
 // SettledTableRow
 // ---------------------------------------------------------------------------
 
-function SettledTableRow({ row }: { row: PaperTrailRow }) {
+/** Columns the paper fills never publish are dropped, not printed as a column of dashes. */
+export type SettledCols = { tier: boolean; prob: boolean; clv: boolean };
+export function settledCols(rows: PaperTrailRow[]): SettledCols {
+  return { tier: rows.some((r) => r.tier), prob: rows.some((r) => r.model_prob != null), clv: rows.some((r) => r.clv_pct != null) };
+}
+
+function SettledTableRow({ row, cols }: { row: PaperTrailRow; cols: SettledCols }) {
   const res = deriveResultLabel(row);
   const isSettled = row.graded && row.status !== "open";
   return (
@@ -110,7 +108,7 @@ function SettledTableRow({ row }: { row: PaperTrailRow }) {
           ? `${row.prop_side}${row.line != null ? ` ${row.line}` : ""}`
           : describeBetShort(row)}
       </td>
-      <td className="px-2 py-1.5">
+      {cols.tier && <td className="px-2 py-1.5">
         {row.tier ? (
           <span
             className={cn(
@@ -123,10 +121,10 @@ function SettledTableRow({ row }: { row: PaperTrailRow }) {
         ) : (
           <span className="text-faint">{EMPTY_CELL}</span>
         )}
-      </td>
-      <td className="px-2 py-1.5 text-right font-mono tabular-nums text-foreground">
+      </td>}
+      {cols.prob && <td className="px-2 py-1.5 text-right font-mono tabular-nums text-foreground">
         {fmtProb(row.model_prob)}
-      </td>
+      </td>}
       <td className="px-2 py-1.5 text-right font-mono tabular-nums text-foreground">
         {fmtDec(row.taken_decimal)}
       </td>
@@ -136,15 +134,9 @@ function SettledTableRow({ row }: { row: PaperTrailRow }) {
       >
         {row.taken_book || EMPTY_CELL}
       </td>
-      <td
-        className="px-2 py-1.5 text-right font-mono tabular-nums text-muted-foreground"
-        data-testid="model-ev-cell"
-      >
-        {fmtEv(row.model_ev)}
-      </td>
-      <td className="px-2 py-1.5 text-right">
+      {cols.clv && <td className="px-2 py-1.5 text-right">
         <ClvInline row={row} />
-      </td>
+      </td>}
       <td
         className="px-2 py-1.5 font-mono text-[12px] text-muted-foreground"
         data-testid="clv-status-cell"
@@ -199,6 +191,7 @@ export function PaperTrailSettled({
     [rows],
   );
   const displayRows = settledOnly ? settledRows : rows;
+  const cols = settledCols(settledOnly ? displayRows : settledRows);
   // Honest cap note: the true settled total (tallyOverride) can exceed the
   // settled rows actually shipped in this capped page.
   const trueSettledTotal = tallyOverride?.nSettled;
@@ -223,18 +216,10 @@ export function PaperTrailSettled({
       <div
         aria-label="Settled book tally"
         data-testid="settled-book-tally"
-        className="grid grid-cols-3 gap-2 sm:grid-cols-6"
+        className="grid grid-cols-2 gap-2 sm:grid-cols-4"
       >
         <TallyTile label="Settled" value={loading ? EMPTY_CELL : String(tally.nSettled)}
           testId="settled-tally-settled" loading={loading && rows.length === 0} />
-        <TallyTile label="Win" value={loading ? EMPTY_CELL : String(tally.nWin)}
-          testId="settled-tally-win"
-          valueClass={tally.nWin > 0 ? "text-success" : "text-foreground"}
-          loading={loading && rows.length === 0} />
-        <TallyTile label="Loss" value={loading ? EMPTY_CELL : String(tally.nLoss)}
-          testId="settled-tally-loss"
-          valueClass={tally.nLoss > 0 ? "text-danger" : "text-foreground"}
-          loading={loading && rows.length === 0} />
         <TallyTile label="Push" value={loading ? EMPTY_CELL : String(tally.nPush)}
           testId="settled-tally-push" loading={loading && rows.length === 0} />
         <TallyTile label="Open" value={loading ? EMPTY_CELL : String(tally.nOpen)}
@@ -280,12 +265,11 @@ export function PaperTrailSettled({
                 <th scope="col" className="px-2 py-2">Matchup</th>
                 <th scope="col" className="px-2 py-2">Market</th>
                 <th scope="col" className="px-2 py-2">Side</th>
-                <th scope="col" className="px-2 py-2">Tier</th>
-                <th scope="col" className="px-2 py-2 text-right">Model P</th>
+                {cols.tier && <th scope="col" className="px-2 py-2">Tier</th>}
+                {cols.prob && <th scope="col" className="px-2 py-2 text-right">Model P</th>}
                 <th scope="col" className="px-2 py-2 text-right">Entry</th>
                 <th scope="col" className="px-2 py-2">Book</th>
-                <th scope="col" className="px-2 py-2 text-right">Model EV</th>
-                <th scope="col" className="px-2 py-2 text-right">CLV</th>
+                {cols.clv && <th scope="col" className="px-2 py-2 text-right">CLV</th>}
                 <th scope="col" className="px-2 py-2">CLV status</th>
                 <th scope="col" className="px-2 py-2">Result</th>
                 <th scope="col" className="px-2 py-2 text-right">Units</th>
@@ -293,7 +277,7 @@ export function PaperTrailSettled({
             </thead>
             <tbody>
               {(settledOnly ? displayRows : settledRows).map((r, i) => (
-                <SettledTableRow key={`${r.game_id}-${r.market_type}-${r.side}-${i}`} row={r} />
+                <SettledTableRow key={`${r.game_id}-${r.market_type}-${r.side}-${i}`} row={r} cols={cols} />
               ))}
             </tbody>
           </table>
@@ -308,8 +292,8 @@ export function PaperTrailSettled({
       {!settledOnly && <OpenPositions rows={openRows ?? rows} loading={loading} />}
 
       <p className="text-[12px] text-faint">
-        Paper mode -- stakes are units (no $). CLV (better-number-than-close) is
-        the only honest calibration yardstick. No edge is claimed.
+        Paper mode -- stakes are units (no $). Columns the paper fills do not publish
+        (tier, model probability, model EV, CLV value) are not shown. No edge is claimed.
       </p>
     </div>
   );

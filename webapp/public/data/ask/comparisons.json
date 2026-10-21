@@ -108,7 +108,7 @@
     "status": "ok",
     "answer": "soccer_intl, at a 2.75-hour half-life, ahead of MLB at 3.67h and NBA at 4.76h. Tennis and WNBA both complete more than half their motion before the 6-hour mark, so they are reported as '>6.0' rather than assigned a number.",
     "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "cross-sport",
@@ -127,7 +127,7 @@
     "status": "ok",
     "answer": "NBA, at 32.47% of total absolute movement inside the final hour, ahead of soccer_intl at 26.10%, MLB at 18.13%, WNBA at 11.76% and tennis at 10.70%. Late-breaking lineup news is the obvious candidate explanation, but this measurement does not test it.",
     "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "cross-sport",
@@ -146,7 +146,7 @@
     "status": "ok",
     "answer": "MLB by a wide margin: 1,307,128 pre-game move pairs, against 809,986 for tennis, 333,540 for WNBA, 182,054 for NBA and 164,072 for soccer_intl. Sample depth and result quality are not the same thing -- NBA has the thinnest odds sample of the five yet the cleanest reliability map.",
     "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "cross-sport",
@@ -203,9 +203,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "soccer_intl, at an overreaction magnitude of 0.2856 against MLB's 0.0721 -- roughly four times larger. Neither is harvestable: at maximum disagreement the model is closer than the market only 21.52% of the time in soccer and 37.73% in MLB, and the soccer buckets are thin (n=21 to 103), so its magnitude is flagged noisy.",
+    "answer": "soccer_intl, at an overreaction magnitude of 0.2856 against MLB's 0.0721 -- roughly four times larger. Neither is harvestable: at maximum disagreement the model is closer than the market only 21.52% of the time in soccer and 37.73% in MLB, and the soccer buckets are thin (n=21 to 103), so its magnitude is flagged noisy. These OHG figures were composed from the earlier (revision 1) in-game corpus that later failed the join-integrity check; the regenerated disagreement profile on the segmented corpus (snapshot dated 2026-09-16) still finds the market usually right at maximum disagreement.",
     "source_artifact": "webapp/public/data/showcase/novel_overreaction_harvest_gap.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "cross-sport",
@@ -301,7 +301,7 @@
     "status": "ok",
     "answer": "Denver on the Elo on/off estimator, where Nikola Jokic carries a win-probability delta of 0.5822 and an on/off net-rating delta of 23.713 -- clear of Oklahoma City's Shai Gilgeous-Alexander at 0.5171. Both figures inherit a roster confound and are not causal player-impact estimates.",
     "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "nba",
@@ -320,7 +320,7 @@
     "status": "ok",
     "answer": "By Elo on/off win-probability delta: Denver 0.5822 (Jokic), Oklahoma City 0.5171 (Gilgeous-Alexander), the Lakers 0.4656 (Dorian Finney-Smith), Milwaukee 0.4441 (Giannis Antetokounmpo), the Clippers 0.4051 (Ivica Zubac) and Indiana 0.3872 (Pascal Siakam). Two of the six name a role player rather than the team's best player, which is the confound showing through.",
     "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "nba",
@@ -415,7 +415,7 @@
     "status": "ok",
     "answer": "Two-strike counts, on the putaway lens: a strike rate of 0.4827 with an in-zone rate of just 0.5787, meaning pitchers get strikes while throwing outside the zone more often. Pitcher-ahead counts show the same shape more strongly -- in-zone rate 0.4604 on 89,820 pitches -- because the hitter has to protect.",
     "source_artifact": "webapp/public/data/showcase/mlb_count_leverage.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "mlb",
@@ -434,7 +434,7 @@
     "status": "ok",
     "answer": "Sharply and monotonically. In-zone rate runs 0.5855 when the pitcher is behind, 0.5503 when even, and 0.4604 when ahead; the three-ball must-throw lens pushes it up to 0.6106 and the two-strike putaway lens down to 0.5787. Leverage, not stuff, drives where the ball goes.",
     "source_artifact": "webapp/public/data/showcase/mlb_count_leverage.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "mlb",
@@ -453,7 +453,7 @@
     "status": "ok",
     "answer": "Yes, clearly. The in-play rate is 0.1954 when the pitcher is behind and 0.2367 on three-ball counts, against a 0.3065 ball rate behind versus 0.2643 on three-ball counts. Being ahead in the count buys the hitter a pitch he can actually drive, which is the whole point of the leverage framing.",
     "source_artifact": "webapp/public/data/showcase/mlb_count_leverage.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "mlb",
@@ -472,7 +472,7 @@
     "status": "ok",
     "answer": "It gets much more fastball-heavy. In pitcher-behind counts the four-seamer is 35.25% of pitches and the sinker 19.28%, against 31.30% and 16.54% in even counts. Sliders move the other way -- 13.14% behind versus 14.22% even -- because a breaking ball is a luxury you cannot afford at 3-1.",
     "source_artifact": "webapp/public/data/showcase/mlb_count_leverage.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "mlb",
@@ -491,7 +491,7 @@
     "status": "ok",
     "answer": "The four-seam fastball, by a distance. Across 512,289 sequenced transitions in the 2025 pull, the four-seamer is the origin pitch 165,179 times, ahead of the sinker at 77,127, the slider at 73,567, the changeup at 51,941, the sweeper at 39,607, the cutter at 39,125, the curveball at 35,596 and the splitter at 16,141.",
     "source_artifact": "webapp/public/data/showcase/pitch_sequencing.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "mlb",
@@ -510,7 +510,7 @@
     "status": "ok",
     "answer": "Often, and more with the fastball than anything else: of 165,179 transitions starting from a four-seamer, 71,414 are followed by another four-seamer -- about 43%. Sinker-to-sinker is 27,764 of 77,127, roughly 36%. Sequencing is far stickier than a randomized-mix story would suggest.",
     "source_artifact": "webapp/public/data/showcase/pitch_sequencing.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "mlb",
@@ -529,7 +529,7 @@
     "status": "ok",
     "answer": "95.46% of the unconditional class: 489,035 of 512,289 transitions land inside the top-8 pitch-type axis, and the remaining rows fall off it. Every row is over its own denominator, so rows sum to at most 1 with the remainder explicitly attributed to types outside the axis.",
     "source_artifact": "webapp/public/data/showcase/pitch_sequencing.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "mlb",
@@ -548,7 +548,7 @@
     "status": "ok",
     "answer": "693,037 pitches from the local 2025 Statcast pull, of which 690,493 are kept for sequencing and 512,289 form strictly adjacent transitions within a plate appearance. Both the count-leverage and sequencing modules read the same file, so their numbers are directly comparable.",
     "source_artifact": "webapp/public/data/showcase/pitch_sequencing.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "mlb",
@@ -567,7 +567,7 @@
     "status": "ok",
     "answer": "Even counts dominate at 305,712 pitches, ahead of pitcher-behind at 183,042 and pitcher-ahead at 178,407. The overlapping lenses are smaller: 46,656 pitches on three-ball counts. Behind/even/ahead partition the data; the lenses do not, so their counts cannot be added to the partition.",
     "source_artifact": "webapp/public/data/showcase/mlb_count_leverage.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "mlb",
@@ -586,7 +586,7 @@
     "status": "ok",
     "answer": "Less than the location does, which is the interesting part. Strike rate runs 0.4981 behind, 0.5038 ahead and 0.4990 on three-ball counts -- nearly flat -- while in-zone rate swings from 0.6106 to 0.4604 across the same states. Pitchers hold their strike rate by changing where they throw, not how often they hit the zone.",
     "source_artifact": "webapp/public/data/showcase/mlb_count_leverage.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "mlb",
@@ -662,7 +662,7 @@
     "status": "ok",
     "answer": "Only where both sides are the same kind of quantity. The kernel-transfer module marks the Murphy reliability component comparable across sports because both are Brier scores of a probability against a binary outcome, and explicitly marks the CRPS totals row not comparable, because CRPS scores a full run-count distribution and Murphy reliability is undefined for it. It is never forced onto the Brier axis.",
     "source_artifact": "webapp/public/data/showcase/kernel_transfer.json",
-    "as_of": "2026-07-22"
+    "as_of": "unknown"
    },
    "tags": [
     "cross-sport",
@@ -719,7 +719,7 @@
     "status": "ok",
     "answer": "The only rows where the model is provisionally sharper are distributional MLB totals and margin checkpoints, not win probability -- 3 MODEL_SHARPER_PROVISIONAL out of 10 in-game checkpoints, with the other 7 underpowered, while pregame total_runs is underpowered at n=300. On binary win probability the market leads at every grain measured.",
     "source_artifact": "webapp/public/data/showcase/kernel_transfer.json",
-    "as_of": "2026-07-22"
+    "as_of": "unknown"
    },
    "tags": [
     "model-vs-market",
@@ -947,7 +947,7 @@
     "status": "ok",
     "answer": "NBA is far more back-loaded: 32.47% of its absolute pre-game motion arrives in the final hour versus 18.13% for MLB, even though MLB's half-life (3.67h) is shorter than NBA's (4.76h). The two facts fit together because NBA is bimodal -- early motion plus a distinct final-hour spike -- which a single half-life hides.",
     "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "nba",
@@ -967,7 +967,7 @@
     "status": "ok",
     "answer": "Indiana is the only team of 30 where both estimators name the same player: Pascal Siakam, at an Elo on/off win-probability delta of 0.3872 and a raw with/without win-rate delta of 0.2075 over 62 active and 15 missed games. That agreement is the exception -- the league-wide agree rate is 0.0333.",
     "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "nba",
@@ -986,7 +986,7 @@
     "status": "ok",
     "answer": "They measure different things on different seasons and agree on 1 of 30 teams. Estimator (a) is Elo on/off win probability against a league-average opponent on a neutral floor, drawn from 2024-25; estimator (b) is raw team win rate active-versus-missed from 2025-26 through 2026-04-12. Neither is preferred -- their disagreement is published as the result.",
     "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "nba",
@@ -1043,9 +1043,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Missing information, by roughly three to one on the MLB in-game moneyline: the reliability gap is +0.0066 while the resolution gap is -0.0235. Recalibration addresses the first and cannot touch the second, so the honest description of the shortfall is a feed problem rather than a fitting problem.",
+    "answer": "Missing information is the larger component on the MLB in-game moneyline in this decomposition: the reliability gap is +0.0022 while the resolution gap is -0.0149. The source labels the first fixable by recalibration and the second information that recalibration cannot add, so it reads the shortfall as a feed problem rather than a fitting problem; no recalibration was tested. Generated 2026-09-17 UTC; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/kernel_transfer.json",
-    "as_of": "2026-07-22"
+    "as_of": "unknown"
    },
    "tags": [
     "murphy",
@@ -1101,7 +1101,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "MLB for in-game work and NBA for market structure. MLB carries 78,986 graded in-game rows and 693,037 pitches; NBA is the only sport with a buildable reliability map (1,593 games, 77 buckets, market ECE 0.0064). Soccer and tennis are consistently the thinnest -- soccer at 9,003 in-game rows, tennis with no reliability map at all.",
+    "answer": "NBA for market structure: it is the only sport with a buildable reliability map in the cross-sport structure module (1,593 games, 77 buckets, market ECE 0.0064). MLB and soccer come back not_buildable under the same floors and tennis has no reliability map at all, so this module does not rank trust across the other sports.",
     "source_artifact": "webapp/public/data/showcase/xsport_structure.json",
     "as_of": "2026-07-18"
    },
@@ -1120,7 +1120,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Tennis, on coverage grounds: it has no reliability map so the cross-sport structure module records it not_buildable, no blowout corpus so Live-Clock Fraction is not buildable, and its line half-life cannot be pinned inside the 6h+ bucket. Soccer is next, with in-game samples in the hundreds per checkpoint and buckets as small as n=21 in the overreaction work.",
+    "answer": "Tennis, on coverage grounds: it has no reliability map so the cross-sport structure module records it not_buildable, no blowout corpus so Live-Clock Fraction is not buildable, and its line half-life cannot be pinned inside the 6h+ bucket. Soccer is next, with in-game samples in the hundreds per checkpoint and very small soccer buckets in the overreaction work.",
     "source_artifact": "webapp/public/data/showcase/xsport_structure.json",
     "as_of": "2026-07-18"
    },

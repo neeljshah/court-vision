@@ -10,3 +10,8 @@ it("renders the published flip cases with ledger links", () => {
   expect(links).toHaveLength(5);
   expect(links.every(link => link.getAttribute("href")?.startsWith("/analytics/the-loop#claim-family-"))).toBe(true);
 });
+
+it("carries the repeated-testing caveat", () => {
+  const { container } = render(<VerdictFlipsPage />);
+  expect(container.querySelector('[data-role="prereg-caveat"]')!.textContent).toContain("re-tested repeatedly and are not pre-registered unless");
+});

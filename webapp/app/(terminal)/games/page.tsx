@@ -22,7 +22,8 @@ export const metadata: Metadata = pageMeta("/games/", {
 });
 
 export default async function GamesPage() {
-  const publishedGames = isSnapshotMode ? (await readManifest())?.games ?? [] : undefined;
+  const manifest = await readManifest();
+  const publishedGames = isSnapshotMode ? manifest?.games ?? [] : undefined;
 
   return (
     <main className="mx-auto flex max-w-7xl flex-col gap-4 p-6">
@@ -41,7 +42,7 @@ export default async function GamesPage() {
         </Link>
       </header>
 
-      <SlateCards publishedGames={publishedGames} />
+      <SlateCards publishedGames={publishedGames} slateAsOf={manifest?.generated_at ?? null} />
 
       <footer className="mt-4 text-center font-data text-[11px] text-faint">
         {HONEST_DISCLAIMER}

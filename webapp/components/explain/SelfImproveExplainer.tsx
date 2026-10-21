@@ -9,6 +9,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { isSnapshotMode } from "@/lib/fetchHonest";
 import { getProductStatus } from "@/lib/api";
 import type { ProductStatus } from "@/lib/api";
 import { Panel, PanelHead } from "@/components/ui/terminal";
@@ -41,6 +42,7 @@ export function SelfImproveExplainer() {
   const [status, setStatus] = useState<ProductStatus | null>(null);
 
   useEffect(() => {
+    if (isSnapshotMode) return; // static build: no live endpoint, no status pill
     const ctrl = new AbortController();
     getProductStatus(ctrl.signal)
       .then(setStatus)
@@ -51,7 +53,7 @@ export function SelfImproveExplainer() {
   return (
     <section aria-label="self-improve ratchet">
     <Panel>
-      <PanelHead title="the self-improve ratchet -- ready, not enabled" right={<ModePill status={status} />} />
+      <PanelHead title="the self-improve ratchet -- ready, not enabled" right={isSnapshotMode ? undefined : <ModePill status={status} />} />
       <div className="p-4">
         <p className="text-xs leading-relaxed text-muted-foreground">
           The system can grade its own predictions and propose a recalibration -- but the

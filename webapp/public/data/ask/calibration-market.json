@@ -182,7 +182,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "The market. On the largest MLB disagreements (>=0.10 probability apart, n=33,402) the model is the closer forecaster only 37.7% of the time, with model Brier 0.2827 versus market Brier 0.2103. Bigger disagreement means the market is usually the one that is right.",
+    "answer": "The market. On the largest MLB disagreements (>=0.10 probability apart, n=8,530 rows) the model is the closer forecaster only 19.94% of the time, with model Brier 0.1778 versus market Brier 0.1298. Bigger disagreement means the market is usually the one that is right. Published snapshot dated 2026-09-16; the observation window is not published. Counts are graded rows, not games.",
     "source_artifact": "webapp/public/data/showcase/market_disagreement_profile.json",
     "as_of": "unknown"
    },
@@ -201,7 +201,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "The market wins even more decisively than in MLB. On the largest soccer disagreements (>=0.10 apart, n=4,406) the model is closer only 21.5% of the time, with model Brier 0.3306 versus market Brier 0.1720. Wide disagreement is a signal the model is off, not that it found something.",
+    "answer": "The market wins even more decisively than in MLB. On the largest soccer disagreements (>=0.10 apart, n=2,291 rows) the model is closer only 10.48% of the time, with model Brier 0.5080 versus market Brier 0.2655. Wide disagreement is a signal the model is off, not that it found something. Published snapshot dated 2026-09-16; the observation window is not published. Counts are graded rows, not games.",
     "source_artifact": "webapp/public/data/showcase/market_disagreement_profile.json",
     "as_of": "unknown"
    },
@@ -467,7 +467,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "The 5-way NNLS win-probability stack scores 0.709 accuracy and 0.193 Brier in 3-fold walk-forward validation. That is a solid, well-calibrated forecaster; it just does not beat sharp closing lines, which is a separate and harder bar.",
+    "answer": "The 5-way NNLS win-probability stack scores 0.709 accuracy and 0.193 Brier in 3-fold walk-forward validation. That measures the forecaster on its own; matching the close is a separate and harder bar, and on NBA moneyline the 2026-09-24 recompute cannot tell because its interval includes zero at 372 games.",
     "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
     "as_of": "2026-07-23"
    },
@@ -619,7 +619,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "It depends on the sport. After an in-game price move, MLB prices land a few points above the eventual outcome (moved-to-minus-outcome +0.0801 to +0.0518 across move sizes, a small overshoot), while soccer prices sit well below it (-0.1945 to -0.3648, an undershoot). This is a documented structural description labeled INCREMENTAL, and some soccer buckets are tiny (n=21).",
+    "answer": "It depends on the sport. After an in-game price move of 3 points or more, MLB prices land a few points above the eventual outcome rate (moved-to-minus-outcome +0.0642, +0.0473 and +0.0368 for 3-6, 6-10 and 10+ point moves, a small overshoot), while soccer prices sit well below it (-0.3127, -0.2823 and -0.3184, an undershoot). This is a documented structural description labeled INCREMENTAL, and some soccer buckets are tiny (n=11). Published snapshot dated 2026-09-16; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/market_overreaction.json",
     "as_of": "unknown"
    },
@@ -638,7 +638,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Yes, and its lead over the model widens. The market's Brier advantage over the model grows from -0.015 at the first checkpoint to -0.0902 by the ninth inning. As information arrives, the market absorbs it faster than the model does.",
+    "answer": "The market stays sharper than the model at every MLB checkpoint, but the gap does not widen steadily. Market-minus-model Brier is -0.0121 at checkpoint 1, largest at -0.0353 at checkpoint 2, and narrows to -0.001 by checkpoint 9 as both forecasts converge on the outcome. Published snapshot dated 2026-09-16; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/info_arrival_curve.json",
     "as_of": "unknown"
    },
@@ -657,7 +657,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "In MLB, yes, and that is a warning sign. By the ninth checkpoint the model's forecast uncertainty has collapsed to 0.3656 bits while the market still sits at 0.7244, and their disagreement widens from 0.07 early to 0.2791 late. Paired with the overconfidence seen in the calibration exhibits, growing certain faster than the market is a flag, not a strength.",
+    "answer": "No. In the current snapshot the model is the less certain forecaster for most of an MLB game: its mean forecast entropy is above the market's at checkpoints 1 through 8 (0.4814 versus 0.4757 bits at checkpoint 8), and only at checkpoint 9 is it lower, 0.4181 versus 0.4589 bits (n=1,110). The mean gap between the two forecasts narrows from 0.0839 at checkpoint 1 to 0.0537 at checkpoint 9. The artifact notes that entropy decay late in a game is expected, not a finding. Published snapshot dated 2026-09-17; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/market_convergence.json",
     "as_of": "unknown"
    },
@@ -714,7 +714,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Yes, as a market phenomenon: on MLB the close beats the open on log-loss (Diebold-Mariano p=0.0010, N=27,975), with the close carrying a Brier skill of +0.43% over the open. The line does move toward the truth from open to close. That sharpening belongs to the market, not to a retrospective model.",
+    "answer": "Yes, as a market phenomenon: on MLB the close has lower log-loss than the open (Diebold-Mariano p=0.0010, N=27,975), with the close carrying a Brier skill of +0.43% over the open. The line does move toward the truth from open to close. That sharpening belongs to the market, not to a retrospective model.",
     "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
     "as_of": "2026-07-07"
    },
@@ -923,7 +923,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Statistically tied on the data available. On MLB pregame total-runs the paired CRPS delta versus the market is -0.0523 (95% CI [-0.1657, 0.0482], n=300), verdict UNDERPOWERED, with 80% interval coverage of 0.75 for the model versus 0.81 for the market. No difference is established either way.",
+    "answer": "Not resolved on the data available. On MLB pregame total-runs the paired CRPS delta versus the market is -0.0523 (95% CI [-0.1657, 0.0482], n=300), verdict UNDERPOWERED. No difference is established either way.",
     "source_artifact": "webapp/public/data/showcase/cross_sport_scoreboard.json",
     "as_of": "2026-07-22"
    },
@@ -980,7 +980,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "In late soccer states at low probabilities. The worst-ranked bucket is soccer minute 75-90+, predicted-probability band 0.2-0.4, where the model's mean prediction was 0.2117 but the outcome rate was 1.0 (calibration error 0.7883, n=10). Late-game low-probability soccer is where the model is furthest from reality relative to the market.",
+    "answer": "In late soccer states at low probabilities. The worst-ranked bucket is soccer minute 75-90+, predicted-probability band 0.2-0.4, where the model's mean prediction was 0.2108 but the outcome rate was 1.0 (calibration error 0.7892, n=7). A seven-row bucket is very thin, so read it as where to look, not a stable estimate. Published snapshot dated 2026-09-16; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/state_conditioned_calibration.json",
     "as_of": "unknown"
    },
@@ -999,7 +999,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "The model. In late MLB innings (7+) for the 0.8-1.0 band the model predicted 0.9211 but teams only won 0.6853 of the time (calibration error 0.2357, n=5,037), while the market's same-band error was just 0.0206. The model badly overrates late favorites relative to the market.",
+    "answer": "The model, by a modest margin. In late MLB innings (7+) for the 0.8-1.0 band the model's mean prediction was 0.9101 and teams won 0.9498 of the time (calibration error 0.0397, n=2,369), while the market's same-band error was 0.0175 (n=2,666). In this snapshot the model under-rates late favorites slightly rather than over-rating them. Published snapshot dated 2026-09-16; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/state_conditioned_calibration.json",
     "as_of": "unknown"
    },
@@ -1018,7 +1018,7 @@
    ],
    "a": {
     "status": "refused",
-    "answer": "This is a calibrated predictor. On the largest model-vs-market disagreements, the market is the more accurate side: the model is closer only 37.7% of the time in MLB and 21.5% in soccer.",
+    "answer": "This is a calibrated predictor. On the largest model-vs-market disagreements, the market is the more accurate side: the model is closer only 19.94% of the time in MLB and 10.48% in soccer (published snapshot dated 2026-09-16).",
     "source_artifact": "webapp/public/data/showcase/market_disagreement_profile.json",
     "as_of": "unknown"
    },
@@ -1096,7 +1096,7 @@
     "status": "no_data",
     "answer": "No data. The measured corpora are NBA, MLB, soccer and tennis; NFL and NHL are not covered, so there are no calibration or market-comparison numbers to report for them.",
     "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "no-data",

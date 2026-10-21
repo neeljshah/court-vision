@@ -1,13 +1,11 @@
 // app/methodology/page.tsx -- how every number on this site is earned, and
-// what it is forbidden to claim. Static export: reads the staged check_all
-// proof-harness report off disk at build time (the /receipts pattern) so the
-// "N/N modules pass" count is measured, never hand-typed. No client fetch.
+// what it is forbidden to claim. Static export: the self-check sentence reads
+// check_all.py's report through the same loader as the home page
+// (components/desk/deskExtras.server loadChecks), never hand-typed. No client fetch.
 //
 // This page is the anchor target for every receipt chip's "what does verified
 // mean" link (#verified) and the do-not-claim rail (#do-not-claim).
 
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
 import Link from "next/link";
 import { Panel, PanelHead } from "@/components/ui/terminal";
 import { HonestBanner } from "@/components/showcase/HonestBanner";
@@ -15,6 +13,12 @@ import { ReproduceBlock } from "@/components/showcase/ReproduceBlock";
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/seo/meta";
 import { GateStatus, GateStatusLegend, Term, gateStatusesIn, isGateStatus } from "@/components/evidence";
+import { AsOfBadge } from "@/components/evidence/AsOfBadge";
+import { PACKET_HREF } from "@/components/evidence/kit";
+import { loadChecks } from "@/components/desk/deskExtras.server";
+import { EntryMeta, MethodList } from "@/components/methodology/MethodEntries";
+import { selfCheckSentence } from "@/components/methodology/selfCheck";
+import { FIGURES, FIGURES_AS_OF } from "@/lib/figures";
 
 export const metadata: Metadata = pageMeta("/methodology/", {
   title: "Methodology",
@@ -23,59 +27,6 @@ export const metadata: Metadata = pageMeta("/methodology/", {
     "truncation-invariant, two or more corpora -- plus the one-command proof " +
     "harness and the do-not-claim rail.",
 });
-
-type CheckRow = { module: string; status: string; as_of?: string };
-
-// ponytail: read the staged proof report straight off disk at build time --
-// static export, so there is no server later. Missing on a fresh clone -> the
-// count renders as pending rather than a fabricated green.
-function loadCheckAll(): { pass: number; total: number; asOf: string | null } | null {
-  try {
-    const raw = readFileSync(
-      join(process.cwd(), "public/data/showcase/check_all_report.json"),
-      "utf-8"
-    );
-    const rows = JSON.parse(raw) as CheckRow[];
-    if (!Array.isArray(rows) || rows.length === 0) return null;
-    const pass = rows.filter((r) => r.status === "PASS").length;
-    const asOf = rows
-      .map((r) => r.as_of)
-      .filter((s): s is string => Boolean(s))
-      .sort()
-      .pop();
-    return { pass, total: rows.length, asOf: asOf ? asOf.slice(0, 10) : null };
-  } catch {
-    return null;
-  }
-}
-
-const DISCIPLINE = [
-  {
-    term: "Leak-free",
-    body:
-      "No feature sees anything the market could not see at decision time. " +
-      "As-of joins only; a future-leak fails the gate closed.",
-  },
-  {
-    term: "Walk-forward",
-    body:
-      "Every score is out-of-sample and forward in time: fit on the past, " +
-      "measure on the strictly later fold. No in-sample lift is ever reported.",
-  },
-  {
-    term: "Truncation-invariant",
-    body:
-      "A feature at time T must be byte-identical whether or not later events exist. " +
-      "The test re-featurizes a truncated event stream and asserts the earlier rows " +
-      "do not change; any difference is a lookahead leak.",
-  },
-  {
-    term: "Two or more corpora",
-    body:
-      "A claim must reproduce across at least two independent corpora. A result " +
-      "that holds on one corpus is labelled provisional until a second confirms it.",
-  },
-];
 
 const VERIFIED_ROWS: { badge: string; tone: string; meaning: string }[] = [
   {
@@ -123,6 +74,8 @@ const VERIFIED_ROWS: { badge: string; tone: string; meaning: string }[] = [
   },
 ];
 
+const RETIRED_HREF = `${PACKET_HREF}#4-retired-figures-retracted-or-unverifiable-not-claimed-anywhere-in-this-repository`;
+
 const DO_NOT_CLAIM = [
   "+18.38%  (a pregame market-follow artifact, not the model)",
   "0.119    (an end-of-Q3 win-prob figure with a Q4 leak)",
@@ -132,8 +85,7 @@ const DO_NOT_CLAIM = [
 ];
 
 export default function MethodologyPage() {
-  const check = loadCheckAll();
-  const countLabel = check ? `${check.pass}/${check.total}` : "pending";
+  const checks = loadChecks();
 
   return (
     <main className="mx-auto flex max-w-5xl flex-col gap-6 p-6">
@@ -146,10 +98,11 @@ export default function MethodologyPage() {
           This page says how a number earns a place on this site and what the site
           is forbidden to claim. The headline result of those checks: pregame, the
           model trails the <Term id="devigged-close">devigged close</Term> on MLB
-          moneyline and soccer over/under 2.5, and matches it on NBA moneyline only
-          where the sample is too small to tell. In play, its win probabilities score
-          behind the live Kalshi price on the same ticks for MLB and international
-          soccer. A recorded null is a result, not a failure. To check a figure, open
+          moneyline and soccer over/under 2.5; on NBA moneyline it cannot tell (interval
+          includes zero; underpowered). In play, its win probabilities score behind
+          the live Kalshi price on the same ticks for MLB and international soccer
+          (measured before a join-integrity repair; the MLB verdict survived two
+          repairs, the soccer verdict has not been re-established). A recorded null is a result, not a failure. To check a figure, open
           its receipt chip (each links back here) or run the one-command harness below.
         </p>
       </header>
@@ -158,35 +111,25 @@ export default function MethodologyPage() {
 
       <Panel>
         <PanelHead title="the discipline behind every claim" />
-        <dl className="prose-console m-0 grid gap-4 p-4">
-          {DISCIPLINE.map((d) => (
-            <div key={d.term} className="grid gap-1">
-              <dt className="font-data text-sm font-semibold text-foreground">
-                {d.term}
-              </dt>
-              <dd className="m-0 text-sm leading-relaxed text-muted-foreground">
-                {d.body}
-              </dd>
-            </div>
-          ))}
-        </dl>
+        <MethodList />
       </Panel>
 
       <Panel>
         <PanelHead
           title="one-command proof harness"
-          asOf={check?.asOf ?? undefined}
-          stale={!check}
+          asOf={checks?.asOf ?? undefined}
+          stale={!checks}
         />
         <div className="flex flex-col gap-3 p-4">
           <p className="prose-console m-0 text-sm leading-relaxed text-muted-foreground">
             Every showcase module ships a self-check. One command runs them all and
-            prints a pass ledger. On the measured run staged into this build,{" "}
-            <span className="font-data font-semibold text-foreground">
-              {countLabel}
-            </span>{" "}
-            modules pass. The count is read from the staged report at build time,
-            not hand-typed.
+            prints a pass ledger. On the report committed with this build:{" "}
+            <span data-testid="self-check" className="font-data font-semibold text-foreground">
+              {checks
+                ? `${selfCheckSentence(checks)} (report as of ${checks.asOf})`
+                : "check report not present on this clone"}
+            </span>
+            . The home page reads the same report through the same loader.
           </p>
           <ReproduceBlock
             command="python -m scripts.platformkit.analytics_showcase.check_all"
@@ -245,10 +188,10 @@ export default function MethodologyPage() {
             These figures were measured, then retracted as artifacts. They are listed
             here so they can never quietly reappear as live results. Each is a
             documented measurement artifact, cited in{" "}
-            <span className="font-data text-foreground">
+            <a href={RETIRED_HREF} className="font-data text-primary underline-offset-2 hover:underline">
               docs/JOB_EVIDENCE_PACKET.md
-            </span>
-            , and appears on this site only inside retraction framing.
+            </a>{" "}
+            section 4, and appears on this site only inside retraction framing.
           </p>
           <ul className="m-0 grid list-none gap-1.5 p-0">
             {DO_NOT_CLAIM.map((line) => (
@@ -269,7 +212,29 @@ export default function MethodologyPage() {
             >
               retraction record
             </Link>
-            . Nothing on this site claims a dollar edge, ROI, or bankroll result.
+            .
+          </p>
+          <p data-entry="retractions" className="prose-console m-0 mt-3 text-sm leading-relaxed text-muted-foreground">
+            Each was found by the project&apos;s own audits: a source-level audit showed the
+            pregame ROI grader bet the market&apos;s own devigged lean and never read the model, a
+            lookahead audit found the Q4 leak, and the in-play figures proved to be an L5-proxy
+            ceiling, not realized performance. Since then the canonical-figures check fails a build
+            that reprints one outside retraction framing.{" "}
+            <EntryMeta
+              links={[
+                { label: "/evidence/retractions/", route: "/evidence/retractions/" },
+                { label: "docs/KNOWN_LIMITATIONS.md", path: "docs/KNOWN_LIMITATIONS.md" },
+              ]}
+              asOf={<AsOfBadge asOf={FIGURES_AS_OF} />}
+            />
+          </p>
+          <p data-entry="not-claimed" className="prose-console m-0 mt-3 text-sm leading-relaxed text-muted-foreground">
+            Nothing on this site claims a dollar edge, ROI, bankroll result, forward track record,
+            or execution quality; simulated fill counts are counts, not results.{" "}
+            <EntryMeta
+              links={[{ label: "docs/JOB_EVIDENCE_PACKET.md", path: "docs/JOB_EVIDENCE_PACKET.md" }]}
+              asOf={<AsOfBadge asOf={FIGURES.paper_desk_fill_counts.as_of} />}
+            />
           </p>
         </div>
       </Panel>

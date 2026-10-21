@@ -283,7 +283,7 @@ describe("/paper-trading ws7 -- non-empty pmTrail renders rows", () => {
       // TRADE_A: result=win -> settled; TRADE_B: result=null -> open
       expect(screen.getByTestId("tally-open").textContent).toBe("1");
       expect(screen.getByTestId("tally-settled").textContent).toBe("1");
-      expect(screen.getByTestId("tally-win").textContent).toBe("1");
+      expect(screen.queryByTestId("tally-win")).toBeNull();
     });
   });
 });

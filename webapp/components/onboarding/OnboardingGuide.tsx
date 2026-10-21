@@ -74,7 +74,7 @@ const RAILS: { term: string; line: string }[] = [
   },
   {
     term: "Calibration, not a market edge",
-    line: "The honest win is matching the devigged close within noise. No profit edge is claimed.",
+    line: "The honest result is calibration: the model trails the devigged close on MLB moneyline and soccer O/U 2.5, and on NBA moneyline the interval includes zero, so we cannot tell. No profit edge is claimed.",
   },
   {
     term: "Self-improve: READY but INERT",

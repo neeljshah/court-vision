@@ -101,56 +101,21 @@ describe("PaperTrailSettled -- WS2 taken_book column", () => {
 // model_ev column (WS2: explicit EV column)
 // ---------------------------------------------------------------------------
 
-describe("PaperTrailSettled -- WS2 model_ev column", () => {
-  it("table header contains 'Model EV' column header", () => {
-    render(<PaperTrailSettled rows={[makeSettledRow()]} loading={false} />);
+describe("PaperTrailSettled -- no Model EV column; never-published columns dropped", () => {
+  it("has no 'Model EV' header or cell even when model_ev is set", () => {
+    render(<PaperTrailSettled rows={[makeSettledRow({ model_ev: 0.0101 })]} loading={false} />);
     const table = screen.getByRole("grid", { name: "Settled paper book" });
-    expect(table.textContent).toMatch(/Model EV/i);
+    expect(table.textContent).not.toMatch(/Model EV/i);
+    expect(screen.queryByTestId("model-ev-cell")).toBeNull();
   });
 
-  it("model-ev-cell shows sign-prefixed percent for positive EV", () => {
-    const row = makeSettledRow({ model_ev: 0.010135 }); // +1.0% expected
-    render(<PaperTrailSettled rows={[row]} loading={false} />);
-    const cells = screen.getAllByTestId("model-ev-cell");
-    expect(cells.length).toBeGreaterThan(0);
-    expect(cells[0].textContent).toMatch(/^\+/); // sign-prefixed
-    expect(cells[0].textContent).toMatch(/%/);    // percent
-  });
-
-  it("model-ev-cell shows sign-prefixed negative for negative EV", () => {
-    const row = makeSettledRow({ model_ev: -0.008485 });
-    render(<PaperTrailSettled rows={[row]} loading={false} />);
-    const cells = screen.getAllByTestId("model-ev-cell");
-    expect(cells[0].textContent).toMatch(/^-/);  // negative sign
-    expect(cells[0].textContent).toMatch(/%/);   // percent
-  });
-
-  it("model-ev-cell shows EMPTY_CELL ('--') when model_ev is null", () => {
-    const row = makeSettledRow({ model_ev: null });
-    render(<PaperTrailSettled rows={[row]} loading={false} />);
-    const cells = screen.getAllByTestId("model-ev-cell");
-    expect(cells[0].textContent).toBe("--");
-  });
-
-  it("model-ev-cell does NOT display a dollar sign (probability-space EV)", () => {
-    const row = makeSettledRow({ model_ev: 0.07 });
-    render(<PaperTrailSettled rows={[row]} loading={false} />);
-    const cells = screen.getAllByTestId("model-ev-cell");
-    expect(cells[0].textContent).not.toMatch(/\$\d/);
-  });
-
-  it("model-ev-cell value for +1.0135% EV formats to '+1.0%'", () => {
-    const row = makeSettledRow({ model_ev: 0.010135 });
-    render(<PaperTrailSettled rows={[row]} loading={false} />);
-    const cells = screen.getAllByTestId("model-ev-cell");
-    expect(cells[0].textContent).toBe("+1.0%");
-  });
-
-  it("model-ev-cell value for -0.8485% EV formats to '-0.8%'", () => {
-    const row = makeSettledRow({ model_ev: -0.008485 });
-    render(<PaperTrailSettled rows={[row]} loading={false} />);
-    const cells = screen.getAllByTestId("model-ev-cell");
-    expect(cells[0].textContent).toBe("-0.8%");
+  it("drops Tier, Model P and CLV columns when every row leaves them blank", () => {
+    render(<PaperTrailSettled rows={[makeSettledRow({ model_prob: null, tier: null, clv_pct: null })]} loading={false} />);
+    const heads = screen.getAllByRole("columnheader").map((th) => th.textContent);
+    expect(heads).not.toContain("Tier");
+    expect(heads).not.toContain("Model P");
+    expect(heads).not.toContain("CLV");
+    expect(heads).toContain("CLV status");
   });
 });
 
@@ -209,17 +174,17 @@ describe("PaperTrailSettled -- WS2 model_prob column", () => {
 // ---------------------------------------------------------------------------
 
 describe("PaperTrailSettled -- WS2 all required columns together", () => {
-  it("table has all required WS2 column headers: Book, Model EV, Model P, Result", () => {
+  it("table has all required WS2 column headers: Book, Model P, Result", () => {
     render(<PaperTrailSettled rows={[makeSettledRow()]} loading={false} />);
     const table = screen.getByRole("grid", { name: "Settled paper book" });
     const text = table.textContent ?? "";
     expect(text).toMatch(/Book/);
-    expect(text).toMatch(/Model EV/);
+    expect(text).not.toMatch(/Model EV/);
     expect(text).toMatch(/Model P/);
     expect(text).toMatch(/Result/);
   });
 
-  it("all 4 required column data cells have content for a real-data row", () => {
+  it("all 3 required column data cells have content for a real-data row", () => {
     const row = makeSettledRow({
       taken_book: "espn:DraftKings",
       model_ev: 0.010135,
@@ -232,10 +197,6 @@ describe("PaperTrailSettled -- WS2 all required columns together", () => {
     const bookCells = screen.getAllByTestId("taken-book-cell");
     expect(bookCells[0].textContent).toBe("espn:DraftKings");
 
-    // model_ev cell
-    const evCells = screen.getAllByTestId("model-ev-cell");
-    expect(evCells[0].textContent).toBe("+1.0%");
-
     // outcome / result label
     const resultLabels = screen.getAllByTestId("result-label");
     expect(resultLabels.some((el) => el.textContent === "win")).toBe(true);
@@ -245,7 +206,7 @@ describe("PaperTrailSettled -- WS2 all required columns together", () => {
     expect(table.textContent).toMatch(/46\.6%/);
   });
 
-  it("no dollar amount in any of the 4 required column cells", () => {
+  it("no dollar amount in any of the 3 required column cells", () => {
     const row = makeSettledRow({
       taken_book: "DraftKings",
       model_ev: 0.07,

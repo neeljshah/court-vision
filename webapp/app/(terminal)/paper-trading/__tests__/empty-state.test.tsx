@@ -247,8 +247,8 @@ describe("/paper-trading WS5 -- no fabricated rows when total_pm=0", () => {
     await waitFor(() => {
       expect(screen.getByTestId("tally-open").textContent).toBe("0");
       expect(screen.getByTestId("tally-settled").textContent).toBe("0");
-      expect(screen.getByTestId("tally-win").textContent).toBe("0");
-      expect(screen.getByTestId("tally-loss").textContent).toBe("0");
+      expect(screen.queryByTestId("tally-win")).toBeNull();
+      expect(screen.queryByTestId("tally-loss")).toBeNull();
       expect(screen.getByTestId("tally-push").textContent).toBe("0");
     });
   });

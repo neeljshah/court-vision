@@ -69,7 +69,7 @@
     "status": "ok",
     "answer": "Across 3 folds it averages 0.7094 accuracy (std 0.0252, range 0.6762 to 0.7373) and a mean Brier of 0.19301 (std 0.00841). Each fold is a 5-way non-negative-least-squares blend of XGBoost, LightGBM, logistic regression, an MLP and naive Bayes, and the weights move sharply between folds -- fold 2 leans XGBoost at 0.382, fold 3 leans logistic regression at 0.686.",
     "source_artifact": "webapp/public/data/showcase/forecaster/winprob_walk_forward_results.json",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "walk-forward",
@@ -88,7 +88,7 @@
     "status": "ok",
     "answer": "Because each fold refits the blend on its own validation slice, and with n_val=491 per fold the meta-learner has limited data to separate similar base models. Fold 2 puts 0.382 on XGBoost and 0.0 on logistic regression; fold 3 flips to 0.686 on logistic regression and 0.108 on XGBoost. The base-model Briers are close enough that the blend is nearly indifferent, which is itself a caution against reading any single fold's weights as a finding.",
     "source_artifact": "webapp/public/data/showcase/forecaster/winprob_walk_forward_results.json",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "walk-forward",
@@ -202,7 +202,7 @@
     "status": "ok",
     "answer": "A per-sport append-only record of every named mechanism the system has tested, with its verdict and an evidence pointer. Across four sports it holds 287 entries: 130 confirmed, 126 null and 31 not-testable. A null or not-testable is recorded as honest market-efficiency evidence, not deleted.",
     "source_artifact": "webapp/public/data/showcase/mechanism_ledger_export.json",
-    "as_of": "2026-07-22"
+    "as_of": "unknown"
    },
    "tags": [
     "claim-ledger",
@@ -240,7 +240,7 @@
     "status": "ok",
     "answer": "Confirmed covers exactly four labels: ARTIFACT_CONFIRMED, CONFIRMED_LOCAL, CONFIRMED_LOCAL_incl_2026_OOS and REPLICATED. Not-testable covers NOT_REPLICABLE_NO_CORPUS and NOT_TESTABLE. Everything else -- NULL, NULL_LOCAL, REJECT, PARTIAL, PROVISIONAL, FAILED_REPLICATION -- buckets to null, so the confirmed bucket cannot quietly absorb a weak result.",
     "source_artifact": "webapp/public/data/showcase/mechanism_ledger_export.json",
-    "as_of": "2026-07-22"
+    "as_of": "unknown"
    },
    "tags": [
     "claim-ledger",
@@ -296,7 +296,7 @@
     "status": "ok",
     "answer": "The permanent record of signals that failed. It carries 804 total verdict rows across all reruns, of which 68 distinct sport-signal pairs currently sit on a REJECT-family verdict as of their latest test, and 628 rows are rejects. The gap between 804 and 68 is signals retested multiple times plus rows whose latest verdict flipped to SHIP.",
     "source_artifact": "webapp/public/data/showcase/reject_graveyard.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "graveyard",
@@ -315,7 +315,7 @@
     "status": "ok",
     "answer": "By recorded reason category the largest is the as-of reclaim sweep at 510 rows -- signals killed when recomputed with strictly as-of information -- followed by prescreen delta 20, walk-forward ablation 18, seed stability 17, calibration-only-unproven 13, discovered transform 10, sealed holdout 8, conformal width 7 and cross-corpus adjudication 6.",
     "source_artifact": "webapp/public/data/showcase/reject_graveyard.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "graveyard",
@@ -334,7 +334,7 @@
     "status": "ok",
     "answer": "Across the full 804-row verdict history: 627 REJECT, 95 SHIP, 45 SHIP_REVIEW, 14 NOT_TESTABLE, 6 WORSE, 6 INSUFFICIENT, 4 NOT-REPLICATED, 3 STANDING_BASELINE_SET, and one each of DEFER, TIER3_BLOCKED, UNDERPOWERED and NULL_UNDERPOWERED. A SHIP here means the signal cleared the calibration gate, not that it beats a market price.",
     "source_artifact": "webapp/public/data/showcase/reject_graveyard.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "graveyard",
@@ -353,7 +353,7 @@
     "status": "ok",
     "answer": "A re-test of existing signals using only information available at the moment of prediction rather than the season-complete tables they were first computed from. It is the single largest killer in the reject ledger, accounting for 510 of the recorded reject rows -- most apparent signal was subtle hindsight.",
     "source_artifact": "webapp/public/data/showcase/reject_graveyard.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "graveyard",
@@ -467,7 +467,7 @@
     "status": "ok",
     "answer": "Five, and each has a mandated behavior: ok returns the value with its receipt; no_data means the artifact is absent or zero-row and the miss must be named; not_supported means the question is outside the registry and must not be improvised; ambiguous means several different mechanisms matched; refused means the question asked for prohibited language or a retracted number.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "contract",
@@ -486,7 +486,7 @@
     "status": "ok",
     "answer": "That the artifact behind the question is absent or has zero matching rows, so there is nothing to quote. It is a designed outcome, not an error: the contract requires naming the zero-row miss rather than substituting a plausible number, and the regression bank counts a correct no_data as a pass.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "contract",
@@ -524,7 +524,7 @@
     "status": "ok",
     "answer": "Some categories fail closed on age rather than answering. For injury and news context, if the newest matched row is older than the 7-day staleness bound the answer is refused, on the reasoning that injuries and news churn weekly and a stale row is worse than silence.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "contract",
@@ -541,7 +541,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Overwhelmingly agents, under one human director. Of 3,224 commits between 2026-03-09 and 2026-07-22, 95.75% are agent-authored and 67.9% carry a Claude co-author trailer. The human decisions were architecture, direction and what may be claimed.",
+    "answer": "Overwhelmingly agents, under one human director. Of 3,224 commits between 2026-03-09 and 2026-07-22, 95.75% are agent-authored and 67.9% carry a Claude co-author trailer. The human decisions were architecture, direction and what may be claimed. Separately, the public repository counts 6,556 commits as of 2026-10-21 (pinned at 4f033b5a5).",
     "source_artifact": "webapp/public/data/showcase/agent_fleet_history.json",
     "as_of": "2026-07-22"
    },
@@ -560,7 +560,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "3,224 commits over roughly four and a half months, from 2026-03-09 to 2026-07-22, in bursts rather than a steady drip -- the opening day alone carries 64 commits. The daily commit series is published rather than summarized.",
+    "answer": "3,224 commits over roughly four and a half months, from 2026-03-09 to 2026-07-22, in bursts rather than a steady drip -- the opening day alone carries 64 commits. The daily commit series is published rather than summarized. Separately, the public repository counts 6,556 commits as of 2026-10-21 (pinned at 4f033b5a5).",
     "source_artifact": "webapp/public/data/showcase/agent_fleet_history.json",
     "as_of": "2026-07-22"
    },
@@ -581,7 +581,7 @@
     "status": "ok",
     "answer": "The gate is, and it is mechanical. Agents can propose and implement anything, but a claim only becomes publishable by clearing the leak-free gate on two corpora, and the reject ledger's 804 recorded verdict rows against 95 SHIPs shows how often the answer is no. Autonomy in writing code is not autonomy in asserting results.",
     "source_artifact": "webapp/public/data/showcase/reject_graveyard.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "agents",
@@ -598,9 +598,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Every showcase module is re-executed in a single check run and its status recorded per module with a timestamp and a wall-clock duration -- for example brier_skill_scores.py PASS in 2.94s and aging_curve_lite.py PASS in 1.71s on the 2026-07-24 run. The site manifest carries the aggregate: 63 of 63 checks green.",
+    "answer": "Every showcase module is re-executed in a single check run and its status recorded per module with a timestamp and a wall-clock duration -- for example brier_skill_scores.py PASS in 1.44s and aging_curve_lite.py PASS in 0.57s on the 2026-07-25 run. The site manifest carries the aggregate: 96 of 96 checks green.",
     "source_artifact": "webapp/public/data/showcase/check_all_report.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "ci",
@@ -638,7 +638,7 @@
     "status": "ok",
     "answer": "Because their underlying computation does not stamp one, and the manifest records null rather than inventing a date. Others carry an as_of that is a corpus description rather than a timestamp -- cf_star_removal reads '2024-25 (Elo end-of-season) x 2024_25 on/off slice' and ctx_lineup_proxy reads '2025-26 regular season (through 2026-04-12)' -- which is more useful than a build time.",
     "source_artifact": "webapp/public/data/showcase/site_manifest.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "modules",
@@ -657,7 +657,7 @@
     "status": "ok",
     "answer": "The mean squared error of a probability against a binary outcome: lower is better, and 0.25 is what you get by always saying 50%. It is the primary yardstick here because it punishes both miscalibration and vagueness, unlike accuracy which only asks whether you picked the right side.",
     "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "brier",
@@ -676,7 +676,7 @@
     "status": "ok",
     "answer": "BSS = 1 - Brier/Brier_ref, the fractional improvement over a reference forecast. Two references are used here: climatology, meaning a constant sport-level base rate, and the market. A BSS above 0 against climatology is easy; against the market it is the only number that would matter, and it is negative everywhere measured.",
     "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "bss",
@@ -695,7 +695,7 @@
     "status": "ok",
     "answer": "Expected calibration error: bin the forecasts, compare the mean predicted probability to the mean outcome inside each bin, and take the n-weighted mean absolute gap. This system computes it over 10 bins. It isolates calibration specifically -- a forecast can have a decent Brier and still be systematically overconfident.",
     "source_artifact": "webapp/public/data/showcase/calibration_by_market_type.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "ece",
@@ -712,9 +712,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "It splits a Brier score into reliability -- how miscalibrated you are -- and resolution -- how much genuine discrimination you have. That matters diagnostically: on MLB in-game moneyline the model's reliability gap versus the market is +0.0066 while the resolution gap is -0.0235, so the shortfall is mostly missing information, which recalibration cannot fix.",
+    "answer": "It splits a Brier score into reliability -- how miscalibrated you are -- and resolution -- how much genuine discrimination you have. That matters diagnostically: on MLB in-game moneyline the model's reliability gap versus the market is +0.0022 while the resolution gap is -0.0149, so the shortfall is mostly in resolution, which the source describes as information recalibration cannot add.",
     "source_artifact": "webapp/public/data/showcase/kernel_transfer.json",
-    "as_of": "2026-07-22"
+    "as_of": "unknown"
    },
    "tags": [
     "murphy",
@@ -733,7 +733,7 @@
     "status": "ok",
     "answer": "Because only one of them is cheap to fix. A reliability gap means the probabilities are systematically off and a recalibration map can close it; a resolution gap means the model does not know things the market knows, and no post-processing invents information. The MLB decomposition puts most of the gap in resolution, which is an honest statement about missing feeds rather than about the fitting procedure.",
     "source_artifact": "webapp/public/data/showcase/kernel_transfer.json",
-    "as_of": "2026-07-22"
+    "as_of": "unknown"
    },
    "tags": [
     "murphy",
@@ -752,7 +752,7 @@
     "status": "ok",
     "answer": "They are per-module and always declared. The Brier skill module requires n>=30 rows per grain; calibration by market type requires n>=30 usable rows for a Brier or ECE over 10 bins; the count-leverage module uses a class minimum of 500 pitches; Line Half-Life requires at least 20 move pairs. Below the floor the cell is flagged rather than filled.",
     "source_artifact": "webapp/public/data/showcase/calibration_by_market_type.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "floors",
@@ -771,7 +771,7 @@
     "status": "ok",
     "answer": "Disclose it rather than score it. The MLB in-game totals quote-tracks -- 5 files, 2,113 rows, 21 quote-tracks -- carry no resolved outcome because the settlement join is unavailable, so their Brier is null by design and only the model-versus-market divergence is reported (median 0.116128, mean 0.124782, p90 0.224736). Scoring them would require fabricating labels.",
     "source_artifact": "webapp/public/data/showcase/calibration_by_market_type.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "unscorable",
@@ -885,7 +885,7 @@
     "status": "ok",
     "answer": "NBA leads at 85 tested mechanisms (45 confirmed, 33 null, 7 not-testable), with MLB at 86, soccer at 64 and tennis at 52 in the honesty exhibit's count. The four ledgers total 287 rows in the mechanism export.",
     "source_artifact": "webapp/public/data/showcase/mechanism_ledger_export.json",
-    "as_of": "2026-07-22"
+    "as_of": "unknown"
    },
    "tags": [
     "mechanisms",
@@ -999,7 +999,7 @@
     "status": "ok",
     "answer": "The evidence packet governs what may be claimed, and every module points back to it. Modules that touch marketable ground -- calibration by market type, the Brier skill pack -- name it as truth_source in the artifact itself, and the answer contract requires quoting source_artifact and as_of with any number.",
     "source_artifact": "webapp/public/data/showcase/calibration_by_market_type.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "truth-source",
@@ -1018,7 +1018,7 @@
     "status": "ok",
     "answer": "It is a machine-checkable stamp that the module is a calibration or description artifact. It appears on the showcase manifest, on every novel-stat card and on the Brier skill pack, and it is the reason a question phrased as financial guidance comes back refused rather than answered.",
     "source_artifact": "webapp/public/data/showcase/site_manifest.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "no-comparative-conclusion",
@@ -1075,7 +1075,7 @@
     "status": "ok",
     "answer": "By labeling them and refusing to sum them. The MLB count-leverage module marks behind/even/ahead as a mutually exclusive, exhaustive partition while two_strike and three_ball are overlapping lenses whose counts are explicitly not additive with it; the schedule module makes the same declaration about back-to-backs, 3-in-4s and 4-in-6s.",
     "source_artifact": "webapp/public/data/showcase/mlb_count_leverage.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "method",
@@ -1094,7 +1094,7 @@
     "status": "ok",
     "answer": "Every rate is taken over its own non-null denominator rather than the raw class count, which is stated as a floor note in the artifacts that publish rates. In the count-leverage module that means strike and ball rates use n_type and in-zone rates use n_zone, which differ -- 183,042 versus 181,462 in the pitcher-behind class alone.",
     "source_artifact": "webapp/public/data/showcase/mlb_count_leverage.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "method",
@@ -1113,7 +1113,7 @@
     "status": "no_data",
     "answer": "No. Every answer here reads committed artifacts on disk -- settled games, historical odds snapshots, finished seasons -- and there is no live odds or live game-state feed behind the site. Questions about tonight's line, a current score or a live win probability come back as no_data by design rather than being estimated.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "live",
@@ -1149,7 +1149,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Yes -- the proof document names the modules directly, including the Diebold-Mariano implementation under the eval-gate package and the beat-the-close scoreboard entry point, and notes that when the real corpora are absent the harness prints VALIDATION_PENDING and falls back to recorded tables rather than silently reproducing them.",
+    "answer": "Yes -- the proof document names the modules directly, including the Diebold-Mariano implementation under the eval-gate package and the close-comparison scoreboard entry point, and notes that when the real corpora are absent the harness prints VALIDATION_PENDING and falls back to recorded tables rather than silently reproducing them.",
     "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
     "as_of": "2026-07-07"
    },
@@ -1187,7 +1187,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Through dedicated modules that re-score the same forecaster across time slices -- calibration_over_time and calibration_stability, both included in the forecaster proof pack, with calibration_stability last stamped 2026-07-23. Stability is treated as a separate question from average calibration, because a model can be well-calibrated on average and badly calibrated in every individual period.",
+    "answer": "Through dedicated modules that re-score the same forecaster across time slices -- calibration_over_time and calibration_stability, both included in the forecaster proof pack (the pack manifest is dated 2026-07-23; the current calibration_stability snapshot is dated 2026-09-16). Stability is treated as a separate question from average calibration, because a model can be well-calibrated on average and badly calibrated in every individual period.",
     "source_artifact": "webapp/public/data/showcase/forecaster/manifest.json",
     "as_of": "2026-07-23"
    },

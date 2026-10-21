@@ -14,7 +14,8 @@ import trail from "@/public/demo-data/api_paper_trail_limit_400.json";
 import { api, type PaperTrailRow } from "@/lib/p5api";
 import { fillParam, fillSeedTrail } from "@/components/paper_pm/paperIds";
 import { bakedFillSeed } from "@/components/paper_pm/bakedFillParams.server";
-import BetDetailPage from "../page";
+import BetDetailPage, { generateMetadata } from "../page";
+import { fillTitle } from "../fillTitle";
 
 const mode = vi.hoisted(() => ({ snapshot: true, betId: "" }));
 vi.mock("@/lib/fetchHonest", async (orig) => ({
@@ -88,6 +89,8 @@ describe("BetDetailPage (server) first render", () => {
     expect(screen.getByTestId("detail-line")).toHaveTextContent((first.taken_decimal as number).toFixed(2));
     expect(screen.getByTestId("detail-result")).toHaveTextContent(first.status === "open" || !first.graded ? "pending" : /win|loss|void/);
     expect(screen.getByTestId("detail-selection")).toBeInTheDocument();
+    expect(screen.getByTestId("fill-title").textContent).toBe(fillTitle(first));
+    expect(screen.getByTestId("fill-raw-key").textContent).toContain(`${first.sport}|${first.game_id}|`);
     const banner = screen.getByTestId("real-money-deny-banner");
     expect(banner).toHaveTextContent("PAPER ONLY");
     expect(banner).toHaveAttribute("role", "alert");
@@ -111,5 +114,13 @@ describe("BetDetailPage (server) first render", () => {
     render(<BetDetailPage params={{ betId: unknown }} />);
     expect(screen.getByTestId("bet-detail-last-updated")).toHaveTextContent("as of not stated");
     expect(screen.getByText("loading...")).toBeInTheDocument();
+  });
+});
+
+describe("fill title", () => {
+  it("derives Paper fill: <sport> <game> <side> <date> from the row, for metadata and header alike", () => {
+    expect(fillTitle({ sport: "nba", game_id: "KXNBAGAME-26OCT08ATLSAS", matchup: "", side: "no", ts: "2026-10-09T00:51:29Z" }))
+      .toBe("Paper fill: NBA ATL @ SAS NO 2026-10-09");
+    expect(generateMetadata({ params: { betId: fillParam(first) } }).title).toBe(fillTitle(first));
   });
 });

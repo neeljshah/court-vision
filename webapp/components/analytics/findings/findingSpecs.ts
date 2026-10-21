@@ -149,11 +149,11 @@ export const FINDING_SPECS: Record<string, FindingSpec> = {
   },
   "nba-momentum": {
     title: "NBA momentum, tested",
-    claim: "Structure held, streaks did not. Fatigue, rest and clutch effects held in preregistered NBA tests. Individual game-to-game carryover shapes came back null.",
+    claim: "Structure held, streaks did not. Fatigue, rest and clutch effects held in tested NBA hypotheses. Individual game-to-game carryover shapes came back null.",
     artifactId: "nba_momentum_tested",
     verdicts: (a) => claims(a).map((c) => c.verdict),
-    n: (a) => `${fmt(claims(a).length)} preregistered claims; per-claim n in the tables`,
-    test: { gate: "preregistered leak-free effect test against an internal baseline (forward-claim scoreboard)", corpora: corporaOf, folds: "per claim, as recorded in the scoreboard" },
+    n: (a) => `${fmt(claims(a).length)} tested claims; per-claim n in the tables`,
+    test: { gate: "leak-free effect test against an internal baseline (forward-claim scoreboard)", corpora: corporaOf, folds: "per claim, as recorded in the scoreboard" },
     replication: replicated,
     inspector: { href: "/analytics/the-loop/", label: "forward-claim loop" },
     limitations: [
@@ -235,8 +235,8 @@ export const FINDING_SPECS: Record<string, FindingSpec> = {
     claim: "Momentum is measurable point to point and disappears at the game grain. Two tiebreak myths are null.",
     artifactId: "tennis_grain_and_myths",
     verdicts: (a) => claims(a).map((c) => c.verdict),
-    n: (a) => `${fmt(claims(a).length)} preregistered claims; per-claim n in the tables`,
-    test: { gate: "preregistered leak-free effect test against an internal baseline (forward-claim scoreboard)", corpora: corporaOf, folds: "per claim; some checked on split halves" },
+    n: (a) => `${fmt(claims(a).length)} tested claims; per-claim n in the tables`,
+    test: { gate: "leak-free effect test against an internal baseline (forward-claim scoreboard)", corpora: corporaOf, folds: "per claim; some checked on split halves" },
     replication: replicated,
     inspector: { href: "/analytics/the-loop/", label: "forward-claim loop" },
     limitations: [

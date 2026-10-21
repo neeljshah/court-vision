@@ -44,9 +44,36 @@ export function parsePacketTable(md: string): PacketRow[] | null {
   return out.length ? out : null;
 }
 
+// Render-time presentation filter. The packet is the truth source and is never edited for the
+// site; these rules only drop its interview-coaching sentences, keep return figures out of the
+// replacement column, and collapse the long tracking row to its three load-bearing sentences.
+const CALIBRATION_STATEMENT =
+  "The pregame model trails the devigged close on MLB moneyline and soccer O/U 2.5; on NBA moneyline the interval includes zero, so we cannot tell.";
+// "Apply as ... hire." addresses a hirer; the discipline quote ends at "its fix".
+const COACHING = [/Apply as an [^.]*hire\.\s*/g, /\s*-- that is the discipline, not an embarrassment/g];
+const INPLAY_STATEMENT =
+  "In play the model trails the Kalshi mid; the L5-proxy backtest is a model-quality ceiling, never a realized result.";
+const RETURN_FIGURE = /[~+-]\s?-?\d+(?:\.\d+)?%|break-even|\bROI\b|P&L|hits \d+%/;
+const TRACKING_WHY =
+  "Measured on the research route, 2026-09-04, not asserted: on one WNBA clip through a validated homography, 10.5 pct of on-court same-ID steps are physically impossible (G267/G270). " +
+  "Only about one retained detection in five sits on a player's feet (G287), detector recall is not established, and the impossible-step rate has no established mechanism. " +
+  "Scope is one clip, one camera shot and one labeller; the full measurement record with receipts G267 to G288 is in section 4 of the packet.";
+
+export function presentRow(r: PacketRow): PacketRow {
+  let { why, sayInstead } = r;
+  for (const re of COACHING) sayInstead = sayInstead.replace(re, "");
+  why = why.replace(/\s*At real odds [^;]*;[^%]*%\./, "");
+  if (RETURN_FIGURE.test(sayInstead)) sayInstead = `"${/in-play/i.test(r.claim) ? INPLAY_STATEMENT : CALIBRATION_STATEMENT}"`;
+  if (why.length > 3000) {
+    why = TRACKING_WHY;
+    sayInstead = sayInstead.replace(/^\s*"?([^.]*\.).*$/s, '"$1"');
+  }
+  return { ...r, why, sayInstead: sayInstead.trim() };
+}
+
 export function loadPacketTable(): PacketRow[] | null {
   try {
-    return parsePacketTable(readFileSync(PACKET_PATH, "utf-8"));
+    return parsePacketTable(readFileSync(PACKET_PATH, "utf-8"))?.map(presentRow) ?? null;
   } catch {
     return null;
   }

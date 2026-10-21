@@ -10,6 +10,11 @@ const s4 = (v: number) => (v >= 0 ? "+" : "") + v.toFixed(4);
 /** Display names for the canonical sport ids (shared with CalibrationIntro). */
 export const SPORT: Record<string, string> = { mlb: "MLB", nba: "NBA", soccer: "Soccer", soccer_intl: "International soccer" };
 
+/** The packet's licensed in-game sentence for the 227-game Brier pair (docs/JOB_EVIDENCE_PACKET.md). */
+export const INGAME_JOIN_CAVEAT = "Measured 2026-09-14 on the 227-game corpus that later failed the join-integrity check; the 178-game segmented revision keeps the verdict BEHIND.";
+export const LATENCY_PAPER_HREF = "https://github.com/neeljshah/court-vision/blob/master/docs/papers/INPLAY_LATENCY_2026.md";
+const caveated = (f: CanonicalFigure) => f.n_unit === "games" && f.n === 227;
+
 export const isVerdictRow = (f: CanonicalFigure) => f.metric === "Brier" && f.model != null && f.close != null;
 
 export function verdictRows(figs: CanonicalFigure[]): CanonicalFigure[] {
@@ -45,7 +50,7 @@ export function CalibrationVerdictTable({ figures }: { figures: CanonicalFigure[
                 <td>{SPORT[f.sport] ?? f.sport}</td>
                 <td>{f.market}</td>
                 <td>{ingame ? "in-play ticks" : "pregame"}</td>
-                <td>{ingame ? "Kalshi in-play mid" : `${f.devig ?? ""} devigged close`.trim()}</td>
+                <td>{ingame ? "Kalshi in-play mid" : `${f.devig ?? ""} devigged close`.trim()}{caveated(f) && <sup data-role="caveat-ref"><a href="#ingame-join-caveat" aria-label="Join-integrity caveat">*</a></sup>}</td>
                 <td data-role="n">{f.n?.toLocaleString("en-US")}</td>
                 <td>{ingame ? "not published" : `${f.n?.toLocaleString("en-US")} (one per game)`}</td>
                 <td>{f4(f.model)} <small>(lower is better)</small></td>
@@ -71,6 +76,13 @@ export function CalibrationVerdictTable({ figures }: { figures: CanonicalFigure[
           })}
         </tbody>
       </table>
+      {rows.some(caveated) && (
+        <p id="ingame-join-caveat" data-role="caveat"><small>
+          {/* the trailing packet word renders as a VerdictLabel; the text stays the licensed sentence */}
+          * {INGAME_JOIN_CAVEAT.replace(/ BEHIND\.$/, " ")}<VerdictLabel verdict="BEHIND" qualifier={false} />. See <a href="/analytics/findings/ingame-join-integrity/">the join-integrity finding</a> and{" "}
+          <a href={LATENCY_PAPER_HREF}>the in-play latency paper</a>.
+        </small></p>
+      )}
     </div>
   );
 }

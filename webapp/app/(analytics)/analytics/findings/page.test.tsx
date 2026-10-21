@@ -10,3 +10,8 @@ it("shows derived finding count and per-card publication metadata", () => {
   expect(screen.getByText(`as of ${first.asOf || "date not published"} / ${first.sport}`)).toBeInTheDocument();
   expect(screen.getByText(first.artifactStatus)).toBeInTheDocument();
 });
+
+it("states that findings are exploratory unless a pre-registration is shown", () => {
+  render(<FindingsIndexPage />);
+  expect(screen.getByText("Findings are exploratory unless a pre-registration file, date and hash are shown on the page.")).toBeInTheDocument();
+});

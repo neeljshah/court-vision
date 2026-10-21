@@ -52,7 +52,7 @@ describe("/paper-trading -- Paper record", () => {
     const { container } = await renderPage();
     await waitFor(() => expect(screen.getByRole("status", { name: "Unavailable paper data" })).toBeInTheDocument());
     const html = container.innerHTML;
-    const settled = html.indexOf("Settled book (real paper record)");
+    const settled = html.indexOf("Settled paper book (PAPER ONLY)");
     expect(settled).toBeGreaterThan(-1);
     expect(settled).toBeLessThan(html.indexOf("july-snapshot-box"));
     const box = screen.getByTestId("july-snapshot-box");

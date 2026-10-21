@@ -260,13 +260,13 @@ describe("/paper-trading -- running tally tiles", () => {
   it("win count from payload", async () => {
     mockApiWithTrades();
     await renderPage();
-    await waitFor(() => expect(screen.getByTestId("tally-win").textContent).toBe("1"));
+    await waitFor(() => expect(screen.queryByTestId("tally-win")).toBeNull());
   });
 
   it("loss count from payload", async () => {
     mockApiWithTrades();
     await renderPage();
-    await waitFor(() => expect(screen.getByTestId("tally-loss").textContent).toBe("1"));
+    await waitFor(() => expect(screen.queryByTestId("tally-loss")).toBeNull());
   });
 
   it("push count from payload", async () => {

@@ -7,7 +7,7 @@ import { decompose } from "@/components/analytics/calibration/CalibrationDecompo
 import { SPORT } from "@/components/analytics/calibration/CalibrationVerdictTable";
 import CalibrationPage from "./page";
 
-type Fig = { key: string; sport: string; market: string; metric: string; n?: number; n_unit?: string; model?: number; close?: number; verdict: string };
+type Fig = { key: string; sport: string; market: string; metric: string; n?: number; n_unit?: string; model?: number; close?: number; verdict: string; ci95?: [number, number] };
 const canon = JSON.parse(readFileSync(join(process.cwd(), "../docs/evidence/CANONICAL_FIGURES.json"), "utf-8")) as { figures: Fig[] };
 const VERDICT_WORD = new RegExp(`\\b(${PACKET_VERDICTS.join("|")})\\b`);
 
@@ -23,7 +23,9 @@ function clauses(rows: Fig[]): string {
   const out: string[] = [];
   for (const f of rows) {
     const q = VERDICT_QUALIFIER[f.verdict as PacketVerdict];
-    const c = `${SPORT[f.sport] ?? f.sport} ${f.market} ${f.verdict}${q ? ` (${q})` : ""}`;
+    const zero = f.ci95 != null && f.ci95[0] <= 0 && f.ci95[1] >= 0;
+    const c = zero ? `${SPORT[f.sport] ?? f.sport} ${f.market} cannot tell (interval includes zero; underpowered)`
+      : `${SPORT[f.sport] ?? f.sport} ${f.market} ${f.verdict}${q ? ` (${q})` : ""}`;
     if (!out.includes(c)) out.push(c);
   }
   return out.join("; ");
@@ -77,6 +79,20 @@ describe("/analytics/calibration/ (T2)", () => {
     const inplay = rows.filter((r) => r.textContent!.includes("Kalshi in-play mid"));
     expect(inplay.length).toBeGreaterThan(0);
     for (const r of inplay) expect(r.querySelector('[data-role="verdict"]')!.textContent).toBe("BEHIND");
+  });
+
+  it("NBA prose reads cannot tell; the 227-game in-play row carries the licensed caveat and links", () => {
+    const { container } = render(<CalibrationPage />);
+    const intro = prose(screen.getByTestId("calibration-intro"));
+    expect(intro).toContain("NBA moneyline cannot tell (interval includes zero; underpowered)");
+    expect(intro).not.toContain("MATCHES_CLOSE");
+    const row = container.querySelector('tr[data-key="mlb_ingame_vs_kalshi_mid"]')!;
+    expect(row.querySelector('[data-role="caveat-ref"] a')!.getAttribute("href")).toBe("#ingame-join-caveat");
+    const note = container.querySelector("#ingame-join-caveat")!;
+    expect(note.textContent).toContain("Measured 2026-09-14 on the 227-game corpus that later failed the join-integrity check; the 178-game segmented revision keeps the verdict BEHIND.");
+    const hrefs = [...note.querySelectorAll("a")].map((a) => a.getAttribute("href"));
+    expect(hrefs).toContain("/analytics/findings/ingame-join-integrity/");
+    expect(hrefs.some((h) => h!.endsWith("docs/papers/INPLAY_LATENCY_2026.md"))).toBe(true);
   });
 
   it("prints a Limitations block with at least three bullets and no banned copy", () => {

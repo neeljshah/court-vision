@@ -1,5 +1,5 @@
 // app/(terminal)/evidence/retractions/page.tsx -- THE retraction record (one page).
-// Renders docs/JOB_EVIDENCE_PACKET.md section 4 verbatim (parsed at build time by
+// Renders docs/JOB_EVIDENCE_PACKET.md section 4 (parsed and filtered at build time by
 // packetTable.ts). The six retracted figures appear on this site only here, inside
 // table rows marked Retracted, each beside the packet's replacement wording ("Say
 // instead") and a date. The old /evidence/retraction-story/ and
@@ -46,11 +46,14 @@ export default function RetractionsPage() {
       <header>
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">Retraction record</h1>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-          Every figure this project withdrew or could not verify, copied verbatim from section 4 of
-          the evidence packet. Each row names the figure, why it fails, the wording that replaces it
+          Every figure this project withdrew or could not verify, copied from section 4 of
+          the evidence packet (interview-coaching sentences and return figures are left out at render
+          time; the long tracking row is shortened to three sentences). Each row names the figure, why it fails, the wording that replaces it
           and a date. The largest withdrawal is the former headline return figure: it was a
-          market-follow artifact, and the honest replacement is that the pregame model matches or trails the
-          closing price. A retracted number appears on this site only here. Source:{" "}
+          market-follow artifact, and the honest replacement is calibration: the pregame model trails the
+          devigged close on MLB moneyline and soccer O/U 2.5, and on NBA moneyline the interval includes
+          zero, so we cannot tell. The six withdrawn figures sit in four rows, each marked Retracted. A
+          retracted number appears on this site only here. Source:{" "}
           <a href={PACKET_URL} className="underline">docs/JOB_EVIDENCE_PACKET.md</a>, section 4.
         </p>
       </header>

@@ -131,7 +131,7 @@ export default function PaperTradingPageClient({ initial }: { initial?: Combined
 
       {/* PRIMARY: the 29-fill forward record, settled rows first */}
       <Panel
-        title="Settled book (real paper record)"
+        title="Settled paper book (PAPER ONLY)"
         right={
           <span className="font-mono text-[12px] text-muted-foreground">
             {loading

@@ -424,7 +424,7 @@ describe("/paper-trading -- running tally tiles (populated trail)", () => {
     mockWithTrades();
     await renderPage();
     await waitFor(() =>
-      expect(screen.getByTestId("tally-win").textContent).toBe("1")
+      expect(screen.queryByTestId("tally-win")).toBeNull()
     );
   });
 
@@ -432,7 +432,7 @@ describe("/paper-trading -- running tally tiles (populated trail)", () => {
     mockWithTrades();
     await renderPage();
     await waitFor(() =>
-      expect(screen.getByTestId("tally-loss").textContent).toBe("1")
+      expect(screen.queryByTestId("tally-loss")).toBeNull()
     );
   });
 

@@ -54,6 +54,15 @@ describe("/desk Record hub", () => {
     expect(body.length).toBeLessThan(40);
     expect(table.textContent).toMatch(/INSUFFICIENT/);
     expect(table.querySelectorAll(":scope > tbody > tr > td > details").length).toBe(body.length);
+    // first screen: one summary row per sport, floor 30 from figures; empty arms and mid rows explained
+    const summary = screen.getByTestId("scoreboard-sport-summary").querySelectorAll("li");
+    expect(summary.length).toBeGreaterThan(0);
+    for (const li of summary) expect(li.textContent).toMatch(/^\w+: \d+ of 30 games needed for a verdict; no verdict yet$/);
+    expect(table.closest("details")?.querySelector("summary")?.textContent).toMatch(/^show the full cell grid \(\d+ cells\)$/);
+    const empty = screen.getByTestId("scoreboard-empty-arms");
+    expect(empty.querySelector("summary")?.textContent).toMatch(/^show \d+ empty arms$/);
+    expect(empty.textContent).not.toMatch(/cells with ticks[\s\S]*[1-9]\d* of 30/);
+    expect(screen.getByTestId("scoreboard-mid-note").textContent).toMatch(/target=mid[\s\S]*Brier 0\.0000[\s\S]*own mid price/);
     const census = screen.getByTestId("census-summary").textContent ?? "";
     expect(census).toMatch(/never judged: 79 games/);
     expect(census).toMatch(/no capture: 11 games/);
@@ -73,6 +82,7 @@ describe("/desk/health", () => {
     expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Desk health");
     const text = document.body.textContent ?? "";
     expect(text).toMatch(/heartbeat:books_root/);
+    expect(screen.getByTestId("health-paper-gloss").textContent).toMatch(/^PAPER ONLY: /);
     expect(text).toMatch(/Live shadow recorder:/);
     expect(text).toMatch(/Window 2026-09-24 to 2026-10-18 \(25 days\)/);
     expect(screen.getByTestId("check-all-count").textContent).toMatch(/\d+ of \d+ module self-checks PASS/);

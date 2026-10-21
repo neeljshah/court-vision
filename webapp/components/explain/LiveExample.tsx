@@ -86,6 +86,7 @@ export function LiveExample() {
   }, []);
 
   if (state === "loading") {
+    if (isSnapshotMode) return null; // static build: no loader text in the exported HTML
     return (
       <Panel>
         <PanelHead title={exampleTitle} />

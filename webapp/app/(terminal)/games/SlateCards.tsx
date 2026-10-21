@@ -38,7 +38,7 @@ function isPredictEnvelope(value: unknown): value is PredictEnvelope {
 // per-game best-bet chip. Each sport degrades INDEPENDENTLY to an honest empty
 // state: an offseason / unavailable sport shows a clear message, NEVER a fake
 // slate. UNITS / probability only -- NO $.
-export function SlateCards({ publishedGames }: { publishedGames?: PublishedGame[] }) {
+export function SlateCards({ publishedGames, slateAsOf }: { publishedGames?: PublishedGame[]; slateAsOf?: string | null }) {
   const [states, setStates] = useState<SportState[]>(
     GAME_SPORTS.map((s) => ({ sport: s, env: null, edges: {}, slate: null })),
   );
@@ -117,6 +117,13 @@ export function SlateCards({ publishedGames }: { publishedGames?: PublishedGame[
     0,
   );
 
+  const boardEmpty = totalGames === 0 && states.every((s) => s.env && !s.err);
+  const sections = states.map((s) => (
+    <div id={`slate-${s.sport}`} key={s.sport}>
+      <SportSlate state={s} publishedGames={publishedGames} />
+    </div>
+  ));
+
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-center justify-between">
@@ -137,7 +144,7 @@ export function SlateCards({ publishedGames }: { publishedGames?: PublishedGame[
       {/* Sport quick-nav: scrolls to the section below -- every sport stays
           in the DOM at once (independent honest-empty states per sport), this
           is just a fast jump-to. */}
-      <nav className="sticky top-14 z-10 flex gap-1 overflow-x-auto border-b border-border bg-background py-2">
+      {!boardEmpty && <nav className="sticky top-14 z-10 flex gap-1 overflow-x-auto border-b border-border bg-background py-2">
         {GAME_SPORTS.map((s) => (
           <a
             key={s}
@@ -147,13 +154,20 @@ export function SlateCards({ publishedGames }: { publishedGames?: PublishedGame[
             {sportLabel(s)}
           </a>
         ))}
-      </nav>
+      </nav>}
 
-      {states.map((s) => (
-        <div id={`slate-${s.sport}`} key={s.sport}>
-          <SportSlate state={s} publishedGames={publishedGames} />
-        </div>
-      ))}
+      {boardEmpty ? (
+        // Every sport answered, none failed, zero games: one honest line, per-sport notes folded.
+        <>
+          <p className="font-data text-sm text-muted-foreground" data-testid="slate-empty">
+            No games on the published slate (snapshot as of {slateAsOf ? slateAsOf.slice(0, 10) : "not stated in the manifest"})
+          </p>
+          <details className="text-xs">
+            <summary className="cursor-pointer py-1 underline">per-sport notes</summary>
+            {sections}
+          </details>
+        </>
+      ) : sections}
     </div>
   );
 }

@@ -598,19 +598,19 @@ describe("WS2-8 -- done-settled-summary real trail counts", () => {
     });
   });
 
-  it("done-win shows 21", async () => {
+  it("done-win tile is not rendered (counts only)", async () => {
     mockWith54RowTrail();
     await renderPage();
     await waitFor(() => {
-      expect(screen.getByTestId("done-win").textContent).toBe("21");
+      expect(screen.queryByTestId("done-win")).toBeNull();
     });
   });
 
-  it("done-loss shows 25", async () => {
+  it("done-loss tile is not rendered (counts only)", async () => {
     mockWith54RowTrail();
     await renderPage();
     await waitFor(() => {
-      expect(screen.getByTestId("done-loss").textContent).toBe("25");
+      expect(screen.queryByTestId("done-loss")).toBeNull();
     });
   });
 

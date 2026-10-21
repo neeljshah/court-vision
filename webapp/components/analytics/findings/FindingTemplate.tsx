@@ -60,6 +60,9 @@ function Block({ id, title, children }: { id: (typeof FINDING_BLOCKS)[number]; t
   );
 }
 
+/** Shown on every finding's status line and on the findings index. */
+export const EXPLORATORY_NOTE = "Findings are exploratory unless a pre-registration file, date and hash are shown on the page.";
+
 export function FindingTemplate({ slug, artifact, children }: { slug: string; artifact?: R | null; children: ReactNode }) {
   const spec = FINDING_SPECS[slug];
   if (!spec) throw new Error(`FindingTemplate: no spec for "${slug}"`);
@@ -86,6 +89,7 @@ export function FindingTemplate({ slug, artifact, children }: { slug: string; ar
         <span className="mono">{spec.interval ?? "no interval"}</span>
         <AsOfBadge asOf={asOf} kind={a.as_of || a.measured_on ? "source" : "snapshot"} />
         <ReceiptChip source={source} asOf={asOf} kind={a.as_of || a.measured_on ? "source" : "snapshot"} quotedOn={quoted} />
+        <span data-role="exploratory">{EXPLORATORY_NOTE}</span>
       </div>
       <Block id="test" title="How it was tested">
         <ul style={{ margin: 0, paddingLeft: 20 }}>

@@ -107,7 +107,7 @@
         "status": "ok",
         "answer": "By the box-composite form measure, Wembanyama is the league's biggest riser: his 10-game rolling per-36 box composite climbed +19.821, roughly doubling from 18.048 to 37.869 -- the 100th league percentile. The mirror image is Myles Turner, the biggest faller at -11.043. This is a trajectory read over the whole span, not a live hot-streak call, and it is box-composite only, not an adjusted impact metric.",
         "source_artifact": "webapp/public/data/insights/nba_form_curves.json",
-        "as_of": "2023-24 to 2025-26"
+        "as_of": "unknown"
       },
       "tags": ["nba", "player", "wembanyama", "form", "trend"]
     },
@@ -271,7 +271,7 @@
       "a": {
         "status": "ok",
         "answer": "On a neutral floor versus a league-average opponent, the star-removal exercise moves OKC from 0.7829 with Shai Gilgeous-Alexander to 0.2658 without -- a 0.5171 win-prob swing. Like every row in this exhibit it is a ceiling built from an on/off net-rating delta, a roster confound rather than a controlled individual value, and it is descriptive only.",
-        "source_artifact": "webapp/public/data/insights/cf_star_removal.json",
+        "source_artifact": "webapp/public/data/showcase/cf_star_removal.json",
         "as_of": "2024-25 (Elo end-of-season) x 2024_25 on/off slice"
       },
       "tags": ["nba", "star-value", "with-without", "sga", "okc"]
@@ -282,7 +282,7 @@
       "a": {
         "status": "ok",
         "answer": "Because raw on/off is a full-lineup swing, not an individual-value estimate, it often flatters bench-anchoring role players: the exhibit's top on/off name is Luke Kornet on Boston (0.2785 swing), Gui Santos on Golden State (0.2378), Dorian Finney-Smith on the Lakers (0.4656), Monte Morris in Phoenix (0.2593), and Isaac Okoro in Cleveland (0.303) -- not Tatum, Curry, LeBron, Booker, or Mitchell. Floor-sharing correlates with coach trust, opponent strength, and garbage-time minutes, none of which are controlled. Treat a big on/off number as a flag to investigate, not a verdict.",
-        "source_artifact": "webapp/public/data/insights/cf_star_removal.json",
+        "source_artifact": "webapp/public/data/showcase/cf_star_removal.json",
         "as_of": "2024-25 (Elo end-of-season) x 2024_25 on/off slice"
       },
       "tags": ["nba", "on-off", "roster-confound", "star-value", "caveat"]
@@ -492,7 +492,7 @@
       "a": {
         "status": "ok",
         "answer": "In the star-removal exhibit, New Orleans moves from 0.3292 with Zion Williamson to 0.0469 without on a neutral floor versus a league-average team -- a 0.2823 swing, off a low starting team strength. It is a ceiling built from an on/off net-rating delta with a roster confound, descriptive only, not an action recommendation.",
-        "source_artifact": "webapp/public/data/insights/cf_star_removal.json",
+        "source_artifact": "webapp/public/data/showcase/cf_star_removal.json",
         "as_of": "2024-25 (Elo end-of-season) x 2024_25 on/off slice"
       },
       "tags": ["nba", "star-value", "with-without", "zion", "new-orleans"]
@@ -503,7 +503,7 @@
       "a": {
         "status": "ok",
         "answer": "San Antonio moves from 0.3901 with Victor Wembanyama to 0.112 without on a neutral floor against a league-average opponent -- a 0.2781 win-prob swing. As with every row, it is a ceiling from a roster-confounded on/off delta, not a controlled individual value, and it is descriptive.",
-        "source_artifact": "webapp/public/data/insights/cf_star_removal.json",
+        "source_artifact": "webapp/public/data/showcase/cf_star_removal.json",
         "as_of": "2024-25 (Elo end-of-season) x 2024_25 on/off slice"
       },
       "tags": ["nba", "star-value", "with-without", "wembanyama", "san-antonio"]
@@ -515,7 +515,7 @@
         "status": "ok",
         "answer": "In the bulk of regulation states it tracks reality closely: for a 1-to-5 point lead with 24-36 minutes left, the model's mean win probability is 0.6204 across 898 games and teams in that state actually won 62.03 percent of the time. The honest exception is overtime -- with a 1-5 lead in OT the model says 0.7113 while teams actually won 98.3 percent and the market priced 97.6 percent, so it under-rates how decisive a late lead is and the market is better there. This is a calibration exhibit.",
         "source_artifact": "webapp/public/data/insights/comeback_atlas.json",
-        "as_of": "reliability map (source records no as_of)"
+        "as_of": "2026-09-17"
       },
       "tags": ["nba", "clutch", "game-state", "calibration", "win-probability"]
     },
@@ -613,7 +613,7 @@
       "a": {
         "status": "ok",
         "answer": "Milwaukee moves from 0.6059 with Giannis Antetokounmpo to 0.1617 without on a neutral floor versus a league-average team -- a 0.4441 win-prob swing, among the largest for a team's clear lead star. Like every row it is a ceiling from a roster-confounded on/off delta, descriptive and not a causal or action recommendation.",
-        "source_artifact": "webapp/public/data/insights/cf_star_removal.json",
+        "source_artifact": "webapp/public/data/showcase/cf_star_removal.json",
         "as_of": "2024-25 (Elo end-of-season) x 2024_25 on/off slice"
       },
       "tags": ["nba", "star-value", "with-without", "giannis", "milwaukee"]
@@ -636,7 +636,7 @@
         "status": "ok",
         "answer": "Myles Turner is the biggest faller, with his 10-game rolling per-36 box composite down -11.043 over the observed span -- the mirror image of Wembanyama's league-leading +19.821 rise to 37.869. This is a net change over the whole multi-season span, a trajectory read rather than a current streak, and it is box-composite only, not age- or opponent-adjusted.",
         "source_artifact": "webapp/public/data/insights/nba_form_curves.json",
-        "as_of": "2023-24 to 2025-26"
+        "as_of": "unknown"
       },
       "tags": ["nba", "player", "form", "myles-turner", "trend"]
     },

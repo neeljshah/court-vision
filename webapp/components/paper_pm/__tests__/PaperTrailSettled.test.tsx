@@ -162,14 +162,14 @@ describe("PaperTrailSettled -- populated settled table", () => {
     expect(screen.getByTestId("settled-tally-settled").textContent).toBe("52");
   });
 
-  it("tally: settled-tally-win shows 24", () => {
+  it("tally: settled-tally-win tile is not rendered (counts only)", () => {
     render(<PaperTrailSettled rows={ROWS_54} loading={false} />);
-    expect(screen.getByTestId("settled-tally-win").textContent).toBe("24");
+    expect(screen.queryByTestId("settled-tally-win")).toBeNull();
   });
 
-  it("tally: settled-tally-loss shows 20", () => {
+  it("tally: settled-tally-loss tile is not rendered (counts only)", () => {
     render(<PaperTrailSettled rows={ROWS_54} loading={false} />);
-    expect(screen.getByTestId("settled-tally-loss").textContent).toBe("20");
+    expect(screen.queryByTestId("settled-tally-loss")).toBeNull();
   });
 
   it("tally: settled-tally-push shows 8", () => {

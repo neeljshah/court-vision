@@ -16,23 +16,17 @@ export function PaperTradingTally({ tally, loading }: {
       <div
         aria-label="Running paper tally"
         data-testid="running-tally"
-        className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7"
+        className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-5"
       >
         <StatTile label="Open" testId="tally-open" loading={loading}
           value={loading || !tally ? EMPTY_CELL : String(tally.nOpen)} />
         <StatTile label="Settled" testId="tally-settled" loading={loading}
           value={loading || !tally ? EMPTY_CELL : String(tally.nSettled)} />
-        <StatTile label="Win" testId="tally-win" loading={loading}
-          value={loading || !tally ? EMPTY_CELL : String(tally.nWin)}
-          valueClass={tally && tally.nWin > 0 ? "text-success" : "text-foreground"} />
-        <StatTile label="Loss" testId="tally-loss" loading={loading}
-          value={loading || !tally ? EMPTY_CELL : String(tally.nLoss)}
-          valueClass={tally && tally.nLoss > 0 ? "text-danger" : "text-foreground"} />
         <StatTile label="Push" testId="tally-push" loading={loading}
           value={loading || !tally ? EMPTY_CELL : String(tally.nPush)} />
         <StatTile label="Units staked" testId="tally-units-staked" loading={loading}
           value={loading || !tally ? EMPTY_CELL : tally.unitsStaked.toFixed(2)} />
-        <div className="col-span-2 sm:col-span-4 lg:col-span-7" data-testid="clv-mean-clv">
+        <div className="col-span-2 sm:col-span-4 lg:col-span-5" data-testid="clv-mean-clv">
           <Unavailable reason={CLV_UNAVAILABLE} />
         </div>
       </div>

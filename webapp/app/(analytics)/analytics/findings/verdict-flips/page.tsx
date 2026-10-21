@@ -66,6 +66,7 @@ export default function VerdictFlipsPage() {
   return (
     <FindingTemplate slug="verdict-flips" artifact={data}>
       <p style={lede}>{headline}</p>
+      <p style={lede} data-role="prereg-caveat">Claims that moved from NULL to CONFIRMED as samples grew were re-tested repeatedly and are not pre-registered unless a pre-registration file is shown.</p>
 
       {summary ? (
         <div className="tnum" style={{ display: "flex", flexWrap: "wrap", gap: 28, marginTop: 28, maxWidth: 700 }}>

@@ -17,6 +17,7 @@ import { PRODUCT_NAME } from "@/lib/api";
 import { Panel, PanelHead, Num } from "@/components/ui/terminal";
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/seo/meta";
+import { DELTA_HEADER, CELL_FLOOR, modelMinusMarketCell, underFloor } from "./ledger";
 
 export const metadata: Metadata = pageMeta("/receipts/", {
   title: "Receipts",
@@ -59,7 +60,9 @@ function loadReceipts(): ReceiptsJson | null {
 // Verdict -> ink. Honesty is the feature: losses (MARKET_SHARPER*) render
 // red, not hidden or softened; UNDERPOWERED (most rows) is neutral amber,
 // not green -- an underpowered result is not a win.
-function verdictClass(verdict: string): string {
+// A MODEL_SHARPER read under the cell floor is neutral, not green.
+function verdictClass(verdict: string, n: number | string): string {
+  if (underFloor(verdict, n)) return "text-stale";
   if (verdict.startsWith("MODEL_SHARPER")) return "text-up";
   if (verdict.startsWith("MARKET_SHARPER")) return "text-down";
   if (verdict === "UNDERPOWERED") return "text-stale";
@@ -136,7 +139,7 @@ export default function ReceiptsPage() {
                     <th className="microlabel px-3 py-1.5">checkpoint</th>
                     <th className="microlabel px-3 py-1.5">model</th>
                     <th className="microlabel px-3 py-1.5">market</th>
-                    <th className="microlabel px-3 py-1.5">delta (95% ci)</th>
+                    <th className="microlabel px-3 py-1.5">{DELTA_HEADER}</th>
                     <th className="microlabel px-3 py-1.5 text-right">n</th>
                     <th className="microlabel px-3 py-1.5">verdict</th>
                     <th className="microlabel px-3 py-1.5">source</th>
@@ -156,12 +159,15 @@ export default function ReceiptsPage() {
                       <td className="px-3 py-1.5">{r.checkpoint}</td>
                       <td className="px-3 py-1.5 font-data">{r.model}</td>
                       <td className="px-3 py-1.5 font-data">{r.market}</td>
-                      <td className="px-3 py-1.5 font-data">{r.delta_ci}</td>
+                      <td className="px-3 py-1.5 font-data" data-role="delta">{modelMinusMarketCell(r.delta_ci)}</td>
                       <td className="px-3 py-1.5 text-right">
                         <Num>{r.n}</Num>
                       </td>
-                      <td className={`px-3 py-1.5 font-mono text-[11px] font-bold ${verdictClass(r.verdict)}`}>
+                      <td className={`px-3 py-1.5 font-mono text-[11px] font-bold ${verdictClass(r.verdict, r.n)}`}>
                         {r.verdict}
+                        {underFloor(r.verdict, r.n) && (
+                          <span data-role="qualifier" title={`n below the ${CELL_FLOOR}-game cell floor`}> UNDERPOWERED</span>
+                        )}
                       </td>
                       <td className="px-3 py-1.5 font-data text-[11px] text-faint">{r.src}</td>
                     </tr>

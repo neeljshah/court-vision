@@ -5,7 +5,7 @@ import type { ComponentType } from "react";
 import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { isPacketVerdict, RETRACTED_TOKENS } from "@/lib/packetVerdicts";
-import { FINDING_BLOCKS } from "./FindingTemplate";
+import { EXPLORATORY_NOTE, FINDING_BLOCKS } from "./FindingTemplate";
 import { FINDING_SPECS } from "./findingSpecs";
 import BookmakerAccuracyPage from "@/app/(analytics)/analytics/findings/bookmaker-accuracy/page";
 import EffectiveSampleSizePage from "@/app/(analytics)/analytics/findings/effective-sample-size/page";
@@ -79,5 +79,13 @@ describe("FindingTemplate (T4)", () => {
     expect(container.querySelector('[data-block="status"] [data-verdict="CONFIRMED_LOCAL"]')).not.toBeNull();
     const mlb = render(<MlbLeaderboardsPage />).container;
     expect(mlb.querySelector('[data-block="status"] [data-verdict="REJECT"]')).not.toBeNull();
+  });
+  it("every status line says findings are exploratory unless pre-registered; momentum and tennis say tested", () => {
+    for (const [slug, Page] of Object.entries(pages)) {
+      const { container, unmount } = render(<Page />);
+      expect(container.querySelector('[data-block="status"]')?.textContent, slug).toContain(EXPLORATORY_NOTE);
+      if (slug === "nba-momentum" || slug === "tennis") expect(container.textContent).not.toMatch(/preregistered/i);
+      unmount();
+    }
   });
 });

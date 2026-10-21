@@ -54,4 +54,15 @@ describe("About page", () => {
     expect(COMMIT_COUNT_COMMANDS.total).toBe("git rev-list --count 4f033b5a5");
     expect(COMMIT_COUNT_COMMANDS.agentCoAuthored).toBe("git log 4f033b5a5 -i --grep='^Co-Authored-By:.*\\(Claude\\|Codex\\)' --format=%H | wc -l");
   });
+  it("adds the owner-decision example, what is next, the why line and the roles line", () => {
+    const { container } = render(<AboutPage />);
+    const text = (container.textContent ?? "").replace(/\s+/g, " ");
+    expect(text).toContain("the former headline return figure was withdrawn, and the evaluation gate was changed so that a grader that never reads the model cannot pass");
+    expect(screen.getByRole("heading", { name: "What is next" })).toBeTruthy();
+    expect(text).toContain("The forward paper series keeps running until each cell reaches its 30-game floor; the NBA fitted arms need a new dated seal. Computer-vision tracking stays paused.");
+    expect(screen.getByTestId("about-why").textContent).toBe("The aim is a forecaster whose every number someone else can check against the market.");
+    const open = screen.getByTestId("open-to");
+    expect(open.textContent!.trim()).toBe("Open to data-science / forecasting, quant-research, ML-engineering and analytics-engineering roles.");
+    expect(open.nextElementSibling!.textContent).toMatch(/^\s*Built by Neel Shah, who has three years of data-science coursework/);
+  });
 });

@@ -80,6 +80,11 @@ describe("Home (/) first screen", () => {
     expect(primary).toHaveLength(2);
     expect(within(screen.getByTestId("byline")).getByRole("link", { name: /@/ }).getAttribute("href"))
       .toMatch(/^mailto:/);
+    const byline = screen.getByTestId("byline").textContent ?? "";
+    expect(screen.getByTestId("byline-roles").textContent).toBe(
+      "Open to data-science / forecasting, quant-research, ML-engineering and analytics-engineering roles.");
+    expect(byline.indexOf("roles.")).toBeLessThan(byline.indexOf("Education:"));
+    expect(within(screen.getByTestId("byline")).queryByRole("link", { name: /resume/i })).toBeNull();
   });
 
   it("no banned copy or retracted figure outside the what-this-is-not block", () => {

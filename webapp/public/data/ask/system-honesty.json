@@ -12,7 +12,7 @@
     "status": "ok",
     "answer": "Every named mechanism the system tests is written to an append-only validation ledger with its verdict, effect size, p-value, and the corpus it ran on. The scoreboard over those ledgers currently counts 287 rows across four sports, of which 129 of 256 testable hypotheses survived as confirmed -- a survival rate of 0.5039. A confirmed, a null, and a not-testable are all recorded and counted; a system that only ever confirmed would not be credible.",
     "source_artifact": "webapp/public/data/showcase/mechanism_survival.json",
-    "as_of": "2026-07-11"
+    "as_of": "unknown"
    },
    "tags": [
     "self-grading",
@@ -67,7 +67,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "The most-cited retraction was an early pregame performance headline that turned out to be a market-follow grading artifact: the grader chose direction from the market's own devigged favorite and never actually read the model, priced at a flat -110 fiction, with filters tuned in-sample on the same file. Read against real closing lines the model is roughly break-even-minus-vig, about -2.00% unfiltered. The instrument that caught it was built by the same person who made the claim.",
+    "answer": "The most-cited retraction was an early pregame performance headline that turned out to be a market-follow grading artifact: the grader chose direction from the market's own devigged favorite and never actually read the model, priced at a flat -110 fiction, with filters tuned in-sample on the same file. Read against real closing lines, it shows no measured advantage. The instrument that caught it was built by the same person who made the claim.",
     "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
     "as_of": "2026-07-23"
    },
@@ -105,7 +105,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Yes. The end-of-third-quarter win-probability model was fed two features computed from fourth-quarter data (halftime_pace_shift and trailing_team_q4_usg_hhi), so it was peeking at the quarter it was supposed to predict, and the famous Brier headline was also mis-sourced from the cited file. After removing the two leaking features the honest leak-free walk-forward Brier is about 0.141. It is framed as a leak caught in my own pipeline, not as a competitive number.",
+    "answer": "Yes. The end-of-third-quarter win-probability model was fed two features computed from fourth-quarter data (halftime_pace_shift and trailing_team_q4_usg_hhi), so it was peeking at the quarter it was supposed to predict, and the famous Brier headline was also mis-sourced from the cited file. After removing the two leaking features the honest leak-free walk-forward Brier is about 0.141. It is framed as a leak caught in the system's own pipeline, not as a competitive number.",
     "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
     "as_of": "2026-07-23"
    },
@@ -260,7 +260,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "It is a solo human-architected build over an agentic pipeline: across 3,224 commits from 2026-03-09 to 2026-07-22, about 95.75% are agent-authored and 67.9% carry a Claude co-author trailer. The busiest single day logged 275 commits. The honest framing is one human directing the pipeline and owning the ship/reject and validation decisions, not one person hand-typing thousands of commits.",
+    "answer": "It is a solo human-architected build over an agentic pipeline: across 3,224 commits from 2026-03-09 to 2026-07-22, about 95.75% are agent-authored and 67.9% carry a Claude co-author trailer. The busiest single day logged 275 commits. The honest framing is one human directing the pipeline and owning the ship/reject and validation decisions, not one person hand-typing thousands of commits. Separately, the public repository counts 6,556 commits as of 2026-10-21 (pinned at 4f033b5a5).",
     "source_artifact": "webapp/public/data/showcase/agent_fleet_history.json",
     "as_of": "2026-07-22"
    },
@@ -338,7 +338,7 @@
     "status": "ok",
     "answer": "By survival rate, NBA leads at 0.56 (42 confirmed of 75 testable), tennis 0.5455, soccer 0.5179, and MLB the lowest at 0.3974. Across all four the overall survival rate is 0.5039 on 256 testable hypotheses. Roughly half surviving is the expected shape when the gate is genuinely trying to refute each candidate.",
     "source_artifact": "webapp/public/data/showcase/mechanism_survival.json",
-    "as_of": "2026-07-11"
+    "as_of": "unknown"
    },
    "tags": [
     "survival-rate",
@@ -357,7 +357,7 @@
     "status": "ok",
     "answer": "By category, officiating effects survive best at 0.75 and the small travel bucket at 1.0, while rest-and-fatigue effects survive weakest at just 0.3056 (11 of 36 testable). That is a useful honesty signal: the folk-wisdom rest-and-fatigue story mostly does not replicate under a leak-free gate. Every bucket is reported as-is.",
     "source_artifact": "webapp/public/data/showcase/mechanism_survival.json",
-    "as_of": "2026-07-11"
+    "as_of": "unknown"
    },
    "tags": [
     "survival-rate",
@@ -509,7 +509,7 @@
     "status": "ok",
     "answer": "Every showcase builder module carries a self-check, and the latest check-all report shows all of them returning PASS. Separately, the repo's check_all self-check passes 52 of 52 on a bare clone and runs green in public CI, where the trail also preserves the first run that honestly failed 46 of 52 on a path-portability bug before it was fixed. Keeping the red run in the history is the discipline, not an embarrassment.",
     "source_artifact": "webapp/public/data/showcase/check_all_report.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "reproducibility",
@@ -545,9 +545,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "The five-way NNLS win-probability stack reads 0.709 accuracy and 0.193 Brier under three-fold walk-forward validation. That is a calibration number, reported without any claim that it beats a closing line -- the full-season test shows it does not.",
+    "answer": "The five-way NNLS win-probability stack reads 0.709 accuracy and 0.193 Brier under three-fold walk-forward validation. That is an accuracy and Brier measurement, reported without any claim that it beats a closing line; the earlier full-season comparison against the close was withdrawn on 2026-09-14 and is not used as evidence either way.",
     "source_artifact": "docs/PUBLIC_EVIDENCE.md",
-    "as_of": "2026-06-11"
+    "as_of": "unknown"
    },
    "tags": [
     "win-probability",
@@ -566,7 +566,7 @@
     "status": "ok",
     "answer": "Not yet. Every CV-derived feature carries SHAP importance of about 0.0 in the production prop models today, and the CV-lift report reads has_cv_data false. The plumbing is complete and the thesis is credible, but it is honestly labeled as not yet measured rather than a moat.",
     "source_artifact": "docs/PUBLIC_EVIDENCE.md",
-    "as_of": "2026-06-11"
+    "as_of": "unknown"
    },
    "tags": [
     "computer-vision",
@@ -623,7 +623,7 @@
     "status": "ok",
     "answer": "There are 1,249 dossiers spanning 28 categories, with a median completeness score of 0.464. Fill rates vary widely and honestly: rebounding profile is well-filled at 0.9544 and foul-drawing at 0.8655, while pace-fit (0.0104), turnover profile (0.0144), and matchup splits (0.0849) are sparse. The gaps are surfaced rather than hidden.",
     "source_artifact": "webapp/public/data/showcase/dossier_completeness.json",
-    "as_of": "2026-07-22"
+    "as_of": "unknown"
    },
    "tags": [
     "dossiers",
@@ -756,7 +756,7 @@
     "status": "ok",
     "answer": "No. The paper execution ledger has 83 logged entries, every one with executed=false -- none were real fills -- and realized closing-line-value is null for all 37 settled rows because no independent close feed was captured for that channel. The only quantity it can speak to is placement-time divergence (model versus taken price), median about 0.092 probability points, which is an execution measurement. It records no-close honestly rather than backfilling a number.",
     "source_artifact": "webapp/public/data/showcase/paper_execution_audit.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "paper-trading",
@@ -849,7 +849,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "No -- an earlier aggregate closing-line-value figure was circular, computed on the same corpus where the model was never actually read. No real Pinnacle-close CLV exists yet; the full-season backtest shows CLV near zero versus real closes. So no CLV number is quoted; only the methodology that will eventually measure it is built.",
+    "answer": "No -- an earlier aggregate closing-line-value figure was circular, computed on the same corpus where the model was never actually read. No real Pinnacle-close CLV exists yet, and the earlier full-season backtest was withdrawn on 2026-09-14. So no CLV number is quoted; only the methodology that will eventually measure it is built.",
     "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
     "as_of": "2026-07-23"
    },
@@ -887,9 +887,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Against real DraftKings, FanDuel, and MGM closing lines the model is roughly break-even-minus-vig overall, about -2% to -5%, with -2.00% unfiltered from the gate analysis. The market is efficient on closing lines. Every candidate, including the strongest one, was ultimately rejected or retracted by the gates.",
+    "answer": "Against real closing lines the model shows no measured advantage. On the 2026-09-24 recompute, MLB moneyline (+0.0039 Brier, 95% interval [+0.0028, +0.0051]) and soccer Over/Under 2.5 (+0.0076, [+0.0059, +0.0092]) trail the devigged close, and NBA moneyline cannot tell at 372 games because its interval includes zero. Every candidate, including the strongest one, was ultimately rejected or retracted by the gates.",
     "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
-    "as_of": "2026-07-23"
+    "as_of": "2026-09-24"
    },
    "tags": [
     "market-efficiency",
@@ -908,7 +908,7 @@
     "status": "ok",
     "answer": "Most of it is mechanical. The end-of-Q3 residual heads cut prediction MAE by about 46% pooled, but three of four quarters of box score are simply observed by then; over a naive carry-forward in-game baseline the learned-head value-add is about 26%, walk-forward validated. The honest framing states it that way rather than claiming the full 46% as skill, and the MAE lift is never bundled with the leaked endQ3 Brier.",
     "source_artifact": "docs/PUBLIC_EVIDENCE.md",
-    "as_of": "2026-06-11"
+    "as_of": "unknown"
    },
    "tags": [
     "in-game",
@@ -982,7 +982,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "About 95.75% of the 3,224 commits are agent-authored, so roughly 4% were hand-authored by the human. Around 67.9% carry a Claude co-author trailer. The honest description is a human architect and director of an agentic build pipeline who owns the engineering judgment and the ship-or-reject decisions.",
+    "answer": "About 95.75% of the 3,224 commits are agent-authored, so roughly 4% were hand-authored by the human. Around 67.9% carry a Claude co-author trailer. The honest description is a human architect and director of an agentic build pipeline who owns the engineering judgment and the ship-or-reject decisions. Separately, the public repository counts 6,556 commits as of 2026-10-21 (pinned at 4f033b5a5).",
     "source_artifact": "webapp/public/data/showcase/agent_fleet_history.json",
     "as_of": "2026-07-22"
    },
@@ -1001,9 +1001,9 @@
    ],
    "a": {
     "status": "no_data",
-    "answer": "There is no realized-return measurement to report: zero real money has been placed. The paper execution ledger's 83 logged entries are all executed=false, and realized closing-line-value is null for the settled rows. The honest yardstick, better-than-close CLV, cannot be measured until an independent close feed accumulates from October 2026.",
+    "answer": "There is no realized-return measurement to report: zero real money has been placed. The paper execution ledger's 83 logged entries are all executed=false, and realized closing-line-value is null for the settled rows. The honest yardstick, better-than-close CLV, cannot be measured until an independent close feed accumulates; the forward paper record is in docs/JOB_EVIDENCE_PACKET.md section 5.",
     "source_artifact": "webapp/public/data/showcase/paper_execution_audit.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "no-data",
@@ -1058,9 +1058,9 @@
    ],
    "a": {
     "status": "no_data",
-    "answer": "There is no realized closing-line-value track record yet: in the paper execution ledger, clv_pct is null for all 37 settled rows because no independent close feed was captured for that channel. No historical sharp-market-source closing archive exists publicly either, so the first real reading is roughly October 2026 onward. The methodology to measure it is built; the number is honestly absent.",
+    "answer": "There is no realized closing-line-value track record yet: in the paper execution ledger, clv_pct is null for all 37 settled rows because no independent close feed was captured for that channel. No historical sharp-market-source closing archive exists publicly either, so there is no first reading yet; the forward paper series and its status are in docs/JOB_EVIDENCE_PACKET.md section 5. The methodology to measure it is built; the number is honestly absent.",
     "source_artifact": "webapp/public/data/showcase/paper_execution_audit.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "no-data",
@@ -1077,7 +1077,7 @@
    ],
    "a": {
     "status": "no_data",
-    "answer": "Only the possession simulator's structure is validated. The correct negative teammate correlation of about -0.10 emerges from the mechanics with no hand-tuned matrix, and the same-game-parlay pricing is structurally correct, but there is no real parlay-price capture to grade against. Team totals also run slightly high, so the side is trusted more than the over.",
+    "answer": "Only the possession simulator's structure is validated. The correct negative teammate correlation of about -0.10 emerges from the mechanics with no hand-tuned matrix, and the same-game-parlay pricing is structurally correct, but there is no real parlay-price capture to grade against. Team totals also run slightly high, so its win-side probabilities are trusted more than its totals.",
     "source_artifact": "docs/KNOWN_LIMITATIONS.md",
     "as_of": "2026-06-11"
    },
@@ -1096,9 +1096,9 @@
    ],
    "a": {
     "status": "no_data",
-    "answer": "There is no real-money track record, by design -- zero money has been placed and the paper ledger's entries are all executed=false. Today's snapshot returns INSUFFICIENT_DATA for CLV, because no close was captured. What exists is a units-only paper track and the harnesses that will grade a real one once a sharp-market-source close feed accumulates.",
+    "answer": "There is no real-money track record, by design -- zero money has been placed and the paper ledger's entries are all executed=false. The paper execution audit records INSUFFICIENT_DATA for CLV, because no close was captured. What exists is a units-only paper track and the harnesses that will grade a real one once a sharp-market-source close feed accumulates.",
     "source_artifact": "webapp/public/data/showcase/paper_execution_audit.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "no-data",
@@ -1136,7 +1136,7 @@
     "status": "ok",
     "answer": "It is a calibrated multi-sport forecasting system whose strongest signal is that the same builder built the instruments that caught and retracted his own inflated headline numbers. The market-efficiency finding -- well-calibrated but does not beat the close -- is the cleanest output a rigorous validation framework can produce. Accuracy and market outperformance are distinct, and honest rejects are counted as successes.",
     "source_artifact": "docs/PUBLIC_EVIDENCE.md",
-    "as_of": "2026-06-11"
+    "as_of": "unknown"
    },
    "tags": [
     "framing",

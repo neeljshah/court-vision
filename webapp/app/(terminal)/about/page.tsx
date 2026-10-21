@@ -7,6 +7,7 @@ import Link from "next/link";
 import { CONTACT_EMAIL, GITHUB, PORTFOLIO, githubDoc } from "@/components/shell/nav";
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/seo/meta";
+import { FIGURES } from "@/lib/figures";
 import { ReceiptChip, Term } from "@/components/evidence";
 import {
   COMMIT_COUNTS, COMMIT_COUNT_RECEIPT, COMMIT_HISTORY_URL, agentShare, fmtCommits,
@@ -42,6 +43,7 @@ export default function AboutPage() {
           over/under 2.5, and matches it on NBA moneyline only where the sample is too small to tell.
           Each headline figure names its source artifact and as-of date, and the evidence packet is the truth source.
         </p>
+        <p className={`mt-2 ${P}`} data-testid="about-why">The aim is a forecaster whose every number someone else can check against the market.</p>
       </header>
 
       <section aria-labelledby="what">
@@ -62,7 +64,9 @@ export default function AboutPage() {
         <p className={`mt-2 ${P}`}>
           One person directed coding agents to build it. The owner set the goals, the
           validation rules and the acceptance bars; agents wrote most of the code, tests and
-          documentation. Counted from git log at commit {COMMIT_COUNTS.sha} on {COMMIT_COUNTS.asOf},{" "}
+          documentation. One owner decision, for example: the former headline return figure was
+          withdrawn, and the evaluation gate was changed so that a grader that never reads the model
+          cannot pass. Counted from git log at commit {COMMIT_COUNTS.sha} on {COMMIT_COUNTS.asOf},{" "}
           {fmtCommits(COMMIT_COUNTS.agentCoAuthored)} of the {fmtCommits(COMMIT_COUNTS.total)} commits
           on the public {COMMIT_COUNTS.branch} branch ({agentShare()}) carry a Co-Authored-By trailer
           naming Claude or Codex, and the true agent share is higher because older and automated
@@ -92,6 +96,14 @@ export default function AboutPage() {
         </ul>
       </section>
 
+      <section aria-labelledby="next">
+        <h2 id="next" className={H2}>What is next</h2>
+        <p className={`mt-2 ${P}`}>
+          The forward paper series keeps running until each cell reaches its {FIGURES.forward_cell_floor_games.value}-game
+          floor; the NBA fitted arms need a new dated seal. Computer-vision tracking stays paused.
+        </p>
+      </section>
+
       <section aria-labelledby="methods">
         <h2 id="methods" className={H2}>Methods</h2>
         <ul className={`mt-2 list-disc space-y-1 pl-5 ${P}`}>
@@ -104,6 +116,9 @@ export default function AboutPage() {
 
       <section aria-labelledby="author">
         <h2 id="author" className={H2}>Author and contact</h2>
+        <p className={`mt-2 ${P}`} data-testid="open-to">
+          Open to data-science / forecasting, quant-research, ML-engineering and analytics-engineering roles.
+        </p>
         <p className={`mt-2 ${P}`}>
           Built by Neel Shah, who has three years of data-science coursework at the University of
           Iowa.

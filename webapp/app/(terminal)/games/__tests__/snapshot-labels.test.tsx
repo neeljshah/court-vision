@@ -69,10 +69,12 @@ describe("Games snapshot labels", () => {
     expect(screen.getByText("published snapshot")).toBeInTheDocument();
     page.unmount();
 
-    render(<SlateCards />);
+    render(<SlateCards slateAsOf="2026-07-16T01:45:31Z" />);
     await waitFor(() =>
       expect(screen.getByText("0 snapshot games")).toBeInTheDocument(),
     );
+    expect(screen.getByTestId("slate-empty").textContent)
+      .toBe("No games on the published slate (snapshot as of 2026-07-16)");
     expect(screen.getAllByText(/no games in published snapshot/i)).not.toHaveLength(0);
   });
 

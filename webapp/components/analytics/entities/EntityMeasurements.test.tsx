@@ -110,3 +110,10 @@ it("renders the published pitch share without percentage inference", () => {
   expect(screen.getAllByText("0.06%").length).toBeGreaterThanOrEqual(1);
   expect(screen.queryByText("6.0%")).not.toBeInTheDocument();
 });
+
+it("shows the scalar grid's source receipt once, not after every stat", () => {
+  const scalars = [props.measurements.scalars[0], { key: "n_games", label: "n games", value: "162" }];
+  render(<EntityMeasurements {...props} measurements={{ ...props.measurements, scalars }} asOf="2026-09-16" />);
+  expect(screen.getAllByRole("button", { name: /receipt: measurements/ })).toHaveLength(1);
+  expect(document.querySelectorAll("dl button")).toHaveLength(0);
+});

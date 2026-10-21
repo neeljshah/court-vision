@@ -30,6 +30,26 @@ describe("retraction record", () => {
     expect(new RegExp(RETRACTED_FIGURE.source).test(outside.textContent ?? "")).toBe(false);
   });
 
+  it("filters coaching sentences and return figures at render time; tracking row is three sentences", () => {
+    const { container } = render(<RetractionsPage />);
+    const txt = container.textContent ?? "";
+    expect(txt).not.toContain("Apply as an ML-infra/modeling/CV hire.");
+    expect(txt).not.toContain("that is the discipline, not an embarrassment");
+    expect(txt).toContain("includes the first red run and its fix.");
+    for (const r of container.querySelectorAll("tbody tr")) {
+      const say = r.querySelectorAll("td")[3].textContent ?? "";
+      expect(say).not.toMatch(/[~+-]\s?-?\d+(?:\.\d+)?%|break-even|ROI|P&L/);
+    }
+    expect(txt).not.toMatch(/~-4%|-2\.00%/);
+    const tracking = [...container.querySelectorAll("tbody tr")].find((r) => /reliably follows players/.test(r.textContent ?? ""))!;
+    const why = tracking.querySelectorAll("td")[2].textContent ?? "";
+    expect(why.split(/(?<=\.)\s+(?=[A-Z])/).length).toBe(3);
+    expect(why).toMatch(/2026-09-04/);
+    expect(why).toMatch(/G267/);
+    expect(container.querySelector("header")!.textContent).toContain("The six withdrawn figures sit in four rows");
+    expect(container.querySelectorAll('tbody tr[data-status="Retracted"]').length).toBe(4);
+  });
+
   it("parses a minimal table and marks status by figure", () => {
     const md = "## 4. Retired\n\n| a | b | c |\n|---|---|---|\n| **\"+18.38% x\"** | why | say |\n| \"13 months\" (added 2026-10-19) | w | s |\n\n## 5. Next\n";
     const rows = parsePacketTable(md)!;

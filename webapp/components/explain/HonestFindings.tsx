@@ -55,7 +55,7 @@ function SurvivorCard() {
       />
       <div className="p-4">
         <p className="text-xs leading-relaxed text-muted-foreground">
-          One signal cleared all six controls: the as-of corners differential
+          One signal cleared every control listed above: the as-of corners differential
           (<span className="font-data text-foreground/80">diff_corners_asof</span>) improved
           held-out home-win Brier in BOTH disjoint league pairs (E0/E1 and SP1/I1),
           clustered-DM p ~= 0.0015, the base was skillful, and the planted-null rejected.

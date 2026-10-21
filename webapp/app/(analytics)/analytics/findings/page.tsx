@@ -9,6 +9,7 @@ import Link from "next/link";
 import { findingsIndex } from "@/lib/analytics/findingsIndex";
 import { pageMeta } from "@/lib/seo/meta";
 import { findingHref } from "@/lib/analytics/findingHref";
+import { EXPLORATORY_NOTE } from "@/components/analytics/findings/FindingTemplate";
 
 export const metadata: Metadata = pageMeta("/analytics/findings/", {
   title: "Findings",
@@ -55,6 +56,7 @@ export default function FindingsIndexPage() {
         either takes a number apart, deflates its own sample, or publishes a
         failed result alongside the dated source artifact.
       </p>
+      <p style={lede} data-role="exploratory">{EXPLORATORY_NOTE}</p>
 
       <div style={{ display: "grid", gap: 16, marginTop: 32, gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", maxWidth: 900 }}>
         {findingsIndex.map((f) => (

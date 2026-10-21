@@ -13,7 +13,7 @@
     "status": "ok",
     "answer": "Six descriptive modules were published: Line Half-Life (LHL), Live-Clock Fraction (LCF), Load-Bearing Index (LBI), Market Foresight Premium (MFP), Overreaction Harvest Gap (OHG), and Schedule Fatigue Tax (SFT). SFT is under review because its claimed points-per-100 offensive-rating unit is not supported by the cited rest receipt. OHG is an honest null.",
     "source_artifact": "webapp/public/data/showcase/novel_stats_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -31,7 +31,7 @@
     "status": "ok",
     "answer": "The prior-art labels describe how much of each module's packaging is new, not whether every measurement is valid. LHL is NOVEL_PACKAGING, LCF is INCREMENTAL_NOVEL, LBI / MFP / SFT are INCREMENTAL, and OHG is NOVEL_SELF_CRITICAL_CROSS. The SFT measurement is under review because its claimed offensive-rating unit is unsupported by the cited rest receipt.",
     "source_artifact": "webapp/public/data/showcase/novel_stats_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -49,7 +49,7 @@
     "status": "refused",
     "answer": "No, and none of them is built to. All six cards are stamped descriptive_only=true, and the one that comes closest to a market angle -- the Overreaction Harvest Gap -- records that the model cannot identify the overshoot it measures in advance. These stats publish no financial outcome figure.",
     "source_artifact": "webapp/public/data/showcase/novel_stats_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -65,9 +65,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "The Overreaction Harvest Gap, flagged is_honest_null=true in the index. It measures real market overshoot at large in-game moves and then measures how badly the model fails to convert it: at maximum disagreement the model is closer than the market only 21.52% of the time in soccer_intl and 37.73% in MLB. Publishing that is the point.",
+    "answer": "The Overreaction Harvest Gap, flagged is_honest_null=true in the index. It measures real market overshoot at large in-game moves and then measures how badly the model fails to convert it: at maximum disagreement the model is closer than the market only 21.52% of the time in soccer_intl and 37.73% in MLB. Publishing that is the point. These OHG figures were composed from the earlier (revision 1) in-game corpus that later failed the join-integrity check; the regenerated disagreement profile on the segmented corpus (snapshot dated 2026-09-16) still finds the market usually right at maximum disagreement.",
     "source_artifact": "webapp/public/data/showcase/novel_overreaction_harvest_gap.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -86,7 +86,7 @@
     "status": "ok",
     "answer": "Per sport, the number of hours before tip by which half of the pre-game absolute line motion is complete. It answers a plain question -- when does a sport's price actually get made -- with a single constant per sport instead of a hand-wave about early sharp money.",
     "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "novel-stats",
@@ -105,7 +105,7 @@
     "status": "ok",
     "answer": "bucket_move = n * mean_abs_move per horizon bucket; G(h) = cumulative far-to-near movement divided by total; the half-life is the h where G(h) = 0.50, linearly interpolated. The inputs come from the micro_absorption module, not from a separate fit.",
     "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "novel-stats",
@@ -124,7 +124,7 @@
     "status": "ok",
     "answer": "Of the five sports measured, soccer_intl settles fastest: half its pre-game line motion is done 2.75 hours before kickoff (half_life_hours 2.7461, n_move_pairs 164,072). MLB follows at 3.67h and NBA at 4.76h.",
     "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "novel-stats",
@@ -143,7 +143,7 @@
     "status": "ok",
     "answer": "4.76 hours (half_life_hours 4.7567) over 182,054 pre-game move pairs -- the slowest of the three sports whose crossing can be pinned. NBA is also the most back-loaded: 32.47% of its total absolute motion lands in the final hour before tip, so the single constant hides a bimodal shape.",
     "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "novel-stats",
@@ -162,7 +162,7 @@
     "status": "ok",
     "answer": "3.67 hours (half_life_hours 3.6709), measured over 1,307,128 pre-game move pairs -- by far the largest sample of the five. Only 18.13% of MLB's absolute motion arrives in the final hour, the steadiest profile in the set.",
     "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "novel-stats",
@@ -181,7 +181,7 @@
     "status": "ok",
     "answer": "Tennis and WNBA both cross the 50% mark inside the open-ended 6h+ bucket, so their half-life is reported as '>6.0' with half_life_hours=null rather than guessed. By 6 hours out tennis has already completed 54.26% of its motion and WNBA 64.41%.",
     "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "novel-stats",
@@ -201,7 +201,7 @@
     "status": "ok",
     "answer": "Domestic soccer is excluded as a timestamp-coverage artifact: all its mass sits in the 6h+ bucket with mean_abs_move 0.0, which is a data defect rather than a finding. KBO and NPB are excluded too, both with 0 pre-game move pairs against a MIN_MOVES floor of 20. soccer_intl, a separate corpus, does qualify.",
     "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "novel-stats",
@@ -220,7 +220,7 @@
     "status": "ok",
     "answer": "Only the packaging. The card is labeled NOVEL_PACKAGING and cites the existing work directly: opening-versus-closing line timing is discussed widely in forecast-market research, and price-impact half-life is a securities-microstructure staple (Kyle 1985; Amihud 2002). What is fresh is the single per-sport half-life constant, not the underlying concept.",
     "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "novel-stats",
@@ -239,7 +239,7 @@
     "status": "ok",
     "answer": "Five are declared on the card. bucket_move sums absolute per-tick moves, so it is churn rather than net price travel and correlated books inflate it; there are only four coarse horizon buckets so the 0.50 crossing is interpolated; soccer is a coverage artifact; NBA is bimodal and a single half-life hides that; and any sport crossing inside the open 6h+ bucket cannot be pinned at all.",
     "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "novel-stats",
@@ -258,7 +258,7 @@
     "status": "ok",
     "answer": "It varies more than three-fold across sports: NBA 32.47%, soccer_intl 26.10%, MLB 18.13%, WNBA 11.76%, tennis 10.70%. NBA being the most back-loaded is the reason its single half-life reads misleadingly slow.",
     "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "novel-stats",
@@ -418,7 +418,7 @@
     "status": "ok",
     "answer": "Per NBA team, how much of its win probability rides on its single most indispensable player, estimated two independent ways and flagged for whether the two agree. Estimator (a) is the max player-level Elo on/off win-prob delta; estimator (b) is the max raw win-rate gap between games a player was active and games he missed.",
     "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -437,7 +437,7 @@
     "status": "ok",
     "answer": "Denver, on the Elo on/off estimator: Nikola Jokic carries a delta_winprob of 0.5822 with an on/off net-rating delta of 23.713 -- the largest single-player figure among the 30 teams. Read it as a dependence description, not a causal player-impact estimate.",
     "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -457,7 +457,7 @@
     "status": "ok",
     "answer": "Shai Gilgeous-Alexander leads the Elo on/off estimator at delta_winprob 0.5171 with an on/off net-rating delta of 15.763, second-highest among the 30 teams. The raw with/without estimator names a different player for OKC (Ajay Mitchell, delta_win_rate 0.2685 over 57 active and 23 missed games), which is the norm rather than the exception here.",
     "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -477,7 +477,7 @@
     "status": "ok",
     "answer": "Almost never. Across the 30 teams covered by both estimators, only 1 agrees on the same #1 player -- an agree_rate of 0.0333. That team is Indiana, where both name Pascal Siakam (Elo delta_winprob 0.3872; raw delta_win_rate 0.2075 over 62 active and 15 missed games).",
     "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -496,7 +496,7 @@
     "status": "ok",
     "answer": "Mostly because they are not measuring the same season or the same quantity. Estimator (a) uses 2024-25 Elo end-of-season on/off, estimator (b) uses the 2025-26 regular season through 2026-04-12, so agreement is directional corroboration and not a paired estimate. On top of that, (a) is win probability against a league-average opponent on a neutral floor while (b) is raw team win rate active-versus-missed -- related axes, different scales.",
     "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -515,7 +515,7 @@
     "status": "ok",
     "answer": "No, and the card labels this the first declared confound. Both estimators inherit the roster confound their source files flag: why a player missed is entangled with injury clustering, rest, blowout pulls and replacement lineup quality, none of which is controlled. It is a fragility description, not a causal player-impact estimate.",
     "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -534,7 +534,7 @@
     "status": "ok",
     "answer": "Incremental, per its own label. The card cites inpredictable's On/Off Win Probability tables, standard record-without-star splits and arXiv 1604.03186 on player impact on win chances, and states plainly that single-method fragility is not new. The claimed twist is a league-wide fragility ranking cross-validated by two independent estimators with an agreement flag.",
     "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -553,7 +553,7 @@
     "status": "ok",
     "answer": "On the raw estimator the largest gaps come with small missed-game samples, which is the warning label. Milwaukee's Kyle Kuzma shows delta_win_rate 0.3659 on 69 active and 12 missed games, and the Clippers' Brook Lopez 0.4038 on 75 active and just 7 missed. Seven-game denominators do not support a strong reading.",
     "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -572,7 +572,7 @@
     "status": "ok",
     "answer": "The two estimators disagree, and the Elo one names a role player rather than a star: Dorian Finney-Smith at delta_winprob 0.4656 with an on/off net-rating delta of 14.944, while the raw with/without estimator names Rui Hachimura at delta_win_rate 0.2626 over 68 active and 14 missed games. Neither is a causal claim about who matters most.",
     "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -753,7 +753,7 @@
     "status": "ok",
     "answer": "Structural market overshoot at large in-game moves, scaled by how far short the model falls of beating the market when the two disagree most. It is deliberately a measured failure diagnostic: the market moves too far, and we still cannot exploit it.",
     "source_artifact": "webapp/public/data/showcase/novel_overreaction_harvest_gap.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -770,9 +770,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "soccer_intl shows an overreaction magnitude of 0.2856 but a model_closer_rate of only 0.2152 at maximum disagreement (n=4,406), giving an OHG of 0.0813. Read literally: the market overshoots and is still right about four times in five when we disagree hardest with it.",
+    "answer": "soccer_intl shows an overreaction magnitude of 0.2856 but a model_closer_rate of only 0.2152 at maximum disagreement (n=4,406), giving an OHG of 0.0813. Read literally: the market overshoots and is still right about four times in five when we disagree hardest with it. These OHG figures were composed from the earlier (revision 1) in-game corpus that later failed the join-integrity check; the regenerated disagreement profile on the segmented corpus (snapshot dated 2026-09-16) still finds the market usually right at maximum disagreement.",
     "source_artifact": "webapp/public/data/showcase/novel_overreaction_harvest_gap.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -789,9 +789,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "MLB overshoots much less -- overreaction magnitude 0.0721 -- and the model_closer_rate at maximum disagreement is 0.3773 over 33,402 rows, giving an OHG of 0.0088. Smaller overshoot, still no harvest.",
+    "answer": "MLB overshoots much less -- overreaction magnitude 0.0721 -- and the model_closer_rate at maximum disagreement is 0.3773 over 33,402 rows, giving an OHG of 0.0088. Smaller overshoot, still no harvest. These OHG figures were composed from the earlier (revision 1) in-game corpus that later failed the join-integrity check; the regenerated disagreement profile on the segmented corpus (snapshot dated 2026-09-16) still finds the market usually right at maximum disagreement.",
     "source_artifact": "webapp/public/data/showcase/novel_overreaction_harvest_gap.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -808,9 +808,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "The market, in both sports measured. At the >=.10 disagreement bucket the model's Brier is 0.282705 against the market's 0.210258 in MLB (n=33,402), and 0.330582 against 0.172027 in soccer_intl (n=4,406). Both rows carry market_usually_right_at_max_disagree=true.",
+    "answer": "The market, in both sports measured. At the >=.10 disagreement bucket the model's Brier is 0.282705 against the market's 0.210258 in MLB (n=33,402), and 0.330582 against 0.172027 in soccer_intl (n=4,406). Both rows carry market_usually_right_at_max_disagree=true. These OHG figures were composed from the earlier (revision 1) in-game corpus that later failed the join-integrity check; the regenerated disagreement profile on the segmented corpus (snapshot dated 2026-09-16) still finds the market usually right at maximum disagreement.",
     "source_artifact": "webapp/public/data/showcase/novel_overreaction_harvest_gap.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -827,9 +827,9 @@
    ],
    "a": {
     "status": "refused",
-    "answer": "Not on this evidence, and that is exactly why the stat exists. The card's first declared confound is mandatory language: OHG is an honest null, and at maximum disagreement the market is usually right (model_closer_rate 0.38 in MLB, 0.22 in soccer). Overshoot that we cannot identify in advance is not actionable from this artifact.",
+    "answer": "Not on this evidence, and that is exactly why the stat exists. The card's first declared confound is mandatory language: OHG is an honest null, and at maximum disagreement the market is usually right (model_closer_rate 0.38 in MLB, 0.22 in soccer). Overshoot that we cannot identify in advance is not actionable from this artifact. These OHG figures were composed from the earlier (revision 1) in-game corpus that later failed the join-integrity check; the regenerated disagreement profile on the segmented corpus (snapshot dated 2026-09-16) still finds the market usually right at maximum disagreement.",
     "source_artifact": "webapp/public/data/showcase/novel_overreaction_harvest_gap.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -846,9 +846,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "MLB is reasonably sized -- 2,860 rows in the 3-6pt bucket, 1,069 in 6-10pt, 794 in 10pt+ -- with overshoot falling from 0.0801 to 0.0518 as moves get bigger. Soccer is thin: 103, 21 and 91 rows respectively, so its 0.2856 magnitude is explicitly flagged noisy.",
+    "answer": "MLB is reasonably sized -- 2,860 rows in the 3-6pt bucket, 1,069 in 6-10pt, 794 in 10pt+ -- with overshoot falling from 0.0801 to 0.0518 as moves get bigger. Soccer is thin: 103, 21 and 91 rows respectively, so its 0.2856 magnitude is explicitly flagged noisy. These OHG figures were composed from the earlier (revision 1) in-game corpus that later failed the join-integrity check; the regenerated disagreement profile on the segmented corpus (snapshot dated 2026-09-16) still finds the market usually right at maximum disagreement.",
     "source_artifact": "webapp/public/data/showcase/novel_overreaction_harvest_gap.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -867,7 +867,7 @@
     "status": "ok",
     "answer": "Overreaction and reversion are Moskowitz (2021, Journal of Finance) and Choi & Hui (2014, JEBO), and disagreement skill is standard forecast verification -- the card flags both components as not new. Its verdict, NOVEL_SELF_CRITICAL_CROSS, describes a market disagreement without a corresponding realized evaluation result. Papers publish comparative findings rather than confessions.",
     "source_artifact": "webapp/public/data/showcase/novel_overreaction_harvest_gap.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -1117,7 +1117,7 @@
     "status": "ok",
     "answer": "None of them is a model. The index states the method plainly: composition only, each card copied from its own module's novel_*.json output, which in turn reads existing committed showcase artifacts. Nothing is refit, and every card names the source artifacts it composed.",
     "source_artifact": "webapp/public/data/showcase/novel_stats_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -1135,7 +1135,7 @@
     "status": "ok",
     "answer": "Schedule Fatigue Tax, with 90 team-season rows, followed by Load-Bearing Index at 30 teams. The market-structure stats are the thinnest by row count -- Line Half-Life covers 5 sports, and LCF, MFP and OHG cover 2 each -- because they are per-sport rather than per-entity.",
     "source_artifact": "webapp/public/data/showcase/novel_stats_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -1153,7 +1153,7 @@
     "status": "ok",
     "answer": "Three of six: Line Half-Life (when the pre-game price gets made), Market Foresight Premium (how much the in-game market knows per bit of remaining uncertainty) and Overreaction Harvest Gap (overshoot we cannot harvest). Load-Bearing Index and Schedule Fatigue Tax are team-side; Live-Clock Fraction is game-structure only and reads the score path, not any price.",
     "source_artifact": "webapp/public/data/showcase/novel_stats_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -1238,7 +1238,7 @@
     "status": "ok",
     "answer": "Two things it is already designed to catch. Each card carries an explicit prior-art citation, so a credible earlier publication of the same construction downgrades or removes it; and each carries declared confounds, so a confound turning out to be the whole effect kills it. Line Half-Life already excludes three sports on data-quality grounds rather than reporting them.",
     "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "novel-stats",
@@ -1256,7 +1256,7 @@
     "status": "ok",
     "answer": "Each novel stat is composed from modules you can open directly in the browse surface: micro_absorption behind Line Half-Life, blowout_dynamics and xsport_structure behind Live-Clock Fraction, cf_star_removal and ctx_lineup_proxy behind Load-Bearing Index, info_arrival_curve and market_convergence behind Market Foresight Premium, market_overreaction and market_disagreement_profile behind the Overreaction Harvest Gap, and schedule_density behind the Schedule Fatigue Tax.",
     "source_artifact": "webapp/public/data/showcase/novel_stats_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",

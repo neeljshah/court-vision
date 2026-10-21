@@ -44,9 +44,11 @@ export function EntityMeasurements({ measurements, sourceArtifact, asOf }: Props
     <dl style={{ display: "grid", gridTemplateColumns: "repeat(2,minmax(0,1fr))", gap: 1, background: "var(--rule)", border: "1px solid var(--rule)", borderRadius: 12 }}>
       {scalars.map((item) => <div key={item.key} style={{ background: "var(--paper-raised)", padding: "14px 16px" }}>
         <dt style={{ fontSize: 11, color: "var(--ink-3)", textTransform: "uppercase", letterSpacing: ".06em", fontWeight: 600 }}>{item.label}</dt>
-        <dd className="mono" style={{ margin: "7px 0", fontSize: "1.05rem", color: "var(--ink)" }}>{item.value}{typeof item.percentile === "number" ? <><PercentileBar pct={item.percentile} nRanked={item.nRanked} /><div style={{ fontFamily: "var(--font-sans)", fontSize: 11, color: "var(--ink-3)", marginTop: 3 }}>pct {item.percentile} of {item.nRanked ?? "?"} measured</div></> : item.percentileUnavailable ? <div style={{ fontFamily: "var(--font-sans)", fontSize: 11, color: "var(--ink-3)", marginTop: 3 }}>No within-cohort percentile published.</div> : null}<Receipt sourceArtifact={sourceArtifact} asOf={asOf} verdict="descriptive_only" label="descriptive_only" value={item.value} /></dd>
+        <dd className="mono" style={{ margin: "7px 0", fontSize: "1.05rem", color: "var(--ink)" }}>{item.value}{typeof item.percentile === "number" ? <><PercentileBar pct={item.percentile} nRanked={item.nRanked} /><div style={{ fontFamily: "var(--font-sans)", fontSize: 11, color: "var(--ink-3)", marginTop: 3 }}>pct {item.percentile} of {item.nRanked ?? "?"} measured</div></> : item.percentileUnavailable ? <div style={{ fontFamily: "var(--font-sans)", fontSize: 11, color: "var(--ink-3)", marginTop: 3 }}>No within-cohort percentile published.</div> : null}</dd>
       </div>)}
     </dl>
+    {/* One receipt for the whole grid: every scalar cites the same artifact and as-of. */}
+    {scalars.length ? <div style={{ marginTop: 6, fontSize: 13 }}><Receipt sourceArtifact={sourceArtifact} asOf={asOf} verdict="descriptive_only" label="measurements" /></div> : null}
     {distributions.map(({ key, ...distribution }) => <Distribution key={key} {...distribution} sourceArtifact={sourceArtifact} asOf={asOf} />)}
     {tables.map((table) => <MeasurementTable key={table.key} table={table} sourceArtifact={sourceArtifact} asOf={asOf} />)}
     {unavailable.length ? <p style={{ margin: "16px 0 0", fontSize: 13, color: "var(--ink-3)", lineHeight: 1.5 }}>

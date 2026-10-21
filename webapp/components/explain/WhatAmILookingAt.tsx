@@ -17,6 +17,10 @@ import { getParityHeadline } from "@/lib/api";
 import type { ParityHeadline } from "@/lib/api";
 import { Legend, InfoTip } from "@/components/depth";
 import { Panel, PanelHead } from "@/components/ui/terminal";
+import { isSnapshotMode } from "@/lib/fetchHonest";
+
+// The static build has no live endpoint: no status pill, a pointer to the dated page instead.
+export const PARITY_STATIC_LINE = "Parity status is shown on the Desk health page with its as-of date.";
 
 function ParitySnapshot({ parity }: { parity: ParityHeadline | null }) {
   const green = parity?.green ?? null;
@@ -39,6 +43,7 @@ export function WhatAmILookingAt() {
   const [parity, setParity] = useState<ParityHeadline | null>(null);
 
   useEffect(() => {
+    if (isSnapshotMode) return;
     const ctrl = new AbortController();
     getParityHeadline(ctrl.signal)
       .then(setParity)
@@ -49,8 +54,13 @@ export function WhatAmILookingAt() {
   return (
     <section aria-label="what am I looking at?">
     <Panel>
-      <PanelHead title="what am I looking at?" right={<ParitySnapshot parity={parity} />} />
+      <PanelHead title="what am I looking at?" right={isSnapshotMode ? undefined : <ParitySnapshot parity={parity} />} />
       <div className="flex flex-col gap-3 p-4">
+        {isSnapshotMode && (
+          <p className="text-xs text-muted-foreground" data-testid="parity-static">
+            <a href="/desk/health/" className="underline">{PARITY_STATIC_LINE}</a>
+          </p>
+        )}
         <p className="text-xs leading-relaxed text-muted-foreground">
           This page walks the whole pipeline from raw game data to a single
           calibrated{" "}
@@ -60,13 +70,14 @@ export function WhatAmILookingAt() {
           </span>{" "}
           per market. It is a{" "}
           <span className="font-semibold text-foreground">calibrated predictor</span>,
-          not a betting-edge product: the honest, defensible win is matching the
-          devigged close within noise (good{" "}
+          not a betting-edge product: the honest result is{" "}
           <span className="inline-flex items-center gap-1">
             calibration
             <InfoTip term="calibration" />
           </span>
-          ), plus one measured in-game conditioning improvement. Every figure is in{" "}
+          : the model trails the devigged close on MLB moneyline and soccer O/U 2.5, and on NBA
+          moneyline the interval includes zero, so we cannot tell. There is also one measured
+          in-game conditioning improvement. Every figure is in{" "}
           <span className="inline-flex items-center gap-1">
             units
             <InfoTip term="units" />

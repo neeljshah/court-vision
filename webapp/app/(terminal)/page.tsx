@@ -10,6 +10,7 @@ import { loadArtifact } from "@/lib/showcase.server";
 import { loadDesk } from "@/lib/desk.server";
 import { headlineFigures, CANONICAL_PATH } from "@/lib/canonicalFigures.server";
 import { loadChecks } from "@/components/desk/deskExtras.server";
+import { selfCheckSentence } from "@/components/methodology/selfCheck";
 import { VERDICT_QUALIFIER, type PacketVerdict } from "@/lib/packetVerdicts";
 import { HomeVerdictRows } from "@/components/home/HomeVerdictRows";
 import { HomeForwardStatus } from "@/components/home/HomeForwardStatus";
@@ -78,7 +79,7 @@ export default function Home() {
         scoreboard with{" "}
         <span className="font-data">python scripts/platformkit/analytics_showcase/check_all.py</span>{" "}
         ({checks
-          ? `${checks.pass} of ${checks.total} module self-checks PASS, ${checks.noCheck} have no self-check, ${checks.other} FAIL/other; report as of ${checks.asOf}`
+          ? `module self-checks: ${selfCheckSentence(checks)}; report as of ${checks.asOf}`
           : "check report not present on this clone"}). Truth source:{" "}
         <span className="font-data">docs/JOB_EVIDENCE_PACKET.md</span>.
       </p>

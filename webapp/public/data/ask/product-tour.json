@@ -11,9 +11,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Five surfaces. /analytics/forecaster is the calibration proof for the prediction engine; /analytics/the-loop shows how a claim is proposed, tested and killed; /analytics/browse opens all 54 analysis modules; /analytics/players opens 1,549 entity cards across seven packs; and /analytics/explainers is the plain-language layer. The retraction story sits at /analytics/findings/retraction.",
+    "answer": "Five surfaces. /analytics/forecaster is the calibration proof for the prediction engine; /analytics/the-loop shows how a claim is proposed, tested and killed; /analytics/browse opens all 77 analysis modules; /analytics/players opens 1,549 entity cards across seven packs; and /analytics/explainers is the plain-language layer. The retraction record sits at /evidence/retractions/.",
     "source_artifact": "webapp/public/data/showcase/site_manifest.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -67,7 +67,7 @@
     "status": "ok",
     "answer": "/analytics/the-loop walks the cycle from claim to verdict: propose, gate, record, retract. The ledgers behind it are public too -- 287 tested mechanisms at /analytics/m/mechanism_survival and /analytics/m/fwd_claim_scoreboard, and the failures at /analytics/m/reject_graveyard.",
     "source_artifact": "webapp/public/data/showcase/mechanism_ledger_export.json",
-    "as_of": "2026-07-22"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -86,7 +86,7 @@
     "status": "ok",
     "answer": "/analytics/m/reject_graveyard holds 804 recorded verdict rows, 68 distinct signals currently sitting on a REJECT-family verdict, and the reason categories behind them. The explainer at /analytics/explainers/the-graveyard makes the case for why publishing failures is the point.",
     "source_artifact": "webapp/public/data/showcase/reject_graveyard.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -124,7 +124,7 @@
     "status": "ok",
     "answer": "Team cards are their own atlas pack under /analytics/players/nba_teams/<slug>. For team-level analysis rather than cards, /analytics/m/ctx_team_states, /analytics/m/nba_matchup_grid and /analytics/m/home_away_anatomy are the relevant modules.",
     "source_artifact": "webapp/public/data/showcase/site_manifest.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -144,7 +144,7 @@
     "status": "ok",
     "answer": "The deepest sport here. /analytics/m/mlb_count_leverage and /analytics/m/pitch_sequencing cover 693,037 pitches from the 2025 Statcast pull; /analytics/m/mlb_velo_bands and /analytics/m/statcast_showcase cover the pitch-level detail; and batters and pitch types have their own atlas packs at /analytics/players/mlb_batters and /analytics/players/mlb_pitch.",
     "source_artifact": "webapp/public/data/showcase/pitch_sequencing.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "tour",
@@ -201,7 +201,7 @@
     "status": "ok",
     "answer": "Four modules and an explainer. /analytics/m/calibration_by_market_type splits it by market, /analytics/m/calibration_over_time and /analytics/m/calibration_stability cover drift, /analytics/m/state_conditioned_calibration conditions on game state, and /analytics/explainers/what-calibration-means explains why the market is the benchmark. Calibration checkpoints also have their own atlas pack at /analytics/players/calibration.",
     "source_artifact": "webapp/public/data/showcase/calibration_by_market_type.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -239,7 +239,7 @@
     "status": "ok",
     "answer": "Four modules: /analytics/m/micro_absorption for how motion distributes across the pre-game window, /analytics/m/micro_closing_decay for the run-up to close, /analytics/m/tick_microstructure for tick-level behavior and /analytics/m/market_convergence for how prices tighten in-game. The Line Half-Life stat sits on top of the first of these.",
     "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "tour",
@@ -256,9 +256,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "/analytics/m/market_overreaction measures the overshoot and /analytics/m/market_disagreement_profile measures who is right when the model and market disagree. Read them together: the overshoot is real, and at maximum disagreement the model is the closer of the two only 37.73% of the time in MLB and 21.52% in soccer.",
+    "answer": "/analytics/m/market_overreaction measures the overshoot and /analytics/m/market_disagreement_profile measures who is right when the model and market disagree. Read them together: the overshoot is real, and at maximum disagreement the market is usually the closer forecaster in both MLB and soccer.",
     "source_artifact": "webapp/public/data/showcase/novel_overreaction_harvest_gap.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -297,7 +297,7 @@
     "status": "ok",
     "answer": "Two modules that disagree with each other, which is the interesting part: /analytics/m/cf_star_removal is the Elo on/off counterfactual and /analytics/m/ctx_lineup_proxy is the raw with/without split. Across 30 teams they name the same most-indispensable player only once, at an agree rate of 0.0333. /analytics/m/on_off_showcase covers the underlying on/off data.",
     "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -335,7 +335,7 @@
     "status": "ok",
     "answer": "/analytics/m/clutch_context is the module, and it is context-conditioned rather than a raw late-game split. Pair it with /analytics/m/ctx_player_splits and /analytics/m/nba_consistency_profiles if you want the same player viewed through different context axes.",
     "source_artifact": "webapp/public/data/showcase/site_manifest.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -354,7 +354,7 @@
     "status": "ok",
     "answer": "/analytics/m/aging_curve_lite, which is deliberately labeled 'lite' -- it is a descriptive curve over the local boxscore corpus, not a projection system. /analytics/m/player_metric_landscape and /analytics/m/box_value_index cover the broader player-metric surface.",
     "source_artifact": "webapp/public/data/showcase/site_manifest.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -373,7 +373,7 @@
     "status": "ok",
     "answer": "/analytics/m/cv_tracking_stats is the committed summary of the tracking pipeline's output. It is a measurement artifact from the vision layer, not a live video feed, and the analytics on this site do not depend on it.",
     "source_artifact": "webapp/public/data/showcase/site_manifest.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -390,7 +390,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "/analytics/findings/retraction is the full account of the numbers that were withdrawn and why. The claim ledger backs it up: 7 claim families currently sit on a retracted status, 6 of them MLB.",
+    "answer": "/evidence/retractions/ is the full account of the numbers that were withdrawn and why. The claim ledger backs it up: 7 claim families currently sit on a retracted status, 6 of them MLB.",
     "source_artifact": "webapp/public/data/showcase/fwd_claim_scoreboard.json",
     "as_of": "2026-07-11"
    },
@@ -409,7 +409,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "/analytics/about covers the project and the person directing it, and /analytics/m/agent_fleet_history has the numbers: 3,224 commits between 2026-03-09 and 2026-07-22, 95.75% agent-authored. The narrative version is at /analytics/explainers/how-ai-agents-built-this.",
+    "answer": "/analytics/about covers the project and the person directing it, and /analytics/m/agent_fleet_history has the numbers: 3,224 commits between 2026-03-09 and 2026-07-22, 95.75% agent-authored. The narrative version is at /analytics/explainers/how-ai-agents-built-this. Separately, the public repository counts 6,556 commits as of 2026-10-21 (pinned at 4f033b5a5).",
     "source_artifact": "webapp/public/data/showcase/agent_fleet_history.json",
     "as_of": "2026-07-22"
    },
@@ -430,7 +430,7 @@
     "status": "ok",
     "answer": "/analytics/explainers/how-a-possession-simulator-thinks is the plain-language walkthrough of how possession-level simulation produces a distribution rather than a single number. The scored output of that machinery is what /analytics/forecaster grades.",
     "source_artifact": "webapp/public/data/explainers/explainers.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -449,7 +449,7 @@
     "status": "ok",
     "answer": "Six, at /analytics/explainers: how a possession simulator thinks, what calibration means and why we grade against the market, the graveyard and why we publish what failed, how AI agents built this and what a human decided, reading an entity card without fooling yourself, and what the Ask AI can and cannot tell you.",
     "source_artifact": "webapp/public/data/explainers/explainers.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -486,7 +486,7 @@
     "status": "ok",
     "answer": "It answers from committed artifacts only, and returns one of five statuses -- ok, no_data, not_supported, ambiguous or refused -- with a source artifact and an as-of date on anything it does answer. /analytics/explainers/what-the-ask-ai-can-and-cannot-tell-you is the honest scope statement; the coverage numbers are at /analytics/m/qa_coverage_stats.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -541,7 +541,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "/analytics/m/claims_corpus_meta has the counts: 103 claim families and 103,048 generated claims, with 98.85% covered by a validation sample and 0 mismatches. /analytics/m/dossier_completeness covers how complete the per-entity dossiers are.",
+    "answer": "The claims-corpus metadata (webapp/public/data/showcase/claims_corpus_meta.json) has the counts: 103 claim families and 103,048 generated claims, with 98.85% covered by a validation sample and 0 mismatches. /analytics/m/dossier_completeness covers how complete the per-entity dossiers are.",
     "source_artifact": "webapp/public/data/showcase/claims_corpus_meta.json",
     "as_of": "2026-07-22"
    },
@@ -562,7 +562,7 @@
     "status": "ok",
     "answer": "Three modules aimed squarely at that: /analytics/m/residual_anatomy dissects the errors, /analytics/m/residual_autocorrelation checks whether they cluster, and /analytics/m/why_attribution attributes them. /analytics/m/murphy_decomposition then splits the gap into miscalibration versus missing information.",
     "source_artifact": "webapp/public/data/showcase/site_manifest.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -581,7 +581,7 @@
     "status": "ok",
     "answer": "/analytics/m/paper_execution_audit is an execution-quality measurement -- how orders would have filled and how state lag affects that. It publishes no realized return figure, and financial-guidance questions are refused rather than answered.",
     "source_artifact": "webapp/public/data/showcase/site_manifest.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -658,7 +658,7 @@
     "status": "ok",
     "answer": "/analytics/m/cf_star_removal simulates a team without its most important player and /analytics/m/cf_pace_variance varies pace. Both are counterfactuals over a model, so they inherit the model's assumptions -- the star-removal one explicitly carries a roster confound and is not a causal impact estimate.",
     "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -677,7 +677,7 @@
     "status": "no_data",
     "answer": "No. There is no live schedule, live odds or live game-state feed behind this site -- every page reads committed artifacts from completed games. What exists instead is the graded record: /analytics/forecaster for how the predictions scored, and /analytics/m/cross_sport_scoreboard for the head-to-head against the market.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -694,9 +694,9 @@
    ],
    "a": {
     "status": "refused",
-    "answer": "No. This is a calibration product, and the published modules are descriptive. /analytics/m/cross_sport_scoreboard and /analytics/m/brier_skill_scores show the model trailing the market at every in-game grain measured.",
+    "answer": "No. This is a calibration product, and the published modules are descriptive. /analytics/m/cross_sport_scoreboard and /analytics/m/brier_skill_scores show the model trailing the market on in-game win probability at every checkpoint measured.",
     "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -715,7 +715,7 @@
     "status": "ok",
     "answer": "Two. /analytics/m/xsport_structure applies one reliability methodology across sports and honestly records three of four as not_buildable, and /analytics/m/kernel_transfer states which cross-sport axes are legitimate at all -- the Murphy reliability component is comparable, CRPS on run totals is not.",
     "source_artifact": "webapp/public/data/showcase/kernel_transfer.json",
-    "as_of": "2026-07-22"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -732,9 +732,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "On the module page itself. Each of the 54 entries in the manifest records its output path, chart path, status, descriptive flag flag and as-of, so /analytics/m/<id> can name the exact artifact a number came from. Modules whose computation does not stamp a date record a null as-of rather than inventing one.",
+    "answer": "On the module page itself. Each of the 77 entries in the manifest records its output path, chart path, status, descriptive flag and as-of, so /analytics/m/<id> can name the exact artifact a number came from. Modules whose computation does not stamp a date record a null as-of rather than inventing one.",
     "source_artifact": "webapp/public/data/showcase/site_manifest.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -751,9 +751,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "The manifest flags them by status rather than hiding them -- blowout_dynamics, for instance, is marked partial. Aggregate health is published too: 63 of 63 checks green at build time, with per-module pass status and timing in the check report.",
+    "answer": "The manifest flags them by status rather than hiding them -- blowout_dynamics, for instance, is marked partial. Aggregate health is published too: 96 of 96 checks green at build time, with per-module pass status and timing in the check report.",
     "source_artifact": "webapp/public/data/showcase/site_manifest.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",

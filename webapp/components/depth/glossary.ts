@@ -49,8 +49,9 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
     label: "edge vs calibration",
     definition:
       "An EDGE means beating the efficient market price for profit. We do NOT " +
-      "claim one. Matching the devigged close within noise is good CALIBRATION, " +
-      "not an edge.",
+      "claim one. The honest result is calibration: the model trails the devigged " +
+      "close on MLB moneyline and soccer O/U 2.5, and on NBA moneyline the interval " +
+      "includes zero, so we cannot tell.",
   },
   brier: {
     term: "brier",

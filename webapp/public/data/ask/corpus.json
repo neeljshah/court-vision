@@ -189,7 +189,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "The market. On the largest MLB disagreements (>=0.10 probability apart, n=33,402) the model is the closer forecaster only 37.7% of the time, with model Brier 0.2827 versus market Brier 0.2103. Bigger disagreement means the market is usually the one that is right.",
+    "answer": "The market. On the largest MLB disagreements (>=0.10 probability apart, n=8,530 rows) the model is the closer forecaster only 19.94% of the time, with model Brier 0.1778 versus market Brier 0.1298. Bigger disagreement means the market is usually the one that is right. Published snapshot dated 2026-09-16; the observation window is not published. Counts are graded rows, not games.",
     "source_artifact": "webapp/public/data/showcase/market_disagreement_profile.json",
     "as_of": "unknown"
    },
@@ -209,7 +209,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "The market wins even more decisively than in MLB. On the largest soccer disagreements (>=0.10 apart, n=4,406) the model is closer only 21.5% of the time, with model Brier 0.3306 versus market Brier 0.1720. Wide disagreement is a signal the model is off, not that it found something.",
+    "answer": "The market wins even more decisively than in MLB. On the largest soccer disagreements (>=0.10 apart, n=2,291 rows) the model is closer only 10.48% of the time, with model Brier 0.5080 versus market Brier 0.2655. Wide disagreement is a signal the model is off, not that it found something. Published snapshot dated 2026-09-16; the observation window is not published. Counts are graded rows, not games.",
     "source_artifact": "webapp/public/data/showcase/market_disagreement_profile.json",
     "as_of": "unknown"
    },
@@ -489,7 +489,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "The 5-way NNLS win-probability stack scores 0.709 accuracy and 0.193 Brier in 3-fold walk-forward validation. That is a solid, well-calibrated forecaster; it just does not beat sharp closing lines, which is a separate and harder bar.",
+    "answer": "The 5-way NNLS win-probability stack scores 0.709 accuracy and 0.193 Brier in 3-fold walk-forward validation. That measures the forecaster on its own; matching the close is a separate and harder bar, and on NBA moneyline the 2026-09-24 recompute cannot tell because its interval includes zero at 372 games.",
     "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
     "as_of": "2026-07-23"
    },
@@ -649,7 +649,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "It depends on the sport. After an in-game price move, MLB prices land a few points above the eventual outcome (moved-to-minus-outcome +0.0801 to +0.0518 across move sizes, a small overshoot), while soccer prices sit well below it (-0.1945 to -0.3648, an undershoot). This is a documented structural description labeled INCREMENTAL, and some soccer buckets are tiny (n=21).",
+    "answer": "It depends on the sport. After an in-game price move of 3 points or more, MLB prices land a few points above the eventual outcome rate (moved-to-minus-outcome +0.0642, +0.0473 and +0.0368 for 3-6, 6-10 and 10+ point moves, a small overshoot), while soccer prices sit well below it (-0.3127, -0.2823 and -0.3184, an undershoot). This is a documented structural description labeled INCREMENTAL, and some soccer buckets are tiny (n=11). Published snapshot dated 2026-09-16; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/market_overreaction.json",
     "as_of": "unknown"
    },
@@ -669,7 +669,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Yes, and its lead over the model widens. The market's Brier advantage over the model grows from -0.015 at the first checkpoint to -0.0902 by the ninth inning. As information arrives, the market absorbs it faster than the model does.",
+    "answer": "The market stays sharper than the model at every MLB checkpoint, but the gap does not widen steadily. Market-minus-model Brier is -0.0121 at checkpoint 1, largest at -0.0353 at checkpoint 2, and narrows to -0.001 by checkpoint 9 as both forecasts converge on the outcome. Published snapshot dated 2026-09-16; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/info_arrival_curve.json",
     "as_of": "unknown"
    },
@@ -689,7 +689,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "In MLB, yes, and that is a warning sign. By the ninth checkpoint the model's forecast uncertainty has collapsed to 0.3656 bits while the market still sits at 0.7244, and their disagreement widens from 0.07 early to 0.2791 late. Paired with the overconfidence seen in the calibration exhibits, growing certain faster than the market is a flag, not a strength.",
+    "answer": "No. In the current snapshot the model is the less certain forecaster for most of an MLB game: its mean forecast entropy is above the market's at checkpoints 1 through 8 (0.4814 versus 0.4757 bits at checkpoint 8), and only at checkpoint 9 is it lower, 0.4181 versus 0.4589 bits (n=1,110). The mean gap between the two forecasts narrows from 0.0839 at checkpoint 1 to 0.0537 at checkpoint 9. The artifact notes that entropy decay late in a game is expected, not a finding. Published snapshot dated 2026-09-17; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/market_convergence.json",
     "as_of": "unknown"
    },
@@ -749,7 +749,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Yes, as a market phenomenon: on MLB the close beats the open on log-loss (Diebold-Mariano p=0.0010, N=27,975), with the close carrying a Brier skill of +0.43% over the open. The line does move toward the truth from open to close. That sharpening belongs to the market, not to a retrospective model.",
+    "answer": "Yes, as a market phenomenon: on MLB the close has lower log-loss than the open (Diebold-Mariano p=0.0010, N=27,975), with the close carrying a Brier skill of +0.43% over the open. The line does move toward the truth from open to close. That sharpening belongs to the market, not to a retrospective model.",
     "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
     "as_of": "2026-07-07"
    },
@@ -969,7 +969,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Statistically tied on the data available. On MLB pregame total-runs the paired CRPS delta versus the market is -0.0523 (95% CI [-0.1657, 0.0482], n=300), verdict UNDERPOWERED, with 80% interval coverage of 0.75 for the model versus 0.81 for the market. No difference is established either way.",
+    "answer": "Not resolved on the data available. On MLB pregame total-runs the paired CRPS delta versus the market is -0.0523 (95% CI [-0.1657, 0.0482], n=300), verdict UNDERPOWERED. No difference is established either way.",
     "source_artifact": "webapp/public/data/showcase/cross_sport_scoreboard.json",
     "as_of": "2026-07-22"
    },
@@ -1029,7 +1029,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "In late soccer states at low probabilities. The worst-ranked bucket is soccer minute 75-90+, predicted-probability band 0.2-0.4, where the model's mean prediction was 0.2117 but the outcome rate was 1.0 (calibration error 0.7883, n=10). Late-game low-probability soccer is where the model is furthest from reality relative to the market.",
+    "answer": "In late soccer states at low probabilities. The worst-ranked bucket is soccer minute 75-90+, predicted-probability band 0.2-0.4, where the model's mean prediction was 0.2108 but the outcome rate was 1.0 (calibration error 0.7892, n=7). A seven-row bucket is very thin, so read it as where to look, not a stable estimate. Published snapshot dated 2026-09-16; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/state_conditioned_calibration.json",
     "as_of": "unknown"
    },
@@ -1049,7 +1049,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "The model. In late MLB innings (7+) for the 0.8-1.0 band the model predicted 0.9211 but teams only won 0.6853 of the time (calibration error 0.2357, n=5,037), while the market's same-band error was just 0.0206. The model badly overrates late favorites relative to the market.",
+    "answer": "The model, by a modest margin. In late MLB innings (7+) for the 0.8-1.0 band the model's mean prediction was 0.9101 and teams won 0.9498 of the time (calibration error 0.0397, n=2,369), while the market's same-band error was 0.0175 (n=2,666). In this snapshot the model under-rates late favorites slightly rather than over-rating them. Published snapshot dated 2026-09-16; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/state_conditioned_calibration.json",
     "as_of": "unknown"
    },
@@ -1069,7 +1069,7 @@
    ],
    "a": {
     "status": "refused",
-    "answer": "This is a calibrated predictor. On the largest model-vs-market disagreements, the market is the more accurate side: the model is closer only 37.7% of the time in MLB and 21.5% in soccer.",
+    "answer": "This is a calibrated predictor. On the largest model-vs-market disagreements, the market is the more accurate side: the model is closer only 19.94% of the time in MLB and 10.48% in soccer (published snapshot dated 2026-09-16).",
     "source_artifact": "webapp/public/data/showcase/market_disagreement_profile.json",
     "as_of": "unknown"
    },
@@ -1151,7 +1151,7 @@
     "status": "no_data",
     "answer": "No data. The measured corpora are NBA, MLB, soccer and tennis; NFL and NHL are not covered, so there are no calibration or market-comparison numbers to report for them.",
     "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "no-data",
@@ -1311,7 +1311,7 @@
     "status": "ok",
     "answer": "soccer_intl, at a 2.75-hour half-life, ahead of MLB at 3.67h and NBA at 4.76h. Tennis and WNBA both complete more than half their motion before the 6-hour mark, so they are reported as '>6.0' rather than assigned a number.",
     "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "cross-sport",
@@ -1331,7 +1331,7 @@
     "status": "ok",
     "answer": "NBA, at 32.47% of total absolute movement inside the final hour, ahead of soccer_intl at 26.10%, MLB at 18.13%, WNBA at 11.76% and tennis at 10.70%. Late-breaking lineup news is the obvious candidate explanation, but this measurement does not test it.",
     "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "cross-sport",
@@ -1351,7 +1351,7 @@
     "status": "ok",
     "answer": "MLB by a wide margin: 1,307,128 pre-game move pairs, against 809,986 for tennis, 333,540 for WNBA, 182,054 for NBA and 164,072 for soccer_intl. Sample depth and result quality are not the same thing -- NBA has the thinnest odds sample of the five yet the cleanest reliability map.",
     "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "cross-sport",
@@ -1411,9 +1411,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "soccer_intl, at an overreaction magnitude of 0.2856 against MLB's 0.0721 -- roughly four times larger. Neither is harvestable: at maximum disagreement the model is closer than the market only 21.52% of the time in soccer and 37.73% in MLB, and the soccer buckets are thin (n=21 to 103), so its magnitude is flagged noisy.",
+    "answer": "soccer_intl, at an overreaction magnitude of 0.2856 against MLB's 0.0721 -- roughly four times larger. Neither is harvestable: at maximum disagreement the model is closer than the market only 21.52% of the time in soccer and 37.73% in MLB, and the soccer buckets are thin (n=21 to 103), so its magnitude is flagged noisy. These OHG figures were composed from the earlier (revision 1) in-game corpus that later failed the join-integrity check; the regenerated disagreement profile on the segmented corpus (snapshot dated 2026-09-16) still finds the market usually right at maximum disagreement.",
     "source_artifact": "webapp/public/data/showcase/novel_overreaction_harvest_gap.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "cross-sport",
@@ -1514,7 +1514,7 @@
     "status": "ok",
     "answer": "Denver on the Elo on/off estimator, where Nikola Jokic carries a win-probability delta of 0.5822 and an on/off net-rating delta of 23.713 -- clear of Oklahoma City's Shai Gilgeous-Alexander at 0.5171. Both figures inherit a roster confound and are not causal player-impact estimates.",
     "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "nba",
@@ -1534,7 +1534,7 @@
     "status": "ok",
     "answer": "By Elo on/off win-probability delta: Denver 0.5822 (Jokic), Oklahoma City 0.5171 (Gilgeous-Alexander), the Lakers 0.4656 (Dorian Finney-Smith), Milwaukee 0.4441 (Giannis Antetokounmpo), the Clippers 0.4051 (Ivica Zubac) and Indiana 0.3872 (Pascal Siakam). Two of the six name a role player rather than the team's best player, which is the confound showing through.",
     "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "nba",
@@ -1614,7 +1614,7 @@
     "status": "ok",
     "answer": "Two-strike counts, on the putaway lens: a strike rate of 0.4827 with an in-zone rate of just 0.5787, meaning pitchers get strikes while throwing outside the zone more often. Pitcher-ahead counts show the same shape more strongly -- in-zone rate 0.4604 on 89,820 pitches -- because the hitter has to protect.",
     "source_artifact": "webapp/public/data/showcase/mlb_count_leverage.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "mlb",
@@ -1634,7 +1634,7 @@
     "status": "ok",
     "answer": "Sharply and monotonically. In-zone rate runs 0.5855 when the pitcher is behind, 0.5503 when even, and 0.4604 when ahead; the three-ball must-throw lens pushes it up to 0.6106 and the two-strike putaway lens down to 0.5787. Leverage, not stuff, drives where the ball goes.",
     "source_artifact": "webapp/public/data/showcase/mlb_count_leverage.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "mlb",
@@ -1654,7 +1654,7 @@
     "status": "ok",
     "answer": "Yes, clearly. The in-play rate is 0.1954 when the pitcher is behind and 0.2367 on three-ball counts, against a 0.3065 ball rate behind versus 0.2643 on three-ball counts. Being ahead in the count buys the hitter a pitch he can actually drive, which is the whole point of the leverage framing.",
     "source_artifact": "webapp/public/data/showcase/mlb_count_leverage.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "mlb",
@@ -1674,7 +1674,7 @@
     "status": "ok",
     "answer": "It gets much more fastball-heavy. In pitcher-behind counts the four-seamer is 35.25% of pitches and the sinker 19.28%, against 31.30% and 16.54% in even counts. Sliders move the other way -- 13.14% behind versus 14.22% even -- because a breaking ball is a luxury you cannot afford at 3-1.",
     "source_artifact": "webapp/public/data/showcase/mlb_count_leverage.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "mlb",
@@ -1694,7 +1694,7 @@
     "status": "ok",
     "answer": "The four-seam fastball, by a distance. Across 512,289 sequenced transitions in the 2025 pull, the four-seamer is the origin pitch 165,179 times, ahead of the sinker at 77,127, the slider at 73,567, the changeup at 51,941, the sweeper at 39,607, the cutter at 39,125, the curveball at 35,596 and the splitter at 16,141.",
     "source_artifact": "webapp/public/data/showcase/pitch_sequencing.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "mlb",
@@ -1714,7 +1714,7 @@
     "status": "ok",
     "answer": "Often, and more with the fastball than anything else: of 165,179 transitions starting from a four-seamer, 71,414 are followed by another four-seamer -- about 43%. Sinker-to-sinker is 27,764 of 77,127, roughly 36%. Sequencing is far stickier than a randomized-mix story would suggest.",
     "source_artifact": "webapp/public/data/showcase/pitch_sequencing.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "mlb",
@@ -1734,7 +1734,7 @@
     "status": "ok",
     "answer": "95.46% of the unconditional class: 489,035 of 512,289 transitions land inside the top-8 pitch-type axis, and the remaining rows fall off it. Every row is over its own denominator, so rows sum to at most 1 with the remainder explicitly attributed to types outside the axis.",
     "source_artifact": "webapp/public/data/showcase/pitch_sequencing.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "mlb",
@@ -1754,7 +1754,7 @@
     "status": "ok",
     "answer": "693,037 pitches from the local 2025 Statcast pull, of which 690,493 are kept for sequencing and 512,289 form strictly adjacent transitions within a plate appearance. Both the count-leverage and sequencing modules read the same file, so their numbers are directly comparable.",
     "source_artifact": "webapp/public/data/showcase/pitch_sequencing.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "mlb",
@@ -1774,7 +1774,7 @@
     "status": "ok",
     "answer": "Even counts dominate at 305,712 pitches, ahead of pitcher-behind at 183,042 and pitcher-ahead at 178,407. The overlapping lenses are smaller: 46,656 pitches on three-ball counts. Behind/even/ahead partition the data; the lenses do not, so their counts cannot be added to the partition.",
     "source_artifact": "webapp/public/data/showcase/mlb_count_leverage.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "mlb",
@@ -1794,7 +1794,7 @@
     "status": "ok",
     "answer": "Less than the location does, which is the interesting part. Strike rate runs 0.4981 behind, 0.5038 ahead and 0.4990 on three-ball counts -- nearly flat -- while in-zone rate swings from 0.6106 to 0.4604 across the same states. Pitchers hold their strike rate by changing where they throw, not how often they hit the zone.",
     "source_artifact": "webapp/public/data/showcase/mlb_count_leverage.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "mlb",
@@ -1874,7 +1874,7 @@
     "status": "ok",
     "answer": "Only where both sides are the same kind of quantity. The kernel-transfer module marks the Murphy reliability component comparable across sports because both are Brier scores of a probability against a binary outcome, and explicitly marks the CRPS totals row not comparable, because CRPS scores a full run-count distribution and Murphy reliability is undefined for it. It is never forced onto the Brier axis.",
     "source_artifact": "webapp/public/data/showcase/kernel_transfer.json",
-    "as_of": "2026-07-22"
+    "as_of": "unknown"
    },
    "tags": [
     "cross-sport",
@@ -1934,7 +1934,7 @@
     "status": "ok",
     "answer": "The only rows where the model is provisionally sharper are distributional MLB totals and margin checkpoints, not win probability -- 3 MODEL_SHARPER_PROVISIONAL out of 10 in-game checkpoints, with the other 7 underpowered, while pregame total_runs is underpowered at n=300. On binary win probability the market leads at every grain measured.",
     "source_artifact": "webapp/public/data/showcase/kernel_transfer.json",
-    "as_of": "2026-07-22"
+    "as_of": "unknown"
    },
    "tags": [
     "model-vs-market",
@@ -2174,7 +2174,7 @@
     "status": "ok",
     "answer": "NBA is far more back-loaded: 32.47% of its absolute pre-game motion arrives in the final hour versus 18.13% for MLB, even though MLB's half-life (3.67h) is shorter than NBA's (4.76h). The two facts fit together because NBA is bimodal -- early motion plus a distinct final-hour spike -- which a single half-life hides.",
     "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "nba",
@@ -2195,7 +2195,7 @@
     "status": "ok",
     "answer": "Indiana is the only team of 30 where both estimators name the same player: Pascal Siakam, at an Elo on/off win-probability delta of 0.3872 and a raw with/without win-rate delta of 0.2075 over 62 active and 15 missed games. That agreement is the exception -- the league-wide agree rate is 0.0333.",
     "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "nba",
@@ -2215,7 +2215,7 @@
     "status": "ok",
     "answer": "They measure different things on different seasons and agree on 1 of 30 teams. Estimator (a) is Elo on/off win probability against a league-average opponent on a neutral floor, drawn from 2024-25; estimator (b) is raw team win rate active-versus-missed from 2025-26 through 2026-04-12. Neither is preferred -- their disagreement is published as the result.",
     "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "nba",
@@ -2275,9 +2275,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Missing information, by roughly three to one on the MLB in-game moneyline: the reliability gap is +0.0066 while the resolution gap is -0.0235. Recalibration addresses the first and cannot touch the second, so the honest description of the shortfall is a feed problem rather than a fitting problem.",
+    "answer": "Missing information is the larger component on the MLB in-game moneyline in this decomposition: the reliability gap is +0.0022 while the resolution gap is -0.0149. The source labels the first fixable by recalibration and the second information that recalibration cannot add, so it reads the shortfall as a feed problem rather than a fitting problem; no recalibration was tested. Generated 2026-09-17 UTC; the observation window is not published.",
     "source_artifact": "webapp/public/data/showcase/kernel_transfer.json",
-    "as_of": "2026-07-22"
+    "as_of": "unknown"
    },
    "tags": [
     "murphy",
@@ -2336,7 +2336,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "MLB for in-game work and NBA for market structure. MLB carries 78,986 graded in-game rows and 693,037 pitches; NBA is the only sport with a buildable reliability map (1,593 games, 77 buckets, market ECE 0.0064). Soccer and tennis are consistently the thinnest -- soccer at 9,003 in-game rows, tennis with no reliability map at all.",
+    "answer": "NBA for market structure: it is the only sport with a buildable reliability map in the cross-sport structure module (1,593 games, 77 buckets, market ECE 0.0064). MLB and soccer come back not_buildable under the same floors and tennis has no reliability map at all, so this module does not rank trust across the other sports.",
     "source_artifact": "webapp/public/data/showcase/xsport_structure.json",
     "as_of": "2026-07-18"
    },
@@ -2356,7 +2356,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Tennis, on coverage grounds: it has no reliability map so the cross-sport structure module records it not_buildable, no blowout corpus so Live-Clock Fraction is not buildable, and its line half-life cannot be pinned inside the 6h+ bucket. Soccer is next, with in-game samples in the hundreds per checkpoint and buckets as small as n=21 in the overreaction work.",
+    "answer": "Tennis, on coverage grounds: it has no reliability map so the cross-sport structure module records it not_buildable, no blowout corpus so Live-Clock Fraction is not buildable, and its line half-life cannot be pinned inside the 6h+ bucket. Soccer is next, with in-game samples in the hundreds per checkpoint and very small soccer buckets in the overreaction work.",
     "source_artifact": "webapp/public/data/showcase/xsport_structure.json",
     "as_of": "2026-07-18"
    },
@@ -2457,7 +2457,7 @@
     "status": "ok",
     "answer": "Across 3 folds it averages 0.7094 accuracy (std 0.0252, range 0.6762 to 0.7373) and a mean Brier of 0.19301 (std 0.00841). Each fold is a 5-way non-negative-least-squares blend of XGBoost, LightGBM, logistic regression, an MLP and naive Bayes, and the weights move sharply between folds -- fold 2 leans XGBoost at 0.382, fold 3 leans logistic regression at 0.686.",
     "source_artifact": "webapp/public/data/showcase/forecaster/winprob_walk_forward_results.json",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "walk-forward",
@@ -2477,7 +2477,7 @@
     "status": "ok",
     "answer": "Because each fold refits the blend on its own validation slice, and with n_val=491 per fold the meta-learner has limited data to separate similar base models. Fold 2 puts 0.382 on XGBoost and 0.0 on logistic regression; fold 3 flips to 0.686 on logistic regression and 0.108 on XGBoost. The base-model Briers are close enough that the blend is nearly indifferent, which is itself a caution against reading any single fold's weights as a finding.",
     "source_artifact": "webapp/public/data/showcase/forecaster/winprob_walk_forward_results.json",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "walk-forward",
@@ -2597,7 +2597,7 @@
     "status": "ok",
     "answer": "A per-sport append-only record of every named mechanism the system has tested, with its verdict and an evidence pointer. Across four sports it holds 287 entries: 130 confirmed, 126 null and 31 not-testable. A null or not-testable is recorded as honest market-efficiency evidence, not deleted.",
     "source_artifact": "webapp/public/data/showcase/mechanism_ledger_export.json",
-    "as_of": "2026-07-22"
+    "as_of": "unknown"
    },
    "tags": [
     "claim-ledger",
@@ -2637,7 +2637,7 @@
     "status": "ok",
     "answer": "Confirmed covers exactly four labels: ARTIFACT_CONFIRMED, CONFIRMED_LOCAL, CONFIRMED_LOCAL_incl_2026_OOS and REPLICATED. Not-testable covers NOT_REPLICABLE_NO_CORPUS and NOT_TESTABLE. Everything else -- NULL, NULL_LOCAL, REJECT, PARTIAL, PROVISIONAL, FAILED_REPLICATION -- buckets to null, so the confirmed bucket cannot quietly absorb a weak result.",
     "source_artifact": "webapp/public/data/showcase/mechanism_ledger_export.json",
-    "as_of": "2026-07-22"
+    "as_of": "unknown"
    },
    "tags": [
     "claim-ledger",
@@ -2696,7 +2696,7 @@
     "status": "ok",
     "answer": "The permanent record of signals that failed. It carries 804 total verdict rows across all reruns, of which 68 distinct sport-signal pairs currently sit on a REJECT-family verdict as of their latest test, and 628 rows are rejects. The gap between 804 and 68 is signals retested multiple times plus rows whose latest verdict flipped to SHIP.",
     "source_artifact": "webapp/public/data/showcase/reject_graveyard.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "graveyard",
@@ -2716,7 +2716,7 @@
     "status": "ok",
     "answer": "By recorded reason category the largest is the as-of reclaim sweep at 510 rows -- signals killed when recomputed with strictly as-of information -- followed by prescreen delta 20, walk-forward ablation 18, seed stability 17, calibration-only-unproven 13, discovered transform 10, sealed holdout 8, conformal width 7 and cross-corpus adjudication 6.",
     "source_artifact": "webapp/public/data/showcase/reject_graveyard.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "graveyard",
@@ -2736,7 +2736,7 @@
     "status": "ok",
     "answer": "Across the full 804-row verdict history: 627 REJECT, 95 SHIP, 45 SHIP_REVIEW, 14 NOT_TESTABLE, 6 WORSE, 6 INSUFFICIENT, 4 NOT-REPLICATED, 3 STANDING_BASELINE_SET, and one each of DEFER, TIER3_BLOCKED, UNDERPOWERED and NULL_UNDERPOWERED. A SHIP here means the signal cleared the calibration gate, not that it beats a market price.",
     "source_artifact": "webapp/public/data/showcase/reject_graveyard.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "graveyard",
@@ -2756,7 +2756,7 @@
     "status": "ok",
     "answer": "A re-test of existing signals using only information available at the moment of prediction rather than the season-complete tables they were first computed from. It is the single largest killer in the reject ledger, accounting for 510 of the recorded reject rows -- most apparent signal was subtle hindsight.",
     "source_artifact": "webapp/public/data/showcase/reject_graveyard.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "graveyard",
@@ -2876,7 +2876,7 @@
     "status": "ok",
     "answer": "Five, and each has a mandated behavior: ok returns the value with its receipt; no_data means the artifact is absent or zero-row and the miss must be named; not_supported means the question is outside the registry and must not be improvised; ambiguous means several different mechanisms matched; refused means the question asked for prohibited language or a retracted number.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "contract",
@@ -2896,7 +2896,7 @@
     "status": "ok",
     "answer": "That the artifact behind the question is absent or has zero matching rows, so there is nothing to quote. It is a designed outcome, not an error: the contract requires naming the zero-row miss rather than substituting a plausible number, and the regression bank counts a correct no_data as a pass.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "contract",
@@ -2936,7 +2936,7 @@
     "status": "ok",
     "answer": "Some categories fail closed on age rather than answering. For injury and news context, if the newest matched row is older than the 7-day staleness bound the answer is refused, on the reasoning that injuries and news churn weekly and a stale row is worse than silence.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "contract",
@@ -2954,7 +2954,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Overwhelmingly agents, under one human director. Of 3,224 commits between 2026-03-09 and 2026-07-22, 95.75% are agent-authored and 67.9% carry a Claude co-author trailer. The human decisions were architecture, direction and what may be claimed.",
+    "answer": "Overwhelmingly agents, under one human director. Of 3,224 commits between 2026-03-09 and 2026-07-22, 95.75% are agent-authored and 67.9% carry a Claude co-author trailer. The human decisions were architecture, direction and what may be claimed. Separately, the public repository counts 6,556 commits as of 2026-10-21 (pinned at 4f033b5a5).",
     "source_artifact": "webapp/public/data/showcase/agent_fleet_history.json",
     "as_of": "2026-07-22"
    },
@@ -2974,7 +2974,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "3,224 commits over roughly four and a half months, from 2026-03-09 to 2026-07-22, in bursts rather than a steady drip -- the opening day alone carries 64 commits. The daily commit series is published rather than summarized.",
+    "answer": "3,224 commits over roughly four and a half months, from 2026-03-09 to 2026-07-22, in bursts rather than a steady drip -- the opening day alone carries 64 commits. The daily commit series is published rather than summarized. Separately, the public repository counts 6,556 commits as of 2026-10-21 (pinned at 4f033b5a5).",
     "source_artifact": "webapp/public/data/showcase/agent_fleet_history.json",
     "as_of": "2026-07-22"
    },
@@ -2996,7 +2996,7 @@
     "status": "ok",
     "answer": "The gate is, and it is mechanical. Agents can propose and implement anything, but a claim only becomes publishable by clearing the leak-free gate on two corpora, and the reject ledger's 804 recorded verdict rows against 95 SHIPs shows how often the answer is no. Autonomy in writing code is not autonomy in asserting results.",
     "source_artifact": "webapp/public/data/showcase/reject_graveyard.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "agents",
@@ -3014,9 +3014,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Every showcase module is re-executed in a single check run and its status recorded per module with a timestamp and a wall-clock duration -- for example brier_skill_scores.py PASS in 2.94s and aging_curve_lite.py PASS in 1.71s on the 2026-07-24 run. The site manifest carries the aggregate: 63 of 63 checks green.",
+    "answer": "Every showcase module is re-executed in a single check run and its status recorded per module with a timestamp and a wall-clock duration -- for example brier_skill_scores.py PASS in 1.44s and aging_curve_lite.py PASS in 0.57s on the 2026-07-25 run. The site manifest carries the aggregate: 96 of 96 checks green.",
     "source_artifact": "webapp/public/data/showcase/check_all_report.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "ci",
@@ -3056,7 +3056,7 @@
     "status": "ok",
     "answer": "Because their underlying computation does not stamp one, and the manifest records null rather than inventing a date. Others carry an as_of that is a corpus description rather than a timestamp -- cf_star_removal reads '2024-25 (Elo end-of-season) x 2024_25 on/off slice' and ctx_lineup_proxy reads '2025-26 regular season (through 2026-04-12)' -- which is more useful than a build time.",
     "source_artifact": "webapp/public/data/showcase/site_manifest.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "modules",
@@ -3076,7 +3076,7 @@
     "status": "ok",
     "answer": "The mean squared error of a probability against a binary outcome: lower is better, and 0.25 is what you get by always saying 50%. It is the primary yardstick here because it punishes both miscalibration and vagueness, unlike accuracy which only asks whether you picked the right side.",
     "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "brier",
@@ -3096,7 +3096,7 @@
     "status": "ok",
     "answer": "BSS = 1 - Brier/Brier_ref, the fractional improvement over a reference forecast. Two references are used here: climatology, meaning a constant sport-level base rate, and the market. A BSS above 0 against climatology is easy; against the market it is the only number that would matter, and it is negative everywhere measured.",
     "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "bss",
@@ -3116,7 +3116,7 @@
     "status": "ok",
     "answer": "Expected calibration error: bin the forecasts, compare the mean predicted probability to the mean outcome inside each bin, and take the n-weighted mean absolute gap. This system computes it over 10 bins. It isolates calibration specifically -- a forecast can have a decent Brier and still be systematically overconfident.",
     "source_artifact": "webapp/public/data/showcase/calibration_by_market_type.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "ece",
@@ -3134,9 +3134,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "It splits a Brier score into reliability -- how miscalibrated you are -- and resolution -- how much genuine discrimination you have. That matters diagnostically: on MLB in-game moneyline the model's reliability gap versus the market is +0.0066 while the resolution gap is -0.0235, so the shortfall is mostly missing information, which recalibration cannot fix.",
+    "answer": "It splits a Brier score into reliability -- how miscalibrated you are -- and resolution -- how much genuine discrimination you have. That matters diagnostically: on MLB in-game moneyline the model's reliability gap versus the market is +0.0022 while the resolution gap is -0.0149, so the shortfall is mostly in resolution, which the source describes as information recalibration cannot add.",
     "source_artifact": "webapp/public/data/showcase/kernel_transfer.json",
-    "as_of": "2026-07-22"
+    "as_of": "unknown"
    },
    "tags": [
     "murphy",
@@ -3156,7 +3156,7 @@
     "status": "ok",
     "answer": "Because only one of them is cheap to fix. A reliability gap means the probabilities are systematically off and a recalibration map can close it; a resolution gap means the model does not know things the market knows, and no post-processing invents information. The MLB decomposition puts most of the gap in resolution, which is an honest statement about missing feeds rather than about the fitting procedure.",
     "source_artifact": "webapp/public/data/showcase/kernel_transfer.json",
-    "as_of": "2026-07-22"
+    "as_of": "unknown"
    },
    "tags": [
     "murphy",
@@ -3176,7 +3176,7 @@
     "status": "ok",
     "answer": "They are per-module and always declared. The Brier skill module requires n>=30 rows per grain; calibration by market type requires n>=30 usable rows for a Brier or ECE over 10 bins; the count-leverage module uses a class minimum of 500 pitches; Line Half-Life requires at least 20 move pairs. Below the floor the cell is flagged rather than filled.",
     "source_artifact": "webapp/public/data/showcase/calibration_by_market_type.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "floors",
@@ -3196,7 +3196,7 @@
     "status": "ok",
     "answer": "Disclose it rather than score it. The MLB in-game totals quote-tracks -- 5 files, 2,113 rows, 21 quote-tracks -- carry no resolved outcome because the settlement join is unavailable, so their Brier is null by design and only the model-versus-market divergence is reported (median 0.116128, mean 0.124782, p90 0.224736). Scoring them would require fabricating labels.",
     "source_artifact": "webapp/public/data/showcase/calibration_by_market_type.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "unscorable",
@@ -3316,7 +3316,7 @@
     "status": "ok",
     "answer": "NBA leads at 85 tested mechanisms (45 confirmed, 33 null, 7 not-testable), with MLB at 86, soccer at 64 and tennis at 52 in the honesty exhibit's count. The four ledgers total 287 rows in the mechanism export.",
     "source_artifact": "webapp/public/data/showcase/mechanism_ledger_export.json",
-    "as_of": "2026-07-22"
+    "as_of": "unknown"
    },
    "tags": [
     "mechanisms",
@@ -3436,7 +3436,7 @@
     "status": "ok",
     "answer": "The evidence packet governs what may be claimed, and every module points back to it. Modules that touch marketable ground -- calibration by market type, the Brier skill pack -- name it as truth_source in the artifact itself, and the answer contract requires quoting source_artifact and as_of with any number.",
     "source_artifact": "webapp/public/data/showcase/calibration_by_market_type.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "truth-source",
@@ -3456,7 +3456,7 @@
     "status": "ok",
     "answer": "It is a machine-checkable stamp that the module is a calibration or description artifact. It appears on the showcase manifest, on every novel-stat card and on the Brier skill pack, and it is the reason a question phrased as financial guidance comes back refused rather than answered.",
     "source_artifact": "webapp/public/data/showcase/site_manifest.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "no-comparative-conclusion",
@@ -3516,7 +3516,7 @@
     "status": "ok",
     "answer": "By labeling them and refusing to sum them. The MLB count-leverage module marks behind/even/ahead as a mutually exclusive, exhaustive partition while two_strike and three_ball are overlapping lenses whose counts are explicitly not additive with it; the schedule module makes the same declaration about back-to-backs, 3-in-4s and 4-in-6s.",
     "source_artifact": "webapp/public/data/showcase/mlb_count_leverage.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "method",
@@ -3536,7 +3536,7 @@
     "status": "ok",
     "answer": "Every rate is taken over its own non-null denominator rather than the raw class count, which is stated as a floor note in the artifacts that publish rates. In the count-leverage module that means strike and ball rates use n_type and in-zone rates use n_zone, which differ -- 183,042 versus 181,462 in the pitcher-behind class alone.",
     "source_artifact": "webapp/public/data/showcase/mlb_count_leverage.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "method",
@@ -3556,7 +3556,7 @@
     "status": "no_data",
     "answer": "No. Every answer here reads committed artifacts on disk -- settled games, historical odds snapshots, finished seasons -- and there is no live odds or live game-state feed behind the site. Questions about tonight's line, a current score or a live win probability come back as no_data by design rather than being estimated.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "live",
@@ -3594,7 +3594,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Yes -- the proof document names the modules directly, including the Diebold-Mariano implementation under the eval-gate package and the beat-the-close scoreboard entry point, and notes that when the real corpora are absent the harness prints VALIDATION_PENDING and falls back to recorded tables rather than silently reproducing them.",
+    "answer": "Yes -- the proof document names the modules directly, including the Diebold-Mariano implementation under the eval-gate package and the close-comparison scoreboard entry point, and notes that when the real corpora are absent the harness prints VALIDATION_PENDING and falls back to recorded tables rather than silently reproducing them.",
     "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
     "as_of": "2026-07-07"
    },
@@ -3634,7 +3634,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Through dedicated modules that re-score the same forecaster across time slices -- calibration_over_time and calibration_stability, both included in the forecaster proof pack, with calibration_stability last stamped 2026-07-23. Stability is treated as a separate question from average calibration, because a model can be well-calibrated on average and badly calibrated in every individual period.",
+    "answer": "Through dedicated modules that re-score the same forecaster across time slices -- calibration_over_time and calibration_stability, both included in the forecaster proof pack (the pack manifest is dated 2026-07-23; the current calibration_stability snapshot is dated 2026-09-16). Stability is treated as a separate question from average calibration, because a model can be well-calibrated on average and badly calibrated in every individual period.",
     "source_artifact": "webapp/public/data/showcase/forecaster/manifest.json",
     "as_of": "2026-07-23"
    },
@@ -3656,7 +3656,7 @@
     "status": "no_data",
     "answer": "No live odds are available. This system carries historical odds snapshots inside committed corpora, used to score calibration after games finish -- there is no live feed to today's number, so there is nothing honest to quote. What it can show instead is how the model's leak-free forecast lined up against the closing price on games already in the corpus.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "live_odds",
@@ -3676,7 +3676,7 @@
     "status": "no_data",
     "answer": "There is no live line to return. The engine reads committed artifacts, not a real-time market-source feed, so a current spread or price simply is not in the data. If you want a number that exists, ask about the model's calibration against the closing line on a completed game.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "live_odds",
@@ -3695,7 +3695,7 @@
     "status": "no_data",
     "answer": "No live game state is being ingested here, so there is no current win probability to report. The in-game model has been scored on recorded game states from finished games, not a live wire. The honest, answerable version is how the in-game calibration behaves at recorded checkpoints in the corpus.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "live_ingame",
@@ -3714,7 +3714,7 @@
     "status": "no_data",
     "answer": "There is no board for today. Lines in this repo are historical snapshots kept for after-the-fact calibration scoring, not a live daily board. Nothing dated to today can be returned honestly.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "live_odds",
@@ -3733,7 +3733,7 @@
     "status": "no_data",
     "answer": "Current moneylines are not available. The system does not poll live prices; it stores closing and historical odds only for scoring, so there is no present-tense number to quote.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "live_odds",
@@ -3752,7 +3752,7 @@
     "status": "no_data",
     "answer": "No live totals are available. Totals here exist only as historical snapshots for calibration work, and the totals market is deliberately left unscored where no settled outcome exists. There is nothing current to return.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "live_odds",
@@ -3772,7 +3772,7 @@
     "status": "no_data",
     "answer": "Live scores are not ingested here. The system reads committed data files, not a live scoreboard, so a current score cannot be returned. Finished-game results in the covered corpora can be looked up instead.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "live_score",
@@ -3791,7 +3791,7 @@
     "status": "no_data",
     "answer": "Today's slate is not something this system tracks. There is no live schedule feed committed to the repo, so the set of games on any given day is unknown here. Historical results already recorded in the corpora are available; upcoming games are not.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "schedule",
@@ -3811,7 +3811,7 @@
     "status": "no_data",
     "answer": "No market source is polled live here, so a current price cannot be quoted. The repo holds historical price snapshots for calibration only. There is no path from this data to a live source number.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "live_odds",
@@ -3830,7 +3830,7 @@
     "status": "no_data",
     "answer": "The system does not forecast where a future line will close, and it has no live line to watch move. Closing lines only enter the data after a game settles, when they are used to score calibration. A future close is not available.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "live_odds",
@@ -3850,7 +3850,7 @@
     "status": "no_data",
     "answer": "Tomorrow's lineups are not knowable from this data. There is no live roster or lineup feed committed here, and lineups are set by teams close to tip-off. The system does hold committed roster and player-context files for completed periods, but not a forward lineup.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "lineups",
@@ -3870,7 +3870,7 @@
     "status": "no_data",
     "answer": "Tonight's availability is not tracked here. There is no live active/inactive feed in the repo, so who suits up tonight is unknown. The committed injury_report resolver reflects a stored snapshot, not tonight's status, and should not be read as a live availability call.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "availability",
@@ -3890,7 +3890,7 @@
     "status": "no_data",
     "answer": "Upcoming schedules are not committed to this repo. Without a live schedule feed, the games on any future date are unknown here. Only games already played and recorded in the corpora can be referenced.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "schedule",
@@ -3910,7 +3910,7 @@
     "status": "no_data",
     "answer": "Probable pitchers for future games are not available. The MLB data here is historical -- pitch-level and outcome data from completed games -- with no forward probables feed. Statcast-style summaries on games already played can be shown instead.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "mlb",
@@ -3931,7 +3931,7 @@
     "status": "no_data",
     "answer": "The system cannot forecast a game it has no inputs for, and tomorrow's matchups, lineups, and prices are not in the committed data. A calibrated forecast needs a defined matchup and current context, neither of which exists here for a future date. Pre-game and in-game calibration on completed corpus games is the honest scope.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "prediction",
@@ -3951,7 +3951,7 @@
     "status": "no_data",
     "answer": "Tomorrow's tennis order of play is not committed here. There is no live draw or schedule feed, so upcoming matches and their favorites are unknown. Committed tennis calibration and surface-transfer summaries cover completed matches only.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "tennis",
@@ -3972,7 +3972,7 @@
     "status": "no_data",
     "answer": "There is no live projection for tonight's game because tonight's matchup, minutes, and context are not in the committed data. Prop-style projections here have been evaluated out-of-sample on historical games, not generated for a live slate. A tonight-specific number would be invented, so none is returned.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "player_prop",
@@ -3992,7 +3992,7 @@
     "status": "no_data",
     "answer": "No live prop line or tonight's game state exists in this data, so an over/under call cannot be made. Prop calibration here was measured on completed games after the fact. There is nothing current to evaluate.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "player_prop",
@@ -4012,7 +4012,7 @@
     "status": "no_data",
     "answer": "A tonight-specific assist projection is not available; the inputs for a live game are not committed here. The system's prop models were scored on historical data, not run against a live slate. No current projection can be honestly produced.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "player_prop",
@@ -4032,7 +4032,7 @@
     "status": "no_data",
     "answer": "This system has no live injury wire, so a right-now status is unknown. There is a committed injury_report resolver, but it returns a stored snapshot with its own as-of timestamp -- treat it as a record, not a live update. For a current status, check an official team or league source.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "injury",
@@ -4052,7 +4052,7 @@
     "status": "no_data",
     "answer": "There is no live news feed committed here, so current team news is out of scope. The news_context resolver returns a stored snapshot with a timestamp, not real-time reporting. For breaking news, use an official or press source.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "news",
@@ -4441,7 +4441,7 @@
     "status": "no_data",
     "answer": "An aging curve is not buildable from this data. There is no birthdate or age column in any NBA table and only a few season snapshots are on hand, so the honest move is not to pretend a curve exists. This is a data-availability limit, not a claim that aging effects are absent -- add age labels and more seasons and it becomes testable.",
     "source_artifact": "webapp/public/data/insights/aging_curve_lite.json",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "not_built",
@@ -4501,7 +4501,7 @@
     "status": "no_data",
     "answer": "The NFL is not in the covered set. This system's committed data spans NBA, MLB, soccer, and tennis; there is no NFL corpus, so there is nothing to answer. Asking about one of the four covered sports will get a real result.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "coverage_gap",
@@ -4520,7 +4520,7 @@
     "status": "no_data",
     "answer": "The NHL is not covered. The committed sports here are NBA, MLB, soccer, and tennis, and no hockey data exists in the repo. There is nothing to return for the NHL.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "coverage_gap",
@@ -4539,7 +4539,7 @@
     "status": "no_data",
     "answer": "College basketball is not covered. The engine's data is NBA, MLB, soccer, and tennis only, with no NCAA corpus, so a college game cannot be forecast here. The NBA is the covered basketball league.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "coverage_gap",
@@ -4558,7 +4558,7 @@
     "status": "no_data",
     "answer": "None of those are covered. The committed sports are NBA, MLB, soccer, and tennis; golf, combat sports, and esports have no data in the repo. There is nothing to answer for them.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "coverage_gap",
@@ -4575,9 +4575,9 @@
    ],
    "a": {
     "status": "no_data",
-    "answer": "The WNBA is not in the covered corpus, so there is no data to answer from -- the honest response is no_data rather than a borrowed NBA number. The covered basketball league here is the NBA. Ask an NBA question for a real result.",
+    "answer": "WNBA predictions are not produced here; the WNBA appears only in the pre-game line-movement measurement (Line Half-Life), with no WNBA forecast or calibration corpus. The covered basketball league for forecasts is the NBA. Ask an NBA question for a real result.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "coverage_gap",
@@ -4596,7 +4596,7 @@
     "status": "no_data",
     "answer": "Neither cricket nor rugby is covered. The committed sports are NBA, MLB, soccer, and tennis, and no data exists for other sports. There is nothing to return here.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "coverage_gap",
@@ -4615,7 +4615,7 @@
     "status": "no_data",
     "answer": "That specific historical fact is not something this engine will answer from memory, and it is not a registered result inside the committed corpora. The historical_result resolver only covers games and outcomes that live in the repo's data files. For general basketball history, a reference source is the right place.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "trivia",
@@ -4634,7 +4634,7 @@
     "status": "no_data",
     "answer": "All-time league records are not in the committed data and are not answered from model memory. The engine reports stats and results that exist in its corpora, not historical-record trivia. A league reference source is the right place for that.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "trivia",
@@ -4653,7 +4653,7 @@
     "status": "no_data",
     "answer": "Trade speculation is not something this system tracks or predicts. There is no transactions or rumors feed committed here, and the engine does not forecast front-office moves. Committed player and team analytics describe on-court performance only.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "rumors",
@@ -4673,7 +4673,7 @@
     "status": "no_data",
     "answer": "The system does not produce fantasy draft rankings or advice. It has descriptive player analytics on completed data, but no fantasy-scoring projection layer, so a draft recommendation would be invented. Ask about a player's actual committed metrics instead.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "fantasy",
@@ -4692,7 +4692,7 @@
     "status": "no_data",
     "answer": "Daily fantasy lineup building is out of scope. It needs a live slate, salaries, and projections, none of which are committed here, so no lineup can be built honestly. The engine's output is calibration and completed-game analytics, not DFS optimization.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "dfs",
@@ -4712,7 +4712,7 @@
     "status": "no_data",
     "answer": "Award outcomes are not forecast here. There is no committed data on voting or a current-season MVP model, so a prediction would be speculation. The engine describes on-court performance in completed corpora, not award races.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "awards",
@@ -4732,7 +4732,7 @@
     "status": "no_data",
     "answer": "Coaching-change speculation is not in scope. The system has no front-office or job-status data committed and does not forecast personnel decisions. Its analytics cover player and team on-court performance only.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "rumors",
@@ -4752,7 +4752,7 @@
     "status": "ok",
     "answer": "Six descriptive modules were published: Line Half-Life (LHL), Live-Clock Fraction (LCF), Load-Bearing Index (LBI), Market Foresight Premium (MFP), Overreaction Harvest Gap (OHG), and Schedule Fatigue Tax (SFT). SFT is under review because its claimed points-per-100 offensive-rating unit is not supported by the cited rest receipt. OHG is an honest null.",
     "source_artifact": "webapp/public/data/showcase/novel_stats_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -4771,7 +4771,7 @@
     "status": "ok",
     "answer": "The prior-art labels describe how much of each module's packaging is new, not whether every measurement is valid. LHL is NOVEL_PACKAGING, LCF is INCREMENTAL_NOVEL, LBI / MFP / SFT are INCREMENTAL, and OHG is NOVEL_SELF_CRITICAL_CROSS. The SFT measurement is under review because its claimed offensive-rating unit is unsupported by the cited rest receipt.",
     "source_artifact": "webapp/public/data/showcase/novel_stats_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -4790,7 +4790,7 @@
     "status": "refused",
     "answer": "No, and none of them is built to. All six cards are stamped descriptive_only=true, and the one that comes closest to a market angle -- the Overreaction Harvest Gap -- records that the model cannot identify the overshoot it measures in advance. These stats publish no financial outcome figure.",
     "source_artifact": "webapp/public/data/showcase/novel_stats_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -4807,9 +4807,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "The Overreaction Harvest Gap, flagged is_honest_null=true in the index. It measures real market overshoot at large in-game moves and then measures how badly the model fails to convert it: at maximum disagreement the model is closer than the market only 21.52% of the time in soccer_intl and 37.73% in MLB. Publishing that is the point.",
+    "answer": "The Overreaction Harvest Gap, flagged is_honest_null=true in the index. It measures real market overshoot at large in-game moves and then measures how badly the model fails to convert it: at maximum disagreement the model is closer than the market only 21.52% of the time in soccer_intl and 37.73% in MLB. Publishing that is the point. These OHG figures were composed from the earlier (revision 1) in-game corpus that later failed the join-integrity check; the regenerated disagreement profile on the segmented corpus (snapshot dated 2026-09-16) still finds the market usually right at maximum disagreement.",
     "source_artifact": "webapp/public/data/showcase/novel_overreaction_harvest_gap.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -4829,7 +4829,7 @@
     "status": "ok",
     "answer": "Per sport, the number of hours before tip by which half of the pre-game absolute line motion is complete. It answers a plain question -- when does a sport's price actually get made -- with a single constant per sport instead of a hand-wave about early sharp money.",
     "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "novel-stats",
@@ -4849,7 +4849,7 @@
     "status": "ok",
     "answer": "bucket_move = n * mean_abs_move per horizon bucket; G(h) = cumulative far-to-near movement divided by total; the half-life is the h where G(h) = 0.50, linearly interpolated. The inputs come from the micro_absorption module, not from a separate fit.",
     "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "novel-stats",
@@ -4869,7 +4869,7 @@
     "status": "ok",
     "answer": "Of the five sports measured, soccer_intl settles fastest: half its pre-game line motion is done 2.75 hours before kickoff (half_life_hours 2.7461, n_move_pairs 164,072). MLB follows at 3.67h and NBA at 4.76h.",
     "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "novel-stats",
@@ -4889,7 +4889,7 @@
     "status": "ok",
     "answer": "4.76 hours (half_life_hours 4.7567) over 182,054 pre-game move pairs -- the slowest of the three sports whose crossing can be pinned. NBA is also the most back-loaded: 32.47% of its total absolute motion lands in the final hour before tip, so the single constant hides a bimodal shape.",
     "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "novel-stats",
@@ -4909,7 +4909,7 @@
     "status": "ok",
     "answer": "3.67 hours (half_life_hours 3.6709), measured over 1,307,128 pre-game move pairs -- by far the largest sample of the five. Only 18.13% of MLB's absolute motion arrives in the final hour, the steadiest profile in the set.",
     "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "novel-stats",
@@ -4929,7 +4929,7 @@
     "status": "ok",
     "answer": "Tennis and WNBA both cross the 50% mark inside the open-ended 6h+ bucket, so their half-life is reported as '>6.0' with half_life_hours=null rather than guessed. By 6 hours out tennis has already completed 54.26% of its motion and WNBA 64.41%.",
     "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "novel-stats",
@@ -4950,7 +4950,7 @@
     "status": "ok",
     "answer": "Domestic soccer is excluded as a timestamp-coverage artifact: all its mass sits in the 6h+ bucket with mean_abs_move 0.0, which is a data defect rather than a finding. KBO and NPB are excluded too, both with 0 pre-game move pairs against a MIN_MOVES floor of 20. soccer_intl, a separate corpus, does qualify.",
     "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "novel-stats",
@@ -4970,7 +4970,7 @@
     "status": "ok",
     "answer": "Only the packaging. The card is labeled NOVEL_PACKAGING and cites the existing work directly: opening-versus-closing line timing is discussed widely in forecast-market research, and price-impact half-life is a securities-microstructure staple (Kyle 1985; Amihud 2002). What is fresh is the single per-sport half-life constant, not the underlying concept.",
     "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "novel-stats",
@@ -4990,7 +4990,7 @@
     "status": "ok",
     "answer": "Five are declared on the card. bucket_move sums absolute per-tick moves, so it is churn rather than net price travel and correlated books inflate it; there are only four coarse horizon buckets so the 0.50 crossing is interpolated; soccer is a coverage artifact; NBA is bimodal and a single half-life hides that; and any sport crossing inside the open 6h+ bucket cannot be pinned at all.",
     "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "novel-stats",
@@ -5010,7 +5010,7 @@
     "status": "ok",
     "answer": "It varies more than three-fold across sports: NBA 32.47%, soccer_intl 26.10%, MLB 18.13%, WNBA 11.76%, tennis 10.70%. NBA being the most back-loaded is the reason its single half-life reads misleadingly slow.",
     "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "novel-stats",
@@ -5178,7 +5178,7 @@
     "status": "ok",
     "answer": "Per NBA team, how much of its win probability rides on its single most indispensable player, estimated two independent ways and flagged for whether the two agree. Estimator (a) is the max player-level Elo on/off win-prob delta; estimator (b) is the max raw win-rate gap between games a player was active and games he missed.",
     "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -5198,7 +5198,7 @@
     "status": "ok",
     "answer": "Denver, on the Elo on/off estimator: Nikola Jokic carries a delta_winprob of 0.5822 with an on/off net-rating delta of 23.713 -- the largest single-player figure among the 30 teams. Read it as a dependence description, not a causal player-impact estimate.",
     "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -5219,7 +5219,7 @@
     "status": "ok",
     "answer": "Shai Gilgeous-Alexander leads the Elo on/off estimator at delta_winprob 0.5171 with an on/off net-rating delta of 15.763, second-highest among the 30 teams. The raw with/without estimator names a different player for OKC (Ajay Mitchell, delta_win_rate 0.2685 over 57 active and 23 missed games), which is the norm rather than the exception here.",
     "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -5240,7 +5240,7 @@
     "status": "ok",
     "answer": "Almost never. Across the 30 teams covered by both estimators, only 1 agrees on the same #1 player -- an agree_rate of 0.0333. That team is Indiana, where both name Pascal Siakam (Elo delta_winprob 0.3872; raw delta_win_rate 0.2075 over 62 active and 15 missed games).",
     "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -5260,7 +5260,7 @@
     "status": "ok",
     "answer": "Mostly because they are not measuring the same season or the same quantity. Estimator (a) uses 2024-25 Elo end-of-season on/off, estimator (b) uses the 2025-26 regular season through 2026-04-12, so agreement is directional corroboration and not a paired estimate. On top of that, (a) is win probability against a league-average opponent on a neutral floor while (b) is raw team win rate active-versus-missed -- related axes, different scales.",
     "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -5280,7 +5280,7 @@
     "status": "ok",
     "answer": "No, and the card labels this the first declared confound. Both estimators inherit the roster confound their source files flag: why a player missed is entangled with injury clustering, rest, blowout pulls and replacement lineup quality, none of which is controlled. It is a fragility description, not a causal player-impact estimate.",
     "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -5300,7 +5300,7 @@
     "status": "ok",
     "answer": "Incremental, per its own label. The card cites inpredictable's On/Off Win Probability tables, standard record-without-star splits and arXiv 1604.03186 on player impact on win chances, and states plainly that single-method fragility is not new. The claimed twist is a league-wide fragility ranking cross-validated by two independent estimators with an agreement flag.",
     "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -5320,7 +5320,7 @@
     "status": "ok",
     "answer": "On the raw estimator the largest gaps come with small missed-game samples, which is the warning label. Milwaukee's Kyle Kuzma shows delta_win_rate 0.3659 on 69 active and 12 missed games, and the Clippers' Brook Lopez 0.4038 on 75 active and just 7 missed. Seven-game denominators do not support a strong reading.",
     "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -5340,7 +5340,7 @@
     "status": "ok",
     "answer": "The two estimators disagree, and the Elo one names a role player rather than a star: Dorian Finney-Smith at delta_winprob 0.4656 with an on/off net-rating delta of 14.944, while the raw with/without estimator names Rui Hachimura at delta_win_rate 0.2626 over 68 active and 14 missed games. Neither is a causal claim about who matters most.",
     "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -5530,7 +5530,7 @@
     "status": "ok",
     "answer": "Structural market overshoot at large in-game moves, scaled by how far short the model falls of beating the market when the two disagree most. It is deliberately a measured failure diagnostic: the market moves too far, and we still cannot exploit it.",
     "source_artifact": "webapp/public/data/showcase/novel_overreaction_harvest_gap.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -5548,9 +5548,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "soccer_intl shows an overreaction magnitude of 0.2856 but a model_closer_rate of only 0.2152 at maximum disagreement (n=4,406), giving an OHG of 0.0813. Read literally: the market overshoots and is still right about four times in five when we disagree hardest with it.",
+    "answer": "soccer_intl shows an overreaction magnitude of 0.2856 but a model_closer_rate of only 0.2152 at maximum disagreement (n=4,406), giving an OHG of 0.0813. Read literally: the market overshoots and is still right about four times in five when we disagree hardest with it. These OHG figures were composed from the earlier (revision 1) in-game corpus that later failed the join-integrity check; the regenerated disagreement profile on the segmented corpus (snapshot dated 2026-09-16) still finds the market usually right at maximum disagreement.",
     "source_artifact": "webapp/public/data/showcase/novel_overreaction_harvest_gap.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -5568,9 +5568,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "MLB overshoots much less -- overreaction magnitude 0.0721 -- and the model_closer_rate at maximum disagreement is 0.3773 over 33,402 rows, giving an OHG of 0.0088. Smaller overshoot, still no harvest.",
+    "answer": "MLB overshoots much less -- overreaction magnitude 0.0721 -- and the model_closer_rate at maximum disagreement is 0.3773 over 33,402 rows, giving an OHG of 0.0088. Smaller overshoot, still no harvest. These OHG figures were composed from the earlier (revision 1) in-game corpus that later failed the join-integrity check; the regenerated disagreement profile on the segmented corpus (snapshot dated 2026-09-16) still finds the market usually right at maximum disagreement.",
     "source_artifact": "webapp/public/data/showcase/novel_overreaction_harvest_gap.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -5588,9 +5588,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "The market, in both sports measured. At the >=.10 disagreement bucket the model's Brier is 0.282705 against the market's 0.210258 in MLB (n=33,402), and 0.330582 against 0.172027 in soccer_intl (n=4,406). Both rows carry market_usually_right_at_max_disagree=true.",
+    "answer": "The market, in both sports measured. At the >=.10 disagreement bucket the model's Brier is 0.282705 against the market's 0.210258 in MLB (n=33,402), and 0.330582 against 0.172027 in soccer_intl (n=4,406). Both rows carry market_usually_right_at_max_disagree=true. These OHG figures were composed from the earlier (revision 1) in-game corpus that later failed the join-integrity check; the regenerated disagreement profile on the segmented corpus (snapshot dated 2026-09-16) still finds the market usually right at maximum disagreement.",
     "source_artifact": "webapp/public/data/showcase/novel_overreaction_harvest_gap.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -5608,9 +5608,9 @@
    ],
    "a": {
     "status": "refused",
-    "answer": "Not on this evidence, and that is exactly why the stat exists. The card's first declared confound is mandatory language: OHG is an honest null, and at maximum disagreement the market is usually right (model_closer_rate 0.38 in MLB, 0.22 in soccer). Overshoot that we cannot identify in advance is not actionable from this artifact.",
+    "answer": "Not on this evidence, and that is exactly why the stat exists. The card's first declared confound is mandatory language: OHG is an honest null, and at maximum disagreement the market is usually right (model_closer_rate 0.38 in MLB, 0.22 in soccer). Overshoot that we cannot identify in advance is not actionable from this artifact. These OHG figures were composed from the earlier (revision 1) in-game corpus that later failed the join-integrity check; the regenerated disagreement profile on the segmented corpus (snapshot dated 2026-09-16) still finds the market usually right at maximum disagreement.",
     "source_artifact": "webapp/public/data/showcase/novel_overreaction_harvest_gap.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -5628,9 +5628,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "MLB is reasonably sized -- 2,860 rows in the 3-6pt bucket, 1,069 in 6-10pt, 794 in 10pt+ -- with overshoot falling from 0.0801 to 0.0518 as moves get bigger. Soccer is thin: 103, 21 and 91 rows respectively, so its 0.2856 magnitude is explicitly flagged noisy.",
+    "answer": "MLB is reasonably sized -- 2,860 rows in the 3-6pt bucket, 1,069 in 6-10pt, 794 in 10pt+ -- with overshoot falling from 0.0801 to 0.0518 as moves get bigger. Soccer is thin: 103, 21 and 91 rows respectively, so its 0.2856 magnitude is explicitly flagged noisy. These OHG figures were composed from the earlier (revision 1) in-game corpus that later failed the join-integrity check; the regenerated disagreement profile on the segmented corpus (snapshot dated 2026-09-16) still finds the market usually right at maximum disagreement.",
     "source_artifact": "webapp/public/data/showcase/novel_overreaction_harvest_gap.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -5650,7 +5650,7 @@
     "status": "ok",
     "answer": "Overreaction and reversion are Moskowitz (2021, Journal of Finance) and Choi & Hui (2014, JEBO), and disagreement skill is standard forecast verification -- the card flags both components as not new. Its verdict, NOVEL_SELF_CRITICAL_CROSS, describes a market disagreement without a corresponding realized evaluation result. Papers publish comparative findings rather than confessions.",
     "source_artifact": "webapp/public/data/showcase/novel_overreaction_harvest_gap.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -5913,7 +5913,7 @@
     "status": "ok",
     "answer": "None of them is a model. The index states the method plainly: composition only, each card copied from its own module's novel_*.json output, which in turn reads existing committed showcase artifacts. Nothing is refit, and every card names the source artifacts it composed.",
     "source_artifact": "webapp/public/data/showcase/novel_stats_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -5932,7 +5932,7 @@
     "status": "ok",
     "answer": "Schedule Fatigue Tax, with 90 team-season rows, followed by Load-Bearing Index at 30 teams. The market-structure stats are the thinnest by row count -- Line Half-Life covers 5 sports, and LCF, MFP and OHG cover 2 each -- because they are per-sport rather than per-entity.",
     "source_artifact": "webapp/public/data/showcase/novel_stats_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -5951,7 +5951,7 @@
     "status": "ok",
     "answer": "Three of six: Line Half-Life (when the pre-game price gets made), Market Foresight Premium (how much the in-game market knows per bit of remaining uncertainty) and Overreaction Harvest Gap (overshoot we cannot harvest). Load-Bearing Index and Schedule Fatigue Tax are team-side; Live-Clock Fraction is game-structure only and reads the score path, not any price.",
     "source_artifact": "webapp/public/data/showcase/novel_stats_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -6040,7 +6040,7 @@
     "status": "ok",
     "answer": "Two things it is already designed to catch. Each card carries an explicit prior-art citation, so a credible earlier publication of the same construction downgrades or removes it; and each carries declared confounds, so a confound turning out to be the whole effect kills it. Line Half-Life already excludes three sports on data-quality grounds rather than reporting them.",
     "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "novel-stats",
@@ -6059,7 +6059,7 @@
     "status": "ok",
     "answer": "Each novel stat is composed from modules you can open directly in the browse surface: micro_absorption behind Line Half-Life, blowout_dynamics and xsport_structure behind Live-Clock Fraction, cf_star_removal and ctx_lineup_proxy behind Load-Bearing Index, info_arrival_curve and market_convergence behind Market Foresight Premium, market_overreaction and market_disagreement_profile behind the Overreaction Harvest Gap, and schedule_density behind the Schedule Fatigue Tax.",
     "source_artifact": "webapp/public/data/showcase/novel_stats_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "novel-stats",
@@ -6273,7 +6273,7 @@
     "status": "ok",
     "answer": "By the box-composite form measure, Wembanyama is the league's biggest riser: his 10-game rolling per-36 box composite climbed +19.821, roughly doubling from 18.048 to 37.869 -- the 100th league percentile. The mirror image is Myles Turner, the biggest faller at -11.043. This is a trajectory read over the whole span, not a live hot-streak call, and it is box-composite only, not an adjusted impact metric.",
     "source_artifact": "webapp/public/data/insights/nba_form_curves.json",
-    "as_of": "2023-24 to 2025-26"
+    "as_of": "unknown"
    },
    "tags": [
     "nba",
@@ -6595,7 +6595,7 @@
    "a": {
     "status": "ok",
     "answer": "On a neutral floor versus a league-average opponent, the star-removal exercise moves OKC from 0.7829 with Shai Gilgeous-Alexander to 0.2658 without -- a 0.5171 win-prob swing. Like every row in this exhibit it is a ceiling built from an on/off net-rating delta, a roster confound rather than a controlled individual value, and it is descriptive only.",
-    "source_artifact": "webapp/public/data/insights/cf_star_removal.json",
+    "source_artifact": "webapp/public/data/showcase/cf_star_removal.json",
     "as_of": "2024-25 (Elo end-of-season) x 2024_25 on/off slice"
    },
    "tags": [
@@ -6617,7 +6617,7 @@
    "a": {
     "status": "ok",
     "answer": "Because raw on/off is a full-lineup swing, not an individual-value estimate, it often flatters bench-anchoring role players: the exhibit's top on/off name is Luke Kornet on Boston (0.2785 swing), Gui Santos on Golden State (0.2378), Dorian Finney-Smith on the Lakers (0.4656), Monte Morris in Phoenix (0.2593), and Isaac Okoro in Cleveland (0.303) -- not Tatum, Curry, LeBron, Booker, or Mitchell. Floor-sharing correlates with coach trust, opponent strength, and garbage-time minutes, none of which are controlled. Treat a big on/off number as a flag to investigate, not a verdict.",
-    "source_artifact": "webapp/public/data/insights/cf_star_removal.json",
+    "source_artifact": "webapp/public/data/showcase/cf_star_removal.json",
     "as_of": "2024-25 (Elo end-of-season) x 2024_25 on/off slice"
    },
    "tags": [
@@ -7031,7 +7031,7 @@
    "a": {
     "status": "ok",
     "answer": "In the star-removal exhibit, New Orleans moves from 0.3292 with Zion Williamson to 0.0469 without on a neutral floor versus a league-average team -- a 0.2823 swing, off a low starting team strength. It is a ceiling built from an on/off net-rating delta with a roster confound, descriptive only, not an action recommendation.",
-    "source_artifact": "webapp/public/data/insights/cf_star_removal.json",
+    "source_artifact": "webapp/public/data/showcase/cf_star_removal.json",
     "as_of": "2024-25 (Elo end-of-season) x 2024_25 on/off slice"
    },
    "tags": [
@@ -7053,7 +7053,7 @@
    "a": {
     "status": "ok",
     "answer": "San Antonio moves from 0.3901 with Victor Wembanyama to 0.112 without on a neutral floor against a league-average opponent -- a 0.2781 win-prob swing. As with every row, it is a ceiling from a roster-confounded on/off delta, not a controlled individual value, and it is descriptive.",
-    "source_artifact": "webapp/public/data/insights/cf_star_removal.json",
+    "source_artifact": "webapp/public/data/showcase/cf_star_removal.json",
     "as_of": "2024-25 (Elo end-of-season) x 2024_25 on/off slice"
    },
    "tags": [
@@ -7076,7 +7076,7 @@
     "status": "ok",
     "answer": "In the bulk of regulation states it tracks reality closely: for a 1-to-5 point lead with 24-36 minutes left, the model's mean win probability is 0.6204 across 898 games and teams in that state actually won 62.03 percent of the time. The honest exception is overtime -- with a 1-5 lead in OT the model says 0.7113 while teams actually won 98.3 percent and the market priced 97.6 percent, so it under-rates how decisive a late lead is and the market is better there. This is a calibration exhibit.",
     "source_artifact": "webapp/public/data/insights/comeback_atlas.json",
-    "as_of": "reliability map (source records no as_of)"
+    "as_of": "2026-09-17"
    },
    "tags": [
     "nba",
@@ -7272,7 +7272,7 @@
    "a": {
     "status": "ok",
     "answer": "Milwaukee moves from 0.6059 with Giannis Antetokounmpo to 0.1617 without on a neutral floor versus a league-average team -- a 0.4441 win-prob swing, among the largest for a team's clear lead star. Like every row it is a ceiling from a roster-confounded on/off delta, descriptive and not a causal or action recommendation.",
-    "source_artifact": "webapp/public/data/insights/cf_star_removal.json",
+    "source_artifact": "webapp/public/data/showcase/cf_star_removal.json",
     "as_of": "2024-25 (Elo end-of-season) x 2024_25 on/off slice"
    },
    "tags": [
@@ -7318,7 +7318,7 @@
     "status": "ok",
     "answer": "Myles Turner is the biggest faller, with his 10-game rolling per-36 box composite down -11.043 over the observed span -- the mirror image of Wembanyama's league-leading +19.821 rise to 37.869. This is a net change over the whole multi-season span, a trajectory read rather than a current streak, and it is box-composite only, not age- or opponent-adjusted.",
     "source_artifact": "webapp/public/data/insights/nba_form_curves.json",
-    "as_of": "2023-24 to 2025-26"
+    "as_of": "unknown"
    },
    "tags": [
     "nba",
@@ -7381,9 +7381,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Five surfaces. /analytics/forecaster is the calibration proof for the prediction engine; /analytics/the-loop shows how a claim is proposed, tested and killed; /analytics/browse opens all 54 analysis modules; /analytics/players opens 1,549 entity cards across seven packs; and /analytics/explainers is the plain-language layer. The retraction story sits at /analytics/findings/retraction.",
+    "answer": "Five surfaces. /analytics/forecaster is the calibration proof for the prediction engine; /analytics/the-loop shows how a claim is proposed, tested and killed; /analytics/browse opens all 77 analysis modules; /analytics/players opens 1,549 entity cards across seven packs; and /analytics/explainers is the plain-language layer. The retraction record sits at /evidence/retractions/.",
     "source_artifact": "webapp/public/data/showcase/site_manifest.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -7440,7 +7440,7 @@
     "status": "ok",
     "answer": "/analytics/the-loop walks the cycle from claim to verdict: propose, gate, record, retract. The ledgers behind it are public too -- 287 tested mechanisms at /analytics/m/mechanism_survival and /analytics/m/fwd_claim_scoreboard, and the failures at /analytics/m/reject_graveyard.",
     "source_artifact": "webapp/public/data/showcase/mechanism_ledger_export.json",
-    "as_of": "2026-07-22"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -7460,7 +7460,7 @@
     "status": "ok",
     "answer": "/analytics/m/reject_graveyard holds 804 recorded verdict rows, 68 distinct signals currently sitting on a REJECT-family verdict, and the reason categories behind them. The explainer at /analytics/explainers/the-graveyard makes the case for why publishing failures is the point.",
     "source_artifact": "webapp/public/data/showcase/reject_graveyard.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -7500,7 +7500,7 @@
     "status": "ok",
     "answer": "Team cards are their own atlas pack under /analytics/players/nba_teams/<slug>. For team-level analysis rather than cards, /analytics/m/ctx_team_states, /analytics/m/nba_matchup_grid and /analytics/m/home_away_anatomy are the relevant modules.",
     "source_artifact": "webapp/public/data/showcase/site_manifest.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -7521,7 +7521,7 @@
     "status": "ok",
     "answer": "The deepest sport here. /analytics/m/mlb_count_leverage and /analytics/m/pitch_sequencing cover 693,037 pitches from the 2025 Statcast pull; /analytics/m/mlb_velo_bands and /analytics/m/statcast_showcase cover the pitch-level detail; and batters and pitch types have their own atlas packs at /analytics/players/mlb_batters and /analytics/players/mlb_pitch.",
     "source_artifact": "webapp/public/data/showcase/pitch_sequencing.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "tour",
@@ -7581,7 +7581,7 @@
     "status": "ok",
     "answer": "Four modules and an explainer. /analytics/m/calibration_by_market_type splits it by market, /analytics/m/calibration_over_time and /analytics/m/calibration_stability cover drift, /analytics/m/state_conditioned_calibration conditions on game state, and /analytics/explainers/what-calibration-means explains why the market is the benchmark. Calibration checkpoints also have their own atlas pack at /analytics/players/calibration.",
     "source_artifact": "webapp/public/data/showcase/calibration_by_market_type.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -7621,7 +7621,7 @@
     "status": "ok",
     "answer": "Four modules: /analytics/m/micro_absorption for how motion distributes across the pre-game window, /analytics/m/micro_closing_decay for the run-up to close, /analytics/m/tick_microstructure for tick-level behavior and /analytics/m/market_convergence for how prices tighten in-game. The Line Half-Life stat sits on top of the first of these.",
     "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "tour",
@@ -7639,9 +7639,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "/analytics/m/market_overreaction measures the overshoot and /analytics/m/market_disagreement_profile measures who is right when the model and market disagree. Read them together: the overshoot is real, and at maximum disagreement the model is the closer of the two only 37.73% of the time in MLB and 21.52% in soccer.",
+    "answer": "/analytics/m/market_overreaction measures the overshoot and /analytics/m/market_disagreement_profile measures who is right when the model and market disagree. Read them together: the overshoot is real, and at maximum disagreement the market is usually the closer forecaster in both MLB and soccer.",
     "source_artifact": "webapp/public/data/showcase/novel_overreaction_harvest_gap.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -7682,7 +7682,7 @@
     "status": "ok",
     "answer": "Two modules that disagree with each other, which is the interesting part: /analytics/m/cf_star_removal is the Elo on/off counterfactual and /analytics/m/ctx_lineup_proxy is the raw with/without split. Across 30 teams they name the same most-indispensable player only once, at an agree rate of 0.0333. /analytics/m/on_off_showcase covers the underlying on/off data.",
     "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -7722,7 +7722,7 @@
     "status": "ok",
     "answer": "/analytics/m/clutch_context is the module, and it is context-conditioned rather than a raw late-game split. Pair it with /analytics/m/ctx_player_splits and /analytics/m/nba_consistency_profiles if you want the same player viewed through different context axes.",
     "source_artifact": "webapp/public/data/showcase/site_manifest.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -7742,7 +7742,7 @@
     "status": "ok",
     "answer": "/analytics/m/aging_curve_lite, which is deliberately labeled 'lite' -- it is a descriptive curve over the local boxscore corpus, not a projection system. /analytics/m/player_metric_landscape and /analytics/m/box_value_index cover the broader player-metric surface.",
     "source_artifact": "webapp/public/data/showcase/site_manifest.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -7762,7 +7762,7 @@
     "status": "ok",
     "answer": "/analytics/m/cv_tracking_stats is the committed summary of the tracking pipeline's output. It is a measurement artifact from the vision layer, not a live video feed, and the analytics on this site do not depend on it.",
     "source_artifact": "webapp/public/data/showcase/site_manifest.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -7780,7 +7780,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "/analytics/findings/retraction is the full account of the numbers that were withdrawn and why. The claim ledger backs it up: 7 claim families currently sit on a retracted status, 6 of them MLB.",
+    "answer": "/evidence/retractions/ is the full account of the numbers that were withdrawn and why. The claim ledger backs it up: 7 claim families currently sit on a retracted status, 6 of them MLB.",
     "source_artifact": "webapp/public/data/showcase/fwd_claim_scoreboard.json",
     "as_of": "2026-07-11"
    },
@@ -7800,7 +7800,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "/analytics/about covers the project and the person directing it, and /analytics/m/agent_fleet_history has the numbers: 3,224 commits between 2026-03-09 and 2026-07-22, 95.75% agent-authored. The narrative version is at /analytics/explainers/how-ai-agents-built-this.",
+    "answer": "/analytics/about covers the project and the person directing it, and /analytics/m/agent_fleet_history has the numbers: 3,224 commits between 2026-03-09 and 2026-07-22, 95.75% agent-authored. The narrative version is at /analytics/explainers/how-ai-agents-built-this. Separately, the public repository counts 6,556 commits as of 2026-10-21 (pinned at 4f033b5a5).",
     "source_artifact": "webapp/public/data/showcase/agent_fleet_history.json",
     "as_of": "2026-07-22"
    },
@@ -7822,7 +7822,7 @@
     "status": "ok",
     "answer": "/analytics/explainers/how-a-possession-simulator-thinks is the plain-language walkthrough of how possession-level simulation produces a distribution rather than a single number. The scored output of that machinery is what /analytics/forecaster grades.",
     "source_artifact": "webapp/public/data/explainers/explainers.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -7842,7 +7842,7 @@
     "status": "ok",
     "answer": "Six, at /analytics/explainers: how a possession simulator thinks, what calibration means and why we grade against the market, the graveyard and why we publish what failed, how AI agents built this and what a human decided, reading an entity card without fooling yourself, and what the Ask AI can and cannot tell you.",
     "source_artifact": "webapp/public/data/explainers/explainers.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -7881,7 +7881,7 @@
     "status": "ok",
     "answer": "It answers from committed artifacts only, and returns one of five statuses -- ok, no_data, not_supported, ambiguous or refused -- with a source artifact and an as-of date on anything it does answer. /analytics/explainers/what-the-ask-ai-can-and-cannot-tell-you is the honest scope statement; the coverage numbers are at /analytics/m/qa_coverage_stats.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -7939,7 +7939,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "/analytics/m/claims_corpus_meta has the counts: 103 claim families and 103,048 generated claims, with 98.85% covered by a validation sample and 0 mismatches. /analytics/m/dossier_completeness covers how complete the per-entity dossiers are.",
+    "answer": "The claims-corpus metadata (webapp/public/data/showcase/claims_corpus_meta.json) has the counts: 103 claim families and 103,048 generated claims, with 98.85% covered by a validation sample and 0 mismatches. /analytics/m/dossier_completeness covers how complete the per-entity dossiers are.",
     "source_artifact": "webapp/public/data/showcase/claims_corpus_meta.json",
     "as_of": "2026-07-22"
    },
@@ -7961,7 +7961,7 @@
     "status": "ok",
     "answer": "Three modules aimed squarely at that: /analytics/m/residual_anatomy dissects the errors, /analytics/m/residual_autocorrelation checks whether they cluster, and /analytics/m/why_attribution attributes them. /analytics/m/murphy_decomposition then splits the gap into miscalibration versus missing information.",
     "source_artifact": "webapp/public/data/showcase/site_manifest.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -7981,7 +7981,7 @@
     "status": "ok",
     "answer": "/analytics/m/paper_execution_audit is an execution-quality measurement -- how orders would have filled and how state lag affects that. It publishes no realized return figure, and financial-guidance questions are refused rather than answered.",
     "source_artifact": "webapp/public/data/showcase/site_manifest.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -8062,7 +8062,7 @@
     "status": "ok",
     "answer": "/analytics/m/cf_star_removal simulates a team without its most important player and /analytics/m/cf_pace_variance varies pace. Both are counterfactuals over a model, so they inherit the model's assumptions -- the star-removal one explicitly carries a roster confound and is not a causal impact estimate.",
     "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -8082,7 +8082,7 @@
     "status": "no_data",
     "answer": "No. There is no live schedule, live odds or live game-state feed behind this site -- every page reads committed artifacts from completed games. What exists instead is the graded record: /analytics/forecaster for how the predictions scored, and /analytics/m/cross_sport_scoreboard for the head-to-head against the market.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -8100,9 +8100,9 @@
    ],
    "a": {
     "status": "refused",
-    "answer": "No. This is a calibration product, and the published modules are descriptive. /analytics/m/cross_sport_scoreboard and /analytics/m/brier_skill_scores show the model trailing the market at every in-game grain measured.",
+    "answer": "No. This is a calibration product, and the published modules are descriptive. /analytics/m/cross_sport_scoreboard and /analytics/m/brier_skill_scores show the model trailing the market on in-game win probability at every checkpoint measured.",
     "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -8122,7 +8122,7 @@
     "status": "ok",
     "answer": "Two. /analytics/m/xsport_structure applies one reliability methodology across sports and honestly records three of four as not_buildable, and /analytics/m/kernel_transfer states which cross-sport axes are legitimate at all -- the Murphy reliability component is comparable, CRPS on run totals is not.",
     "source_artifact": "webapp/public/data/showcase/kernel_transfer.json",
-    "as_of": "2026-07-22"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -8140,9 +8140,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "On the module page itself. Each of the 54 entries in the manifest records its output path, chart path, status, descriptive flag flag and as-of, so /analytics/m/<id> can name the exact artifact a number came from. Modules whose computation does not stamp a date record a null as-of rather than inventing one.",
+    "answer": "On the module page itself. Each of the 77 entries in the manifest records its output path, chart path, status, descriptive flag and as-of, so /analytics/m/<id> can name the exact artifact a number came from. Modules whose computation does not stamp a date record a null as-of rather than inventing one.",
     "source_artifact": "webapp/public/data/showcase/site_manifest.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -8160,9 +8160,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "The manifest flags them by status rather than hiding them -- blowout_dynamics, for instance, is marked partial. Aggregate health is published too: 63 of 63 checks green at build time, with per-module pass status and timing in the check report.",
+    "answer": "The manifest flags them by status rather than hiding them -- blowout_dynamics, for instance, is marked partial. Aggregate health is published too: 96 of 96 checks green at build time, with per-module pass status and timing in the check report.",
     "source_artifact": "webapp/public/data/showcase/site_manifest.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "tour",
@@ -8222,7 +8222,7 @@
     "status": "ok",
     "answer": "Every named mechanism the system tests is written to an append-only validation ledger with its verdict, effect size, p-value, and the corpus it ran on. The scoreboard over those ledgers currently counts 287 rows across four sports, of which 129 of 256 testable hypotheses survived as confirmed -- a survival rate of 0.5039. A confirmed, a null, and a not-testable are all recorded and counted; a system that only ever confirmed would not be credible.",
     "source_artifact": "webapp/public/data/showcase/mechanism_survival.json",
-    "as_of": "2026-07-11"
+    "as_of": "unknown"
    },
    "tags": [
     "self-grading",
@@ -8280,7 +8280,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "The most-cited retraction was an early pregame performance headline that turned out to be a market-follow grading artifact: the grader chose direction from the market's own devigged favorite and never actually read the model, priced at a flat -110 fiction, with filters tuned in-sample on the same file. Read against real closing lines the model is roughly break-even-minus-vig, about -2.00% unfiltered. The instrument that caught it was built by the same person who made the claim.",
+    "answer": "The most-cited retraction was an early pregame performance headline that turned out to be a market-follow grading artifact: the grader chose direction from the market's own devigged favorite and never actually read the model, priced at a flat -110 fiction, with filters tuned in-sample on the same file. Read against real closing lines, it shows no measured advantage. The instrument that caught it was built by the same person who made the claim.",
     "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
     "as_of": "2026-07-23"
    },
@@ -8320,7 +8320,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Yes. The end-of-third-quarter win-probability model was fed two features computed from fourth-quarter data (halftime_pace_shift and trailing_team_q4_usg_hhi), so it was peeking at the quarter it was supposed to predict, and the famous Brier headline was also mis-sourced from the cited file. After removing the two leaking features the honest leak-free walk-forward Brier is about 0.141. It is framed as a leak caught in my own pipeline, not as a competitive number.",
+    "answer": "Yes. The end-of-third-quarter win-probability model was fed two features computed from fourth-quarter data (halftime_pace_shift and trailing_team_q4_usg_hhi), so it was peeking at the quarter it was supposed to predict, and the famous Brier headline was also mis-sourced from the cited file. After removing the two leaking features the honest leak-free walk-forward Brier is about 0.141. It is framed as a leak caught in the system's own pipeline, not as a competitive number.",
     "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
     "as_of": "2026-07-23"
    },
@@ -8483,7 +8483,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "It is a solo human-architected build over an agentic pipeline: across 3,224 commits from 2026-03-09 to 2026-07-22, about 95.75% are agent-authored and 67.9% carry a Claude co-author trailer. The busiest single day logged 275 commits. The honest framing is one human directing the pipeline and owning the ship/reject and validation decisions, not one person hand-typing thousands of commits.",
+    "answer": "It is a solo human-architected build over an agentic pipeline: across 3,224 commits from 2026-03-09 to 2026-07-22, about 95.75% are agent-authored and 67.9% carry a Claude co-author trailer. The busiest single day logged 275 commits. The honest framing is one human directing the pipeline and owning the ship/reject and validation decisions, not one person hand-typing thousands of commits. Separately, the public repository counts 6,556 commits as of 2026-10-21 (pinned at 4f033b5a5).",
     "source_artifact": "webapp/public/data/showcase/agent_fleet_history.json",
     "as_of": "2026-07-22"
    },
@@ -8565,7 +8565,7 @@
     "status": "ok",
     "answer": "By survival rate, NBA leads at 0.56 (42 confirmed of 75 testable), tennis 0.5455, soccer 0.5179, and MLB the lowest at 0.3974. Across all four the overall survival rate is 0.5039 on 256 testable hypotheses. Roughly half surviving is the expected shape when the gate is genuinely trying to refute each candidate.",
     "source_artifact": "webapp/public/data/showcase/mechanism_survival.json",
-    "as_of": "2026-07-11"
+    "as_of": "unknown"
    },
    "tags": [
     "survival-rate",
@@ -8585,7 +8585,7 @@
     "status": "ok",
     "answer": "By category, officiating effects survive best at 0.75 and the small travel bucket at 1.0, while rest-and-fatigue effects survive weakest at just 0.3056 (11 of 36 testable). That is a useful honesty signal: the folk-wisdom rest-and-fatigue story mostly does not replicate under a leak-free gate. Every bucket is reported as-is.",
     "source_artifact": "webapp/public/data/showcase/mechanism_survival.json",
-    "as_of": "2026-07-11"
+    "as_of": "unknown"
    },
    "tags": [
     "survival-rate",
@@ -8745,7 +8745,7 @@
     "status": "ok",
     "answer": "Every showcase builder module carries a self-check, and the latest check-all report shows all of them returning PASS. Separately, the repo's check_all self-check passes 52 of 52 on a bare clone and runs green in public CI, where the trail also preserves the first run that honestly failed 46 of 52 on a path-portability bug before it was fixed. Keeping the red run in the history is the discipline, not an embarrassment.",
     "source_artifact": "webapp/public/data/showcase/check_all_report.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-07-25"
    },
    "tags": [
     "reproducibility",
@@ -8783,9 +8783,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "The five-way NNLS win-probability stack reads 0.709 accuracy and 0.193 Brier under three-fold walk-forward validation. That is a calibration number, reported without any claim that it beats a closing line -- the full-season test shows it does not.",
+    "answer": "The five-way NNLS win-probability stack reads 0.709 accuracy and 0.193 Brier under three-fold walk-forward validation. That is an accuracy and Brier measurement, reported without any claim that it beats a closing line; the earlier full-season comparison against the close was withdrawn on 2026-09-14 and is not used as evidence either way.",
     "source_artifact": "docs/PUBLIC_EVIDENCE.md",
-    "as_of": "2026-06-11"
+    "as_of": "unknown"
    },
    "tags": [
     "win-probability",
@@ -8805,7 +8805,7 @@
     "status": "ok",
     "answer": "Not yet. Every CV-derived feature carries SHAP importance of about 0.0 in the production prop models today, and the CV-lift report reads has_cv_data false. The plumbing is complete and the thesis is credible, but it is honestly labeled as not yet measured rather than a moat.",
     "source_artifact": "docs/PUBLIC_EVIDENCE.md",
-    "as_of": "2026-06-11"
+    "as_of": "unknown"
    },
    "tags": [
     "computer-vision",
@@ -8865,7 +8865,7 @@
     "status": "ok",
     "answer": "There are 1,249 dossiers spanning 28 categories, with a median completeness score of 0.464. Fill rates vary widely and honestly: rebounding profile is well-filled at 0.9544 and foul-drawing at 0.8655, while pace-fit (0.0104), turnover profile (0.0144), and matchup splits (0.0849) are sparse. The gaps are surfaced rather than hidden.",
     "source_artifact": "webapp/public/data/showcase/dossier_completeness.json",
-    "as_of": "2026-07-22"
+    "as_of": "unknown"
    },
    "tags": [
     "dossiers",
@@ -9005,7 +9005,7 @@
     "status": "ok",
     "answer": "No. The paper execution ledger has 83 logged entries, every one with executed=false -- none were real fills -- and realized closing-line-value is null for all 37 settled rows because no independent close feed was captured for that channel. The only quantity it can speak to is placement-time divergence (model versus taken price), median about 0.092 probability points, which is an execution measurement. It records no-close honestly rather than backfilling a number.",
     "source_artifact": "webapp/public/data/showcase/paper_execution_audit.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "paper-trading",
@@ -9103,7 +9103,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "No -- an earlier aggregate closing-line-value figure was circular, computed on the same corpus where the model was never actually read. No real Pinnacle-close CLV exists yet; the full-season backtest shows CLV near zero versus real closes. So no CLV number is quoted; only the methodology that will eventually measure it is built.",
+    "answer": "No -- an earlier aggregate closing-line-value figure was circular, computed on the same corpus where the model was never actually read. No real Pinnacle-close CLV exists yet, and the earlier full-season backtest was withdrawn on 2026-09-14. So no CLV number is quoted; only the methodology that will eventually measure it is built.",
     "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
     "as_of": "2026-07-23"
    },
@@ -9143,9 +9143,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Against real DraftKings, FanDuel, and MGM closing lines the model is roughly break-even-minus-vig overall, about -2% to -5%, with -2.00% unfiltered from the gate analysis. The market is efficient on closing lines. Every candidate, including the strongest one, was ultimately rejected or retracted by the gates.",
+    "answer": "Against real closing lines the model shows no measured advantage. On the 2026-09-24 recompute, MLB moneyline (+0.0039 Brier, 95% interval [+0.0028, +0.0051]) and soccer Over/Under 2.5 (+0.0076, [+0.0059, +0.0092]) trail the devigged close, and NBA moneyline cannot tell at 372 games because its interval includes zero. Every candidate, including the strongest one, was ultimately rejected or retracted by the gates.",
     "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
-    "as_of": "2026-07-23"
+    "as_of": "2026-09-24"
    },
    "tags": [
     "market-efficiency",
@@ -9165,7 +9165,7 @@
     "status": "ok",
     "answer": "Most of it is mechanical. The end-of-Q3 residual heads cut prediction MAE by about 46% pooled, but three of four quarters of box score are simply observed by then; over a naive carry-forward in-game baseline the learned-head value-add is about 26%, walk-forward validated. The honest framing states it that way rather than claiming the full 46% as skill, and the MAE lift is never bundled with the leaked endQ3 Brier.",
     "source_artifact": "docs/PUBLIC_EVIDENCE.md",
-    "as_of": "2026-06-11"
+    "as_of": "unknown"
    },
    "tags": [
     "in-game",
@@ -9243,7 +9243,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "About 95.75% of the 3,224 commits are agent-authored, so roughly 4% were hand-authored by the human. Around 67.9% carry a Claude co-author trailer. The honest description is a human architect and director of an agentic build pipeline who owns the engineering judgment and the ship-or-reject decisions.",
+    "answer": "About 95.75% of the 3,224 commits are agent-authored, so roughly 4% were hand-authored by the human. Around 67.9% carry a Claude co-author trailer. The honest description is a human architect and director of an agentic build pipeline who owns the engineering judgment and the ship-or-reject decisions. Separately, the public repository counts 6,556 commits as of 2026-10-21 (pinned at 4f033b5a5).",
     "source_artifact": "webapp/public/data/showcase/agent_fleet_history.json",
     "as_of": "2026-07-22"
    },
@@ -9263,9 +9263,9 @@
    ],
    "a": {
     "status": "no_data",
-    "answer": "There is no realized-return measurement to report: zero real money has been placed. The paper execution ledger's 83 logged entries are all executed=false, and realized closing-line-value is null for the settled rows. The honest yardstick, better-than-close CLV, cannot be measured until an independent close feed accumulates from October 2026.",
+    "answer": "There is no realized-return measurement to report: zero real money has been placed. The paper execution ledger's 83 logged entries are all executed=false, and realized closing-line-value is null for the settled rows. The honest yardstick, better-than-close CLV, cannot be measured until an independent close feed accumulates; the forward paper record is in docs/JOB_EVIDENCE_PACKET.md section 5.",
     "source_artifact": "webapp/public/data/showcase/paper_execution_audit.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "no-data",
@@ -9323,9 +9323,9 @@
    ],
    "a": {
     "status": "no_data",
-    "answer": "There is no realized closing-line-value track record yet: in the paper execution ledger, clv_pct is null for all 37 settled rows because no independent close feed was captured for that channel. No historical sharp-market-source closing archive exists publicly either, so the first real reading is roughly October 2026 onward. The methodology to measure it is built; the number is honestly absent.",
+    "answer": "There is no realized closing-line-value track record yet: in the paper execution ledger, clv_pct is null for all 37 settled rows because no independent close feed was captured for that channel. No historical sharp-market-source closing archive exists publicly either, so there is no first reading yet; the forward paper series and its status are in docs/JOB_EVIDENCE_PACKET.md section 5. The methodology to measure it is built; the number is honestly absent.",
     "source_artifact": "webapp/public/data/showcase/paper_execution_audit.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "no-data",
@@ -9343,7 +9343,7 @@
    ],
    "a": {
     "status": "no_data",
-    "answer": "Only the possession simulator's structure is validated. The correct negative teammate correlation of about -0.10 emerges from the mechanics with no hand-tuned matrix, and the same-game-parlay pricing is structurally correct, but there is no real parlay-price capture to grade against. Team totals also run slightly high, so the side is trusted more than the over.",
+    "answer": "Only the possession simulator's structure is validated. The correct negative teammate correlation of about -0.10 emerges from the mechanics with no hand-tuned matrix, and the same-game-parlay pricing is structurally correct, but there is no real parlay-price capture to grade against. Team totals also run slightly high, so its win-side probabilities are trusted more than its totals.",
     "source_artifact": "docs/KNOWN_LIMITATIONS.md",
     "as_of": "2026-06-11"
    },
@@ -9363,9 +9363,9 @@
    ],
    "a": {
     "status": "no_data",
-    "answer": "There is no real-money track record, by design -- zero money has been placed and the paper ledger's entries are all executed=false. Today's snapshot returns INSUFFICIENT_DATA for CLV, because no close was captured. What exists is a units-only paper track and the harnesses that will grade a real one once a sharp-market-source close feed accumulates.",
+    "answer": "There is no real-money track record, by design -- zero money has been placed and the paper ledger's entries are all executed=false. The paper execution audit records INSUFFICIENT_DATA for CLV, because no close was captured. What exists is a units-only paper track and the harnesses that will grade a real one once a sharp-market-source close feed accumulates.",
     "source_artifact": "webapp/public/data/showcase/paper_execution_audit.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "no-data",
@@ -9405,7 +9405,7 @@
     "status": "ok",
     "answer": "It is a calibrated multi-sport forecasting system whose strongest signal is that the same builder built the instruments that caught and retracted his own inflated headline numbers. The market-efficiency finding -- well-calibrated but does not beat the close -- is the cleanest output a rigorous validation framework can produce. Accuracy and market outperformance are distinct, and honest rejects are counted as successes.",
     "source_artifact": "docs/PUBLIC_EVIDENCE.md",
-    "as_of": "2026-06-11"
+    "as_of": "unknown"
    },
    "tags": [
     "framing",

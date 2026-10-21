@@ -11,8 +11,6 @@ export function PaperTradingDoneSummary({ summary, loading, error }: {
   const rows = [
     ["Total bets", "done-total", summary?.nTotal],
     ["Settled", "done-settled", summary?.nSettled],
-    ["Win", "done-win", summary?.nWin],
-    ["Loss", "done-loss", summary?.nLoss],
     ["Push", "done-push", summary?.nPush],
     ["Void", "done-void", summary?.nVoid],
     ["Units staked", "done-units-staked", summary?.totalUnitsStaked],
@@ -23,13 +21,12 @@ export function PaperTradingDoneSummary({ summary, loading, error }: {
         Done / settled summary
       </h2>
       {!loading && !summary && <Unavailable reason={error ?? "Paper history unavailable"} />}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-5">
         {rows.map(([label, id, value]) => (
           <StatTile key={id} label={label} testId={id} loading={loading}
             value={loading || value == null ? EMPTY_CELL : id === "done-units-staked" ? value.toFixed(2) : String(value)}
             note={id === "done-void" && summary?.nUnknown ? `${summary.nUnknown} graded with an unrecognised outcome` : undefined}
-            valueClass={value && value > 0 && id === "done-win" ? "text-success"
-              : value && value > 0 && id === "done-loss" ? "text-danger" : "text-foreground"} />
+            valueClass="text-foreground" />
         ))}
       </div>
     </section>

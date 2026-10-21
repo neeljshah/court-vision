@@ -40,7 +40,7 @@ export const FUNNEL_STAGE_DETAIL: FunnelStageDetail[] = [
   {
     key: "signals",
     label: "SIGNALS",
-    essence: "Hundreds of per-player / per-team signals, each gated leak-free.",
+    essence: "Candidate signals from 60 classes, each gated leak-free; none has shipped.",
     detail:
       "A signal factory proposes candidate features off the data spine. Every one is " +
       "run through the same leak-free, walk-forward, cross-corpus gate before it can " +
@@ -99,8 +99,8 @@ export const FUNNEL_STAGE_DETAIL: FunnelStageDetail[] = [
       "signal means, and the validation gate re-runs every stage. The self-improve " +
       "ratchet is built and READY but INERT (human-gated OFF).",
     discipline:
-      "CLV (a better number than the devigged close, in probability space) is the only " +
-      "honest yardstick. Real-money execution is default-DENY; paper mode only.",
+      "Brier score against the devigged close is the pregame yardstick; closing-line value " +
+      "cannot be measured yet. Real-money execution is default-DENY; paper mode only.",
     tips: ["CLV", "INERT"],
   },
 ];

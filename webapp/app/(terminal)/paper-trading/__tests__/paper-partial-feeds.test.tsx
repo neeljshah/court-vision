@@ -84,7 +84,7 @@ describe("PaperTradingPage independent feed failures", () => {
     calls.pm.mockResolvedValue(missing("PM"));
     render(<PaperTradingPage />);
     await summariesLoaded();
-    for (const id of ["done-total", "done-win", "done-units-staked", "tally-open", "tally-win", "tally-units-staked"]) {
+    for (const id of ["done-total", "done-units-staked", "tally-open", "tally-units-staked"]) {
       expect(screen.getByTestId(id)).toHaveTextContent("--");
     }
     expect(screen.queryByTestId("no-paper-trades")).not.toBeInTheDocument();

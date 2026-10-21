@@ -13,7 +13,7 @@
     "status": "no_data",
     "answer": "No live odds are available. This system carries historical odds snapshots inside committed corpora, used to score calibration after games finish -- there is no live feed to today's number, so there is nothing honest to quote. What it can show instead is how the model's leak-free forecast lined up against the closing price on games already in the corpus.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "live_odds",
@@ -32,7 +32,7 @@
     "status": "no_data",
     "answer": "There is no live line to return. The engine reads committed artifacts, not a real-time market-source feed, so a current spread or price simply is not in the data. If you want a number that exists, ask about the model's calibration against the closing line on a completed game.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "live_odds",
@@ -50,7 +50,7 @@
     "status": "no_data",
     "answer": "No live game state is being ingested here, so there is no current win probability to report. The in-game model has been scored on recorded game states from finished games, not a live wire. The honest, answerable version is how the in-game calibration behaves at recorded checkpoints in the corpus.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "live_ingame",
@@ -68,7 +68,7 @@
     "status": "no_data",
     "answer": "There is no board for today. Lines in this repo are historical snapshots kept for after-the-fact calibration scoring, not a live daily board. Nothing dated to today can be returned honestly.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "live_odds",
@@ -86,7 +86,7 @@
     "status": "no_data",
     "answer": "Current moneylines are not available. The system does not poll live prices; it stores closing and historical odds only for scoring, so there is no present-tense number to quote.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "live_odds",
@@ -104,7 +104,7 @@
     "status": "no_data",
     "answer": "No live totals are available. Totals here exist only as historical snapshots for calibration work, and the totals market is deliberately left unscored where no settled outcome exists. There is nothing current to return.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "live_odds",
@@ -123,7 +123,7 @@
     "status": "no_data",
     "answer": "Live scores are not ingested here. The system reads committed data files, not a live scoreboard, so a current score cannot be returned. Finished-game results in the covered corpora can be looked up instead.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "live_score",
@@ -141,7 +141,7 @@
     "status": "no_data",
     "answer": "Today's slate is not something this system tracks. There is no live schedule feed committed to the repo, so the set of games on any given day is unknown here. Historical results already recorded in the corpora are available; upcoming games are not.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "schedule",
@@ -160,7 +160,7 @@
     "status": "no_data",
     "answer": "No market source is polled live here, so a current price cannot be quoted. The repo holds historical price snapshots for calibration only. There is no path from this data to a live source number.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "live_odds",
@@ -178,7 +178,7 @@
     "status": "no_data",
     "answer": "The system does not forecast where a future line will close, and it has no live line to watch move. Closing lines only enter the data after a game settles, when they are used to score calibration. A future close is not available.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "live_odds",
@@ -197,7 +197,7 @@
     "status": "no_data",
     "answer": "Tomorrow's lineups are not knowable from this data. There is no live roster or lineup feed committed here, and lineups are set by teams close to tip-off. The system does hold committed roster and player-context files for completed periods, but not a forward lineup.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "lineups",
@@ -216,7 +216,7 @@
     "status": "no_data",
     "answer": "Tonight's availability is not tracked here. There is no live active/inactive feed in the repo, so who suits up tonight is unknown. The committed injury_report resolver reflects a stored snapshot, not tonight's status, and should not be read as a live availability call.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "availability",
@@ -235,7 +235,7 @@
     "status": "no_data",
     "answer": "Upcoming schedules are not committed to this repo. Without a live schedule feed, the games on any future date are unknown here. Only games already played and recorded in the corpora can be referenced.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "schedule",
@@ -254,7 +254,7 @@
     "status": "no_data",
     "answer": "Probable pitchers for future games are not available. The MLB data here is historical -- pitch-level and outcome data from completed games -- with no forward probables feed. Statcast-style summaries on games already played can be shown instead.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "mlb",
@@ -274,7 +274,7 @@
     "status": "no_data",
     "answer": "The system cannot forecast a game it has no inputs for, and tomorrow's matchups, lineups, and prices are not in the committed data. A calibrated forecast needs a defined matchup and current context, neither of which exists here for a future date. Pre-game and in-game calibration on completed corpus games is the honest scope.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "prediction",
@@ -293,7 +293,7 @@
     "status": "no_data",
     "answer": "Tomorrow's tennis order of play is not committed here. There is no live draw or schedule feed, so upcoming matches and their favorites are unknown. Committed tennis calibration and surface-transfer summaries cover completed matches only.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "tennis",
@@ -313,7 +313,7 @@
     "status": "no_data",
     "answer": "There is no live projection for tonight's game because tonight's matchup, minutes, and context are not in the committed data. Prop-style projections here have been evaluated out-of-sample on historical games, not generated for a live slate. A tonight-specific number would be invented, so none is returned.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "player_prop",
@@ -332,7 +332,7 @@
     "status": "no_data",
     "answer": "No live prop line or tonight's game state exists in this data, so an over/under call cannot be made. Prop calibration here was measured on completed games after the fact. There is nothing current to evaluate.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "player_prop",
@@ -351,7 +351,7 @@
     "status": "no_data",
     "answer": "A tonight-specific assist projection is not available; the inputs for a live game are not committed here. The system's prop models were scored on historical data, not run against a live slate. No current projection can be honestly produced.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "player_prop",
@@ -370,7 +370,7 @@
     "status": "no_data",
     "answer": "This system has no live injury wire, so a right-now status is unknown. There is a committed injury_report resolver, but it returns a stored snapshot with its own as-of timestamp -- treat it as a record, not a live update. For a current status, check an official team or league source.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "injury",
@@ -389,7 +389,7 @@
     "status": "no_data",
     "answer": "There is no live news feed committed here, so current team news is out of scope. The news_context resolver returns a stored snapshot with a timestamp, not real-time reporting. For breaking news, use an official or press source.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "news",
@@ -758,7 +758,7 @@
     "status": "no_data",
     "answer": "An aging curve is not buildable from this data. There is no birthdate or age column in any NBA table and only a few season snapshots are on hand, so the honest move is not to pretend a curve exists. This is a data-availability limit, not a claim that aging effects are absent -- add age labels and more seasons and it becomes testable.",
     "source_artifact": "webapp/public/data/insights/aging_curve_lite.json",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "not_built",
@@ -815,7 +815,7 @@
     "status": "no_data",
     "answer": "The NFL is not in the covered set. This system's committed data spans NBA, MLB, soccer, and tennis; there is no NFL corpus, so there is nothing to answer. Asking about one of the four covered sports will get a real result.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "coverage_gap",
@@ -833,7 +833,7 @@
     "status": "no_data",
     "answer": "The NHL is not covered. The committed sports here are NBA, MLB, soccer, and tennis, and no hockey data exists in the repo. There is nothing to return for the NHL.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "coverage_gap",
@@ -851,7 +851,7 @@
     "status": "no_data",
     "answer": "College basketball is not covered. The engine's data is NBA, MLB, soccer, and tennis only, with no NCAA corpus, so a college game cannot be forecast here. The NBA is the covered basketball league.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "coverage_gap",
@@ -869,7 +869,7 @@
     "status": "no_data",
     "answer": "None of those are covered. The committed sports are NBA, MLB, soccer, and tennis; golf, combat sports, and esports have no data in the repo. There is nothing to answer for them.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "coverage_gap",
@@ -885,9 +885,9 @@
    ],
    "a": {
     "status": "no_data",
-    "answer": "The WNBA is not in the covered corpus, so there is no data to answer from -- the honest response is no_data rather than a borrowed NBA number. The covered basketball league here is the NBA. Ask an NBA question for a real result.",
+    "answer": "WNBA predictions are not produced here; the WNBA appears only in the pre-game line-movement measurement (Line Half-Life), with no WNBA forecast or calibration corpus. The covered basketball league for forecasts is the NBA. Ask an NBA question for a real result.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "coverage_gap",
@@ -905,7 +905,7 @@
     "status": "no_data",
     "answer": "Neither cricket nor rugby is covered. The committed sports are NBA, MLB, soccer, and tennis, and no data exists for other sports. There is nothing to return here.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "coverage_gap",
@@ -923,7 +923,7 @@
     "status": "no_data",
     "answer": "That specific historical fact is not something this engine will answer from memory, and it is not a registered result inside the committed corpora. The historical_result resolver only covers games and outcomes that live in the repo's data files. For general basketball history, a reference source is the right place.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "trivia",
@@ -941,7 +941,7 @@
     "status": "no_data",
     "answer": "All-time league records are not in the committed data and are not answered from model memory. The engine reports stats and results that exist in its corpora, not historical-record trivia. A league reference source is the right place for that.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "trivia",
@@ -959,7 +959,7 @@
     "status": "no_data",
     "answer": "Trade speculation is not something this system tracks or predicts. There is no transactions or rumors feed committed here, and the engine does not forecast front-office moves. Committed player and team analytics describe on-court performance only.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "rumors",
@@ -978,7 +978,7 @@
     "status": "no_data",
     "answer": "The system does not produce fantasy draft rankings or advice. It has descriptive player analytics on completed data, but no fantasy-scoring projection layer, so a draft recommendation would be invented. Ask about a player's actual committed metrics instead.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "fantasy",
@@ -996,7 +996,7 @@
     "status": "no_data",
     "answer": "Daily fantasy lineup building is out of scope. It needs a live slate, salaries, and projections, none of which are committed here, so no lineup can be built honestly. The engine's output is calibration and completed-game analytics, not DFS optimization.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "dfs",
@@ -1015,7 +1015,7 @@
     "status": "no_data",
     "answer": "Award outcomes are not forecast here. There is no committed data on voting or a current-season MVP model, so a prediction would be speculation. The engine describes on-court performance in completed corpora, not award races.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "awards",
@@ -1034,7 +1034,7 @@
     "status": "no_data",
     "answer": "Coaching-change speculation is not in scope. The system has no front-office or job-status data committed and does not forecast personnel decisions. Its analytics cover player and team on-court performance only.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
-    "as_of": "2026-07-23"
+    "as_of": "unknown"
    },
    "tags": [
     "rumors",
