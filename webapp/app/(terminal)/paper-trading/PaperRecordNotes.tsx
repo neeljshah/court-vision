@@ -14,9 +14,10 @@ export const LEDGER_SRC = "docs/evidence/forward/paper_result/LEDGER.jsonl";
 export function PaperRecordIntro({ asOf, lastNight }: { asOf: string | null; lastNight: string | null }) {
   return (
     <p data-testid="paper-record-intro" className="mt-1 max-w-3xl text-[12px] text-muted-foreground">
-      The forward paper record: simulated maker fills on the recorded Kalshi in-game tape, read from the desk
-      ledger. 29 fills over four ledger nights (2026-10-03, 10-04, 10-05 and 10-08); counts, contracts and
-      probabilities only. stake_units = contracts per fill. Not a verdict on the model.{" "}
+      The paper fill ledger: simulated maker fills on the recorded Kalshi in-game tape, read from the desk
+      ledger. 29 fills over four ledger nights (2026-10-03, 10-04, 10-05 and 10-08; the first three come before
+      the prospective series that starts 2026-10-06); counts, contracts and probabilities only. stake_units =
+      contracts per fill. A count, not an execution-quality or P&amp;L result, and not a verdict on the model.{" "}
       <span className="font-data text-foreground">
         Fills through night {lastNight ?? "not stated"}; ledger as of {asOf ? asOf.slice(0, 10) : "not stated"}.
       </span>{" "}

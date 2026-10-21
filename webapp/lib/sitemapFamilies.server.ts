@@ -2,6 +2,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { listClaimSlugs } from "@/lib/evidence.server";
+import { paperDetailHref } from "@/lib/paperLinks";
 import { bakedFillParams } from "@/components/paper_pm/bakedFillParams.server";
 
 const read = (rel: string): any => {
@@ -16,7 +17,8 @@ export function sitemapFamilies(): Families {
   const manifest = read("demo-data/manifest.json");
   return {
     claims: listClaimSlugs().filter(real).map((c) => `/evidence/${c}`),
-    fills: bakedFillParams().filter(real).map((f) => `/paper/${f}`), // already URL-encoded; do NOT re-encode
+    // The export directory is the once-encoded fill id; the public href carries one more layer (lib/paperLinks).
+    fills: bakedFillParams().filter(real).map((f) => paperDetailHref(f).replace(/\/$/, "")),
     receipts: ((read("receipts.json")?.rows ?? []) as unknown[]).map((_, i) => `/receipts/${i}`),
     explainers: ((read("data/explainers/explainers.json")?.essays ?? []) as Array<{ slug: string }>)
       .filter((e) => real(e.slug)).map((e) => `/analytics/explainers/${e.slug}`),

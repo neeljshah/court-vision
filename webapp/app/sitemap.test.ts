@@ -16,6 +16,8 @@ describe("sitemap", () => {
       expect(paths.some((p) => re.test(p)), String(re)).toBe(true);
     }
     expect(paths).not.toContain("/paper/");
+    // fill hrefs carry the double-encoded id (a once-encoded /paper/<id>/ 404s on Pages)
+    for (const p of paths.filter((x) => x.startsWith("/paper/"))) expect(p).toMatch(/%25/);
     expect(paths.some((p) => p.includes("/none/"))).toBe(false);
   });
 

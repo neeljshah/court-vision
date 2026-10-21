@@ -46,15 +46,15 @@ const PAGE_GUIDE: { href: string; label: string; purpose: string }[] = [
     href: "/paper-trading",
     label: "Paper record",
     purpose:
-      "Every paper fill with its receipt, graded against the close where a close " +
-      "exists. Calibration is the claim; there is no profit claim.",
+      "Every paper fill with its receipt, as counts and contracts. No closing-line " +
+      "reading exists yet. Calibration is the claim; there is no profit claim.",
   },
   {
     href: "/desk/health",
     label: "Desk health",
     purpose:
-      "The gate-verdict ledger (every signal tested, leak-free), freshness, and " +
-      "the night's refusals. A REJECT is a SUCCESS, not a failure.",
+      "The gate-verdict ledger (each tested signal's leak-free verdict), freshness, " +
+      "and the night's refusals. A REJECT is a SUCCESS, not a failure.",
   },
   {
     href: "/how-it-works",
