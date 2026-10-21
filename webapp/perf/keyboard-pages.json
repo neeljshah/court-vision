@@ -1,0 +1,11 @@
+{
+  "basePath": "/court-vision",
+  "pages": [
+    "/",
+    "/desk/",
+    "/paper-trading/",
+    "/analytics/calibration/",
+    "/analytics/findings/shrinkage/",
+    "trail:fills:0"
+  ]
+}

@@ -56,9 +56,9 @@ describe("a11y smoke -- SiteHeader", () => {
 
   it("theme + mobile toggles have aria-labels (icon-only buttons)", () => {
     render(<SiteHeader />);
-    expect(
-      screen.getByRole("button", { name: /switch to (light|dark) theme/i }),
-    ).toBeInTheDocument();
+    // The toggle is a pressed-state button ("Dark theme", aria-pressed), the menu a disclosure.
+    expect(screen.getByRole("button", { name: "Dark theme" })).toHaveAttribute("aria-pressed");
+    expect(screen.getByRole("button", { name: "Menu" })).toHaveAttribute("aria-expanded", "false");
   });
 });
 
@@ -109,12 +109,11 @@ describe("a11y smoke -- OnboardingOverlay", () => {
       within(dialog).getByText(/READY but INERT/i),
     ).toBeInTheDocument();
     expect(within(dialog).getByText(/Real money: DENY/i)).toBeInTheDocument();
-    // Page map links every product area.
-    ["Home", "Games", "Risk", "Progress", "System", "How it works"].forEach(
-      (label) => {
-        expect(within(dialog).getByText(label)).toBeInTheDocument();
-      },
-    );
+    // Page map links every product area (the six shell destinations, in order).
+    const mapLinks = within(dialog).getAllByRole("link").map((l) => l.textContent ?? "");
+    ["Home", "Games", "Desk", "Paper record", "Desk health", "How it works"].forEach((label, i) => {
+      expect(mapLinks[i]).toContain(label);
+    });
     noDollar(container);
   });
 

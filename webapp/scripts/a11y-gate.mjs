@@ -7,12 +7,13 @@
 //   --report: print per-page/theme counts + violations and a JSON blob, never fail.
 //
 // Needs a Chromium: in CI the runner's Google Chrome (playwright-core
-// channel "chrome"); locally set A11Y_CHROME=/path/to/chrome or install Chrome.
+// channel "chrome"); locally set A11Y_CHROME=/path/to/chrome or install Chrome
+// (the launcher is shared with keyboard-walk and third-party-requests: scripts/browser.mjs).
 import { readFileSync } from "node:fs";
-import { chromium } from "playwright-core";
 import AxeBuilder from "@axe-core/playwright";
 import { createServer } from "./serve-export.mjs";
 import { resolvePage, readManifest } from "./perf-pages.mjs";
+import { launchChrome } from "./browser.mjs";
 
 const TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa", "best-practice"];
 const BLOCKING = new Set(["serious", "critical"]);
@@ -35,16 +36,6 @@ export function formatViolation(page, theme, v) {
   return `${page} [${theme}] ${v.id} (${v.impact}) x${v.nodes}: ${v.help} -- ${v.targets.join(" | ")}`;
 }
 
-async function launch() {
-  const executablePath = process.env.A11Y_CHROME;
-  if (executablePath) return chromium.launch({ executablePath, args: ["--no-sandbox"] });
-  try {
-    return await chromium.launch({ channel: "chrome", args: ["--no-sandbox"] });
-  } catch (err) {
-    throw new Error(`a11y-gate: no Chrome found (${err.message.split("\n")[0]}); set A11Y_CHROME=/path/to/chrome`);
-  }
-}
-
 const isMain = process.argv[1] && import.meta.url.endsWith(process.argv[1].split("/").pop());
 if (isMain) {
   const report = process.argv.includes("--report");
@@ -58,7 +49,7 @@ if (isMain) {
   await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
   const base = `http://127.0.0.1:${server.address().port}${config.basePath}`;
   let browser;
-  try { browser = await launch(); } catch (err) {
+  try { browser = await launchChrome("a11y-gate"); } catch (err) {
     if (!report) throw err;
     console.log(`a11y report skipped: ${err.message}`); server.close(); process.exit(0);
   }

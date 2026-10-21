@@ -7,6 +7,7 @@ import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { findingsIndex } from "@/lib/analytics/findingsIndex";
+import { findingHref } from "@/lib/analytics/findingHref";
 
 export const metadata: Metadata = {
   title: "Findings",
@@ -58,7 +59,7 @@ export default function FindingsIndexPage() {
         {findingsIndex.map((f) => (
           // prefetch={false}: static export has no RSC prefetch payload, so the
           // default hover/viewport prefetch only 404s -- disable it on these cards.
-          <Link key={f.slug} href={`/analytics/findings/${f.slug}/`} style={card} prefetch={false}>
+          <Link key={f.slug} href={findingHref(f.slug)} style={card} prefetch={false}>
             <div className="serif" style={{ fontWeight: 500, fontSize: 21, color: "var(--ink)", marginBottom: 8 }}>
               {f.title}
             </div>

@@ -20,7 +20,7 @@
 // ASCII only. <= 300 LOC.
 
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import { useRef, useState, type RefObject } from "react";
 import { cn } from "@/lib/utils";
 
 const OnboardingGuide = dynamic(
@@ -28,9 +28,10 @@ const OnboardingGuide = dynamic(
   { ssr: false },
 );
 
-function HelpButton({ onClick }: { onClick: () => void }) {
+function HelpButton({ onClick, buttonRef }: { onClick: () => void; buttonRef: RefObject<HTMLButtonElement> }) {
   return (
     <button
+      ref={buttonRef}
       type="button"
       onClick={onClick}
       aria-label="Open the how-to-read-this guide"
@@ -52,16 +53,19 @@ export function OnboardingOverlay() {
   const [open, setOpen] = useState(false);
   // Once requested, the guide stays mounted (closed) so a second press is instant.
   const [requested, setRequested] = useState(false);
+  // The guide opens without a Radix Dialog.Trigger, so it is told where focus goes back to.
+  const helpRef = useRef<HTMLButtonElement>(null);
 
   return (
     <>
       <HelpButton
+        buttonRef={helpRef}
         onClick={() => {
           setRequested(true);
           setOpen(true);
         }}
       />
-      {requested && <OnboardingGuide open={open} setOpen={setOpen} />}
+      {requested && <OnboardingGuide open={open} setOpen={setOpen} returnFocusTo={helpRef} />}
     </>
   );
 }

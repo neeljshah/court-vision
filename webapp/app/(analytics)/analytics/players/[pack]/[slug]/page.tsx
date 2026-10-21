@@ -212,7 +212,7 @@ export default function EntityPage({ params }: { params: { pack: string; slug: s
         {" \u203A "}
         <Link href={`/analytics/players#${display.anchor}`} style={{ color: "var(--ink-3)" }}>{display.label}</Link>
         {" \u203A "}<span style={{ color: "var(--ink-2)" }}>{name}</span>
-        {" · "}<Link href="/analytics/" style={{ color: "var(--ink-3)" }}>Analytics hub</Link>{" · "}<Link href="/methodology/" style={{ color: "var(--ink-3)" }}>Methodology</Link>
+        {" · "}<Link href="/" style={{ color: "var(--ink-3)" }}>Analytics hub</Link>{" · "}<Link href="/methodology/" style={{ color: "var(--ink-3)" }}>Methodology</Link>
       </nav>
 
       <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "var(--paper-tint)", border: "1px solid var(--rule-strong)", borderRadius: 8, padding: "8px 14px", fontSize: 13, color: "var(--ink-2)", margin: "8px 0 26px" }}>

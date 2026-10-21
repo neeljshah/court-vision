@@ -1,4 +1,5 @@
 import { moduleCategory } from "./dashboardData";
+import { findingHref } from "./findingHref";
 import { analysisDestinations } from "./analysisDestinations";
 import { findingsIndex } from "./findingsIndex";
 import { snapshot } from "./labHelpers";
@@ -108,7 +109,7 @@ export function getLibraryEntries(): LibraryEntry[] {
   });
   const findings: LibraryEntry[] = findingsIndex.map(finding => ({
     id: finding.slug, title: finding.title, description: finding.dek, category: "Findings", sport: finding.sport,
-    kind: "finding", kindLabel: kindLabel.finding, status: "published", href: `/analytics/findings/${finding.slug}/`, asOf: finding.asOf,
+    kind: "finding", kindLabel: kindLabel.finding, status: "published", href: findingHref(finding.slug), asOf: finding.asOf,
     keywords: finding.artifactIds.join(" "), rows: null, fields: null, preview: [], previewLabel: "",
     integrityNotice: integrityNotice(finding.artifactIds),
   }));

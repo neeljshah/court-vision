@@ -214,7 +214,7 @@ export default function EntitiesIndexPage() {
         <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "var(--paper-tint)", border: "1px solid var(--rule-strong)", borderRadius: 8, padding: "8px 14px", fontSize: 13, color: "var(--ink-2)", marginTop: 16 }}>
           <span className="dot d-desc" style={{ width: 8, height: 8 }} /> Descriptive only &mdash; published rates and stated sample floors.
         </div>
-        <p style={{ color: "var(--ink-3)", fontSize: 13, marginTop: 12 }}>Each table lists its as-of date and stamps the pack manifest it is read from; each card links its source artifact. <Link href="/analytics/">Analytics hub</Link> &middot; <Link href="/methodology/">Methodology</Link></p>
+        <p style={{ color: "var(--ink-3)", fontSize: 13, marginTop: 12 }}>Each table lists its as-of date and stamps the pack manifest it is read from; each card links its source artifact. <Link href="/">Analytics hub</Link> &middot; <Link href="/methodology/">Methodology</Link></p>
       </header>
 
       <EntityFilter />
