@@ -33,6 +33,8 @@ Each file is `<region>--<width>-<theme>.jpg`, under 150 KB.
 | /paper/<fill>/ | all | both | "back to PM trail" link 14 px tall | `BetDetailPageClient` link | fixed: `min-h-6` |
 | /games/ | all | both | Sport tab strip is `sticky top-0` under the sticky site header, so it disappears behind the header once the page scrolls | `SlateCards` nav | fixed: `top-14` (header height) |
 | /analytics/lab/ | all | both | Dataset catalog row counts and rank sub-labels at 8 px | `.lab-nav-group>button small`, `.lab-rank-label small` | fixed: 10 px |
+| /desk/ | all | both | "show N cells" disclosure summaries 16 px tall | `ScoreboardCompact` summary | fixed: `py-1` |
+| /analytics/calibration/ | all | both | "Inspect bin" buttons unstyled, 19 px tall | `.cr-inspect` (22 per view) | fixed: 24 px rule in `calibration.css` |
 
 Noted, not changed (by design or outside a layout fix):
 
@@ -59,6 +61,12 @@ Noted, not changed (by design or outside a layout fix):
 - `app/(terminal)/paper/[betId]/BetDetailPageClient.tsx`: back link `inline-flex min-h-6 items-center`.
 - `app/(terminal)/games/SlateCards.tsx`: sport nav `sticky top-14`.
 - `app/(analytics)/analytics/lab/lab.css`: the two 8 px `small` rules become 10 px.
+- `components/desk/ScoreboardCompact.tsx`: `py-1` on the cell summaries; `app/(analytics)/analytics/calibration/calibration.css`: `.cr-inspect` rule (24 px, chip border).
+
+DOM audit, 17 pages x 3 widths x 2 themes: horizontal page scroll 2 -> 0, tables without a scroll
+container 14 -> 0, pages with sub-24 px block targets 7 -> 0, 8 px text 2 rules -> 0. The one
+remaining "scroller wider than viewport" hit is the nested per-arm table on /desk/ at 375, which
+scrolls inside the outer table wrapper.
 
 No copy changed. Gates after the change: axe 0 serious/critical on the 10 gate pages x 2 themes,
 perf budget green, typecheck clean, lint unchanged (pre-existing warnings only).

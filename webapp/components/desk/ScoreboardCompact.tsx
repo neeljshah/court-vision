@@ -64,7 +64,7 @@ export function ScoreboardCompact({ sb, arms }: { sb: Sb; arms: Record<string, s
                 <td className="px-3 py-1">{verdictText(g.verdicts)}</td>
                 <td className="px-3 py-1">
                   <details>
-                    <summary className="cursor-pointer underline">show {g.cells} cells</summary>
+                    <summary className="cursor-pointer py-1 underline">show {g.cells} cells</summary>
                     <T head={["segment", "target", "Brier", "log loss", "Brier minus A", "ticks", "games", "verdict", "reason"]}
                       rows={g.rows.map((r) => [r.segment, r.target, fmt(r.brier), fmt(r.logloss), fmt(r.brier_minus_A),
                         r.n_ticks ?? "-", r.n_games ?? "-", r.verdict ?? "-", r.reason ?? ""])} />
