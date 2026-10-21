@@ -34,6 +34,7 @@ const EXTRA_DESTINATIONS: Rec[] = [
   { id: "page-measurement-lab", title: "Measurement lab", subtitle: "Inspect published measurements and source context", href: "/analytics/lab", type: "page", keywords: ["lab", "measurement", "tables"] },
   { id: "page-compare-profiles", title: "Compare profiles", subtitle: "Compare published Atlas profiles", href: "/analytics/compare", type: "page", keywords: ["compare", "profiles", "atlas"] },
   { id: "page-evidence-platform", title: "Evidence & Platform", subtitle: "Browse source-linked visual evidence", href: "/analytics/evidence", type: "page", keywords: ["evidence", "platform", "charts", "sources"] },
+  { id: "page-working-papers", title: "Working papers", subtitle: "Read the published working papers", href: "/analytics/papers", type: "page", keywords: ["papers", "working papers", "research"] },
 ];
 const SCOPES: Array<{ value: "all" | Rec["type"]; label: string }> = [
   { value: "all", label: "All" }, { value: "page", label: "Pages" }, { value: "entity", label: "Entities" }, { value: "module", label: "Modules" }, { value: "finding", label: "Findings" },

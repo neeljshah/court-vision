@@ -211,6 +211,24 @@ export const COMPARISON_FIGURES = {
     "source": "docs/evidence/forward/cumulative/2026-10-04.md",
     "as_of": "2026-10-04",
     "licenses": "To 2026-10-04 the paper desk has 10 nights with any receipt (2 COMPLETE), 0 qualified games, and 136 TTL-30 credited paper fills on unqualified tape; every pooled cell is INSUFFICIENT."
+  },
+  "forward_window_counts": {
+    "kind": "comparison",
+    "key": "forward_window_counts",
+    "sport": "all",
+    "market": "in-play maker paper quotes",
+    "metric": "forward paper window: games served, receipt nights, qualified games (counts only)",
+    "value": "113 games served; 8 nights with receipts (1 COMPLETE, 7 PARTIAL); 0 of 31 judged games qualified",
+    "games_served": 113,
+    "receipt_nights": 8,
+    "complete": 1,
+    "partial": 7,
+    "qualified_of_judged": "0 of 31",
+    "window_end": "2026-10-16",
+    "verdict": "INSUFFICIENT",
+    "source": "docs/JOB_EVIDENCE_PACKET.md section 5 (Forward paper record 2026-10-06 .. 2026-10-16)",
+    "as_of": "2026-10-19",
+    "licenses": "Through 2026-10-16 the paper desk served 113 games over 8 receipt nights (1 COMPLETE, 7 PARTIAL); 0 of 31 judged games qualified and every pooled cell is INSUFFICIENT. Counts only; not a verdict on the model and never execution quality."
   }
 } as const;
 

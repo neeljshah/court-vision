@@ -76,7 +76,7 @@ produce.
 - *Proof:* `src/pipeline/unified_pipeline.py`, `src/tracking/advanced_tracker.py`. Manifest:
   [CV_TRACKING.md](CV_TRACKING.md).
 - *Honest caveat:* CV features carry **SHAP ≈ 0 in production today** (`cv_lift_report.json:
-  has_cv_data: false`) — complete plumbing, credible thesis, **not yet a measured edge.**
+  has_cv_data: false`) — complete plumbing, credible thesis, **no measured lift (SHAP is about 0 in production).**
 
 ### 2 · SIGNALS — *real engineering; no market-relative lift measured*
 
@@ -191,7 +191,7 @@ the honest version was written down and the inflated one retired:
 | Retracted | Root cause | Honest version |
 |---|---|---|
 | +18.38% ROI on 1,535 bets | Market-follow grading artifact (model never read; flat -110 fiction; in-sample filters) | Market efficient: the pregame model matches or trails the devigged close in Brier; no return figure is claimed |
-| endQ3 Brier 0.119 "Pinnacle-class" | Q4 feature leak (`halftime_pace_shift`, `trailing_team_q4_usg_hhi`); source file reads 0.1354, not 0.1191 | Leak-free ~0.141 (caught own pipeline Q4 leak) |
+| endQ3 Brier 0.119 "Pinnacle-class" | Q4 feature leak (`halftime_pace_shift`, `trailing_team_q4_usg_hhi`); source file reads 0.1354, not 0.1191 | Leak-free value: see JOB_EVIDENCE_PACKET.md (not a canonical key); caught own pipeline Q4 leak |
 | +54% in-play ROI | L5-proxy model-quality ceiling, not a tradeable/realized result | No $ figure quoted; the forward paper series (since 2026-10-06) has no verdict yet |
 | "Season edge proven" | Full-season WF: CLV ≈ 0; model explains 0.13%/0.29% of line move | Market is efficient; well-calibrated but does not beat the close |
 | "13-month build" / "hand-typed 5,504 commits" (the 2026-09-07 count) | Git history spans ~6 months (2026-03-09 to 2026-09-07); the large majority of commits are agent-authored under direction | ~6-month build; solo human architect/director of an agentic pipeline |

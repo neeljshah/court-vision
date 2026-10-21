@@ -5,7 +5,7 @@ export type Section = { label: string; href: string; match: RegExp };
 
 export const SITE_NAV: readonly Section[] = [
   { label: "Today", href: "/", match: /^\/(games)(\/|$)/ },
-  { label: "Desk", href: "/desk/", match: /^\/(desk|paper-trading)(\/|$)/ },
+  { label: "Desk", href: "/desk/", match: /^\/(desk|paper-trading|paper)(\/|$)/ },
   {
     label: "Calibration",
     href: "/analytics/calibration/",
@@ -14,7 +14,7 @@ export const SITE_NAV: readonly Section[] = [
   {
     label: "Research",
     href: "/analytics/papers/",
-    match: /^\/(graveyard|analytics\/(papers|findings|novel|lab|players|browse|research|m|the-loop|blowout-timing|pitch-sequencing|count-context))(\/|$)/,
+    match: /^\/(graveyard|analytics\/(papers|ask|findings|novel|lab|players|browse|research|m|the-loop|blowout-timing|pitch-sequencing|count-context))(\/|$)/,
   },
   { label: "Evidence", href: "/evidence/", match: /^\/(evidence|receipts|analytics\/evidence)(\/|$)/ },
   { label: "About", href: "/about/", match: /^\/(about|how-it-works|methodology|analytics\/(about|explainers))(\/|$)/ },

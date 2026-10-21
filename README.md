@@ -84,7 +84,7 @@ map is **[docs/CAPABILITIES.md](docs/CAPABILITIES.md)**.
 - **[Papers](https://neeljshah.github.io/court-vision/analytics/papers/)** -- research write-ups whose evidence paths are machine-checked against the published artifacts before deploy.
 - **Inspectors** -- state reliability, residual anatomy, blowout timing, pitch sequencing, score decomposition, cross-sport comparability.
 - **Experimental metrics, the measurement lab, Compare, the entity library (1,549 cards), and Ask Scout** -- every answer cites its artifact and `as_of` date, or returns `NO_DATA`.
-- **[The retraction finding](https://neeljshah.github.io/court-vision/analytics/findings/retraction/)** -- what was claimed, what was wrong, how it was caught.
+- **[The retraction finding](https://neeljshah.github.io/court-vision/evidence/retractions/)** -- what was claimed, what was wrong, how it was caught.
 
 The site is a static export built from [`webapp/`](webapp/) on every push; published JSON is
 scrubbed and receipt-checked in CI before it ships. Page-by-page map, data lineage and the CI gates:
