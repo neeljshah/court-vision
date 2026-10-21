@@ -45,6 +45,14 @@ output; measured mean error under 2/255), and the brand icons sit at 2-60 KB.
 To raise a ceiling, change `budget.json` in the same pull request as the code that needs it and
 say in this file what the extra bytes buy.
 
+Raised ceilings:
+
+- 2026-10-21, `/paper-trading/` HTML 10 KB -> 17 KB (measured 15354 gzip bytes + 2 KB headroom). The page
+  now server-renders the five baked paper feeds (`public/demo-data/api_paper_*.json`) instead of fetching
+  them after hydration, so the exported HTML carries the ledger as-of date, the 29 fills and the settled
+  count on first paint rather than "loading" and "not stated". The extra bytes are the 29-fill trail,
+  present once as the rendered rows and once as the client page's props; JS and CSS are unchanged.
+
 ## Re-measuring locally
 
 ```
