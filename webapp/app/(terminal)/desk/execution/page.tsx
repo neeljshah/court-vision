@@ -3,11 +3,13 @@
 
 import { loadDesk, refusalsFor, fmt } from "@/lib/desk.server";
 import { DeskShell, NotAvailable, Section, T } from "@/components/desk/DeskShell";
+import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo/meta";
 
-export const metadata = {
+export const metadata: Metadata = pageMeta("/desk/execution/", {
   title: "Desk execution",
   description: "Paper only: maker-only quotes, fill realism, markouts and latency on the recorded tape.",
-};
+});
 
 function PaceBar({ hours, max }: { hours: number; max: number }) {
   return (

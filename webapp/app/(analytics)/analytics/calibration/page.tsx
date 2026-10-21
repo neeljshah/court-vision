@@ -16,11 +16,12 @@ import { loadCalibrationReliability } from "@/lib/analytics/calibrationReliabili
 import { snapshot } from "@/lib/analytics/labHelpers";
 import { canonicalFigures, CANONICAL_PATH } from "@/lib/canonicalFigures.server";
 import "./calibration.css";
+import { pageMeta } from "@/lib/seo/meta";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta("/analytics/calibration/", {
   title: "Calibration",
   description: "Calibration against the market by sport, market and checkpoint: verdicts, reliability bins with game-cluster intervals, Brier decomposition and sharpness.",
-};
+});
 
 type MarketType = {
   description?: string; scored?: boolean; n_rows?: number;

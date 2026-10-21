@@ -5,13 +5,15 @@
 import { loadArtifact, receiptChip } from "@/lib/showcase.server";
 import { Panel, PanelHead, Num } from "@/components/ui/terminal";
 import { ReceiptChip } from "@/components/showcase/ReceiptChip";
+import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo/meta";
 
-export const metadata = {
+export const metadata: Metadata = pageMeta("/graveyard/", {
   title: "Graveyard",
   description:
     "Killed signals shown with the same prominence as shipped ones: nulls, " +
     "REJECT verdicts, and mechanisms that did not survive replication.",
-};
+});
 
 type HonestySport = {
   sport: string;

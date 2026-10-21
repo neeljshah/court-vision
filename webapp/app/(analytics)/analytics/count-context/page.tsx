@@ -5,11 +5,12 @@ import { ExactCountExplorer } from "@/components/analytics/count-context/ExactCo
 import { InspectorReadingTrail } from "@/components/analytics/InspectorReadingTrail";
 import { loadCountContext, loadExactCountContext } from "@/lib/analytics/countContext.server";
 import "./count-context.css";
+import { pageMeta } from "@/lib/seo/meta";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta("/analytics/count-context/", {
   title: "Count context",
   description: "Compare MLB pitch profiles by exact ball-strike count, then inspect count-class pitch mixes and outcome proxies.",
-};
+});
 
 export default function CountContextPage() {
   const data = loadCountContext();

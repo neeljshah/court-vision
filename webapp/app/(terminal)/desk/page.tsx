@@ -10,11 +10,13 @@ import { DeskShell, NotAvailable, Section, T } from "@/components/desk/DeskShell
 import { ScoreboardCompact } from "@/components/desk/ScoreboardCompact";
 import { StatusCard, CensusSummary, DeskNotClaimed } from "@/components/desk/DeskStatus";
 import { CENSUS, CENSUS_SRC, ghBlob, loadUptime } from "@/components/desk/deskExtras.server";
+import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo/meta";
 
-export const metadata = {
+export const metadata: Metadata = pageMeta("/desk/", {
   title: "Paper desk record",
   description: "Paper only: simulated maker quotes on the recorded Kalshi tape; nights, scoreboard cells, coverage. Not a verdict.",
-};
+});
 
 const SRC = "docs/evidence/forward";
 

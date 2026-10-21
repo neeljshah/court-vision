@@ -8,11 +8,12 @@ import { join } from "node:path";
 import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { pageMeta } from "@/lib/seo/meta";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta("/analytics/explainers/", {
   title: "Explainers",
   description: `${readEssays().length} long-form essays on how the possession simulator thinks, what calibration means, and why the graveyard of null results is the point.`,
-};
+});
 
 type Essay = { slug: string; title: string; dek: string; cited: string[] };
 

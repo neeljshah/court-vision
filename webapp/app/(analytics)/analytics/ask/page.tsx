@@ -6,11 +6,12 @@ import type { AskEntry } from "@/lib/analytics/askSearch";
 import { loadScoutCorpus } from "@/lib/analytics/scoutCorpus.server";
 import "../workspace.css";
 import styles from "./ask.module.css";
+import { pageMeta } from "@/lib/seo/meta";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta("/analytics/ask/", {
   title: "Ask Scout",
   description: "Search CourtVision's published player profiles, metrics, and research answers. Inspect the source and snapshot date behind every result.",
-};
+});
 const BUCKETS = [
   { key: "calibration-market", label: "Calibration & the market" },
   { key: "players-teams", label: "Players & teams" },

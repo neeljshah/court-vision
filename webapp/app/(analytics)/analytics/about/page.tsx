@@ -5,12 +5,13 @@
 import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { pageMeta } from "@/lib/seo/meta";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta("/analytics/about/", {
   title: "About",
   description:
     "What CourtVision Analytics is, the three Scout AI tiers, and who built it.",
-};
+});
 
 const section: CSSProperties = { padding: "56px 0", borderTop: "1px solid var(--rule)" };
 const h2: CSSProperties = {

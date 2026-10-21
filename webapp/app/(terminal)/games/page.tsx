@@ -13,10 +13,13 @@ import { SlateCards } from "./SlateCards";
 import { HONEST_DISCLAIMER } from "@/lib/api";
 import { isSnapshotMode } from "@/lib/fetchHonest";
 import { readManifest } from "@/lib/manifest.server";
+import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo/meta";
 
-export const metadata = {
+export const metadata: Metadata = pageMeta("/games/", {
   title: "Games",
-};
+  description: "Today's games in the snapshot: pregame probabilities, the market surface and in-game calibration per game. Paper units only.",
+});
 
 export default async function GamesPage() {
   const publishedGames = isSnapshotMode ? (await readManifest())?.games ?? [] : undefined;

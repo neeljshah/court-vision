@@ -3,11 +3,12 @@ import Link from "next/link";
 import { artifactUrl } from "@/lib/analytics/artifactProvenance";
 import { countWord, type CardVerdict } from "@/lib/analytics/novelCards";
 import { getNovelCards } from "@/lib/analytics/novelCards.server";
+import { pageMeta } from "@/lib/seo/meta";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta("/analytics/novel/", {
   title: "Experimental measurements",
   description: "Published experimental measurements with their results, intervals, and declared limitations.",
-};
+});
 
 const baseName = (path: string) => path.split(/[\\/]/).pop() || path;
 const verdictClass = (verdict: CardVerdict) => ({

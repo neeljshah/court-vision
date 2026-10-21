@@ -15,6 +15,8 @@ import { asOfDate } from "@/lib/analytics/format";
 import { CalibrationTableSection, type CalibrationEntry } from "@/components/analytics/entities/CalibrationTableSection";
 import { PackSectionHeading } from "@/components/analytics/entities/PackSectionHeading";
 import { EntityFilter } from "@/components/analytics/EntityFilter";
+import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo/meta";
 
 type KN = Record<string, unknown>;
 type Entry = CalibrationEntry;
@@ -132,10 +134,10 @@ function sportLabel(sport: string | undefined): string {
   return sport === "soccer_intl" ? "Soccer international" : (sport || "Cross-sport").toUpperCase();
 }
 
-export const metadata = {
+export const metadata: Metadata = pageMeta("/analytics/players/", {
   title: "Entities",
   description: "1,549 descriptive cards across basketball, baseball, soccer, and tennis. Measured historical rates held to conservative sample floors.",
-};
+});
 
 const STYLES = `
 .pl-search{width:100%;max-width:440px;font-family:var(--font-sans);font-size:15px;color:var(--ink);background:var(--paper-raised);border:1px solid var(--rule-strong);border-radius:var(--radius-pill,999px);padding:11px 18px;min-height:44px;margin:22px 0 6px}

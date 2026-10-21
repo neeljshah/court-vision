@@ -7,14 +7,16 @@
 import { loadDesk, refusalsFor, fmt } from "@/lib/desk.server";
 import { DeskShell, NotAvailable, Section, T } from "@/components/desk/DeskShell";
 import { heartbeats } from "@/components/desk/DeskStatus";
+import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo/meta";
 import {
   CHECK_ALL_SRC, UPTIME_SRC, ghBlob, loadChecks, loadIssues, loadUptime,
 } from "@/components/desk/deskExtras.server";
 
-export const metadata = {
+export const metadata: Metadata = pageMeta("/desk/health/", {
   title: "Desk health",
   description: "Paper only: capture heartbeats, host uptime, nightly steps, open issues and self-checks.",
-};
+});
 
 const EXPORT = "webapp/public/data/desk/latest.json";
 const counts = (o: Record<string, number> | null | undefined) =>

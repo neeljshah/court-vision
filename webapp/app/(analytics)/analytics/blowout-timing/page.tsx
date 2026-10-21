@@ -5,11 +5,12 @@ import { InspectorReadingTrail } from "@/components/analytics/InspectorReadingTr
 import { Receipt } from "@/components/analytics/Receipt";
 import { loadBlowoutTiming } from "@/lib/analytics/blowoutTiming.server";
 import "./blowout-timing.css";
+import { pageMeta } from "@/lib/seo/meta";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta("/analytics/blowout-timing/", {
   title: "Blowout timing",
   description: "Published frequency and conditional clock quartiles for permanent score margins.",
-};
+});
 
 export default function BlowoutTimingPage() {
   const sports = loadBlowoutTiming();

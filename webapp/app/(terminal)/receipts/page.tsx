@@ -15,13 +15,15 @@ import { join } from "node:path";
 import Link from "next/link";
 import { PRODUCT_NAME } from "@/lib/api";
 import { Panel, PanelHead, Num } from "@/components/ui/terminal";
+import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo/meta";
 
-export const metadata = {
+export const metadata: Metadata = pageMeta("/receipts/", {
   title: "Receipts",
   description:
     "The calibration receipts ledger: model vs. market sharpness per sport/market, " +
     "as measured, losses included. No dollar edge claimed.",
-};
+});
 
 type ReceiptRow = {
   sport_market: string;

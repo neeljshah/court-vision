@@ -5,11 +5,12 @@ import { StateReliability } from "@/components/analytics/state-reliability/State
 import { InspectorReadingTrail } from "@/components/analytics/InspectorReadingTrail";
 import { loadStateReliability } from "@/lib/analytics/stateReliability.server";
 import "./state-reliability.css";
+import { pageMeta } from "@/lib/seo/meta";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta("/analytics/state-reliability/", {
   title: "State reliability",
   description: "Inspect published state-conditioned calibration rows and source-specific support by sport.",
-};
+});
 
 export default function StateReliabilityPage() {
   const sports = loadStateReliability();

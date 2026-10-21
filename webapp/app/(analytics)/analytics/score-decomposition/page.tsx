@@ -3,11 +3,12 @@ import { ScoreDecomposition } from "@/components/analytics/score-decomposition/S
 import { InspectorReadingTrail } from "@/components/analytics/InspectorReadingTrail";
 import { loadScoreDecomposition } from "@/lib/analytics/scoreDecomposition";
 import "./score-decomposition.css";
+import { pageMeta } from "@/lib/seo/meta";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta("/analytics/score-decomposition/", {
   title: "Score decomposition",
   description: "Published Brier score components and reconstruction remainders.",
-};
+});
 
 export default function ScoreDecompositionPage() {
   const { sports, asOf } = loadScoreDecomposition();

@@ -22,14 +22,16 @@ import { FunnelDetail } from "@/components/explain/FunnelDetail";
 import { ValidationDiscipline } from "@/components/explain/ValidationDiscipline";
 import { HonestFindings } from "@/components/explain/HonestFindings";
 import { SelfImproveExplainer } from "@/components/explain/SelfImproveExplainer";
+import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo/meta";
 
-export const metadata = {
+export const metadata: Metadata = pageMeta("/how-it-works/", {
   title: "How it works",
   description:
     "How CourtVision works, honestly: the full data-to-intelligence funnel, the " +
     "validation discipline that makes most signals reject, the recorded findings, " +
     "and the ready-but-inert self-improve ratchet. Calibration, not a market edge.",
-};
+});
 
 export default function HowItWorksPage() {
   return (

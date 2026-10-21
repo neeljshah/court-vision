@@ -4,11 +4,13 @@
 
 import { loadDesk, refusalsFor, fmt } from "@/lib/desk.server";
 import { DeskShell, NotAvailable, Section, T } from "@/components/desk/DeskShell";
+import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo/meta";
 
-export const metadata = {
+export const metadata: Metadata = pageMeta("/desk/ingame/", {
   title: "How in-game works",
   description: "Paper only: state capture, per-sport fit, arms, live paper quote, fill realism, markout.",
-};
+});
 
 const STEPS: [string, string][] = [
   ["State capture",
