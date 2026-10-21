@@ -51,7 +51,10 @@ describe("NBA consistency lab dataset", () => {
     expect(dataset.rows[0].note).toContain("player_id: 1629029");
     expect(dataset.rows[15].note).toContain("least_consistent_top15[0]");
     expect(dataset.rows[15].note).toContain("player_id: 200782");
-    expect(labComparisonPolicy(dataset.rows).compatibility).toBe("unknown");
+    // The source publishes its NBA input path, floor population and pooled seasons, so the rows share one complete definition.
+    expect(labComparisonPolicy(dataset.rows).compatibility).toBe("compatible");
+    expect(dataset.rows[0].definition).toEqual({ sport: "NBA", population: "579 players meeting the floor of 807 source players; games at or above 10 minutes; at least 15 qualifying appearances", observationWindow: "2023-24, 2024-25, 2025-26 pooled; as of 2026-04-12" });
+    expect(dataset.publishedAsOf).toEqual({ date: "2026-04-12", field: "as_of" });
   });
 
   it("states the source date, pooled window, qualifying floors, population, and limits", () => {

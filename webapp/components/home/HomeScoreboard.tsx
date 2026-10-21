@@ -53,16 +53,16 @@ export function HomeScoreboard({ board }: { board: Scoreboard | null }) {
                     <td className="px-3 py-2 font-data">{r.sport}</td>
                     <td className="px-3 py-2">{r.market}</td>
                     <td className="px-3 py-2 font-data text-xs">{r.checkpoint}</td>
-                    <td className="px-3 py-2 text-right font-data tabular">{r.n}</td>
+                    <td className="px-3 py-2 text-right font-data tabular whitespace-nowrap">{r.n}</td>
                     <td className="px-3 py-2">
                       <div className="flex items-center gap-2">
                         <DeltaBars delta={d.delta} ci={d.ci} verdict={r.verdict} />
-                        <span className="font-data tabular text-foreground">{fmt(d.delta)}</span>
+                        <span className="font-data tabular whitespace-nowrap text-foreground">{fmt(d.delta)}</span>
                         <ReceiptChip sourceArtifact={r.source} asOf={asOf} verified="edge_claimed:false"
                           verdict={r.verdict} n={r.n} ci={d.ci} />
                       </div>
                     </td>
-                    <td className="px-3 py-2 text-right font-data tabular text-muted-foreground">
+                    <td className="px-3 py-2 text-right font-data tabular whitespace-nowrap text-muted-foreground">
                       [{fmt(d.ci[0])}, {fmt(d.ci[1])}]
                     </td>
                     <td className="px-3 py-2">

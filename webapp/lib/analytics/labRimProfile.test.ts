@@ -30,7 +30,9 @@ describe("rim profile lab dataset", () => {
     expect(dataset.rows[15].label).toBe("Rudy Gobert");
     expect(dataset.rows[15].values.relative_rim_share_difference).toBeCloseTo(-0.185, 3);
     expect(dataset.rows[15].values.delta).toBe(-0.0632);
-    expect(dataset.rows[0].definition).toEqual({ sport: "NBA", season: "2025-26" });
+    expect(dataset.rows[0].definition).toEqual({ sport: "NBA", season: "2025-26", population: "370 qualified players; 500 on-court minute floor", observationWindow: "2025-26 (complete NBA season)" });
+    expect(dataset.rows[15].definition).toEqual({ sport: "NBA", season: "2024-25", population: "387 qualified players; 500 on-court minute floor", observationWindow: "2024-25 (complete NBA season)" });
+    expect(dataset.publishedAsOf).toEqual({ date: "2026-07-25", field: "generated_at" });
     expect(labComparisonPolicy(dataset.rows).compatibility).toBe("incompatible");
     expect(dataset.fields.map(field => field.key)).toEqual([
       "delta", "rim_share_allowed_on", "rim_share_allowed_off", "rim_efg_delta", "min_on",

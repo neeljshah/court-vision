@@ -79,7 +79,7 @@ export function FindingTemplate({ slug, artifact, children }: { slug: string; ar
         <AsOfBadge asOf={asOf} kind={a.as_of || a.measured_on ? "source" : "snapshot"} />
         <ReceiptChip source={source} asOf={asOf} kind={a.as_of || a.measured_on ? "source" : "snapshot"} quotedOn={quotedOn(source)} />
       </div>
-      <Block id="test" title="The test that produced it">
+      <Block id="test" title="How it was tested">
         <ul style={{ margin: 0, paddingLeft: 20 }}>
           <li>Gate: {spec.test.gate}</li>
           <li>Corpora: {val(spec.test.corpora, a)}</li>

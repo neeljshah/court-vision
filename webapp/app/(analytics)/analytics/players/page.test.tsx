@@ -50,6 +50,17 @@ describe("EntitiesIndexPage", () => {
     expect(bands).toBeVisible();
   });
 
+  it("stamps every pack section heading with a receipt that opens the pack manifest", () => {
+    render(<EntitiesIndexPage />);
+    const packs = [["NBA players", "atlas_nba_manifest.json", "2026-04-12"], ["MLB batters", "atlas_mlb_batters_manifest.json", "2025-09-28"], ["Tennis players", "atlas_tennis_manifest.json", "2026-07-19"], ["Calibration checkpoints", "atlas_calibration_manifest.json", "2026-09-16"]] as const;
+    for (const [heading, manifest, asOf] of packs) {
+      const row = screen.getByRole("heading", { name: heading }).parentElement as HTMLElement;
+      expect(row).toHaveTextContent(`as of ${asOf}`);
+      fireEvent.click(within(row).getByRole("button", { name: new RegExp(`Source as of ${asOf}`) }));
+      expect(within(row).getByRole("link", { name: `webapp/public/data/showcase/${manifest}` })).toHaveAttribute("href", `/data/showcase/${manifest}`);
+    }
+  });
+
   it("labels the data-derived pitch atlas total without calling every card a pitch type", () => {
     render(<EntitiesIndexPage />);
     const count = mlbPitchEntries().length.toLocaleString();

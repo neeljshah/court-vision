@@ -1,4 +1,4 @@
-import { field as f, snapshot } from "./labHelpers";
+import { field as f, snapshot, sourceAsOf } from "./labHelpers";
 import type { LabDataset, LabRow } from "./labTypes";
 
 type RecordValue = Record<string, unknown>;
@@ -27,6 +27,10 @@ export function buildRimProfileLabDataset(source: unknown): LabDataset {
   ];
   const scopeParts: string[] = [];
   const rows: LabRow[] = [];
+  // Published observation window: the source lists the seasons it covers and notes they are complete seasons.
+  const window = object(source.observation_window) ? source.observation_window : {};
+  const windowSeasons = Array.isArray(window.seasons) ? window.seasons.filter((item): item is string => typeof item === "string") : [];
+  const completeSeasons = typeof window.note === "string" && /complete NBA seasons/.test(window.note);
   for (const [seasonIndex, rawSeason] of source.seasons.entries()) {
     const path = `rim_deterrence.seasons[${seasonIndex}]`;
     if (!object(rawSeason)) throw new Error(`${path} must be an object`);
@@ -36,6 +40,12 @@ export function buildRimProfileLabDataset(source: unknown): LabDataset {
     const qualified = nonnegativeInteger(rawSeason.n_qualified);
     const floor = finite(rawSeason.min_on_floor);
     const floorText = floor !== null && floor >= 0 ? `${floor} on-court minute floor` : "on-court minute floor unavailable";
+    const definition = {
+      sport: "NBA",
+      season,
+      ...(qualified === null ? {} : { population: `${qualified} qualified players; ${floorText}` }),
+      ...(windowSeasons.includes(season) ? { observationWindow: `${season}${completeSeasons ? " (complete NBA season)" : ""}` } : {}),
+    };
     scopeParts.push(`${season}: ${rawSeason.leaders.length} selected player-season rows from ${qualified === null ? "an unavailable number of" : qualified} qualified players; ${floorText}`);
     rawSeason.leaders.forEach((leader, index) => {
       const rowPath = `${path}.leaders[${index}]`;
@@ -48,7 +58,7 @@ export function buildRimProfileLabDataset(source: unknown): LabDataset {
         id: `${season}-${index}`,
         label: leader.player_name,
         group: season,
-        definition: { sport: "NBA", season },
+        definition,
         values: {
           delta: finite(leader.delta),
           rim_share_allowed_on: on,
@@ -78,6 +88,7 @@ export function buildRimProfileLabDataset(source: unknown): LabDataset {
     status: "Descriptive",
     fields,
     rows,
+    publishedAsOf: sourceAsOf(source),
   };
 }
 

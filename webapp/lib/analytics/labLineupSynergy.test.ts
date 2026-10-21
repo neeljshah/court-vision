@@ -38,7 +38,10 @@ describe("lineup synergy lab dataset", () => {
     expect(dataset.scope).toContain("15 top and 8 bottom selected lineups from 102 qualified lineups; 2024-25");
     expect(dataset.scope).toContain("all five members");
     expect(dataset.caveat).toContain("not points per 100 possessions");
-    expect(labComparisonPolicy(dataset.rows).compatibility).toBe("unknown");
+    // The source publishes its qualified count and single-season window, so every row shares one complete definition.
+    expect(labComparisonPolicy(dataset.rows).compatibility).toBe("compatible");
+    expect(dataset.rows[0].definition).toEqual({ population: "102 qualified five-man lineups (all five members qualify for individual on/off)", observationWindow: "2024-25" });
+    expect(dataset.publishedAsOf).toEqual({ date: "2026-07-25", field: "generated_at" });
   });
 
   it("uses original residual and derives minutes only for valid support", () => {

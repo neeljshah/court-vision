@@ -6,7 +6,7 @@ import * as table from "./LabTable";
 
 const dataset = establishedDatasets().find(item => item.id === "pitch-profiles")!;
 const data = { datasets: [dataset], novel: [] };
-beforeEach(() => window.history.replaceState(null, "", "/analytics/lab/?dataset=pitch-profiles&field=velocity_span"));
+beforeEach(() => window.history.replaceState(null, "", "/analytics/lab/?dataset=pitch-profiles&field=velocity_span&view=table"));
 afterEach(() => vi.restoreAllMocks());
 
 describe("pitch-profile velocity support", () => {
@@ -22,7 +22,11 @@ describe("pitch-profile velocity support", () => {
     expect(details).toHaveTextContent("pitch_type_distribution[0]");
     expect(details).toHaveTextContent("velo_percentiles_by_pitch_type[0]");
     expect(details).toHaveTextContent(/round/i);
-    expect(screen.queryByRole("region", { name: "Measurement summary" })).not.toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "Measurement summary" })).toBeInTheDocument();
+    const definition = screen.getByRole("region", { name: "Published definition" });
+    expect(within(definition).getByText("Sport").nextElementSibling).toHaveTextContent("MLB");
+    expect(within(definition).getByText("Population").nextElementSibling).toHaveTextContent("693,037 pitches");
+    expect(within(definition).getByText("Observation window").nextElementSibling).toHaveTextContent("2025 Statcast pull (season named by the source path; exact dates not published)");
   });
 
   it("keeps omitted velocity groups unavailable and exports the original denominators", () => {

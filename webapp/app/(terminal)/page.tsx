@@ -1,5 +1,6 @@
 // Home (/) -- Today's front door, built to the first-screen contract (DESIGN_BRIEF section 4,
-// DESIGN_PRINCIPLES P2.1-P2.4): sentence; packet headline verdicts (largest n first) read from
+// DESIGN_PRINCIPLES P2.1-P2.4): sentence; plain-words verdict; how to check (scoring rule and
+// reference as Term tooltips); packet headline verdicts (largest n first) read from
 // docs/evidence/CANONICAL_FIGURES.json; forward paper series status with the last night's
 // receipt; what this is not; exactly two primary actions; byline. Below the fold: the in-game
 // scoreboard sorted by n and the reproduce line. Build-time only; no client fetch.
@@ -16,6 +17,7 @@ import { HomeForwardStatus } from "@/components/home/HomeForwardStatus";
 import { HomeNotClaimed } from "@/components/home/HomeNotClaimed";
 import { HomeByline } from "@/components/home/HomeByline";
 import { HomeScoreboard, type Scoreboard } from "@/components/home/HomeScoreboard";
+import { Term } from "@/components/evidence";
 
 export const metadata: Metadata = {
   title: "Calibration Scoreboard",
@@ -61,6 +63,12 @@ export default function Home() {
             return `${f.sport.toUpperCase()} ${f.market} ${f.verdict}${q ? ` (${q})` : ""}`;
           }).join("; ")}.
         </h2>
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          Each row below is scored by <Term id="brier">Brier score</Term> against the{" "}
+          <Term id="devigged-close">devigged close</Term> and carries its sample size, 95% interval,
+          as-of date and receipt. To check a number, open its receipt or the truth source,{" "}
+          <span className="font-data">docs/JOB_EVIDENCE_PACKET.md</span>.
+        </p>
         <HomeVerdictRows figures={figures} />
         <HomeForwardStatus desk={desk} />
         <HomeNotClaimed asOf={desk?.date ?? asOf} />
@@ -74,7 +82,7 @@ export default function Home() {
       <HomeScoreboard board={board} />
 
       <p className="mt-8 border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground">
-        Headline figures: <span className="font-data">{CANONICAL_PATH}</span> (recompute memo{" "}
+        How to check: the headline figures are read from <span className="font-data">{CANONICAL_PATH}</span> (recompute memo{" "}
         <span className="font-data">docs/evidence/pregame/DM_RECOMPUTE_2026-09-24.md</span>). Reproduce the
         scoreboard with{" "}
         <span className="font-data">python scripts/platformkit/analytics_showcase/check_all.py</span>{" "}

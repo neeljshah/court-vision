@@ -6,7 +6,7 @@ import * as table from "./LabTable";
 
 const dataset = establishedDatasets().find(item => item.id === "nba-consistency")!;
 const data = { datasets: [dataset], novel: [] };
-beforeEach(() => window.history.replaceState(null, "", "/analytics/lab/?dataset=nba-consistency&field=shrink_weight"));
+beforeEach(() => window.history.replaceState(null, "", "/analytics/lab/?dataset=nba-consistency&field=shrink_weight&view=table"));
 afterEach(() => vi.restoreAllMocks());
 
 describe("consistency estimate context", () => {
@@ -25,9 +25,13 @@ describe("consistency estimate context", () => {
     expect(details).toHaveTextContent("1629029");
     expect(details).toHaveTextContent("184");
     expect(details).toHaveTextContent(/confidence/i);
-    expect(screen.queryByRole("region", { name: "Measurement summary" })).not.toBeInTheDocument();
-    expect(screen.getByRole("combobox", { name: "Rank order" })).toBeDisabled();
-    expect(screen.getByText(/2026-04-12/)).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "Measurement summary" })).toBeInTheDocument();
+    expect(screen.getByRole("combobox", { name: "Rank order" })).not.toBeDisabled();
+    expect(screen.getAllByText(/2026-04-12/).length).toBeGreaterThan(0);
+    const definition = screen.getByRole("region", { name: "Published definition" });
+    expect(within(definition).getByText("Sport").nextElementSibling).toHaveTextContent("NBA");
+    expect(within(definition).getByText("Population").nextElementSibling).toHaveTextContent("579 players meeting the floor of 807 source players; games at or above 10 minutes; at least 15 qualifying appearances");
+    expect(within(definition).getByText("Observation window").nextElementSibling).toHaveTextContent("2023-24, 2024-25, 2025-26 pooled; as of 2026-04-12");
   });
 
   it("preserves raw source weights and provenance in full and filtered exports", () => {
