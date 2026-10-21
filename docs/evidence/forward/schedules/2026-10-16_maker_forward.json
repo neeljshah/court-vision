@@ -1,0 +1,98 @@
+[
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXMLBGAME-26OCT152000MILLAD",
+    "game_key": "849810",
+    "scheduled_start": "2026-10-16T00:00:00.000000Z",
+    "selected_at": "2026-10-15T15:56:34.246330+00:00",
+    "sport": "mlb",
+    "ticker": "KXMLBGAME-26OCT152000MILLAD-LAD"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXNCAAFGAME-26OCT15CSUTXST",
+    "game_key": "401860923",
+    "scheduled_start": "2026-10-16T00:00:00.000000Z",
+    "selected_at": "2026-10-15T15:56:34.246330+00:00",
+    "sport": "ncaaf",
+    "ticker": "KXNCAAFGAME-26OCT15CSUTXST-TXST"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXNFLGAME-26OCT15SEADEN",
+    "game_key": "401872995",
+    "scheduled_start": "2026-10-16T00:15:00.000000Z",
+    "selected_at": "2026-10-15T15:56:34.246330+00:00",
+    "sport": "nfl",
+    "ticker": "KXNFLGAME-26OCT15SEADEN-DEN"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXLIGUE1GAME-26OCT16MANTFC",
+    "game_key": "fra.1:401876437",
+    "scheduled_start": "2026-10-16T18:45:00.000000Z",
+    "selected_at": "2026-10-15T15:56:34.246330+00:00",
+    "sport": "soccer",
+    "ticker": "KXLIGUE1GAME-26OCT16MANTFC-MAN"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXSERIEAGAME-26OCT16FROSAS",
+    "game_key": "ita.1:401874959",
+    "scheduled_start": "2026-10-16T18:45:00.000000Z",
+    "selected_at": "2026-10-15T15:56:34.246330+00:00",
+    "sport": "soccer",
+    "ticker": "KXSERIEAGAME-26OCT16FROSAS-FRO"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXMLBGAME-26OCT161800TBCLE",
+    "game_key": "849817",
+    "scheduled_start": "2026-10-16T22:00:00.000000Z",
+    "selected_at": "2026-10-15T15:56:34.246330+00:00",
+    "sport": "mlb",
+    "ticker": "KXMLBGAME-26OCT161800TBCLE-CLE"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXNBAGAME-26OCT16BOSPHI",
+    "game_key": "401898407",
+    "scheduled_start": "2026-10-16T23:00:00.000000Z",
+    "season_reason": null,
+    "season_type": 1,
+    "season_year": 2027,
+    "selected_at": "2026-10-15T15:56:34.246330+00:00",
+    "sport": "nba",
+    "ticker": "KXNBAGAME-26OCT16BOSPHI-PHI"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXNBAGAME-26OCT16MIAORL",
+    "game_key": "401898406",
+    "scheduled_start": "2026-10-16T23:00:00.000000Z",
+    "season_reason": null,
+    "season_type": 1,
+    "season_year": 2027,
+    "selected_at": "2026-10-15T15:56:34.246330+00:00",
+    "sport": "nba",
+    "ticker": "KXNBAGAME-26OCT16MIAORL-ORL"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXNCAAFGAME-26OCT16MEMTULN",
+    "game_key": "401862801",
+    "scheduled_start": "2026-10-16T23:30:00.000000Z",
+    "selected_at": "2026-10-15T15:56:34.246330+00:00",
+    "sport": "ncaaf",
+    "ticker": "KXNCAAFGAME-26OCT16MEMTULN-TULN"
+  }
+]

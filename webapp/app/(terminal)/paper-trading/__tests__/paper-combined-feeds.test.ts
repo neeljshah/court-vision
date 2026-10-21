@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { api } from "@/lib/p5api";
 import type { ClvScoreboard } from "@/lib/types";
 import { fetchPaperCombined } from "../paperTradingHelpers";
+import { combinePaperPayload } from "../paperPayload";
 import clv from "@/test/fixtures/july_2026/api_paper_clv.json";
 import pnl from "@/test/fixtures/july_2026/api_paper_pnl_series.json";
 
@@ -71,5 +72,24 @@ describe("fetchPaperCombined independent feed contracts", () => {
     for (const key of ["clv", "pnl", "bankroll"] as const) {
       expect(calls[key]).toHaveBeenCalledWith(controller.signal);
     }
+  });
+});
+
+describe("fetchPaperCombined shape checks", () => {
+  it.each([[{}, "trail"], [{ detail: "x" }, "pmTrail"], [{}, "clv"], [{}, "pnl"], [{}, "bankroll"]] as const)(
+    "treats %j as bad shape for %s", async (bad, key) => {
+      const calls = mocks();
+      (calls[key as Key] as unknown as { mockResolvedValue: (v: unknown) => void }).mockResolvedValue(bad);
+      const result = await fetchPaperCombined(new AbortController().signal);
+      expect(result[key as Key]).toBeNull();
+      expect(result.errors?.[key as Key]).toBe("bad shape");
+    });
+});
+
+describe("combinePaperPayload (server reader path)", () => {
+  it("turns a baked {} payload into null with bad shape", () => {
+    const r = combinePaperPayload({} as never, GOOD.pmTrail, GOOD.clv as ClvScoreboard, GOOD.pnl, GOOD.bankroll);
+    expect(r.trail).toBeNull();
+    expect(r.errors?.trail).toBe("bad shape");
   });
 });

@@ -8,6 +8,7 @@ import { join } from "node:path";
 import { getResearchAnalyses } from "@/lib/analytics/researchData";
 import { loadPapers } from "@/lib/analytics/papers.server";
 import { resolveRedirect } from "@/lib/redirects";
+import { sitemapFamilies } from "@/lib/sitemapFamilies.server";
 
 export const dynamic = "force-static";
 
@@ -25,6 +26,7 @@ const ROOTS = [
   "/analytics/browse", "/analytics/pitch-sequencing", "/analytics/blowout-timing", "/analytics/count-context",
   "/analytics/evidence", "/evidence", "/evidence/retractions", "/receipts",
   "/about", "/how-it-works", "/methodology",
+  "/graveyard", "/desk/execution", "/desk/ingame", "/desk/model-cards",
 ];
 
 /** True when a static page.tsx backs this route in either route group. */
@@ -33,8 +35,15 @@ function exists(route: string): boolean {
   return ["(terminal)", "(analytics)"].some((g) => existsSync(join(process.cwd(), "app", g, rel, "page.tsx")));
 }
 
-/** Kept = not a redirect stub and not inside a retired dynamic family. */
-const isKept = (h: string) => resolveRedirect(h) === null;
+/** Kept = not a redirect stub and not inside a retired dynamic family; /paper/<fill> pages are real, /paper is a stub. */
+const isKept = (h: string) => h.startsWith("/paper/") || resolveRedirect(h) === null;
+
+/** lastmod only from an artifact as_of; everything else omits it. */
+function lastmod(h: string, f: ReturnType<typeof sitemapFamilies>): Date | undefined {
+  const v = h === "/paper-trading" || h.startsWith("/paper/") ? f.fillsAsOf : h.startsWith("/games/") ? f.gamesAsOf : undefined;
+  const d = v ? new Date(v) : undefined;
+  return d && !isNaN(d.getTime()) ? d : undefined;
+}
 
 export default function sitemap(): MetadataRoute.Sitemap {
   let hrefs: string[] = [];
@@ -46,14 +55,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }
   const research = getResearchAnalyses().map((a) => `/analytics/research/${a.id}`);
   const papers = loadPapers().map((p) => `/analytics/papers/${p.slug}`);
+  const f = sitemapFamilies();
   const seen = new Set<string>();
   const urls: MetadataRoute.Sitemap = [];
-  for (const h of [...ROOTS.filter(exists), ...hrefs, ...research, ...papers]) {
+  for (const h of [...ROOTS.filter(exists), ...hrefs, ...research, ...papers,
+    ...f.claims, ...f.fills, ...f.receipts, ...f.explainers, ...f.games]) {
     if (seen.has(h) || !isKept(h)) continue;
     seen.add(h);
     urls.push({
       // trailingSlash: true -> the canonical exported page ends in "/".
       url: `${ORIGIN}${BASE}${h === "/" ? "/" : `${h}/`}`,
+      lastModified: lastmod(h, f),
       changeFrequency: "weekly",
       priority: h === "/" ? 1 : ROOTS.includes(h) ? 0.8 : 0.6,
     });

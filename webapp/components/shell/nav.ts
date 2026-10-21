@@ -5,7 +5,7 @@ export type Section = { label: string; href: string; match: RegExp };
 
 export const SITE_NAV: readonly Section[] = [
   { label: "Today", href: "/", match: /^\/(games)(\/|$)/ },
-  { label: "Desk", href: "/desk/", match: /^\/(desk|paper-trading)(\/|$)/ },
+  { label: "Desk", href: "/desk/", match: /^\/(desk|paper-trading|paper)(\/|$)/ },
   {
     label: "Calibration",
     href: "/analytics/calibration/",
@@ -14,7 +14,7 @@ export const SITE_NAV: readonly Section[] = [
   {
     label: "Research",
     href: "/analytics/papers/",
-    match: /^\/(graveyard|analytics\/(papers|findings|novel|lab|players|browse|research|m|the-loop|blowout-timing|pitch-sequencing|count-context))(\/|$)/,
+    match: /^\/(graveyard|analytics\/(papers|ask|findings|novel|lab|players|browse|research|m|the-loop|blowout-timing|pitch-sequencing|count-context))(\/|$)/,
   },
   { label: "Evidence", href: "/evidence/", match: /^\/(evidence|receipts|analytics\/evidence)(\/|$)/ },
   { label: "About", href: "/about/", match: /^\/(about|how-it-works|methodology|analytics\/(about|explainers))(\/|$)/ },
@@ -27,7 +27,10 @@ export const PORTFOLIO = "https://neelshahportfolio.netlify.app/";
 
 /** Strip the export basePath and any trailing slash; "" becomes "/". */
 export function normalizePath(raw: string | null | undefined): string {
-  const p = (raw || "/").replace(/^\/court-vision(?=\/|$)/, "").replace(/\/+$/, "");
+  const base = process.env.NEXT_PUBLIC_BASE_PATH || "/court-vision";
+  let p = raw || "/";
+  if (p === base || p.startsWith(base + "/")) p = p.slice(base.length);
+  p = p.replace(/\/+$/, "");
   return p || "/";
 }
 
@@ -88,7 +91,7 @@ export function crumbsFor(raw: string | null | undefined): Crumb[] {
     const path = `/${segs.slice(0, i + 1).join("/")}`;
     if (path === "/analytics" || path === sectionPath) return;
     const last = i === segs.length - 1;
-    out.push({ label: humanize(seg), href: !last && INDEXES.has(path) ? `${path}/` : null });
+    out.push({ label: segs[0] === "paper" && i === 1 && last ? "Fill" : humanize(seg), href: !last && INDEXES.has(path) ? `${path}/` : null });
   });
   return out;
 }

@@ -51,7 +51,7 @@ read "not recorded".
 | 2026-09-29 | nba L18 2025-26 projected | 937 | -0.00200 [-0.00296, -0.00127] | +0.00006 [-0.00088, +0.00077] | S542 replay |
 | 2026-09-29 | mlb Lreal 2026-09 all | 35 | -0.00091 [-0.00208, -0.00011] | -0.00036 [-0.00124, +0.00044] | S542 replay |
 
-- Replay verdict: ACCEPT_STALENESS_BACKSTOP_ONLY. Brier deltas, negative = PROJ closer to the
+- Replay verdict: status: accept (staleness backstop only). Brier deltas, negative = PROJ closer to the
   outcome; intervals are game-clustered 95 percent (S542 replay).
 - Forward M2 read-outs: through 2026-10-16 no cell exceeds 11 games, below the 30-game floor; no
   verdict (`docs/evidence/forward/model2/m2/HISTORY.json`).

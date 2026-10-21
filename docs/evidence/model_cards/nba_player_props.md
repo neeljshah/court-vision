@@ -62,7 +62,7 @@ read "not recorded".
 - Systematic PTS under-bias of about -0.45 on the walk-forward OOF frame (packet section 3; `docs/KNOWN_LIMITATIONS.md`).
 - A leaky grid search once gave train R2 about 0.79 vs honest holdout about 0.06 on STL / BLK;
   corrective regularization is hard-coded (packet section 2C).
-- Prior-season tracking aggregates: CEILING_ZERO on pts / reb / ast (`docs/CAPABILITIES.md`).
+- Prior-season tracking aggregates: status: ceiling zero (no usable headroom) on pts / reb / ast (`docs/CAPABILITIES.md`).
 
 ## Artifacts
 

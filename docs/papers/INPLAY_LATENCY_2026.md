@@ -42,7 +42,7 @@ compare with the 15 s receipt-age split that the sealed S542 staleness backstop 
   This is the capture leg only. Serve timestamps are not in any committed ledger, so the leg from
   receipt to a served number is not measured here.
 - **Clock offset.** No offset journal exists on any night (generated block), so every row is
-  `OFFSET_UNMEASURED`. The recorder clock is compared with a source clock it was never synchronised
+  `status: offset unmeasured` (replay status). The recorder clock is compared with a source clock it was never synchronised
   with. The S664 bound covers recorder versus UTC only and is never applied as a correction. A
   constant offset would shift every quantile by the same amount.
 - **Pooling rule.** A sport is POOLED only when at least 10 nights carry events (`docs/evidence/harness/QUANT_EVIDENCE_BUILD_SLATE_2026-10-06.md`, section R7). Otherwise it is INSUFFICIENT and shown per night only.
@@ -140,7 +140,7 @@ soccer). This readout is consistent with one reason for that. Our state arrives 
 play (Table 1), while the venue book often moves within the same window (Table 2). A model fed this capture can price from a view older than the mid. This readout does not measure the venue's own latency, so it does not establish how often that happens.
 
 The sealed S542 replay (`docs/evidence/RESULTS_LEDGER_SYSTEM.md`, 2026-09-29 row) returned
-ACCEPT_STALENESS_BACKSTOP_ONLY. Its projection recovers part of the loss from a stale price and is
+status: accept (staleness backstop only). Its projection recovers part of the loss from a stale price and is
 never ahead of a fresh one. Table 3 shows how often our live ticks fall on the stale side of the
 15 s split, which is when that backstop applies at all. The S662 push probe (same ledger,
 2026-09-30 row, INSUFFICIENT at 2 games) suggests that a push feed would shorten the MLB capture

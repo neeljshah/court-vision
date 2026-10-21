@@ -207,8 +207,22 @@ def render_png(result, path):
     plt.close(fig)
 
 
+def _recorded_ok():
+    try:
+        with open(OUT_JSON, "r", encoding="utf-8") as f:
+            return json.load(f).get("status") == "ok"
+    except (OSError, json.JSONDecodeError):
+        return False
+
+
 def main():
     result = build()
+    if result["status"] != "ok" and _recorded_ok():
+        # Fresh clone (no data/): keep the committed tally instead of
+        # overwriting it with a no_data stub.
+        print(f"status=no_data paths_tried={result['paths_tried']}")
+        print(f"kept recorded artifact {OUT_JSON} (not overwritten without data/)")
+        return
     os.makedirs(os.path.dirname(OUT_JSON), exist_ok=True)
     with open(OUT_JSON, "w", encoding="utf-8") as f:
         json.dump(result, f, indent=2)
@@ -233,7 +247,12 @@ def main():
 def check():
     assert os.path.exists(OUT_JSON) and os.path.getsize(OUT_JSON) > 0, OUT_JSON
     assert os.path.exists(OUT_PNG) and os.path.getsize(OUT_PNG) > 0, OUT_PNG
-    print("OK: claims_corpus_meta self-check passed")
+    with open(OUT_JSON, "r", encoding="utf-8") as f:
+        rec = json.load(f)
+    assert rec.get("status") == "ok", f"recorded artifact status={rec.get('status')!r}, not ok"
+    gv = rec["generated_vs_validated"]
+    print("OK: claims_corpus_meta self-check passed "
+          f"(recorded: generated={gv['n_claims_generated']} verified={gv['n_verified']})")
 
 
 if __name__ == "__main__":

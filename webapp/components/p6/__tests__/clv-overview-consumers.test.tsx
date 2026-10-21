@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import { api, type ClvScoreboard as Clv } from "@/lib/p5api";
-import PaperTradingPage from "@/app/(terminal)/paper-trading/page";
+import PaperTradingPage from "@/app/(terminal)/paper-trading/PaperTradingPageClient";
 import { CLV_UNAVAILABLE } from "@/lib/clvUnavailable";
 
 afterEach(() => {

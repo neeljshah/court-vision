@@ -1,0 +1,77 @@
+[
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXMLBGAME-26OCT132000CLETB",
+    "game_key": "849813",
+    "scheduled_start": "2026-10-14T00:00:00.000000Z",
+    "selected_at": "2026-10-13T20:01:38.939965+00:00",
+    "sport": "mlb",
+    "ticker": "KXMLBGAME-26OCT132000CLETB-TB"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXNBAGAME-26OCT13INDOKC",
+    "game_key": "401908621",
+    "scheduled_start": "2026-10-14T00:00:00.000000Z",
+    "season_reason": null,
+    "season_type": 1,
+    "season_year": 2027,
+    "selected_at": "2026-10-13T20:01:38.939965+00:00",
+    "sport": "nba",
+    "ticker": "KXNBAGAME-26OCT13INDOKC-OKC"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXNBAGAME-26OCT13GSWLAL",
+    "game_key": "401898718",
+    "scheduled_start": "2026-10-14T02:00:00.000000Z",
+    "season_reason": null,
+    "season_type": 1,
+    "season_year": 2027,
+    "selected_at": "2026-10-13T20:01:38.939965+00:00",
+    "sport": "nba",
+    "ticker": "KXNBAGAME-26OCT13GSWLAL-LAL"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXNBAGAME-26OCT13PORSAC",
+    "game_key": "401901826",
+    "scheduled_start": "2026-10-14T02:00:00.000000Z",
+    "season_reason": null,
+    "season_type": 1,
+    "season_year": 2027,
+    "selected_at": "2026-10-13T20:01:38.939965+00:00",
+    "sport": "nba",
+    "ticker": "KXNBAGAME-26OCT13PORSAC-SAC"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXNBAGAME-26OCT14BKNMIA",
+    "game_key": "401898404",
+    "scheduled_start": "2026-10-14T23:30:00.000000Z",
+    "season_reason": null,
+    "season_type": 1,
+    "season_year": 2027,
+    "selected_at": "2026-10-13T20:01:38.939965+00:00",
+    "sport": "nba",
+    "ticker": "KXNBAGAME-26OCT14BKNMIA-MIA"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXNBAGAME-26OCT14CHABOS",
+    "game_key": "401898405",
+    "scheduled_start": "2026-10-14T23:30:00.000000Z",
+    "season_reason": null,
+    "season_type": 1,
+    "season_year": 2027,
+    "selected_at": "2026-10-13T20:01:38.939965+00:00",
+    "sport": "nba",
+    "ticker": "KXNBAGAME-26OCT14CHABOS-BOS"
+  }
+]

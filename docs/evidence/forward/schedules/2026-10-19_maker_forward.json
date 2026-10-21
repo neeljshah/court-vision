@@ -1,0 +1,32 @@
+[
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXSERIEAGAME-26OCT19MONCAG",
+    "game_key": "ita.1:401874762",
+    "scheduled_start": "2026-10-19T16:30:00.000000Z",
+    "selected_at": "2026-10-19T15:56:34.296865+00:00",
+    "sport": "soccer",
+    "ticker": "KXSERIEAGAME-26OCT19MONCAG-MON"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXSERIEAGAME-26OCT19PARTOR",
+    "game_key": "ita.1:401874784",
+    "scheduled_start": "2026-10-19T18:45:00.000000Z",
+    "selected_at": "2026-10-19T15:56:34.296865+00:00",
+    "sport": "soccer",
+    "ticker": "KXSERIEAGAME-26OCT19PARTOR-PAR"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXEPLGAME-26OCT19TOTCOV",
+    "game_key": "401879257",
+    "scheduled_start": "2026-10-19T19:00:00.000000Z",
+    "selected_at": "2026-10-19T15:56:34.296865+00:00",
+    "sport": "soccer",
+    "ticker": "KXEPLGAME-26OCT19TOTCOV-TOT"
+  }
+]

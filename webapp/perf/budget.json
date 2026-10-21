@@ -1,5 +1,5 @@
 {
-  "$comment": "Gzip byte ceilings per exported page (module scripts, stylesheets, HTML) = the 2026-10-20 21:5xZ CI measurement of the unified site (webapp-qa run 39502127175, public tip becd8d740) + 10% rounded up to the KB; see perf/README.md. The paper fill page (trail:fills:0) is resolved from demo-data/api_paper_trail_limit_400.json at run time; measured in CI run 39506767551 (+10%).",
+  "$comment": "Gzip byte ceilings per exported page (module scripts, stylesheets, HTML) = the 2026-10-20 21:5xZ CI measurement of the unified site (webapp-qa run 39502127175, public tip becd8d740) + 10% rounded up to the KB; see perf/README.md. The paper fill page (trail:fills:0) is resolved from demo-data/api_paper_trail_limit_400.json at run time; measured in CI run 39506767551 (+10%). /paper-trading/ htmlGz re-set 2026-10-21 from a local snapshot build (15354 gzip bytes + 2 KB headroom, rounded up) when the page started server-rendering the baked paper feeds; see perf/README.md.",
   "basePath": "/court-vision",
   "pages": {
     "/": {
@@ -15,7 +15,7 @@
     "/paper-trading/": {
       "jsGz": 202752,
       "cssGz": 16384,
-      "htmlGz": 10240
+      "htmlGz": 17408
     },
     "/analytics/": {
       "jsGz": 115712,
@@ -59,18 +59,8 @@
       "$comment": "largest quantized chart is 45 KB; a re-staged RGBA chart is 80-190 KB"
     },
     "brand": {
-      "maxBytes": 81920,
-      "exempt": [
-        "courtvision-logo.png",
-        "courtvision-logo-transparent.png",
-        "courtvision-research-fields.webp",
-        "courtvision-emblem.webp",
-        "logo-on-light.png",
-        "logo-on-dark.png",
-        "logo-square-dark.png",
-        "logo-square-light.png"
-      ],
-      "$comment": "icons and social cards; the exempt files are README/press assets no page loads"
+      "maxBytes": 77824,
+      "$comment": "icons, social cards and the 640px emblem; largest is courtvision-emblem-hero.webp at 70,062 B, +10% rounded up to the KB. The eight exempt press/source files (1.9 MB logo PNG etc.) left public/brand on 2026-10-21 -- see perf/README.md."
     }
   }
 }

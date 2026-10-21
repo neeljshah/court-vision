@@ -1,0 +1,26 @@
+{
+  "capacity_rule": "live_concurrency",
+  "capacity_subset_selected_at": "2026-10-13T20:06:10.563122+00:00",
+  "denominator_of_record": "C:/Users/neelj/nba-ai-system/docs/evidence/forward/schedules/2026-10-14_maker_forward_full_selection.json",
+  "floor_per_sport": 1,
+  "focus_game_capacity": 3,
+  "focus_ticker_capacity": 6,
+  "focus_window_s": {
+    "after_start": 3600,
+    "before_start": 120
+  },
+  "max_live_overlap": 2,
+  "max_live_tickers": 4,
+  "not_served": [],
+  "rule": "S742 live_concurrency: earliest starts, game_id then ticker order on ties; a row is served only if the focus tickers of the served games whose scheduled-focus window [start - 120 s, start + 3600 s) is open never exceed the focus ticker capacity (anonymous_rate_ceiling x focus_tick_s requests x focus share // 100; soccer 3 tickers a game, other sports 2) and the full request budget (books + selected repoll + half the tickers' trades), with a floor of one game per sport that has a selected game in its window; score-blind, before any start; the profile key maximum_scheduled_games_per_hour declares the default rule only",
+  "served": [
+    "KXMLBGAME-26OCT132000CLETB-TB",
+    "KXNBAGAME-26OCT13INDOKC-OKC",
+    "KXNBAGAME-26OCT13GSWLAL-LAL",
+    "KXNBAGAME-26OCT13PORSAC-SAC",
+    "KXNBAGAME-26OCT14BKNMIA-MIA",
+    "KXNBAGAME-26OCT14CHABOS-BOS"
+  ],
+  "served_file": "C:/Users/neelj/nba-ai-system/docs/evidence/forward/schedules/2026-10-14_maker_forward.json",
+  "unserved": []
+}

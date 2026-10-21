@@ -1,0 +1,532 @@
+{
+  "mlb": {
+    "canonical_rules": {
+      "home_alias": 2
+    },
+    "game_key_sources": {
+      "849810": "mlb_game_pk",
+      "849817": "mlb_game_pk"
+    },
+    "games_seen": 3,
+    "link_paths": {
+      "849810": "team_set",
+      "849817": "team_set"
+    },
+    "linked": 2,
+    "local_date_tz": "America/Chicago",
+    "record_counts": {
+      "derivative_series_ignored": 2169,
+      "future_records": 76,
+      "ignored_record_type": 1574908,
+      "listed_on_previous_us_date": 1,
+      "previous_us_date_other_day": 1
+    },
+    "refused_by_reason": {
+      "outside_utc_date": 1
+    },
+    "refused_team_evidence": {},
+    "schedule_receipt": {
+      "fetch_status": "OK",
+      "http_status": 200,
+      "kept_from": {
+        "849808": "20261016",
+        "849810": "20261015",
+        "849817": "20261016"
+      },
+      "query_receipts": {
+        "20261015": {
+          "fetch_status": "OK",
+          "http_status": 200,
+          "request_start_utc": "2026-10-15T15:56:32.697706+00:00",
+          "response_bytes": 6178,
+          "response_end_utc": "2026-10-15T15:56:32.786464+00:00",
+          "response_sha256": "bcb50b914d22e8a3c5f9ee34d4f5692a18f30b10dcf1e712cea5052f2a876ed8",
+          "url": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=2026-10-15&hydrate=team"
+        },
+        "20261016": {
+          "fetch_status": "OK",
+          "http_status": 200,
+          "request_start_utc": "2026-10-15T15:56:32.786464+00:00",
+          "response_bytes": 6169,
+          "response_end_utc": "2026-10-15T15:56:32.858559+00:00",
+          "response_sha256": "5882cc90d38aaa5d0cb0fb3c85334fd702b033289727c06b4849c7d02cf124a2",
+          "url": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=2026-10-16&hydrate=team"
+        }
+      },
+      "request_start_utc": "2026-10-15T15:56:32.786464+00:00",
+      "response_bytes": 6169,
+      "response_end_utc": "2026-10-15T15:56:32.858559+00:00",
+      "response_sha256": "5882cc90d38aaa5d0cb0fb3c85334fd702b033289727c06b4849c7d02cf124a2",
+      "url": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=2026-10-16&hydrate=team"
+    },
+    "schedule_source": "live",
+    "written": 2
+  },
+  "nba": {
+    "canonical_rules": {
+      "home_alias": 5
+    },
+    "game_key_sources": {
+      "401898406": "espn_event_id",
+      "401898407": "espn_event_id",
+      "401908622": "espn_event_id",
+      "401908946": "espn_event_id",
+      "401914126": "espn_event_id"
+    },
+    "games_seen": 13,
+    "link_paths": {
+      "401898406": "team_set",
+      "401898407": "team_set",
+      "401908622": "team_set",
+      "401908946": "team_set",
+      "401914126": "team_set"
+    },
+    "linked": 5,
+    "local_date_tz": "America/Chicago",
+    "record_counts": {
+      "derivative_series_ignored": 2224,
+      "espn_minute_precision_normalized": 14,
+      "future_records": 4,
+      "ignored_record_type": 499272,
+      "listed_on_previous_us_date": 1,
+      "local_date_from_declared_tz": 5,
+      "previous_us_date_other_day": 1
+    },
+    "refused_by_reason": {
+      "outside_utc_date": 8
+    },
+    "refused_team_evidence": {},
+    "schedule_receipt": {
+      "fetch_status": "OK",
+      "http_status": 200,
+      "kept_from": {
+        "401898406": "20261016",
+        "401898407": "20261016",
+        "401898408": "20261016",
+        "401898409": "20261016",
+        "401898719": "20261016",
+        "401898843": "20261016",
+        "401901822": "20261016",
+        "401906509": "20261016",
+        "401908622": "20261015",
+        "401908943": "20261016",
+        "401908946": "20261016",
+        "401908948": "20261016",
+        "401914126": "20261016"
+      },
+      "query_receipts": {
+        "20261015": {
+          "fetch_status": "OK",
+          "http_status": 200,
+          "request_start_utc": "2026-10-15T15:56:32.858559+00:00",
+          "response_bytes": 28277,
+          "response_end_utc": "2026-10-15T15:56:32.932230+00:00",
+          "response_sha256": "246ff154c15a2d3168945b804cd282a1a9942eaf340aa7b38c09b230868446d6",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=20261015"
+        },
+        "20261016": {
+          "fetch_status": "OK",
+          "http_status": 200,
+          "request_start_utc": "2026-10-15T15:56:32.932230+00:00",
+          "response_bytes": 71301,
+          "response_end_utc": "2026-10-15T15:56:33.027568+00:00",
+          "response_sha256": "277b97dc15478a307df809803fe149abc3f8e0bdd168fb9f03c7bb5edc8909fc",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=20261016"
+        }
+      },
+      "request_start_utc": "2026-10-15T15:56:32.932230+00:00",
+      "response_bytes": 71301,
+      "response_end_utc": "2026-10-15T15:56:33.027568+00:00",
+      "response_sha256": "277b97dc15478a307df809803fe149abc3f8e0bdd168fb9f03c7bb5edc8909fc",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=20261016"
+    },
+    "schedule_source": "live",
+    "written": 5
+  },
+  "ncaaf": {
+    "canonical_rules": {
+      "home_alias": 2
+    },
+    "game_key_sources": {
+      "401860923": "espn_event_id",
+      "401862801": "espn_event_id"
+    },
+    "games_seen": 4,
+    "link_paths": {
+      "401860923": "team_set",
+      "401862801": "team_set"
+    },
+    "linked": 2,
+    "local_date_tz": "America/Chicago",
+    "record_counts": {
+      "espn_minute_precision_normalized": 6,
+      "future_records": 48,
+      "ignored_record_type": 78265,
+      "listed_on_previous_us_date": 1,
+      "local_date_from_declared_tz": 2,
+      "previous_us_date_other_day": 2
+    },
+    "refused_by_reason": {
+      "outside_utc_date": 2
+    },
+    "refused_team_evidence": {},
+    "schedule_receipt": {
+      "fetch_status": "OK",
+      "http_status": 200,
+      "kept_from": {
+        "401858493": "20261016",
+        "401860923": "20261015",
+        "401862801": "20261016",
+        "401869844": "20261016"
+      },
+      "query_receipts": {
+        "20261015": {
+          "fetch_status": "OK",
+          "http_status": 200,
+          "request_start_utc": "2026-10-15T15:56:33.027568+00:00",
+          "response_bytes": 60397,
+          "response_end_utc": "2026-10-15T15:56:33.090547+00:00",
+          "response_sha256": "7621dbc30cd519190a61c470cdf76729cda7cacb7829ba91a40a1ffea179e0de",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?dates=20261015"
+        },
+        "20261016": {
+          "fetch_status": "OK",
+          "http_status": 200,
+          "request_start_utc": "2026-10-15T15:56:33.090547+00:00",
+          "response_bytes": 60672,
+          "response_end_utc": "2026-10-15T15:56:33.182566+00:00",
+          "response_sha256": "845eb572cc90d92ade9fb657b111e838b6ba345dff237f4292ad84f23a1c52bd",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?dates=20261016"
+        }
+      },
+      "request_start_utc": "2026-10-15T15:56:33.090547+00:00",
+      "response_bytes": 60672,
+      "response_end_utc": "2026-10-15T15:56:33.182566+00:00",
+      "response_sha256": "845eb572cc90d92ade9fb657b111e838b6ba345dff237f4292ad84f23a1c52bd",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?dates=20261016"
+    },
+    "schedule_source": "live",
+    "written": 2
+  },
+  "nfl": {
+    "canonical_rules": {
+      "home_alias": 1
+    },
+    "game_key_sources": {
+      "401872995": "espn_event_id"
+    },
+    "games_seen": 1,
+    "link_paths": {
+      "401872995": "team_set"
+    },
+    "linked": 1,
+    "local_date_tz": "America/Chicago",
+    "record_counts": {
+      "derivative_series_ignored": 1605,
+      "espn_minute_precision_normalized": 1,
+      "future_records": 1372,
+      "ignored_record_type": 684954,
+      "listed_on_previous_us_date": 1,
+      "local_date_from_declared_tz": 1
+    },
+    "refused_by_reason": {},
+    "refused_team_evidence": {},
+    "schedule_receipt": {
+      "fetch_status": "OK",
+      "http_status": 200,
+      "kept_from": {
+        "401872995": "20261015"
+      },
+      "query_receipts": {
+        "20261015": {
+          "fetch_status": "OK",
+          "http_status": 200,
+          "request_start_utc": "2026-10-15T15:56:33.182566+00:00",
+          "response_bytes": 22897,
+          "response_end_utc": "2026-10-15T15:56:33.261693+00:00",
+          "response_sha256": "7fe04b0136510b0bebe551e5afb58409c0c7d311adc5ffd1e4b71a72c7c4456f",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=20261015"
+        },
+        "20261016": {
+          "fetch_status": "OK",
+          "http_status": 200,
+          "request_start_utc": "2026-10-15T15:56:33.261693+00:00",
+          "response_bytes": 5050,
+          "response_end_utc": "2026-10-15T15:56:33.334455+00:00",
+          "response_sha256": "d0b7c1d790cfa9721ccd5f8d4d5bafaadb09697286709bfb74b4f200f06e9b8d",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=20261016"
+        }
+      },
+      "request_start_utc": "2026-10-15T15:56:33.261693+00:00",
+      "response_bytes": 5050,
+      "response_end_utc": "2026-10-15T15:56:33.334455+00:00",
+      "response_sha256": "d0b7c1d790cfa9721ccd5f8d4d5bafaadb09697286709bfb74b4f200f06e9b8d",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=20261016"
+    },
+    "schedule_source": "live",
+    "written": 1
+  },
+  "soccer": {
+    "canonical_rules": {
+      "home_alias": 3
+    },
+    "game_key_sources": {
+      "esp.1:401882844": "espn_event_id",
+      "fra.1:401876437": "espn_event_id",
+      "ita.1:401874959": "espn_event_id"
+    },
+    "games_seen": 4,
+    "link_paths": {
+      "esp.1:401882844": "soccer_crosswalk",
+      "fra.1:401876437": "soccer_crosswalk",
+      "ita.1:401874959": "soccer_crosswalk"
+    },
+    "linked": 3,
+    "local_date_tz": "America/Chicago",
+    "per_league": {
+      "eng.1": {
+        "games_seen": 0,
+        "linked": 0,
+        "refused_by_reason": {},
+        "written": 0
+      },
+      "esp.1": {
+        "games_seen": 1,
+        "linked": 1,
+        "refused_by_reason": {},
+        "written": 1
+      },
+      "fra.1": {
+        "games_seen": 1,
+        "linked": 1,
+        "refused_by_reason": {},
+        "written": 1
+      },
+      "ger.1": {
+        "games_seen": 1,
+        "linked": 0,
+        "refused_by_reason": {
+          "soccer_alias_unmapped": 1
+        },
+        "written": 0
+      },
+      "ita.1": {
+        "games_seen": 1,
+        "linked": 1,
+        "refused_by_reason": {},
+        "written": 1
+      },
+      "uefa.champions": {
+        "games_seen": 0,
+        "linked": 0,
+        "refused_by_reason": {},
+        "written": 0
+      }
+    },
+    "record_counts": {
+      "derivative_series_ignored": 103,
+      "espn_minute_precision_normalized": 4,
+      "future_records": 160,
+      "ignored_record_type": 426384,
+      "local_date_from_declared_tz": 4
+    },
+    "refused_by_reason": {
+      "soccer_alias_unmapped": 1
+    },
+    "refused_team_evidence": {},
+    "schedule_receipt": {
+      "tour_receipts": {
+        "eng.1": {
+          "fetch_status": "OK",
+          "http_status": 200,
+          "kept_from": {},
+          "query_receipts": {
+            "20261015": {
+              "fetch_status": "OK",
+              "http_status": 200,
+              "request_start_utc": "2026-10-15T15:56:33.334455+00:00",
+              "response_bytes": 2363,
+              "response_end_utc": "2026-10-15T15:56:33.412878+00:00",
+              "response_sha256": "57e18c687bf21abd795e68e9cdcd961cbeba98d5c583cc5a81e60abbeb8f544a",
+              "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20261015"
+            },
+            "20261016": {
+              "fetch_status": "OK",
+              "http_status": 200,
+              "request_start_utc": "2026-10-15T15:56:33.412878+00:00",
+              "response_bytes": 2363,
+              "response_end_utc": "2026-10-15T15:56:33.496603+00:00",
+              "response_sha256": "57e18c687bf21abd795e68e9cdcd961cbeba98d5c583cc5a81e60abbeb8f544a",
+              "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20261016"
+            }
+          },
+          "request_start_utc": "2026-10-15T15:56:33.412878+00:00",
+          "response_bytes": 2363,
+          "response_end_utc": "2026-10-15T15:56:33.496603+00:00",
+          "response_sha256": "57e18c687bf21abd795e68e9cdcd961cbeba98d5c583cc5a81e60abbeb8f544a",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20261016"
+        },
+        "esp.1": {
+          "fetch_status": "OK",
+          "http_status": 200,
+          "kept_from": {
+            "esp.1:401882844": "20261016"
+          },
+          "query_receipts": {
+            "20261015": {
+              "fetch_status": "OK",
+              "http_status": 200,
+              "request_start_utc": "2026-10-15T15:56:33.639331+00:00",
+              "response_bytes": 2447,
+              "response_end_utc": "2026-10-15T15:56:33.704144+00:00",
+              "response_sha256": "cad7f065bd0bbf8cb7867f69da06af4601af32c207eda26a0c8d868007f9d68f",
+              "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261015"
+            },
+            "20261016": {
+              "fetch_status": "OK",
+              "http_status": 200,
+              "request_start_utc": "2026-10-15T15:56:33.704144+00:00",
+              "response_bytes": 15340,
+              "response_end_utc": "2026-10-15T15:56:33.801805+00:00",
+              "response_sha256": "1362dad82a6d88621b148bcddca76069888e359747aa5fdd147784123aa8478a",
+              "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261016"
+            }
+          },
+          "request_start_utc": "2026-10-15T15:56:33.704144+00:00",
+          "response_bytes": 15340,
+          "response_end_utc": "2026-10-15T15:56:33.801805+00:00",
+          "response_sha256": "1362dad82a6d88621b148bcddca76069888e359747aa5fdd147784123aa8478a",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261016"
+        },
+        "fra.1": {
+          "fetch_status": "OK",
+          "http_status": 200,
+          "kept_from": {
+            "fra.1:401876437": "20261016"
+          },
+          "query_receipts": {
+            "20261015": {
+              "fetch_status": "OK",
+              "http_status": 200,
+              "request_start_utc": "2026-10-15T15:56:33.942837+00:00",
+              "response_bytes": 2208,
+              "response_end_utc": "2026-10-15T15:56:33.994883+00:00",
+              "response_sha256": "080c474de21b3b88edb5e409b43ada4627317e7e19905d7474802bad4493c425",
+              "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261015"
+            },
+            "20261016": {
+              "fetch_status": "OK",
+              "http_status": 200,
+              "request_start_utc": "2026-10-15T15:56:33.995884+00:00",
+              "response_bytes": 14707,
+              "response_end_utc": "2026-10-15T15:56:34.093410+00:00",
+              "response_sha256": "1efe45323f20599fabd57455d024b16c59cc5bdd377c599919772896e2e2c308",
+              "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261016"
+            }
+          },
+          "request_start_utc": "2026-10-15T15:56:33.995884+00:00",
+          "response_bytes": 14707,
+          "response_end_utc": "2026-10-15T15:56:34.093410+00:00",
+          "response_sha256": "1efe45323f20599fabd57455d024b16c59cc5bdd377c599919772896e2e2c308",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261016"
+        },
+        "ger.1": {
+          "fetch_status": "OK",
+          "http_status": 200,
+          "kept_from": {
+            "ger.1:401884770": "20261016"
+          },
+          "query_receipts": {
+            "20261015": {
+              "fetch_status": "OK",
+              "http_status": 200,
+              "request_start_utc": "2026-10-15T15:56:33.496603+00:00",
+              "response_bytes": 2052,
+              "response_end_utc": "2026-10-15T15:56:33.561588+00:00",
+              "response_sha256": "5024345334f53ad151b1400af0ba34b0d56deb5f7d6859a5380d3639547cd788",
+              "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261015"
+            },
+            "20261016": {
+              "fetch_status": "OK",
+              "http_status": 200,
+              "request_start_utc": "2026-10-15T15:56:33.561588+00:00",
+              "response_bytes": 14830,
+              "response_end_utc": "2026-10-15T15:56:33.638331+00:00",
+              "response_sha256": "2d843ad8cc299e9236bd09e9aa3a43bd867a9a7dba2f99cd67ec06fce2c903c4",
+              "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261016"
+            }
+          },
+          "request_start_utc": "2026-10-15T15:56:33.561588+00:00",
+          "response_bytes": 14830,
+          "response_end_utc": "2026-10-15T15:56:33.638331+00:00",
+          "response_sha256": "2d843ad8cc299e9236bd09e9aa3a43bd867a9a7dba2f99cd67ec06fce2c903c4",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261016"
+        },
+        "ita.1": {
+          "fetch_status": "OK",
+          "http_status": 200,
+          "kept_from": {
+            "ita.1:401874959": "20261016"
+          },
+          "query_receipts": {
+            "20261015": {
+              "fetch_status": "OK",
+              "http_status": 200,
+              "request_start_utc": "2026-10-15T15:56:33.801805+00:00",
+              "response_bytes": 2568,
+              "response_end_utc": "2026-10-15T15:56:33.862496+00:00",
+              "response_sha256": "2048ebfe872d9a0cca6236e6397c9e0a3044969672cee3a2dfa21cf34c450d5b",
+              "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261015"
+            },
+            "20261016": {
+              "fetch_status": "OK",
+              "http_status": 200,
+              "request_start_utc": "2026-10-15T15:56:33.863495+00:00",
+              "response_bytes": 15107,
+              "response_end_utc": "2026-10-15T15:56:33.941833+00:00",
+              "response_sha256": "5d09c211e2eb3d6c29f683827b744f7e7f6dffa369a38cdd5879d6efa710237a",
+              "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261016"
+            }
+          },
+          "request_start_utc": "2026-10-15T15:56:33.863495+00:00",
+          "response_bytes": 15107,
+          "response_end_utc": "2026-10-15T15:56:33.941833+00:00",
+          "response_sha256": "5d09c211e2eb3d6c29f683827b744f7e7f6dffa369a38cdd5879d6efa710237a",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261016"
+        },
+        "uefa.champions": {
+          "fetch_status": "OK",
+          "http_status": 200,
+          "kept_from": {},
+          "query_receipts": {
+            "20261015": {
+              "fetch_status": "OK",
+              "http_status": 200,
+              "request_start_utc": "2026-10-15T15:56:34.094411+00:00",
+              "response_bytes": 1786,
+              "response_end_utc": "2026-10-15T15:56:34.176868+00:00",
+              "response_sha256": "0a74e0ff565268e9bba896aa280e4e1327015cfae3f09087c2f944aa70dfe321",
+              "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard?dates=20261015"
+            },
+            "20261016": {
+              "fetch_status": "OK",
+              "http_status": 200,
+              "request_start_utc": "2026-10-15T15:56:34.176868+00:00",
+              "response_bytes": 1786,
+              "response_end_utc": "2026-10-15T15:56:34.246330+00:00",
+              "response_sha256": "0a74e0ff565268e9bba896aa280e4e1327015cfae3f09087c2f944aa70dfe321",
+              "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard?dates=20261016"
+            }
+          },
+          "request_start_utc": "2026-10-15T15:56:34.176868+00:00",
+          "response_bytes": 1786,
+          "response_end_utc": "2026-10-15T15:56:34.246330+00:00",
+          "response_sha256": "0a74e0ff565268e9bba896aa280e4e1327015cfae3f09087c2f944aa70dfe321",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard?dates=20261016"
+        }
+      }
+    },
+    "schedule_source": "live",
+    "written": 3
+  }
+}

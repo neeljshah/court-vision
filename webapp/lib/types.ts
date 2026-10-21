@@ -879,6 +879,7 @@ export type RawPaperTrade = {
   commence_time:  string | null;
   channel:        string | null;
   note:           string | null;
+  clv_is_proxy?:  boolean | null;
 };
 
 /** Raw envelope exactly as the backend returns it. */
@@ -915,7 +916,7 @@ export type PaperPredictionRow = {
   final_score?:   string | null;
   clv_pct:        number | null;   // <- clv
   beat_close?:    boolean | null;
-  clv_is_proxy?:  boolean;
+  clv_is_proxy?:  boolean | null;  // null = unknown (wire field absent)
   clv_status?:    string | null;
   ts:             string | null;   // <- logged_at
   line?:          number | null;   // not in real backend; optional for tests

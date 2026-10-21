@@ -183,10 +183,10 @@ Pre-specified verdict rule (verbatim in substance from the prereg): fewer than 3
 season -> INSUFFICIENT; if the share of projected ticks whose state differs at L = 18 is below 0.20
 in either season, or the canary interval's upper bound is not below 0 in both -> INACTIVE; else if in
 BOTH seasons the PROJ - STALE interval at L = 18 and the real-versus-placebo interval both have upper
-bound < 0 -> ACCEPT_STALENESS_BACKSTOP_ONLY; otherwise REJECT.
+bound < 0 -> status: accept (staleness backstop only); otherwise REJECT.
 
 Result ([`S542_anchor_projection_replay_2026-09-29.md`](../evidence/harness/S542_anchor_projection_replay_2026-09-29.md)
-and its `.json`, as of 2026-09-29): **ACCEPT_STALENESS_BACKSTOP_ONLY**.
+and its `.json`, as of 2026-09-29): status: accept (staleness backstop only).
 
 | Cell (NBA, L = 18 s, projected ticks) | Games | Ticks | PROJ - STALE | PROJ - FRESH | Placebo contrast |
 |---|---|---|---|---|---|

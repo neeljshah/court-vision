@@ -2,27 +2,23 @@
 
 **Calibrated multi-sport forecasting, audited in public -- with the rejects and retractions left in.**
 
-**What it is.** A four-sport forecasting system (NBA, MLB, soccer, tennis): a leak-guarded walk-forward
-harness, one calibrated win probability per sport, a possession-level Monte Carlo, an in-game repricer, a
-paper-only execution layer and a public analytics site. NBA broadcast-video tracking is the origin lineage and
-is paused. The engine runs in a private repository; this repository is the evidence surface.
+**What it is.** A four-sport forecasting system (NBA, MLB, soccer, tennis) with a leak-guarded walk-forward
+harness and a paper-only execution layer. Pregame probabilities match or trail the devigged close; the in-game
+model is behind the live market; honest rejects and six retractions are published. Nothing here is a
+betting-edge claim. The engine is private; this repository is the evidence surface.
+
+**Start here**
+
+- [Site home](https://neeljshah.github.io/court-vision/) -- the whole public record
+- [About](https://neeljshah.github.io/court-vision/about/) -- scope and how built
+- [Calibration](https://neeljshah.github.io/court-vision/analytics/calibration/) -- verdicts with n and intervals
+- [Retractions](https://neeljshah.github.io/court-vision/evidence/retractions/) -- six withdrawn figures, reasons
+- [Paper record](https://neeljshah.github.io/court-vision/paper-trading/) -- simulated fills, PAPER ONLY
+
+Claim-by-claim reproduce index: [EVIDENCE.md](EVIDENCE.md).
 
 **Who it is for.** Quant research, pricing and sports-analytics teams, and ML or data hiring managers who want
 to see a forecasting system measured against the market with its negative results kept in.
-
-**Headline results.** Measured as Brier score against the devigged closing line and the live market, on
-held-out games, with intervals. The pregame model matches the close on NBA moneyline at an underpowered n=372
-and trails it by small, measurable margins on MLB moneyline and soccer totals (recomputed 2026-09-24). It never
-beats the close. Conditioning on the realized game state sharpens the forecast against a static prior, and the
-live market is sharper still (Gate A-0, 2026-09-14). 0 of 60 candidate signal classes passed the gate. A
-paper-only forward series has run since 2026-10-06 and has no verdict as of 2026-10-19. Everything here is a
-calibration result. Nothing here is a betting-edge claim.
-
-**How it is proven, and where to reproduce.** Every number traces to a committed artifact through
-[EVIDENCE.md](EVIDENCE.md) and the audited [evidence packet](docs/JOB_EVIDENCE_PACKET.md). A fresh clone
-re-verifies the site's committed artifacts in about five minutes (the "Verify it yourself" section below).
-
-### [Open the live analytics site -> neeljshah.github.io/court-vision/](https://neeljshah.github.io/court-vision/)
 
 **Reading this as a trading desk or quant team?** Start with the one-page
 [desk brief](docs/QUANT_BRIEF.md): pricing quality against the devigged close and the live market,
@@ -84,7 +80,7 @@ map is **[docs/CAPABILITIES.md](docs/CAPABILITIES.md)**.
 - **[Papers](https://neeljshah.github.io/court-vision/analytics/papers/)** -- research write-ups whose evidence paths are machine-checked against the published artifacts before deploy.
 - **Inspectors** -- state reliability, residual anatomy, blowout timing, pitch sequencing, score decomposition, cross-sport comparability.
 - **Experimental metrics, the measurement lab, Compare, the entity library (1,549 cards), and Ask Scout** -- every answer cites its artifact and `as_of` date, or returns `NO_DATA`.
-- **[The retraction finding](https://neeljshah.github.io/court-vision/analytics/findings/retraction/)** -- what was claimed, what was wrong, how it was caught.
+- **[The retraction finding](https://neeljshah.github.io/court-vision/evidence/retractions/)** -- what was claimed, what was wrong, how it was caught.
 
 The site is a static export built from [`webapp/`](webapp/) on every push; published JSON is
 scrubbed and receipt-checked in CI before it ships. Page-by-page map, data lineage and the CI gates:

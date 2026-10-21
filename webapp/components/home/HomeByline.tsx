@@ -10,7 +10,7 @@ export function HomeByline() {
       <a href={PORTFOLIO} className="inline-flex min-h-6 items-center hover:text-foreground">Portfolio</a>
       <span className="basis-full">
         Education: three years of data-science coursework at the University of Iowa. Built by one person
-        directing Claude and Codex agents; every number links to its receipt.
+        directing Claude and Codex agents; each headline figure names its source artifact and as-of date.
       </span>
     </p>
   );

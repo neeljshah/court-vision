@@ -84,7 +84,7 @@ recruiter or interviewer can check them directly.
 |---|---|---|
 | Walk-forward (expanding-window) CV with assertion-level per-fold leak guard + overfit-gap CI gate | `src/prediction/walk_forward_backtester.py` asserts `max_train_date < min_test_date` every fold; `scripts/run_walk_forward.py --gate` exits 1 on overfit | "Built a walk-forward CV harness with an assertion-level leakage guard on every fold and a CI gate that fails the build on overfitting." |
 | Truncation-invariance leak test for streaming features | `tests/test_ingame_leak_free.py`: re-featurizes a truncated event stream and asserts past rows are byte-identical; passes | "Wrote property-based leakage tests that catch lookahead bias by asserting truncation invariance — a feature at time T is identical with or without future events." |
-| Full-season walk-forward proving market efficiency | Season backtest (truncation-invariance PROVEN, 2025-26 season): well-calibrated (Brier 0.208 vs close 0.198; CORRECTION 2026-09-14: unreproduced, no artifact; reproducible artifact `data/cache/kalshi_complete/own_lines_backtest_nba.json` gives 0.1735 vs 0.1666, n=743, TRAILS_CLOSE, see the Selected Metrics entry) but does not beat the close; spread/total pregame CLV ≈ 0 (corr-with-outcome = 0.001). The cleanest market-efficiency proof in the system. | "I ran a full-season leak-free backtest that proved the model is well-calibrated but does not beat sharp closing lines — the honest finding a validation framework is *supposed* to produce." |
+| Full-season walk-forward proving market efficiency | Season backtest (truncation-invariance PROVEN, 2025-26 season): well-calibrated (Brier 0.208 vs close 0.198; CORRECTION 2026-09-14: unreproduced, no artifact; reproducible artifact `data/cache/kalshi_complete/own_lines_backtest_nba.json` gives 0.1735 vs 0.1666, n=743, TRAILS_CLOSE, see the Selected Metrics entry; SUPERSEDED 2026-09-24 by the recompute: n=372 scored, gap +0.0069, 95% CI [-0.0038, +0.0175], DM p 0.20 -- see the Corrections entry) but does not beat the close; spread/total pregame CLV ≈ 0 (corr-with-outcome = 0.001). The cleanest market-efficiency proof in the system. | "I ran a full-season leak-free backtest that proved the model is well-calibrated but does not beat sharp closing lines — the honest finding a validation framework is *supposed* to produce." |
 | Shin (1992) insider-trading de-vig model from scratch (+ 3 other methods), production-wired | `src/prediction/devig.py` (numerically-stable bisection solver); 7 tests; `POST /api/devig` defaults to `shin` | "Implemented four de-vig methods from scratch — including the Shin (1992) model via a stable bisection solver — and verified the output matches published theory." |
 | Multi-corpus calibration acceptance gate (must beat raw on ≥2 independent corpora) | `scripts/validate_calibration_multicorpus.py` + tests (min-sample filter, least-intervention tie-break, strict train-before-eval guard) | "Designed a calibration-acceptance protocol that only ships a calibration if it beats raw on ≥2 independent OOS corpora — preventing single-window overfit from masquerading as a durable gain." |
 | Append-only shadow-logging + overnight settlement (anti-survivorship-bias) | `src/prediction/shadow_logger.py` (logs passed AND blocked bets); `src/prediction/settlement.py` (scores vs final box scores) | "Built shadow-logging that records every bet the engine evaluated — including rejected ones — and a settlement engine, creating a counterfactual dataset to calibrate thresholds against real outcomes." |
@@ -280,7 +280,7 @@ the repo will catch each one. Do not cite them as current results.
 | **"Run my verify scripts to reproduce the headlines"** | **AMENDED 2026-07-23:** the historical failures (`verify_production_mae.py` feature mismatch; `verify_winprob.py` uncommitted cache) were fixed 2026-07-20 (`eb95e13b8`), and fresh-clone reproducibility is now **measured, not assumed**: `check_all.py` passes 52/52 on a bare clone (8 data-dependent modules verify their committed artifacts in a labeled recorded-artifact mode) and runs green in public CI (`proof.yml`, first green run 2026-07-23; the first run honestly FAILED 46/52 on a path-portability bug, fixed in `03c4ce398` -- the red run stays in Actions history). | "Clone the repo and run `check_all.py` -- 52 module self-checks pass on a bare clone and in public CI ([REPRODUCE.md](../REPRODUCE.md)). The CI trail includes the first red run and its fix -- that is the discipline, not an embarrassment." |
 | **Any "quant alpha / P&L track record" framing** | There is **no verified leak-free profitable edge.** Zero real money placed. | Apply as an ML-infra/modeling/CV hire. "I built the full quant toolchain — devig, Kelly, CLV, calibration, walk-forward backtesting — and ran the validation that proved the apparent edge was an artifact." |
 | **"85 trained signals" / "0/85 candidate signals" / "80-artifact intelligence layer"** | **CORRECTED 2026-09-03 (S56).** No artifact holds 85 signals: 85 is the per-row `n_trials` multiplicity constant, while `scripts/platformkit/eval_gate/spa_catalog_report.txt` and `retro_correction_report.txt` both enumerate **60** catalog classes (NBA 16 / soccer 15 / tennis 15 / MLB 14), 0 surviving. The disjoint `data/registry/signal_registry.parquet` holds **86** rows (72 folded / 14 deferred, `coverage_pct` null 86/86, no market-relative verdict). `data/intelligence/` holds **151** files on disk and the 80-subset is not enumerable by any script. Memo: `docs/evidence/harness/SIGNAL_INVENTORY_REDTEAM_2026-09-03.md`. | "0 of 60 candidate signal classes survived the multiplicity correction; 86 registry signals carry no market-relative test; the intelligence layer is 151 files on disk." |
-| **"A forward track record" / "N weeks of forward paper trading" / any forward-series Brier as a model verdict** (added 2026-10-19) | Through 2026-10-18 every scoreboard cell is INSUFFICIENT (1 to 6 games against the 30-game floor), 0 of 31 judged games passed qualification, 7 of 8 night receipts are PARTIAL, and the fitted arms scored ticks on two nights only. Arm A is the venue mid's own Brier, not the model's. Section 5. | "A prospective, receipt-backed paper series has run since 2026-10-06. It has no calibration verdict yet, and the receipts say why: scorer wall time, laptop sleeps and recorder uptime." |
+| **"A forward track record" / "N weeks of forward paper trading" / any forward-series Brier as a model verdict** (added 2026-10-19) | Through 2026-10-18 every scoreboard cell is INSUFFICIENT (1 to 6 games against the 30-game floor), 0 of 44 judged games passed qualification, 7 of 9 night receipts are PARTIAL, and the fitted arms scored ticks on two nights only. Arm A is the venue mid's own Brier, not the model's. Section 5. | "A prospective, receipt-backed paper series has run since 2026-10-06. It has no calibration verdict yet, and the receipts say why: scorer wall time, laptop sleeps and recorder uptime." |
 | **"Simulated fills" as execution quality or P&L** (added 2026-10-19) | fill_realism is `COUNTS ONLY` on unqualified tape with zero assumed latency. It reports no markout, no fee netting and no money figure. | "The fill-realism step counts which paper quotes would have been touched (106 at a 5 s quote life, 452 at 30 s, 10-08 to 10-14). It is a count, not a result." |
 | **"The NBA season is pre-registered forward"** (added 2026-10-19) | No NBA-specific pre-registration document exists. NBA cells are scored under the general `PREREG_2026-10-07.json` seal (arm A and B_lag only so far, every cell INSUFFICIENT) and the fitted NBA arms are in warmup until about 20 regular-season games settle. Say "scored under the 2026-10-07 seal, fitted arms warmup", never "a pre-registered NBA season" or any NBA forward verdict. | "NBA is served and scored against the mid from the opener. A fitted NBA arm needs a new dated seal." |
 
@@ -343,7 +343,7 @@ Tennis left the served tuple from 10-11 by a recorded desk decision (`docs/opera
 committed at this writing. The NBA rows served so far are preseason games (`season_type` 1 in the
 schedule rows).
 
-**Nights** (from `nights/<D>.json`; 8 receipts, 1 COMPLETE, 7 PARTIAL, 5 calendar days without a scored night):
+**Nights** (from `nights/<D>.json`; 9 receipts, 2 COMPLETE, 7 PARTIAL, 4 calendar days without a scored night):
 
 | Night | Status | Reason (step status from the receipt) |
 |---|---|---|
@@ -356,8 +356,11 @@ schedule rows).
 | 10-12 | COMPLETE | all six steps RAN |
 | 10-13 | PARTIAL | scoreboard KILLED at its 900 s deadline, no scoreboard receipt (register row S824) |
 | 10-14 | PARTIAL | scoreboard KILLED at its 900 s deadline, no scoreboard receipt |
-| 10-15, 10-16 | not run | laptop dark from 10-16 03:56Z; after the 10-19 relaunch, free RAM was 0.4 to 1.5 GB against the 2.5 GB night floor (`docs/operations/DESK_STATE.md`, 10-19 status) |
+| 10-15 | not run | laptop dark from 10-16 03:56Z; after the 10-19 relaunch, free RAM was 0.4 to 1.5 GB against the 2.5 GB night floor (`docs/operations/DESK_STATE.md`, 10-19 status) |
+| 10-16 | COMPLETE | all six steps RAN, run after the 10-19 relaunch (as_of 2026-10-17T06:00Z; qualification 13 games judged, 0 qualified; week report INCOMPLETE) |
 | 10-17, 10-18 | missing | no schedule (unrecoverable) |
+
+The 2026-10-19 night (`nights/2026-10-19.json`, PARTIAL, as_of 2026-10-20T06:00Z, qualification refused `step_budget_exceeded`) is committed but lies outside this window; it will be absorbed at the next packet refresh.
 
 The scoreboard kills have a measured cause. The sealed scorer refits once per history row, so its
 wall time grows about quadratically with the cumulative history: 1,443 s measured at 29k rows (`docs/operations/DESK_STATE.md`, 10-15 status; register row S825).
@@ -367,8 +370,8 @@ check is the next night to run. The real fix is S825, which is **open** (registe
 time ceilings on qualification and fill_realism. They were bounded by S805 and S806 on 10-09, and
 the nights from 10-12 on ran both steps.
 
-**Scoreboard cells** (from `scoreboard/<D>.json`, outcome target; scoreboards exist for 10-06 to 10-10
-and 10-12; every cell in every file is **INSUFFICIENT**, with a null 95% interval):
+**Scoreboard cells** (from `scoreboard/<D>.json`, outcome target; scoreboards exist for 10-06 to 10-10,
+10-12 and 10-16 (10-16 not summarized below); every cell in every file is **INSUFFICIENT**, with a null 95% interval):
 
 - Games with arm A scored per night: 10-06 mlb 2, nfl 1; 10-07 mlb 3, nba 3; 10-08 mlb 2, nba 6;
   10-09 mlb 1, nba 1, nfl 1, soccer 2; 10-10 none (all unsettled); 10-12 mlb 1, soccer 3. Arm A is
@@ -386,19 +389,19 @@ and 10-12; every cell in every file is **INSUFFICIENT**, with a null 95% interva
 - Registry arm E (`cumulative/2026-10-14.md`): 967 ticks scored on 10-12 and 401 on 10-13. Every
   E row on 10-14 was refused `training_class_refused`. All INSUFFICIENT.
 
-**Qualification** (from `qualification/<D>.json`): **0 PASS of 31 games judged** (10-06 0/3, 10-12
-0/8, 10-13 0/14, 10-14 0/6). 10-07, 10-08 and 10-09 were killed before writing a receipt, and 10-10
-was refused (`undeclared_sport`). All 31 failing games carry COVERAGE_LOW and LINKAGE_INVALID. Other
-causes counted per game: STATE_GAP 23, DECISIONS_LOW 20, TAPE_INCOMPLETE 17, RESERVATION_INVALID 21,
-NOT_LIVE 18, STATE_STALE 15 and BOOK_CADENCE 12. Qualified decisions are 0 on every sport, to date
+**Qualification** (from `qualification/<D>.json`): **0 PASS of 44 games judged** (10-06 0/3, 10-12
+0/8, 10-13 0/14, 10-14 0/6, 10-16 0/13). 10-07, 10-08 and 10-09 were killed before writing a receipt, and 10-10
+was refused (`undeclared_sport`). All 44 failing games carry COVERAGE_LOW and LINKAGE_INVALID. Other
+causes counted per game: STATE_GAP 34, DECISIONS_LOW 33, TAPE_INCOMPLETE 27, RESERVATION_INVALID 25,
+NOT_LIVE 19, STATE_STALE 16 and BOOK_CADENCE 25. Qualified decisions are 0 on every sport, to date
 (`cumulative/2026-10-14.md`). These are data-completeness and linkage checks, and the receipts do not attribute them to one cause. Known contributors in the same period: overnight capture holes,
 laptop sleeps, and a live shadow recorder that has been **down since 2026-10-13 01:08Z** (adoption of
 S823 still owed; `daily/2026-10-19.md`). Qualification grades the tape, not the model.
 
 **Fill realism** (from `fill_realism/<D>.json`, mode `COUNTS ONLY` on unqualified tape; the 10-14 receipt declares 1 unit and
 zero assumed latency): fills credited at a 5 s / 30 s quote life were 10 / 77 (10-08), 3 / 20
-(10-10), 35 / 111 (10-12), 36 / 139 (10-13) and 22 / 105 (10-14). The 10-08 to 10-14 totals are
-106 / 452, which matches the last-7 count in `cumulative/2026-10-14.md`. These count simulated
+(10-10), 35 / 111 (10-12), 36 / 139 (10-13), 22 / 105 (10-14) and 24 / 61 (10-16, from `fill_realism/2026-10-16.json`). The 10-08 to 10-14 totals are
+106 / 452, which matches the last-7 count in `cumulative/2026-10-14.md`; with 10-16 the 10-08 to 10-16 totals are 130 / 513. These count simulated
 fills. They are not markouts, and no fee-netted markout or P&L is computed from them.
 
 **Feed latency** (`cumulative/2026-10-14.md`, S663 ledger): MLB statsapi receipt-minus-play-clock p50
@@ -417,7 +420,7 @@ model requirement, not whether NBA is scored. No NBA-specific pre-registration d
 forward series runs under the sealed 2026-10-07 pre-registration, fitted arms warmup until the
 regular-season history exists.
 
-**Reading.** The desk wrote a prospective schedule on 10 of 13 calendar days and a night receipt on 8 of them. The receipts also record its operational limits: scorer wall time, laptop sleeps and recorder
+**Reading.** The desk wrote a prospective schedule on 10 of 13 calendar days and a night receipt on 9 of them. The receipts also record its operational limits: scorer wall time, laptop sleeps and recorder
 uptime. In the same period no cell reached its floor and no game qualified. As of
 2026-10-19 the forward series has no calibration verdict, either for or against the model.
 

@@ -54,7 +54,7 @@ PBP microstructure ────────────────────�
                                           │
        ┌──────────────────────────────────┼──────────────────────────────────┐
        ▼                                  ▼                                  ▼
-  Prop models                     In-play winprob                    Bet construction
+  Prop models                     In-play winprob                    Selection filter
   (PTS/REB/AST/...)              (endQ1/Q2/Q3 LGB)                  (filters + Kelly)
 ```
 
@@ -67,8 +67,8 @@ Concrete examples of how a prediction call consumes intelligence:
 - **In-play endQ3 winprob** → consumes `ingame_momentum` (H1 → H2 delta vector), `clutch_cv_split`
   (clutch elevators vs. shrinkers), `quarter_profiles` (per-quarter velocity baseline),
   `coaching_adjustments` (whether the trailing team is mid-adjustment).
-- **Bet filter / sizing** → reads `cv_quality_per_game` (gate by tracking quality),
-  `confidence_curves` (per-EV-decile reliability), `anomaly_log` (suppress bets on players
+- **Selection filter / sizing** → reads `cv_quality_per_game` (gate by tracking quality),
+  `confidence_curves` (per-EV-decile reliability), `anomaly_log` (suppress candidates on players
   currently outside their baseline).
 - **Possession simulation** → the player-level Monte Carlo (`src/sim/`) reads
   `data/cache/team_system/{player_rates, team_rates}` plus scheme / clutch / rest context tables
@@ -124,7 +124,7 @@ computed against history only.
 
 ## How an atlas section is built (leak-free)
 
-The 48 deep atlas-section builders live under `intel/` (30 `player_*` + 18 `team_*`), and they all
+As of 2026-07-23, the 48 deep atlas-section builders live under `intel/` (30 `player_*` + 18 `team_*`), and they all
 subclass the single `AtlasSection` contract in `src/loop/atlas.py`. The contract is what makes the
 "intelligence is leak-free" claim mechanical rather than aspirational:
 
@@ -275,7 +275,7 @@ served model, and produces **no** betting edge versus closing lines.
 
 | Artifact | Rows | What it encodes |
 |---|---:|---|
-| `cv_quality_per_game.parquet` | 3,560 | Per-game CV quality (homography validity, jersey resolution, phantom-slot flag) — used to gate bets |
+| `cv_quality_per_game.parquet` | 3,560 (as of the 2026-06-02 build) | Per-game CV quality (homography validity, jersey resolution, phantom-slot flag) — used to gate candidates |
 | `cv_quality_confidence_curves.json` | — | Quality → confidence mapping; quality-adjusted Kelly multiplier |
 | `per_player_confidence.parquet` | 112 | Per-player CV volatility + per-stat confidence multipliers |
 | `confidence_curves.json` | — | EV decile → realized return curve (the calibration honesty check) |
@@ -364,8 +364,8 @@ axis), never silent re-weighting until the number looks right.
 - **Significance is recorded where applicable** — `t_stat`, `p_value`, `p_value_adj` columns live
   in the parquets. Most signals are corrected; a few sub-100-row tables aren't significant on their
   own and only earn weight when stacked.
-- **CV quality gating is real.** `cv_quality_per_game.parquet` (3,560 game-slots) feeds the
-  bet-construction filter — a prediction on a game with `homography_valid_rate < 0.6` is
+- **CV quality gating is real.** `cv_quality_per_game.parquet` (3,560 game-slots, as of the 2026-06-02 build) feeds the
+  selection filter — a prediction on a game with `homography_valid_rate < 0.6` is
   downweighted regardless of model confidence.
 - **The intelligence layer regenerates from raw tracking + NBA Stats.** Nothing here is
   hand-edited. Every signal is reproducible from a fresh `data/` snapshot.
@@ -380,13 +380,13 @@ A candid accounting of the wiring, end to end, so the gap between *plumbed* and 
 |---|---|---|
 | Dossier fields -> prop model features (PTS/REB/AST/FG3M...) | Yes | Competitive leak-free WF accuracy; **point-accuracy lift attributable to the intelligence layer ~= 0** |
 | CV behavioral features -> prop models | Yes (imputed for non-CV games) | **SHAP ~= 0** (`cv_lift_report.json: has_cv_data: false`); lift gated on the 80-game retrain |
-| Scheme / clutch / rest tables -> possession Monte Carlo rate multipliers | Yes | Structure validated (teammate-rho emerges ~= -0.10); **no SGP / totals dollar edge claimed** |
-| `cv_quality_per_game` -> bet-construction gate | Yes | Real: low-homography games are downweighted regardless of model confidence |
+| Scheme / clutch / rest tables -> possession Monte Carlo rate multipliers | Yes | Structure validated (teammate-rho emerges ~= -0.10, as of the 2026-06-02 build; the number is not carried by a receipt file); **no SGP / totals dollar edge claimed** |
+| `cv_quality_per_game` -> selection gate | Yes | Real: low-homography games are downweighted regardless of model confidence |
 | Intelligence features -> vs. devigged closing line | Yes (graded) | **CLV ~= 0** — market efficient; the model matches but does not beat the close |
-| In-game / freshness frontier | Partial | The *thesis* (this is where the gap is) — calibration gains only, **not yet a measured vs-close edge** |
+| In-game / freshness frontier | Partial | The *thesis* (this is where the gap is) — calibration gains only, **no vs-close edge measured** |
 
 The one-line summary: the layer is a **fully-plumbed, leak-free scouting + correlation substrate**.
-It demonstrably sharpens *understanding* and gates bets on data quality; it has **not** demonstrated
+It demonstrably sharpens *understanding* and gates candidates on data quality; it has **not** demonstrated
 a predictive edge on the served model, and claims to the contrary are retracted in
 [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md).
 

@@ -1,12 +1,12 @@
 # Public Evidence — 60-Second Funnel Scan
 
-> **See it first, then read this.** The flagship product is **CourtVision Analytics — the Reading
-> Room**, live at
-> **[neeljshah.github.io/court-vision/](https://neeljshah.github.io/court-vision/)**:
-> 77 published source modules, 17 findings and 1,549 entity atlas cards, 6 prior-art-gated novel stats (one published
-> as an honest null), Scout AI in three honest tiers, and a self-grading claim ledger — every
-> number on the page carrying the artifact path it was read from. The dense quant terminal is
-> product 2, at **[neeljshah.github.io/court-vision](https://neeljshah.github.io/court-vision)**.
+> **See it first, then read this.** One public site:
+> **[neeljshah.github.io/court-vision/](https://neeljshah.github.io/court-vision/)**
+> ([About](https://neeljshah.github.io/court-vision/about/),
+> [Calibration](https://neeljshah.github.io/court-vision/analytics/calibration/),
+> [Retractions](https://neeljshah.github.io/court-vision/evidence/retractions/),
+> [Paper record](https://neeljshah.github.io/court-vision/paper-trading/)). Every number on it carries
+> the artifact path it was read from.
 >
 > This document is the fast scan of what the engine underneath actually does and how well,
 > organized by the funnel. Every number here is the **leak-free, audited** version. For the full
@@ -40,7 +40,7 @@ agentic loop that re-validates every stage. Each stage refines the one above it.
 
 ## October 19 forward-record update
 
-- Forward paper record 2026-10-06 to 2026-10-16 (PAPER ONLY; no schedule on 10-17 or 10-18; as of 2026-10-19): 113 games served on prospective schedules, 1 COMPLETE and 7 PARTIAL nights, every scoreboard cell INSUFFICIENT against the 30-game floor, 0 of 31 games qualified. There is no calibration verdict yet. See [JOB_EVIDENCE_PACKET.md section 5](JOB_EVIDENCE_PACKET.md#5-forward-paper-record-2026-10-06--2026-10-16-as-of-2026-10-19).
+- Forward paper record 2026-10-06 to 2026-10-16 (PAPER ONLY; no schedule on 10-17 or 10-18; as of 2026-10-19): 113 games served on prospective schedules, 2 COMPLETE and 7 PARTIAL nights, every scoreboard cell INSUFFICIENT against the 30-game floor, 0 of 44 games qualified. There is no calibration verdict yet. See [JOB_EVIDENCE_PACKET.md section 5](JOB_EVIDENCE_PACKET.md#5-forward-paper-record-2026-10-06--2026-10-16-as-of-2026-10-19).
 
 ---
 
@@ -76,7 +76,7 @@ produce.
 - *Proof:* `src/pipeline/unified_pipeline.py`, `src/tracking/advanced_tracker.py`. Manifest:
   [CV_TRACKING.md](CV_TRACKING.md).
 - *Honest caveat:* CV features carry **SHAP ≈ 0 in production today** (`cv_lift_report.json:
-  has_cv_data: false`) — complete plumbing, credible thesis, **not yet a measured edge.**
+  has_cv_data: false`) — complete plumbing, credible thesis, **no measured lift (SHAP is about 0 in production).**
 
 ### 2 · SIGNALS — *real engineering; no market-relative lift measured*
 
@@ -191,7 +191,7 @@ the honest version was written down and the inflated one retired:
 | Retracted | Root cause | Honest version |
 |---|---|---|
 | +18.38% ROI on 1,535 bets | Market-follow grading artifact (model never read; flat -110 fiction; in-sample filters) | Market efficient: the pregame model matches or trails the devigged close in Brier; no return figure is claimed |
-| endQ3 Brier 0.119 "Pinnacle-class" | Q4 feature leak (`halftime_pace_shift`, `trailing_team_q4_usg_hhi`); source file reads 0.1354, not 0.1191 | Leak-free ~0.141 (caught own pipeline Q4 leak) |
+| endQ3 Brier 0.119 "Pinnacle-class" | Q4 feature leak (`halftime_pace_shift`, `trailing_team_q4_usg_hhi`); source file reads 0.1354, not 0.1191 | Leak-free value: see JOB_EVIDENCE_PACKET.md (not a canonical key); caught own pipeline Q4 leak |
 | +54% in-play ROI | L5-proxy model-quality ceiling, not a tradeable/realized result | No $ figure quoted; the forward paper series (since 2026-10-06) has no verdict yet |
 | "Season edge proven" | Full-season WF: CLV ≈ 0; model explains 0.13%/0.29% of line move | Market is efficient; well-calibrated but does not beat the close |
 | "13-month build" / "hand-typed 5,504 commits" (the 2026-09-07 count) | Git history spans ~6 months (2026-03-09 to 2026-09-07); the large majority of commits are agent-authored under direction | ~6-month build; solo human architect/director of an agentic pipeline |

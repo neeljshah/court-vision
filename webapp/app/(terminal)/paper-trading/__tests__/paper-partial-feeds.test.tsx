@@ -5,7 +5,7 @@ import { api } from "@/lib/p5api";
 import type { ClvScoreboard, PaperTrailRow, PmTrailRow, PnlSeries } from "@/lib/types";
 import clv from "@/test/fixtures/july_2026/api_paper_clv.json";
 import pnlJson from "@/test/fixtures/july_2026/api_paper_pnl_series.json";
-import PaperTradingPage from "../page";
+import PaperTradingPage from "../PaperTradingPageClient";
 
 afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 

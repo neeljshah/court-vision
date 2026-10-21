@@ -101,7 +101,11 @@ export function normalizeRawEnvelope(
     return raw as Unavailable;
   }
   const env = raw as RawPaperEnvelope;
-  const predictions: NormRow[] = (env.trades ?? []).map((t) => ({
+  if (!Array.isArray(env.trades)) {
+    return { status: "unavailable", reason: "unexpected envelope shape" } as Unavailable;
+  }
+  const totalOk = typeof env.total === "number" && Number.isFinite(env.total);
+  const predictions: NormRow[] = env.trades.map((t) => ({
     game_id:     t.event_id ?? null,
     matchup:     t.matchup  ?? null,
     sport:       t.sport    ?? null,
@@ -118,18 +122,19 @@ export function normalizeRawEnvelope(
     stake_units:   null,
     line:          null,
     beat_close:    null,
-    clv_is_proxy:  false,
+    clv_is_proxy:  t.clv_is_proxy ?? null, // null = unknown, never assumed real
     edge_vs_market: null,
     final_score:   null,
     decision:      null,
   }));
   return {
-    status:      env.status      ?? "ok",
-    count:       env.total       ?? 0,
+    status:      env.status      ?? "unknown",
+    count:       totalOk ? env.total : predictions.length,
     generated_at: null,          // not in the real envelope
     predictions,
     edge_claimed: env.edge_claimed ?? false,
-    honest_note:  env.honest_note,
+    honest_note:  totalOk ? env.honest_note
+      : [env.honest_note, "total missing from envelope; count is the rows returned"].filter(Boolean).join(" | "),
   };
 }
 

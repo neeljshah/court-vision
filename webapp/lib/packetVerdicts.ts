@@ -19,7 +19,7 @@ export const VERDICT_MEANING: Record<PacketVerdict, string> = {
   TRAILS_CLOSE: "Pregame: the model scores worse than the devigged close and the 95% interval on the gap excludes zero.",
   MATCHES_CLOSE: "The 95% interval on the model-minus-close gap includes zero, and the sample cannot resolve a gap below its MDE: not resolved, not parity.",
   UNDERPOWERED: "The sample cannot resolve a gap smaller than its minimum detectable effect; no direction is drawn.",
-  INSUFFICIENT: "Too few qualified games or weeks to score; no verdict is drawn.",
+  INSUFFICIENT: "Fewer than 30 games in the cell; no verdict is drawn until it fills (packet rule).",
   PROVISIONAL: "Held once on a single corpus or fold; awaits replication on an independent corpus before it is settled.",
   MODEL_SHARPER_PROVISIONAL: "A small-sample retrospective diagnostic in which the model scored sharper than the market reference; provisional, not evidence of market outperformance.",
   MARKET_SHARPER_PROVISIONAL: "The market reference scored sharper than the model and the interval excludes zero, on a single corpus; provisional until replicated.",

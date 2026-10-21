@@ -40,7 +40,7 @@ function ThemeToggle() {
       type="button"
       className={s.tool}
       aria-pressed={dark}
-      aria-label={dark ? "Switch to light theme" : "Switch to dark theme"}
+      aria-label="Dark theme"
       onClick={() => {
         applyTheme(!dark);
         setDark(!dark);

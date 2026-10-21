@@ -157,7 +157,7 @@ distinguish parity from a real deficit, and is reported as underpowered.
 
 - MATCHES_CLOSE if the 95% interval includes 0.
 - TRAILS_CLOSE if the whole interval lies above 0.
-- BEATS_CLOSE if the whole interval lies below 0.
+- status: beats close (replay status, not a packet verdict) if the whole interval lies below 0.
 
 There is no tolerance band and no threshold on the point gap. Section 5.2 explains why that matters.
 
@@ -387,9 +387,9 @@ step is a record fixed before the games are played. It is **planned, not done**;
   rows are expected to read worse than the retrospective holdout.
 
 **The paper maker desk.** Separately, an in-play paper desk rests simulated maker quotes and credits
-a fill only when later captured trades deplete the modelled queue ahead of the quote. To 2026-10-04 the paper desk has 10 nights with any receipt (2 COMPLETE), 0 qualified games, and 136 TTL-30 credited paper fills on unqualified tape; every pooled cell is INSUFFICIENT.
-Both fill counts carry an uncertainty marker in the source: 136 (?4) TTL-30 and 48 (?4) TTL-5
-credited fills, where (?4) means the count is unknown on 4 nights, so the true totals may be higher
+a fill only when later captured trades deplete the modelled queue ahead of the quote. The paper desk has not produced a qualified game: through 2026-10-16 (as of 2026-10-19) 113 games were served, 9 nights have receipts (2 COMPLETE, 7 PARTIAL), 0 of 44 judged games qualified, and every pooled cell is INSUFFICIENT (JOB_EVIDENCE_PACKET.md section 5).
+As of 2026-10-04 (superseded by the window above) the source counted 136 TTL-30 and 48 TTL-5
+credited fills, with the count unknown on 4 nights, so the true totals may be higher
 (sources: [CANONICAL_FIGURES.json](../evidence/CANONICAL_FIGURES.json) key `paper_desk_fill_counts`
 and [cumulative/2026-10-04.md](../evidence/forward/cumulative/2026-10-04.md)). These are
 counts, not a verdict. No markout level is published yet (definitions in

@@ -46,7 +46,7 @@ export function StatusCard({ desk, uptime }: { desk: Desk | null; uptime: Uptime
           value={`${last.date} ${last.status ?? "status not stated"}${
             last.reasons?.length ? ` (${last.reasons.join(", ")})` : " (all steps ran)"}`} />
       ) : (
-        <p className="px-3 py-2 text-xs text-stale">No night receipt is in the desk export, so the last night cannot be shown.</p>
+        <div><dt className="sr-only">Status</dt><dd className="px-3 py-2 text-xs text-stale">No night receipt is in the desk export, so the last night cannot be shown.</dd></div>
       )}
       {uptime ? (
         <>
@@ -56,14 +56,14 @@ export function StatusCard({ desk, uptime }: { desk: Desk | null; uptime: Uptime
             value={`${(uptime.share * 100).toFixed(1)} pct of days, window ${uptime.window}`} />
         </>
       ) : (
-        <p className="px-3 py-2 text-xs text-stale">The uptime receipt {UPTIME_SRC} could not be read at build time, so no uptime share is shown.</p>
+        <div><dt className="sr-only">Status</dt><dd className="px-3 py-2 text-xs text-stale">The uptime receipt {UPTIME_SRC} could not be read at build time, so no uptime share is shown.</dd></div>
       )}
       {books ? (
         <Row label="Capture heartbeat (books root)" asOf={exportAsOf} src="webapp/public/data/desk/latest.json"
           value={`${books.decision} (${books.reason}) at ${books.ts ?? "time not stated"}${
             books.ageMin != null ? `, ${books.ageMin} min before the export was generated` : ""}`} />
       ) : (
-        <p className="px-3 py-2 text-xs text-stale">The desk export carries no capture heartbeat, so its age cannot be shown.</p>
+        <div><dt className="sr-only">Status</dt><dd className="px-3 py-2 text-xs text-stale">The desk export carries no capture heartbeat, so its age cannot be shown.</dd></div>
       )}
     </dl>
   );

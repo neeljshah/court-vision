@@ -40,10 +40,40 @@ before), or adding a second font family (each face is 10-66 KB) fails immediatel
 
 The image caps are the largest optimised file in each directory plus headroom: the showcase
 charts quantise to a 256-colour palette at 20-45 KB each (visually lossless for matplotlib
-output; measured mean error under 2/255), and the brand icons sit at 2-60 KB.
+output; measured mean error under 2/255), and the brand icons and social cards sit at 2-70 KB
+(cap 77,824 B = `courtvision-emblem-hero.webp` + 10%, no exemptions).
+
+### Brand image cleanup (2026-10-21)
+
+None of the eight oversized `public/brand` files was rendered by any page, manifest or document,
+so they were removed from the served tree instead of re-encoded, and the brand cap dropped from
+81,920 B with eight exemptions to 77,824 B with none.
+
+| file (`public/brand/`) | before (B) | after (B) | action |
+|---|---:|---:|---|
+| `courtvision-logo.png` | 1,923,171 | 0 | moved to `scripts/platformkit/analytics_showcase/assets/` (generator source; bytes unchanged, no longer served) |
+| `courtvision-research-fields.webp` | 1,628,150 | 0 | deleted (unreferenced) |
+| `courtvision-logo-transparent.png` | 1,350,688 | 0 | deleted (unreferenced) |
+| `logo-on-light.png` | 961,034 | 0 | deleted (unreferenced generator press composite; now a local export under `out/brand/`) |
+| `logo-on-dark.png` | 960,630 | 0 | deleted (same) |
+| `courtvision-emblem.webp` | 924,822 | 0 | deleted (unreferenced; the export verifier's 1254x1254 pin was removed with it) |
+| `logo-square-dark.png` | 706,092 | 0 | deleted (same as logo-on-*) |
+| `logo-square-light.png` | 701,291 | 0 | deleted (same as logo-on-*) |
+| **total** | **9,155,878** | **0** | **9,155,878 B (8.73 MiB) removed from the served tree** |
+
+Not changed: the `og-*.png` cards (1200x630, 50-62 KB each, all under 150 KB) and
+`courtvision-emblem-hero.webp` (640x640, 70,062 B), which is now the largest brand file.
 
 To raise a ceiling, change `budget.json` in the same pull request as the code that needs it and
 say in this file what the extra bytes buy.
+
+Raised ceilings:
+
+- 2026-10-21, `/paper-trading/` HTML 10 KB -> 17 KB (measured 15354 gzip bytes + 2 KB headroom). The page
+  now server-renders the five baked paper feeds (`public/demo-data/api_paper_*.json`) instead of fetching
+  them after hydration, so the exported HTML carries the ledger as-of date, the 29 fills and the settled
+  count on first paint rather than "loading" and "not stated". The extra bytes are the 29-fill trail,
+  present once as the rendered rows and once as the client page's props; JS and CSS are unchanged.
 
 ## Re-measuring locally
 

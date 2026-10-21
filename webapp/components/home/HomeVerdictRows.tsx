@@ -33,7 +33,7 @@ export function HomeVerdictRows({ figures }: { figures: CanonicalFigure[] }) {
               {q && <span data-role="qualifier"><VerdictLabel verdict={q} qualifier={false} /></span>}
             </div>
             <div className="mt-1 font-data text-sm tabular text-foreground">
-              Brier {f.model?.toFixed(4)} model vs {f.close?.toFixed(4)} close
+              Brier {(f.model?.toFixed(4) ?? "--")} model vs {(f.close?.toFixed(4) ?? "--")} close
               <span className="text-muted-foreground"> (lower is better)</span>
             </div>
             <div className="font-data text-xs tabular text-muted-foreground">
@@ -43,7 +43,7 @@ export function HomeVerdictRows({ figures }: { figures: CanonicalFigure[] }) {
               </span>
             </div>
             <div className="font-data text-xs text-muted-foreground">
-              <span data-role="n">n = {f.n?.toLocaleString("en-US")} games</span> &middot;{" "}
+              <span data-role="n">n = {f.n?.toLocaleString("en-US") ?? "--"} games</span> &middot;{" "}
               <span data-role="asof">as of {f.as_of}</span>
               <span data-role="receipt">
                 <ReceiptChip sourceArtifact={f.source} asOf={f.as_of} verified="edge_claimed:false"

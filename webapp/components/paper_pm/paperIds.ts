@@ -7,7 +7,7 @@
 // The route param can arrive with one or two layers still encoded depending on how
 // the client reads it, so findFill compares fully decoded forms on both sides.
 import type { PaperTrailRow } from "@/lib/p5api";
-import { toBetId } from "./PmTradeRow";
+import { toBetId } from "./betId";
 
 // ponytail: ts + qty separates the two partial fills that share one fill receipt;
 // a collision would need two identical quantities on one receipt (the test checks the baked trail).

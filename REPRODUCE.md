@@ -59,11 +59,16 @@ answer) and asserts the result matches -- no network, no `data/`.
 3. **matplotlib backend variance** -- some modules render PNGs during a full
    (non-`--check`) run; `--check` paths never byte-compare images, only the
    JSON artifacts, precisely to avoid this.
+4. **`No module named pytest`** -- the `python -m pytest ...` rows in
+   [EVIDENCE.md](EVIDENCE.md) need one more package than the three above:
+   `pip install pytest`.
 
 ## Reporting a result
 
 File a [reproduction attestation](.github/ISSUE_TEMPLATE/reproduction-attestation.md)
-either way -- pass or fail. A FAIL report gets fixed and thanked publicly,
+either way -- pass or fail. The last end-to-end run of every command in this file, EVIDENCE.md
+and the evidence packet is [docs/evidence/REPRODUCE_AUDIT_2026-10-20.md](docs/evidence/REPRODUCE_AUDIT_2026-10-20.md).
+ A FAIL report gets fixed and thanked publicly,
 same discipline as the disclosed `check_all` fix trail in
 [docs/evidence/README.md](docs/evidence/README.md).
 
