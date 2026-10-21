@@ -6,6 +6,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { REDIRECTS } from "@/lib/redirects";
+import { stubMeta } from "@/lib/seo/families";
 import s from "./shell.module.css";
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
@@ -16,14 +17,10 @@ function target(from: string) {
   return r;
 }
 
+/** noindex,follow + canonical on the destination + og/twitter tags (lib/seo/families stubMeta). */
 export function stubMetadata(from: string): Metadata {
   const r = target(from);
-  return {
-    title: "Page moved",
-    description: `This page moved to ${r.label}.`,
-    robots: { index: false, follow: true },
-    alternates: { canonical: `${BASE_PATH}${r.to}` },
-  };
+  return stubMeta(from, r.to, r.label);
 }
 
 export function RedirectStub({ from }: { from: string }) {

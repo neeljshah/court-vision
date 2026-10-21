@@ -4,11 +4,12 @@ import { PipelineLedger } from "@/components/analytics/evidence/PipelineLedger";
 import { evidenceRepositoryUrl, getEvidenceCharts } from "@/lib/analytics/evidenceHub";
 import "../workspace.css";
 import "./evidence.css";
+import { pageMeta } from "@/lib/seo/meta";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta("/analytics/evidence/", {
   title: "Evidence & Platform",
   description: "A source-linked gallery of CourtVision's published visual evidence and documented platform architecture.",
-};
+});
 
 export default function EvidencePage() {
   const charts = getEvidenceCharts();

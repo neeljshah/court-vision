@@ -255,6 +255,10 @@ jobs:
           npx vitest run components/analytics/evidence/EvidenceGallery.test.tsx
           npx vitest run lib/analytics/evidenceHub.test.ts
           npx vitest run components/analytics/CommandPalette.test.tsx
+          npx vitest run lib/analytics/paletteRank.test.ts
+          npx vitest run lib/analytics/askCorpusRails.test.ts
+          npx vitest run 'app/(analytics)/analytics/search-index.json/route.test.ts'
+          npx vitest run 'app/(analytics)/analytics/ask/page.test.tsx'
           npx vitest run components/shell/__tests__/SiteHeader.test.tsx
           npx vitest run components/shell/__tests__/Breadcrumbs.test.tsx
 
@@ -283,6 +287,8 @@ jobs:
           node scripts/check-analytics-copy.mjs --data
           node scripts/verify-analytics-export.mjs
           node --test scripts/verify-analytics-export.test.mjs
+          node scripts/check-search-index.mjs
+          node --test scripts/check-search-index.test.mjs
           node scripts/verify-public-json.mjs out/data
 
       - uses: actions/configure-pages@v6

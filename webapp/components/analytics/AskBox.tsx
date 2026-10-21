@@ -1,24 +1,13 @@
 "use client";
-// Ask Scout is a client-side reader for committed, cited answers. It has no LLM,
-// no fetch, and no live-data path; retrieval only selects an existing envelope.
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
-import { Receipt, type ReceiptData } from "./Receipt";
-import { DataIntegrityNotice } from "./DataIntegrityNotice";
-import Link from "next/link";
-
-// Source JSON files are static assets, not routes: a plain anchor (base-path prefixed by hand)
-// avoids the router prefetching them as RSC payloads (a 404 per click on the exported site).
-const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
-import type { Verdict } from "./VerdictDot";
-import { typeset } from "@/lib/analytics/format";
-import { isReadingRoomPath } from "@/lib/analytics/scoutInspectorAnswers";
-import { scoutIntegrity } from "@/lib/analytics/scoutIntegrity";
-import {
-  resolveQuestion,
-  type AskAnswer,
-  type AskEntry,
-  type ResolvedQuestion,
-} from "@/lib/analytics/askSearch";
+// Ask Scout is a search over prepared answers. It is a client-side reader for
+// committed, cited corpus entries: no LLM, no fetch, no live-data path. Retrieval
+// only selects an existing entry (AskAnswerEnvelope) or says that none matches
+// and offers the closest prepared questions (AskNoMatch).
+import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { AskAnswerEnvelope } from "./AskAnswerEnvelope";
+import { AskNoMatch } from "./AskNoMatch";
+import { pill } from "./askStyles";
+import { resolveQuestion, type AskEntry, type ResolvedQuestion } from "@/lib/analytics/askSearch";
 
 export type { AskEntry } from "@/lib/analytics/askSearch";
 
@@ -27,21 +16,8 @@ export interface AskTour {
   questions: string[];
 }
 
-const statusMap: Record<AskAnswer["status"], { verdict: Verdict; label: string }> = {
-  ok: { verdict: "descriptive_only", label: "CITED" },
-  no_data: { verdict: "not_testable", label: "NO_DATA" },
-  refused: { verdict: "not_testable", label: "NOT ADVICE" },
-};
-
-function receiptFor(answer: AskAnswer): ReceiptData {
-  const stamp = statusMap[answer.status] || statusMap.ok;
-  return {
-    sourceArtifact: answer.source_artifact,
-    asOf: answer.as_of && answer.as_of !== "unknown" ? answer.as_of : undefined,
-    verdict: stamp.verdict,
-    label: stamp.label,
-  };
-}
+export const LOADING_HELP = "Loading the prepared answers...";
+export const READY_HELP = "Press Enter to search. Escape clears the question. Every result is a prepared answer shown verbatim with its source and as-of date; nothing is generated.";
 
 const bar: CSSProperties = {
   display: "flex", alignItems: "center", gap: 10, background: "var(--paper-raised)",
@@ -57,127 +33,6 @@ const submit: CSSProperties = {
   fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 15, padding: "10px 20px",
   minHeight: 44, borderRadius: "var(--radius-pill, 999px)", cursor: "pointer",
 };
-const pill: CSSProperties = {
-  fontSize: 13, color: "var(--accent)", border: "1px solid var(--rule-strong)",
-  borderRadius: "var(--radius-pill, 999px)", display: "inline-flex", alignItems: "center",
-  minHeight: 44, padding: "6px 14px", background: "var(--paper-raised)", cursor: "pointer",
-  fontFamily: "var(--font-sans)", textAlign: "left", lineHeight: 1.35,
-};
-const answerStyle: CSSProperties = { fontSize: 15.5, color: "var(--ink-2)", lineHeight: 1.6 };
-const questionStyle: CSSProperties = { fontSize: 13, color: "var(--ink-3)", marginBottom: 6 };
-const chipRow: CSSProperties = { display: "flex", flexWrap: "wrap", gap: "6px 16px", marginTop: 10 };
-
-const PACK_LABELS: Record<string, string> = {
-  calibration: "Calibration checkpoints",
-  mlb_batters: "MLB batters",
-  mlb_pitch: "MLB pitch types",
-  nba_players: "NBA players",
-  nba_teams: "NBA teams",
-  soccer: "Soccer teams",
-  tennis: "Tennis players",
-};
-
-function profilePath({ pack, slug }: { pack: string; slug: string }): string {
-  return `/analytics/players/${pack}/${slug}`;
-}
-
-function AnswerEnvelope({ result, query, onAsk, excludedQuestions, entries }: {
-  result: ResolvedQuestion;
-  query: string;
-  onAsk: (question: string) => void;
-  excludedQuestions: Set<string>;
-  entries: AskEntry[];
-}): ReactNode {
-  if (result.kind === "none" || !result.entry) {
-    const unavailable = result.kind === "unavailable";
-    return (
-      <section aria-label={unavailable ? "Scout corpus unavailable" : "No verified answer"} style={envelope(true)}>
-        <Marker neutral />
-        <div>
-          <div style={questionStyle}>{query}</div>
-          {result.compareOffer ? <div style={{ ...chipRow, margin: "0 0 10px" }}>
-            <Link href={result.compareOffer.href} style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)" }}>{result.compareOffer.label}</Link>
-          </div> : null}
-          <div style={answerStyle}>
-            {result.entityChoices?.length ? (
-              <>
-                <strong style={{ color: "var(--ink)" }}>Did you mean:</strong>
-                <div style={chipRow}>
-                  {result.entityChoices.map((entity) => (
-                    <Link key={`${entity.pack}:${entity.slug}`} href={profilePath(entity)} style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)" }}>
-                      {entity.name} ({PACK_LABELS[entity.pack] || entity.pack})
-                    </Link>
-                  ))}
-                </div>
-              </>
-            ) : unavailable ? (
-              <><strong style={{ color: "var(--ink)" }}>Scout's public corpus is unavailable.</strong> No answer can be verified until its committed sources load.</>
-            ) : (
-              <><strong style={{ color: "var(--ink)" }}>No verified result.</strong> Scout searches published questions and answers. Try a player, team, sport, or a metric such as calibration, Brier score, pitch mix, or home advantage. <a href="#scout-suggestions" style={{ color: "var(--accent)", fontWeight: 700 }}>Explore published questions</a>.</>
-            )}
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  const { entry } = result;
-  const integrity = scoutIntegrity(entry.a);
-  const related = result.kind === "related";
-  const neutral = related || entry.a.status !== "ok";
-  const publicArtifact = /^webapp\/public\/data\/(?:showcase|papers|explainers)\/[a-z0-9_-]+\.json$/i.test(entry.a.source_artifact);
-  const sourceHref = publicArtifact ? entry.a.source_artifact.slice("webapp/public".length) : "/data/ask/corpus.json";
-  const path = entry.a.explore_path || "";
-  const standardPath = /^\/analytics\/(?:research\/[a-z0-9-]+\/|players\/[a-z0-9_]+\/[a-z0-9_]+|m\/[a-z0-9_]+)$/i.test(path);
-  const researchViewPath = /^\/analytics\/research\/[a-z0-9-]+\/\?(?:q|metric|row)=[^#\s&]*(?:&(?:q|metric|row)=[^#\s&]*)*$/i.test(path);
-  const explorePath = standardPath || researchViewPath || isReadingRoomPath(path, entries) ? path : null;
-  const destinationLabel = entry.bucket === "public-entity-profile" ? "Open profile" : entry.bucket === "public-analytics-module" ? "Open module" : entry.bucket === "public-inspector" ? "Open inspector" : entry.bucket === "public-explainer" ? "Read explainer" : entry.bucket === "public-paper" ? "Read paper" : "Read analysis";
-  const followUps = result.followUps.filter(question => question !== query && !excludedQuestions.has(question));
-  return (
-    <section aria-label={related ? "Related cited answer" : "Cited answer"} style={envelope(neutral)}>
-      <Marker neutral={neutral} />
-      <div style={{ minWidth: 0 }}>
-        <div style={questionStyle}>{query}</div>
-        {related ? (
-          <p style={{ ...answerStyle, margin: "0 0 10px" }}>
-            <strong style={{ color: "var(--ink)" }}>Related cited note, not a direct answer.</strong>
-            {" "}Closest available question:
-          </p>
-        ) : null}
-        {related ? <div style={{ ...questionStyle, fontStyle: "italic" }}>{entry.q}</div> : null}
-        <DataIntegrityNotice notices={integrity.notices} moduleIds={integrity.moduleIds} />
-        <div style={answerStyle}>{typeset(entry.a.answer)}</div>
-        <div style={chipRow}>
-          {result.compareOffer ? <Link href={result.compareOffer.href} style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)" }}>{result.compareOffer.label}</Link> : null}
-          {explorePath ? <Link href={explorePath} style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)" }}>{destinationLabel}</Link> : null}
-          <Receipt {...receiptFor(entry.a)} />
-          <a href={`${BASE_PATH}${sourceHref}`} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: "var(--accent)" }}>{publicArtifact ? "Open published source" : "Open published answer record"}</a>
-        </div>
-        {followUps.length > 0 ? (
-          <div style={{ marginTop: 16 }}>
-            <div className="overline" style={{ color: "var(--ink-3)", marginBottom: 7 }}>Continue exploring</div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-              {followUps.map((question) => (
-                <button key={question} type="button" style={pill} onClick={() => onAsk(question)}>{question}</button>
-              ))}
-            </div>
-          </div>
-        ) : null}
-      </div>
-    </section>
-  );
-}
-
-function Marker({ neutral }: { neutral: boolean }) {
-  return <span aria-hidden style={{ width: 26, height: 26, borderRadius: "50%", flex: "0 0 auto", opacity: 0.9, background: neutral ? "var(--null)" : "var(--signal)" }} />;
-}
-
-function envelope(neutral: boolean): CSSProperties {
-  return {
-    background: "var(--paper-tint)", borderLeft: `2px solid ${neutral ? "var(--null)" : "var(--accent)"}`,
-    borderRadius: "var(--radius-card, 10px)", padding: "20px 22px", display: "flex", gap: 14,
-  };
-}
 
 export function AskBox({ entries, tours }: { entries: AskEntry[]; tours: AskTour[] }) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -224,6 +79,8 @@ export function AskBox({ entries, tours }: { entries: AskEntry[]; tours: AskTour
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const answered = result?.kind === "direct" && result.entry ? result.entry : null;
+
   return (
     <div>
       <form role="search" aria-busy={!ready} style={bar} onSubmit={(event) => { event.preventDefault(); if (ready) run(query); }}>
@@ -237,19 +94,21 @@ export function AskBox({ entries, tours }: { entries: AskEntry[]; tours: AskTour
           onKeyDown={(event) => {
             if (event.key === "Escape") clear();
           }}
-          placeholder="Ask about a player, team, sport, or metric..."
+          placeholder="Search the prepared answers: a player, team, metric, or method..."
           aria-label="Ask Scout a question"
           aria-describedby="scout-help"
           enterKeyHint="search"
         />
-        <button type="submit" style={submit} disabled={!ready || !query.trim()} aria-label="Search Scout's cited answers">Ask</button>
+        <button type="submit" style={submit} disabled={!ready || !query.trim()} aria-label="Search Scout's cited answers">Search</button>
       </form>
       <p id="scout-help" style={{ margin: "8px 6px 0", fontSize: 12.5, color: "var(--ink-3)" }}>
-        {ready ? "Press Enter to search. Escape clears the question. Scout searches published answers with source links." : "Preparing Scout's published answers..."}
+        {ready ? READY_HELP : LOADING_HELP}
       </p>
 
       <div ref={resultRef} tabIndex={-1} role="region" aria-label="Scout answer" aria-live="polite" aria-atomic="true" style={result ? { marginTop: 16 } : undefined}>
-        {result ? <AnswerEnvelope result={result} query={submittedQuery} onAsk={askFollowUp} excludedQuestions={suggestedQuestions} entries={entries} /> : null}
+        {result && answered
+          ? <AskAnswerEnvelope entry={answered} result={result} query={submittedQuery} onAsk={askFollowUp} excludedQuestions={suggestedQuestions} entries={entries} />
+          : result ? <AskNoMatch result={result} query={submittedQuery} onAsk={askFollowUp} /> : null}
       </div>
 
       <section id="scout-suggestions" aria-label="Suggested Scout questions" style={{ margin: "22px 0 10px" }}>

@@ -4,13 +4,12 @@
 // docs/evidence/CANONICAL_FIGURES.json; forward paper series status with the last night's
 // receipt; what this is not; exactly two primary actions; byline. Below the fold: the in-game
 // scoreboard sorted by n and the reproduce line. Build-time only; no client fetch.
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { loadArtifact } from "@/lib/showcase.server";
 import { loadDesk } from "@/lib/desk.server";
 import { headlineFigures, CANONICAL_PATH } from "@/lib/canonicalFigures.server";
+import { loadChecks } from "@/components/desk/deskExtras.server";
 import { VERDICT_QUALIFIER, type PacketVerdict } from "@/lib/packetVerdicts";
 import { HomeVerdictRows } from "@/components/home/HomeVerdictRows";
 import { HomeForwardStatus } from "@/components/home/HomeForwardStatus";
@@ -18,26 +17,15 @@ import { HomeNotClaimed } from "@/components/home/HomeNotClaimed";
 import { HomeByline } from "@/components/home/HomeByline";
 import { HomeScoreboard, type Scoreboard } from "@/components/home/HomeScoreboard";
 import { Term } from "@/components/evidence";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { pageMeta } from "@/lib/seo/meta";
+import { personJsonLd, websiteJsonLd } from "@/lib/seo/jsonld";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta("/", {
   title: "Calibration Scoreboard",
   description:
     "A calibrated sports forecaster that publishes its own scorecard against the market, including losses, nulls and retractions.",
-};
-
-// check_all.py's own report (build-time read): PASS / NO_CHECK counts + its as-of.
-function checkCounts(): { pass: number; noCheck: number; total: number; asOf: string } | null {
-  try {
-    const rows = JSON.parse(readFileSync(join(process.cwd(),
-      "../scripts/platformkit/analytics_showcase/out/check_all_report.json"), "utf-8")) as
-      { status: string; as_of?: string }[];
-    const asOf = rows.map((x) => x.as_of ?? "").sort().pop()?.slice(0, 10) ?? "";
-    return { pass: rows.filter((x) => x.status === "PASS").length,
-      noCheck: rows.filter((x) => x.status === "NO_CHECK").length, total: rows.length, asOf };
-  } catch {
-    return null;
-  }
-}
+});
 
 const PRIMARY =
   "inline-flex min-h-[44px] items-center border border-primary bg-primary px-4 text-sm font-semibold text-primary-foreground hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
@@ -46,11 +34,14 @@ export default function Home() {
   const figures = headlineFigures();
   const desk = loadDesk();
   const board = loadArtifact("cross_sport_scoreboard") as Scoreboard | null;
-  const checks = checkCounts();
+  // check_all.py's own report (components/desk/deskExtras.server): a FAIL/other row or a
+  // missing as_of throws at build time rather than vanishing from the sentence.
+  const checks = loadChecks();
   const asOf = figures[0]?.as_of ?? null;
 
   return (
     <div className="mx-auto max-w-[1200px] px-4 pb-16 sm:px-6 [overflow-wrap:anywhere]">
+      <JsonLd data={[websiteJsonLd(), personJsonLd()]} />
       <section aria-labelledby="home-h1" className="space-y-3 pt-5 sm:pt-8">
         <h1 id="home-h1" className="max-w-3xl text-xl font-semibold leading-tight tracking-tight text-foreground sm:text-2xl">
           A calibrated sports forecaster that publishes its own scorecard against the market,
@@ -87,7 +78,7 @@ export default function Home() {
         scoreboard with{" "}
         <span className="font-data">python scripts/platformkit/analytics_showcase/check_all.py</span>{" "}
         ({checks
-          ? `${checks.pass} of ${checks.total} module self-checks PASS, ${checks.noCheck} have no self-check; report as of ${checks.asOf}`
+          ? `${checks.pass} of ${checks.total} module self-checks PASS, ${checks.noCheck} have no self-check, ${checks.other} FAIL/other; report as of ${checks.asOf}`
           : "check report not present on this clone"}). Truth source:{" "}
         <span className="font-data">docs/JOB_EVIDENCE_PACKET.md</span>.
       </p>

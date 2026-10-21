@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import "../workspace.css";
 import "./compare.css";
 import { CompareExperience } from "@/components/analytics/compare/CompareExperience";
+import { pageMeta } from "@/lib/seo/meta";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta("/analytics/compare/", {
   title: "Compare profiles",
   description: "Compare two descriptive Atlas profiles in the same published pack. Raw values and within-pack percentiles only; no projection or quality ranking.",
-};
+});
 export const dynamic = "force-static";
 
 export default function CompareProfilesPage() {

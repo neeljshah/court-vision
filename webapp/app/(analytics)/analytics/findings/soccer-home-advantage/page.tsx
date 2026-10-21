@@ -10,19 +10,14 @@ import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import { loadArtifact, type Artifact } from "@/lib/showcase.server";
 import { Receipt } from "@/components/analytics/Receipt";
-import { findingMeta } from "@/lib/analytics/og";
+import { findingMetadata } from "@/lib/seo/findings.server";
 
 import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
 
 import { FindingUnavailable } from "@/components/analytics/findings/FindingUnavailable";
 import { FindingTemplate } from "@/components/analytics/findings/FindingTemplate";
 
-export const metadata: Metadata = {
-  title: "Soccer Home-Advantage Decomposition",
-  description:
-    "Descriptive exhibit: international soccer home advantage decomposed by venue (true-home vs neutral-site), era, and tournament type via the neutral-site natural control.",
-  ...findingMeta("soccer-home-advantage"),
-};
+export const metadata: Metadata = findingMetadata("soccer-home-advantage");
 
 type VenueStats = { n: number; home_win_rate: number; draw_rate: number; away_win_rate: number; goal_diff: number };
 type EraRow = {

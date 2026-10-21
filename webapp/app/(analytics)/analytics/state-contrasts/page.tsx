@@ -5,11 +5,12 @@ import { StateContrasts } from "@/components/analytics/state-contrasts/StateCont
 import { InspectorReadingTrail } from "@/components/analytics/InspectorReadingTrail";
 import { loadStateContrasts } from "@/lib/analytics/stateContrasts.server";
 import "./state-contrasts.css";
+import { pageMeta } from "@/lib/seo/meta";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta("/analytics/state-contrasts/", {
   title: "State contrasts",
   description: "Published differences in outcome frequency between adjacent time-bucket populations.",
-};
+});
 
 export default function StateContrastsPage() {
   const sports = loadStateContrasts();

@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import CommandPalette from "./CommandPalette";
 
 const push = vi.fn();
@@ -20,9 +20,11 @@ function openPalette() {
   return screen.findByRole("dialog", { name: "Search CourtVision" });
 }
 
-beforeAll(() => vi.stubGlobal("ResizeObserver", ResizeObserverMock));
-
 beforeEach(() => {
+  // Re-stubbed per test: a test may call vi.unstubAllGlobals().
+  vi.stubGlobal("ResizeObserver", ResizeObserverMock);
+  // cmdk scrolls the selected item into view on reopen; jsdom has no layout.
+  Element.prototype.scrollIntoView = vi.fn();
   push.mockReset();
   fetchMock.mockReset();
   vi.stubGlobal("fetch", fetchMock);
@@ -75,5 +77,65 @@ describe("CommandPalette", () => {
     expect(assign).toHaveBeenCalledWith("/analytics/zeta/");
     expect(push).not.toHaveBeenCalled();
     vi.unstubAllGlobals();
+  });
+
+  it("opens with the slash key and with Ctrl+K", async () => {
+    fetchMock.mockReturnValue(response([]));
+    render(<CommandPalette />);
+    expect(screen.queryByRole("dialog", { name: "Search CourtVision" })).not.toBeInTheDocument();
+    fireEvent.keyDown(window, { key: "/" });
+    expect(await screen.findByRole("dialog", { name: "Search CourtVision" })).toBeInTheDocument();
+    // Ctrl+K toggles: once to close the palette the slash opened, once to reopen it.
+    fireEvent.keyDown(window, { key: "k", ctrlKey: true });
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Search CourtVision" })).not.toBeInTheDocument());
+    fireEvent.keyDown(window, { key: "k", ctrlKey: true });
+    expect(await screen.findByRole("dialog", { name: "Search CourtVision" })).toBeInTheDocument();
+    fireEvent.keyDown(window, { key: "k", metaKey: true });
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Search CourtVision" })).not.toBeInTheDocument());
+  });
+
+  it("lists site pages, papers and findings but not redirect stubs, and puts an exact title first", async () => {
+    fetchMock.mockReturnValue(response([
+      { id: "site-paper-trading", title: "Paper record", subtitle: "Site page", href: "/paper-trading", type: "page", keywords: ["paper record"] },
+      { id: "site-evidence-retractions", title: "Retraction record", subtitle: "Site page", href: "/evidence/retractions", type: "page", keywords: ["retraction record"] },
+      { id: "page-calibration", title: "Calibration reliability", subtitle: "Inspector", href: "/analytics/calibration", type: "page", keywords: ["calibration"] },
+      { id: "module-calibration-stability", title: "Calibration Stability", subtitle: "Module", href: "/analytics/m/calibration_stability", type: "module", keywords: ["calibration"] },
+      { id: "module-calibration", title: "Calibration", subtitle: "Module", href: "/analytics/m/calibration", type: "module", keywords: ["calibration"] },
+      { id: "module-retraction-count", title: "Mechanism retraction count", subtitle: "Module", href: "/analytics/m/retraction_count", type: "module", keywords: ["retraction", "ledger"] },
+      { id: "finding-verdict-flips", title: "Verdict flips", subtitle: "Finding", href: "/analytics/findings/verdict-flips", type: "finding", keywords: ["retraction", "verdict"] },
+      { id: "paper-how-to-read", title: "How to read a CourtVision paper", subtitle: "Working paper", href: "/analytics/papers/how-to-read-a-courtvision-paper", type: "module", keywords: ["paper"] },
+    ]));
+    render(<CommandPalette />);
+    await openPalette();
+    const input = screen.getByRole("combobox", { name: "Search CourtVision" });
+    const titles = () => screen.getAllByRole("option").map((option) => option.querySelector(".serif")?.textContent);
+
+    await screen.findByText("Paper record");
+    expect(titles()).toEqual(expect.arrayContaining(["Paper record", "Retraction record", "Verdict flips", "Working papers"]));
+    expect(screen.queryByText("Page moved")).not.toBeInTheDocument();
+
+    fireEvent.change(input, { target: { value: "calibration" } });
+    await waitFor(() => expect(titles()[0]).toBe("Calibration"));
+    // Groups stay intact on screen: the group holding the exact match renders first, so its sibling follows it.
+    expect(titles().slice(0, 3)).toEqual(["Calibration", "Calibration Stability", "Calibration reliability"]);
+
+    fireEvent.change(input, { target: { value: "retraction" } });
+    await waitFor(() => expect(titles()[0]).toBe("Retraction record"));
+    expect(titles()).toContain("Mechanism retraction count");
+
+    fireEvent.change(input, { target: { value: "paper" } });
+    await waitFor(() => expect(titles()).toContain("How to read a CourtVision paper"));
+  });
+
+  it("names three starting points when nothing matches", async () => {
+    fetchMock.mockReturnValue(response([{ id: "a", title: "Zeta module", subtitle: "x", href: "/analytics/m/zeta", type: "module", keywords: ["zeta"] }]));
+    render(<CommandPalette />);
+    await openPalette();
+    await screen.findByText("Evidence & Platform");
+    fireEvent.change(screen.getByRole("combobox", { name: "Search CourtVision" }), { target: { value: "qqzzxx" } });
+    expect(await screen.findByRole("status")).toHaveTextContent('No results for "qqzzxx". Three good starting points:');
+    const titles = screen.getAllByRole("option").map((option) => option.querySelector(".serif")?.textContent);
+    expect(titles).toEqual(["Calibration", "Retractions", "Paper record"]);
+    expect(screen.queryByText("No results.")).not.toBeInTheDocument();
   });
 });

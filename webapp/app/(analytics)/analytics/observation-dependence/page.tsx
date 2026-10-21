@@ -6,11 +6,12 @@ import { Receipt } from "@/components/analytics/Receipt";
 import { buildObservationDependence } from "@/lib/analytics/observationDependence";
 import { loadArtifact, type Artifact } from "@/lib/showcase.server";
 import "./observation-dependence.css";
+import { pageMeta } from "@/lib/seo/meta";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta("/analytics/observation-dependence/", {
   title: "Observation dependence",
   description: "Published within-game lag-1 residual autocorrelation distributions, shown separately for model and market series.",
-};
+});
 
 type DependenceArtifact = Omit<Artifact, "floors" | "generated_at" | "as_of"> & {
   floors?: { min_rows_per_game?: number; min_residual_variance?: number };

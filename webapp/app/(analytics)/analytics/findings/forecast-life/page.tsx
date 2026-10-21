@@ -11,19 +11,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { loadArtifact, type Artifact } from "@/lib/showcase.server";
 import { Receipt } from "@/components/analytics/Receipt";
-import { findingMeta } from "@/lib/analytics/og";
+import { findingMetadata } from "@/lib/seo/findings.server";
 
 import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
 
 import { FindingUnavailable } from "@/components/analytics/findings/FindingUnavailable";
 import { FindingTemplate } from "@/components/analytics/findings/FindingTemplate";
 
-export const metadata: Metadata = {
-  title: "The Life of a Forecast",
-  description:
-    "Descriptive exhibit: how the published price reference absorbs information pregame (line half-life) and in-game (Brier checkpoints). The same-corpus Brier comparison remains visible throughout.",
-  ...findingMeta("forecast-life"),
-};
+export const metadata: Metadata = findingMetadata("forecast-life");
 
 type BoundaryFractions = { "6.0": number; "3.0": number; "1.0": number; "0.0": number };
 type ObsWindow = { start: string; end: string; days: number; files: number };

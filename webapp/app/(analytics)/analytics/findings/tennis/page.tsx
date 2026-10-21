@@ -8,19 +8,14 @@ import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import { loadArtifact, type Artifact } from "@/lib/showcase.server";
 import { Receipt } from "@/components/analytics/Receipt";
-import { findingMeta } from "@/lib/analytics/og";
+import { findingMetadata } from "@/lib/seo/findings.server";
 
 import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
 
 import { FindingUnavailable } from "@/components/analytics/findings/FindingUnavailable";
 import { FindingTemplate } from "@/components/analytics/findings/FindingTemplate";
 
-export const metadata: Metadata = {
-  title: "Tennis: Momentum, Myths, and Altitude",
-  description:
-    "Descriptive-only exhibit: momentum's grain limit, two null tiebreak myths, and confirmed altitude/travel effects in tennis.",
-  ...findingMeta("tennis"),
-};
+export const metadata: Metadata = findingMetadata("tennis");
 
 type Claim = {
   hypothesis: string;

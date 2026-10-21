@@ -125,11 +125,13 @@ export interface DoneSummary {
   nLoss: number;
   nPush: number;
   nVoid: number;
+  /** Graded rows whose outcome is none of win/loss/push/void (null, "pending", a typo): counted, never folded into void. */
+  nUnknown: number;
   totalUnitsStaked: number;
 }
 
 export function deriveDoneSummary(rows: PaperTrailRow[]): DoneSummary {
-  let nSettled = 0, nOpen = 0, nWin = 0, nLoss = 0, nPush = 0, nVoid = 0, totalUnitsStaked = 0;
+  let nSettled = 0, nOpen = 0, nWin = 0, nLoss = 0, nPush = 0, nVoid = 0, nUnknown = 0, totalUnitsStaked = 0;
   for (const r of rows) {
     if (r.status === "open" || !r.graded) {
       nOpen++;
@@ -139,11 +141,12 @@ export function deriveDoneSummary(rows: PaperTrailRow[]): DoneSummary {
       if (o === "win") nWin++;
       else if (o === "loss") nLoss++;
       else if (o === "push") nPush++;
-      else nVoid++;
+      else if (o === "void") nVoid++;
+      else nUnknown++;
     }
     totalUnitsStaked += r.stake_units ?? 0;
   }
-  return { nTotal: rows.length, nSettled, nOpen, nWin, nLoss, nPush, nVoid, totalUnitsStaked };
+  return { nTotal: rows.length, nSettled, nOpen, nWin, nLoss, nPush, nVoid, nUnknown, totalUnitsStaked };
 }
 
 // ---------------------------------------------------------------------------

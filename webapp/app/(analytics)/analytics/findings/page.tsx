@@ -7,12 +7,13 @@ import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { findingsIndex } from "@/lib/analytics/findingsIndex";
+import { pageMeta } from "@/lib/seo/meta";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta("/analytics/findings/", {
   title: "Findings",
   description:
     "Dated descriptive exhibits: retractions, effective sample size, verdict flips, and MLB leaderboards linked to published source artifacts.",
-};
+});
 
 
 // One entry per findings page. Descriptions say what the exhibit IS, plainly --

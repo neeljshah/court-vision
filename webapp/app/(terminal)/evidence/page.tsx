@@ -4,17 +4,19 @@
 import { buildClaimIndex } from "@/lib/evidence.server";
 import { ClaimIndex } from "@/components/evidence/ClaimIndex";
 import { EvidenceHubLinks } from "@/components/shell/EvidenceHubLinks";
+import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo/meta";
 
 // Counts come from the staged evidence_index.json so the description cannot
 // drift from the page (it once said 22 while the index held 23).
 const INDEX = buildClaimIndex();
 
-export const metadata = {
+export const metadata: Metadata = pageMeta("/evidence/", {
   title: "Evidence",
   description:
     `The ${INDEX.claimCount} evidence claims, grouped into ${INDEX.buckets.length} buckets, each with its strongest receipt. ` +
     "Calibration and engineering evidence only -- no dollar edge claimed.",
-};
+});
 
 export default function EvidencePage() {
   const index = INDEX;

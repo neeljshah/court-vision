@@ -3,11 +3,12 @@ import { PitchSequencing } from "@/components/analytics/pitch-sequencing/PitchSe
 import { InspectorReadingTrail } from "@/components/analytics/InspectorReadingTrail";
 import { loadPitchSequencing } from "@/lib/analytics/pitchSequencing.server";
 import "./pitch-sequencing.css";
+import { pageMeta } from "@/lib/seo/meta";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta("/analytics/pitch-sequencing/", {
   title: "Pitch sequencing",
   description: "Published conditional next-pitch matrices by count class.",
-};
+});
 
 export default function PitchSequencingPage() {
   const data = loadPitchSequencing();

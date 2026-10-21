@@ -17,6 +17,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ScoutQuestions } from "@/components/analytics/ScoutQuestions";
 import { typeset } from "@/lib/analytics/format";
+import { explainerMeta } from "@/lib/seo/families";
 
 type Essay = {
   slug: string;
@@ -160,10 +161,8 @@ export function generateMetadata({
   params: { slug: string };
 }): Metadata {
   const essay = readEssays().find((e) => e.slug === params.slug);
-  return {
-    title: essay ? essay.title : "Explainer",
-    description: essay?.dek || "A long-form CourtVision Analytics explainer.",
-  };
+  if (!essay) return { title: "Explainer", description: "A long-form CourtVision Analytics explainer." };
+  return explainerMeta({ slug: essay.slug, title: essay.title, dek: essay.dek });
 }
 
 const inlineCode: CSSProperties = {

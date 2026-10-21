@@ -771,7 +771,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Yes, and they outnumber the wins. Across five validation ledgers there are 351 nulls versus 168 confirms, a 2.1x ratio: NBA 45 confirmed / 31 null, MLB 32 / 37, soccer 29 / 24, tennis 24 / 20, and the interaction factory 38 confirmed / 239 null / 709 not-testable. A system that only ever confirmed would not be credible.",
+    "answer": "Yes, and they outnumber the wins. Across five validation ledgers there are 351 nulls versus 168 confirms, a 2.1x ratio: NBA 45 confirmed / 31 null, MLB 32 / 37, soccer 29 / 24, tennis 24 / 20, and the interaction factory 38 confirmed / 239 null / 709 not-testable. A system that only ever confirmed would not be credible. This is the research-ledger honesty exhibit's tally (four sport ledgers plus the 1,003-row interaction-factory sweep, as of 2026-07-22). It is a different population from the evidence packet's mechanism-gate tally (docs/JOB_EVIDENCE_PACKET.md line 138), which reads 89 confirmed, 74 null and 34 not-testable or other out of 197 validation-ledger rows as of 2026-07-10; the two counts are not comparable, and neither is a market result.",
     "source_artifact": "webapp/public/data/showcase/honesty_exhibit.json",
     "as_of": "2026-07-22"
    },

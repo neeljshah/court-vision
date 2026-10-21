@@ -165,7 +165,45 @@ describe("resolveQuestion", () => {
       entry: null,
       kind: "none",
       followUps: [],
+      closest: [],
     });
+  });
+
+  it("offers the closest prepared questions instead of an answer when nothing matches directly", () => {
+    const result = resolveQuestion("what is the capital of france and what about jokic", entries);
+    expect(result?.kind).toBe("related");
+    expect(result?.closest.length).toBeGreaterThan(0);
+    expect(result?.closest.length).toBeLessThanOrEqual(3);
+    expect(result?.closest).toContain(entries[0].q);
+    expect(result?.followUps).toEqual([]);
+    const direct = resolveQuestion("does the model actually beat the betting market?", entries);
+    expect(direct).toMatchObject({ kind: "direct", entry: { q: entries[2].q }, closest: [] });
+  });
+
+  it("answers the four sample questions verbatim from the committed corpus", () => {
+    const corpus = loadScoutCorpus();
+    const expected: Array<[string, string]> = [
+      ["does the model beat the market", "In-game, does the win-probability model beat the market's win probability?"],
+      ["what is the Brier score", "What is a Brier score?"],
+      ["is this real money", "Has any real money been placed?"],
+      ["how was it built", "How was this AI actually built?"],
+    ];
+    for (const [query, question] of expected) {
+      const result = resolveQuestion(query, corpus);
+      const prepared = corpus.find((entry) => entry.q === question);
+      expect(prepared, question).toBeDefined();
+      expect(result?.kind, query).toBe("direct");
+      expect(result?.entry?.a.answer, query).toBe(prepared?.a.answer);
+      expect(result?.entry?.a.source_artifact, query).toBe(prepared?.a.source_artifact);
+      expect(result?.entry?.a.as_of, query).toBe(prepared?.a.as_of);
+    }
+    expect(resolveQuestion("is this real money", corpus)?.entry?.a).toMatchObject({ source_artifact: "docs/JOB_EVIDENCE_PACKET.md", as_of: "2026-10-19" });
+  });
+
+  it("does not pass off a player profile as the answer to an unrelated question", () => {
+    const result = resolveQuestion("what is the capital of france", loadScoutCorpus());
+    expect(result?.kind).not.toBe("direct");
+    expect(result?.closest.length).toBeLessThanOrEqual(3);
   });
 
   it("admits exact-only answers without widening ordinary retrieval", () => {

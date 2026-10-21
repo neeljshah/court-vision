@@ -8,19 +8,14 @@ import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import { loadArtifact, type Artifact } from "@/lib/showcase.server";
 import { Receipt } from "@/components/analytics/Receipt";
-import { findingMeta } from "@/lib/analytics/og";
+import { findingMetadata } from "@/lib/seo/findings.server";
 
 import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
 
 import { FindingUnavailable } from "@/components/analytics/findings/FindingUnavailable";
 import { FindingTemplate } from "@/components/analytics/findings/FindingTemplate";
 
-export const metadata: Metadata = {
-  title: "How accurate were the market sources?",
-  description:
-    "Descriptive-only exhibit: a source-accuracy leaderboard with proportional-devig Brier scores on shared-game subsets for tennis match-winner and soccer over/under 2.5 goals.",
-  ...findingMeta("bookmaker-accuracy"),
-};
+export const metadata: Metadata = findingMetadata("bookmaker-accuracy");
 
 type BookRow = { book: string; brier: number; n: number };
 type SportBlock = { market: string; outcome: string; n_shared: number; books: BookRow[] };

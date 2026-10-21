@@ -13,14 +13,16 @@ import { Panel, PanelHead } from "@/components/ui/terminal";
 import { HonestBanner } from "@/components/showcase/HonestBanner";
 import { ReproduceBlock } from "@/components/showcase/ReproduceBlock";
 import { Term } from "@/components/evidence";
+import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo/meta";
 
-export const metadata = {
+export const metadata: Metadata = pageMeta("/methodology/", {
   title: "Methodology",
   description:
     "The discipline behind every number: leak-free, walk-forward, " +
     "truncation-invariant, two or more corpora -- plus the one-command proof " +
     "harness and the do-not-claim rail.",
-};
+});
 
 type CheckRow = { module: string; status: string; as_of?: string };
 

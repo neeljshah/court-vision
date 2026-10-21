@@ -17,6 +17,7 @@ import { ReceiptChip } from "@/components/showcase/ReceiptChip";
 import { MurphyBars } from "@/components/charts/MurphyBars";
 import { ReliabilityBins } from "@/components/charts/ReliabilityBins";
 import { loadArtifact, receiptChip, type Artifact } from "@/lib/showcase.server";
+import { receiptMeta } from "@/lib/seo/families";
 
 type ReceiptRow = {
   sport_market: string;
@@ -43,6 +44,13 @@ export const dynamicParams = process.env.NEXT_PUBLIC_DATA_MODE !== "snapshot";
 export async function generateStaticParams() {
   const rows = loadRows();
   return (rows.length ? rows.map((_, i) => String(i)) : ["0"]).map((row) => ({ row }));
+}
+
+export function generateMetadata({ params }: { params: { row: string } }) {
+  const idx = Number(params.row);
+  const r = Number.isInteger(idx) ? loadRows()[idx] : undefined;
+  if (!r) return { title: "Receipt", description: "No ledger row with this id in the receipts snapshot." };
+  return receiptMeta({ index: idx, sportMarket: r.sport_market, checkpoint: r.checkpoint, verdict: r.verdict, src: r.src });
 }
 
 // The receipt row's sport_market maps to a staged artifact sport key only for

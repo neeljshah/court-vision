@@ -5,11 +5,13 @@
 import { loadDesk, refusalsFor, fmt } from "@/lib/desk.server";
 import { DeskShell, NotAvailable, Section, T } from "@/components/desk/DeskShell";
 import { ReceiptChip } from "@/components/showcase/ReceiptChip";
+import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo/meta";
 
-export const metadata = {
+export const metadata: Metadata = pageMeta("/desk/model-cards/", {
   title: "Desk models",
   description: "Paper only: how each sport's pregame and in-game models work, with calibration figures.",
-};
+});
 
 export default function DeskModelsPage() {
   const desk = loadDesk();

@@ -1,8 +1,9 @@
 "use client";
 // Global Cmd+K / "/" command palette -- typo-tolerant search over the static
-// showcase record list (1,637 destinations). cmdk supplies the dialog + keyboard
-// nav; MiniSearch supplies fuzzy/prefix scoring. The 410KB record JSON is
-// lazy-fetched on first open, never bundled. DESIGN_ANALYTICS palette request.
+// showcase record list (search-index.json, ~1,770 destinations). cmdk supplies the
+// dialog + keyboard nav; MiniSearch supplies fuzzy/prefix scoring; paletteRank
+// puts an exact title match first. The record JSON is lazy-fetched on first
+// open, never bundled. DESIGN_ANALYTICS palette request.
 //
 // This is the implementation module. CommandPalette.tsx is the thin shell the
 // layout renders: it owns the shortcut/trigger listeners and dynamic-imports this
@@ -13,32 +14,19 @@ import { useRouter } from "next/navigation";
 import { Command } from "cmdk";
 import { group } from "@/components/shell/nav";
 import MiniSearch from "minisearch";
-
-interface Rec {
-  id: string;
-  title: string;
-  subtitle: string;
-  href: string;
-  type: "entity" | "module" | "finding" | "page";
-  keywords: string[];
-}
+import { groupResults, rankHits, STARTING_POINTS, type PaletteRecord as Rec, type PaletteType } from "@/lib/analytics/paletteRank";
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
-const GROUP_ORDER: Array<{ type: Rec["type"]; heading: string }> = [
-  { type: "page", heading: "Pages" },
-  { type: "finding", heading: "Findings" },
-  { type: "module", heading: "Modules" },
-  { type: "entity", heading: "Entities" },
-];
 const EXTRA_DESTINATIONS: Rec[] = [
   { id: "page-measurement-lab", title: "Measurement lab", subtitle: "Inspect published measurements and source context", href: "/analytics/lab", type: "page", keywords: ["lab", "measurement", "tables"] },
   { id: "page-compare-profiles", title: "Compare profiles", subtitle: "Compare published Atlas profiles", href: "/analytics/compare", type: "page", keywords: ["compare", "profiles", "atlas"] },
   { id: "page-evidence-platform", title: "Evidence & Platform", subtitle: "Browse source-linked visual evidence", href: "/analytics/evidence", type: "page", keywords: ["evidence", "platform", "charts", "sources"] },
   { id: "page-working-papers", title: "Working papers", subtitle: "Read the published working papers", href: "/analytics/papers", type: "page", keywords: ["papers", "working papers", "research"] },
 ];
-const SCOPES: Array<{ value: "all" | Rec["type"]; label: string }> = [
+const SCOPES: Array<{ value: "all" | PaletteType; label: string }> = [
   { value: "all", label: "All" }, { value: "page", label: "Pages" }, { value: "entity", label: "Entities" }, { value: "module", label: "Modules" }, { value: "finding", label: "Findings" },
 ];
+const SEARCH_OPTIONS = { fuzzy: 0.2, prefix: true, boost: { title: 3 } };
 
 type LoadState = "idle" | "loading" | "ready" | "error";
 
@@ -47,7 +35,7 @@ export function CommandPalette({ initialOpen = false }: { initialOpen?: boolean 
   const [open, setOpen] = useState(initialOpen);
   const [query, setQuery] = useState("");
   const [loadState, setLoadState] = useState<LoadState>("idle");
-  const [scope, setScope] = useState<"all" | Rec["type"]>("all");
+  const [scope, setScope] = useState<"all" | PaletteType>("all");
   const recordsRef = useRef<Map<string, Rec>>(new Map());
   const indexRef = useRef<MiniSearch<Rec> | null>(null);
 
@@ -67,7 +55,7 @@ export function CommandPalette({ initialOpen = false }: { initialOpen?: boolean 
           idField: "id",
           fields: ["title", "subtitle", "keywords"],
           storeFields: ["id", "title", "subtitle", "href", "type"],
-          searchOptions: { fuzzy: 0.2, prefix: true, boost: { title: 3 } },
+          searchOptions: SEARCH_OPTIONS,
         });
         mini.addAll(recs);
         indexRef.current = mini;
@@ -76,7 +64,7 @@ export function CommandPalette({ initialOpen = false }: { initialOpen?: boolean 
       .catch(() => setLoadState("error"));
   }, [loadState]);
 
-  // Default (empty-query) list: findings + top-level pages only, not all 1,549.
+  // Default (empty-query) list: findings + top-level pages only, not all 1,549 entities.
   const inScope = useCallback((records: Rec[]): Rec[] => (
     scope === "all" ? records : records.filter((record) => record.type === scope)
   ), [scope]);
@@ -92,12 +80,8 @@ export function CommandPalette({ initialOpen = false }: { initialOpen?: boolean 
   const results = useMemo((): Rec[] => {
     if (!query.trim()) return open ? defaults() : [];
     if (!indexRef.current) return [];
-    const hits = indexRef.current.search(query, { fuzzy: 0.2, prefix: true, boost: { title: 3 } });
-    const recs = inScope(hits
-      .map((h) => recordsRef.current.get(String(h.id)))
-      .filter((r): r is Rec => Boolean(r)))
-      .slice(0, 30);
-    return recs;
+    const hits = indexRef.current.search(query, SEARCH_OPTIONS);
+    return inScope(rankHits(query, hits, (id) => recordsRef.current.get(id))).slice(0, 30);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query, open, defaults, inScope, loadState]);
 
@@ -155,10 +139,15 @@ export function CommandPalette({ initialOpen = false }: { initialOpen?: boolean 
     else router.push(r.href);
   };
 
-  const grouped = GROUP_ORDER.map((g) => ({
-    ...g,
-    items: results.filter((r) => r.type === g.type),
-  })).filter((g) => g.items.length > 0);
+  const item = (r: Rec): ReactNode => (
+    <Command.Item key={r.id} value={r.id} onSelect={() => select(r)} style={itemS}>
+      <span className="serif" style={{ color: "var(--ink)" }}>{r.title}</span>
+      <span className="mono" style={typeTagS}>{r.type}</span>
+      <span style={{ color: "var(--ink-3)", fontSize: 12 }}>{r.subtitle}</span>
+    </Command.Item>
+  );
+  const grouped = groupResults(results, query);
+  const noHits = loadState === "ready" && results.length === 0 && query.trim().length > 0;
 
   return (
     <Command.Dialog
@@ -173,7 +162,7 @@ export function CommandPalette({ initialOpen = false }: { initialOpen?: boolean 
       <Command.Input
         value={query}
         onValueChange={setQuery}
-        placeholder="Search players, modules, findings..."
+        placeholder="Search pages, findings, modules, players..."
         aria-label="Search CourtVision"
         style={inputS}
       />
@@ -185,23 +174,17 @@ export function CommandPalette({ initialOpen = false }: { initialOpen?: boolean 
           <Command.Empty style={emptyS}>Search unavailable. <button type="button" onClick={() => load(true)} style={retryS}>Retry</button></Command.Empty>
         ) : loadState === "loading" ? (
           <Command.Loading style={emptyS}>Loading...</Command.Loading>
+        ) : noHits ? (
+          <>
+            <div style={emptyS} role="status">No results for &quot;{query.trim()}&quot;. Three good starting points:</div>
+            <Command.Group heading="Start here" style={groupS}>{STARTING_POINTS.map(item)}</Command.Group>
+          </>
         ) : results.length === 0 ? (
           <Command.Empty style={emptyS}>No results.</Command.Empty>
         ) : (
-          grouped.map((g): ReactNode => (
+          grouped.map((g) => (
             <Command.Group key={g.type} heading={g.heading} style={groupS}>
-              {g.items.map((r) => (
-                <Command.Item
-                  key={r.id}
-                  value={r.id}
-                  onSelect={() => select(r)}
-                  style={itemS}
-                >
-                  <span className="serif" style={{ color: "var(--ink)" }}>{r.title}</span>
-                  <span className="mono" style={typeTagS}>{r.type}</span>
-                  <span style={{ color: "var(--ink-3)", fontSize: 12 }}>{r.subtitle}</span>
-                </Command.Item>
-              ))}
+              {g.items.map(item)}
             </Command.Group>
           ))
         )}

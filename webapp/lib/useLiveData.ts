@@ -18,140 +18,20 @@
 //   - Server seed: initialData (+ initialUpdatedAt) starts the hook with data and
 //     isLoading=false so server-rendered HTML carries the values; the first fetch
 //     and polling are unchanged. Age/stale stamps are applied after mount.
+//   - Snapshot build (NEXT_PUBLIC_DATA_MODE=snapshot): one load, no re-poll, so the
+//     first answer ends isLoading even when it is the Unavailable sentinel, and the
+//     age ticker is off (baked data never flips to STALE on the viewer's clock).
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { fetchHonest, isSnapshotMode } from "./fetchHonest";
 import type { Unavailable } from "./types";
+import { backoffDelay, isUnavailableSentinel, lkvGet, lkvPut } from "./liveDataSupport";
+import type { LiveDataState, UseLiveDataOptions } from "./liveDataSupport";
 
-// ---------------------------------------------------------------------------
-// Public contract
-// ---------------------------------------------------------------------------
-
-export interface LiveDataState<T> {
-  /** Last successfully fetched data (null until first success). */
-  data: T | null;
-  /** Timestamp (Date.now()) of the last successful poll. null before first success. */
-  lastUpdatedAt: number | null;
-  /** Seconds since last successful poll. null before first success. */
-  ageSec: number | null;
-  /** True when ageSec exceeds staleAfterSec. */
-  isStale: boolean;
-  /** Error message from the most recent failed poll. null when last poll succeeded. */
-  error: string | null;
-  /** True only during the very first load (no data yet, no prior good state). */
-  isLoading: boolean;
-  /**
-   * Number of consecutive failed polls since the last success (0 = no backoff).
-   * Exposed so badges/consumers can show an honest "backing off" hint.
-   */
-  consecutiveFailures: number;
-  /** True when consecutiveFailures > 0 (backoff actively in effect). */
-  backoffActive: boolean;
-  /** Manually trigger an immediate re-fetch (e.g. pull-to-refresh). */
-  refresh: () => void;
-}
-
-export interface UseLiveDataOptions<T = unknown> {
-  /** Polling interval in ms (default 20000). */
-  intervalMs?: number;
-  /** Age threshold in seconds after which isStale flips true (default 60). */
-  staleAfterSec?: number;
-  /** Per-attempt timeout forwarded to fetchHonest (default 8000). */
-  timeoutMs?: number;
-  /** Disable polling entirely (default true). */
-  enabled?: boolean;
-  /** Max backoff multiplier cap (default 5x). */
-  maxBackoffMultiplier?: number;
-  /**
-   * Opt-in last-known-value cache key. When set, the hook seeds its initial
-   * state from the last successful payload for this key (module memory,
-   * falling back to sessionStorage) so navigations paint INSTANTLY with
-   * honest age/stale stamps instead of skeletons, then refreshes in the
-   * background. Cached data is never presented as fresh: lastUpdatedAt is
-   * the ORIGINAL fetch time, so ageSec/isStale stay truthful.
-   */
-  cacheKey?: string;
-  /**
-   * First payload supplied by the caller (e.g. a server page that read the baked
-   * snapshot at build time). When set, the hook starts with data=initialData and
-   * isLoading=false instead of the loading state, so server-rendered HTML carries
-   * the values. The first fetch and polling are unchanged: the first poll replaces
-   * the seed. Takes precedence over a cacheKey seed.
-   */
-  initialData?: T;
-  /**
-   * Epoch ms the seed was produced. Pass the payload's OWN as-of timestamp (e.g.
-   * the export's as_of): only then are lastUpdatedAt/ageSec/isStale honest. Left
-   * undefined, the seed carries no age stamp (lastUpdatedAt stays null) until the
-   * first poll succeeds. The age is stamped after mount, never in the first render,
-   * because Date.now() differs between the server render and hydration.
-   */
-  initialUpdatedAt?: number;
-}
-
-// ---------------------------------------------------------------------------
-// Last-known-value cache (opt-in via cacheKey). Module map survives client
-// navigations; sessionStorage survives reloads within the tab session.
-// ---------------------------------------------------------------------------
-
-type LkvEntry = { data: unknown; ts: number };
-const _LKV = new Map<string, LkvEntry>();
-const _LKV_PREFIX = "cv-lkv:";
-
-function lkvGet(key: string): LkvEntry | null {
-  const mem = _LKV.get(key);
-  if (mem) return mem;
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = window.sessionStorage.getItem(_LKV_PREFIX + key);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as LkvEntry;
-    if (parsed && typeof parsed.ts === "number") {
-      _LKV.set(key, parsed);
-      return parsed;
-    }
-  } catch {
-    /* corrupt/quota -> behave as cache miss */
-  }
-  return null;
-}
-
-function lkvPut(key: string, data: unknown, ts: number): void {
-  const entry: LkvEntry = { data, ts };
-  _LKV.set(key, entry);
-  if (typeof window === "undefined") return;
-  try {
-    window.sessionStorage.setItem(_LKV_PREFIX + key, JSON.stringify(entry));
-  } catch {
-    /* quota exceeded -> memory cache still works */
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Utilities
-// ---------------------------------------------------------------------------
-
-function isUnavailableSentinel(v: unknown): v is Unavailable {
-  return (
-    v !== null &&
-    typeof v === "object" &&
-    (v as { status?: string }).status === "unavailable"
-  );
-}
-
-/**
- * Compute the next poll delay with capped exponential backoff.
- * consecutiveFailures=0 -> base intervalMs. f>=1 -> intervalMs*2^(f-1) capped.
- */
-export function backoffDelay(
-  intervalMs: number,
-  consecutiveFailures: number,
-  maxMultiplier = 5,
-): number {
-  if (consecutiveFailures <= 0) return intervalMs;
-  const multiplier = Math.min(Math.pow(2, consecutiveFailures - 1), maxMultiplier);
-  return Math.round(intervalMs * multiplier);
-}
+// The public contract and the backoff helper live in liveDataSupport.ts; re-exported
+// here so every existing `from "@/lib/useLiveData"` import keeps working.
+export { backoffDelay } from "./liveDataSupport";
+export type { LiveDataState, UseLiveDataOptions } from "./liveDataSupport";
 
 // ---------------------------------------------------------------------------
 // Hook
@@ -269,7 +149,10 @@ export function useLiveData<T>(
       setConsecutiveFailures(newFailures);
       setError(reason);
       setIsStale(true);
-      setIsLoading((prev) => (lastUpdatedAtRef.current === null ? prev : false));
+      // Snapshot build: there is no retry (scheduleNextPoll returns), so the first answer
+      // ends the loading state even when it is the sentinel; live keeps the skeleton until
+      // a success because a re-poll is coming.
+      setIsLoading((prev) => (isSnapshotMode || lastUpdatedAtRef.current !== null ? false : prev));
     } else {
       consecutiveFailuresRef.current = 0;
       setConsecutiveFailures(0);
@@ -352,8 +235,11 @@ export function useLiveData<T>(
     };
   }, [enabled, runFetch, stopPolling]);
 
-  // Age ticker: increments ageSec ~every 1 s without triggering a fetch.
+  // Age ticker: increments ageSec ~every 1 s without triggering a fetch. Off in a
+  // snapshot build: the baked payload cannot refresh, so counting the viewer's seconds
+  // since the single load would flip honest baked data to STALE after staleAfterSec.
   useEffect(() => {
+    if (isSnapshotMode) return;
     const ticker = setInterval(() => {
       const lu = lastUpdatedAtRef.current;
       if (lu === null) return;

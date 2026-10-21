@@ -3,11 +3,12 @@ import { CrossSportComparability } from "@/components/analytics/cross-sport-comp
 import { InspectorReadingTrail } from "@/components/analytics/InspectorReadingTrail";
 import { loadCrossSportComparability } from "@/lib/analytics/crossSportComparability.server";
 import "./cross-sport-comparability.css";
+import { pageMeta } from "@/lib/seo/meta";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta("/analytics/cross-sport-comparability/", {
   title: "Cross-sport comparability",
   description: "Published decisions about which cross-sport reliability measurements share a valid axis.",
-};
+});
 
 export default function CrossSportComparabilityPage() {
   const data = loadCrossSportComparability();

@@ -5,12 +5,14 @@
 import Link from "next/link";
 import { CONTACT_EMAIL, GITHUB, PORTFOLIO, githubDoc } from "@/components/shell/nav";
 import { Term } from "@/components/evidence";
+import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo/meta";
 
-export const metadata = {
+export const metadata: Metadata = pageMeta("/about/", {
   title: "About",
   description:
     "What CourtVision is, how it was built, what it is not, and how to contact its author.",
-};
+});
 
 const NOT_THIS = [
   "It is not a betting product and has no order path. Every desk figure is in paper units.",

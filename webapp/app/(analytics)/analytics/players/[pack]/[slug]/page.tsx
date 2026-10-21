@@ -22,6 +22,7 @@ import { getMlbPitchAtlasCohorts } from "@/lib/analytics/atlasResearchCohorts";
 import { entityMeasurements, summarizeAvailableMeasurements, type EntityPercentilePack } from "@/lib/analytics/entityMeasurements";
 import { entityObservationContext } from "@/lib/analytics/entityObservationContext";
 import { packComparables, packJoins, packPercentiles } from "@/lib/analytics/showcaseData";
+import { entityMeta } from "@/lib/seo/families";
 
 type KN = Record<string, unknown>;
 type Entry = { entity: string; card_path: string; key_numbers: KN; floors?: string; as_of?: string; card_type?: string };
@@ -144,11 +145,11 @@ export function generateMetadata({ params }: { params: { pack: string; slug: str
   const pack = PACKS.find((p) => p.slug === params.pack);
   const m = pack && readManifest(pack);
   const hit = m && withSlugs(m.entries).find((x) => x.slug === params.slug);
-  const name = readInsight(params.pack, params.slug)?.display_name || (hit && nameFor(hit.entry)) || "Entity";
-  return {
-    title: pack ? `${name} -- ${displayFor(pack, hit?.entry).label}` : "Entity",
-    description: `Descriptive reference card for ${name}: measured historical rates, not a prediction.`,
-  };
+  const insight = readInsight(params.pack, params.slug);
+  const name = insight?.display_name || (hit && nameFor(hit.entry)) || "Entity";
+  if (!pack) return { title: "Entity", description: "Descriptive reference card: measured historical rates, not a prediction." };
+  return entityMeta({ pack: params.pack, slug: params.slug, name, packLabel: displayFor(pack, hit?.entry).label, sport: pack.sport,
+    asOf: asOfDate(insight?.as_of || hit?.entry.as_of) || null });
 }
 
 const REPO = "webapp/public/data/showcase";

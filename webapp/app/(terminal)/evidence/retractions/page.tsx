@@ -7,12 +7,14 @@
 import type { ReactNode } from "react";
 import { githubDoc } from "@/components/shell/nav";
 import { loadPacketTable, type PacketRow } from "./packetTable";
+import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo/meta";
 
-export const metadata = {
+export const metadata: Metadata = pageMeta("/evidence/retractions/", {
   title: "Retraction record",
   description:
     "Every figure this project withdrew or never verified, copied from section 4 of the evidence packet, each with the wording that replaces it.",
-};
+});
 
 // The packet's own withdrawal record for the four retracted rows was published 2026-07-23.
 const RETRACTION_RECORD_DATE = "2026-07-23";

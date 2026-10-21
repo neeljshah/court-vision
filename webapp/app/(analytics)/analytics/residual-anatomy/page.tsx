@@ -4,11 +4,12 @@ import { ResidualAnatomy } from "@/components/analytics/residual-anatomy/Residua
 import { InspectorReadingTrail } from "@/components/analytics/InspectorReadingTrail";
 import { loadResidualAnatomy } from "@/lib/analytics/residualAnatomy.server";
 import "./residual-anatomy.css";
+import { pageMeta } from "@/lib/seo/meta";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta("/analytics/residual-anatomy/", {
   title: "Residual anatomy",
   description: "Published residual volume and per-row residuals by time and probability bucket.",
-};
+});
 
 export default function ResidualAnatomyPage() {
   const data = loadResidualAnatomy();

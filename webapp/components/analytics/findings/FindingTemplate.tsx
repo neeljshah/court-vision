@@ -8,6 +8,8 @@ import { AsOfBadge, ReceiptChip, VerdictLabel } from "@/components/evidence";
 import { QuotedOnList } from "@/components/analytics/QuotedOnList";
 import { quotedOn } from "@/lib/quotedOn.server";
 import { isPacketVerdict, type PacketVerdict } from "@/lib/packetVerdicts";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { datasetJsonLd } from "@/lib/seo/jsonld";
 import { FINDING_SPECS, type FindingSpec } from "./findingSpecs";
 
 type R = Record<string, any>;
@@ -68,6 +70,11 @@ export function FindingTemplate({ slug, artifact, children }: { slug: string; ar
   const verdicts = packetVerdicts(spec, a);
   const quoted = quotedOn(source); // once per page: the status chip and the footer list share it
   const pagePath = `webapp/app/(analytics)/analytics/findings/${slug}/page.tsx`;
+  // Dataset JSON-LD only when the artifact itself names a source URL and a license (never invented);
+  // both are printed in the Source block so the markup says nothing the page does not.
+  const license = typeof a.license === "string" && a.license.trim() ? a.license.trim() : null;
+  const sourceUrl = typeof a.source_url === "string" && /^https?:\/\//.test(a.source_url) ? a.source_url : null;
+  const dataset = license && sourceUrl ? datasetJsonLd({ slug, name: spec.title, description: spec.claim, sourceUrl, license, dateModified: asOf }) : null;
   return (
     <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }} data-template="T4">
       <p className="overline">Findings</p>
@@ -105,6 +112,9 @@ export function FindingTemplate({ slug, artifact, children }: { slug: string; ar
         <Block id="source" title="Source path">
           <p className="mono" style={{ margin: 0 }}>{source}</p>
           <p className="mono" style={{ margin: 0 }}>{reproduce.replace(/^python /, "")}</p>
+          {sourceUrl ? <p className="mono" style={{ margin: 0 }}>source URL: <a href={sourceUrl}>{sourceUrl}</a></p> : null}
+          {license ? <p className="mono" style={{ margin: 0 }}>license: {license}</p> : null}
+          {dataset ? <JsonLd data={dataset} /> : null}
         </Block>
         <Block id="changelog" title="Change log">
           <ul style={{ margin: 0, paddingLeft: 20 }}>

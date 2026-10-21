@@ -18,12 +18,13 @@ import { pickQuestions } from "@/lib/analytics/askPicks";
 import { claimFamilyId, flipDestinations } from "@/lib/analytics/claimHistory";
 import { loadClaimHistory } from "@/lib/analytics/claimHistory.server";
 import "./the-loop.css";
+import { pageMeta } from "@/lib/seo/meta";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta("/analytics/the-loop/", {
   title: "The Loop",
   description:
     "The self-improving system: an AI that proposes signals, tests them leak-free, keeps its nulls and retractions in the same ledger it confirms from, and grades itself.",
-};
+});
 
 // Clone-safe: process.cwd() is the webapp root at build; join keeps it repo-
 // relative. Missing artifact (fresh clone) -> null -> the page degrades to a

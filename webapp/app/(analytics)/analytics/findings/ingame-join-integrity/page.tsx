@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import type { Metadata } from "next";
-import { findingMeta } from "@/lib/analytics/og";
+import { findingMetadata } from "@/lib/seo/findings.server";
 import { loadIngameIntegrityReceipt, loadIngameRegenerationReceipt, loadIngameTimingRegenerationReceipt } from "./ingameJoinIntegrity.server";
 import { base } from "@/lib/analytics/dashboardTypes";
 import { buildIngameJoinIntegrityFinding } from "./ingameJoinIntegrity";
@@ -8,11 +8,7 @@ import { resolveIngameArtifact, type ArtifactReference } from "./ingameJoinInteg
 import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
 import { FindingTemplate } from "@/components/analytics/findings/FindingTemplate";
 
-export const metadata: Metadata = {
-  title: "MLB in-game join integrity",
-  description: "A dated account of mixed-game MLB tick files, incomplete state rows, and the revision-2 calibration artifacts rebuilt from the segment-clean corpus.",
-  ...findingMeta("ingame-join-integrity"),
-};
+export const metadata: Metadata = findingMetadata("ingame-join-integrity");
 
 const lede: CSSProperties = { fontSize: 18, lineHeight: 1.6, color: "var(--ink-2)", maxWidth: 760, marginTop: 16 };
 const section: CSSProperties = { marginTop: 32, maxWidth: 900 };

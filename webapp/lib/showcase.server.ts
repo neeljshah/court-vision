@@ -72,28 +72,44 @@ function safeId(id: string): string | null {
   return /^[A-Za-z0-9._-]+$/.test(id) && !id.includes("..") ? id : null;
 }
 
-function readJson(basename: string): unknown | null {
+// Not staged (no such file, or a directory where a file was expected) -> null, the
+// honest pending chip. Anything else -- a present file that is not valid JSON, a
+// permission error -- THROWS: a corrupt artifact must fail the build, never render as
+// pending. `dir` overrides the staged directory (tests).
+function readJson(basename: string, dir = SHOWCASE_DIR): unknown | null {
+  let raw: string;
   try {
-    return JSON.parse(readFileSync(join(SHOWCASE_DIR, basename), "utf-8"));
-  } catch {
-    return null;
+    raw = readFileSync(join(dir, basename), "utf-8");
+  } catch (e) {
+    const code = (e as NodeJS.ErrnoException).code;
+    if (code === "ENOENT" || code === "EISDIR" || code === "ENOTDIR") return null;
+    throw e;
+  }
+  try {
+    return JSON.parse(raw);
+  } catch (e) {
+    throw new Error(`showcase: ${join(dir, basename)} is not valid JSON: ${e instanceof Error ? e.message : String(e)}`);
   }
 }
 
 // Read one staged artifact by its out/ basename (no .json suffix). Missing or
-// unstaged -> null (page renders a pending chip).
-export function loadArtifact(id: string): Artifact | null {
+// unstaged -> null (page renders a pending chip); corrupt -> throws.
+export function loadArtifact(id: string, dir = SHOWCASE_DIR): Artifact | null {
   const clean = safeId(id);
   if (!clean) return null;
-  return readJson(`${clean}.json`) as Artifact | null;
+  return readJson(`${clean}.json`, dir) as Artifact | null;
 }
 
-// The site index. Prefer the real site_manifest.json; fall back to the
-// T0.1 sample so pages compile before the manifest exists. Null-tolerant:
-// callers use listModules() which falls back further to a static registry.
-export function loadManifest(): SiteManifest | null {
-  const raw = (readJson("site_manifest.json") ??
-    readJson("manifest-sample.json")) as
+// The T0.1 sample manifest and the static module registry below exist so pages
+// compile before the real manifest is staged. They are development scaffolding: a
+// production build never ships the sample or the registry in place of the manifest.
+const DEV_FALLBACKS = process.env.NODE_ENV !== "production";
+
+// The site index. Prefer the real site_manifest.json; outside production fall back
+// to the T0.1 sample. Null-tolerant: callers use listModules().
+export function loadManifest(dir = SHOWCASE_DIR): SiteManifest | null {
+  const raw = (readJson("site_manifest.json", dir) ??
+    (DEV_FALLBACKS ? readJson("manifest-sample.json", dir) : null)) as
     | Partial<SiteManifest>
     | null;
   if (!raw || !Array.isArray(raw.modules)) return null;
@@ -126,9 +142,13 @@ const FALLBACK_MODULES: ModuleMeta[] = [
   { id: "check_all_report", label: "check_all proof harness", category: "methodology" },
 ];
 
-export function listModules(): ModuleMeta[] {
-  const m = loadManifest();
-  return m && m.modules.length > 0 ? m.modules : FALLBACK_MODULES;
+export function listModules(dir = SHOWCASE_DIR): ModuleMeta[] {
+  const m = loadManifest(dir);
+  if (m && m.modules.length > 0) return m.modules;
+  if (!DEV_FALLBACKS) {
+    throw new Error(`showcase: ${join(dir, "site_manifest.json")} is missing or lists no modules; the static registry is development-only`);
+  }
+  return FALLBACK_MODULES;
 }
 
 // Normalize a repo-relative artifact path: Windows backslashes -> forward, no

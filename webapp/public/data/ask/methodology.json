@@ -617,9 +617,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "54 modules and 1,549 atlas entity cards, all built from the same output directory and all flagged descriptive-only. The manifest records 63 of 63 checks green at build time.",
+    "answer": "77 modules and 1,549 atlas entity cards, all built from the same output directory and all flagged descriptive-only. The site manifest records 96 of 96 checks green at build time.",
     "source_artifact": "webapp/public/data/showcase/site_manifest.json",
-    "as_of": "2026-07-24"
+    "as_of": "unknown"
    },
    "tags": [
     "modules",
