@@ -1,10 +1,10 @@
-// page.test.tsx -- /evidence/: a strongest-receipt label that is a gate ledger token (the
-// staged index carries DESCRIPTIVE_ONLY) renders as GateStatus, other labels stay plain text,
-// and the page shows one legend for exactly the gate tokens present. Per-file vitest test.
+// Receipt labels do not establish gate-ledger provenance, even when vocabularies overlap.
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import index from "@/public/data/showcase/evidence_index.json";
-import { GATE_GLOSS, gateStatusesIn, isGateStatus } from "@/components/evidence";
+import exhibit from "@/public/data/showcase/cf_star_removal.json";
+import { ClaimIndex } from "@/components/evidence/ClaimIndex";
+import { buildClaimIndex } from "@/lib/evidence.server";
 import EvidencePage from "./page";
 
 // jsdom has no router; prefetch is a Link-only prop, not an <a> attribute.
@@ -15,30 +15,35 @@ vi.mock("next/link", () => ({
 }));
 afterEach(cleanup);
 
-type Claim = { strongest_receipt?: { label?: string | null } | null };
-const labels = ((index as { claims: Claim[] }).claims ?? []).map((c) => c.strongest_receipt?.label ?? "");
-const gates = gateStatusesIn(labels);
-
 describe("/evidence claim index", () => {
-  it("renders gate ledger labels as GateStatus and carries one legend for exactly those tokens", () => {
+  it("preserves the published descriptive exhibit label without inventing gate provenance", () => {
     render(<EvidencePage />);
-    expect(gates).toContain("DESCRIPTIVE_ONLY"); // the staged index carries one
-    for (const t of gates) {
-      const chips = document.querySelectorAll(`[data-gate="${t}"]`);
-      expect(chips.length).toBe(labels.filter((l) => l === t).length);
-      for (const el of chips) {
-        expect(el).toHaveClass("ev-gate");
-        expect(el.getAttribute("title")).toBe(`${t}: ${GATE_GLOSS[t]}. gate ledger status, not a packet verdict.`);
-      }
+    const claim = index.claims.find((c) => c.slug === "true-intelligence")!;
+    expect(claim.strongest_receipt.source).toBe("scripts/platformkit/analytics_showcase/out/cf_star_removal.json");
+    expect(claim.strongest_receipt.label).toBe(exhibit.label);
+    const row = screen.getByRole("link", { name: /^True intelligence/ });
+    expect(within(row).getByText("DESCRIPTIVE_ONLY")).toBeInTheDocument();
+    expect(row).toHaveAttribute("href", "/evidence/true-intelligence/");
+    expect(document.querySelector("[data-gate]")).toBeNull();
+    expect(screen.queryByTestId("gate-status-legend")).not.toBeInTheDocument();
+    expect(document.body.textContent).not.toContain("gate ledger status");
+  });
+
+  it("retains all published strongest-receipt labels", () => {
+    render(<EvidencePage />);
+    for (const claim of index.claims) {
+      expect(document.body.textContent).toContain(claim.strongest_receipt.label);
     }
-    expect(document.querySelectorAll("[data-gate]").length).toBe(labels.filter(isGateStatus).length);
-    const legend = screen.getByTestId("gate-status-legend");
-    expect(legend.textContent).toBe(
-      `Gate ledger statuses, not packet verdicts: ${gates.map((t) => `${t} = ${GATE_GLOSS[t]}`).join("; ")}.`,
-    );
-    expect(screen.getAllByTestId("gate-status-legend").length).toBe(1);
-    // a plain label is still printed as text, not as a chip
-    const plain = labels.find((l) => l && !isGateStatus(l));
-    if (plain) expect(document.body.textContent).toContain(plain);
+  });
+
+  it("does not infer a gate result from a matching token with no source", () => {
+    const data = buildClaimIndex({
+      claims: [{ slug: "fixture", bucket: "Fixture", title: "Unclassified receipt",
+        strongest_receipt: { source: null, label: "SHIP" } }],
+    });
+    render(<ClaimIndex data={data} />);
+    expect(screen.getByText("SHIP")).toBeInTheDocument();
+    expect(document.querySelector("[data-gate]")).toBeNull();
+    expect(document.body.textContent).not.toContain("passed every gate");
   });
 });

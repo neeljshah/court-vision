@@ -6,7 +6,6 @@ import Link from "next/link";
 import { Panel, PanelHead } from "@/components/ui/terminal";
 import { ReceiptChip } from "@/components/showcase/ReceiptChip";
 import type { ClaimIndex as ClaimIndexData } from "@/lib/evidence.server";
-import { GateStatus, isGateStatus } from "./GateStatus";
 import { claimHref } from "@/lib/evidenceLinks";
 
 export function ClaimIndex({ data }: { data: ClaimIndexData }) {
@@ -31,14 +30,10 @@ export function ClaimIndex({ data }: { data: ClaimIndexData }) {
                     )}
                   </div>
                   <div className="flex min-w-0 shrink items-center gap-1 pt-0.5">
-                    {/* A gate ledger token (e.g. DESCRIPTIVE_ONLY) wears its own style; the page's legend glosses it. */}
-                    {isGateStatus(c.receipt.label) ? (
-                      <span className="hidden sm:inline"><GateStatus token={c.receipt.label} /></span>
-                    ) : (
-                      <span className="hidden max-w-[32ch] truncate font-data text-[11px] text-faint sm:inline">
-                        {c.receipt.label}
-                      </span>
-                    )}
+                    {/* Receipt labels alone do not identify a gate-ledger source. */}
+                    <span className="hidden max-w-[32ch] truncate font-data text-[11px] text-faint sm:inline">
+                      {c.receipt.label}
+                    </span>
                     <ReceiptChip
                       sourceArtifact={c.receipt.source ?? "not yet measured"}
                       // The index has no per-claim date; the full receipt with

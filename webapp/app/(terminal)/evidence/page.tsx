@@ -6,13 +6,10 @@ import { ClaimIndex } from "@/components/evidence/ClaimIndex";
 import { EvidenceHubLinks } from "@/components/shell/EvidenceHubLinks";
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/seo/meta";
-import { GateStatusLegend, gateStatusesIn } from "@/components/evidence";
 
 // Counts come from the staged evidence_index.json so the description cannot
 // drift from the page (it once said 22 while the index held 23).
 const INDEX = buildClaimIndex();
-// Receipt labels that are eval-gate ledger tokens (e.g. DESCRIPTIVE_ONLY) get the one-line legend.
-const GATE_TOKENS = gateStatusesIn(INDEX.buckets.flatMap((b) => b.claims.map((c) => c.receipt.label)));
 
 export const metadata: Metadata = pageMeta("/evidence/", {
   title: "Evidence",
@@ -36,7 +33,6 @@ export default function EvidencePage() {
           edge, ROI, or bankroll result is claimed anywhere on this page --
           calibration and engineering evidence only.
         </p>
-        <div className="mt-2"><GateStatusLegend tokens={GATE_TOKENS} /></div>
       </header>
 
       <EvidenceHubLinks />
