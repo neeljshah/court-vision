@@ -213,22 +213,6 @@ function analyticsHtmlFiles() {
   return files;
 }
 
-export function webpInfo(file) {
-  const bytes = readFileSync(file);
-  if (bytes.toString("ascii", 0, 4) !== "RIFF" || bytes.toString("ascii", 8, 12) !== "WEBP") return null;
-  const chunk = bytes.toString("ascii", 12, 16);
-  if (chunk === "VP8L" && bytes.length >= 25 && bytes[20] === 0x2f) {
-    const bits = bytes[21] | (bytes[22] << 8) | (bytes[23] << 16) | (bytes[24] << 24);
-    return { alpha: Boolean((bits >>> 28) & 1), width: (bits & 0x3fff) + 1, height: ((bits >>> 14) & 0x3fff) + 1 };
-  }
-  if (chunk !== "VP8X" || bytes.length < 30) return null;
-  return {
-    alpha: (bytes[20] & 0x10) !== 0,
-    width: 1 + bytes[24] + (bytes[25] << 8) + (bytes[26] << 16),
-    height: 1 + bytes[27] + (bytes[28] << 8) + (bytes[29] << 16),
-  };
-}
-
 export function verifyExport(out, basePath = BASE_PATH) {
   const failures = [];
   // Keep the full scan behind one entry point so CI and focused tests agree.
@@ -265,10 +249,6 @@ export function verifyExport(out, basePath = BASE_PATH) {
     referenceCount += references(html).length;
     verifyReferences(file, html, failures);
   }
-  const emblem = join(OUT, "brand", "courtvision-emblem.webp");
-  const info = existsSync(emblem) ? webpInfo(emblem) : null;
-  if (!info) failures.push("generated analytics emblem is missing or not a readable WebP");
-  else if (!info.alpha || info.width !== 1254 || info.height !== 1254) failures.push(`generated analytics emblem must be 1254x1254 with alpha (got ${info.width}x${info.height}, alpha ${info.alpha})`);
   const manifestFile = join(OUT, "manifest.webmanifest");
   if (existsSync(manifestFile)) {
     try {

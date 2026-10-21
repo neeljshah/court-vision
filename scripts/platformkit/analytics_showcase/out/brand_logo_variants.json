@@ -1,7 +1,7 @@
 {
   "edge_claimed": false,
   "method": "tile-local bimodal-cluster background key (see module docstring), trim, composite",
-  "source": "webapp/public/brand/courtvision-logo.png",
+  "source": "scripts/platformkit/analytics_showcase/assets/courtvision-logo.png",
   "checkerboard_detected": {
     "tile_px": 22,
     "gap_threshold": 9.0,
