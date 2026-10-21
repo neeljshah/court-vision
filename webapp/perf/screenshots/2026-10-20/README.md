@@ -82,3 +82,8 @@ node scripts/serve-export.mjs out 4173 &
 A11Y_CHROME=/opt/pw-browsers/chromium node scripts/a11y-gate.mjs out perf/a11y-pages.json
 node scripts/perf-budget.mjs out perf/budget.json
 ```
+
+
+## Evidence note (added at merge, 2026-10-21)
+
+The following before/after pairs were byte-identical and were removed because they evidence nothing: home-top--375-dark.jpg, home-top--375-light.jpg, mobile-menu-open--375-light.jpg, paper-fill-backlink--375-light.jpg, paper-trading-settled--375-light.jpg, paper-trading-settled--768-light.jpg. For paper-trading-settled the horizontal ScrollBar fix is evidenced by the DOM change (components/ui/scroll-area.tsx mounts a horizontal bar), not by a capture. Dark theme was captured only for the home-top region (1280 and 375); the other regions were checked in light theme plus a DOM audit, so 'both' in the findings table means light capture + DOM check for dark.
