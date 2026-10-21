@@ -3,31 +3,26 @@
 // paperTradingHelpers.tsx -- shared helpers for the paper-trading page.
 // Extracted to keep page.tsx under the 300 LOC/file rail.
 //
-// Exports: StatTile, deriveTally, DoneSummary, deriveDoneSummary,
-//          TallySummary, toPaperTrailRows.
+// Exports: fetchPaperCombined, StatTile, deriveTally, DoneSummary,
+//          deriveDoneSummary, TallySummary, toPaperTrailRows, mergeVenueRows.
 //
 // HONESTY RAILS: units only; no $ edge; CLV = honest calibration yardstick.
 
-import type { PaperTrail, PaperTrailRow, PmTrail, PmTrailRow, ClvScoreboard } from "@/lib/p5api";
+import type { PaperTrailRow, PmTrailRow, ClvScoreboard } from "@/lib/p5api";
 import type { PaperTrailRow as PaperTrailRowType } from "@/lib/p5api";
-import type { PnlSeries, PaperBankroll, Unavailable as UnavailableSentinel } from "@/lib/types";
-import { api, isUnavailable } from "@/lib/p5api";
+import { api } from "@/lib/p5api";
 import { EMPTY_CELL } from "@/lib/tokens";
+import { combinePaperPayload, type CombinedPayload } from "./paperPayload";
 
 // ---------------------------------------------------------------------------
 // Combined fetcher for the paper-trading page -- one useLiveData fetch pulls the
 // trail + PM trail + CLV scoreboard + P&L equity series + bankroll in parallel.
-// Each feed degrades independently; a missing history must not discard summaries.
+// Each feed degrades independently (combinePaperPayload, shared with the
+// build-time reader in paperTrading.server); a missing history must not discard
+// summaries. The payload type is re-exported so page callers keep one import.
 // ---------------------------------------------------------------------------
 
-export interface CombinedPayload {
-  trail: PaperTrail | null;
-  pmTrail: PmTrail | null;
-  clv: ClvScoreboard | null;
-  pnl: PnlSeries | null;
-  bankroll: PaperBankroll | null;
-  errors?: Partial<Record<"trail" | "pmTrail" | "clv" | "pnl" | "bankroll", string>>;
-}
+export type { CombinedPayload };
 
 export async function fetchPaperCombined(
   signal: AbortSignal,
@@ -40,20 +35,7 @@ export async function fetchPaperCombined(
     api.getPaperPnlSeries(signal),
     api.getPaperBankroll(signal),
   ]);
-  const errors: NonNullable<CombinedPayload["errors"]> = {};
-  function available<T>(key: keyof typeof errors, value: T | UnavailableSentinel): T | null {
-    if (!isUnavailable(value)) return value;
-    errors[key] = value.reason || "unavailable";
-    return null;
-  }
-  return {
-    trail: available("trail", t),
-    pmTrail: available("pmTrail", pt),
-    clv: available("clv", c),
-    pnl: available("pnl", pnl),
-    bankroll: available("bankroll", bank),
-    errors,
-  };
+  return combinePaperPayload(t, pt, c, pnl, bank);
 }
 
 // ---------------------------------------------------------------------------

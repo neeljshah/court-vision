@@ -153,7 +153,7 @@ function mockPending() {
 afterEach(() => vi.restoreAllMocks());
 
 async function renderPage() {
-  const { default: PaperTradingPage } = await import("../page");
+  const { default: PaperTradingPage } = await import("../PaperTradingPageClient");
   return render(<PaperTradingPage />);
 }
 

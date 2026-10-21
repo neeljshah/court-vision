@@ -15,6 +15,8 @@
 //       (e2) a single success resets the delay to base (consecutiveFailures=0).
 //       (e3) last-good data is still retained and isStale flips true during backoff.
 //       (e4) consecutiveFailures / backoffActive are exposed on LiveDataState.
+//   (f) SERVER SEED -- initialData/initialUpdatedAt start the hook with data and
+//       isLoading=false; the first poll and refresh still replace the seed.
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, waitFor, act } from "@testing-library/react";
@@ -623,5 +625,64 @@ describe("useLiveData (e) -- exponential backoff on consecutive failures", () =>
     // Error clears on success.
     expect(result.current.error).toBeNull();
     expect(result.current.isStale).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// (f) Server seed -- initialData / initialUpdatedAt
+// ---------------------------------------------------------------------------
+
+describe("useLiveData (f) -- initialData seed", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    resetVisibility();
+  });
+
+  it("renders the seed before the first fetch resolves, then the poll and refresh replace it", async () => {
+    let resolveCurrentFetch!: (v: { n: number } | Unavailable) => void;
+    const fetcher = vi.fn(() => new Promise<{ n: number } | Unavailable>((res) => {
+      resolveCurrentFetch = res;
+    }));
+    // The seed's own as-of stamp: five minutes old, so it is stale at 90 s.
+    const seededAt = Date.now() - 5 * 60_000;
+
+    const { result } = renderHook(() =>
+      useLiveData(fetcher, {
+        intervalMs: 60_000, staleAfterSec: 90, initialData: { n: 0 }, initialUpdatedAt: seededAt,
+      }),
+    );
+
+    // Seeded synchronously: no loading state, the data and its own timestamp present.
+    expect(result.current.data).toEqual({ n: 0 });
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.lastUpdatedAt).toBe(seededAt);
+    expect(result.current.error).toBeNull();
+    // The age is stamped after mount and is honest (never green for an old seed).
+    await waitFor(() => expect(result.current.ageSec).toBeGreaterThanOrEqual(299), { timeout: 3000 });
+    expect(result.current.isStale).toBe(true);
+
+    // The first fetch still ran on mount (unchanged) and replaces the seed.
+    expect(fetcher).toHaveBeenCalledTimes(1);
+    await act(async () => { resolveCurrentFetch({ n: 1 }); });
+    await waitFor(() => expect(result.current.data).toEqual({ n: 1 }), { timeout: 3000 });
+    expect(result.current.lastUpdatedAt).toBeGreaterThan(seededAt);
+    expect(result.current.isStale).toBe(false);
+
+    // refresh fetches again and replaces the data.
+    await act(async () => { result.current.refresh(); });
+    await waitFor(() => expect(fetcher).toHaveBeenCalledTimes(2), { timeout: 3000 });
+    await act(async () => { resolveCurrentFetch({ n: 2 }); });
+    await waitFor(() => expect(result.current.data).toEqual({ n: 2 }), { timeout: 3000 });
+  });
+
+  it("carries no age stamp for a seed without initialUpdatedAt until the first poll", () => {
+    const fetcher = vi.fn(() => new Promise<{ n: number } | Unavailable>(() => { /* pending */ }));
+    const { result } = renderHook(() => useLiveData(fetcher, { initialData: { n: 0 } }));
+    expect(result.current.data).toEqual({ n: 0 });
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.lastUpdatedAt).toBeNull();
+    expect(result.current.ageSec).toBeNull();
+    expect(result.current.isStale).toBe(false);
+    expect(fetcher).toHaveBeenCalledTimes(1);
   });
 });

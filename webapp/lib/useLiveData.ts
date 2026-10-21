@@ -15,6 +15,9 @@
 //   - ageSec ticks every ~1 s via a separate interval (no extra fetches).
 //   - isStale flips true when ageSec > staleAfterSec.
 //   - Cleans up timeout + visibilitychange listener on unmount.
+//   - Server seed: initialData (+ initialUpdatedAt) starts the hook with data and
+//     isLoading=false so server-rendered HTML carries the values; the first fetch
+//     and polling are unchanged. Age/stale stamps are applied after mount.
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { fetchHonest, isSnapshotMode } from "./fetchHonest";
@@ -48,7 +51,7 @@ export interface LiveDataState<T> {
   refresh: () => void;
 }
 
-export interface UseLiveDataOptions {
+export interface UseLiveDataOptions<T = unknown> {
   /** Polling interval in ms (default 20000). */
   intervalMs?: number;
   /** Age threshold in seconds after which isStale flips true (default 60). */
@@ -68,6 +71,22 @@ export interface UseLiveDataOptions {
    * the ORIGINAL fetch time, so ageSec/isStale stay truthful.
    */
   cacheKey?: string;
+  /**
+   * First payload supplied by the caller (e.g. a server page that read the baked
+   * snapshot at build time). When set, the hook starts with data=initialData and
+   * isLoading=false instead of the loading state, so server-rendered HTML carries
+   * the values. The first fetch and polling are unchanged: the first poll replaces
+   * the seed. Takes precedence over a cacheKey seed.
+   */
+  initialData?: T;
+  /**
+   * Epoch ms the seed was produced. Pass the payload's OWN as-of timestamp (e.g.
+   * the export's as_of): only then are lastUpdatedAt/ageSec/isStale honest. Left
+   * undefined, the seed carries no age stamp (lastUpdatedAt stays null) until the
+   * first poll succeeds. The age is stamped after mount, never in the first render,
+   * because Date.now() differs between the server render and hydration.
+   */
+  initialUpdatedAt?: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -140,7 +159,7 @@ export function backoffDelay(
 
 export function useLiveData<T>(
   fetcher: (signal: AbortSignal) => Promise<T | Unavailable>,
-  options: UseLiveDataOptions = {},
+  options: UseLiveDataOptions<T> = {},
 ): LiveDataState<T> {
   const {
     intervalMs = 20_000,
@@ -149,14 +168,20 @@ export function useLiveData<T>(
     enabled = true,
     maxBackoffMultiplier = 5,
     cacheKey,
+    initialData,
+    initialUpdatedAt,
   } = options;
 
-  const [data, setData] = useState<T | null>(null);
-  const [lastUpdatedAt, setLastUpdatedAt] = useState<number | null>(null);
+  // Seeded start (see UseLiveDataOptions.initialData): data present, not loading.
+  const hasInitial = initialData !== undefined;
+  const seedUpdatedAt = hasInitial ? initialUpdatedAt ?? null : null;
+
+  const [data, setData] = useState<T | null>(initialData === undefined ? null : initialData);
+  const [lastUpdatedAt, setLastUpdatedAt] = useState<number | null>(seedUpdatedAt);
   const [ageSec, setAgeSec] = useState<number | null>(null);
   const [isStale, setIsStale] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(!hasInitial);
   const [consecutiveFailures, setConsecutiveFailures] = useState(0);
 
   // Stable refs -- avoid re-registering effects on option changes.
@@ -179,7 +204,7 @@ export function useLiveData<T>(
   // renders the loading state; the very first client effect swaps in the
   // cached payload with its ORIGINAL timestamp (age/stale stay truthful).
   useEffect(() => {
-    if (!cacheKey) return;
+    if (!cacheKey || hasInitial) return;
     // Test env: never seed -- suites assert on genuine loading states, and the
     // module-level cache would leak "instant data" across tests in a file.
     if (typeof process !== "undefined" && process.env.NODE_ENV === "test") return;
@@ -195,8 +220,18 @@ export function useLiveData<T>(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cacheKey]);
 
+  // Seeded payload: stamp its age/stale AFTER mount. Date.now() differs between
+  // the server render and hydration, so the stamp must not enter the first render.
+  useEffect(() => {
+    if (seedUpdatedAt === null) return;
+    const seedAge = (Date.now() - seedUpdatedAt) / 1000;
+    setAgeSec(Math.round(seedAge));
+    setIsStale(seedAge > staleAfterSecRef.current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const abortRef = useRef<AbortController | null>(null);
-  const lastUpdatedAtRef = useRef<number | null>(null);
+  const lastUpdatedAtRef = useRef<number | null>(seedUpdatedAt);
   const consecutiveFailuresRef = useRef(0);
   const pollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pollingActiveRef = useRef(false);
@@ -348,7 +383,7 @@ export function useLiveData<T>(
 
 export function useLiveDataUrl<T>(
   url: string,
-  options: UseLiveDataOptions = {},
+  options: UseLiveDataOptions<T> = {},
 ): LiveDataState<T> {
   const fetcher = useCallback(
     (signal: AbortSignal) =>
