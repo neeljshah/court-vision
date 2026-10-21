@@ -292,8 +292,8 @@ export function PaperTrailSettled({
       {!settledOnly && <OpenPositions rows={openRows ?? rows} loading={loading} />}
 
       <p className="text-[12px] text-faint">
-        Paper mode -- stakes are units (no $). Columns the paper fills do not publish
-        (tier, model probability, model EV, CLV value) are not shown. No edge is claimed.
+        Paper mode -- stakes are units (no $). Tier, model probability and CLV value are
+        shown only when the fills publish them; no model EV is shown. No edge is claimed.
       </p>
     </div>
   );

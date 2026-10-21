@@ -9,7 +9,7 @@ export function PaperTradingDoneSummary({ summary, loading, error }: {
   error: string | null;
 }) {
   const rows = [
-    ["Total bets", "done-total", summary?.nTotal],
+    ["Total paper entries", "done-total", summary?.nTotal],
     ["Settled", "done-settled", summary?.nSettled],
     ["Push", "done-push", summary?.nPush],
     ["Void", "done-void", summary?.nVoid],
@@ -18,7 +18,7 @@ export function PaperTradingDoneSummary({ summary, loading, error }: {
   return (
     <section data-testid="done-settled-summary" aria-label="Done and settled summary" className="mb-5 mt-6">
       <h2 className="mb-3 text-[12px] font-semibold uppercase tracking-widest text-muted-foreground">
-        Done / settled summary
+        Done / settled summary (PAPER ONLY)
       </h2>
       {!loading && !summary && <Unavailable reason={error ?? "Paper history unavailable"} />}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-5">

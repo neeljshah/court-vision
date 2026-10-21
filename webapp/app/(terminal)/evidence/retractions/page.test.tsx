@@ -47,6 +47,7 @@ describe("retraction record", () => {
     expect(why).toMatch(/2026-09-04/);
     expect(why).toMatch(/G267/);
     expect(container.querySelector("header")!.textContent).toContain("The six withdrawn figures sit in four rows");
+    expect(container.querySelector("header")!.textContent).toMatch(/only inside retraction framing: here and the methodology\s+do-not-claim list/);
     expect(container.querySelectorAll('tbody tr[data-status="Retracted"]').length).toBe(4);
   });
 

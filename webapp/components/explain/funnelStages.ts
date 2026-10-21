@@ -44,7 +44,8 @@ export const FUNNEL_STAGE_DETAIL: FunnelStageDetail[] = [
     detail:
       "A signal factory proposes candidate features off the data spine. Every one is " +
       "run through the same leak-free, walk-forward, cross-corpus gate before it can " +
-      "touch a prediction. The vast majority REJECT -- markets are efficient.",
+      // 0 of 60 typed from docs/JOB_EVIDENCE_PACKET.md line 282.
+      "touch a prediction. 0 of 60 candidate signal classes survived the multiplicity correction -- markets are efficient.",
     discipline:
       "A REJECT is a SUCCESS, kept as VALIDATED SCOUTING. A rejected signal is NEVER " +
       "force-fed into the model (force-feeding destroys calibration: accuracy != edge).",

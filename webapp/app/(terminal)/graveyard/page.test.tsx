@@ -42,7 +42,7 @@ describe("/graveyard ledger by type", () => {
   it("leads in plain words, dates the heading, merges nba keys and glosses SHIP", () => {
     const { container } = render(<GraveyardPage />);
     expect(container.querySelector('[data-role="lead"]')!.textContent).toContain(
-      "Every idea we tested is kept here, including the ones that failed. A 'confirmed' hypothesis held up in its own test; that is not the same as shipping, and none of the 60 candidate signal classes has passed the full market-relative gate.");
+      "Every idea we tested is kept here, including the ones that failed. A 'confirmed' hypothesis held up in its own test; that is not the same as shipping, and none of the 60 candidate signal classes survived the multiplicity correction.");
     expect(container.querySelector('[data-role="asof"]')!.textContent).toMatch(/as of \d{4}-\d{2}-\d{2}/);
     const heads = [...container.querySelectorAll("th")];
     expect(heads.find((h) => h.getAttribute("title") === "confirmed")!.textContent).toBe("Held up in its own test");
@@ -51,6 +51,6 @@ describe("/graveyard ledger by type", () => {
     expect(nbaRows.length).toBe(2); // one in the nulls table, one (merged) in the survival table
     const gloss = container.querySelector('[data-role="ship-gloss"]')!;
     expect(gloss.textContent).toContain(String((rejects as { verdicts_by_type: Record<string, number> }).verdicts_by_type.SHIP));
-    expect(gloss.textContent).toContain("not signals shipped");
+    expect(gloss.textContent).toContain("none survived the multiplicity correction, so none shipped");
   });
 });

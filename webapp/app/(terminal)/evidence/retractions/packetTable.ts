@@ -57,7 +57,7 @@ const RETURN_FIGURE = /[~+-]\s?-?\d+(?:\.\d+)?%|break-even|\bROI\b|P&L|hits \d+%
 const TRACKING_WHY =
   "Measured on the research route, 2026-09-04, not asserted: on one WNBA clip through a validated homography, 10.5 pct of on-court same-ID steps are physically impossible (G267/G270). " +
   "Only about one retained detection in five sits on a player's feet (G287), detector recall is not established, and the impossible-step rate has no established mechanism. " +
-  "Scope is one clip, one camera shot and one labeller; the full measurement record with receipts G267 to G288 is in section 4 of the packet.";
+  "Scope is one clip, one camera shot and one labeller; the full measurement record with receipts G267 to G298 is in section 4 of the packet.";
 
 export function presentRow(r: PacketRow): PacketRow {
   let { why, sayInstead } = r;

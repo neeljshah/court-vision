@@ -164,10 +164,9 @@ export default function ReceiptsPage() {
                         <Num>{r.n}</Num>
                       </td>
                       <td className={`px-3 py-1.5 font-mono text-[11px] font-bold ${verdictClass(r.verdict, r.n)}`}>
-                        {r.verdict}
-                        {underFloor(r.verdict, r.n) && (
-                          <span data-role="qualifier" title={`n below the ${CELL_FLOOR}-game cell floor`}> UNDERPOWERED</span>
-                        )}
+                        {underFloor(r.verdict, r.n) ? (
+                          <span data-role="qualifier" title={r.verdict}>cannot tell (n below the {CELL_FLOOR}-game floor)</span>
+                        ) : r.verdict}
                       </td>
                       <td className="px-3 py-1.5 font-data text-[11px] text-faint">{r.src}</td>
                     </tr>

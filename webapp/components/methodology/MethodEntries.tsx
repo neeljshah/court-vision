@@ -86,7 +86,7 @@ export const METHOD_ENTRIES: MethodEntry[] = [
       <>
         A private test featurizes one game&apos;s play-by-play, re-featurizes only the first half of
         its events, and requires the row at that one mid-game cut to equal the full-stream row field
-        by field (value equality, not byte identity). It is one cut on one game, and it skips when no
+        by field, minus the exempt fields (value equality, not byte identity). It is one cut on one game, and it skips when no
         local game is present, so a skip is not a pass.
       </>
     ),

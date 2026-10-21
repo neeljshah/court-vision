@@ -91,8 +91,12 @@ describe("/analytics/calibration/ (T2)", () => {
     const note = container.querySelector("#ingame-join-caveat")!;
     expect(note.textContent).toContain("Measured 2026-09-14 on the 227-game corpus that later failed the join-integrity check; the 178-game segmented revision keeps the verdict BEHIND.");
     const hrefs = [...note.querySelectorAll("a")].map((a) => a.getAttribute("href"));
-    expect(hrefs).toContain("/analytics/findings/ingame-join-integrity/");
+    // next/link may prefix the basePath and drop the trailing slash in jsdom
+    expect(hrefs.some((h) => /\/analytics\/findings\/ingame-join-integrity\/?$/.test(h))).toBe(true);
     expect(hrefs.some((h) => h!.endsWith("docs/papers/INPLAY_LATENCY_2026.md"))).toBe(true);
+    const soccer = container.querySelector('tr[data-key="soccer_ingame_vs_kalshi_mid"]')!;
+    expect(soccer.querySelector('[data-role="caveat-ref"] a')!.getAttribute("href")).toBe("#soccer-join-note");
+    expect(container.querySelector("#soccer-join-note")!.textContent).toContain("Measured before the join-integrity repair; not re-established after it.");
   });
 
   it("prints a Limitations block with at least three bullets and no banned copy", () => {

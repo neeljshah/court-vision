@@ -1,12 +1,13 @@
 // app/(terminal)/evidence/retractions/page.tsx -- THE retraction record (one page).
 // Renders docs/JOB_EVIDENCE_PACKET.md section 4 (parsed and filtered at build time by
-// packetTable.ts). The six retracted figures appear on this site only here, inside
+// packetTable.ts). The six retracted figures appear on this site only in retraction framing (here and the methodology do-not-claim list), inside
 // table rows marked Retracted, each beside the packet's replacement wording ("Say
 // instead") and a date. The old /evidence/retraction-story/ and
 // /analytics/findings/retraction/ routes are redirect stubs to this page.
 import type { ReactNode } from "react";
 import { githubDoc } from "@/components/shell/nav";
-import { loadPacketTable, type PacketRow } from "./packetTable";
+import { loadPacketTable, RETRACTED_FIGURE, type PacketRow } from "./packetTable";
+import { countWord } from "@/lib/analytics/novelCards";
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/seo/meta";
 
@@ -41,19 +42,26 @@ function rowDate(r: PacketRow): string {
 
 export default function RetractionsPage() {
   const rows = loadPacketTable();
+  const retracted = (rows ?? []).filter((r) => r.status === "Retracted");
+  // Each alternative of RETRACTED_FIGURE is one withdrawn figure; count those the Retracted rows carry.
+  const claims = retracted.map((r) => r.claim).join(" ");
+  const figureCount = countWord(
+    RETRACTED_FIGURE.source.split("|").filter((f) => new RegExp(f).test(claims)).length,
+  ).toLowerCase();
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-6">
       <header>
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">Retraction record</h1>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
           Every figure this project withdrew or could not verify, copied from section 4 of
-          the evidence packet (interview-coaching sentences and return figures are left out at render
-          time; the long tracking row is shortened to three sentences). Each row names the figure, why it fails, the wording that replaces it
+          the evidence packet (interview-coaching sentences and return figures are left out of the
+          replacement wording; the long tracking row is shortened to three sentences). Each row names the figure, why it fails, the wording that replaces it
           and a date. The largest withdrawal is the former headline return figure: it was a
           market-follow artifact, and the honest replacement is calibration: the pregame model trails the
           devigged close on MLB moneyline and soccer O/U 2.5, and on NBA moneyline the interval includes
-          zero, so we cannot tell. The six withdrawn figures sit in four rows, each marked Retracted. A
-          retracted number appears on this site only here. Source:{" "}
+          zero, so we cannot tell. The {figureCount} withdrawn figures sit in {countWord(retracted.length).toLowerCase()} rows, each marked Retracted. A
+          retracted number appears on this site only inside retraction framing: here and the methodology
+          do-not-claim list. Source:{" "}
           <a href={PACKET_URL} className="underline">docs/JOB_EVIDENCE_PACKET.md</a>, section 4.
         </p>
       </header>

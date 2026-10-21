@@ -24,7 +24,7 @@
         {
           "type": "callout",
           "label": "Status",
-          "text": "Revision 2, 2026-09-17: every cell below is unchanged. comeback_atlas.json was re-run on the segment-clean roots and reproduced all 84 state buckets exactly, because its corpus is the NBA in-play reliability map, not the MLB and soccer in-game join the segmentation touched. Its review status is cleared on that evidence rather than on a rebuild, and nothing here is under review (receipt mlb-ingame-timing-regeneration.json). blowout_dynamics.json, cited for contrast below, was rebuilt in the same pass and now reads 174 usable MLB and 26 usable soccer games."
+          "text": "Data integrity: this paper reads NBA in-play checkpoints only (comeback_atlas.json, a reshaping of the NBA reliability map: 84 deficit-by-time state buckets, as of 2026-09-17, source data/cache/calibration_grid/nba_reliability_map.json). It does not use the MLB and soccer in-game join that the data-integrity finding re-segmented, so that finding does not apply here. Revision 2 (2026-09-17) re-ran the atlas and reproduced all 84 buckets exactly; every cell below is unchanged and nothing here is under review (receipt mlb-ingame-timing-regeneration.json)."
         },
         {
           "type": "p",

@@ -49,7 +49,7 @@ function SurvivorCard() {
         right={
           <SignalVerdictBadge
             verdict="SHIP"
-            stat="diff_corners_asof -- clustered-DM p ~= 0.0015, replicated E0/E1 + SP1/I1"
+            stat="diff_corners_asof -- replicated E0/E1 + SP1/I1"
           />
         }
       />
@@ -58,13 +58,14 @@ function SurvivorCard() {
           One signal cleared every control listed above: the as-of corners differential
           (<span className="font-data text-foreground/80">diff_corners_asof</span>) improved
           held-out home-win Brier in BOTH disjoint league pairs (E0/E1 and SP1/I1),
-          clustered-DM p ~= 0.0015, the base was skillful, and the planted-null rejected.
+          the base was skillful, and the planted-null rejected. No published artifact on this site
+          carries its p-value, so none is printed. This is versus the base model, not the market;
+          exploratory; not counted as surviving the multiplicity correction.
           It is kept as a PROPOSAL / scouting prior and is never force-fed into a prediction.
         </p>
         <dl className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
           {[
             { k: "deciding stat", v: "diff_corners_asof" },
-            { k: "clustered-DM p", v: "~= 0.0015" },
             { k: "replicated on", v: "E0/E1 + SP1/I1" },
             { k: "planted-null", v: "rejected (good)" },
           ].map((s) => (

@@ -17,7 +17,7 @@ describe("About page", () => {
     const { container } = render(<AboutPage />);
     const lede = container.querySelector("header p")!;
     expect(lede.textContent).toMatch(/does not\s+price games better than the market/);
-    expect(lede.textContent).toMatch(/on MLB moneyline and soccer\s+over\/under 2\.5, and matches it on NBA moneyline only where the sample is too small to tell/);
+    expect(lede.textContent).toMatch(/on MLB moneyline and soccer\s+over\/under 2\.5; on NBA moneyline the interval includes zero, so we cannot tell/);
     expect(screen.getByRole("button", { name: "devigged closing price" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Brier score" })).toBeTruthy();
     expect(container.textContent).not.toMatch(/within noise/i);
@@ -57,7 +57,7 @@ describe("About page", () => {
   it("adds the owner-decision example, what is next, the why line and the roles line", () => {
     const { container } = render(<AboutPage />);
     const text = (container.textContent ?? "").replace(/\s+/g, " ");
-    expect(text).toContain("the former headline return figure was withdrawn, and the evaluation gate was changed so that a grader that never reads the model cannot pass");
+    expect(text).toContain("the former headline return figure was withdrawn once its grader was found never to read the model.");
     expect(screen.getByRole("heading", { name: "What is next" })).toBeTruthy();
     expect(text).toContain("The forward paper series keeps running until each cell reaches its 30-game floor; the NBA fitted arms need a new dated seal. Computer-vision tracking stays paused.");
     expect(screen.getByTestId("about-why").textContent).toBe("The aim is a forecaster whose every number someone else can check against the market.");

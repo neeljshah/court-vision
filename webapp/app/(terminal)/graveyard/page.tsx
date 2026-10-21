@@ -56,7 +56,7 @@ const SPORT_NAME: Record<string, string> = { nba: "NBA", basketball_nba: "NBA", 
 const sportName = (k: string) => SPORT_NAME[k] ?? k;
 const PACKET_URL = "https://github.com/neeljshah/court-vision/blob/master/docs/JOB_EVIDENCE_PACKET.md";
 const GRAVEYARD_LEAD =
-  "Every idea we tested is kept here, including the ones that failed. A 'confirmed' hypothesis held up in its own test; that is not the same as shipping, and none of the 60 candidate signal classes has passed the full market-relative gate.";
+  "Every idea we tested is kept here, including the ones that failed. A 'confirmed' hypothesis held up in its own test; that is not the same as shipping, and none of the 60 candidate signal classes survived the multiplicity correction.";
 
 type Survival = { n: number; n_testable: number; n_confirmed: number; survival_rate: number };
 /** nba and basketball_nba are the same sport under two ledger keys: one row, counts summed. */
@@ -190,7 +190,7 @@ export default function GraveyardPage() {
                   <td className="px-3 py-1.5 font-mono text-[11px] font-bold text-foreground">
                     {isGateStatus(verdict) ? <><GateStatus token={verdict} />{verdict === "SHIP" && (
                       <span data-role="ship-gloss" className="ml-2 font-sans font-normal text-muted-foreground">
-                        ({count} = verdict rows across all reruns that passed every gate; not signals shipped)
+                        ({count} = SHIP rows the per-signal ledger gate logged across all reruns; none survived the multiplicity correction, so none shipped)
                       </span>)}</>
                       : isPacketVerdict(verdict) ? <VerdictLabel verdict={verdict} qualifier={false} />
                       : verdict}

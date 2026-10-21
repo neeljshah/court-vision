@@ -37,11 +37,14 @@ export function groupScoreboard(sb: Sb): ArmGroup[] {
   return [...map.values()].sort((a, b) => a.sport.localeCompare(b.sport) || rank(a.arm) - rank(b.arm) || a.arm.localeCompare(b.arm));
 }
 
-/** One summary row per sport: the most games any cell of that sport holds. */
-export function sportSummary(groups: ArmGroup[]): { sport: string; games: number }[] {
-  const m = new Map<string, number>();
-  for (const g of groups) m.set(g.sport, Math.max(m.get(g.sport) ?? 0, g.maxGames));
-  return [...m.entries()].map(([sport, games]) => ({ sport, games }));
+/** One summary row per sport: the cell holding the most games, with that cell's verdict. */
+export function sportSummary(groups: ArmGroup[]): { sport: string; games: number; verdict: string }[] {
+  const m = new Map<string, { games: number; verdict: string }>();
+  for (const g of groups) for (const r of g.rows) {
+    const games = r.n_games ?? 0;
+    if (!m.has(g.sport) || games > m.get(g.sport)!.games) m.set(g.sport, { games, verdict: r.verdict ?? "no verdict" });
+  }
+  return [...m.entries()].map(([sport, v]) => ({ sport, ...v }));
 }
 
 const verdictText = (v: Record<string, number>) => Object.entries(v).map(([k, n]) => `${k} ${n}`).join(", ");
@@ -88,7 +91,9 @@ export function ScoreboardCompact({ sb, arms }: { sb: Sb; arms: Record<string, s
     <div className="flex flex-col gap-3 py-2">
       <ul className="px-3 font-data text-xs" data-testid="scoreboard-sport-summary">
         {sportSummary(groups).map((s) => (
-          <li key={s.sport}>{s.sport}: {s.games} of {FLOOR} games needed for a verdict; no verdict yet</li>
+          <li key={s.sport}>{s.games < FLOOR
+            ? `${s.sport}: ${s.games} of ${FLOOR} games needed for a verdict; no verdict yet`
+            : `${s.sport}: ${s.games} games; verdict ${s.verdict}`}</li>
         ))}
       </ul>
       <p className="px-3 text-xs text-muted-foreground" data-testid="scoreboard-mid-note">

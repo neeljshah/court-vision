@@ -21,7 +21,7 @@ export const metadata: Metadata = pageMeta("/about/", {
 
 const NOT_THIS = [
   "It is not a betting product and has no order path. Every desk figure is in paper units.",
-  "It does not price games better than the market. Pregame, the model trails the devigged closing price, or matches it only where the sample is too small to tell.",
+  "It does not price games better than the market. Pregame, the model trails the devigged closing price, and on NBA moneyline the interval includes zero, so we cannot tell.",
   "The forward paper series has no calibration verdict yet. The receipts say why.",
   "Pages show a dated static snapshot, not live data.",
 ];
@@ -40,7 +40,7 @@ export default function AboutPage() {
           including losses, nulls and retractions. Its headline finding: the pregame model does not
           price games better than the market. It trails the{" "}
           <Term id="devigged-close">devigged closing price</Term> on MLB moneyline and soccer
-          over/under 2.5, and matches it on NBA moneyline only where the sample is too small to tell.
+          over/under 2.5; on NBA moneyline the interval includes zero, so we cannot tell.
           Each headline figure names its source artifact and as-of date, and the evidence packet is the truth source.
         </p>
         <p className={`mt-2 ${P}`} data-testid="about-why">The aim is a forecaster whose every number someone else can check against the market.</p>
@@ -65,8 +65,7 @@ export default function AboutPage() {
           One person directed coding agents to build it. The owner set the goals, the
           validation rules and the acceptance bars; agents wrote most of the code, tests and
           documentation. One owner decision, for example: the former headline return figure was
-          withdrawn, and the evaluation gate was changed so that a grader that never reads the model
-          cannot pass. Counted from git log at commit {COMMIT_COUNTS.sha} on {COMMIT_COUNTS.asOf},{" "}
+          withdrawn once its grader was found never to read the model. Counted from git log at commit {COMMIT_COUNTS.sha} on {COMMIT_COUNTS.asOf},{" "}
           {fmtCommits(COMMIT_COUNTS.agentCoAuthored)} of the {fmtCommits(COMMIT_COUNTS.total)} commits
           on the public {COMMIT_COUNTS.branch} branch ({agentShare()}) carry a Co-Authored-By trailer
           naming Claude or Codex, and the true agent share is higher because older and automated

@@ -57,7 +57,7 @@ describe("/desk Record hub", () => {
     // first screen: one summary row per sport, floor 30 from figures; empty arms and mid rows explained
     const summary = screen.getByTestId("scoreboard-sport-summary").querySelectorAll("li");
     expect(summary.length).toBeGreaterThan(0);
-    for (const li of summary) expect(li.textContent).toMatch(/^\w+: \d+ of 30 games needed for a verdict; no verdict yet$/);
+    for (const li of summary) expect(li.textContent).toMatch(/^\w+: (\d+ of 30 games needed for a verdict; no verdict yet|\d+ games; verdict \S+)$/);
     expect(table.closest("details")?.querySelector("summary")?.textContent).toMatch(/^show the full cell grid \(\d+ cells\)$/);
     const empty = screen.getByTestId("scoreboard-empty-arms");
     expect(empty.querySelector("summary")?.textContent).toMatch(/^show \d+ empty arms$/);
