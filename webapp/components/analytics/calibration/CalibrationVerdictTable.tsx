@@ -7,7 +7,8 @@ import type { CanonicalFigure } from "@/lib/canonicalFigures.server";
 
 const f4 = (v: number | undefined) => (v == null ? "not published" : v.toFixed(4));
 const s4 = (v: number) => (v >= 0 ? "+" : "") + v.toFixed(4);
-const SPORT: Record<string, string> = { mlb: "MLB", nba: "NBA", soccer: "Soccer", soccer_intl: "International soccer" };
+/** Display names for the canonical sport ids (shared with CalibrationIntro). */
+export const SPORT: Record<string, string> = { mlb: "MLB", nba: "NBA", soccer: "Soccer", soccer_intl: "International soccer" };
 
 export const isVerdictRow = (f: CanonicalFigure) => f.metric === "Brier" && f.model != null && f.close != null;
 

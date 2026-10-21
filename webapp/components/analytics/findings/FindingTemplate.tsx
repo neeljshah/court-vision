@@ -66,6 +66,7 @@ export function FindingTemplate({ slug, artifact, children }: { slug: string; ar
   const reproduce = spec.reproduce ?? `python scripts/platformkit/analytics_showcase/${spec.artifactId}.py`;
   const asOf = findingAsOf(a);
   const verdicts = packetVerdicts(spec, a);
+  const quoted = quotedOn(source); // once per page: the status chip and the footer list share it
   const pagePath = `webapp/app/(analytics)/analytics/findings/${slug}/page.tsx`;
   return (
     <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }} data-template="T4">
@@ -77,7 +78,7 @@ export function FindingTemplate({ slug, artifact, children }: { slug: string; ar
         <span className="mono">n = {spec.n(a)}</span>
         <span className="mono">{spec.interval ?? "no interval"}</span>
         <AsOfBadge asOf={asOf} kind={a.as_of || a.measured_on ? "source" : "snapshot"} />
-        <ReceiptChip source={source} asOf={asOf} kind={a.as_of || a.measured_on ? "source" : "snapshot"} quotedOn={quotedOn(source)} />
+        <ReceiptChip source={source} asOf={asOf} kind={a.as_of || a.measured_on ? "source" : "snapshot"} quotedOn={quoted} />
       </div>
       <Block id="test" title="How it was tested">
         <ul style={{ margin: 0, paddingLeft: 20 }}>
@@ -111,7 +112,7 @@ export function FindingTemplate({ slug, artifact, children }: { slug: string; ar
             <li><a href={`${REPO}/commits/master/${encodeURI(pagePath)}`}>page history on GitHub</a></li>
           </ul>
         </Block>
-        <Block id="quoted-on" title="Quoted on"><QuotedOnList artifact={source} /></Block>
+        <Block id="quoted-on" title="Quoted on"><QuotedOnList artifact={source} items={quoted} /></Block>
       </footer>
     </div>
   );

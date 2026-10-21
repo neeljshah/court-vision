@@ -1,8 +1,33 @@
 import { render, screen, within } from "@testing-library/react";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { PACKET_VERDICTS, BANNED_COPY, RETRACTED_TOKENS } from "@/lib/packetVerdicts";
+import { PACKET_VERDICTS, BANNED_COPY, RETRACTED_TOKENS, VERDICT_QUALIFIER, type PacketVerdict } from "@/lib/packetVerdicts";
 import { decompose } from "@/components/analytics/calibration/CalibrationDecomposition";
+import { SPORT } from "@/components/analytics/calibration/CalibrationVerdictTable";
 import CalibrationPage from "./page";
+
+type Fig = { key: string; sport: string; market: string; metric: string; n?: number; n_unit?: string; model?: number; close?: number; verdict: string };
+const canon = JSON.parse(readFileSync(join(process.cwd(), "../docs/evidence/CANONICAL_FIGURES.json"), "utf-8")) as { figures: Fig[] };
+const VERDICT_WORD = new RegExp(`\\b(${PACKET_VERDICTS.join("|")})\\b`);
+
+/** Text of a subtree without the glossary tooltips Term mounts (their definitions are kit text, not page prose). */
+function prose(el: Element, drop = ""): string {
+  const copy = el.cloneNode(true) as HTMLElement;
+  copy.querySelectorAll([".ev-term__tip", drop].filter(Boolean).join(", ")).forEach((n) => n.remove());
+  return (copy.textContent ?? "").replace(/\s+/g, " ").trim();
+}
+
+// The home h2 mapping, re-derived from the JSON: sport, market, verdict, packet qualifier; repeats print once.
+function clauses(rows: Fig[]): string {
+  const out: string[] = [];
+  for (const f of rows) {
+    const q = VERDICT_QUALIFIER[f.verdict as PacketVerdict];
+    const c = `${SPORT[f.sport] ?? f.sport} ${f.market} ${f.verdict}${q ? ` (${q})` : ""}`;
+    if (!out.includes(c)) out.push(c);
+  }
+  return out.join("; ");
+}
 
 describe("/analytics/calibration/ (T2)", () => {
   it("renders the T2 blocks in order with a status line", () => {
@@ -11,6 +36,29 @@ describe("/analytics/calibration/ (T2)", () => {
     const want = ["Verdict table", "Reliability diagrams with game-cluster intervals", "Brier decomposition", "Sharpness", "Coverage", "Inspectors", "Summary by market", "Limitations"];
     expect(h2.filter((t) => want.includes(t ?? ""))).toEqual(want);
     expect(screen.getByTestId("status-line")).toHaveTextContent(/TRAILS_CLOSE on \d+ of \d+ pregame rows, BEHIND on \d+ of \d+ in-play rows/);
+  });
+
+  it("the intro verdict sentence is computed from CANONICAL_FIGURES with the home h2 mapping", () => {
+    render(<CalibrationPage />);
+    const rows = canon.figures.filter((f) => f.metric === "Brier" && f.model != null && f.close != null).sort((a, b) => (b.n ?? 0) - (a.n ?? 0));
+    const pregame = rows.filter((f) => f.n_unit !== "games");
+    const inplay = rows.filter((f) => f.n_unit === "games");
+    expect(pregame.length).toBeGreaterThan(0);
+    expect(inplay.length).toBeGreaterThan(0);
+    const want = `Verdict. Pregame vs the devigged close: ${clauses(pregame)}. In play: ${clauses(inplay)}. ` +
+      "Every row below is scored by Brier score (lower is better) and shows its n, 95% interval, as-of date and receipt.";
+    const intro = screen.getByTestId("calibration-intro");
+    expect(prose(intro)).toBe(want);
+    // every verdict word in the sentence is a VerdictLabel, one per distinct clause
+    const labels = [...intro.querySelectorAll(".ev-verdict")].map((el) => el.getAttribute("data-verdict"));
+    expect(labels).toEqual([...want.matchAll(new RegExp(VERDICT_WORD.source, "g"))].map((m) => m[1]));
+  });
+
+  it("no verdict word appears outside a VerdictLabel or the generated sentence", () => {
+    const { container } = render(<CalibrationPage />);
+    expect(prose(container)).toMatch(VERDICT_WORD); // the page does print verdicts
+    expect(prose(container, ".ev-verdict, [data-testid='calibration-intro']")).not.toMatch(VERDICT_WORD);
+    expect(prose(screen.getByTestId("calibration-intro"), ".ev-verdict")).not.toMatch(VERDICT_WORD);
   });
 
   it("every verdict-table row is a full metric block with a packet verdict", () => {
