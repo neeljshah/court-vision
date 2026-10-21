@@ -28,6 +28,18 @@ function commonRails() {
 }
 
 describe("/desk Record hub", () => {
+  it("renders the census COVERAGE_LOW cause as a gate ledger status with its legend, never as a verdict", () => {
+    render(<DeskRecordPage />);
+    const census = screen.getByTestId("census-summary");
+    const el = census.querySelector('[data-gate="COVERAGE_LOW"]');
+    expect(el).toHaveClass("ev-gate");
+    expect(el?.getAttribute("title")).toBe("COVERAGE_LOW: too little coverage. gate ledger status, not a packet verdict.");
+    expect(census.querySelector('[data-verdict="COVERAGE_LOW"]')).toBeNull();
+    expect(within(census).getByTestId("gate-status-legend").textContent)
+      .toBe("Gate ledger statuses, not packet verdicts: COVERAGE_LOW = too little coverage.");
+    expect(census.textContent).toMatch(/COVERAGE_LOW: 23 games/);
+  });
+
   it("renders the status card, compact scoreboard, census, receipts and NotClaimed", () => {
     render(<DeskRecordPage />);
     expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Paper desk record");

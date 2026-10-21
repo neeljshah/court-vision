@@ -10,4 +10,8 @@ export {
   VerdictLabel, PACKET_VERDICTS, VERDICT_QUALIFIER, VERDICT_MEANING,
   isPacketVerdict, toPacketVerdict, verdictQualifier, type PacketVerdict,
 } from "./VerdictLabel";
+export {
+  GateStatus, GateStatusLegend, GATE_STATUSES, GATE_GLOSS, GATE_LEDGER_NOTE,
+  isGateStatus, toGateStatus, gateStatusesIn, gateStatusTitle, type GateStatusToken,
+} from "./GateStatus";
 export { PACKET_HREF, PACKET_PATH, blobUrl, receiptHref, isRepoPath, type ReceiptStatus } from "./kit";

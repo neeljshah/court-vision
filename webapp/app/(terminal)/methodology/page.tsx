@@ -12,7 +12,7 @@ import Link from "next/link";
 import { Panel, PanelHead } from "@/components/ui/terminal";
 import { HonestBanner } from "@/components/showcase/HonestBanner";
 import { ReproduceBlock } from "@/components/showcase/ReproduceBlock";
-import { Term } from "@/components/evidence";
+import { GateStatus, GateStatusLegend, Term, gateStatusesIn, isGateStatus } from "@/components/evidence";
 
 export const metadata = {
   title: "Methodology",
@@ -214,11 +214,15 @@ export default function MethodologyPage() {
                 className="grid gap-1.5 sm:grid-cols-[minmax(0,220px)_1fr] sm:items-start sm:gap-4"
               >
                 <dt>
-                  <span
-                    className={`inline-block border px-1.5 py-px font-data text-[11px] ${r.tone}`}
-                  >
-                    {r.badge}
-                  </span>
+                  {isGateStatus(r.badge) ? (
+                    <GateStatus token={r.badge} />
+                  ) : (
+                    <span
+                      className={`inline-block border px-1.5 py-px font-data text-[11px] ${r.tone}`}
+                    >
+                      {r.badge}
+                    </span>
+                  )}
                 </dt>
                 <dd className="m-0 text-sm leading-relaxed text-muted-foreground">
                   {r.meaning}
@@ -226,6 +230,9 @@ export default function MethodologyPage() {
               </div>
             ))}
           </dl>
+          <div className="mt-4">
+            <GateStatusLegend tokens={gateStatusesIn(VERIFIED_ROWS.map((r) => r.badge))} />
+          </div>
         </div>
       </Panel>
 
