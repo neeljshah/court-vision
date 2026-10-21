@@ -32,7 +32,7 @@ what exists and what it is evidence of, and what is not shown.
 [![Honesty gate + webapp QA](https://github.com/neeljshah/court-vision/actions/workflows/webapp-qa.yml/badge.svg)](https://github.com/neeljshah/court-vision/actions/workflows/webapp-qa.yml)
 [![Proof harness](https://github.com/neeljshah/court-vision/actions/workflows/proof.yml/badge.svg)](https://github.com/neeljshah/court-vision/actions/workflows/proof.yml)
 
-[![CourtVision analytics: how forecasts compare with outcomes](docs/img/analytics_home.png)](https://neeljshah.github.io/court-vision/)
+[![CourtVision home: the calibration scoreboard, pregame forecasts against the devigged close](docs/img/analytics_home.png)](https://neeljshah.github.io/court-vision/)
 
 ## Results at a glance
 
