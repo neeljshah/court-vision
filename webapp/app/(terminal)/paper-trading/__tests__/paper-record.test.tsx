@@ -31,7 +31,7 @@ function mockExport() {
 afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 
 async function renderPage() {
-  const { default: Page } = await import("../page");
+  const { default: Page } = await import("../PaperTradingPageClient");
   return render(<Page />);
 }
 

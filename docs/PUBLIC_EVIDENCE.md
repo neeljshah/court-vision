@@ -1,12 +1,12 @@
 # Public Evidence — 60-Second Funnel Scan
 
-> **See it first, then read this.** The flagship product is **CourtVision Analytics — the Reading
-> Room**, live at
-> **[neeljshah.github.io/court-vision/](https://neeljshah.github.io/court-vision/)**:
-> 77 published source modules, 17 findings and 1,549 entity atlas cards, 6 prior-art-gated novel stats (one published
-> as an honest null), Scout AI in three honest tiers, and a self-grading claim ledger — every
-> number on the page carrying the artifact path it was read from. The dense quant terminal is
-> product 2, at **[neeljshah.github.io/court-vision](https://neeljshah.github.io/court-vision)**.
+> **See it first, then read this.** One public site:
+> **[neeljshah.github.io/court-vision/](https://neeljshah.github.io/court-vision/)**
+> ([About](https://neeljshah.github.io/court-vision/about/),
+> [Calibration](https://neeljshah.github.io/court-vision/analytics/calibration/),
+> [Retractions](https://neeljshah.github.io/court-vision/evidence/retractions/),
+> [Paper record](https://neeljshah.github.io/court-vision/paper-trading/)). Every number on it carries
+> the artifact path it was read from.
 >
 > This document is the fast scan of what the engine underneath actually does and how well,
 > organized by the funnel. Every number here is the **leak-free, audited** version. For the full
