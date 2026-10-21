@@ -1,4 +1,4 @@
-import { field as f, snapshot } from "./labHelpers";
+import { field as f, snapshot, sourceAsOf } from "./labHelpers";
 import type { LabDataset, LabRow } from "./labTypes";
 
 type SourceObject = Record<string, unknown>;
@@ -78,6 +78,7 @@ export function buildLiveClockLabDataset(source: unknown): LabDataset {
     status: "Incremental metric",
     fields,
     rows,
+    publishedAsOf: sourceAsOf(source),
   };
 }
 

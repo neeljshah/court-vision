@@ -1,7 +1,9 @@
-import { field as f, snapshot } from "./labHelpers";
-import type { LabDataset, LabRow } from "./labTypes";
+import { field as f, snapshot, sourceAsOf } from "./labHelpers";
+import type { LabDataset, LabDefinition, LabRow } from "./labTypes";
 
 type Source = {
+  sport?: unknown;
+  source?: unknown;
   n_pitches?: unknown;
   pitch_type_distribution?: unknown;
   velo_percentiles_by_pitch_type?: unknown;
@@ -33,6 +35,16 @@ export function buildPitchProfilesLabDataset(source: Source): LabDataset {
     f("velocity_span", "P90-P10 velocity span", "mph", 1),
     f("velocity_coverage", "Velocity measurement coverage", "percent", 3),
   ];
+  const total = count(source.n_pitches);
+  // Published definition: the source names its sport, its pitch total, and (only by the
+  // season in its corpus path) the pull it summarises. Exact observation dates are not published.
+  const sport = typeof source.sport === "string" && source.sport.trim() ? source.sport.trim().toUpperCase() : undefined;
+  const pullYear = typeof source.source === "string" ? /(?:^|[^0-9])((?:19|20)[0-9]{2})(?![0-9])/.exec(source.source)?.[1] : undefined;
+  const definition: LabDefinition = {
+    ...(sport ? { sport } : {}),
+    ...(total === null ? {} : { population: `${total.toLocaleString("en-US")} pitches` }),
+    ...(pullYear ? { observationWindow: `${pullYear} Statcast pull (season named by the source path; exact dates not published)` } : {}),
+  };
   const mix = sourceRows(source.pitch_type_distribution, "pitch_type_distribution");
   const velocity = sourceRows(source.velo_percentiles_by_pitch_type, "velo_percentiles_by_pitch_type");
   const rows: LabRow[] = mix.map((raw, mixIndex) => {
@@ -79,9 +91,9 @@ export function buildPitchProfilesLabDataset(source: Source): LabDataset {
       note: `Source: ${sourceRows}; matched by pitch_type. ${supportNote} ` +
         "Velocity span = published p90 minus published p10, rounded to 0.1 mph only when p10 <= p50 <= p90 are finite, nonnegative quantiles; the published quantiles were already rounded independently. " +
         "These are pooled pitch-type summaries, not pitcher-level consistency or quality.",
+      definition,
     };
   });
-  const total = count(source.n_pitches);
   return {
     id: "pitch-profiles",
     title: "Pitch mix and velocity profiles",
@@ -94,6 +106,7 @@ export function buildPitchProfilesLabDataset(source: Source): LabDataset {
     status: "Descriptive",
     fields,
     rows,
+    publishedAsOf: sourceAsOf(source),
   };
 }
 

@@ -11,7 +11,9 @@ export type LabDefinition = {
   halfLifeLabel?: string;
 };
 export type LabRow = { id: string; label: string; group: string; values: Record<string, number | null>; note?: string; definition?: LabDefinition };
-export type LabDataset = { id: string; title: string; sport: Sport; category: string; source: string; description: string; scope: string; caveat: string; status: string; fields: LabField[]; rows: LabRow[]; eligiblePopulation?: number; qualificationRule?: string; nQualifying?: number; note?: string };
+/** Build-time generation stamp read from the dataset's source JSON: the date and the field that carried it. */
+export type LabAsOf = { date: string; field: string };
+export type LabDataset = { id: string; title: string; sport: Sport; category: string; source: string; description: string; scope: string; caveat: string; status: string; fields: LabField[]; rows: LabRow[]; publishedAsOf?: LabAsOf; eligiblePopulation?: number; qualificationRule?: string; nQualifying?: number; note?: string };
 export type NovelCard = { stat_name: string; abbrev: string; module: string; formula: string; prior_art_verdict: string; headline: string; is_honest_null?: boolean };
 export type LabData = { datasets: LabDataset[]; novel: NovelCard[] };
 

@@ -15,6 +15,9 @@
 .lab-analysis-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start}
 .lab-analysis-head h2{margin:12px 0 8px;font-size:24px}
 .lab-analysis-head .cv-muted{max-width:620px}
+.lab-as-of{display:inline-flex;flex-wrap:wrap;align-items:baseline;gap:6px;margin-left:10px;font:10px/1.5 var(--font-mono);color:var(--ink-3)}
+.lab-as-of time{color:var(--ink-2)}
+.lab-as-of small{font-size:9px}
 .lab-controls{display:grid;grid-template-columns:1.4fr 1.2fr 1fr;gap:12px;padding:22px 0 18px;margin-top:6px;border-bottom:1px solid var(--cv-line)}
 .lab-primary-field select{border-color:var(--cv-blue)}
 .lab-definition{margin:16px 0 0;padding:13px 15px;border:1px solid var(--rule);border-left:3px solid var(--signal);background:var(--paper-tint)}

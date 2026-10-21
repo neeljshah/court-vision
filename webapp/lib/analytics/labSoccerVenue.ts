@@ -1,4 +1,4 @@
-import { field as f, snapshot } from "./labHelpers";
+import { field as f, snapshot, sourceAsOf } from "./labHelpers";
 import type { LabDataset, LabRow } from "./labTypes";
 
 type Source = {
@@ -85,6 +85,7 @@ export function buildSoccerVenueLabDataset(source: Source): LabDataset {
     status: "Descriptive",
     fields,
     rows,
+    publishedAsOf: sourceAsOf(source),
   };
 }
 

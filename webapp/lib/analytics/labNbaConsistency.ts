@@ -1,8 +1,9 @@
-import { field as f, snapshot } from "./labHelpers";
-import type { LabDataset, LabRow } from "./labTypes";
+import { field as f, snapshot, sourceAsOf } from "./labHelpers";
+import type { LabDataset, LabDefinition, LabRow } from "./labTypes";
 
 type Entry = Record<string, unknown>;
 type Source = {
+  source?: unknown;
   as_of?: unknown;
   methodology?: unknown;
   input_coverage?: unknown;
@@ -43,14 +44,25 @@ export function buildNbaConsistencyLabDataset(source: Source): LabDataset {
   const method = object(source.methodology) ? source.methodology : {};
   const coverage = object(source.input_coverage) ? source.input_coverage : {};
   const asOf = typeof source.as_of === "string" && source.as_of.trim() ? source.as_of.trim() : "unavailable";
-  const seasons = Array.isArray(method.seasons_pooled) && method.seasons_pooled.length > 0 &&
+  const pooledSeasons = Array.isArray(method.seasons_pooled) && method.seasons_pooled.length > 0 &&
     method.seasons_pooled.every((season: unknown) => typeof season === "string" && season.trim().length > 0)
-    ? (method.seasons_pooled as string[]).join(", ") : "pooled seasons unavailable";
+    ? (method.seasons_pooled as string[]).join(", ") : null;
+  const seasons = pooledSeasons ?? "pooled seasons unavailable";
   const minutes = nonnegative(method.min_game_minutes_floor);
   const minimumGames = positiveCount(method.min_qualifying_games_floor);
   const shrinkK = positive(method.shrink_k_games);
   const eligible = count(coverage.players_meeting_floor);
   const sourcePlayers = count(coverage.unique_players);
+  // Published definition: the input path names the NBA domain; coverage and methodology
+  // publish the floor population; methodology publishes the pooled seasons behind the as-of date.
+  const definition: LabDefinition = {
+    ...(typeof source.source === "string" && /basketball_nba/.test(source.source) ? { sport: "NBA" } : {}),
+    ...(eligible === null ? {} : { population: `${eligible} players meeting the floor` +
+      (sourcePlayers === null ? "" : ` of ${sourcePlayers} source players`) +
+      (minutes === null ? "" : `; games at or above ${minutes} minutes`) +
+      (minimumGames === null ? "" : `; at least ${minimumGames} qualifying appearances`) }),
+    ...(pooledSeasons === null ? {} : { observationWindow: `${pooledSeasons} pooled${asOf === "unavailable" ? "" : `; as of ${asOf}`}` }),
+  };
   const fields = [
     f("composite_cv_shrunk", "Composite variability", "number", 4),
     f("pts_per36_mean", "Points / 36"),
@@ -81,6 +93,7 @@ export function buildNbaConsistencyLabDataset(source: Source): LabDataset {
         "Qualifying game appearances count games meeting the pooled minutes floor, not valid observations for each stat. " +
         "The published player-data blend weight is rounded to three decimals; it is not a confidence, probability, or effectiveness score. " +
         "Per-stat valid counts and raw standard deviations are unavailable in this snapshot.",
+      definition,
     };
   });
   return {
@@ -103,6 +116,7 @@ export function buildNbaConsistencyLabDataset(source: Source): LabDataset {
       ...rows(least, "least_consistent_top15", "Least consistent"),
     ],
     eligiblePopulation: eligible === null ? undefined : eligible,
+    publishedAsOf: sourceAsOf(source),
   };
 }
 
