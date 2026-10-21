@@ -59,18 +59,8 @@
       "$comment": "largest quantized chart is 45 KB; a re-staged RGBA chart is 80-190 KB"
     },
     "brand": {
-      "maxBytes": 81920,
-      "exempt": [
-        "courtvision-logo.png",
-        "courtvision-logo-transparent.png",
-        "courtvision-research-fields.webp",
-        "courtvision-emblem.webp",
-        "logo-on-light.png",
-        "logo-on-dark.png",
-        "logo-square-dark.png",
-        "logo-square-light.png"
-      ],
-      "$comment": "icons and social cards; the exempt files are README/press assets no page loads"
+      "maxBytes": 77824,
+      "$comment": "icons, social cards and the 640px emblem; largest is courtvision-emblem-hero.webp at 70,062 B, +10% rounded up to the KB. The eight exempt press/source files (1.9 MB logo PNG etc.) left public/brand on 2026-10-21 -- see perf/README.md."
     }
   }
 }

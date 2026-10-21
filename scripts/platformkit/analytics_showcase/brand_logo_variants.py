@@ -20,6 +20,13 @@ Not a stats module: no edge_claimed numeric claim, just an asset build + a
 provenance report (out/brand_logo_variants.json) recording what was detected
 and produced.
 
+Layout: the source PNG lives beside this module (assets/courtvision-logo.png,
+never under webapp/public/ -- no page loads it). The favicons and mono tints
+are written to webapp/public/brand/ and committed. The four press composites
+(on-dark, on-light, square-dark, square-light) are local exports under
+out/brand/ (gitignored): no page or document references them, so they stay
+out of the deployed site and its image budget (webapp/perf/budget.json).
+
 Usage:
     python -m scripts.platformkit.analytics_showcase.brand_logo_variants
     python -m scripts.platformkit.analytics_showcase.brand_logo_variants --check
@@ -32,9 +39,11 @@ import numpy as np
 from PIL import Image, ImageDraw
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-BRAND_DIR = os.path.join(REPO_ROOT, "webapp", "public", "brand")
-SRC_PNG = os.path.join(BRAND_DIR, "courtvision-logo.png")
-OUT_JSON = os.path.join(REPO_ROOT, "scripts", "platformkit", "analytics_showcase", "out", "brand_logo_variants.json")
+SHOWCASE_DIR = os.path.dirname(os.path.abspath(__file__))
+BRAND_DIR = os.path.join(REPO_ROOT, "webapp", "public", "brand")   # committed: favicons + mono tints
+PRESS_DIR = os.path.join(SHOWCASE_DIR, "out", "brand")             # local press exports (gitignored)
+SRC_PNG = os.path.join(SHOWCASE_DIR, "assets", "courtvision-logo.png")
+OUT_JSON = os.path.join(SHOWCASE_DIR, "out", "brand_logo_variants.json")
 
 DARK_BG = (11, 14, 19)      # #0B0E13 -- flatters the silver ring + amber glow
 LIGHT_BG = (248, 249, 250)  # #F8F9FA -- clean near-white
@@ -174,24 +183,25 @@ def _mono_tint(mark, rgb):
 
 def build():
     os.makedirs(BRAND_DIR, exist_ok=True)
+    os.makedirs(PRESS_DIR, exist_ok=True)
     mark, checker_info = load_mark()
 
     outputs = {}
 
     on_dark = _composite_flat(mark, DARK_BG)
-    on_dark.save(os.path.join(BRAND_DIR, "logo-on-dark.png"))
+    on_dark.save(os.path.join(PRESS_DIR, "logo-on-dark.png"))
     outputs["logo-on-dark.png"] = on_dark.size
 
     on_light = _composite_flat(mark, LIGHT_BG)
-    on_light.save(os.path.join(BRAND_DIR, "logo-on-light.png"))
+    on_light.save(os.path.join(PRESS_DIR, "logo-on-light.png"))
     outputs["logo-on-light.png"] = on_light.size
 
     sq_dark = _square_icon(mark, DARK_BG)
-    sq_dark.save(os.path.join(BRAND_DIR, "logo-square-dark.png"))
+    sq_dark.save(os.path.join(PRESS_DIR, "logo-square-dark.png"))
     outputs["logo-square-dark.png"] = sq_dark.size
 
     sq_light = _square_icon(mark, LIGHT_BG)
-    sq_light.save(os.path.join(BRAND_DIR, "logo-square-light.png"))
+    sq_light.save(os.path.join(PRESS_DIR, "logo-square-light.png"))
     outputs["logo-square-light.png"] = sq_light.size
 
     for sz in (192, 512):
@@ -225,9 +235,9 @@ def build():
 
 
 def check():
-    for name in ("logo-on-dark.png", "logo-on-light.png", "logo-square-dark.png",
-                 "logo-square-light.png", "favicon-192.png", "favicon-512.png",
-                 "logo-mono-white.png", "logo-mono-dark.png"):
+    # Only the committed outputs are asserted; the four press composites are
+    # local exports under out/brand/ and are absent from a bare clone by design.
+    for name in ("favicon-192.png", "favicon-512.png", "logo-mono-white.png", "logo-mono-dark.png"):
         p = os.path.join(BRAND_DIR, name)
         assert os.path.exists(p), f"missing output: {p}"
         im = Image.open(p)
@@ -238,8 +248,8 @@ def check():
     report = json.loads(open(OUT_JSON, encoding="utf-8").read())
     assert report["edge_claimed"] is False
     assert len(report["outputs"]) == 8
-    print(f"PASS: brand_logo_variants -- 8/8 outputs present, none fully-transparent "
-          f"(bg_frac={report['checkerboard_detected']['bg_frac']})")
+    print(f"PASS: brand_logo_variants -- 4/4 committed outputs present, none fully-transparent; "
+          f"report lists {len(report['outputs'])} outputs (bg_frac={report['checkerboard_detected']['bg_frac']})")
 
 
 if __name__ == "__main__":
