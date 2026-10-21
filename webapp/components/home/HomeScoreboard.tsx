@@ -32,6 +32,8 @@ export function HomeScoreboard({ board }: { board: Scoreboard | null }) {
       <Panel className="mt-2">
         <PanelHead title="paired Brier / CRPS difference, 95% CI, verdict (lower is better)" asOf={day} />
         <div className="overflow-x-auto">
+          {/* whitespace-nowrap once, on the table: every cell inherits it inside the scroll wrapper;
+              only the small-sample note opts back out (whitespace-normal). */}
           <table className="w-full border-collapse whitespace-nowrap text-[13.5px]">
             <thead>
               <tr className="text-left">
@@ -53,20 +55,20 @@ export function HomeScoreboard({ board }: { board: Scoreboard | null }) {
                     <td className="px-3 py-2 font-data">{r.sport}</td>
                     <td className="px-3 py-2">{r.market}</td>
                     <td className="px-3 py-2 font-data text-xs">{r.checkpoint}</td>
-                    <td className="px-3 py-2 text-right font-data tabular whitespace-nowrap">{r.n}</td>
+                    <td className="px-3 py-2 text-right font-data tabular">{r.n}</td>
                     <td className="px-3 py-2">
                       <div className="flex items-center gap-2">
                         <DeltaBars delta={d.delta} ci={d.ci} verdict={r.verdict} />
-                        <span className="font-data tabular whitespace-nowrap text-foreground">{fmt(d.delta)}</span>
+                        <span className="font-data tabular text-foreground">{fmt(d.delta)}</span>
                         <ReceiptChip sourceArtifact={r.source} asOf={asOf} verified="edge_claimed:false"
                           verdict={r.verdict} n={r.n} ci={d.ci} />
                       </div>
                     </td>
-                    <td className="px-3 py-2 text-right font-data tabular whitespace-nowrap text-muted-foreground">
+                    <td className="px-3 py-2 text-right font-data tabular text-muted-foreground">
                       [{fmt(d.ci[0])}, {fmt(d.ci[1])}]
                     </td>
                     <td className="px-3 py-2">
-                      <span className="inline-block whitespace-nowrap border border-border px-1.5 py-px font-data text-xs text-foreground">
+                      <span className="inline-block border border-border px-1.5 py-px font-data text-xs text-foreground">
                         {r.verdict}
                       </span>
                       {small && <div className="mt-0.5 whitespace-normal text-xs text-muted-foreground">{SMALL_SAMPLE_NOTE}</div>}

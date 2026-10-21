@@ -1,11 +1,13 @@
 // /analytics/calibration/ -- the T2 calibration page (DESIGN_PRINCIPLES section 3): header with
-// status line; verdict table (CANONICAL_FIGURES); reliability diagrams with game-cluster
-// intervals; Brier decomposition; sharpness; coverage; inspector links; summary by market;
-// common footer (Limitations, Reproduce, Source path, Change log). Build-time only.
+// the generated verdict sentence (CalibrationIntro) and status line; verdict table
+// (CANONICAL_FIGURES); reliability diagrams with game-cluster intervals; Brier decomposition;
+// sharpness; coverage; inspector links; summary by market; common footer (Limitations,
+// Reproduce, Source path, Change log). Build-time only.
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CalibrationReliability } from "@/components/analytics/calibration/CalibrationReliability";
 import { Term, VerdictLabel } from "@/components/evidence";
+import { CalibrationIntro } from "@/components/analytics/calibration/CalibrationIntro";
 import { CalibrationVerdictTable, verdictRows } from "@/components/analytics/calibration/CalibrationVerdictTable";
 import { CalibrationDecomposition, CalibrationSharpness } from "@/components/analytics/calibration/CalibrationDecomposition";
 import { InspectorReadingTrail } from "@/components/analytics/InspectorReadingTrail";
@@ -45,7 +47,7 @@ export default function CalibrationPage() {
 
   return <div className="calibration-page">
     <h1 className="calibration-title">Calibration against the market</h1>
-    <p className="calibration-intro">Verdict: pregame, the model trails the <Term id="devigged-close">devigged close</Term> on MLB moneyline and soccer over/under 2.5, and matches it on NBA moneyline only because that sample is too small to tell. In play, its win probabilities score behind the live Kalshi price on the same ticks. Every row below is scored by <Term id="brier">Brier score</Term> (lower is better) and shows its n, 95% interval, as-of date and receipt.</p>
+    <CalibrationIntro figures={canonicalFigures()} />
     <p className="cal-status" data-testid="status-line">
       Status: <VerdictLabel verdict="TRAILS_CLOSE" qualifier={false} /> on {trails} of {pregame.length} pregame rows,{" "}
       <VerdictLabel verdict="BEHIND" qualifier={false} /> on {behind} of {rows.length - pregame.length} in-play rows &middot; as of {asOf ?? "not staged"}
@@ -54,7 +56,7 @@ export default function CalibrationPage() {
 
     <section className="calibration-section" aria-labelledby="verdicts-h">
       <h2 id="verdicts-h">Verdict table</h2>
-      <p><Term id="brier">Brier</Term> is the mean squared error of the probability; lower is better. The 0.2500 baseline is a constant 50% forecast. MATCHES_CLOSE carries UNDERPOWERED where the row&apos;s interval is wider than its <Term id="mde">minimum detectable effect</Term>: not resolved, not parity.</p>
+      <p><Term id="brier">Brier</Term> is the mean squared error of the probability; lower is better. The 0.2500 baseline is a constant 50% forecast. <VerdictLabel verdict="MATCHES_CLOSE" qualifier={false} /> carries <VerdictLabel verdict="UNDERPOWERED" qualifier={false} /> where the row&apos;s interval is wider than its <Term id="mde">minimum detectable effect</Term>: not resolved, not parity.</p>
       <CalibrationVerdictTable figures={canonicalFigures()} />
     </section>
 
