@@ -106,6 +106,26 @@ jobs:
           retention-days: 7
           if-no-files-found: ignore
 
+      # Head-tag audit per page family (title, description < 160 and unique, canonical, og, twitter, stub
+      # noindex, JSON-LD). Report only -- see webapp/scripts/meta-audit.mjs; no hard gate yet.
+      - name: Metadata audit (non-blocking report)
+        continue-on-error: true
+        run: |
+          mkdir -p report
+          node --test scripts/meta-audit.test.mjs
+          node scripts/meta-audit.mjs out --report --verbose | tee report/meta-audit.md
+          awk '/^```json/{f=1;next} /^```/{f=0} f' report/meta-audit.md > report/meta-audit.json
+          cat report/meta-audit.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload meta-audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: meta-audit
+          path: webapp/report/meta-audit.*
+          retention-days: 7
+          if-no-files-found: ignore
+
       - name: Accessibility report (non-blocking; skipped when Chrome is absent)
         continue-on-error: true
         run: |
