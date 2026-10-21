@@ -4,6 +4,7 @@
 // with its measurement date. ASCII only.
 import Link from "next/link";
 import { CONTACT_EMAIL, GITHUB, PORTFOLIO, githubDoc } from "@/components/shell/nav";
+import { Term } from "@/components/evidence";
 
 export const metadata = {
   title: "About",
@@ -13,8 +14,8 @@ export const metadata = {
 
 const NOT_THIS = [
   "It is not a betting product and has no order path. Every desk figure is in paper units.",
-  "It does not claim to price games better than the market. Pregame, the model matches or trails the devigged closing price.",
-  "The forward paper series has no calibration verdict yet; the receipts say why.",
+  "It does not price games better than the market. Pregame, the model trails the devigged closing price, or matches it only where the sample is too small to tell.",
+  "The forward paper series has no calibration verdict yet. The receipts say why.",
   "Pages show a dated static snapshot, not live data.",
 ];
 
@@ -29,7 +30,11 @@ export default function AboutPage() {
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">About CourtVision</h1>
         <p className={`mt-2 ${P}`}>
           A calibrated sports forecaster that publishes its own scorecard against the market,
-          including losses, nulls and retractions.
+          including losses, nulls and retractions. Its headline finding: the pregame model does not
+          price games better than the market. It trails the{" "}
+          <Term id="devigged-close">devigged closing price</Term> on MLB moneyline and soccer
+          over/under 2.5, and matches it on NBA moneyline only where the sample is too small to tell.
+          Every number on this site links to a receipt, and the evidence packet is the truth source.
         </p>
       </header>
 
@@ -37,8 +42,9 @@ export default function AboutPage() {
         <h2 id="what" className={H2}>What it is</h2>
         <p className={`mt-2 ${P}`}>
           CourtVision makes probability forecasts for NBA, MLB, soccer and tennis games, before
-          and during play, and scores them out of sample with Brier score and reliability
-          against the devigged closing price. The goal is calibration: a 60% forecast should
+          and during play. It scores them out of sample with the{" "}
+          <Term id="brier">Brier score</Term>: against the devigged closing price before a game,
+          and against the live market during it. The goal is calibration: a 60% forecast should
           come true about 60% of the time. Every published number carries an as-of date, a
           source file and a verdict word taken from the{" "}
           <a href={githubDoc("docs/JOB_EVIDENCE_PACKET.md")} className={A}>evidence packet</a>.
@@ -53,7 +59,7 @@ export default function AboutPage() {
           documentation. As measured on 2026-10-20, 24.8% of the 6,515 public commits carry an
           agent co-author trailer, and the true agent share is higher (
           <a href={githubDoc("CONTRIBUTING.md")} className={A}>CONTRIBUTING.md</a>). Results that
-          failed later checks were withdrawn in public: see the{" "}
+          failed later checks were withdrawn in public and are listed on the{" "}
           <Link href="/evidence/retractions/" prefetch={false} className={A}>retraction record</Link>.
         </p>
       </section>

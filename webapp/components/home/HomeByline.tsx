@@ -9,8 +9,8 @@ export function HomeByline() {
       <a href={GITHUB} className="hover:text-foreground">GitHub</a>
       <a href={PORTFOLIO} className="hover:text-foreground">Portfolio</a>
       <span className="basis-full">
-        Education: three years of data-science coursework at the University of Iowa. Built by one person
-        directing Claude and Codex agents; every number links to its receipt.
+        Education: three years of data-science coursework at the University of Iowa. One person built it by
+        directing Claude and Codex coding agents; every number links to its receipt.
       </span>
     </p>
   );

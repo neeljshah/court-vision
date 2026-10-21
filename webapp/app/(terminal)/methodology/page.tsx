@@ -12,6 +12,7 @@ import Link from "next/link";
 import { Panel, PanelHead } from "@/components/ui/terminal";
 import { HonestBanner } from "@/components/showcase/HonestBanner";
 import { ReproduceBlock } from "@/components/showcase/ReproduceBlock";
+import { Term } from "@/components/evidence";
 
 export const metadata = {
   title: "Methodology",
@@ -62,14 +63,15 @@ const DISCIPLINE = [
   {
     term: "Truncation-invariant",
     body:
-      "The result must hold when the sample is truncated at either end. A number " +
-      "that only appears at one cut point is a measurement artifact, not a signal.",
+      "A feature at time T must be byte-identical whether or not later events exist. " +
+      "The test re-featurizes a truncated event stream and asserts the earlier rows " +
+      "do not change; any difference is a lookahead leak.",
   },
   {
     term: "Two or more corpora",
     body:
-      "A claim must reproduce across at least two independent corpora. A single- " +
-      "fold lift is treated as noise until a second corpus confirms it.",
+      "A claim must reproduce across at least two independent corpora. A result " +
+      "that holds on one corpus is labelled provisional until a second confirms it.",
   },
 ];
 
@@ -78,29 +80,30 @@ const VERIFIED_ROWS: { badge: string; tone: string; meaning: string }[] = [
     badge: "edge_claimed:false",
     tone: "text-info border-info/50",
     meaning:
-      "Measured, out-of-sample, and NOT a dollar-edge claim. This is the default " +
-      "and the point: calibration and sharpness only.",
+      "Measured out of sample, with no claim of an advantage over the market: " +
+      "calibration and sharpness only. This is the default badge, and the point.",
   },
   {
     badge: "descriptive_only",
     tone: "text-info border-info/50",
     meaning:
-      "A descriptive summary of past data (atlas cards). Not a prediction, not a " +
-      "claim of future performance.",
+      "A descriptive summary of past data (atlas cards). Not a prediction and not " +
+      "a claim about future performance.",
   },
   {
     badge: "MODEL_SHARPER_PROVISIONAL",
     tone: "text-success border-success/50",
     meaning:
-      "Sharper than the live market on this cell (CRPS or Brier), provisional; the reference is the live market, not the devigged close. " +
-      "Shown at the same size as a loss.",
+      "The model scored sharper than the live market on this cell (CRPS or Brier) " +
+      "in a small-sample retrospective diagnostic. Provisional: the reference is " +
+      "the live market, not the devigged close. Shown at the same size as a loss.",
   },
   {
     badge: "MARKET_SHARPER_PROVISIONAL",
     tone: "text-danger border-danger/50",
     meaning:
-      "The market was sharper than the model here. An honest loss, rendered red, " +
-      "never hidden or softened.",
+      "The market scored sharper than the model here and the interval excludes " +
+      "zero, on a single corpus. A loss, shown in red at full size, never softened.",
   },
   {
     badge: "UNDERPOWERED",
@@ -135,14 +138,17 @@ export default function MethodologyPage() {
       <header className="prose-console">
         <p className="microlabel">methodology</p>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight text-foreground">
-          How every number here is earned
+          How every number here is checked
         </h1>
         <p className="text-sm leading-relaxed text-muted-foreground">
-          The market is efficient. The honest, defensible win is a calibrated
-          predictor that matches the devigged close within noise, plus a measured
-          in-game conditioning improvement. Accuracy is not an edge, and a recorded
-          null is a success. Every figure on this site carries a receipt chip that
-          links back here to define what its verification badge means.
+          This page says how a number earns a place on this site and what the site
+          is forbidden to claim. The headline result of those checks: pregame, the
+          model trails the <Term id="devigged-close">devigged close</Term> on MLB
+          moneyline and soccer over/under 2.5, and matches it on NBA moneyline only
+          where the sample is too small to tell. In play, its win probabilities score
+          behind the live Kalshi price on the same ticks for MLB and international
+          soccer. A recorded null is a result, not a failure. To check a figure, open
+          its receipt chip (each links back here) or run the one-command harness below.
         </p>
       </header>
 
@@ -177,15 +183,16 @@ export default function MethodologyPage() {
             <span className="font-data font-semibold text-foreground">
               {countLabel}
             </span>{" "}
-            modules pass. The number above is read from the staged report at build
-            time, not hand-typed.
+            modules pass. The count is read from the staged report at build time,
+            not hand-typed.
           </p>
           <ReproduceBlock
             command="python -m scripts.platformkit.analytics_showcase.check_all"
             note={
               "Fresh clone: data-dependent modules fall back to a recorded artifact " +
               "so the harness stays green on a bare checkout. CI runs the same " +
-              "command on every push; a red run is disclosed, never hidden."
+              "command on pushes that touch the showcase or the evidence, and " +
+              "weekly; a red run stays in the Actions history, never hidden."
             }
           />
         </div>
@@ -196,9 +203,9 @@ export default function MethodologyPage() {
         <div id="verified" className="scroll-mt-20 p-4">
           <p className="prose-console m-0 mb-4 text-sm leading-relaxed text-muted-foreground">
             Each receipt chip carries one of these badges. Color is meaning: blue is
-            a measured, no-edge result; green is a provisional model win; red is an
-            honest loss shown at full size; amber is pending or stale. Green is never
-            the default.
+            a measured result that claims nothing against the market; green is a
+            provisional model win; red is a loss shown at full size; amber is pending
+            or stale. Green is never the default.
           </p>
           <dl className="m-0 grid gap-3">
             {VERIFIED_ROWS.map((r) => (
@@ -245,12 +252,13 @@ export default function MethodologyPage() {
             ))}
           </ul>
           <p className="prose-console m-0 mt-4 text-sm leading-relaxed text-muted-foreground">
-            The full retracted-vs-honest story lives on the{" "}
+            The full record, each withdrawn figure beside the wording that replaces
+            it, is the{" "}
             <Link
-              href="/evidence/retraction-story"
+              href="/evidence/retractions/"
               className="text-primary underline-offset-2 hover:underline"
             >
-              retraction page
+              retraction record
             </Link>
             . Nothing on this site claims a dollar edge, ROI, or bankroll result.
           </p>

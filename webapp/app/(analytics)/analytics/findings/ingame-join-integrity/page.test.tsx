@@ -4,7 +4,7 @@ import IngameJoinIntegrityPage from "./page";
 
 it("renders the receipt, agreement, and artifact status tables", () => {
   render(<IngameJoinIntegrityPage />);
-  expect(screen.getByRole("heading", { name: "MLB in-game calibration now runs on a segment-clean corpus." })).toBeInTheDocument();
+  expect(screen.getByRole("heading", { name: "MLB in-game join integrity" })).toBeInTheDocument();
   const counts = screen.getByRole("region", { name: "Corpus integrity counts scroll horizontally" });
   expect(within(counts).getByText("78,986")).toBeInTheDocument();
   expect(within(counts).getByText(/2 \(Draws truncated at minute 60 and 42/)).toBeInTheDocument();

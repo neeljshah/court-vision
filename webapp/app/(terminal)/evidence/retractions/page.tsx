@@ -45,8 +45,10 @@ export default function RetractionsPage() {
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">Retraction record</h1>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
           Every figure this project withdrew or could not verify, copied verbatim from section 4 of
-          the evidence packet. A retracted number is shown only here, next to the wording that
-          replaces it. Source:{" "}
+          the evidence packet. Each row names the figure, why it fails, the wording that replaces it
+          and a date. The largest withdrawal is the former headline return figure: it was a grading
+          artifact, and the honest replacement is that the pregame model matches or trails the
+          closing price. A retracted number appears on this site only here. Source:{" "}
           <a href={PACKET_URL} className="underline">docs/JOB_EVIDENCE_PACKET.md</a>, section 4.
         </p>
       </header>

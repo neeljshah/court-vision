@@ -23,6 +23,17 @@ describe("Home (/) first screen", () => {
       /calibrated sports forecaster that publishes its own scorecard against the market/i);
   });
 
+  it("leads with the verdict in plain words, then the scoring rule and reference as glossary terms", () => {
+    render(<Home />);
+    const verdict = screen.getAllByRole("heading", { level: 2 })[0];
+    expect(verdict.textContent).toMatch(/^\s*Verdict: pregame, the model trails the market's closing price/);
+    expect(verdict.textContent).toMatch(/matches the close only because that sample is too small to tell/);
+    expect(verdict.textContent).not.toMatch(/within noise/i);
+    expect(screen.getByRole("button", { name: "Brier score" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "devigged close" })).toBeTruthy();
+    expect(verdict.nextElementSibling!.textContent).toMatch(/To check a number, open its receipt or the truth source/);
+  });
+
   it("headline verdict rows come from CANONICAL_FIGURES, largest n first, each a full metric block", () => {
     const { container } = render(<Home />);
     const blocks = [...container.querySelectorAll("li.metric")] as HTMLElement[];
