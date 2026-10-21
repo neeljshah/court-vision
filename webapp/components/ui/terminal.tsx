@@ -30,9 +30,9 @@ export function PanelHead({
   right?: ReactNode;
 }) {
   return (
-    <div className="flex items-baseline gap-3 border-b border-border px-3 py-2">
+    <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-border px-3 py-2">
       <h2 className="microlabel">{title}</h2>
-      <div className="ml-auto flex items-baseline gap-3">
+      <div className="ml-auto flex min-w-0 flex-wrap items-baseline gap-3">
         {right}
         {asOf != null && <AsOf stamp={asOf} stale={stale} />}
       </div>

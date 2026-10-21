@@ -28,7 +28,7 @@ export function HomeForwardStatus({ desk }: { desk: Desk | null }) {
         ) : (
           <span data-role="n">desk export not staged on this clone</span>
         )}{" "}
-        &middot; <Link href="/desk/" className="text-primary underline underline-offset-2 hover:no-underline">night receipts</Link>
+        &middot; <Link href="/desk/" className="py-[5px] text-primary underline underline-offset-2 hover:no-underline">night receipts</Link>
       </div>
     </div>
   );

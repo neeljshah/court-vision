@@ -41,7 +41,7 @@
   gap: 0.45em;
   max-width: 100%;
   margin: 0;
-  padding: 1px 6px 1px 5px;
+  padding: 3px 6px 3px 5px; /* 24px tall: WCAG 2.5.8 target size */
   border: 1px solid var(--ev-rule);
   border-radius: 3px;
   background: var(--ev-surface);
