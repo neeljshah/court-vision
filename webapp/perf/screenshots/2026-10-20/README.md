@@ -35,6 +35,7 @@ Each file is `<region>--<width>-<theme>.jpg`, under 150 KB.
 | /analytics/lab/ | all | both | Dataset catalog row counts and rank sub-labels at 8 px | `.lab-nav-group>button small`, `.lab-rank-label small` | fixed: 10 px |
 | /desk/ | all | both | "show N cells" disclosure summaries 16 px tall | `ScoreboardCompact` summary | fixed: `py-1` |
 | /analytics/calibration/ | all | both | "Inspect bin" buttons unstyled, 19 px tall | `.cr-inspect` (22 per view) | fixed: 24 px rule in `calibration.css` |
+| /analytics/calibration/ | all | both | "Quoted on" list link whose label is the path `/` is 5 px wide | `QuotedOnList` link | fixed: `inline-block`, `min-width: 24px` |
 
 Noted, not changed (by design or outside a layout fix):
 
@@ -61,6 +62,7 @@ Noted, not changed (by design or outside a layout fix):
 - `app/(terminal)/paper/[betId]/BetDetailPageClient.tsx`: back link `inline-flex min-h-6 items-center`.
 - `app/(terminal)/games/SlateCards.tsx`: sport nav `sticky top-14`.
 - `app/(analytics)/analytics/lab/lab.css`: the two 8 px `small` rules become 10 px.
+- `components/analytics/QuotedOnList.tsx`: links `inline-block` with `min-width: 24px`.
 - `components/desk/ScoreboardCompact.tsx`: `py-1` on the cell summaries; `app/(analytics)/analytics/calibration/calibration.css`: `.cr-inspect` rule (24 px, chip border).
 
 DOM audit, 17 pages x 3 widths x 2 themes: horizontal page scroll 2 -> 0, tables without a scroll

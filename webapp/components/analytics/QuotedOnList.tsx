@@ -16,7 +16,7 @@ export function QuotedOnList({ artifact }: { artifact: string }) {
               {q.href.startsWith("/") ? (
                 <Link href={q.href} style={{ padding: "4px 0", textDecoration: "underline" }}>{q.label}</Link>
               ) : (
-                <a href={q.href} style={{ padding: "4px 0", textDecoration: "underline" }}>{q.label}</a>
+                <a href={q.href} style={{ display: "inline-block", minWidth: 24, padding: "4px 0", textDecoration: "underline" }}>{q.label}</a>
               )}
             </li>
           ))}
