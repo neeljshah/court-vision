@@ -74,7 +74,7 @@ describe("SiteHeader", () => {
 
   it("theme toggle sets both theme hooks and stores one key", () => {
     render(<SiteHeader />);
-    const toggle = screen.getByRole("button", { name: "Switch to dark theme" });
+    const toggle = screen.getByRole("button", { name: "Dark theme" });
     expect(toggle).toHaveAttribute("aria-pressed", "false");
     fireEvent.click(toggle);
     expect(document.documentElement.getAttribute("data-theme")).toBe("dark");
@@ -96,7 +96,7 @@ describe("SiteHeader", () => {
       });
       expect(onRecoverableError).not.toHaveBeenCalled();
       const toggle = within(container).getByRole("button", {
-        name: theme === "dark" ? "Switch to light theme" : "Switch to dark theme",
+        name: "Dark theme",
       });
       expect(toggle).toHaveAttribute("aria-pressed", String(theme === "dark"));
     } finally {

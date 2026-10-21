@@ -10,6 +10,7 @@ import Link from "next/link";
 import { loadArtifact } from "@/lib/showcase.server";
 import { loadDesk } from "@/lib/desk.server";
 import { headlineFigures, CANONICAL_PATH } from "@/lib/canonicalFigures.server";
+import { VERDICT_QUALIFIER, type PacketVerdict } from "@/lib/packetVerdicts";
 import { HomeVerdictRows } from "@/components/home/HomeVerdictRows";
 import { HomeForwardStatus } from "@/components/home/HomeForwardStatus";
 import { HomeNotClaimed } from "@/components/home/HomeNotClaimed";
@@ -53,9 +54,12 @@ export default function Home() {
           A calibrated sports forecaster that publishes its own scorecard against the market,
           including losses, nulls and retractions.
         </h1>
-        <h2 className="text-sm font-semibold text-foreground">
-          Pregame trails the devigged close on MLB moneyline and soccer O/U 2.5; NBA moneyline
-          matches it but is underpowered.
+        <h2 className="text-sm font-semibold text-foreground" data-testid="home-h2">
+          Pregame vs the devigged close:{" "}
+          {figures.map((f) => {
+            const q = VERDICT_QUALIFIER[f.verdict as PacketVerdict];
+            return `${f.sport.toUpperCase()} ${f.market} ${f.verdict}${q ? ` (${q})` : ""}`;
+          }).join("; ")}.
         </h2>
         <HomeVerdictRows figures={figures} />
         <HomeForwardStatus desk={desk} />

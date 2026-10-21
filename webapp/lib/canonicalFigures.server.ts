@@ -1,7 +1,7 @@
 // canonicalFigures.server.ts -- build-time reader for docs/evidence/CANONICAL_FIGURES.json,
 // the one file every public pregame-vs-close / in-game-vs-market figure comes from.
 // Pages read numbers through here so no canonical figure is typed by hand.
-// Server-only (node:fs). A missing file returns [] and callers render "not staged".
+// Server-only (node:fs). A missing/malformed file THROWS (build-time failure is the honest outcome).
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
@@ -33,9 +33,10 @@ export function canonicalFigures(file = join(process.cwd(), "..", CANONICAL_PATH
   if (cache) return cache;
   try {
     const d = JSON.parse(readFileSync(file, "utf-8")) as { figures?: CanonicalFigure[] };
-    cache = Array.isArray(d.figures) ? d.figures : [];
-  } catch {
-    cache = [];
+    if (!Array.isArray(d.figures)) throw new Error("no figures array");
+    cache = d.figures;
+  } catch (e) {
+    throw new Error(`canonicalFigures: cannot read ${file}: ${e instanceof Error ? e.message : String(e)}`);
   }
   return cache;
 }
@@ -52,7 +53,9 @@ export const HEADLINE_KEYS = [
 ] as const;
 
 export function headlineFigures(): CanonicalFigure[] {
-  return HEADLINE_KEYS.map(figure)
-    .filter((f): f is CanonicalFigure => f !== null)
+  const got = HEADLINE_KEYS.map((k) => ({ k, f: figure(k) }));
+  const missing = got.filter((g) => !g.f).map((g) => g.k);
+  if (missing.length) throw new Error(`headlineFigures: missing keys in ${CANONICAL_PATH}: ${missing.join(", ")}`);
+  return got.map((g) => g.f as CanonicalFigure)
     .sort((a, b) => (b.n ?? 0) - (a.n ?? 0));
 }

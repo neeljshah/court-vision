@@ -13,6 +13,9 @@ import { Badge } from "@/components/p6/Primitives";
 import { ClvInline } from "./ClvInline";
 import { humanizeMatchup, describeBetShort } from "@/lib/betdesc";
 import type { PaperTrailRow } from "@/lib/p5api";
+import { toBetId } from "./betId";
+// re-exported for the client consumers (PmTrailTable, tests); server code imports ./betId directly
+export { toBetId };
 
 type DerivedResult = "win" | "loss" | "void" | "pending";
 
@@ -42,21 +45,6 @@ function fmtDec(d: number | null): string {
 
 function fmtUnits(u: number | null): string {
   return u != null ? `${u.toFixed(2)}u` : EMPTY_CELL;
-}
-
-// bet_id is constructed from the ledger row fields for stable routing.
-export function toBetId(r: PaperTrailRow): string {
-  // Mirrors the durable bet_id pattern from clv_ledger: sport|matchup|side|ts
-  const parts = [
-    r.sport || "unknown",
-    r.game_id || "unknown",
-    r.market_type || "moneyline",
-    r.side || "home",
-    r.taken_book || "paper",
-  ];
-  // Link hrefs go through lib/paperLinks.paperDetailHref (see its header for
-  // the static-export encoding rules).
-  return encodeURIComponent(parts.join("|"));
 }
 
 type Props = {

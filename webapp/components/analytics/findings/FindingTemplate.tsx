@@ -51,8 +51,8 @@ export function verdictHistory(spec: FindingSpec, a: R): { date: string; text: s
 
 function Block({ id, title, children }: { id: (typeof FINDING_BLOCKS)[number]; title: string; children: ReactNode }) {
   return (
-    <section data-block={id} aria-label={title} style={blockS}>
-      <h2 style={headS}>{title}</h2>
+    <section data-block={id} aria-labelledby={`block-${id}`} style={blockS}>
+      <h2 id={`block-${id}`} style={headS}>{title}</h2>
       {children}
     </section>
   );
@@ -72,7 +72,7 @@ export function FindingTemplate({ slug, artifact, children }: { slug: string; ar
       <p className="overline">Findings</p>
       <h1 style={h1}>{spec.title}</h1>
       <p data-block="claim" style={claimS}>{spec.claim}</p>
-      <div data-block="status" aria-label="Status" style={statusS}>
+      <div data-block="status" role="group" aria-label="Status" style={statusS}>
         {verdicts.length ? verdicts.map((v) => <VerdictLabel key={v} verdict={v} />) : <span data-verdict="none">no packet verdict (descriptive exhibit)</span>}
         <span className="mono">n = {spec.n(a)}</span>
         <span className="mono">{spec.interval ?? "no interval"}</span>

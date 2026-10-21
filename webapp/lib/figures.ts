@@ -218,17 +218,17 @@ export const COMPARISON_FIGURES = {
     "sport": "all",
     "market": "in-play maker paper quotes",
     "metric": "forward paper window: games served, receipt nights, qualified games (counts only)",
-    "value": "113 games served; 8 nights with receipts (1 COMPLETE, 7 PARTIAL); 0 of 31 judged games qualified",
+    "value": "113 games served; 9 nights with receipts (2 COMPLETE, 7 PARTIAL); 0 of 44 judged games qualified",
     "games_served": 113,
-    "receipt_nights": 8,
-    "complete": 1,
+    "receipt_nights": 9,
+    "complete": 2,
     "partial": 7,
-    "qualified_of_judged": "0 of 31",
+    "qualified_of_judged": "0 of 44",
     "window_end": "2026-10-16",
     "verdict": "INSUFFICIENT",
     "source": "docs/JOB_EVIDENCE_PACKET.md section 5 (Forward paper record 2026-10-06 .. 2026-10-16)",
     "as_of": "2026-10-19",
-    "licenses": "Through 2026-10-16 the paper desk served 113 games over 8 receipt nights (1 COMPLETE, 7 PARTIAL); 0 of 31 judged games qualified and every pooled cell is INSUFFICIENT. Counts only; not a verdict on the model and never execution quality."
+    "licenses": "Through 2026-10-16 the paper desk served 113 games over 9 receipt nights (2 COMPLETE, 7 PARTIAL); 0 of 44 judged games qualified and every pooled cell is INSUFFICIENT. Counts only; not a verdict on the model and never execution quality."
   }
 } as const;
 

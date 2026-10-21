@@ -41,17 +41,27 @@ export async function fetchPaperCombined(
     api.getPaperBankroll(signal),
   ]);
   const errors: NonNullable<CombinedPayload["errors"]> = {};
-  function available<T>(key: keyof typeof errors, value: T | UnavailableSentinel): T | null {
-    if (!isUnavailable(value)) return value;
-    errors[key] = value.reason || "unavailable";
-    return null;
+  // A 200 body that is not the expected object (null, {}, {"detail": ...}) is unavailable, never {} passed through.
+  function available<T>(key: keyof typeof errors, value: T | UnavailableSentinel, ok: (o: Record<string, unknown>) => boolean): T | null {
+    if (isUnavailable(value)) {
+      errors[key] = value.reason || "unavailable";
+      return null;
+    }
+    const o = value as unknown as Record<string, unknown> | null;
+    if (!o || typeof o !== "object" || Array.isArray(o) || !ok(o)) {
+      errors[key] = "bad shape";
+      return null;
+    }
+    return value;
   }
+  const arr = (k: string) => (o: Record<string, unknown>) => Array.isArray(o[k]);
+  const num = (k: string) => (o: Record<string, unknown>) => typeof o[k] === "number";
   return {
-    trail: available("trail", t),
-    pmTrail: available("pmTrail", pt),
-    clv: available("clv", c),
-    pnl: available("pnl", pnl),
-    bankroll: available("bankroll", bank),
+    trail: available("trail", t, arr("trail")),
+    pmTrail: available("pmTrail", pt, arr("trades")),
+    clv: available("clv", c, num("n_bets")),
+    pnl: available("pnl", pnl, arr("points")),
+    bankroll: available("bankroll", bank, num("current_units")),
     errors,
   };
 }

@@ -73,3 +73,14 @@ describe("fetchPaperCombined independent feed contracts", () => {
     }
   });
 });
+
+describe("fetchPaperCombined shape checks", () => {
+  it.each([[{}, "trail"], [{ detail: "x" }, "pmTrail"], [{}, "clv"], [{}, "pnl"], [{}, "bankroll"]] as const)(
+    "treats %j as bad shape for %s", async (bad, key) => {
+      const calls = mocks();
+      (calls[key as Key] as unknown as { mockResolvedValue: (v: unknown) => void }).mockResolvedValue(bad);
+      const result = await fetchPaperCombined(new AbortController().signal);
+      expect(result[key as Key]).toBeNull();
+      expect(result.errors?.[key as Key]).toBe("bad shape");
+    });
+});

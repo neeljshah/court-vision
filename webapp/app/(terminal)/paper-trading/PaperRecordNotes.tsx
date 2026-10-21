@@ -1,5 +1,3 @@
-"use client";
-
 // PaperRecordNotes.tsx -- the fixed copy blocks of /paper-trading (Paper record):
 // what the book is, the paper-only banner, the units convention, and the boxed
 // retired July 2026 model snapshot. Split from page.tsx for the 300-line rail.
@@ -17,7 +15,7 @@ export function PaperRecordIntro({ asOf, lastNight }: { asOf: string | null; las
       The paper fill ledger: simulated maker fills on the recorded Kalshi in-game tape, read from the desk
       ledger. 29 fills over four ledger nights (2026-10-03, 10-04, 10-05 and 10-08; the first three come before
       the prospective series that starts 2026-10-06); counts, contracts and probabilities only. stake_units =
-      contracts per fill. A count, not an execution-quality or P&amp;L result, and not a verdict on the model.{" "}
+      contracts per fill. A count only: not an execution-quality result, not a money result, and not a verdict on the model.{" "}
       <span className="font-data text-foreground">
         Fills through night {lastNight ?? "not stated"}; ledger as of {asOf ? asOf.slice(0, 10) : "not stated"}.
       </span>{" "}

@@ -387,7 +387,7 @@ step is a record fixed before the games are played. It is **planned, not done**;
   rows are expected to read worse than the retrospective holdout.
 
 **The paper maker desk.** Separately, an in-play paper desk rests simulated maker quotes and credits
-a fill only when later captured trades deplete the modelled queue ahead of the quote. The paper desk has not produced a qualified game: through 2026-10-16 (as of 2026-10-19) 113 games were served, 8 nights have receipts (1 COMPLETE, 7 PARTIAL), 0 of 31 judged games qualified, and every pooled cell is INSUFFICIENT (JOB_EVIDENCE_PACKET.md section 5).
+a fill only when later captured trades deplete the modelled queue ahead of the quote. The paper desk has not produced a qualified game: through 2026-10-16 (as of 2026-10-19) 113 games were served, 9 nights have receipts (2 COMPLETE, 7 PARTIAL), 0 of 44 judged games qualified, and every pooled cell is INSUFFICIENT (JOB_EVIDENCE_PACKET.md section 5).
 As of 2026-10-04 (superseded by the window above) the source counted 136 TTL-30 and 48 TTL-5
 credited fills, with the count unknown on 4 nights, so the true totals may be higher
 (sources: [CANONICAL_FIGURES.json](../evidence/CANONICAL_FIGURES.json) key `paper_desk_fill_counts`

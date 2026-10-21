@@ -8,7 +8,7 @@
 // layout renders: it owns the shortcut/trigger listeners and dynamic-imports this
 // file (cmdk + MiniSearch, ~60 KB raw) on the first open, so no analytics page
 // pays for the palette until a reader asks for it.
-import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { Command } from "cmdk";
 import { group } from "@/components/shell/nav";
@@ -50,7 +50,6 @@ export function CommandPalette({ initialOpen = false }: { initialOpen?: boolean 
   const [scope, setScope] = useState<"all" | Rec["type"]>("all");
   const recordsRef = useRef<Map<string, Rec>>(new Map());
   const indexRef = useRef<MiniSearch<Rec> | null>(null);
-  const [results, setResults] = useState<Rec[]>([]);
 
   const load = useCallback((retry = false) => {
     if (loadState === "loading" || (!retry && loadState !== "idle")) return;
@@ -90,18 +89,16 @@ export function CommandPalette({ initialOpen = false }: { initialOpen?: boolean 
   // loadState is a dependency: the records are lazy-fetched AFTER the palette
   // opens, so this must re-run when they arrive (idle->loading->ready) or an
   // empty query renders defaults() against an empty map -> a spurious "No results".
-  useEffect(() => {
-    if (!query.trim()) {
-      setResults(open ? defaults() : []);
-      return;
-    }
-    if (!indexRef.current) return;
+  const results = useMemo((): Rec[] => {
+    if (!query.trim()) return open ? defaults() : [];
+    if (!indexRef.current) return [];
     const hits = indexRef.current.search(query, { fuzzy: 0.2, prefix: true, boost: { title: 3 } });
     const recs = inScope(hits
       .map((h) => recordsRef.current.get(String(h.id)))
       .filter((r): r is Rec => Boolean(r)))
       .slice(0, 30);
-    setResults(recs);
+    return recs;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query, open, defaults, inScope, loadState]);
 
   const openPalette = useCallback(() => {
@@ -121,11 +118,8 @@ export function CommandPalette({ initialOpen = false }: { initialOpen?: boolean 
       const isMod = e.metaKey || e.ctrlKey;
       if (isMod && e.key.toLowerCase() === "k") {
         e.preventDefault();
-        setOpen((v) => {
-          const next = !v;
-          if (next) load();
-          return next;
-        });
+        if (!open) load();
+        setOpen(!open);
         return;
       }
       if (e.key === "/") {
@@ -183,7 +177,7 @@ export function CommandPalette({ initialOpen = false }: { initialOpen?: boolean 
         aria-label="Search CourtVision"
         style={inputS}
       />
-      <div aria-label="Search scope" style={scopeS}>
+      <div role="group" aria-label="Search scope" style={scopeS}>
         {SCOPES.map((item) => <button key={item.value} type="button" onClick={() => setScope(item.value)} aria-pressed={scope === item.value} style={{ ...scopeButtonS, ...(scope === item.value ? scopeActiveS : null) }}>{item.label}</button>)}
       </div>
       <Command.List style={listS}>

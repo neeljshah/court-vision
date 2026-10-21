@@ -12,11 +12,11 @@ export const PAPER_HEADER =
   "PAPER DESK -- PAPER ONLY, simulated maker quotes on the recorded Kalshi tape; not a verdict";
 
 const TABS = [
-  { href: "/desk", label: "Record" },
-  { href: "/desk/ingame", label: "How in-game works" },
-  { href: "/desk/execution", label: "Execution" },
-  { href: "/desk/model-cards", label: "Models" },
-  { href: "/desk/health", label: "Health" },
+  { href: "/desk/", label: "Record" },
+  { href: "/desk/ingame/", label: "How in-game works" },
+  { href: "/desk/execution/", label: "Execution" },
+  { href: "/desk/model-cards/", label: "Models" },
+  { href: "/desk/health/", label: "Health" },
 ];
 
 /** Explicit refusal chip: a missing section is shown with its reason, never blank. */
@@ -83,6 +83,7 @@ export function Section({ title, asOf, source, verdict, children, id }: {
 export function DeskShell({ desk, title, active, children }: {
   desk: Desk | null; title: string; active: string; children: ReactNode;
 }) {
+  const activeHref = active.replace(/\/*$/, "/");
   return (
     // A <div>, not a second <main>: AppShell already renders the page's main landmark
     // (axe landmark-no-duplicate-main / landmark-main-is-top-level).
@@ -103,8 +104,9 @@ export function DeskShell({ desk, title, active, children }: {
         <nav aria-label="Desk pages" className="mt-3 flex flex-wrap gap-2">
           {TABS.map((t) => (
             <Link key={t.href} href={t.href}
+              aria-current={t.href === activeHref ? "page" : undefined}
               className={"border px-2 py-0.5 text-xs " +
-                (t.href === active ? "border-foreground text-foreground" : "border-border text-muted-foreground")}>
+                (t.href === activeHref ? "border-foreground font-semibold underline text-foreground" : "border-border text-muted-foreground")}>
               {t.label}
             </Link>
           ))}

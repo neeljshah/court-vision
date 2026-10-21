@@ -116,6 +116,8 @@ export interface FetchHonestOptions {
   backoffCapMs?: number;
   /** POST body. When present the request method becomes POST with JSON. */
   body?: unknown;
+  /** Shape check on a 2xx body; false -> Unavailable("bad shape"). null/undefined bodies are always rejected. */
+  validate?: (body: unknown) => boolean;
 }
 
 const DEFAULTS = {
@@ -138,9 +140,10 @@ const isAbort = (e: unknown): boolean =>
 // answered) is NOT retried -- it degrades immediately to an honest sentinel.
 async function attempt<T>(
   url: string,
-  opts: Required<Omit<FetchHonestOptions, "signal" | "body">> & {
+  opts: Required<Omit<FetchHonestOptions, "signal" | "body" | "validate">> & {
     signal?: AbortSignal;
     body?: unknown;
+    validate?: (body: unknown) => boolean;
   },
 ): Promise<T | Unavailable> {
   const ctrl = new AbortController();
@@ -176,7 +179,10 @@ async function attempt<T>(
     if (!hasJson) {
       return unavailable(`non-JSON response (${ctype || "no content-type"})`);
     }
-    return (await r.json()) as T;
+    const parsed: unknown = await r.json();
+    if (parsed === null || parsed === undefined) return unavailable("empty body");
+    if (opts.validate && !opts.validate(parsed)) return unavailable("bad shape");
+    return parsed as T;
   } catch (e) {
     // Parent aborted (page unmounted) -> honest, not retryable.
     if (isAbort(e) && opts.signal?.aborted) return unavailable("request aborted");
@@ -210,6 +216,7 @@ export async function fetchHonest<T>(
     backoffCapMs: options.backoffCapMs ?? DEFAULTS.backoffCapMs,
     signal: options.signal,
     body: options.body,
+    validate: options.validate,
   };
   // Snapshot mode: GET-only demo build, redirect to the baked static file.
   // POSTs (placePaper etc.) have no snapshot equivalent -- fall through to the
