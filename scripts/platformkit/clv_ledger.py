@@ -41,8 +41,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence
 
-from scripts.platformkit.odds_shop import devig_twoway
-
 # Append-only ledger lives under the gitignored data/ tree -- the human's own
 # record, never sent anywhere. Override with FRONTEND_CLV_LEDGER env or `path=`.
 _HERE = Path(__file__).resolve().parent
@@ -265,6 +263,9 @@ def compute_clv(
     s = str(side).strip().lower()
     if s not in (_SIDE_HOME, _SIDE_AWAY):
         raise ValueError("side must be 'home' or 'away', got %r" % (side,))
+    # Lazy: odds_shop lives in the private tree; importing it here keeps
+    # DEFAULT_LEDGER and the ledger I/O importable on the public clone.
+    from scripts.platformkit.odds_shop import devig_twoway
     fair_home, fair_away = devig_twoway(closing_decimal_home, closing_decimal_away)
     fair_close = fair_home if s == _SIDE_HOME else fair_away
     taken_p = 1.0 / float(taken_decimal)
