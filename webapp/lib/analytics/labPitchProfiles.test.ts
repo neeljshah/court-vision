@@ -18,7 +18,10 @@ describe("pitch profiles lab dataset", () => {
     expect(dataset.scope).toContain("2025 Statcast pull");
     expect(dataset.scope).toContain("exact observation dates are not published");
     expect(dataset.caveat).toContain("Pooled pitch-type velocity variation is not pitcher consistency or quality");
-    expect(labComparisonPolicy(dataset.rows).compatibility).toBe("unknown");
+    // The source publishes its sport and pitch total; the season comes only from its corpus path, and it carries no generation stamp.
+    expect(labComparisonPolicy(dataset.rows).compatibility).toBe("compatible");
+    expect(dataset.rows[0].definition).toEqual({ sport: "MLB", population: "693,037 pitches", observationWindow: "2025 Statcast pull (season named by the source path; exact dates not published)" });
+    expect(dataset.publishedAsOf).toBeUndefined();
   });
 
   it("derives span and coverage from the matched published counts and percentiles", () => {

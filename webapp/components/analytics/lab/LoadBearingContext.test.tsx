@@ -11,14 +11,16 @@ beforeEach(() => window.history.replaceState(null, "", "/analytics/lab/?dataset=
 afterEach(() => vi.restoreAllMocks());
 
 describe("load-bearing estimator periods", () => {
-  it("shows each exact published period without enabling pooled comparison", () => {
+  it("shows each exact published period and carries both into the published window", () => {
     render(<MeasurementLab data={{ datasets: [published], novel: [] }} />);
     const scope = screen.getByText(published.scope);
     expect(scope).toHaveTextContent(`Estimator A period: ${source.as_of.estimator_a}`);
     expect(scope).toHaveTextContent(`Estimator B period: ${source.as_of.estimator_b}`);
-    expect(screen.getByRole("combobox", { name: "Rank order" })).toBeDisabled();
-    expect(screen.queryByRole("region", { name: "Measurement summary" })).not.toBeInTheDocument();
-    expect(published.rows.every(row => row.definition?.observationWindow === undefined)).toBe(true);
+    expect(screen.getByRole("combobox", { name: "Rank order" })).not.toBeDisabled();
+    expect(screen.getByRole("region", { name: "Measurement summary" })).toBeInTheDocument();
+    expect(published.rows.every(row => row.definition?.observationWindow === `Estimator A: ${source.as_of.estimator_a}; Estimator B: ${source.as_of.estimator_b}`)).toBe(true);
+    expect(published.rows.every(row => row.definition?.sport === undefined)).toBe(true);
+    expect(screen.getByText("Sport").nextElementSibling).toHaveTextContent("Not published");
   });
 
   it("preserves both periods when exporting a filtered team and keeps its measurements", () => {
@@ -47,7 +49,8 @@ describe("load-bearing estimator periods", () => {
     const dataset = novelDatasets().find(item => item.id === "load-bearing")!;
     expect(dataset.scope).toContain(`Estimator A period: ${a}.`);
     expect(dataset.scope).toContain(`Estimator B period: ${b}.`);
-    expect(dataset.rows).toEqual(published.rows);
+    expect(dataset.rows.map(row => ({ ...row, definition: undefined }))).toEqual(published.rows.map(row => ({ ...row, definition: undefined })));
+    expect(dataset.rows.every(row => row.definition?.observationWindow === undefined)).toBe(true);
     expect(table.buildLabCSV(dataset, dataset.rows)).toContain(dataset.scope);
   });
 });

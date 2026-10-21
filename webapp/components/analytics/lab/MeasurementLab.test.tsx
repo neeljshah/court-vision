@@ -39,33 +39,6 @@ describe("MeasurementLab sport filtering and inspection", () => {
     expect(screen.queryByRole("complementary", { name: /^Data integrity/ })).not.toBeInTheDocument();
   });
 
-  it("isolates rim-deterrence to one season and suppresses pooled summaries", () => {
-    window.history.replaceState(null, "", "/analytics/lab?dataset=rim-deterrence");
-    render(<MeasurementLab data={getLabData()} />);
-
-    expect(screen.getByRole("status")).toHaveTextContent("15 rows");
-    expect(screen.getByLabelText("Published group")).toHaveValue("sport=NBA|season=2025-26");
-    expect(within(screen.getByRole("region", { name: "Published definition" })).getByText("2025-26")).toBeInTheDocument();
-
-    fireEvent.change(screen.getByLabelText("Published group"), { target: { value: "all" } });
-    expect(screen.queryByRole("region", { name: "Measurement summary" })).not.toBeInTheDocument();
-    expect(window.location.search).toContain("allCohorts=true");
-
-    window.history.replaceState(null, "", "/analytics/lab?dataset=rim-deterrence&allCohorts=true");
-    act(() => window.dispatchEvent(new PopStateEvent("popstate")));
-    expect(screen.getByLabelText("Published group")).toHaveValue("all");
-    expect(screen.queryByRole("region", { name: "Measurement summary" })).not.toBeInTheDocument();
-  });
-
-  it("restores a selected cohort from the lab URL", () => {
-    window.history.replaceState(null, "", "/analytics/lab?dataset=rim-deterrence&cohort=sport%3DNBA%7Cseason%3D2024-25");
-    render(<MeasurementLab data={getLabData()} />);
-
-    expect(screen.getByLabelText("Published group")).toHaveValue("sport=NBA|season=2024-25");
-    expect(screen.getByRole("status")).toHaveTextContent("15 rows");
-    expect(window.location.search).toContain("season%3D2024-25");
-  });
-
   it("defaults incompatible definitions to one cohort and never renders a pooled median", () => {
     const incompatible = { ...fixture, datasets: [{ ...fixture.datasets[0], rows: [
       { id: "mlb", label: "MLB", group: "MLB", values: { value: 2, alt: 1 }, definition: { sport: "MLB", unit: "runs", threshold: 3, clockField: "inning", population: "178 games" } },

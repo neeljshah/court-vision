@@ -1,8 +1,8 @@
-import { field as f, snapshot } from "./labHelpers";
-import type { LabDataset, LabRow } from "./labTypes";
+import { field as f, snapshot, sourceAsOf } from "./labHelpers";
+import type { LabDataset, LabDefinition, LabRow } from "./labTypes";
 
 type Entry = Record<string, unknown>;
-type Source = { top?: unknown; bottom?: unknown; season?: unknown; n_qualified?: unknown };
+type Source = { top?: unknown; bottom?: unknown; season?: unknown; n_qualified?: unknown; observation_window?: unknown };
 type TeamSource = { players?: unknown };
 type AtlasSource = { entries?: unknown };
 
@@ -53,6 +53,15 @@ export function buildLineupSynergyLabDataset(source: Source, teams?: TeamSource,
   const top = rows(source.top, "top");
   const bottom = rows(source.bottom, "bottom");
   const knownTeams = teamNames(teams, atlas);
+  const qualified = count(source.n_qualified);
+  // Published definition: the source publishes its qualified-lineup count and a single-season
+  // observation window. It carries no sport field, so sport stays unpublished here.
+  const window = object(source.observation_window) && typeof source.observation_window.season === "string" && source.observation_window.season.trim()
+    ? source.observation_window.season.trim() : undefined;
+  const definition: LabDefinition = {
+    ...(qualified === null ? {} : { population: `${qualified} qualified five-man lineups (all five members qualify for individual on/off)` }),
+    ...(window ? { observationWindow: window } : {}),
+  };
   const fields = [
     f("synergy_residual", "Residual points / 48 min"),
     f("net_per48", "Observed net points / 48 min"),
@@ -88,9 +97,9 @@ export function buildLineupSynergyLabDataset(source: Source, teams?: TeamSource,
         "Expected net points / 48 min sums the five members' individual on/off contributions. " +
         "Residual points / 48 min is published observed minus published expected; the original residual is retained because source operands were rounded independently. " +
         "Minutes per recorded game divides the published rounded on-court minute total by recorded games; it is not a typical stint duration or a count of independent samples.",
+      definition,
     };
   });
-  const qualified = count(source.n_qualified);
   const season = typeof source.season === "string" && source.season.trim() ? source.season.trim() : "season unavailable";
   return {
     id: "lineup-synergy",
@@ -105,6 +114,7 @@ export function buildLineupSynergyLabDataset(source: Source, teams?: TeamSource,
     fields,
     rows: [...buildRows(top, "top", "Top residuals"), ...buildRows(bottom, "bottom", "Bottom residuals")],
     nQualifying: qualified === null ? undefined : qualified,
+    publishedAsOf: sourceAsOf(source),
   };
 }
 

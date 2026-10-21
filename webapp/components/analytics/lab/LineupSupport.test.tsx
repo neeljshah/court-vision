@@ -6,7 +6,7 @@ import * as table from "./LabTable";
 
 const dataset = establishedDatasets().find(item => item.id === "lineup-synergy")!;
 const data = { datasets: [dataset], novel: [] };
-beforeEach(() => window.history.replaceState(null, "", "/analytics/lab/?dataset=lineup-synergy&field=minutes_per_game"));
+beforeEach(() => window.history.replaceState(null, "", "/analytics/lab/?dataset=lineup-synergy&field=minutes_per_game&view=table"));
 afterEach(() => vi.restoreAllMocks());
 
 describe("lineup support and measurement units", () => {
@@ -26,8 +26,12 @@ describe("lineup support and measurement units", () => {
     expect(details).toHaveTextContent("Jaylen Wells");
     expect(details).toHaveTextContent("top[0]");
     expect(details).toHaveTextContent("221.8");
-    expect(screen.queryByRole("region", { name: "Measurement summary" })).not.toBeInTheDocument();
-    expect(screen.getByRole("combobox", { name: "Rank order" })).toBeDisabled();
+    expect(screen.getByRole("region", { name: "Measurement summary" })).toBeInTheDocument();
+    expect(screen.getByRole("combobox", { name: "Rank order" })).not.toBeDisabled();
+    const definition = screen.getByRole("region", { name: "Published definition" });
+    expect(within(definition).getByText("Sport").nextElementSibling).toHaveTextContent("Not published");
+    expect(within(definition).getByText("Population").nextElementSibling).toHaveTextContent("102 qualified five-man lineups (all five members qualify for individual on/off)");
+    expect(within(definition).getByText("Observation window").nextElementSibling).toHaveTextContent("2024-25");
     fireEvent.keyDown(details, { key: "Escape" });
     expect(screen.queryByRole("region", { name: "Selected measurement" })).not.toBeInTheDocument();
   });

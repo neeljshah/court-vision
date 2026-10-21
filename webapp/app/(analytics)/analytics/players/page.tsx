@@ -13,6 +13,7 @@ import { getMlbPitchAtlasCohorts } from "@/lib/analytics/atlasResearchCohorts";
 import { getEntityMeasurementSchema } from "@/lib/analytics/entityMeasurementSchemas";
 import { asOfDate } from "@/lib/analytics/format";
 import { CalibrationTableSection, type CalibrationEntry } from "@/components/analytics/entities/CalibrationTableSection";
+import { PackSectionHeading } from "@/components/analytics/entities/PackSectionHeading";
 import { EntityFilter } from "@/components/analytics/EntityFilter";
 
 type KN = Record<string, unknown>;
@@ -185,11 +186,7 @@ function AtlasTableSection({ pack, entries, heading, id, routeEntries = entries 
   const fieldDefinitions = fields.map((key) => atlasFieldDefinition(pack.slug, key).label).join("; ");
   const asOf = asOfDate(entries[0]?.as_of);
   return <section id={id} className="pl-anchor pl-fsec" style={{ marginTop: 44 }}>
-    <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 6, flexWrap: "wrap" }}>
-      <span aria-hidden style={{ width: 9, height: 9, borderRadius: "50%", background: SPORT_COLOR[pack.sport] }} />
-      <h2 className="serif" style={{ fontWeight: 500, fontSize: 26 }}>{heading}</h2>
-      <span style={{ color: "var(--ink-3)", fontSize: 13 }}>{entries.length.toLocaleString()} cards{asOf ? ` \u00B7 as of ${asOf}` : ""}</span>
-    </div>
+    <PackSectionHeading heading={heading} color={SPORT_COLOR[pack.sport]} count={entries.length} asOf={asOf} manifest={pack.manifest} />
     <p style={{ color: "var(--ink-3)", fontSize: 12, marginBottom: 14 }}>Published fields: {fieldDefinitions}.</p>
     <div className="pl-tblwrap"><table className="pl-tbl"><thead><tr><th scope="col">Entity</th>{colKeys(entries).map((key) => <th key={key} scope="col">{label(key)}</th>)}</tr></thead>
       <tbody>{rows.map(({ slug, entry }) => <tr key={slug} data-name={nameFor(entry).toLowerCase()}><td><Link href={`/analytics/players/${pack.slug}/${slug}`}>{nameFor(entry)}</Link></td>{colKeys(entries).map((key) => <td key={key} className="num">{fmtCell(key, entry.key_numbers[key])}</td>)}</tr>)}</tbody>
@@ -217,7 +214,7 @@ export default function EntitiesIndexPage() {
         <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "var(--paper-tint)", border: "1px solid var(--rule-strong)", borderRadius: 8, padding: "8px 14px", fontSize: 13, color: "var(--ink-2)", marginTop: 16 }}>
           <span className="dot d-desc" style={{ width: 8, height: 8 }} /> Descriptive only &mdash; published rates and stated sample floors.
         </div>
-        <p style={{ color: "var(--ink-3)", fontSize: 13, marginTop: 12 }}>Each table lists its as-of date; each card links its source artifact. <Link href="/analytics/">Analytics hub</Link> &middot; <Link href="/methodology/">Methodology</Link></p>
+        <p style={{ color: "var(--ink-3)", fontSize: 13, marginTop: 12 }}>Each table lists its as-of date and stamps the pack manifest it is read from; each card links its source artifact. <Link href="/analytics/">Analytics hub</Link> &middot; <Link href="/methodology/">Methodology</Link></p>
       </header>
 
       <EntityFilter />
@@ -266,12 +263,9 @@ export default function EntitiesIndexPage() {
             bySport.set(sport, [...(bySport.get(sport) || []), entry]);
           }
           const count = Array.from(bySport.values()).reduce((total, entries) => total + entries.length, 0);
+          const asOf = asOfDate(manifest.entries.find((item) => item.card_type === cardType)?.as_of);
           return <section key={cardType} className="pl-fsec" aria-labelledby={`${id}-heading`} style={{ marginTop: 44 }}>
-            <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 6, flexWrap: "wrap" }}>
-              <span aria-hidden style={{ width: 9, height: 9, borderRadius: "50%", background: SPORT_COLOR[pack.sport] }} />
-              <h2 id={`${id}-heading`} className="serif" style={{ fontWeight: 500, fontSize: 26 }}>{title}</h2>
-              <span style={{ color: "var(--ink-3)", fontSize: 13 }}>{count.toLocaleString()} cards</span>
-            </div>
+            <PackSectionHeading heading={title} headingId={`${id}-heading`} color={SPORT_COLOR[pack.sport]} count={count} asOf={asOf} manifest={pack.manifest} />
             {Array.from(bySport.entries()).map(([sport, entries], index) => <CalibrationTableSection key={sport} entries={entries} heading={sportLabel(sport)} id={index === 0 ? id : `${id}-${sport}`} />)}
           </section>;
         });
