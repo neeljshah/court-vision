@@ -5,13 +5,17 @@ import { join } from "node:path";
 import type { PaperTrailRow } from "@/lib/p5api";
 import { fillParam } from "@/components/paper_pm/paperIds";
 
-export function bakedFillParams(
-  file = join(process.cwd(), "public/demo-data/api_paper_trail_limit_400.json"),
-): string[] {
+const TRAIL = join(process.cwd(), "public/demo-data/api_paper_trail_limit_400.json");
+
+/** The baked trail rows (empty when the snapshot file is absent, e.g. a live/dev build). */
+export function bakedFillRows(file = TRAIL): PaperTrailRow[] {
   try {
-    const rows = (JSON.parse(readFileSync(file, "utf-8")).trail ?? []) as PaperTrailRow[];
-    return rows.map(fillParam);
+    return (JSON.parse(readFileSync(file, "utf-8")).trail ?? []) as PaperTrailRow[];
   } catch {
     return [];
   }
+}
+
+export function bakedFillParams(file = TRAIL): string[] {
+  return bakedFillRows(file).map(fillParam);
 }

@@ -18,12 +18,15 @@ import { HomeNotClaimed } from "@/components/home/HomeNotClaimed";
 import { HomeByline } from "@/components/home/HomeByline";
 import { HomeScoreboard, type Scoreboard } from "@/components/home/HomeScoreboard";
 import { Term } from "@/components/evidence";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { pageMeta } from "@/lib/seo/meta";
+import { personJsonLd, websiteJsonLd } from "@/lib/seo/jsonld";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta("/", {
   title: "Calibration Scoreboard",
   description:
     "A calibrated sports forecaster that publishes its own scorecard against the market, including losses, nulls and retractions.",
-};
+});
 
 // check_all.py's own report (build-time read): PASS / NO_CHECK counts + its as-of.
 function checkCounts(): { pass: number; noCheck: number; total: number; asOf: string } | null {
@@ -51,6 +54,7 @@ export default function Home() {
 
   return (
     <div className="mx-auto max-w-[1200px] px-4 pb-16 sm:px-6 [overflow-wrap:anywhere]">
+      <JsonLd data={[websiteJsonLd(), personJsonLd()]} />
       <section aria-labelledby="home-h1" className="space-y-3 pt-5 sm:pt-8">
         <h1 id="home-h1" className="max-w-3xl text-xl font-semibold leading-tight tracking-tight text-foreground sm:text-2xl">
           A calibrated sports forecaster that publishes its own scorecard against the market,

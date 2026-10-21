@@ -9,19 +9,14 @@ import type { Metadata } from "next";
 import { loadArtifact, type Artifact } from "@/lib/showcase.server";
 import { Receipt } from "@/components/analytics/Receipt";
 import { VerdictFlipCases, type VerdictFlipCase } from "@/components/analytics/verdict-flips/VerdictFlipCases";
-import { findingMeta } from "@/lib/analytics/og";
+import { findingMetadata } from "@/lib/seo/findings.server";
 
 import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
 
 import { FindingUnavailable } from "@/components/analytics/findings/FindingUnavailable";
 import { FindingTemplate } from "@/components/analytics/findings/FindingTemplate";
 
-export const metadata: Metadata = {
-  title: "Verdict Flips",
-  description:
-    "Descriptive-only exhibit: the claim families that changed their verdict as more data arrived, and how long each retracted claim survived before it was caught.",
-  ...findingMeta("verdict-flips"),
-};
+export const metadata: Metadata = findingMetadata("verdict-flips");
 
 type Retracted = {
   sport: string; hypothesis: string; first_run_ts: string | null; last_run_ts: string | null;

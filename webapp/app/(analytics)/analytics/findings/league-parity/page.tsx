@@ -11,19 +11,14 @@ import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import { loadArtifact, type Artifact } from "@/lib/showcase.server";
 import { Receipt } from "@/components/analytics/Receipt";
-import { findingMeta } from "@/lib/analytics/og";
+import { findingMetadata } from "@/lib/seo/findings.server";
 
 import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
 
 import { FindingUnavailable } from "@/components/analytics/findings/FindingUnavailable";
 import { FindingTemplate } from "@/components/analytics/findings/FindingTemplate";
 
-export const metadata: Metadata = {
-  title: "A Parity Ledger",
-  description:
-    "Descriptive exhibit: win-share Gini and HHI concentration per NBA season, 2023-24 through 2025-26, with partial-season and playoff-pooling caveats in plain sight.",
-  ...findingMeta("league-parity"),
-};
+export const metadata: Metadata = findingMetadata("league-parity");
 
 type SeasonRow = {
   season: string;

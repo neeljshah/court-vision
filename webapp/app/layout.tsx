@@ -10,6 +10,7 @@ import { CommandPalette } from "@/components/analytics/CommandPalette";
 import { CrossGroupNav } from "@/components/shell/CrossGroupNav";
 import { THEME_INIT_SCRIPT } from "@/components/shell/theme";
 import { snapshotDates, snapshotLine } from "@/components/shell/snapshot.server";
+import { SITE_DESCRIPTION as DESC } from "@/lib/seo/meta";
 import s from "@/components/shell/shell.module.css";
 
 // next/image + metadata icons do NOT auto-prefix basePath in export mode; prefix by hand.
@@ -17,8 +18,7 @@ const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 // Social scrapers need absolute og:image URLs (GitHub Pages project site by default).
 const SITE_ORIGIN = process.env.NEXT_PUBLIC_SITE_URL || "https://neeljshah.github.io";
 const OG_IMAGE = `${BASE_PATH}/brand/og-analytics.png`;
-const DESC =
-  "A calibrated sports forecaster (NBA, MLB, soccer, tennis) that publishes its own scorecard against devigged closing markets, including losses, nulls and retractions. Paper units only.";
+// Per-page canonical / og:url / descriptions come from lib/seo/meta pageMeta; this is the default.
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_ORIGIN),

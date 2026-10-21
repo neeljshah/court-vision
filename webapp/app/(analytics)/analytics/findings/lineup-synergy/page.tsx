@@ -8,19 +8,14 @@ import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import { loadArtifact, type Artifact } from "@/lib/showcase.server";
 import { Receipt } from "@/components/analytics/Receipt";
-import { findingMeta } from "@/lib/analytics/og";
+import { findingMetadata } from "@/lib/seo/findings.server";
 
 import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
 
 import { FindingUnavailable } from "@/components/analytics/findings/FindingUnavailable";
 import { FindingTemplate } from "@/components/analytics/findings/FindingTemplate";
 
-export const metadata: Metadata = {
-  title: "Greater Than The Sum Of Their Parts",
-  description:
-    "Descriptive-only exhibit: a five-man lineup-synergy ledger from real NBA on/off stint data -- which units scored above what their individual parts predict, with the single-season and small-minutes confounds made explicit.",
-  ...findingMeta("lineup-synergy"),
-};
+export const metadata: Metadata = findingMetadata("lineup-synergy");
 
 type LineupRow = {
   rank: number;

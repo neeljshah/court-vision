@@ -6,6 +6,7 @@
 import { notFound } from "next/navigation";
 import { listClaimSlugs, buildClaimPage } from "@/lib/evidence.server";
 import { ClaimPage } from "@/components/evidence/ClaimPage";
+import { claimMeta } from "@/lib/seo/families";
 
 // Only the known slugs build; an unknown /evidence/<x> 404s rather than being
 // server-rendered (there is no server in an export).
@@ -17,10 +18,8 @@ export function generateStaticParams() {
 
 export function generateMetadata({ params }: { params: { claim: string } }) {
   const props = buildClaimPage(params.claim);
-  return {
-    title: props ? `Evidence / ${props.title}` : "Evidence",
-    description: props?.lede || props?.claim?.slice(0, 160) || "Evidence claim.",
-  };
+  if (!props) return { title: "Evidence", description: "Evidence claim." };
+  return claimMeta({ slug: props.slug, title: props.title, lede: props.lede, claim: props.claim, bucket: props.bucket, status: props.status });
 }
 
 export default function EvidenceClaimPage({

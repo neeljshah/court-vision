@@ -9,19 +9,14 @@ import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import { loadArtifact, type Artifact } from "@/lib/showcase.server";
 import { Receipt } from "@/components/analytics/Receipt";
-import { findingMeta } from "@/lib/analytics/og";
+import { findingMetadata } from "@/lib/seo/findings.server";
 
 import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
 
 import { FindingUnavailable } from "@/components/analytics/findings/FindingUnavailable";
 import { FindingTemplate } from "@/components/analytics/findings/FindingTemplate";
 
-export const metadata: Metadata = {
-  title: "NBA Momentum, Tested",
-  description:
-    "Descriptive-only exhibit: confirmed NBA fatigue/rest/clutch effects vs null individual hot-cold carryover shapes.",
-  ...findingMeta("nba-momentum"),
-};
+export const metadata: Metadata = findingMetadata("nba-momentum");
 
 type Claim = {
   hypothesis: string;

@@ -5,7 +5,7 @@ import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import { loadArtifact, type Artifact } from "@/lib/showcase.server";
 import { Receipt } from "@/components/analytics/Receipt";
-import { findingMeta } from "@/lib/analytics/og";
+import { findingMetadata } from "@/lib/seo/findings.server";
 
 import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
 
@@ -14,12 +14,7 @@ import { DataIntegrityNotice } from "@/components/analytics/DataIntegrityNotice"
 import { noticesForModules } from "@/lib/analytics/dataIntegrity";
 import { FindingTemplate } from "@/components/analytics/findings/FindingTemplate";
 
-export const metadata: Metadata = {
-  title: "Effective Sample Size",
-  description:
-    "Descriptive-only historical AR(1) proxy and stored-series anchor for joined-corpus rows; distinct games and intervals await recomposition.",
-  ...findingMeta("effective-sample-size"),
-};
+export const metadata: Metadata = findingMetadata("effective-sample-size");
 
 type Corpus = {
   sport: string;

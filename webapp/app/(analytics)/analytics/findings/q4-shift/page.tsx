@@ -12,19 +12,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { loadArtifact, type Artifact } from "@/lib/showcase.server";
 import { Receipt } from "@/components/analytics/Receipt";
-import { findingMeta } from "@/lib/analytics/og";
+import { findingMetadata } from "@/lib/seo/findings.server";
 
 import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
 
 import { FindingUnavailable } from "@/components/analytics/findings/FindingUnavailable";
 import { FindingTemplate } from "@/components/analytics/findings/FindingTemplate";
 
-export const metadata: Metadata = {
-  title: "The Q4 Shift",
-  description:
-    "Descriptive-only exhibit: Q4-vs-Q1-3 per-36 rate shifts in points, rebounds, and assists for a fixed corpus, published beside the clutch module it un-refuses. Not a clutch metric, not predictive.",
-  ...findingMeta("q4-shift"),
-};
+export const metadata: Metadata = findingMetadata("q4-shift");
 
 type ShiftRow = {
   player_name: string;

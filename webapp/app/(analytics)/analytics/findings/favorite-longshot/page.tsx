@@ -5,19 +5,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { loadArtifact, type Artifact } from "@/lib/showcase.server";
 import { Receipt } from "@/components/analytics/Receipt";
-import { findingMeta } from "@/lib/analytics/og";
+import { findingMetadata } from "@/lib/seo/findings.server";
 
 import { FindingTableRegion } from "@/components/analytics/findings/FindingTableRegion";
 
 import { FindingUnavailable } from "@/components/analytics/findings/FindingUnavailable";
 import { FindingTemplate } from "@/components/analytics/findings/FindingTemplate";
 
-export const metadata: Metadata = {
-  title: "Is the Market Calibrated?",
-  description:
-    "Descriptive favorite-longshot calibration for tennis and MLB, with published row-count Wilson intervals and explicit unverified independence assumptions.",
-  ...findingMeta("favorite-longshot"),
-};
+export const metadata: Metadata = findingMetadata("favorite-longshot");
 
 type Bucket = { lo: number; hi: number; n: number; impl: number; real: number; gap: number; wilson_lo: number; wilson_hi: number };
 type SportBlock = { book: string; market: string; n_total: number; buckets: Bucket[]; verdict: string };
