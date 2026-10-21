@@ -9,7 +9,7 @@
 // press that loaded it also opens it; from then on the impl owns its own
 // listeners and this shell stays inert.
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const CommandPaletteImpl = dynamic(
   () => import("./CommandPaletteImpl").then((m) => m.CommandPalette),
@@ -24,10 +24,17 @@ function isTypingTarget(el: Element | null): boolean {
 
 export function CommandPalette() {
   const [armed, setArmed] = useState(false);
+  const openerRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     if (armed) return;
-    const arm = () => setArmed(true);
+    const arm = () => {
+      // The press that loads the impl also opens it: remember what had focus so Escape
+      // can hand it back (the impl records every later opener itself).
+      const el = document.activeElement;
+      openerRef.current = el instanceof HTMLElement && el !== document.body ? el : null;
+      setArmed(true);
+    };
     const onKeydown = (e: KeyboardEvent) => {
       const isMod = e.metaKey || e.ctrlKey;
       if (isMod && e.key.toLowerCase() === "k") {
@@ -48,7 +55,7 @@ export function CommandPalette() {
     };
   }, [armed]);
 
-  return armed ? <CommandPaletteImpl initialOpen /> : null;
+  return armed ? <CommandPaletteImpl initialOpen returnFocusTo={openerRef.current} /> : null;
 }
 
 export default CommandPalette;

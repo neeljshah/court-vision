@@ -3,6 +3,10 @@
 // /paper/[betId] -- full execution detail for one PM paper trade.
 // Loads the full trail via useLiveData and finds the matching row by bet_id.
 // Shows: venue, price taken, model_prob, confidence, units, tier, result, CLV.
+// Rendered by page.tsx (server), which in snapshot builds passes the page's own baked
+// fill as `initial`: useLiveData starts seeded (the exported HTML carries the as-of,
+// contracts, probability and status) and the first poll replaces the seed as before.
+// PAPER ONLY banner on every fill page (components/paper/PaperOnlyBanner).
 //
 // LIVE POLLING:
 //   - Open trades: poll every 30s -- status may change.
@@ -20,7 +24,8 @@ import { api, isUnavailable, type PaperTrailRow, type PaperTrail } from "@/lib/p
 import type { Unavailable } from "@/lib/types";
 import { useLiveData } from "@/lib/useLiveData";
 import { ExecutionDetail } from "@/components/paper_pm/ExecutionDetail";
-import { findFill, canonicalId } from "@/components/paper_pm/paperIds";
+import { findFill, canonicalId, fillSeedTrail, type FillSeed } from "@/components/paper_pm/paperIds";
+import { PaperOnlyBanner } from "@/components/paper/PaperOnlyBanner";
 import { isSnapshotMode } from "@/lib/fetchHonest";
 import { ExecutionTrail } from "@/components/execution/ExecutionTrail";
 import { paperRowToExecutionTrail } from "@/components/paper_pm/paperTrailAdapter";
@@ -45,9 +50,14 @@ function fmtAge(ageSec: number | null, isStaleOrErr: boolean): string {
 // BetDetailPage
 // ---------------------------------------------------------------------------
 
-export default function BetDetailPageClient() {
+export default function BetDetailPageClient({ initial }: { initial?: FillSeed }) {
   const params = useParams<{ betId: string }>();
   const betId = params?.betId ?? "";
+
+  // Server seed (snapshot builds): the baked fill as a one-row trail with the export's OWN
+  // as_of, so the age stamp stays honest. Read once, at the hook's first render.
+  const seed = initial ? fillSeedTrail(initial) : undefined;
+  const seedMs = initial?.asOf ? Date.parse(initial.asOf) : NaN;
 
   // Fetcher: GET the full trail (returns trail or unavailable sentinel).
   const fetcher = useCallback(
@@ -70,6 +80,8 @@ export default function BetDetailPageClient() {
       // Open trades may change status; 30s is a good cadence for both.
       intervalMs: 30_000,
       staleAfterSec: 90,
+      initialData: seed,
+      initialUpdatedAt: Number.isFinite(seedMs) ? seedMs : undefined,
     },
   );
 
@@ -113,6 +125,8 @@ export default function BetDetailPageClient() {
           </li>
         </ol>
       </nav>
+
+      <PaperOnlyBanner />
 
       {/* Freshness badge (LiveBadge-equivalent inline indicator).
           Honesty rails:
@@ -200,7 +214,7 @@ export default function BetDetailPageClient() {
 
       <div className="mt-6">
         <Link
-          href="/paper"
+          href="/paper-trading/"
           className="inline-flex min-h-6 items-center font-mono text-[12px] text-muted-foreground hover:text-foreground"
         >
           &larr; back to PM trail

@@ -15,6 +15,11 @@ describe("SiteFooter", () => {
     expect(document.body.textContent).toContain("model data as of 2026-07-16; paper desk record through 2026-10-16");
   });
 
+  it("states the request inventory's finding: no analytics, no cookies, no third-party requests", () => {
+    render(<SiteFooter dates={{ modelAsOf: null, deskThrough: null }} />);
+    expect(screen.getByText("No analytics, no cookies, no third-party requests.")).toBeInTheDocument();
+  });
+
   it("uses no banned wording and no tool names", () => {
     const { container } = render(<SiteFooter dates={{ modelAsOf: null, deskThrough: null }} />);
     const text = container.textContent ?? "";

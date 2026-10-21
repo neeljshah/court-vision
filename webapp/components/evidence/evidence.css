@@ -1,5 +1,5 @@
 /* evidence.css -- the shared evidence kit: ReceiptChip, AsOfBadge, VerdictLabel,
-   FigureValue, NotClaimed and Term. ONE visual style for both halves of the site
+   GateStatus, FigureValue, NotClaimed and Term. ONE visual style for both halves of the site
    and both themes. The kit owns its colours (every ink/surface pair below is at
    least 6:1, checked with the WCAG relative-luminance formula), reads the font
    tokens of whichever half it is mounted in, and switches to dark on the
@@ -110,6 +110,34 @@ a.ev-chip:hover .ev-chip__status { color: var(--ev-link); }
 .ev-verdict[data-verdict="MODEL_SHARPER_PROVISIONAL"],
 .ev-verdict[data-verdict="MARKET_SHARPER_PROVISIONAL"],
 .ev-verdict[data-verdict="CONFIRMED_LOCAL"] { border-style: dashed; }
+
+/* GateStatus: an eval-gate ledger token, a different vocabulary from the packet verdicts.
+   A dotted pill with a small "gate" kind marker and a sans, lower-case gloss, never the
+   verdict's solid box, so the token cannot be read as a packet verdict. */
+.ev-gate {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5em;
+  max-width: 100%;
+  padding: 1px 8px;
+  border: 1px dotted var(--ev-ink-2);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ev-ink);
+  font: 600 10.5px/1.5 var(--ev-font-mono);
+  letter-spacing: 0.04em;
+  vertical-align: baseline;
+}
+.ev-gate__kind {
+  font: 600 9.5px/1.5 var(--ev-font-sans);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ev-ink-2);
+}
+.ev-gate__gloss { font: 500 10.5px/1.5 var(--ev-font-sans); letter-spacing: 0; color: var(--ev-ink-2); }
+.ev-gate-legend { margin: 0; font: 500 11px/1.5 var(--ev-font-sans); color: var(--ev-ink-2); }
+.ev-gate-legend__lead { font-weight: 600; color: var(--ev-ink); }
+.ev-gate-legend__token { font: 600 10.5px/1.5 var(--ev-font-mono); letter-spacing: 0.04em; color: var(--ev-ink); }
 
 /* FigureValue: the value inherits its context's size and colour; the badges do not. */
 .ev-figure { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 0.45em; max-width: 100%; }

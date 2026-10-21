@@ -1,11 +1,13 @@
 // ClaimIndex.tsx -- the 4-bucket claim index: each row is a claim + its
-// strongest receipt. Links out to /evidence/<slug> (retraction-story routes
-// to its own page). Server component -- no client state needed.
+// strongest receipt. Links out to /evidence/<slug> through lib/evidenceLinks.claimHref
+// (the retired retraction-story slug lands on /evidence/retractions/). Server component.
 
 import Link from "next/link";
 import { Panel, PanelHead } from "@/components/ui/terminal";
 import { ReceiptChip } from "@/components/showcase/ReceiptChip";
 import type { ClaimIndex as ClaimIndexData } from "@/lib/evidence.server";
+import { GateStatus, isGateStatus } from "./GateStatus";
+import { claimHref } from "@/lib/evidenceLinks";
 
 export function ClaimIndex({ data }: { data: ClaimIndexData }) {
   return (
@@ -17,7 +19,7 @@ export function ClaimIndex({ data }: { data: ClaimIndexData }) {
             {bucket.claims.map((c) => (
               <li key={c.slug}>
                 <Link
-                  href={`/evidence/${c.slug}`}
+                  href={claimHref(c.slug)}
                   className="flex items-start justify-between gap-4 px-3 py-2.5 hover:bg-surface-2"
                 >
                   <div className="min-w-0">
@@ -29,9 +31,14 @@ export function ClaimIndex({ data }: { data: ClaimIndexData }) {
                     )}
                   </div>
                   <div className="flex min-w-0 shrink items-center gap-1 pt-0.5">
-                    <span className="hidden max-w-[32ch] truncate font-data text-[11px] text-faint sm:inline">
-                      {c.receipt.label}
-                    </span>
+                    {/* A gate ledger token (e.g. DESCRIPTIVE_ONLY) wears its own style; the page's legend glosses it. */}
+                    {isGateStatus(c.receipt.label) ? (
+                      <span className="hidden sm:inline"><GateStatus token={c.receipt.label} /></span>
+                    ) : (
+                      <span className="hidden max-w-[32ch] truncate font-data text-[11px] text-faint sm:inline">
+                        {c.receipt.label}
+                      </span>
+                    )}
                     <ReceiptChip
                       sourceArtifact={c.receipt.source ?? "not yet measured"}
                       // The index has no per-claim date; the full receipt with

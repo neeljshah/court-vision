@@ -148,6 +148,58 @@ jobs:
           retention-days: 7
           if-no-files-found: ignore
 
+      # Non-blocking link crawl over the export (scripts/crawl-export.mjs): internal targets
+      # missing from out/ (a 404 on Pages), links landing on a redirect stub, links without
+      # the trailing slash, anchors whose id is absent, external hosts. The script itself
+      # exits non-zero only for missing targets; here that is a warning plus the artifact.
+      - name: Link crawl report (non-blocking)
+        continue-on-error: true
+        run: |
+          mkdir -p report
+          node --test scripts/crawl-export.test.mjs
+          node scripts/crawl-export.mjs out /court-vision > report/crawl-report.md \
+            || echo "::warning::crawl-export found internal links with no target in the export (non-blocking; see the crawl-report artifact)"
+          awk '/^```json/{f=1;next} /^```/{f=0} f' report/crawl-report.md > report/crawl-report.json
+          cat report/crawl-report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload crawl-report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: crawl-report
+          path: webapp/report/crawl-report.*
+          retention-days: 7
+          if-no-files-found: ignore
+
+      # Non-blocking browser QA on the shell pages (perf/keyboard-pages.json): the keyboard
+      # walk (skip link, focus indicators, theme toggle, menu, palette, desk tabs) and the
+      # third-party request inventory that backs the footer's "no analytics, no cookies,
+      # no third-party requests" line. Same Chrome logic as the a11y report.
+      - name: Browser QA reports -- keyboard walk + third-party requests (non-blocking; skipped when Chrome is absent)
+        continue-on-error: true
+        run: |
+          mkdir -p report
+          if [ -z "$A11Y_CHROME" ] && ! command -v google-chrome >/dev/null 2>&1; then
+            echo "browser QA reports skipped: no Chrome found and A11Y_CHROME is unset" | tee report/keyboard-report.md report/third-party-report.md
+          else
+            node scripts/keyboard-walk.mjs out perf/keyboard-pages.json > report/keyboard-report.md \
+              || echo "::warning::keyboard-walk reported FAIL rows (non-blocking; see the browser-qa-report artifact)"
+            node scripts/third-party-requests.mjs out perf/keyboard-pages.json > report/third-party-report.md \
+              || echo "::warning::a third-party host or a cookie was recorded; the footer line must change (non-blocking; see the browser-qa-report artifact)"
+          fi
+          cat report/keyboard-report.md report/third-party-report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload browser-qa-report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-qa-report
+          path: |
+            webapp/report/keyboard-report.md
+            webapp/report/third-party-report.md
+          retention-days: 7
+          if-no-files-found: ignore
+
       # Re-enabled 2026-10-20 22:3xZ after re-measuring on the unified shell (qa run 39506767551:
       # every page inside budget.json + 10%; axe 0 serious/critical, 6 advisory moderate).
       - name: Performance budget -- gzip JS/CSS/HTML per page + image caps (hard gate)

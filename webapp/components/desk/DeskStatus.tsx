@@ -4,7 +4,7 @@
 
 import type { Desk } from "@/lib/desk.server";
 import { ReceiptChip } from "@/components/showcase/ReceiptChip";
-import { ReceiptChip as KitReceiptChip } from "@/components/evidence";
+import { GateStatus, GateStatusLegend, ReceiptChip as KitReceiptChip, gateStatusesIn, isGateStatus } from "@/components/evidence";
 import {
   CENSUS, CENSUS_SRC, UPTIME_SRC, ghBlob, minutesBetween, type Uptime,
 } from "./deskExtras.server";
@@ -79,11 +79,14 @@ export function CensusSummary() {
       <ul className="flex flex-col gap-1">
         {CENSUS.causes.map((c) => (
           <li key={c.cause}>
-            <span className="font-data text-foreground">{c.cause}: {c.n} games</span>{" "}
+            <span className="font-data text-foreground">
+              {isGateStatus(c.cause) ? <GateStatus token={c.cause} gloss={false} /> : c.cause}: {c.n} games
+            </span>{" "}
             <span className="text-muted-foreground">-- {c.why}.</span>
           </li>
         ))}
       </ul>
+      <GateStatusLegend tokens={gateStatusesIn(CENSUS.causes.map((c) => c.cause))} />
       <p className="text-faint">
         {CENSUS.causes.map((c) => c.n).join(" + ")} = {CENSUS.served}; PASS {CENSUS.pass}.{" "}
         <KitReceiptChip source={CENSUS_SRC} asOf={CENSUS.asOf} status="descriptive_only" />

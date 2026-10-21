@@ -9,10 +9,17 @@
 // layout renders: it owns the shortcut/trigger listeners and dynamic-imports this
 // file (cmdk + MiniSearch, ~60 KB raw) on the first open, so no analytics page
 // pays for the palette until a reader asks for it.
+//
+// The dialog is composed from @radix-ui/react-dialog by hand rather than through
+// Command.Dialog: Radix's modal content hands focus to a Dialog.Trigger when it closes,
+// and this palette has none (it opens from "/", Ctrl/Cmd+K or the header button), so
+// Escape dropped focus on <body>. onCloseAutoFocus returns it to whatever opened it.
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
+import * as Dialog from "@radix-ui/react-dialog";
 import { Command } from "cmdk";
 import { group } from "@/components/shell/nav";
+import shell from "@/components/shell/shell.module.css";
 import MiniSearch from "minisearch";
 import { groupResults, rankHits, STARTING_POINTS, type PaletteRecord as Rec, type PaletteType } from "@/lib/analytics/paletteRank";
 
@@ -30,9 +37,21 @@ const SEARCH_OPTIONS = { fuzzy: 0.2, prefix: true, boost: { title: 3 } };
 
 type LoadState = "idle" | "loading" | "ready" | "error";
 
-export function CommandPalette({ initialOpen = false }: { initialOpen?: boolean }) {
+export function CommandPalette({ initialOpen = false, returnFocusTo = null }: { initialOpen?: boolean; returnFocusTo?: HTMLElement | null }) {
   const router = useRouter();
   const [open, setOpen] = useState(initialOpen);
+  // The element to hand focus back to on close: the lazy shell passes the first opener
+  // (the press that loaded this module), later openers are recorded here.
+  const openerRef = useRef<HTMLElement | null>(returnFocusTo);
+  const rememberOpener = useCallback(() => {
+    const el = document.activeElement;
+    openerRef.current = el instanceof HTMLElement && el !== document.body ? el : null;
+  }, []);
+  const returnFocus = useCallback((e: Event) => {
+    e.preventDefault();
+    const el = openerRef.current;
+    if (el && el.isConnected) el.focus();
+  }, []);
   const [query, setQuery] = useState("");
   const [loadState, setLoadState] = useState<LoadState>("idle");
   const [scope, setScope] = useState<"all" | PaletteType>("all");
@@ -86,9 +105,10 @@ export function CommandPalette({ initialOpen = false }: { initialOpen?: boolean 
   }, [query, open, defaults, inScope, loadState]);
 
   const openPalette = useCallback(() => {
+    rememberOpener();
     setOpen(true);
     load();
-  }, [load]);
+  }, [load, rememberOpener]);
 
   // Mounted already open (the lazy shell forwarded a Cmd+K / "/" / button press):
   // start the index fetch that opening normally triggers.
@@ -102,7 +122,7 @@ export function CommandPalette({ initialOpen = false }: { initialOpen?: boolean 
       const isMod = e.metaKey || e.ctrlKey;
       if (isMod && e.key.toLowerCase() === "k") {
         e.preventDefault();
-        if (!open) load();
+        if (!open) { rememberOpener(); load(); }
         setOpen(!open);
         return;
       }
@@ -121,7 +141,7 @@ export function CommandPalette({ initialOpen = false }: { initialOpen?: boolean 
     };
     window.addEventListener("keydown", onKeydown);
     return () => window.removeEventListener("keydown", onKeydown);
-  }, [open, load, openPalette]);
+  }, [open, load, openPalette, rememberOpener]);
 
   // Let the small nav trigger button (rendered separately, outside this
   // client boundary) open the palette without a shared store.
@@ -150,15 +170,12 @@ export function CommandPalette({ initialOpen = false }: { initialOpen?: boolean 
   const noHits = loadState === "ready" && results.length === 0 && query.trim().length > 0;
 
   return (
-    <Command.Dialog
-      open={open}
-      onOpenChange={setOpen}
-      label="Search CourtVision"
-      shouldFilter={false}
-      style={dialogS}
-      overlayClassName="cv-cmdk-overlay"
-      contentClassName="cv-cmdk-content"
-    >
+    <Dialog.Root open={open} onOpenChange={setOpen}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="cv-cmdk-overlay" />
+        <Dialog.Content aria-label="Search CourtVision" aria-describedby={undefined} className={`cv-cmdk-content ${shell.palette}`} onCloseAutoFocus={returnFocus}>
+          <Dialog.Title style={srOnlyS}>Search CourtVision</Dialog.Title>
+          <Command label="Search CourtVision" shouldFilter={false} style={dialogS}>
       <Command.Input
         value={query}
         onValueChange={setQuery}
@@ -189,7 +206,10 @@ export function CommandPalette({ initialOpen = false }: { initialOpen?: boolean 
           ))
         )}
       </Command.List>
-    </Command.Dialog>
+          </Command>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }
 
@@ -200,10 +220,13 @@ const dialogS: CSSProperties = {
   borderRadius: "var(--radius-card)", boxShadow: "var(--shadow-raise)",
   overflow: "hidden", display: "flex", flexDirection: "column", zIndex: 100,
 };
+// No outline: none here -- the focus ring is shell.module.css's .palette [cmdk-input]:focus-visible rule,
+// drawn inside the box because the input sits flush inside the overflow-hidden dialog.
 const inputS: CSSProperties = {
   width: "100%", boxSizing: "border-box", border: 0, borderBottom: "1px solid var(--rule)",
-  background: "transparent", color: "var(--ink)", fontSize: 16, padding: "16px 18px", outline: "none",
+  background: "transparent", color: "var(--ink)", fontSize: 16, padding: "16px 18px",
 };
+const srOnlyS: CSSProperties = { position: "absolute", width: 1, height: 1, padding: 0, margin: -1, overflow: "hidden", clip: "rect(0, 0, 0, 0)", whiteSpace: "nowrap", border: 0 };
 const listS: CSSProperties = { overflowY: "auto", padding: "6px 0", flex: 1 };
 const scopeS: CSSProperties = { display: "flex", gap: 6, overflowX: "auto", padding: "9px 12px", borderBottom: "1px solid var(--rule)" };
 const scopeButtonS: CSSProperties = { border: "1px solid var(--rule)", borderRadius: "var(--radius-chip, 4px)", background: "transparent", color: "var(--ink-3)", cursor: "pointer", fontSize: 11, padding: "5px 8px", whiteSpace: "nowrap" };

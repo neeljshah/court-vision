@@ -1,12 +1,16 @@
 // app/(terminal)/about/page.tsx -- About: what CourtVision is, how it is built, what it
 // is not, methods links, and the author with contact. Calibration language only (see
-// .claude/rules/no-edge-claims.md). The commit figures are quoted from CONTRIBUTING.md
-// with its measurement date. ASCII only.
+// .claude/rules/no-edge-claims.md). The commit figures are counted from the public git
+// history (about/commitCounts.ts): the sentence carries the method and the count date, and
+// the receipt chip names the commands. ASCII only.
 import Link from "next/link";
 import { CONTACT_EMAIL, GITHUB, PORTFOLIO, githubDoc } from "@/components/shell/nav";
-import { Term } from "@/components/evidence";
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/seo/meta";
+import { ReceiptChip, Term } from "@/components/evidence";
+import {
+  COMMIT_COUNTS, COMMIT_COUNT_RECEIPT, COMMIT_HISTORY_URL, agentShare, fmtCommits,
+} from "./commitCounts";
 
 export const metadata: Metadata = pageMeta("/about/", {
   title: "About",
@@ -58,11 +62,26 @@ export default function AboutPage() {
         <p className={`mt-2 ${P}`}>
           One person directed coding agents to build it. The owner set the goals, the
           validation rules and the acceptance bars; agents wrote most of the code, tests and
-          documentation. As measured on 2026-10-20, 24.8% of the 6,515 public commits carry an
-          agent co-author trailer, and the true agent share is higher (
+          documentation. Counted from git log at commit {COMMIT_COUNTS.sha} on {COMMIT_COUNTS.asOf},{" "}
+          {fmtCommits(COMMIT_COUNTS.agentCoAuthored)} of the {fmtCommits(COMMIT_COUNTS.total)} commits
+          on the public {COMMIT_COUNTS.branch} branch ({agentShare()}) carry a Co-Authored-By trailer
+          naming Claude or Codex, and the true agent share is higher because older and automated
+          commits carry no trailer (
           <a href={githubDoc("CONTRIBUTING.md")} className={A}>CONTRIBUTING.md</a>). Results that
           failed later checks were withdrawn in public and are listed on the{" "}
           <Link href="/evidence/retractions/" prefetch={false} className={A}>retraction record</Link>.
+        </p>
+        <p className="mt-2 flex flex-wrap items-baseline gap-x-2 gap-y-1 text-[12px] text-muted-foreground">
+          <ReceiptChip
+            source="git log (public master)"
+            asOf={COMMIT_COUNTS.asOf}
+            status="descriptive_only"
+            href={COMMIT_HISTORY_URL}
+            note={COMMIT_COUNT_RECEIPT}
+          />
+          <code data-testid="commit-count-command" className="break-all font-data text-[11px] text-faint">
+            {COMMIT_COUNT_RECEIPT}
+          </code>
         </p>
       </section>
 

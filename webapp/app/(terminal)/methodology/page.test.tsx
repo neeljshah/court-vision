@@ -34,4 +34,16 @@ describe("Methodology page", () => {
     for (const t of RETRACTED_TOKENS) expect(txt).not.toContain(t);
     expect(BANNED_COPY.test(txt)).toBe(false);
   });
+
+  it("renders the gate ledger token among the badges in its own style, with the one-line legend", () => {
+    const { container } = render(<MethodologyPage />);
+    const el = container.querySelector('#verified [data-gate="VALIDATION_PENDING"]');
+    expect(el).toHaveClass("ev-gate");
+    expect(el).toHaveTextContent("not yet validated");
+    expect(el?.getAttribute("title")).toBe("VALIDATION_PENDING: not yet validated. gate ledger status, not a packet verdict.");
+    expect(container.querySelectorAll("[data-gate]").length).toBe(1); // the packet badges keep their own style
+    const legend = container.querySelector('#verified [data-testid="gate-status-legend"]');
+    expect(legend?.textContent).toBe("Gate ledger statuses, not packet verdicts: VALIDATION_PENDING = not yet validated.");
+  });
 });
+

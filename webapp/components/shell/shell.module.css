@@ -90,6 +90,11 @@
   text-decoration: underline; text-underline-offset: 2px; }
 .page { min-height: 100vh; background: var(--sh-page); }
 
+/* The palette's search input sits flush inside an overflow-hidden dialog, so its ring is drawn
+   inside the box (a 2px offset would be clipped). Ring colour: the analytics token, else the
+   terminal one, else the shell blue; each already switches with the theme. */
+.palette :global([cmdk-input]:focus-visible) { outline: 2px solid var(--focus-ring, hsl(var(--ring, 212 67% 50%))); outline-offset: -2px; }
+
 /* The analytics CommandPalette reads analytics tokens; map them onto the terminal tokens
    on terminal pages only (the dialog portals to body, so the mapping sits on body). */
 :global(body):has(.terminalScope) {

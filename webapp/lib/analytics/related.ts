@@ -1,4 +1,5 @@
 import { analysisDestinations } from "./analysisDestinations";
+import { findingHref } from "./findingHref";
 import { findingsIndex } from "./findingsIndex";
 import { collectionMemberIds, readingCollections } from "./readingCollections";
 import { isAuthoredPrerequisite } from "./readingRelationships";
@@ -70,7 +71,7 @@ export function joinedFindingTarget(sourceArtifact: string, analyses: ResearchAn
 export function readingEntries(): ReadingEntry[] {
   return [
     ...getResearchAnalyses().map((analysis) => ({ id: analysis.id, title: analysis.title, kind: "analysis" as const, sport: analysis.sport, asOf: analysis.asOf || null, href: `/analytics/research/${analysis.id}/`, population: `analysis:${analysis.id}` })),
-    ...findingsIndex.map((finding) => ({ id: finding.slug, title: finding.title, kind: "finding" as const, sport: finding.sport, asOf: finding.asOf, href: `/analytics/findings/${finding.slug}/`, population: `finding:${finding.slug}` })),
+    ...findingsIndex.map((finding) => ({ id: finding.slug, title: finding.title, kind: "finding" as const, sport: finding.sport, asOf: finding.asOf, href: findingHref(finding.slug), population: `finding:${finding.slug}` })),
     ...analysisDestinations.map((destination) => ({ id: destination.id, title: destination.title, kind: "inspector" as const, sport: destination.sport, asOf: null, href: destination.route, population: destination.populationId, prerequisite: destination.prerequisite })),
   ];
 }

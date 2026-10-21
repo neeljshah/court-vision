@@ -1,4 +1,5 @@
 import { analysisDestinations } from "./analysisDestinations";
+import { findingHref } from "./findingHref";
 import { noticesForModules } from "./dataIntegrity";
 import { findingsIndex } from "./findingsIndex";
 import { getLibraryEntries } from "./libraryData";
@@ -37,7 +38,7 @@ export function readingEntries(): ReadingEntry[] {
     }),
     ...findingsIndex.map((finding) => {
       const populationInput = { id: finding.slug, sport: finding.sport, source: finding.artifactIds[0] };
-      return { id: finding.slug, title: finding.title, kind: "finding" as const, sport: finding.sport, asOf: finding.asOf, href: `/analytics/findings/${finding.slug}/`, sources: finding.artifactIds, artifacts: finding.artifactIds, population: populationIdentifier(populationInput), entityType: entityTypeIdentifier(populationInput) };
+      return { id: finding.slug, title: finding.title, kind: "finding" as const, sport: finding.sport, asOf: finding.asOf, href: findingHref(finding.slug), sources: finding.artifactIds, artifacts: finding.artifactIds, population: populationIdentifier(populationInput), entityType: entityTypeIdentifier(populationInput) };
     }),
     ...analysisDestinations.map((destination) => ({ id: destination.id, title: destination.title, kind: "inspector" as const, sport: destination.sport, asOf: null, href: destination.route, sources: [...destination.sourceModuleIds], artifacts: [...destination.sourceModuleIds], population: populationIdentifier({ id: destination.id, sport: destination.sport, populationId: destination.populationId }), entityType: entityTypeIdentifier({ id: destination.id, sport: destination.sport, populationId: destination.populationId }), prerequisite: destination.prerequisite })),
     ...papers,

@@ -42,6 +42,9 @@ export function SiteFooter({ dates }: { dates: SnapshotDates }) {
           <li><a href={PORTFOLIO}>Portfolio</a></li>
         </ul>
         <p>{asOf ? `Static snapshot: ${asOf}.` : "Static snapshot; no live data."}</p>
+        {/* Backed by scripts/third-party-requests.mjs (every request same-origin, no cookie set);
+            fonts are self-hosted by next/font at build time. */}
+        <p>No analytics, no cookies, no third-party requests.</p>
       </div>
     </footer>
   );

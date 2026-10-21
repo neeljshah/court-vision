@@ -1,5 +1,5 @@
 // PaperRecordNotes.tsx -- the fixed copy blocks of /paper-trading (Paper record):
-// what the book is, the paper-only banner, the units convention, and the boxed
+// what the book is, the paper-only banner (re-exported), the units convention, and the boxed
 // retired July 2026 model snapshot. Split from page.tsx for the 300-line rail.
 
 import Link from "next/link";
@@ -25,19 +25,8 @@ export function PaperRecordIntro({ asOf, lastNight }: { asOf: string | null; las
   );
 }
 
-export function PaperOnlyBanner() {
-  return (
-    <div
-      role="alert"
-      data-testid="real-money-deny-banner"
-      aria-label="Real money is DENIED -- paper mode only"
-      className="mb-5 rounded-lg border border-warning/50 bg-warning/10 px-4 py-2.5 text-[12px] text-warning"
-    >
-      <span className="font-semibold">Real-money: DENY.</span>{" "}
-      PAPER ONLY (paper mode). No real money placed. No order path exists. Calibration record only.
-    </div>
-  );
-}
+// The banner itself lives in components/paper/PaperOnlyBanner so /paper/<fill>/ shows the same one.
+export { PaperOnlyBanner } from "@/components/paper/PaperOnlyBanner";
 
 export function UnitsClarifier() {
   return (

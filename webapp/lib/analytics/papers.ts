@@ -5,6 +5,7 @@
 const FORBIDDEN = /(?<![A-Za-z0-9_])(edge|edges|bet|bets|betting|bettor|bettors|bookmaker|bookmakers|sportsbook|profit|profits|profitable|roi|wager|wagers|wagering|bankroll|bankrolls|payout|payouts|odds boost|financial returns?|betting returns?|dollar)(?![A-Za-z0-9_])/gi;
 
 import { analysisDestinations } from "./analysisDestinations";
+import { findingHref } from "./findingHref";
 
 export type PaperSport = "all" | "nba" | "mlb" | "soccer_intl" | "tennis";
 export type PaperRelatedKind = "inspector" | "analysis" | "module" | "paper" | "finding";
@@ -230,7 +231,7 @@ export function relatedHref(link: PaperRelated): string {
   }
   if (link.kind === "analysis") return `/analytics/research/${link.id}/`;
   if (link.kind === "module") return `/analytics/m/${link.id}/`;
-  if (link.kind === "finding") return `/analytics/findings/${link.id}/`;
+  if (link.kind === "finding") return findingHref(link.id);
   return `/analytics/papers/${link.id}/`;
 }
 

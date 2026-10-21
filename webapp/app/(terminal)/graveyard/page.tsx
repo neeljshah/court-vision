@@ -1,12 +1,15 @@
 // app/graveyard/page.tsx -- killed signals at full prominence: nulls, REJECTs,
 // and non-surviving mechanisms rendered as visibly as anything shipped.
 // Static build-time read via showcase.server; no client fetch.
+// The ledger-by-type table mixes two vocabularies: packet verdicts (VerdictLabel) and
+// eval-gate ledger statuses (GateStatus, with its legend); neither is dressed as the other.
 
 import { loadArtifact, receiptChip } from "@/lib/showcase.server";
 import { Panel, PanelHead, Num } from "@/components/ui/terminal";
 import { ReceiptChip } from "@/components/showcase/ReceiptChip";
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/seo/meta";
+import { GateStatus, GateStatusLegend, VerdictLabel, gateStatusesIn, isGateStatus, isPacketVerdict } from "@/components/evidence";
 
 export const metadata: Metadata = pageMeta("/graveyard/", {
   title: "Graveyard",
@@ -146,18 +149,25 @@ export default function GraveyardPage() {
       </div>
 
       <Panel>
-        <PanelHead title="verdicts by type (full history)" />
+        <PanelHead title="verdicts and gate statuses by type (full history)" />
         <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-sm">
+          <table className="w-full border-collapse text-sm" data-testid="ledger-by-type">
             <tbody>
               {verdictRows.map(([verdict, count]) => (
                 <tr key={verdict} className="border-b border-border">
-                  <td className="px-3 py-1.5 font-mono text-[11px] font-bold text-foreground">{verdict}</td>
+                  <td className="px-3 py-1.5 font-mono text-[11px] font-bold text-foreground">
+                    {isGateStatus(verdict) ? <GateStatus token={verdict} />
+                      : isPacketVerdict(verdict) ? <VerdictLabel verdict={verdict} qualifier={false} />
+                      : verdict}
+                  </td>
                   <td className="px-3 py-1.5 text-right"><Num>{count}</Num></td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
+        <div className="px-3 py-2">
+          <GateStatusLegend tokens={gateStatusesIn(verdictRows.map(([verdict]) => verdict))} />
         </div>
       </Panel>
 

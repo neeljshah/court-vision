@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import CommandPalette from "./CommandPalette";
 
 const push = vi.fn();
@@ -19,6 +19,12 @@ function openPalette() {
   window.dispatchEvent(new CustomEvent("cv-open-palette"));
   return screen.findByRole("dialog", { name: "Search CourtVision" });
 }
+
+beforeAll(() => {
+  vi.stubGlobal("ResizeObserver", ResizeObserverMock);
+  // jsdom has no layout: cmdk scrolls the selected item into view once focus is in the list.
+  Element.prototype.scrollIntoView = () => {};
+});
 
 beforeEach(() => {
   // Re-stubbed per test: a test may call vi.unstubAllGlobals().
@@ -61,6 +67,29 @@ describe("CommandPalette", () => {
     fireEvent.click(screen.getByRole("button", { name: "Retry" }));
     expect(await screen.findByText("Evidence & Platform")).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("hands focus back to the element that opened it when Escape closes it", async () => {
+    fetchMock.mockReturnValue(response([]));
+    render(<><button type="button">Open search</button><a href="#top">Top link</a><CommandPalette /></>);
+    const trigger = screen.getByRole("button", { name: "Open search" });
+    trigger.focus();
+    await openPalette();
+    // Radix moves focus into the dialog (the combobox) while it is open.
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("combobox", { name: "Search CourtVision" })));
+    fireEvent.keyDown(document.activeElement as Element, { key: "Escape" });
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    await waitFor(() => expect(document.activeElement).toBe(trigger));
+
+    // A later open from the "/" shortcut (the impl's own listener) returns to that opener too.
+    const link = screen.getByRole("link", { name: "Top link" });
+    link.focus();
+    fireEvent.keyDown(window, { key: "/" });
+    await screen.findByRole("dialog", { name: "Search CourtVision" });
+    await waitFor(() => expect(document.activeElement).not.toBe(link));
+    fireEvent.keyDown(document.activeElement as Element, { key: "Escape" });
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    await waitFor(() => expect(document.activeElement).toBe(link));
   });
 
   it("full-loads a cross-group result and soft-navigates a same-group one", async () => {

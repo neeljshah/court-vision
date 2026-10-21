@@ -54,6 +54,15 @@ describe("OnboardingOverlay page guide", () => {
     });
   });
 
+  it("hands focus back to the Help button when Escape closes the guide", async () => {
+    await renderGuide("/court-vision");
+    fireEvent.keyDown(document.activeElement ?? document.body, { key: "Escape" });
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    // Queried after the close: Radix marks everything outside an open modal aria-hidden.
+    const help = screen.getByRole("button", { name: /open the how-to-read-this guide/i });
+    await waitFor(() => expect(document.activeElement).toBe(help));
+  });
+
   it("closes on a guide link and reopens from the Help button", async () => {
     const links = await renderGuide("/court-vision");
     links[1].addEventListener("click", (event) => event.preventDefault(), { capture: true });

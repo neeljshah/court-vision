@@ -9,6 +9,7 @@
 // ASCII only. <= 300 LOC.
 
 import Link from "next/link";
+import type { RefObject } from "react";
 import {
   Dialog,
   DialogContent,
@@ -86,10 +87,20 @@ const RAILS: { term: string; line: string }[] = [
 ];
 
 
-export function OnboardingGuide({ open, setOpen }: { open: boolean; setOpen: (open: boolean) => void }) {
+export function OnboardingGuide({ open, setOpen, returnFocusTo }: {
+  open: boolean; setOpen: (open: boolean) => void; returnFocusTo?: RefObject<HTMLElement>;
+}) {
   return (
       <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="max-h-[85vh] max-w-2xl overflow-y-auto rounded-none border-border bg-card shadow-none">
+      <DialogContent
+        className="max-h-[85vh] max-w-2xl overflow-y-auto rounded-none border-border bg-card shadow-none"
+        // No Dialog.Trigger here: without this Radix hands focus to nothing and it lands on <body>.
+        onCloseAutoFocus={(e) => {
+          if (!returnFocusTo?.current) return;
+          e.preventDefault();
+          returnFocusTo.current.focus();
+        }}
+      >
         <DialogHeader>
           <DialogTitle className="microlabel text-foreground">
             What is this &amp; how to read it

@@ -7,6 +7,8 @@
 // Absolute URLs, anchors and mailto: pass through untouched. Pure (no fs) so it
 // is unit-testable; evidence.server.ts applies it at build time.
 
+import { resolveRedirect } from "@/lib/redirects";
+
 const REPO = "https://github.com/neeljshah/court-vision";
 const BRANCH = "master";
 const MD_DIR = "docs/evidence";
@@ -18,6 +20,12 @@ function repoPathFor(relativeHref: string): string {
     else if (seg && seg !== ".") out.push(seg);
   }
   return out.join("/");
+}
+
+/** The exported page of a claim; a retired slug (retraction-story) links to its new home. */
+export function claimHref(slug: string): string {
+  const path = `/evidence/${slug}/`;
+  return resolveRedirect(path) ?? path;
 }
 
 /** Resolve one markdown link target found in an evidence claim file. */
@@ -32,7 +40,7 @@ export function resolveEvidenceHref(
   const path = hashAt >= 0 ? raw.slice(0, hashAt) : raw;
   const hash = hashAt >= 0 ? raw.slice(hashAt) : "";
   const sibling = /^([a-z0-9][a-z0-9-]*)\.md$/i.exec(path);
-  if (sibling && claimSlugs.has(sibling[1])) return `${basePath}/evidence/${sibling[1]}/${hash}`;
+  if (sibling && claimSlugs.has(sibling[1])) return `${basePath}${claimHref(sibling[1])}${hash}`;
   const repoPath = repoPathFor(path);
   if (path.endsWith("/")) return `${REPO}/tree/${BRANCH}/${repoPath}/${hash}`;
   return `${REPO}/blob/${BRANCH}/${repoPath}${hash}`;

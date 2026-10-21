@@ -10,6 +10,7 @@ that touches `webapp/**`.
 | `AFTER_2026-10-20.md` | The same measurement after the fixes on the `perf/webapp-baseline-2026-10-20` branch, with the before/after deltas. |
 | `budget.json` | Per-page gzip ceilings for JS, CSS and HTML plus image size caps. Read by `scripts/perf-budget.mjs`. |
 | `a11y-pages.json` | The pages `scripts/a11y-gate.mjs` runs axe-core on (both themes). |
+| `keyboard-pages.json` | The shell pages `scripts/keyboard-walk.mjs` and `scripts/third-party-requests.mjs` drive (home, desk, paper record, calibration, one finding, one paper fill). |
 
 ## The gate (what fails the workflow)
 
@@ -29,6 +30,35 @@ gates like the typecheck and the honesty grep:
    critical** violation. Moderate and minor findings print as workflow warnings.
 
 Unit tests for both scripts: `node --test scripts/perf-budget.test.mjs scripts/a11y-gate.test.mjs`.
+
+## The reports (what the workflow uploads but never fails on)
+
+Three more scripts run after the export as non-blocking report steps, each with an artifact
+and a copy in the run summary:
+
+1. **`node scripts/crawl-export.mjs out /court-vision`** (artifact `crawl-report`) -- no browser.
+   Walks every exported HTML file, pulls every `href` / `src` (and a redirect stub's meta refresh
+   url), resolves each one the way GitHub Pages serves the project site (basePath, one
+   percent-decode, a directory's `index.html`) and reports, per page family and as the top
+   offending (page, href) pairs: internal targets missing from `out/` (a 404 on Pages), links that
+   land on a retired-route stub (with the final target from `lib/redirects.ts`), internal links
+   without the trailing slash (a redirect hop), anchors whose id is absent on the target page, and
+   the external hosts referenced. It exits non-zero only for missing internal targets. Unit test:
+   `node --test scripts/crawl-export.test.mjs`.
+2. **`node scripts/keyboard-walk.mjs out perf/keyboard-pages.json`** (artifact `browser-qa-report`)
+   -- Chrome via `playwright-core`. Tabs from the top of each page: the skip link must be the first
+   stop and land on `#main-content`; every Tab stop must show a computed outline or box-shadow and
+   be on screen; the theme toggle and the narrow-screen menu must work from the keyboard; the
+   command palette must open on `/` and Ctrl/Cmd+K, keep focus inside, close on Escape and hand
+   focus back to its trigger; the desk tabs must be reached in order. PASS/FAIL rows per page.
+3. **`node scripts/third-party-requests.mjs out perf/keyboard-pages.json`** (same artifact) --
+   loads the same pages, opens the palette and flips the theme, and records every request host
+   other than the site's own origin plus any cookie set. This is the receipt behind the footer line
+   "No analytics, no cookies, no third-party requests": fonts are self-hosted by `next/font` at
+   build time, so the expected inventory is empty. It exits non-zero when a third-party host or a
+   cookie appears, which is the signal to change the footer line rather than the script.
+
+Locally all three take `A11Y_CHROME=/path/to/chrome` like the a11y gate.
 
 ## How the ceilings were chosen
 
