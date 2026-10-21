@@ -92,7 +92,7 @@ describe("/analytics/calibration/ (T2)", () => {
     expect(note.textContent).toContain("Measured 2026-09-14 on the 227-game corpus that later failed the join-integrity check; the 178-game segmented revision keeps the verdict BEHIND.");
     const hrefs = [...note.querySelectorAll("a")].map((a) => a.getAttribute("href"));
     // next/link may prefix the basePath and drop the trailing slash in jsdom
-    expect(hrefs.some((h) => /\/analytics\/findings\/ingame-join-integrity\/?$/.test(h))).toBe(true);
+    expect(hrefs.some((h) => /\/analytics\/findings\/ingame-join-integrity\/?$/.test(h ?? ""))).toBe(true);
     expect(hrefs.some((h) => h!.endsWith("docs/papers/INPLAY_LATENCY_2026.md"))).toBe(true);
     const soccer = container.querySelector('tr[data-key="soccer_ingame_vs_kalshi_mid"]')!;
     expect(soccer.querySelector('[data-role="caveat-ref"] a')!.getAttribute("href")).toBe("#soccer-join-note");
