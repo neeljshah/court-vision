@@ -2,13 +2,17 @@
 
 Neel Shah, CourtVision. Operations readout; paper only. Drafted 2026-10-20.
 
-**Summary.** This paper measures how far behind the game our in-play state capture runs: the time
-from the official play clock to the moment our recorder held the response. Every table below is
-written by one script from tracked JSON files under `docs/evidence/forward/`, which a reader can
-re-run without the private engine (section 7). MLB is the only sport with enough nights to pool.
-NFL and NCAAF are reported per night and labelled INSUFFICIENT. NBA, soccer and tennis carry no
-play-clock events in these ledgers, so their feed latency is not measured here. Latency describes
-how stale our view is. It says nothing about achievable results, and no such statement is made.
+**Summary.** How far behind the game does our in-play state capture run? From 20 committed nightly
+latency ledgers (2026-09-24 to 2026-10-16) I report receipt minus the official play clock, as
+nightly quantiles summarised across nights, and the share of events where the venue book moved
+before our receipt, with a game-clustered bootstrap 95% interval. MLB is the only sport with enough
+nights to pool: its nightly p50 runs 17.0 to 24.0 s (median 18.5 s). The book-moved-first share is
+0.4832 [0.4498, 0.5165]; the interval includes 0.5, so I cannot tell which moves first. NFL and
+NCAAF are INSUFFICIENT; NBA, soccer and tennis carry no play-clock events. Latency measures
+staleness, not skill, and no result on any venue is claimed.
+
+Every table below is written by one script from tracked JSON files under `docs/evidence/forward/`,
+which a reader can re-run without the private engine (section 7).
 
 ## 1. The question
 
@@ -45,7 +49,7 @@ compare with the 15 s receipt-age split that the sealed S542 staleness backstop 
   `status: offset unmeasured` (replay status). The recorder clock is compared with a source clock it was never synchronised
   with. The S664 bound covers recorder versus UTC only and is never applied as a correction. A
   constant offset would shift every quantile by the same amount.
-- **Pooling rule.** A sport is POOLED only when at least 10 nights carry events (`docs/evidence/harness/QUANT_EVIDENCE_BUILD_SLATE_2026-10-06.md`, section R7). Otherwise it is INSUFFICIENT and shown per night only.
+- **Pooling rule.** A sport is labelled POOLED in Table 1 (this script's pooling status: enough nights to summarise across them; not a packet verdict) only when at least 10 nights carry events (`docs/evidence/harness/QUANT_EVIDENCE_BUILD_SLATE_2026-10-06.md`, section R7). Otherwise it is INSUFFICIENT and shown per night only.
 - **Book-moved-first share.** The share of events where the venue book snapshot changed before our
   state receipt. Both instants are on the recorder clock, and a change inside the window may belong
   to a later play. It is shown with a game-clustered bootstrap interval. It is descriptive only. The interval contains 0.5, so neither ordering is established. The book time is our own snapshot receipt, not the venue's update time, so the complement is not evidence that our feed leads the venue. It is not an information advantage and not a pricing input.
@@ -161,6 +165,10 @@ results achievable on any venue.
 - Table 3 measures receipt age at the read-out, on M2 read-out nights only, and covers fewer nights
   than the ledgers.
 - The book-moved-first share mixes plays: a book change counted for one event may belong to the next.
+- Freshness is not skill. These tables say how old our view is; they do not score any model, and a
+  shorter lag would not by itself make a model closer to the outcome than the venue mid.
+- Table 2 is the one interval in this paper; the per-night rows in Table 4 are descriptive and no
+  test is run on them, so no multiplicity correction applies.
 
 ## 7. Reproduce
 

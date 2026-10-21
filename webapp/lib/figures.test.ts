@@ -30,7 +30,9 @@ describe("lib/figures.ts (generated)", () => {
   it("agrees with the figures the site derives for itself (module count, findings count)", () => {
     expect(siteManifest.module_count).toBe(COUNT_FIGURES.published_module_count.value);
     const findingsDir = join(__dirname, "../app/(analytics)/analytics/findings");
-    const findingPages = readdirSync(findingsDir, { withFileTypes: true }).filter((entry) => entry.isDirectory()).length;
+    // redirect stubs (retired exhibits) are not findings
+    const findingPages = readdirSync(findingsDir, { withFileTypes: true })
+      .filter((entry) => entry.isDirectory() && !readFileSync(join(findingsDir, entry.name, "page.tsx"), "utf-8").includes("RedirectStub")).length;
     expect(findingPages).toBe(COUNT_FIGURES.titled_findings_count.value);
   });
 

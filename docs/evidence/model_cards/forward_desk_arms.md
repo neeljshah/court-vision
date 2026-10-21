@@ -58,7 +58,7 @@ read "not recorded".
 |---|---|---|---|
 | 2026-10-19 | every scoreboard cell, nights 10-06 to 10-10 and 10-12 | INSUFFICIENT (null interval) | packet section 5 |
 | 2026-10-19 | current seal: 1 of the 30 games the floor needs (projected 2027-05-05) | INSUFFICIENT | packet section 5 |
-| 2026-10-19 | qualification: 0 PASS of 31 games judged | no qualified decision | packet section 5 |
+| 2026-10-19 | qualification: 0 PASS of 44 games judged (nights 10-06 to 10-16) | no qualified decision | packet section 5 |
 
 - No interval, verdict or model-quality number exists for any arm. Per-night arm values on one or
   two games are not quoted.
@@ -75,7 +75,7 @@ read "not recorded".
 - The sealed scorer refits per history row, so wall time grows about quadratically (1,443 s at 29k
   rows); S824 raised the deadline as a stopgap; S825 is the fix (packet section 5).
 - Laptop sleeps and a shadow recorder down since 2026-10-13 01:08Z left nights missing.
-- All 31 judged games failed qualification on COVERAGE_LOW and LINKAGE_INVALID.
+- All 44 judged games (through 10-16) failed qualification on COVERAGE_LOW and LINKAGE_INVALID.
 
 ## Artifacts
 

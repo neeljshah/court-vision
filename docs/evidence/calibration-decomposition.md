@@ -37,27 +37,28 @@ model's checkpoint snapshots cannot see, and no recalibration fixes that.
 (`edge_claimed: false`; method: `"10-bin Murphy decomposition (Brier = reliability -
 resolution + uncertainty)"`). Plot: `docs/img/reliability_model_vs_market.png`.
 
-| sport | n | model Brier | market Brier | Brier gap | reliability gap | resolution gap |
-|---|---|---|---|---|---|---|
-| mlb | 78,986 | 0.237684 | 0.206653 | +0.0310 | +0.0066 | -0.0235 |
-| soccer_intl | 9,003 | 0.227887 | 0.142726 | +0.0852 | +0.0394 | -0.0446 |
+**Revision 2, segment-clean corpus** (rebuilt 2026-09-16 from the 178-game segmented MLB corpus; see the [join-integrity finding](/analytics/findings/ingame-join-integrity/)). Revision 1 was withdrawn: its 227-game MLB corpus failed the join-integrity check (126 of 227 stored files mixed ticks from consecutive-day games under one outcome label), so its figures are not republished here.
 
-Reliability gaps are small; resolution gaps carry most of the deficit in both sports. The
-verdict string, copied verbatim from the JSON:
+| sport | n | model Brier | market Brier | model reliability | model resolution | market reliability | market resolution |
+|---|---|---|---|---|---|---|---|
+| mlb | 27,351 | 0.166759 | 0.151008 | 0.005619 | 0.087187 | 0.003425 | 0.102062 |
+| soccer_intl | 4,265 | 0.332522 | 0.195157 | 0.191982 | 0.038714 | 0.088088 | 0.071263 |
 
-> mlb: model Brier 0.2377 is worse than market 0.2067 (gap=+0.0310); driven mainly by
-> resolution (information, not fixable by recalibration) (reliability_gap=+0.0066,
-> resolution_gap=-0.0235). soccer_intl: model Brier 0.2279 is worse than market 0.1427
-> (gap=+0.0852); driven mainly by resolution (information, not fixable by recalibration)
-> (reliability_gap=+0.0394, resolution_gap=-0.0446).
+The verdict string, copied verbatim from the revision-2 JSON:
 
-**Honest read:** the market isn't beating the model because the model is badly calibrated --
-it's beating it because it resolves more information into its probability (state changes it
-can see that our checkpoint snapshots can't). This is consistent with the standing in-game
-freshness finding already on record: early-game deficits are a *news* gap, not a *model* gap.
+> mlb: model Brier 0.1668 is worse than market 0.1510 (gap=+0.0158); driven mainly by
+> resolution (information, not fixable by recalibration) (reliability_gap=+0.0022,
+> resolution_gap=-0.0149). soccer_intl: model Brier 0.3325 is worse than market 0.1952
+> (gap=+0.1374); driven mainly by reliability (calibration, fixable) (reliability_gap=+0.1039,
+> resolution_gap=-0.0325).
+
+**Honest read:** in MLB the market is not ahead because the model is badly calibrated -- it is
+ahead because it resolves more information into its probability (state changes it can see
+that our checkpoint snapshots cannot). In soccer_intl the revision-2 gap is mostly
+*reliability*: the model is miscalibrated there, which recalibration could address.
 
 **Reconstruction caveat (stated, not hidden):** the binned formula reconstructs MLB model
-Brier as 0.237166 vs the exact 0.237684 -- a small residual from within-bin prediction
+Brier as 0.168327 vs the exact 0.166759 -- a small residual from within-bin prediction
 dispersion, expected for the binned decomposition. The soccer reconstructions carry a larger
 residual for the same reason at that sport's smaller n; the exact Brier is the one to quote.
 
@@ -80,31 +81,31 @@ Story string, verbatim from the JSON:
 > ranked_worst_buckets is where the model is furthest from outcomes relative to the market,
 > i.e. the improvement backlog.
 
-n-weighted ECE (calibration only):
+n-weighted ECE (calibration only; revision 2, segment-clean corpus):
 
 | sport | n records | model ECE | market ECE |
 |---|---|---|---|
-| mlb | 78,986 | 0.079 | 0.0591 |
-| soccer_intl | 9,003 | 0.3609 | 0.2511 |
+| mlb | 27,351 | 0.0494 | 0.0397 |
+| soccer_intl | 4,265 | 0.3784 | 0.2666 |
 
 The model trails the market on the same buckets in both sports -- narrowly in MLB, widely in
 soccer. Top of the ranked worst-bucket backlog (model source, verbatim numbers):
 
 | sport | time bucket | prob band | n | mean_p | mean_y | calib error |
 |---|---|---|---|---|---|---|
-| soccer_intl | 75-90+ | .2-.4 | 10 | 0.2117 | 1.0 | 0.7883 |
-| soccer_intl | 60-75 | .2-.4 | 90 | 0.2577 | 0.8333 | 0.5756 |
-| soccer_intl | 30-45 | 0-.2 | 264 | 0.0935 | 0.6534 | 0.5599 |
-| soccer_intl | 75-90+ | 0-.2 | 379 | 0.0661 | 0.5739 | 0.5078 |
-| mlb | late(inn7+) | .8-1 | 5,037 | 0.9211 | 0.6853 | 0.2357 |
+| soccer_intl | 75-90+ | .2-.4 | 7 | 0.2108 | 1.0 | 0.7892 |
+| soccer_intl | 30-45 | 0-.2 | 232 | 0.0951 | 0.6746 | 0.5795 |
+| soccer_intl | 60-75 | .2-.4 | 88 | 0.2578 | 0.8295 | 0.5718 |
+| soccer_intl | 15-30 | .4-.6 | 120 | 0.5 | 1.0 | 0.5 |
+| soccer_intl | 30-45 | .4-.6 | 104 | 0.5002 | 1.0 | 0.4998 |
 
-**Honest read:** the model is closest to the market early and drifts further as game state
-resolves -- late innings, late minutes, and the low-probability soccer bands. That drift is
-the backlog the ranked list surfaces; it is market-trailing, not any edge.
+**Honest read:** on the segment-clean corpus the top of the backlog is all soccer_intl --
+late minutes, the low-probability bands, and coin-flip (.4-.6) bands whose games all resolved
+one way. That is the backlog the ranked list surfaces; it is market-trailing, not any edge.
 
 **Two caveats stated on the page, not buried:**
 
-- The single worst bucket (soccer 75-90+, .2-.4) is **n=10** -- flagged as top of the backlog
+- The single worst bucket (soccer 75-90+, .2-.4) is **n=7** -- flagged as top of the backlog
   but not statistically load-bearing.
 - Several soccer buckets show `mean_y = 1.0` for hundreds of rows because the corpus contains
   **many correlated ticks per game** sharing one eventual outcome. Treat bucket counts as raw

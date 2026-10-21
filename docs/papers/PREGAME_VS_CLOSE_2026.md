@@ -2,11 +2,15 @@
 
 Neel Shah, CourtVision. Calibration readout; paper only. Generated 2026-10-06.
 
-**Summary.** I built pregame forecasters for three sports from public results data only and scored
-them against the devigged closing price on the same held-out games. On MLB moneyline and on soccer
-Over/Under 2.5 goals the model TRAILS the close: the gap is small but clearly measured, and its
-game-clustered 95% interval lies above zero. On NBA moneyline the gap is indistinguishable from zero,
-but that sample is underpowered. No row matches or beats the close in a way the sample can resolve.
+**Summary.** Can a pregame model built only from public results data match the devigged sportsbook
+close? I scored online-rating forecasters against the close on the later chronological half of each
+overlap: MLB moneyline (13,992 games), soccer O/U 2.5 against the Pinnacle close (7,558 matches from
+2022-10-08) and NBA moneyline (372 games, 2025-26). The comparison is the paired Brier gap, model
+minus close, with a game-clustered Diebold-Mariano 95% interval and a verdict rule fixed in advance.
+MLB and soccer read TRAILS_CLOSE: the gaps are small, and both intervals exclude zero. NBA reads
+MATCHES_CLOSE (underpowered): the interval includes zero, so I cannot tell, and an MLB-sized deficit
+would not be visible at n=372. No row is sharper than the close.
+
 The result is the point of this paper. What I want to show is the measurement discipline: leak-free
 walk-forward models, a stated devig, game-clustered intervals, a verdict rule fixed in advance, and
 a published correction when an earlier label did not survive an interval. The soccer per-game file
@@ -42,7 +46,7 @@ The close is the right benchmark for three reasons.
   to the price that was already available?
 
 The comparison has three possible honest answers: the model TRAILS the close, it MATCHES the close
-within the precision of the sample, or it BEATS it. Section 3.6 fixes which answer each interval
+within the precision of the sample, or it scores a lower Brier than the close (a replay status, not a packet verdict). Section 3.6 fixes which answer each interval
 gives.
 
 ## 2. Data and licences
@@ -157,7 +161,7 @@ distinguish parity from a real deficit, and is reported as underpowered.
 
 - MATCHES_CLOSE if the 95% interval includes 0.
 - TRAILS_CLOSE if the whole interval lies above 0.
-- status: beats close (replay status, not a packet verdict) if the whole interval lies below 0.
+- status: model sharper than the close (replay status, not a packet verdict) if the whole interval lies below 0.
 
 There is no tolerance band and no threshold on the point gap. Section 5.2 explains why that matters.
 
@@ -191,7 +195,7 @@ In words:
 - On soccer O/U 2.5 the pregame model trails the devigged close by +0.0076 Brier (95% CI [+0.0059, +0.0092], DM p 1.1e-19, n=7,558).
 - On NBA moneyline the gap to the Shin-devigged close, +0.0069 Brier (95% CI [-0.0038, +0.0175], DM p 0.20, n=372), is indistinguishable from zero and underpowered (MDE 0.0152).
 
-The MLB and soccer gaps are about 2.5 and 3.3 times their MDEs, so the close is measurably sharper
+The MLB and soccer gaps are about 2.5 and 3.3 times their MDEs (memo, plain-English reading), so the close is measurably sharper
 in both. They are still small in relative terms: the model's Brier score is 1.6% worse than the
 close's on MLB and 3.2% worse on soccer (memo, plain-English reading). The NBA MDE is more than
 twice the NBA point gap. A deficit the size of the MLB or soccer one would not be visible at
@@ -341,8 +345,8 @@ paper, in prose:
   NBA row is underpowered and is not described as parity.
 - **No claim of any return, gain or money result of any kind.** No order has ever been placed on any
   venue. All forward work is paper only.
-- **Earlier headline figures are retracted and are not repeated here.** A pregame betting-return
-  figure was retracted as a grading artifact: the grader picked each bet's direction from the
+- **Earlier headline figures are retracted and are not repeated here.** A pregame return
+  figure was retracted as a grading artifact: the grader picked each wager's direction from the
   market's own devigged lean and never read the model. An end-of-third-quarter in-play Brier figure
   was retracted because two features peeked at the quarter being predicted. An in-play hit-rate and
   return figure was retracted because it was graded against a soft proxy line rather than real
@@ -422,6 +426,37 @@ gives the same output either way.
 A reviewer who wants to break the scorer can try: duplicate a row, set an outcome to 2, add a row
 whose `p_model` equals its outcome, or mix devig methods. Each produces `"status": "REFUSED"` with a
 counted reason and exit code 3.
+
+The MLB and NBA corpora are private (`data/`, licence ledger rows 13 and 1), so rows 1, 3 and 4 of
+section 4.1 do not reproduce from a public clone; only the fixture tests above and the canonical
+figures check do.
+
+## 9. Limitations
+
+- **One chronological split, not rolling folds.** Each row is a single n // 2 split of the
+  chronological overlap. The ratings are online (MLB and NBA Elo; soccer exponentially weighted
+  Poisson), so each pregame probability uses only earlier results, but there is one train/test
+  boundary per sport, no rolling or expanding walk-forward folds, and no purge or embargo. The
+  soccer Platt recalibration is fitted once on the first half. A different split point could move
+  the gaps; that sensitivity was not run.
+- **De-vig is a model.** The primary rows use proportional de-vig and Shin is the sensitivity
+  (section 3.2; formulas in [`docs/evidence/method/DEVIG_METHODS.md`](../evidence/method/DEVIG_METHODS.md)).
+  Neither recovers the true probability. The multiplicative and power variants were not run.
+- **Provenance of the close.** All three closes are sportsbook prices from public archives, not
+  exchange prices, and there is no project-side timestamp rule: the close is whatever the archive
+  records as closing. The NBA odds file has no snapshot timestamp, and it is not established that
+  the cached ESPN price is the closing price (section 2).
+- **Information sets differ by design.** The models see no starting pitcher, line-ups, injuries,
+  rest or weather (section 5.1). The gaps measure a public-results model against the close, not the
+  best model that could be built.
+- **Power.** The NBA row has n=372 and an MDE of 0.0152 against a point gap of +0.0069, so it cannot
+  tell parity from a deficit the size of the MLB or soccer one.
+- **Multiplicity.** Three rows were planned and all three are reported, with no selection among
+  markets or splits; the two Shin rows and the date-clustered rows are sensitivity checks on the
+  same rows, not extra hypotheses. The candidate-signal search that the evidence packet counts
+  across 60 classes is a separate exercise and is not used by any model here.
+- **Retrospective.** Every holdout was scored after the games; the prospective record is planned,
+  not done (section 7).
 
 ## Appendix: full scorer output (verbatim, 2026-10-06)
 

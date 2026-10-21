@@ -46,7 +46,7 @@ agentic loop that re-validates every stage. Each stage refines the one above it.
 
 ## The one-paragraph version
 
-End-to-end NBA intelligence system: 6,508 commits in the public repository from 2026-03-09 to 2026-10-19
+End-to-end NBA intelligence system: 6,556 commits in the public repository from 2026-03-09 to commit 4f033b5a5 (counted 2026-10-21)
 (most are agent-authored under direction; the private repository's audited count was 5,504 at 2026-09-07,
 [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md) section 4), human-architected over an agentic build pipeline.
 Broadcast video to court coordinates (CV pipeline on a consumer GPU; tracking paused since 2026-09-17, and the

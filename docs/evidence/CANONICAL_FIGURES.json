@@ -93,11 +93,17 @@
     "figures": [
       {
         "key": "public_commit_count",
-        "value": 6508,
-        "as_of": "2026-10-19",
+        "value": 6556,
+        "as_of": "2026-10-21",
         "pattern": "(?<![\\d,.])(\\d[\\d,]*)\\+? commits\\b",
-        "source": "git rev-list --count origin/master in the public clone at merge base 6a3520ffe (2026-10-19); docs/research/PR5_REVIEW_2026-10-20.md",
+        "source": "git rev-list --count 4f033b5a5 on the public master branch (pinned sha, counted 2026-10-21; re-verified 2026-10-21 against the GitHub commits API: 6,556 commits, of which 1,620 = 24.7% carry a Co-Authored-By trailer naming Claude or Codex, per git log 4f033b5a5 -i --grep='^Co-Authored-By:.*\\(Claude\\|Codex\\)'). Same figures as webapp/app/(terminal)/about/commitCounts.ts; docs/research/site/OPUS_D_SEMANTIC_SWEEP_2026-10-21.md",
         "historical": [
+          {
+            "value": 6508,
+            "as_of": "2026-10-19",
+            "requires": "2026-10-19",
+            "source": "git rev-list --count at public merge base 6a3520ffe (2026-10-19); docs/research/PR5_REVIEW_2026-10-20.md; allowed only on a clause that carries 2026-10-19"
+          },
           {
             "value": 5504,
             "as_of": "2026-09-07",
@@ -105,6 +111,31 @@
             "source": "docs/JOB_EVIDENCE_PACKET.md section 4 (lines 276-277): the Mar-Sep 2026 audit count; allowed only on a clause that carries its own date (2026-09-07, Mar-Sep 2026 or Sep 2026)"
           }
         ]
+      },
+      {
+        "key": "walkforward_purge_hours",
+        "value": 48,
+        "unit": "hours",
+        "as_of": "2026-10-20",
+        "label": "method constant (no verdict)",
+        "source": "scripts/platformkit/eval_gate/walkforward.py line 31, PURGE_HOURS = 48: drop same-team games within 48 h of the test game (file last changed 2026-10-20, commit 25f9ba76b)"
+      },
+      {
+        "key": "walkforward_embargo_days",
+        "value": 3,
+        "unit": "days",
+        "as_of": "2026-10-20",
+        "label": "method constant (no verdict)",
+        "source": "scripts/platformkit/eval_gate/walkforward.py line 32, EMBARGO_DAYS = 3: drop the same matchup within 3 days of the fold boundary (file last changed 2026-10-20, commit 25f9ba76b)"
+      },
+      {
+        "key": "forward_cell_floor_games",
+        "value": 30,
+        "unit": "games",
+        "as_of": "2026-09-24",
+        "label": "pre-registered floor (no verdict; a cell below it reads INSUFFICIENT)",
+        "pattern": "(?<![\\d,.])(\\d+)-game floor\b",
+        "source": "docs/evidence/forward/scoreboard/PREREG_2026-09-24.json field policy.n_games = 30 (the base policy; the amendments through PREREG_2026-10-07.json, effective 2026-10-07, do not change it). Same 30 in PREREG_E_2026-09-25.json policy.n_games_floor for registry arm E"
       },
       {
         "key": "published_module_count",
@@ -117,10 +148,18 @@
       },
       {
         "key": "titled_findings_count",
-        "value": 17,
-        "as_of": "2026-10-19",
+        "value": 16,
+        "as_of": "2026-10-21",
         "pattern": "(?<![\\d,.])(\\d+) (?:titled |published )?findings\\b",
-        "source": "count of finding pages: ls -d 'webapp/app/(analytics)/analytics/findings'/*/ | wc -l"
+        "source": "count of finding pages excluding redirect stubs: ls -d 'webapp/app/(analytics)/analytics/findings'/*/ | wc -l gives 17 directories; findings/retraction/ is a redirect stub since 2026-10-20 (the retraction exhibit moved to the evidence record at /evidence/retractions/), so 16 finding pages",
+        "historical": [
+          {
+            "value": 17,
+            "as_of": "2026-10-19",
+            "requires": "2026-10-19",
+            "source": "the 2026-10-19 count, which included findings/retraction/ before it became a redirect stub; allowed only on a clause that carries 2026-10-19"
+          }
+        ]
       },
       {
         "key": "forward_window_end",

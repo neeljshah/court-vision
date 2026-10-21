@@ -9,7 +9,7 @@ Ground rules for this page:
 
 - **Calibration only.** Nothing here is a dollar, ROI, or betting-edge claim. The documented
   central result is that the market is efficient.
-- **Losses are listed.** `MARKET_SHARPER`, `BEHIND`, `UNDERPOWERED`, `REJECT`, and `RETRACTED`
+- **Losses are listed.** `MARKET_SHARPER_PROVISIONAL`, `TRAILS_CLOSE`, `BEHIND`, `UNDERPOWERED`, `REJECT`, and `RETRACTED`
   rows are part of the record, not footnotes.
 - **Power is stated before results.** The minimum detectable effect of every market-relative
   row -- which rows could have answered their question at all -- is on
@@ -24,8 +24,9 @@ Ground rules for this page:
   ([REPRODUCE.md](REPRODUCE.md)). Rows marked *recorded* are read from a committed artifact;
   the corpus behind them is private.
 
-Verdict vocabulary: `MATCHES_CLOSE` / `TRAILS_CLOSE` / `MARKET_SHARPER` / `MODEL_SHARPER_PROVISIONAL` /
-`BEHIND` / `UNDERPOWERED` / `REJECT` / `HOLD` / `RETRACTED` / `DESCRIPTIVE`.
+Verdict vocabulary (the packet's, as listed in `webapp/lib/packetVerdicts.ts`): `MATCHES_CLOSE` / `TRAILS_CLOSE` /
+`MARKET_SHARPER_PROVISIONAL` / `MODEL_SHARPER_PROVISIONAL` / `BEHIND` / `UNDERPOWERED` / `INSUFFICIENT` / `REJECT` / `RETRACTED`.
+Rows marked *descriptive (no verdict)* report a measurement and draw no verdict.
 
 ---
 
@@ -38,8 +39,8 @@ Verdict vocabulary: `MATCHES_CLOSE` / `TRAILS_CLOSE` / `MARKET_SHARPER` / `MODEL
 | MLB moneyline and soccer O/U 2.5, held-out half vs the devigged close, game-clustered intervals attached to the proof-page rows | MLB gap +0.0039 [+0.0028, +0.0051], DM p 3.6e-12, n=13,992; soccer gap +0.0076 [+0.0059, +0.0092], DM p 1.1e-19, n=7,558 | `TRAILS_CLOSE` (small, measurable; the proof page's MATCH was a fixed-threshold label) | [docs/evidence/pregame/DM_RECOMPUTE_2026-09-24.md](docs/evidence/pregame/DM_RECOMPUTE_2026-09-24.md) | same command; test `python -m pytest scripts/platformkit/eval_gate/test_dm_recompute_pregame.py -q` |
 | NBA win probability, 3-fold walk-forward | Brier 0.1930 (std 0.0084), n=1,473 | no market baseline in artifact | [results/winprob_walk_forward_results.json](results/winprob_walk_forward_results.json) | [RECEIPTS.md](RECEIPTS.md) row |
 | MLB total runs, pregame CRPS vs market | 2.9331 vs 2.8808, delta -0.0523 [-0.1657, 0.0482], n=300 | `UNDERPOWERED` | [last_run_mlb.json](scripts/platformkit/benchmarks/crps_market/last_run_mlb.json) | [RECEIPTS.md](RECEIPTS.md) row |
-| Per-sport reliability curves (NBA, MLB, soccer, tennis) | all bins with intervals | `DESCRIPTIVE` | [docs/evidence/calibration/](docs/evidence/calibration/) | [live: calibration](https://neeljshah.github.io/court-vision/analytics/calibration/) |
-| Calibration decomposition (reliability / resolution / uncertainty) | per-sport table | `DESCRIPTIVE` | [docs/evidence/calibration-decomposition.md](docs/evidence/calibration-decomposition.md) | recorded |
+| Per-sport reliability curves (NBA, MLB, soccer, tennis) | all bins with intervals | descriptive (no verdict) | [docs/evidence/calibration/](docs/evidence/calibration/) | [live: calibration](https://neeljshah.github.io/court-vision/analytics/calibration/) |
+| Calibration decomposition (reliability / resolution / uncertainty) | per-sport table | descriptive (no verdict) | [docs/evidence/calibration-decomposition.md](docs/evidence/calibration-decomposition.md) | recorded |
 | NBA player-prop accuracy, production-model chronological holdout | MAE: PTS 4.83, REB 1.92, AST 1.39, FG3M 0.89 (20,354 player-games) | accuracy, no market comparison | [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md) section 3 | recorded |
 
 ## B. In-game conditioning
@@ -58,7 +59,7 @@ Verdict vocabulary: `MATCHES_CLOSE` / `TRAILS_CLOSE` / `MARKET_SHARPER` / `MODEL
 |---|---|---|---|---|
 | Gate A-0: in-game models against the contemporaneous Kalshi in-play price, paired ticks, game-clustered bootstrap | MLB Brier 0.2377 vs 0.2067, delta +0.0310 [0.0170, 0.0454], 227 games; soccer 0.2279 vs 0.1427, 51 games | `BEHIND` (measured 2026-09-14 on a corpus that later failed the project's own join-integrity check; the per-game segmented revision -- 178 games / 27,351 ticks -- is published on the site with a regeneration receipt, and the verdict is unchanged: the market reference is closer) | [docs/evidence/ingame/GATE_A0_2026-09-14.md](docs/evidence/ingame/GATE_A0_2026-09-14.md), [mlb-ingame-regeneration.json](webapp/public/data/audits/mlb-ingame-regeneration.json) | [live: join-integrity finding](https://neeljshah.github.io/court-vision/analytics/findings/ingame-join-integrity/) |
 | Gate B: prior-season player-tracking aggregates added to the per-game prop model | pts / reb / ast all `CEILING_ZERO` across three seasons | `REJECT` | [q06_gate_b_tracking_ablation_summary.json](docs/evidence/props/q06_gate_b_tracking_ablation_summary.json) | recorded |
-| Per-game prop model + defender-matchup features | not seed-stable; CRPS underpowered | `HOLD` | [q15c_prop_game_model_matchup_summary.json](docs/evidence/props/q15c_prop_game_model_matchup_summary.json) | recorded |
+| Per-game prop model + defender-matchup features | not seed-stable; CRPS underpowered | `UNDERPOWERED` | [q15c_prop_game_model_matchup_summary.json](docs/evidence/props/q15c_prop_game_model_matchup_summary.json) | recorded |
 | Win-probability feature challenger | see memo | recorded verdict | [Q16_WINPROB_FEATURE_CHALLENGER_2026-09-14.md](docs/evidence/pregame/Q16_WINPROB_FEATURE_CHALLENGER_2026-09-14.md) | recorded |
 | Signal discovery: 60 candidate signal classes through the leak-free gate | 0 shipped; 513 recorded REJECT / DEFER verdicts | `REJECT` (the expected shape of honest discovery) | [spa_catalog_report.txt](scripts/platformkit/eval_gate/spa_catalog_report.txt), [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md) section G | recorded |
 | The retracted headline figures, what was wrong with each, and how each was caught | six figures | `RETRACTED` | [docs/evidence/retraction-story.md](docs/evidence/retraction-story.md), [docs/KNOWN_LIMITATIONS.md](docs/KNOWN_LIMITATIONS.md) | [live: retraction finding](https://neeljshah.github.io/court-vision/analytics/findings/retraction/) |
@@ -68,9 +69,9 @@ Verdict vocabulary: `MATCHES_CLOSE` / `TRAILS_CLOSE` / `MARKET_SHARPER` / `MODEL
 
 | Claim | Number | Verdict | Artifact | Reproduce |
 |---|---|---|---|---|
-| Derived intelligence layer between raw data and models | 151 files, manifest per sport | `DESCRIPTIVE` | [docs/INTELLIGENCE.md](docs/INTELLIGENCE.md), [docs/evidence/intelligence/](docs/evidence/intelligence/) | recorded |
-| Fact-claims corpus, generated vs re-verified split | 103,048 generated; 101,864 recompute from their declared source and formula (provenance, not predictive accuracy) | `DESCRIPTIVE` | [claims_corpus_meta.json](scripts/platformkit/analytics_showcase/out/claims_corpus_meta.json) | `python -m scripts.platformkit.analytics_showcase.claims_corpus_meta --check` |
-| Entity atlas | 1,549 entity cards | `DESCRIPTIVE` | [webapp/public/data/showcase/](webapp/public/data/showcase/) | [live site](https://neeljshah.github.io/court-vision/) |
+| Derived intelligence layer between raw data and models | 151 files, manifest per sport | descriptive (no verdict) | [docs/INTELLIGENCE.md](docs/INTELLIGENCE.md), [docs/evidence/intelligence/](docs/evidence/intelligence/) | recorded |
+| Fact-claims corpus, generated vs re-verified split | 103,048 generated; 101,864 recompute from their declared source and formula (provenance, not predictive accuracy) | descriptive (no verdict) | [claims_corpus_meta.json](scripts/platformkit/analytics_showcase/out/claims_corpus_meta.json) | `python -m scripts.platformkit.analytics_showcase.claims_corpus_meta --check` |
+| Entity atlas | 1,549 entity cards | descriptive (no verdict) | [webapp/public/data/showcase/](webapp/public/data/showcase/) | [live site](https://neeljshah.github.io/court-vision/) |
 
 ## E. The analytics site
 
@@ -106,11 +107,11 @@ market reference (section C). Both facts are part of the record.
 | A venue fee model that fails closed (raises on a unit error rather than returning a zero fee) and names what it could not verify | tested against golden numbers | engineering control | [execution/venue_fees.py](scripts/platformkit/execution/venue_fees.py) | recorded |
 | Guards against fabricated closing-line value: off-market prices are filtered at read time without mutating the ledger | two-condition rule | engineering control | [clv_ledger.py](scripts/platformkit/clv_ledger.py) | recorded |
 | The circuit breaker gates on the median, not the flattering fat-tailed mean | pre-registered 2026-07-15 | engineering control | [execution/circuit_breaker.py](scripts/platformkit/execution/circuit_breaker.py) | recorded |
-| The paper-execution audit publishes its own nulls: every logged paper bet is `executed=False`, and realized closing-line value is null where no independent close feed exists | see artifact | `DESCRIPTIVE` | [docs/evidence/execution-honesty.md](docs/evidence/execution-honesty.md), [paper_execution_audit.json](scripts/platformkit/analytics_showcase/out/paper_execution_audit.json) | recorded |
+| The paper-execution audit publishes its own nulls: every logged paper bet is `executed=False`, and realized closing-line value is null where no independent close feed exists | see artifact | descriptive (no verdict) | [docs/evidence/execution-honesty.md](docs/evidence/execution-honesty.md), [paper_execution_audit.json](scripts/platformkit/analytics_showcase/out/paper_execution_audit.json) | recorded |
 | A check-then-append race in the ledger writer, closed and proven by a test that races two real OS processes | test passes | engineering control | [clv_ledger_io.py](scripts/platformkit/clv_ledger_io.py), [test_clv_ledger_io.py](scripts/platformkit/test_clv_ledger_io.py) | `python -m pytest scripts/platformkit/test_clv_ledger_io.py -q` |
 | The bar for any real order is fixed in advance: six gates, including 8 weeks of fee-netted shadow markout with an interval excluding 0 on two market families; no gate may be weakened after its own result | pre-registered 2026-09-17; G6 has not started as of 2026-10-19 (zero weeks collected: the paper desk runs, but fill realism is counts-only and no fee-netted markout series exists yet; last row of this table) | pre-registration | [docs/GO_LIVE_GATES.md](docs/GO_LIVE_GATES.md) | read the page |
 | An integrity checker that fails the project's own headline in-game corpus, shipped with the finding it produced | exit 1 on the original corpus | engineering control | [check_ingame_join_integrity.py](scripts/platformkit/check_ingame_join_integrity.py) | [live: join-integrity finding](https://neeljshah.github.io/court-vision/analytics/findings/ingame-join-integrity/) |
-| Forward paper record 2026-10-06 to 2026-10-16 (no schedule on 10-17 or 10-18): 113 games served on prospective schedules, 9 night receipts (2 COMPLETE, 7 PARTIAL), every scoreboard cell INSUFFICIENT, 0 of 44 games qualified | as of 2026-10-19 | `DESCRIPTIVE` (no verdict) | [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md) section 5, [cumulative/2026-10-14.md](docs/evidence/forward/cumulative/2026-10-14.md) | recorded |
+| Forward paper record 2026-10-06 to 2026-10-16 (no schedule on 10-17 or 10-18): 113 games served on prospective schedules, 9 night receipts (2 COMPLETE, 7 PARTIAL), every scoreboard cell INSUFFICIENT, 0 of 44 games qualified | as of 2026-10-19 | descriptive (no verdict) | [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md) section 5, [cumulative/2026-10-14.md](docs/evidence/forward/cumulative/2026-10-14.md) | recorded |
 
 ---
 

@@ -27,35 +27,39 @@ where we happen to look good.
 
 ## 1. Who is right when we disagree? (market_disagreement_profile)
 
+**Revision 2, segment-clean corpus** (rebuilt 2026-09-16 from the 178-game segmented MLB corpus; see the [join-integrity finding](/analytics/findings/ingame-join-integrity/)). Revision 1 was withdrawn: its 227-game MLB corpus failed the join-integrity check (126 of 227 stored files mixed ticks from consecutive-day games under one outcome label), so its figures are not republished here.
+
 Every graded in-game row is bucketed by `|model_prob - market_prob|` into four bands
 (`<.02`, `.02-.05`, `.05-.10`, `>=.10`). Per bucket we report the row count, the model's
 Brier, the market's Brier, and `model_closer_rate` -- the fraction of rows where the model's
 absolute error beat the market's (ties excluded).
 
-The pattern is monotonic: the further our model strays from the market, the more often the
-market turns out right, and the wider the market's Brier advantage.
+In MLB the pattern is monotonic: the further our model strays from the market, the more often
+the market turns out right, and the wider the market's Brier advantage. In soccer_intl the widest
+bucket is again the worst for the model, but the narrower buckets do not fall in order.
 
-**MLB** (`data/cache/ingame_grade_joined/mlb/*.jsonl`):
-
-| Disagreement bucket | n | model Brier | market Brier | model_closer_rate |
-|---|---|---|---|---|
-| `<.02`    | 12,415 | 0.184598 | 0.184498 | 0.4494 |
-| `.02-.05` | 13,934 | 0.203230 | 0.203408 | 0.4592 |
-| `.05-.10` | 19,235 | 0.218726 | 0.217043 | 0.4085 |
-| `>=.10`   | 33,402 | 0.282705 | 0.210258 | 0.3773 |
-
-**soccer_intl** (`data/cache/ingame_grade_joined/soccer_intl/*.jsonl`):
+**MLB** (`data/cache/ingame_grade_joined/mlb_segmented/`):
 
 | Disagreement bucket | n | model Brier | market Brier | model_closer_rate |
 |---|---|---|---|---|
-| `<.02`    | 1,105 | 0.109427 | 0.106941 | 0.3403 |
-| `.02-.05` | 1,524 | 0.141101 | 0.133776 | 0.3983 |
-| `.05-.10` | 1,968 | 0.131688 | 0.104152 | 0.3201 |
-| `>=.10`   | 4,406 | 0.330582 | 0.172027 | 0.2152 |
+| `<.02`    | 4,649 | 0.129506 | 0.129087 | 0.4166 |
+| `.02-.05` | 5,690 | 0.162348 | 0.161486 | 0.4130 |
+| `.05-.10` | 8,482 | 0.179072 | 0.177298 | 0.3479 |
+| `>=.10`   | 8,530 | 0.177763 | 0.129824 | 0.1994 |
 
-At the biggest disagreements (`>=.10`) the model is closer only **37.7%** of the time in MLB
-and **21.5%** in soccer_intl, and the market's Brier is lower in both. When we agree with the
-market (`<.02`) the two are indistinguishable (MLB 0.184598 vs 0.184498). The signal is
+**soccer_intl** (`data/cache/ingame_grade_joined/soccer_intl_segmented/`):
+
+| Disagreement bucket | n | model Brier | market Brier | model_closer_rate |
+|---|---|---|---|---|
+| `<.02`    | 554 | 0.142768 | 0.137637 | 0.2292 |
+| `.02-.05` | 679 | 0.113592 | 0.104293 | 0.3756 |
+| `.05-.10` | 741 | 0.132395 | 0.103844 | 0.4103 |
+| `>=.10`   | 2,291 | 0.508022 | 0.265530 | 0.1048 |
+
+Revision 2 headline, as the join-integrity finding publishes it: at disagreement >=.10 the
+model is closer 0.1994 of the time (Brier 0.177763 vs 0.129824, n=8,530 MLB ticks); in
+soccer_intl it is closer 0.1048 of the time, and the market's Brier is lower in both. When we
+agree with the market (`<.02`) the two are indistinguishable (MLB 0.129506 vs 0.129087). The signal is
 unambiguous: our disagreements with the market are, on average, our mistakes.
 
 ![Model vs market Brier by disagreement bucket, MLB and soccer_intl; model_closer_rate falls as disagreement grows](../img/market_disagreement_profile.png)
@@ -69,7 +73,7 @@ soccer_intl. Data:
 
 ## 2. Is the gap stable over time? (calibration_over_time)
 
-The same joined corpora, split by calendar month, scored for both Brier and ECE (10-bin
+The same segment-clean corpora (revision 2), split by calendar month, scored for both Brier and ECE (10-bin
 expected calibration error). Only two months of data exist in either corpus (2026-06,
 2026-07), so this is a **two-point trend, not a seasonal-drift study** -- disclosed as such
 rather than dressed up. A drift-significance test is deferred until >=4 months of corpus
@@ -79,20 +83,20 @@ exist.
 
 | Month | n | model Brier | market Brier | model ECE | market ECE |
 |---|---|---|---|---|---|
-| 2026-06 | 33,290 | 0.2404 | 0.2243 | 0.1165 | 0.0944 |
-| 2026-07 | 45,696 | 0.2357 | 0.1938 | 0.0834 | 0.0635 |
+| 2026-06 | 5,030 | 0.1968 | 0.1873 | 0.1265 | 0.1210 |
+| 2026-07 | 22,321 | 0.1600 | 0.1428 | 0.0750 | 0.0439 |
 
 **soccer_intl:**
 
 | Month | n | model Brier | market Brier | model ECE | market ECE |
 |---|---|---|---|---|---|
-| 2026-06 | 5,874 | 0.1729 | 0.1156 | 0.2112 | 0.1517 |
-| 2026-07 | 3,129 | 0.3310 | 0.1936 | 0.4210 | 0.2961 |
+| 2026-06 | 1,213 | 0.3273 | 0.1955 | 0.3644 | 0.2596 |
+| 2026-07 | 3,052 | 0.3346 | 0.1950 | 0.4243 | 0.2952 |
 
 The honest read: the market beats the model on Brier and ECE in **every** sport-month cell.
-The MLB model improves slightly month over month (0.2404 -> 0.2357) but the market improves
-faster, so the gap widens. soccer_intl degrades in July (model Brier 0.1729 -> 0.3310), and
-degrades more than the market does. There is no drift-reversal and no edge to claim -- this
+The MLB model improves month over month (0.1968 -> 0.1600) but the market improves faster
+(0.1873 -> 0.1428), so the gap widens. soccer_intl is roughly flat for both (model 0.3273 ->
+0.3346, market 0.1955 -> 0.1950), with the model far behind in both months. There is no drift-reversal and no edge to claim -- this
 is market efficiency with a visible, if data-thin, time dimension.
 
 ![Monthly model vs market Brier and ECE for MLB and soccer_intl across 2026-06 and 2026-07](../img/calibration_over_time.png)
@@ -105,7 +109,7 @@ is market efficiency with a visible, if data-thin, time dimension.
 ## Reproduce
 
 Both scripts read the private joined-grade corpora
-(`data/cache/ingame_grade_joined/{mlb,soccer_intl}/*.jsonl`, gitignored) and rewrite their
+(`data/cache/ingame_grade_joined/{mlb_segmented,soccer_intl_segmented}/`, gitignored) and rewrite their
 committed JSON plus the charts under `docs/img/`:
 
 ```

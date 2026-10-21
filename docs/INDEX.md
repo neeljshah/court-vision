@@ -93,7 +93,7 @@ reprice. Follow the links to go as deep as you want at any stage.
 - [evidence/model_cards](evidence/model_cards/INDEX.json) -- one model card per forecaster a public number comes from (intended use, data, validation, measured result, limits, artifact sha256); checked by `python -m scripts.platformkit.eval_gate.model_card_check`
 - [evidence/SESSION_2026-09-01_INDEX](evidence/SESSION_2026-09-01_INDEX.md) -- public-safe session index: tracking audit, harness hardening, and paper-execution receipts
 - [evidence/retraction-story](evidence/retraction-story.md) -- the flagship: the instruments that refuted my own headline numbers
-- [evidence/ingame-conditioning](evidence/ingame-conditioning.md) -- the one measured calibration win, market-comparison losses stated plainly
+- [evidence/ingame-conditioning](evidence/ingame-conditioning.md) -- a static-to-conditional calibration finding, market-comparison losses stated plainly
 - [evidence/agent-fleet-direction](evidence/agent-fleet-direction.md) -- directing an agent fleet under fail-closed gates (the large majority agent-authored, disclosed)
 - [evidence/devig-stack](evidence/devig-stack.md) -- four devig methods from scratch; the Shin-devigged close as the honest yardstick
 - [evidence/leak-instruments](evidence/leak-instruments.md) -- the leakage-catching instruments (walk-forward guard, truncation invariance, multi-corpus gate, ship gate)

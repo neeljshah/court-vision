@@ -10,7 +10,7 @@ This project combines computer vision, data engineering, statistical modeling, a
 
 ## How this repository was built
 
-This repository was built by one person directing coding agents. The owner set the goals, the validation rules, and the acceptance bars; agents wrote most of the code, tests, and documentation, and a second agent reviewed each landed change against those bars. As measured on 2026-10-20, 24.8% of the 6,515 public commits carry an agent co-author trailer. The true agent-authored share is higher, because older and automated commits carry no trailer. One person directed, reviewed, and is accountable for every change; most lines were not hand-written, and nothing here claims otherwise. What the owner owns is the specification, the leak-free evaluation design, and the decisions to keep, reject, or retract results.
+This repository was built by one person directing coding agents. The owner set the goals, the validation rules, and the acceptance bars; agents wrote most of the code, tests, and documentation, and a second agent reviewed each landed change against those bars. Counted from git log at commit 4f033b5a5 on 2026-10-21, 1,620 of the 6,556 commits on the public master branch (24.7%) carry a Co-Authored-By trailer naming Claude or Codex (`git rev-list --count 4f033b5a5`; `git log 4f033b5a5 -i --grep='^Co-Authored-By:.*\(Claude\|Codex\)' --format=%H | wc -l`). The true agent-authored share is higher, because older and automated commits carry no trailer. One person directed, reviewed, and is accountable for every change; most lines were not hand-written, and nothing here claims otherwise. What the owner owns is the specification, the leak-free evaluation design, and the decisions to keep, reject, or retract results.
 
 Retractions are part of the audit trail, not something hidden. The full tree holds 157 retract or revert commits, and 23% of public commits mention fix, revert, or retract. Find them with `git log -i --grep="retract\|revert" --oneline`. The system is a calibrated forecaster, not a profit claim. Every number links to a committed artifact; start from [EVIDENCE.md](EVIDENCE.md).
 
@@ -94,7 +94,7 @@ Environment: Python 3.10.20, conda env `basketball_ai`, CUDA 11.8, RTX 4060 8GB 
 Any change that affects model output, features, or prediction logic must clear the ship gate:
 
 1. **Walk-forward CV** -- expanding window; all folds must improve; `max_train_date < min_test_date` asserted per fold
-2. **Multi-corpus** -- calibration must beat raw on >=2 independent OOS corpora
+2. **Multi-corpus** -- calibration must improve on raw on >=2 independent OOS corpora
 3. **Truncation-invariance** -- features at time T are byte-identical with or without future events
 4. Report walk-forward numbers in the PR, not single-split numbers alone
 5. If a result does not clear the gate, document the rejection honestly -- do not drop it or bury it

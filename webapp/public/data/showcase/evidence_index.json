@@ -74,7 +74,7 @@
    "claim": "I don't just report that the closing reference forecast beats my in-game model -- I take my own Brier gap apart into its named components and publish the ranked list of exactly which game states my model handles worst. Two instruments do this:",
    "strongest_receipt": {
     "source": "scripts/platformkit/analytics_showcase/out/murphy_decomposition.json",
-    "label": "mlb: model Brier 0.2377 is worse than market 0.2067 (gap=+0.0310); driven mainly by resolution (information, not fixable by recalibration) (reliability_gap=+0.0066, resolution_gap=-0.0235). soccer_intl: model Brier 0.2279 is worse than m..."
+    "label": "mlb: model Brier 0.1668 is worse than market 0.1510 (gap=+0.0158); driven mainly by resolution (information, not fixable by recalibration) (reliability_gap=+0.0022, resolution_gap=-0.0149). soccer_intl: model Brier 0.3325 is worse than m..."
    },
    "cited_artifacts": [
     "scripts/platformkit/analytics_showcase/out/murphy_decomposition.json",
@@ -180,7 +180,7 @@
   {
    "slug": "ingame-conditioning",
    "bucket": "Calibration & market",
-   "title": "In-Game Conditioning -- the one measured calibration win",
+   "title": "In-game conditioning: a static-to-conditional calibration finding",
    "claim": "The honest question is not \"can I beat the close\" -- I proved against myself that I cannot, pregame -- but \"does the system's mid-game conditioning actually sharpen the forecast.\" It does, and the win is measured, not asserted: conditioning the win-probability forecaster on the realized in-game state improves calibration (Brier) on real out-of-sample corpora in two sports. This is forecaster qu...",
    "strongest_receipt": {
     "source": null,
@@ -223,7 +223,7 @@
    "claim": "We do not hide the cases where the closing reference forecast beats us. We instrument them. Two published analytics answer two honest questions:",
    "strongest_receipt": {
     "source": "scripts/platformkit/analytics_showcase/out/market_disagreement_profile.json",
-    "label": "mlb: at largest disagreement (>=.10, n=33402), market usually right (model_closer_rate=0.377, model_brier=0.2827 vs market_brier=0.2103). soccer_intl: at largest disagreement (>=.10, n=4406), market usually right (model_closer_rate=0.215..."
+    "label": "mlb: at largest disagreement (>=.10, n=8530), market usually right (model_closer_rate=0.199, model_brier=0.1778 vs market_brier=0.1298). soccer_intl: at largest disagreement (>=.10, n=2291), market usually right (model_closer_rate=0.105,..."
    },
    "cited_artifacts": [
     "scripts/platformkit/analytics_showcase/out/market_disagreement_profile.json",

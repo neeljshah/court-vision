@@ -4,14 +4,15 @@ Neel Shah, CourtVision. Calibration readout; paper only. Drafted 2026-10-20 from
 dated 2026-09-03 .. 2026-10-16. No new computation: every number below is copied from the file named
 beside it; the only arithmetic done for this page is two ratios of published Brier scores (marked).
 
-**Summary.** I asked whether an in-game win-probability model that conditions on the realized game
-state is closer to the outcome than the contemporaneous venue price on the same ticks. It is not. On
-Kalshi MLB and international-soccer in-play ticks the model is BEHIND the price with game-clustered
-intervals that exclude zero (Gate A-0; measured before the join-integrity repair, not re-established after it, section 2). A hygiene re-derivation that removed prior-game and pre-start
-ticks narrowed the MLB gap but kept the verdict (S541). Six further probe families looked for any residual, recalibration, price summary or state reaction that improves on a fresh mid; none did
-(Model 2.0, S540). The one mechanism that survived a sealed, live-like replay is narrow: when OUR copy
-of the book is stale, moving the market's implied strength through the state change is closer to the
-outcome than the stale copy; it is never ahead of a fresh price (S542). No order has been placed.
+**Summary.** On identical in-play ticks, is an in-game win-probability model closer to the
+outcome than the contemporaneous Kalshi mid? Gate A-0 scored the per-tick paired Brier gap, model
+minus mid, with a game-clustered bootstrap 95% interval, on Kalshi MLB (227 games) and international
+soccer (51 games) captured 2026-06-20 to 2026-07-12. Both read BEHIND: each interval excludes zero
+on the market's side. Both corpora later failed a join-integrity check; after the S541 hygiene
+re-derivation MLB still reads BEHIND (+0.01696 [0.00834, 0.02542], 177 games), and soccer was not
+re-established. Six probe families found nothing closer than a fresh mid. One sealed replay held,
+status: accept (staleness backstop only): closer than our stale copy of the book, never ahead
+of a fresh price.
 
 ## 1. The question and why it is hard
 
@@ -62,7 +63,7 @@ favoured, UNDERPOWERED when n_games < 30 or the interval contains 0
 
 Source: [`gate_a0_summary.md`](../evidence/ingame/gate_a0_summary.md). Rounded to four decimals these
 are the canonical rows `mlb_ingame_vs_kalshi_mid` and `soccer_ingame_vs_kalshi_mid` in
-[`CANONICAL_FIGURES.json`](../evidence/CANONICAL_FIGURES.json). No cell in either corpus is AHEAD. By
+[`CANONICAL_FIGURES.json`](../evidence/CANONICAL_FIGURES.json). No cell in either corpus has the model ahead of the market (interval excluding zero on the model's side). By
 phase the MLB gap widens late (innings 1-3 +0.01812, 4-6 +0.02874, 7-9+ +0.07411, all BEHIND). The
 model changes on 8.3 pct of MLB ticks (only at parsed state transitions); the market changes on 25.0
 pct (GATE_A0 verdict section).
@@ -181,7 +182,7 @@ prereg sealed before the first metric
 
 Pre-specified verdict rule (verbatim in substance from the prereg): fewer than 30 population games per
 season -> INSUFFICIENT; if the share of projected ticks whose state differs at L = 18 is below 0.20
-in either season, or the canary interval's upper bound is not below 0 in both -> INACTIVE; else if in
+in either season, or the canary interval's upper bound is not below 0 in both -> status: inactive (replay status: the delayed-state replay did not exercise the projection enough to judge it); else if in
 BOTH seasons the PROJ - STALE interval at L = 18 and the real-versus-placebo interval both have upper
 bound < 0 -> status: accept (staleness backstop only); otherwise REJECT.
 
@@ -250,15 +251,14 @@ different market (totals CRPS, not win-probability Brier on paired ticks).
 
 ## 8. Limitations
 
-- **One capture window per Gate A-0 corpus** (2026-06-20..07-12) and one venue (Kalshi). model_prob
-  provenance is not audited by Gate A-0 or S541 (both memos say so).
-- **Join-integrity history and small soccer n.** Both corpora failed the check after publication
-  (section 2); soccer is 51 games raw, 27 after segmentation, 11 labelled after S541.
+- **One capture window per Gate A-0 corpus** (2026-06-20..07-12) and one venue (Kalshi). How model_prob was produced is not audited by Gate A-0 or S541 (both memos say so), so whether the Gate A-0 models were trained walk-forward is not established here; only the Model 2.0 probes are walk-forward by date (PROBE_RAILS).
+- **The reference is a raw mid, not a de-vigged close.** Each tick is compared with the venue mid on that tick (Kalshi; Polymarket for the NBA replay). No de-vig is applied and it is not "the close" ([`DEVIG_METHODS.md`](../evidence/method/DEVIG_METHODS.md)); P2 found no better summary of the book than the mid.
+- **Join integrity.** Both corpora failed the project's join-integrity check after publication (section 2). The segmented revision keeps the MLB verdict (178 of 227 files, 27,351 ticks, Brier skill score -0.1043, before -0.1502) and keeps 27 of 51 soccer files; the soccer BEHIND row was measured before the repair and not re-established after it (11 labelled games after S541).
+- **Staleness versus skill.** Our MLB state arrives a nightly median p50 of 18.5 s after the play ([`INPLAY_LATENCY_2026.md`](INPLAY_LATENCY_2026.md) Table 1, ledgers through 2026-10-16), and the venue book often moves inside that window. A model priced from that view is older than the mid, so BEHIND measures freshness as much as model quality; this paper does not separate the two. The S542 gain is likewise against our own stale copy, not a venue weakness.
 - **No game-end timestamp on disk** for mlb_clean, so no post-final trim is possible (S541 NOT VERIFIED).
-- **NBA backstop evidence is single-venue Polymarket** with unverified price-point semantics and clock
-  alignment; the 18 s delay is a scenario.
-- **Most probe cells are INSUFFICIENT** (P1, P2, P6 under 30 games); their reading is "no difference
-  visible at this n", not "no difference".
+- **NBA backstop evidence is single-venue Polymarket** with unverified price-point semantics and clock alignment; the 18 s delay is a scenario.
+- **Multiplicity.** Gate A-0 splits, six probe families and the S542 cells are many comparisons with no correction across them. Only S542 is counted as a finding, and it was tested under a prereg sealed before the first metric, in two seasons; every other family is reported as REJECT or INSUFFICIENT. One survivor among this many tests should be read with that in mind.
+- **Most probe cells are INSUFFICIENT** (P1, P2, P6 under 30 games); their reading is "no difference visible at this n", not "no difference".
 
 ## 9. What would change the conclusion (stated before any new data)
 
@@ -271,7 +271,7 @@ different market (totals CRPS, not win-probability Brier on paired ticks).
 
 ## 10. Reproduce
 
-Tick corpora are private (`data/`); test counts are as recorded in the memos, not re-run for this page.
+The tick corpora are private (`data/`), so the Gate A-0, S541 and S542 tables do not reproduce from a public clone; test counts are as recorded in the memos, not re-run for this page.
 
 | # | Command | Expected | Needs |
 |---|---|---|---|

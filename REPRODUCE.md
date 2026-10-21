@@ -27,12 +27,12 @@ Expected output (final two lines; last recorded run as of 2026-09-17,
 `scripts/platformkit/analytics_showcase/out/check_all_report.json`):
 
 ```
-total 110  pass 96  fail 0  no_check 14  runtime <N>s
+total <N>  pass <N>  fail 0  no_check <N>  runtime <N>s
 wrote scripts/platformkit/analytics_showcase/out/check_all_report.json
 ```
 
-The module count grows as more showcase modules are authored -- do not treat
-"110" as fixed, treat "0 FAIL" as the bar. `no_check` modules have no self-check yet and are listed by name in the
+The module count grows as more showcase modules are authored; for the current counts
+see docs/evidence/CANONICAL_FIGURES.json (titled_findings_count / module counts). Treat "0 FAIL" as the bar. `no_check` modules have no self-check yet and are listed by name in the
 report. The run also fails if any `--check` writes to a tracked file, so running it never alters your clone. `check_all.py` runs each module
 sequentially as `python -m <module> --check`; a module's `--check` re-verifies
 its own committed `out/*.json` (or a synthetic self-check with a known

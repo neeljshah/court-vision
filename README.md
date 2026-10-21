@@ -39,9 +39,9 @@ artifact -> reproduce command).
 
 | Question | What the record says | Verdict |
 |---|---|---|
-| Does the pregame model beat the closing line? | NBA held-out Brier 0.1735 vs 0.1666 for the devigged close (n=372 scored, CI includes 0, underpowered); MLB moneyline and soccer O/U trail by 0.0039 and 0.0076 Brier with intervals excluding 0; totals and ATP trail by more (recomputed 2026-09-24) | matches or trails the close -- never beats it |
+| How does the pregame model compare with the devigged close? | NBA held-out Brier 0.1735 vs 0.1666 for the devigged close (n=372 scored, CI includes 0, underpowered); MLB moneyline and soccer O/U trail by 0.0039 and 0.0076 Brier with intervals excluding 0; totals and ATP trail by more (recomputed 2026-09-24) | TRAILS_CLOSE on MLB moneyline and soccer O/U; MATCHES_CLOSE (underpowered) on NBA; no row scores better than the close |
 | Does in-game state help? | vs a static pregame prior: NBA Brier 0.209 to 0.159, MLB 0.241 to 0.126 | sharper than static |
-| Does it beat the live market? | NBA end-Q1: market sharper (n=1,592). Later checkpoints: underpowered. Kalshi paired ticks (2026-09-14): model behind | no -- and the page says so |
+| How does it compare with the live market? | NBA end-Q1: market sharper (n=1,592, as of 2026-07-22). Later checkpoints: underpowered. Kalshi paired ticks (2026-09-14): model behind | BEHIND on the Kalshi ticks; MARKET_SHARPER_PROVISIONAL at NBA end-Q1 -- and the page says so |
 | How many discovered signals shipped? | 0 of 60 candidate classes; 513 recorded reject / defer verdicts | the gate rejects, by design |
 | What got retracted? | six headline figures, each root-caused to a leak or a grading artifact by the project's own harnesses | [the retraction record](docs/evidence/retraction-story.md) |
 | Player-prop accuracy | PTS MAE 4.83, REB 1.92, AST 1.39 on a 20,354-row chronological holdout (re-measured 2026-07-20) | accuracy only |
@@ -54,8 +54,8 @@ the system also built the instruments that caught his own overclaims, and publis
 
 ## How far it goes
 
-One person directing an agentic build pipeline. This public repository holds 6,508 commits from 2026-03-09 to
-2026-10-19 (`git rev-list --count master`), most of them agent-authored under direction; the audited count in the
+One person directing an agentic build pipeline. This public repository holds 6,556 commits from 2026-03-09 to
+commit 4f033b5a5 (`git rev-list --count 4f033b5a5`, counted 2026-10-21; 1,620 of them, 24.7%, carry a Claude or Codex Co-Authored-By trailer), most of them agent-authored under direction; the audited count in the
 private repository was 5,504 at 2026-09-07 (packet section 4) and has grown since. Counts below are read
 from committed artifacts or the audited [evidence packet](docs/JOB_EVIDENCE_PACKET.md); the layer-by-layer
 map is **[docs/CAPABILITIES.md](docs/CAPABILITIES.md)**.
@@ -63,7 +63,7 @@ map is **[docs/CAPABILITIES.md](docs/CAPABILITIES.md)**.
 | Layer | Scale |
 |---|---|
 | Sports covered by one kernel + per-sport adapters | NBA, MLB, soccer, tennis |
-| Analytics site (public, static, CI-gated) | 29 research papers, 77 measurement modules, 17 findings, 10 interactive inspectors, 1,549 entity cards, 1,653 searchable records |
+| Analytics site (public, static, CI-gated) | 29 research papers, 77 measurement modules, 16 findings (as of 2026-10-21), 10 interactive inspectors, 1,549 entity cards, 1,653 searchable records |
 | Intelligence layer between raw data and models | 151 files; a 291,625-pair player-vs-player matchup matrix; 1,249 player dossiers across 28 categories |
 | Signal discovery under a gate built to refute | 60 candidate signal classes, 0 shipped; 513 recorded reject / defer verdicts; 197 hypothesis-ledger rows with every NULL kept ([the ledgers are public](domains/)) |
 | Fact-claims corpus | 103,048 generated claims, 101,864 re-verified from their declared source and formula |

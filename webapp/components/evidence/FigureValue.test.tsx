@@ -17,7 +17,7 @@ describe("FigureValue", () => {
   });
 
   it("formats a large count with separators and renders a string figure verbatim", () => {
-    expect(figureText({ k: "public_commit_count" })).toBe("6,508");
+    expect(figureText({ k: "public_commit_count" })).toBe("6,556");
     expect(figureText({ k: "g6_status" })).toBe("has not started as of 2026-10-19 (zero weeks collected)");
     expect(figureText({ k: "forward_window_end" })).toBe("2026-10-16");
   });
@@ -46,7 +46,7 @@ describe("FigureValue", () => {
 
   it("can drop the badges and take a custom format", () => {
     render(<FigureValue k="titled_findings_count" asOf={false} receipt={false} format={(v) => `${v} findings`} />);
-    expect(screen.getByText("17 findings")).toBeInTheDocument();
+    expect(screen.getByText("16 findings")).toBeInTheDocument();
     expect(screen.queryByRole("link")).not.toBeInTheDocument();
   });
 

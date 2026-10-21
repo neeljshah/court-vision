@@ -27,8 +27,8 @@ showed why it was fiction: it chose bet direction from `devig(over_odds, under_o
 market's own devigged lean -- and **never read the model** (the eval CSV had no prediction
 column). It priced every bet at a flat -110 that real books do not offer, and its filters
 were tuned in-sample on the same file. It was betting the market's favorite and calling the
-result a model edge. At real odds the model's own number is about -2.00%, i.e.
-break-even-minus-vig. (The retracted figure -- `+18.38%` -- is quoted only in
+result a model edge. Priced at real odds, the model's own selections lose to the vig;
+the honest statement is calibration, not return: the model does not beat the devigged close. (The retracted figure -- `+18.38%` -- is quoted only in
 JOB_EVIDENCE_PACKET section 4, as a documented artifact.)
 
 **The end-of-Q3 win-probability number had a Q4 feature leak.** The famous end-of-Q3 Brier
@@ -62,7 +62,7 @@ have the harnesses that prove it.
 
 | Retraction | What was wrong | Proof artifact | Honest replacement |
 |---|---|---|---|
-| Pregame ROI headline | Grader bet the market's devigged lean, never read the model, flat -110 fiction, in-sample-tuned filters | `gate1_full_analysis.json` (model's own unfiltered number: -2.00%); grader read line-by-line in JOB_EVIDENCE_PACKET s3/s4 | "Roughly break-even-minus-vig vs real closing lines" |
+| Pregame ROI headline | Grader bet the market's devigged lean, never read the model, flat -110 fiction, in-sample-tuned filters | `gate1_full_analysis.json` (the model's own unfiltered selections lose to the vig at real odds; no return figure is published); grader read line-by-line in JOB_EVIDENCE_PACKET s3/s4 | "Roughly break-even-minus-vig vs real closing lines" |
 | End-of-Q3 win-prob Brier | Two Q4-derived features leaked; also mis-sourced | Leak-free walk-forward re-run; controlled A/B (~4% relative inflation); JOB_EVIDENCE_PACKET s3 "In-game win-probability Brier" | "Leak-free walk-forward end-of-Q3 Brier ~0.141" |
 | Prop-model overfit (STL/BLK) | Leaky grid search: train R^2 ~0.79 vs leak-free holdout ~0.06 | `src/prediction/prop_cv_split.py` (documents the gap; hard-codes corrective regularization) | "Caught and hard-corrected a leakage-driven overfit" |
 | Assists ROI edge (retracted 2026-07-21) | Regime-dependent; broke in the playoffs | `gate1_full_analysis.json` (historical record only); JOB_EVIDENCE_PACKET s3 "Betting edge" | No $/ROI edge claimed anywhere |

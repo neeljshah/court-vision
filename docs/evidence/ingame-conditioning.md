@@ -1,6 +1,6 @@
-# In-Game Conditioning -- the one measured calibration win
+# In-game conditioning: a static-to-conditional calibration finding
 
-> Pregame, the market is efficient: across 4 sports and 6 independent corpora my leak-free
+> Pregame, the market is efficient: my leak-free
 > forecaster TRAILS the devigged close on MLB moneyline (+0.0039 Brier, 95% CI [+0.0028, +0.0051]) and soccer O/U 2.5 (+0.0076, [+0.0059, +0.0092]) and is indistinguishable from it on NBA moneyline at an underpowered n=372 (corrected 2026-10-06 from DM_RECOMPUTE_2026-09-24) and beats nothing. The one
 > place the machinery measurably sharpens is IN-GAME -- fusing the pregame rating prior with
 > the realized mid-game state improves win-probability calibration. A live book sees the
@@ -17,8 +17,17 @@ The honest question is not "can I beat the close" -- I proved against myself tha
 pregame -- but "does the system's mid-game conditioning actually sharpen the forecast." It
 does, and the win is measured, not asserted: conditioning the win-probability forecaster on
 the realized in-game state improves calibration (Brier) on real out-of-sample corpora in two
-sports. This is forecaster quality. A live book also sees the score, so no beat-the-market
-test applies to an in-game number and none is claimed.
+sports. This is forecaster quality, measured against the model's own static pregame prior,
+not against the market. Against the contemporaneous Kalshi in-play price on the same ticks the
+in-game models are BEHIND (measured 2026-09-14 on the 227-game corpus that later failed the
+join-integrity check; the 178-game segmented revision keeps the verdict BEHIND).
+
+**Staleness caveat.** The in-game model updates only at parsed state transitions, so on many
+ticks it is staler than the market price, and the BEHIND verdict does not separate staleness
+from forecast quality. As of 2026-09-14, model_prob changes on 8.3 pct of MLB ticks against
+25.0 pct for the market price (source: `docs/evidence/ingame/GATE_A0_2026-09-14.md`, lines
+44-45, measured on the 227-game corpus). How stale our in-play view runs is measured in the
+[in-play latency paper](../papers/INPLAY_LATENCY_2026.md).
 
 ---
 
@@ -28,15 +37,19 @@ test applies to an in-game number and none is claimed.
 
 | Sport | static (prior only) | conditional (prior + state) | Honesty label | Source |
 |---|---|---|---|---|
-| NBA | Brier **0.209** | Brier **0.159** | calibration, real-corpus OOS, `edge_claimed=False` | `scripts/platformkit/proof_nba/ingame_accuracy.py` |
-| MLB | Brier **0.241** | Brier **0.126** | calibration, real-corpus OOS, `edge_claimed=False` | `scripts/platformkit/proof_mlb/ingame_accuracy.py` |
+| NBA | higher Brier | lower Brier (improves) | calibration finding, real-corpus OOS, `edge_claimed=False` | `scripts/platformkit/proof_nba/ingame_accuracy.py` |
+| MLB | higher Brier | lower Brier (improves) | calibration finding, real-corpus OOS, `edge_claimed=False` | `scripts/platformkit/proof_mlb/ingame_accuracy.py` |
+
+The packet records these as calibration findings against a static prior (JOB_EVIDENCE_PACKET
+section 2, ML / validation table); they are not in the canonical figure list, so this page states the direction and
+not the size.
 
 Most of that lift is *mechanical* -- the scoreboard itself, which anyone watching the game
-(including a live book) gets for free. A three-arm decomposition attributes ~73% of the NBA
-lift and ~99% of the MLB lift to conditioning on the realized score alone. The model's own
-pregame rating prior adds the last ~0.014 Brier in NBA and is essentially washed out by
-mid-game in MLB (~0.001). The endpoints are true; the model-prior share is the only part
-that is ours, and it is stated at that size and never larger.
+(including a live book) gets for free. A three-arm decomposition attributes most of the NBA
+lift and nearly all of the MLB lift to conditioning on the realized score alone. The model's
+own pregame rating prior adds a small remaining share in NBA and is essentially washed out by
+mid-game in MLB. The model-prior share is the only part that is ours, and it is never stated
+as larger.
 
 **The honest market comparison (1593-game ALLGAMES_v3 run).** When I put the conditional
 forecaster head-to-head against the market's own in-game win probability, the result is a
@@ -71,8 +84,8 @@ story, not quoted here).
 
 | Number | Artifact path |
 |---|---|
-| NBA static->conditional Brier 0.209 -> 0.159 | `scripts/platformkit/proof_nba/ingame_accuracy.py` |
-| MLB static->conditional Brier 0.241 -> 0.126 | `scripts/platformkit/proof_mlb/ingame_accuracy.py` |
+| NBA static->conditional Brier improvement (calibration) | `scripts/platformkit/proof_nba/ingame_accuracy.py` |
+| MLB static->conditional Brier improvement (calibration) | `scripts/platformkit/proof_mlb/ingame_accuracy.py` |
 | Cross-sport roll-up | `scripts/platformkit/ingame_scoreboard.py` |
 | end_q1 MARKET_SHARPER delta -0.0084, halftime/end_q3/q4 UNDERPOWERED, n~1593 | `scripts/platformkit/benchmarks/crps_market/last_run_ingame_nba_winprob_ALLGAMES_v3.json` |
 | Same, pre-registered ledger row | [`RECEIPTS.md`](../../RECEIPTS.md) (batch 6eba592d3a77, nba end_q1 row) |
@@ -111,7 +124,7 @@ end-to-end.
 
 The in-game conditioning result is small, honest, and load-bearing for exactly that reason.
 The static -> conditional Brier improvement is a real calibration gain, most of it mechanical,
-with the model's own prior contributing a measured ~0.014 in NBA. Benchmarked against the
+with the model's own prior contributing a small measured share in NBA. Benchmarked against the
 live market, the conditional forecaster is sharper nowhere it is powered: the market wins the
 one resolvable checkpoint and ties everywhere else, the loss stated as plainly as any win. The
 hire signal is not the metric. It is a forecaster whose author scores it against the market,
