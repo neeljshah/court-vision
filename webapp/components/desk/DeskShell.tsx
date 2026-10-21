@@ -39,7 +39,7 @@ export function T({ head, rows }: { head: string[]; rows: ReactNode[][] }) {
     <div className="overflow-x-auto">
       <table className="w-full font-data text-xs">
         <thead>
-          <tr className="border-b border-border text-left text-faint">
+          <tr className="whitespace-nowrap border-b border-border text-left text-faint">
             {head.map((h, i) => (
               <th key={`${h}-${i}`} scope="col" className="px-3 py-1 font-normal">
                 {/* A blank column header still needs a screen-reader name (axe empty-table-header). */}
@@ -103,7 +103,7 @@ export function DeskShell({ desk, title, active, children }: {
         <nav aria-label="Desk pages" className="mt-3 flex flex-wrap gap-2">
           {TABS.map((t) => (
             <Link key={t.href} href={t.href}
-              className={"border px-2 py-0.5 text-xs " +
+              className={"inline-flex min-h-6 items-center border px-2 py-0.5 text-xs " +
                 (t.href === active ? "border-foreground text-foreground" : "border-border text-muted-foreground")}>
               {t.label}
             </Link>

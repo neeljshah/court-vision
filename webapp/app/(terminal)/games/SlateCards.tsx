@@ -137,7 +137,7 @@ export function SlateCards({ publishedGames }: { publishedGames?: PublishedGame[
       {/* Sport quick-nav: scrolls to the section below -- every sport stays
           in the DOM at once (independent honest-empty states per sport), this
           is just a fast jump-to. */}
-      <nav className="sticky top-0 z-10 flex gap-1 overflow-x-auto border-b border-border bg-background py-2">
+      <nav className="sticky top-14 z-10 flex gap-1 overflow-x-auto border-b border-border bg-background py-2">
         {GAME_SPORTS.map((s) => (
           <a
             key={s}

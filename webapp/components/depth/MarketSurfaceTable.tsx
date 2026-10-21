@@ -71,7 +71,7 @@ export function MarketSurfaceTable({
               "Devigged market references from the named sources. These are not model probabilities."}
           </TableCaption>
           <TableHeader>
-            <TableRow className="hover:bg-transparent">
+            <TableRow className="whitespace-nowrap hover:bg-transparent">
               <TableHead scope="col" className="microlabel h-auto px-3 py-1.5">
                 market
               </TableHead>

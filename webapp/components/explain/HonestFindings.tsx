@@ -90,7 +90,7 @@ function VerdictTable() {
       <div className="overflow-x-auto">
         <table className="w-full text-left text-[11px]">
           <thead>
-            <tr>
+            <tr className="whitespace-nowrap">
               <th className="microlabel px-3 py-1.5">sport</th>
               <th className="microlabel px-3 py-1.5">deep-data layer gated</th>
               <th className="microlabel px-3 py-1.5">verdict</th>

@@ -201,7 +201,7 @@ export default function BetDetailPageClient() {
       <div className="mt-6">
         <Link
           href="/paper"
-          className="font-mono text-[12px] text-muted-foreground hover:text-foreground"
+          className="inline-flex min-h-6 items-center font-mono text-[12px] text-muted-foreground hover:text-foreground"
         >
           &larr; back to PM trail
         </Link>

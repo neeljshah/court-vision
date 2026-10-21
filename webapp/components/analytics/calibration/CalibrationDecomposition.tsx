@@ -90,6 +90,9 @@ export function CalibrationSharpness({ series, sport }: { series: ReliabilitySer
       </figcaption>
       <details>
         <summary>Show as table</summary>
+        {/* Same scroll wrapper as the verdict table: main clips overflow-x, so without it the
+            760px table lost every column past the second on phones. */}
+        <div className="calibration-table-wrap" role="region" aria-label="Histogram bins, scrollable" data-scroll-region tabIndex={0}>
         <table className="calibration-table">
           <thead><tr><th>Bin</th>{pair.map((s) => <th key={s.side}>{s.side} forecasts</th>)}</tr></thead>
           <tbody>{bins.map((b, i) => (
@@ -97,6 +100,7 @@ export function CalibrationSharpness({ series, sport }: { series: ReliabilitySer
               {pair.map((s) => <td key={s.side}>{s.bins[i]?.n?.toLocaleString("en-US") ?? "--"}</td>)}</tr>
           ))}</tbody>
         </table>
+        </div>
       </details>
     </figure>
   );

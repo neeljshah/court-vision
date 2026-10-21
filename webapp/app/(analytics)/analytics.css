@@ -216,3 +216,12 @@ main table { max-width: none; }
 main a:where(:not([class])), main a:where(.mono) { padding-top: 5px; padding-bottom: 5px; }
 main summary { padding-top: 5px; padding-bottom: 5px; }
 main input:where([type="search"], [type="text"], :not([type])) { min-height: 24px; }
+
+/* The showcase ReceiptChip glyph (components/showcase/ReceiptChip.tsx) is styled with
+   Tailwind utilities that never load in this group; without this it rendered as a bare
+   14x19px "R" pressed against the preceding text (calibration page, 29 per view). */
+.cv-receipt-glyph { display: inline-flex; align-items: center; justify-content: center; min-width: 24px;
+  min-height: 24px; margin-left: 4px; padding: 0 4px; border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-chip); background: var(--paper-raised); color: var(--ink-3);
+  font: 600 10px/1 var(--font-mono); vertical-align: middle; cursor: pointer; }
+.cv-receipt-glyph:hover { color: var(--ink); border-color: var(--accent); }

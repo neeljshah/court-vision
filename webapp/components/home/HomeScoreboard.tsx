@@ -32,7 +32,7 @@ export function HomeScoreboard({ board }: { board: Scoreboard | null }) {
       <Panel className="mt-2">
         <PanelHead title="paired Brier / CRPS difference, 95% CI, verdict (lower is better)" asOf={day} />
         <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-[13.5px]">
+          <table className="w-full border-collapse whitespace-nowrap text-[13.5px]">
             <thead>
               <tr className="text-left">
                 <th className="microlabel px-3 py-2">sport</th>
@@ -69,7 +69,7 @@ export function HomeScoreboard({ board }: { board: Scoreboard | null }) {
                       <span className="inline-block whitespace-nowrap border border-border px-1.5 py-px font-data text-xs text-foreground">
                         {r.verdict}
                       </span>
-                      {small && <div className="mt-0.5 text-xs text-muted-foreground">{SMALL_SAMPLE_NOTE}</div>}
+                      {small && <div className="mt-0.5 whitespace-normal text-xs text-muted-foreground">{SMALL_SAMPLE_NOTE}</div>}
                     </td>
                   </tr>
                 );

@@ -48,7 +48,7 @@ export function ScoreboardCompact({ sb, arms }: { sb: Sb; arms: Record<string, s
       <div className="overflow-x-auto">
         <table className="w-full font-data text-xs" data-testid="scoreboard-compact">
           <thead>
-            <tr className="border-b border-border text-left text-faint">
+            <tr className="whitespace-nowrap border-b border-border text-left text-faint">
               {["sport", "arm", "cells", "cells with ticks", "most games in a cell", "verdicts", "cells"].map((h, i) =>
                 <th key={i} className="px-3 py-1 font-normal">{i === 6 ? "detail" : h}</th>)}
             </tr>
