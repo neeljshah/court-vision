@@ -503,9 +503,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "/analytics/browse lists all 54 modules, and each one opens at /analytics/m/<id> where the id is the module name -- /analytics/m/murphy_decomposition, /analytics/m/residual_anatomy, /analytics/m/why_attribution and so on. Every module page carries its own source path, floors and as-of.",
+    "answer": "/analytics/browse lists all 77 modules (as of 2026-10-19), and each one opens at /analytics/m/<id> where the id is the module name -- /analytics/m/murphy_decomposition, /analytics/m/residual_anatomy, /analytics/m/why_attribution and so on. Every module page carries its own source path, floors and as-of.",
     "source_artifact": "webapp/public/data/showcase/site_manifest.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-10-19"
    },
    "tags": [
     "tour",

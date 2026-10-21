@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { renderToString } from "react-dom/server";
 import { AskBox } from "./AskBox";
 
@@ -12,6 +12,9 @@ const entries = [{
 }];
 
 describe("AskBox", () => {
+  // run() writes ?q= into the jsdom URL; a later mount would replay it as a prefill.
+  beforeEach(() => window.history.replaceState(null, "", "/analytics/ask/"));
+
   it("keeps the submitted question attached to its result while the input changes", () => {
     render(<AskBox entries={entries} tours={[]} />);
     const input = screen.getByLabelText("Ask Scout a question");
@@ -134,24 +137,48 @@ describe("AskBox", () => {
     expect(screen.getByRole("region", { name: "Scout answer" })).toHaveTextContent("Committed answer.");
   });
 
-  it("uses plain-language source help and labels related results clearly", () => {
-    const related = [{ ...entries[0], q: "Closest available question", alt_phrasings: ["Related question"] }];
+  it("says there is no prepared answer and offers the closest topics instead of a nearest paragraph", () => {
+    const related = [
+      { ...entries[0], q: "Closest available question", alt_phrasings: ["Related question"], a: { ...entries[0].a, answer: "Nearest paragraph." } },
+      { ...entries[0], q: "Second available question", alt_phrasings: [], a: { ...entries[0].a, answer: "Second paragraph." } },
+    ];
     render(<AskBox entries={related} tours={[]} />);
     fireEvent.change(screen.getByLabelText("Ask Scout a question"), { target: { value: "Different available question" } });
     fireEvent.click(screen.getByRole("button", { name: "Search Scout's cited answers" }));
 
     expect(screen.getByText("Scout searches published answers and links each result to its source.")).toBeInTheDocument();
-    expect(screen.getByText("Closest available question:")).toBeInTheDocument();
+    const noMatch = screen.getByLabelText("No prepared answer");
+    expect(noMatch).toHaveTextContent("No prepared answer for this question.");
+    expect(noMatch).toHaveTextContent(/closest prepared topic/);
+    expect(screen.queryByText("Nearest paragraph.")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Cited answer")).not.toBeInTheDocument();
+    const topics = within(noMatch).getAllByRole("button").map((button) => button.textContent);
+    expect(topics).toEqual(["Closest available question", "Second available question"]);
+
+    fireEvent.click(within(noMatch).getByRole("button", { name: "Closest available question" }));
+    const cited = screen.getByLabelText("Cited answer");
+    expect(cited).toHaveTextContent("Nearest paragraph.");
+    expect(within(cited).getByRole("link", { name: "Open published answer record" })).toHaveAttribute("href", "/data/ask/corpus.json");
+    expect(within(cited).getByRole("button", { name: /2026-01-01/ })).toBeInTheDocument();
   });
 
-  it("offers published questions after a query has no verified answer", () => {
+  it("offers published questions after a query has no prepared answer at all", () => {
     render(<AskBox entries={entries} tours={[]} />);
     fireEvent.change(screen.getByLabelText("Ask Scout a question"), { target: { value: "zqx vprt lmn" } });
     fireEvent.click(screen.getByRole("button", { name: "Search Scout's cited answers" }));
 
-    const noResult = screen.getByLabelText("No verified answer");
-    expect(noResult).toHaveTextContent("No verified result.");
+    const noResult = screen.getByLabelText("No prepared answer");
+    expect(noResult).toHaveTextContent("No prepared answer for this question.");
+    expect(noResult).toHaveTextContent("No prepared topic shares a term with it.");
+    expect(within(noResult).queryAllByRole("button")).toHaveLength(0);
     expect(within(noResult).getByRole("link", { name: "Explore published questions" })).toHaveAttribute("href", "#scout-suggestions");
+  });
+
+  it("describes itself as a search over prepared answers, not a live assistant", () => {
+    render(<AskBox entries={entries} tours={[]} />);
+    expect(screen.getByText(/nothing is generated/)).toBeInTheDocument();
+    expect(screen.getByLabelText("Ask Scout a question")).toHaveAttribute("placeholder", expect.stringMatching(/prepared answers/));
+    expect(screen.queryByText(/thinking|typing|assistant is/i)).not.toBeInTheDocument();
   });
   it("keeps server-rendered controls disabled until the linked question is restored", () => {
     const tours = [{ label: "Start here", questions: ["Known question"] }];
@@ -160,7 +187,7 @@ describe("AskBox", () => {
     expect(doc.querySelector('form[aria-busy="true"]')).not.toBeNull();
     expect(doc.querySelector("input")?.disabled).toBe(true);
     expect([...doc.querySelectorAll("button")].every(button => button.disabled)).toBe(true);
-    expect(doc.body.textContent).toContain("Preparing Scout's published answers...");
+    expect(doc.body.textContent).toContain("Loading the prepared answers...");
     window.history.replaceState(null, "", "/analytics/ask/?q=Known+question");
     render(<AskBox entries={entries} tours={tours} />);
     expect(screen.getByRole("search")).toHaveAttribute("aria-busy", "false");

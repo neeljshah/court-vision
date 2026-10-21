@@ -393,3 +393,7 @@
 :root:not(.dark) [class*="border-slate-"] { border-color: hsl(var(--border)); }
 :root:not(.dark) [class*="border-amber-"] { border-color: hsl(var(--warning) / 0.5); }
 :root:not(.dark) [class*="border-red-"] { border-color: hsl(var(--danger) / 0.5); }
+
+/* Command palette backdrop on site-group pages (the analytics group styles it in
+   analytics.css; the two stylesheets never coexist, so the rule lives in both). */
+.cv-cmdk-overlay { position: fixed; inset: 0; background: rgba(20, 16, 10, .45); z-index: 90; }

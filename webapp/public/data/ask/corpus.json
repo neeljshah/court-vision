@@ -809,7 +809,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Yes, and they outnumber the wins. Across five validation ledgers there are 351 nulls versus 168 confirms, a 2.1x ratio: NBA 45 confirmed / 31 null, MLB 32 / 37, soccer 29 / 24, tennis 24 / 20, and the interaction factory 38 confirmed / 239 null / 709 not-testable. A system that only ever confirmed would not be credible.",
+    "answer": "Yes, and they outnumber the wins. Across five validation ledgers there are 351 nulls versus 168 confirms, a 2.1x ratio: NBA 45 confirmed / 31 null, MLB 32 / 37, soccer 29 / 24, tennis 24 / 20, and the interaction factory 38 confirmed / 239 null / 709 not-testable. A system that only ever confirmed would not be credible. This is the research-ledger honesty exhibit's tally (four sport ledgers plus the 1,003-row interaction-factory sweep, as of 2026-07-22). It is a different population from the evidence packet's mechanism-gate tally, which reads 89 confirmed, 74 null and 34 not-testable or other out of 197 validation-ledger rows as of 2026-07-10; the two counts are not comparable, and neither is a market result.",
     "source_artifact": "webapp/public/data/showcase/honesty_exhibit.json",
     "as_of": "2026-07-22"
    },
@@ -3034,9 +3034,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "54 modules and 1,549 atlas entity cards, all built from the same output directory and all flagged descriptive-only. The manifest records 63 of 63 checks green at build time.",
+    "answer": "77 modules and 1,549 atlas entity cards, all built from the same output directory and all flagged descriptive-only. The site manifest records 96 of 96 checks green at build time (module count as of 2026-10-19).",
     "source_artifact": "webapp/public/data/showcase/site_manifest.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-10-19"
    },
    "tags": [
     "modules",
@@ -7899,9 +7899,9 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "/analytics/browse lists all 54 modules, and each one opens at /analytics/m/<id> where the id is the module name -- /analytics/m/murphy_decomposition, /analytics/m/residual_anatomy, /analytics/m/why_attribution and so on. Every module page carries its own source path, floors and as-of.",
+    "answer": "/analytics/browse lists all 77 modules (as of 2026-10-19), and each one opens at /analytics/m/<id> where the id is the module name -- /analytics/m/murphy_decomposition, /analytics/m/residual_anatomy, /analytics/m/why_attribution and so on. Every module page carries its own source path, floors and as-of.",
     "source_artifact": "webapp/public/data/showcase/site_manifest.json",
-    "as_of": "2026-07-24"
+    "as_of": "2026-10-19"
    },
    "tags": [
     "tour",
@@ -8260,7 +8260,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Yes. Across the four sport ledgers plus a 1,003-row interaction-factory sweep, nulls (351) outnumber confirms (168) by about 2.1x. In MLB the balance actually inverts, 32 confirmed against 37 null. Keeping the failures visible is the entire point of the exhibit.",
+    "answer": "Yes. Across the four sport ledgers plus a 1,003-row interaction-factory sweep, nulls (351) outnumber confirms (168) by about 2.1x. In MLB the balance actually inverts, 32 confirmed against 37 null. Keeping the failures visible is the entire point of the exhibit. This is the research-ledger honesty exhibit's tally (four sport ledgers plus the 1,003-row interaction-factory sweep, as of 2026-07-22). It is a different population from the evidence packet's mechanism-gate tally, which reads 89 confirmed, 74 null and 34 not-testable or other out of 197 validation-ledger rows as of 2026-07-10; the two counts are not comparable, and neither is a market result.",
     "source_artifact": "webapp/public/data/showcase/honesty_exhibit.json",
     "as_of": "2026-07-22"
    },
@@ -8300,7 +8300,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "An in-play backtest once posted eye-catching accuracy and return figures on 55,073 recorded positions, but those were settled against a soft L5 rolling-average line proxy, not real sharp closing lines. That makes it a model-quality ceiling, not a tradeable or realized result, so both figures were retracted. A prospective, receipt-backed paper series has run since 2026-10-06; as of 2026-10-19 no scored cell has reached its sealed 30-game floor, so there is no closing-line-value reading yet.",
+    "answer": "An in-play backtest once posted eye-catching accuracy and return figures on 55,073 recorded positions, but those were settled against a soft L5 rolling-average line proxy, not real sharp closing lines. That makes it a model-quality ceiling, not a tradeable or realized result, so both figures were retracted. A prospective, receipt-backed paper series has run since 2026-10-06; as of 2026-10-19 no scored cell has reached its sealed 30-game floor, so there is no closing-line-value reading yet. Through 2026-10-16 that series served 113 games over 9 receipt nights (2 COMPLETE, 7 PARTIAL); 0 of 44 judged games qualified and every pooled cell is INSUFFICIENT. Counts only, as of 2026-10-19; not a verdict on the model.",
     "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
     "as_of": "2026-10-19"
    },
@@ -8476,7 +8476,10 @@
    "alt_phrasings": [
     "who wrote the code",
     "was it hand-typed",
-    "how solo is this build"
+    "how solo is this build",
+    "how was it built",
+    "how was this built",
+    "how did you build this"
    ],
    "a": {
     "status": "ok",
@@ -9020,7 +9023,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Zero real money has been placed, by design. It is gated behind a sharp-market closing-line-value reading from the forward paper series (running since 2026-10-06; as of 2026-10-19 no scored cell has reached its sealed 30-game floor and no game has passed qualification), plus CV-depth and deployment-stability work. Until that gate passes, no real-money execution is considered justified.",
+    "answer": "Zero real money has been placed, by design. It is gated behind a sharp-market closing-line-value reading from the forward paper series (running since 2026-10-06; as of 2026-10-19 no scored cell has reached its sealed 30-game floor and no game has passed qualification), plus CV-depth and deployment-stability work. Until that gate passes, no real-money execution is considered justified. Through 2026-10-16 that series served 113 games over 9 receipt nights (2 COMPLETE, 7 PARTIAL); 0 of 44 judged games qualified and every pooled cell is INSUFFICIENT. Counts only, as of 2026-10-19; not a verdict on the model.",
     "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
     "as_of": "2026-10-19"
    },

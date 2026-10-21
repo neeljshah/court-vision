@@ -9,7 +9,7 @@ import styles from "./ask.module.css";
 
 export const metadata: Metadata = {
   title: "Ask Scout",
-  description: "Search CourtVision's published player profiles, metrics, and research answers. Inspect the source and snapshot date behind every result.",
+  description: "Search CourtVision's prepared answers about player profiles, metrics, and research results. Every result is shown verbatim with its source and as-of date; nothing is generated.",
 };
 const BUCKETS = [
   { key: "calibration-market", label: "Calibration & the market" },
@@ -42,13 +42,13 @@ export default function AskPage() {
   const sportCount = countSports(entries);
   return <div className="cv-workspace"><div className={`cv-workspace-inner ${styles.page}`}>
     <header className="cv-masthead"><div>
-      <p className="cv-eyebrow"><span className="cv-square" /> Research assistant / Published evidence</p>
+      <p className="cv-eyebrow"><span className="cv-square" /> Search over prepared answers / Published evidence</p>
       <h1>Start with a question.<br />Follow the evidence.</h1>
-      <p>Find a player profile, understand a metric, or inspect a research result. Every answer keeps its source and snapshot date.</p>
+      <p>Ask Scout is a search over prepared answers: each result is a committed corpus entry shown verbatim with its source and as-of date. Nothing is generated and nothing is live. A question with no prepared answer says so and offers the closest prepared topics.</p>
     </div></header>
     <div className={styles.coverage} aria-label="Search coverage">
       <span><b>{entries.length.toLocaleString("en-US")}</b> searchable entries</span>
-      <span><b>{sportCount}</b> sports</span><span>Historical snapshots</span><span>Search runs in your browser</span>
+      <span><b>{sportCount}</b> sports</span><span>Historical snapshots</span><span>Search runs in your browser</span><span>No model, nothing generated</span>
     </div>
     <AskBox entries={entries} tours={buildTours(entries)} />
     <section className={styles.next} aria-labelledby="scout-next">
