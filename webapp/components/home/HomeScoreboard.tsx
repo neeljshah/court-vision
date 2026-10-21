@@ -55,15 +55,19 @@ export function HomeScoreboard({ board }: { board: Scoreboard | null }) {
                     <td className="px-3 py-2 font-data text-xs">{r.checkpoint}</td>
                     <td className="px-3 py-2 text-right font-data tabular whitespace-nowrap">{r.n}</td>
                     <td className="px-3 py-2">
-                      <div className="flex items-center gap-2">
-                        <DeltaBars delta={d.delta} ci={d.ci} verdict={r.verdict} />
-                        <span className="font-data tabular whitespace-nowrap text-foreground">{fmt(d.delta)}</span>
-                        <ReceiptChip sourceArtifact={r.source} asOf={asOf} verified="edge_claimed:false"
-                          verdict={r.verdict} n={r.n} ci={d.ci} />
-                      </div>
+                      {d ? (
+                        <div className="flex items-center gap-2">
+                          <DeltaBars delta={d.delta} ci={d.ci} verdict={r.verdict} />
+                          <span className="font-data tabular whitespace-nowrap text-foreground">{fmt(d.delta)}</span>
+                          <ReceiptChip sourceArtifact={r.source} asOf={asOf} verified="edge_claimed:false"
+                            verdict={r.verdict} n={r.n} ci={d.ci} />
+                        </div>
+                      ) : (
+                        <span className="text-xs text-stale">delta not finite in the artifact; not shown</span>
+                      )}
                     </td>
                     <td className="px-3 py-2 text-right font-data tabular whitespace-nowrap text-muted-foreground">
-                      [{fmt(d.ci[0])}, {fmt(d.ci[1])}]
+                      {d ? `[${fmt(d.ci[0])}, ${fmt(d.ci[1])}]` : "-"}
                     </td>
                     <td className="px-3 py-2">
                       <span className="inline-block whitespace-nowrap border border-border px-1.5 py-px font-data text-xs text-foreground">

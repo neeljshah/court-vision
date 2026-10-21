@@ -37,7 +37,8 @@ export function ClaimIndex({ data }: { data: ClaimIndexData }) {
                       // The index has no per-claim date; the full receipt with
                       // its real as-of date lives on the claim page.
                       asOf={c.receipt.source ? "see claim page" : null}
-                      verified={c.edgeClaimed ? undefined : "edge_claimed:false"}
+                      // Pending unless the index says edge_claimed:false explicitly (lib/evidence.server).
+                      verified={c.edgeClaimed ? undefined : c.verified}
                     />
                   </div>
                 </Link>

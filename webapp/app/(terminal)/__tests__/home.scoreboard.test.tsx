@@ -23,7 +23,7 @@ describe("Home in-game scoreboard (below the fold)", () => {
       const cells = within(rows[i]).getAllByRole("cell");
       expect(cells[0].textContent).toBe(row.sport);
       expect(cells[3].textContent).toBe(String(row.n));
-      const d = modelMinusMarket(row.paired_delta_mean, row.paired_delta_95ci as [number, number]);
+      const d = modelMinusMarket(row.paired_delta_mean, row.paired_delta_95ci as [number, number])!;
       expect(within(cells[4]).getByText(fmt(d.delta))).toBeVisible();
       expect(cells[5].textContent?.trim()).toBe(`[${fmt(d.ci[0])}, ${fmt(d.ci[1])}]`);
       expect(cells[6].textContent).toContain(row.verdict);

@@ -27,6 +27,7 @@ export function PaperTradingDoneSummary({ summary, loading, error }: {
         {rows.map(([label, id, value]) => (
           <StatTile key={id} label={label} testId={id} loading={loading}
             value={loading || value == null ? EMPTY_CELL : id === "done-units-staked" ? value.toFixed(2) : String(value)}
+            note={id === "done-void" && summary?.nUnknown ? `${summary.nUnknown} graded with an unrecognised outcome` : undefined}
             valueClass={value && value > 0 && id === "done-win" ? "text-success"
               : value && value > 0 && id === "done-loss" ? "text-danger" : "text-foreground"} />
         ))}

@@ -58,7 +58,7 @@ export default function DeskHealthPage() {
               no night receipt. A missed night is absent from the record, never filtered out after the fact.
             </p>
             <T head={["date", "scheduled", "games served", "night receipt", "partial reasons"]}
-              rows={uptime.table.map((d) => [d.date, d.scheduled ? "yes" : "no", d.served, d.night,
+              rows={uptime.table.map((d) => [d.date, d.scheduled ? "yes" : "no", d.served, d.night ?? "none",
                 d.reasons.join(", ") || "-"])} />
           </>
         ) : <Reason>{`The uptime receipt ${UPTIME_SRC} could not be read at build time, so the table is not shown.`}</Reason>}
@@ -67,8 +67,8 @@ export default function DeskHealthPage() {
       <Section title="Module self-checks (check_all)" asOf={checks?.asOf} source={CHECK_ALL_SRC}>
         {checks ? (
           <p className="px-3 py-2 text-xs" data-testid="check-all-count">
-            {checks.pass} of {checks.total} module self-checks PASS; {checks.noCheck} have no self-check
-            (check_all_report.json as of {checks.asOf}).
+            {checks.pass} of {checks.total} module self-checks PASS; {checks.noCheck} have no self-check;{" "}
+            {checks.other} FAIL/other (check_all_report.json as of {checks.asOf}).
           </p>
         ) : <Reason>{`The check_all report ${CHECK_ALL_SRC} was not present at build time, so no count is shown.`}</Reason>}
       </Section>

@@ -15,11 +15,18 @@ describe("home scoreboard delta sign", () => {
     const sharper = scoreboard.rows.filter((r) => r.verdict.includes("SHARPER"));
     expect(sharper.length).toBeGreaterThan(0);
     for (const r of sharper) {
-      const { delta, ci } = modelMinusMarket(r.paired_delta_mean, r.paired_delta_95ci as [number, number]);
+      const { delta, ci } = modelMinusMarket(r.paired_delta_mean, r.paired_delta_95ci as [number, number])!;
       if (r.verdict.startsWith("MARKET_SHARPER")) expect(delta).toBeGreaterThan(0);
       if (r.verdict.startsWith("MODEL_SHARPER")) expect(delta).toBeLessThan(0);
       expect(ci[0]).toBeLessThanOrEqual(ci[1]);
     }
+  });
+
+  it("returns null, never NaN, for a non-finite delta or interval", () => {
+    expect(modelMinusMarket(NaN, [-0.01, 0.01])).toBeNull();
+    expect(modelMinusMarket(0.01, [null as unknown as number, 0.02])).toBeNull();
+    expect(modelMinusMarket(0.01, [-0.02, Infinity])).toBeNull();
+    expect(modelMinusMarket(0, [0, 0])).toEqual({ delta: 0, ci: [0, 0] });
   });
 
   it("states the direction in the legend", () => {

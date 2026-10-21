@@ -1,17 +1,29 @@
 // Server-only helper: the baked paper fill ids for /paper/[betId] static params.
 // Lives outside the page module because Next.js rejects extra exports on a page.
+// In a snapshot build a missing, unreadable or empty trail THROWS: an empty list
+// would export zero /paper/<id> pages with a green build. Live builds keep [].
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { PaperTrailRow } from "@/lib/p5api";
+import { isSnapshotMode } from "@/lib/fetchHonest";
 import { fillParam } from "@/components/paper_pm/paperIds";
 
+export const TRAIL_FILE = "public/demo-data/api_paper_trail_limit_400.json";
+
 export function bakedFillParams(
-  file = join(process.cwd(), "public/demo-data/api_paper_trail_limit_400.json"),
+  file = join(process.cwd(), TRAIL_FILE),
+  snapshot = isSnapshotMode,
 ): string[] {
+  let rows: PaperTrailRow[];
   try {
-    const rows = (JSON.parse(readFileSync(file, "utf-8")).trail ?? []) as PaperTrailRow[];
-    return rows.map(fillParam);
-  } catch {
+    rows = (JSON.parse(readFileSync(file, "utf-8")).trail ?? []) as PaperTrailRow[];
+  } catch (e) {
+    if (snapshot) {
+      const why = e instanceof Error ? e.message : String(e);
+      throw new Error(`snapshot build: ${file} is missing or unreadable (${why}), so no /paper/<id> page can be exported`);
+    }
     return [];
   }
+  if (snapshot && !rows.length) throw new Error(`snapshot build: ${file} has no trail rows, so no /paper/<id> page can be exported`);
+  return rows.map(fillParam);
 }

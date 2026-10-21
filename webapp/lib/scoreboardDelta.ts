@@ -7,10 +7,13 @@
 
 const r4 = (v: number) => Math.round(v * 1e4) / 1e4 + 0; // + 0 folds -0 to 0
 
+// A non-finite input (a null or NaN slipped into the artifact) has no sign to flip:
+// null, so the row says so, never a NaN rendered as "NaN" or folded to 0.
 export function modelMinusMarket(
   marketMinusModel: number,
   ci: [number, number],
-): { delta: number; ci: [number, number] } {
+): { delta: number; ci: [number, number] } | null {
+  if (!Number.isFinite(marketMinusModel) || !Array.isArray(ci) || !Number.isFinite(ci[0]) || !Number.isFinite(ci[1])) return null;
   return { delta: r4(-marketMinusModel), ci: [r4(-ci[1]), r4(-ci[0])] };
 }
 
