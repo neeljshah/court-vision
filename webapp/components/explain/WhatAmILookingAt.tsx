@@ -13,6 +13,7 @@
 // only, NO $ field; no fabricated number -- the parity bit is the live API's.
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { getParityHeadline } from "@/lib/api";
 import type { ParityHeadline } from "@/lib/api";
 import { Legend, InfoTip } from "@/components/depth";
@@ -58,7 +59,7 @@ export function WhatAmILookingAt() {
       <div className="flex flex-col gap-3 p-4">
         {isSnapshotMode && (
           <p className="text-xs text-muted-foreground" data-testid="parity-static">
-            <a href="/desk/health/" className="underline">{PARITY_STATIC_LINE}</a>
+            <Link href="/desk/health/" className="underline">{PARITY_STATIC_LINE}</Link>
           </p>
         )}
         <p className="text-xs leading-relaxed text-muted-foreground">
