@@ -15,10 +15,21 @@ async function load() {
     ...(await import("../HonestFindings")),
     ...(await import("../funnelStages")),
     ...(await import("../LiveExample")),
+    HowItWorksPage: (await import("@/app/(terminal)/how-it-works/page")).default,
   };
 }
 
 describe("how-it-works on the static build", () => {
+  it("describes recorded findings and snapshot destinations without a live health claim", async () => {
+    const m = await load();
+    render(<m.HowItWorksPage />);
+    const findings = screen.getByLabelText("honest findings").textContent;
+    expect(findings).not.toMatch(/FULLY GREEN|live grid/);
+    expect(findings).toContain("recorded deep-data gate artifacts");
+    expect(screen.getByRole("link", { name: "Explore the Games snapshot" })).toHaveAttribute("href", "/games");
+    expect(screen.getByRole("link", { name: "Inspect Desk health" })).toHaveAttribute("href", "/desk/health");
+  });
+
   it("hides the status pills and shows the parity pointer", async () => {
     const m = await load();
     const { container } = render(<><m.WhatAmILookingAt /><m.SelfImproveExplainer /><m.LiveExample /></>);

@@ -6,7 +6,7 @@
 //   (b) the VALIDATION DISCIPLINE explained visually -- 8 stacked controls and
 //       why most signals honestly REJECT and that's success (ValidationDiscipline).
 //   (c) the HONEST FINDINGS: the depth plateau per sport, the CONFIRMED soccer
-//       corners CALIBRATION survivor, parity GREEN (HonestFindings, from the
+//       corners CALIBRATION survivor (HonestFindings, from the
 //       on-disk gate verdict artifacts).
 //   (d) the self-improve ratchet as READY-but-INERT, human-gated (SelfImproveExplainer).
 //
@@ -24,6 +24,7 @@ import { HonestFindings } from "@/components/explain/HonestFindings";
 import { SelfImproveExplainer } from "@/components/explain/SelfImproveExplainer";
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/seo/meta";
+import { isSnapshotMode } from "@/lib/fetchHonest";
 
 export const metadata: Metadata = pageMeta("/how-it-works/", {
   title: "How it works",
@@ -71,13 +72,13 @@ export default function HowItWorksPage() {
           href="/games"
           className="rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
         >
-          See it on live Games
+          {isSnapshotMode ? "Explore the Games snapshot" : "See it on live Games"}
         </Link>
         <Link
           href="/desk/health/"
           className="rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
         >
-          Inspect the System
+          Inspect Desk health
         </Link>
       </div>
     </main>

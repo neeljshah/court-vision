@@ -128,8 +128,8 @@ export function HonestFindings() {
       <SurvivorCard />
       <VerdictTable />
       <p className="text-[11px] leading-relaxed text-muted-foreground">
-        Source: the on-disk deep-data gate artifacts. Parity across all four sports is
-        FULLY GREEN -- see the System page for the live grid.
+        Source: the recorded deep-data gate artifacts. For system health, use the
+        Desk health page and its as-of date.
       </p>
     </section>
   );
