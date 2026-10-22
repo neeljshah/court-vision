@@ -2,13 +2,13 @@
  "slug": "freddie_freeman",
  "pack": "mlb_batters",
  "display_name": "Freddie Freeman",
- "one_liner": "Freddie Freeman kept squaring the ball up in 2025: a .346 estimated wOBA on contact over 835 batted balls.",
+ "one_liner": "Freddie Freeman kept squaring the ball up in 2025: a .346 estimated wOBA on contact. His exit-velocity figures use 835 recorded rows.",
  "three_things": [
-  "High contact volume -- 835 batted balls, among the most in this group.",
+  "835 rows with recorded exit velocity, among the most in this group.",
   "A line-drive profile more than raw thump: 84.3 mph average exit velocity, 102.3 mph at the 90th percentile.",
   "Four-seam fastballs were 31.5% of the 2,372 pitches he saw; 49.0% landed in the rulebook zone."
  ],
- "context_note": "Descriptive only, from a single 2025 Statcast pull (>=300 pitches-faced floor). Contact numbers are over the 835 batted balls only, not all 2,372 pitches, and estimated wOBA on contact is a batted-ball model that ignores walks and strikeouts. No swing/miss or launch-angle column in this pull, so no whiff rate or barrel profile. Not park- or opponent-adjusted; not a prediction. 'Among the most' is scoped to these twelve hitters.",
+ "context_note": "Descriptive only, from a single 2025 Statcast pull (>=300 pitches-faced floor). Exit-velocity figures use the 835 rows with recorded exit velocity from 2,372 pitches seen. Estimated wOBA on contact uses rows with recorded model estimates, whose count is not reported here, and is a batted-ball model that ignores walks and strikeouts. No swing/miss or launch-angle column in this pull, so no whiff rate or barrel profile. Not park- or opponent-adjusted; not a prediction. 'Among the most' is scoped to these twelve hitters.",
  "cited": [
   {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Freddie Freeman].key_numbers.avg_estimated_woba_on_contact", "value": 0.346},
   {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Freddie Freeman].key_numbers.n_batted_balls", "value": 835},

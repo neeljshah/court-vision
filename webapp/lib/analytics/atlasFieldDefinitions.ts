@@ -31,7 +31,7 @@ export const ATLAS_FIELD_DEFINITIONS: Record<string, Record<string, AtlasFieldDe
     bats: definition("bats", "Batting side", "text", 0),
     batter_id: definition("batter_id", "Batter identifier", "text", 0, { isIdentifier: true }),
     exit_velo_p90: definition("exit_velo_p90", "Exit velocity, 90th percentile", "mph", 1),
-    n_batted_balls: definition("n_batted_balls", "Batted-ball events", "count", 0),
+    n_batted_balls: definition("n_batted_balls", "Rows with recorded exit velocity", "count", 0),
     pct_pitches_in_rulebook_zone: definition("pct_pitches_in_rulebook_zone", "Pitches in the rulebook zone", "percent-already", 1),
     pitches_faced: definition("pitches_faced", "Pitches faced", "count", 0),
     switch_hitter: definition("switch_hitter", "Switch hitter", "text", 0),

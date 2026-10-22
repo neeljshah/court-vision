@@ -4,11 +4,11 @@
  "display_name": "Mookie Betts",
  "one_liner": "Mookie Betts lived on contact more than raw power in 2025: his 90th-percentile exit velocity was 100.8 mph, the lowest top-end in this group.",
  "three_things": [
-  "The bat-to-ball skill showed up in volume: 814 batted balls over 2,420 pitches seen.",
+  "The pull has 814 rows with recorded exit velocity over 2,420 pitches seen.",
   "Average exit velocity 84.7 mph, .329 estimated wOBA on contact.",
   "Four-seam fastballs were 31.7% of his diet; 51.1% of pitches were in the rulebook zone."
  ],
- "context_note": "Descriptive only, from a single 2025 Statcast pull (>=300 pitches-faced floor). These are contact-quality numbers only -- they say nothing about his on-base skill, baserunning, or defense. The contact figures are over the 814 batted balls, and estimated wOBA on contact is a batted-ball model that ignores walks and strikeouts. No swing/miss or launch-angle column in this pull. Not park- or opponent-adjusted; not a prediction. 'Lowest top-end' is scoped to these twelve hitters.",
+ "context_note": "Descriptive only, from a single 2025 Statcast pull (>=300 pitches-faced floor). These are contact-quality numbers only -- they say nothing about his on-base skill, baserunning, or defense. Exit-velocity figures use the 814 rows with recorded exit velocity. Estimated wOBA on contact uses rows with recorded model estimates, whose count is not reported here, and is a batted-ball model that ignores walks and strikeouts. No swing/miss or launch-angle column in this pull. Not park- or opponent-adjusted; not a prediction. 'Lowest top-end' is scoped to these twelve hitters.",
  "cited": [
   {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Mookie Betts].key_numbers.exit_velo_p90", "value": 100.8},
   {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Mookie Betts].key_numbers.n_batted_balls", "value": 814},

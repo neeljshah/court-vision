@@ -13,6 +13,18 @@ vi.mock("next/link", () => ({ default: ({ children, ...props }: React.ComponentP
 const a: ComparisonEntity = { slug: "a", name: "Alpha", values: { rate: 0.6 }, percentiles: { rate: 82 } };
 const b: ComparisonEntity = { slug: "b", name: "Beta", values: { rate: 0.5 }, percentiles: { rate: 50 } };
 
+it("keeps exit-velocity row counts distinct from wOBA support in batter comparisons", () => {
+  const pack = normalizeComparisonPack("mlb_batters", batterManifest, entityPercentiles, {});
+  const judge = pack.entities.find(entity => entity.slug === "aaron_judge")!;
+  const rodgers = pack.entities.find(entity => entity.slug === "brendan_rodgers")!;
+  render(<ComparisonResults pack={pack} a={judge} b={rodgers} manifest="atlas_mlb_batters_manifest.json" surface="hard" onSurfaceChange={() => undefined} />);
+  const support = screen.getByRole("rowheader", { name: "Rows with recorded exit velocity rows" }).closest("tr")!;
+  expect(within(support).getByText("698", { exact: true })).toBeInTheDocument();
+  expect(screen.getByText(/Sample definition: the count covers rows with recorded exit velocity/))
+    .toHaveTextContent("Estimated wOBA on contact uses separately filtered rows; its sample count is not published");
+  expect(screen.queryByRole("rowheader", { name: /n batted balls/ })).not.toBeInTheDocument();
+});
+
 it("labels ranked NBA measurements by their corpus observation window", () => {
   const alpha: ComparisonEntity = { ...a, values: { career_games: 50, seasons_played: 1 }, percentiles: { career_games: 80, seasons_played: 25 } };
   const beta: ComparisonEntity = { ...b, values: { career_games: 100, seasons_played: 2 }, percentiles: { career_games: 40, seasons_played: 75 } };

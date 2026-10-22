@@ -181,6 +181,7 @@ export function normalizeComparisonPack(
 }
 
 export function metricLabel(key: string): string {
+  if (key === "n_batted_balls") return "Rows with recorded exit velocity";
   if (key === "velo_p10") return "Release speed P10";
   if (key === "velo_p50") return "Release speed median (P50)";
   if (key === "velo_p90") return "Release speed P90";
@@ -205,7 +206,7 @@ export function metricUnit(key: string): string | undefined {
   if (/games/.test(key)) return "games";
   if (/seasons/.test(key)) return "seasons";
   if (/pitches_faced|n_pitches/.test(key)) return "pitches";
-  if (/n_batted_balls/.test(key)) return "batted balls";
+  if (/n_batted_balls/.test(key)) return "rows";
   if (/n_pitch_types/.test(key)) return "pitch types";
   if (/estimated_woba/.test(key)) return "estimated wOBA";
   return undefined;

@@ -6,9 +6,9 @@
  "three_things": [
   "That diet came in hot -- the median pitch he saw was 92.5 mph, the highest median velocity in this set.",
   "He still did damage: 90th-percentile exit velocity 104.6 mph, .361 estimated wOBA on contact.",
-  "A comparatively small contact sample: 589 batted balls over 2,440 pitches seen."
+  "A comparatively small exit-velocity sample: 589 recorded rows over 2,440 pitches seen."
  ],
- "context_note": "Descriptive only, from a single 2025 Statcast pull (>=300 pitches-faced floor). The 589 batted balls is a small sample, so the contact numbers carry more noise than the higher-volume hitters here. Estimated wOBA on contact is a batted-ball model over those 589 balls, not all 2,440 pitches, and says nothing about walks or strikeouts. No swing/miss or launch-angle column in this pull. Not park- or opponent-adjusted; not a prediction. 'Most fastball-heavy/highest median' is scoped to these twelve hitters.",
+ "context_note": "Descriptive only, from a single 2025 Statcast pull (>=300 pitches-faced floor). The 589 rows with recorded exit velocity form a comparatively small exit-velocity sample. That count of 589 comes from 2,440 pitches seen. Estimated wOBA on contact uses rows with recorded model estimates, whose count is not reported here, and is a batted-ball model that says nothing about walks or strikeouts. No swing/miss or launch-angle column in this pull. Not park- or opponent-adjusted; not a prediction. 'Most fastball-heavy/highest median' is scoped to these twelve hitters.",
  "cited": [
   {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Mike Trout].key_numbers.top_pitch_type_seen", "value": "FF"},
   {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Mike Trout].key_numbers.top_pitch_type_seen_pct", "value": 45.5},

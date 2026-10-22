@@ -8,6 +8,15 @@ function rankNote() {
 }
 
 describe("entity rank context", () => {
+  it.each(["aaron_judge", "mart_n_maldonado"])("defines exit-velocity support separately from wOBA on %s", (slug) => {
+    render(<EntityPage params={{ pack: "mlb_batters", slug }} />);
+    expect(screen.getByText("Rows with recorded exit velocity", { exact: true })).toBeInTheDocument();
+    expect(screen.queryByText("Batted-ball events", { exact: true })).not.toBeInTheDocument();
+    const note = screen.getByText(/Sample definition: the count covers rows with recorded exit velocity/);
+    expect(note).toHaveTextContent("Official batted-ball events and foul inclusion are not established");
+    expect(note).toHaveTextContent("Estimated wOBA on contact uses separately filtered rows; its sample count is not published");
+  });
+
   it("renders Como's stored soccer ranks with the published pack caveat and receipt", () => {
     render(<EntityPage params={{ pack: "soccer", slug: "como" }} />);
 

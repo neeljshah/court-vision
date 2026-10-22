@@ -2,13 +2,13 @@
  "slug": "fernando_tatis_jr",
  "pack": "mlb_batters",
  "display_name": "Fernando Tatis Jr.",
- "one_liner": "Fernando Tatis Jr. averaged 85.9 mph off the bat across 776 batted balls in 2025 -- hard contact as a baseline.",
+ "one_liner": "Fernando Tatis Jr. averaged 85.9 mph off the bat across 776 rows with recorded exit velocity in 2025 -- hard contact as a baseline.",
  "three_things": [
   "Top-end exit velocity 106.4 mph.",
   ".367 estimated wOBA on contact.",
   "Only 46.7% of his 2,591 pitches were in the rulebook zone; four-seam fastballs were 27.9%."
  ],
- "context_note": "Descriptive only, from a single 2025 Statcast pull (>=300 pitches-faced floor). Contact numbers are over the 776 batted balls only, not all 2,591 pitches, and estimated wOBA on contact is a batted-ball model -- it ignores walks and strikeouts. No swing/miss or launch-angle column in this pull, so no whiff rate or barrel profile. Not park- or opponent-adjusted; not a prediction.",
+ "context_note": "Descriptive only, from a single 2025 Statcast pull (>=300 pitches-faced floor). Exit-velocity figures use the 776 rows with recorded exit velocity from 2,591 pitches seen. Estimated wOBA on contact uses rows with recorded model estimates, whose count is not reported here, and is a batted-ball model -- it ignores walks and strikeouts. No swing/miss or launch-angle column in this pull, so no whiff rate or barrel profile. Not park- or opponent-adjusted; not a prediction.",
  "cited": [
   {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Fernando Tatis Jr.].key_numbers.avg_exit_velo", "value": 85.9},
   {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Fernando Tatis Jr.].key_numbers.n_batted_balls", "value": 776},
