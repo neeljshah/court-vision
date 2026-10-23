@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import LibraryExplorer from "./LibraryExplorer";
 import type { LibraryEntry } from "@/lib/analytics/libraryTypes";
 import { getLibraryEntries } from "@/lib/analytics/libraryData";
@@ -15,6 +15,12 @@ const entries: LibraryEntry[] = [
 ];
 
 describe("LibraryExplorer", () => {
+  const scrollDescriptor = Object.getOwnPropertyDescriptor(HTMLElement.prototype, "scrollIntoView");
+  beforeAll(() => Object.defineProperty(HTMLElement.prototype, "scrollIntoView", { configurable: true, value: vi.fn() }));
+  afterAll(() => {
+    if (scrollDescriptor) Object.defineProperty(HTMLElement.prototype, "scrollIntoView", scrollDescriptor);
+    else Reflect.deleteProperty(HTMLElement.prototype, "scrollIntoView");
+  });
   beforeEach(() => window.history.replaceState(null, "", "/analytics/browse/"));
 
   it("combines search, sport, and collection filters and restores them from the URL", async () => {
@@ -143,5 +149,39 @@ describe("LibraryExplorer", () => {
     render(<LibraryExplorer entries={paged} />);
     await waitFor(() => expect(screen.getByText("Page 1 of 2")).toBeInTheDocument());
     expect(window.location.search).toBe("?page=not-a-page");
+  });
+
+  it("moves keyboard focus to the first new result after Next and Previous", () => {
+    const paged = Array.from({ length: 25 }, (_, index) => entry(`paged-${index}`, `Paged entry ${index + 1}`, "nba", "derived", "paged"));
+    render(<LibraryExplorer entries={paged} />);
+    const next = screen.getByRole("button", { name: "Next", exact: true });
+    next.focus();
+    fireEvent.click(next);
+    expect(screen.getByRole("heading", { name: "Paged entry 13", exact: true }).closest("a")).toHaveFocus();
+    expect(window.location.search).toBe("?page=2");
+    fireEvent.click(next);
+    expect(screen.getByRole("heading", { name: "Paged entry 25", exact: true }).closest("a")).toHaveFocus();
+    expect(next).toBeDisabled();
+    const previous = screen.getByRole("button", { name: "Previous", exact: true });
+    previous.focus();
+    fireEvent.click(previous);
+    expect(screen.getByRole("heading", { name: "Paged entry 13", exact: true }).closest("a")).toHaveFocus();
+  });
+
+  it("does not move focus when restoring a URL or typing a filter", async () => {
+    const paged = Array.from({ length: 25 }, (_, index) => entry(`paged-${index}`, `Paged entry ${index + 1}`, "nba", "derived", "paged"));
+    window.history.replaceState(null, "", "/analytics/browse/?page=2");
+    render(<LibraryExplorer entries={paged} />);
+    await waitFor(() => expect(screen.getByText("Page 2 of 3")).toBeInTheDocument());
+    expect(screen.getByRole("heading", { name: "Paged entry 13", exact: true }).closest("a")).not.toHaveFocus();
+    const search = screen.getByRole("textbox", { name: "Search analytics library" });
+    search.focus();
+    fireEvent.change(search, { target: { value: "paged" } });
+    expect(screen.getByText("Page 1 of 3")).toBeInTheDocument();
+    expect(search).toHaveFocus();
+    window.history.replaceState(null, "", "/analytics/browse/?page=2&q=paged");
+    window.dispatchEvent(new PopStateEvent("popstate"));
+    await waitFor(() => expect(screen.getByText("Page 2 of 3")).toBeInTheDocument());
+    expect(search).toHaveFocus();
   });
 });

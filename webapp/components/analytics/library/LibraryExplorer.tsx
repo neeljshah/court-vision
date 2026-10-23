@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowDown, ArrowUpRight, Search, SlidersHorizontal, Layers3 } from "lucide-react";
 import { SPORTS, type Sport } from "@/lib/analytics/dashboardTypes";
@@ -35,8 +35,10 @@ function DerivedEvidence({ entry }: { entry: LibraryEntry }) {
 export default function LibraryExplorer({ entries }: { entries: LibraryEntry[] }) {
   const [state, setState] = useState<LibraryViewState>({ sport: "all", kind: "all", query: "", collection: "all", page: 1 });
   const { sport, kind, query, collection, page } = state;
+  const firstResult = useRef<HTMLAnchorElement>(null);
+  const pendingPage = useRef<number | null>(null);
   useEffect(() => {
-    const restore = () => setState(readLibraryViewState(window.location.search));
+    const restore = () => { pendingPage.current = null; setState(readLibraryViewState(window.location.search)); };
     restore(); window.addEventListener("popstate", restore); return () => window.removeEventListener("popstate", restore);
   }, []);
   function writeState(next: LibraryViewState) {
@@ -45,13 +47,22 @@ export default function LibraryExplorer({ entries }: { entries: LibraryEntry[] }
     window.history.replaceState(null, "", `${window.location.pathname}${search ? `?${search}` : ""}`);
   }
   function update(s: Sport, k: LibraryViewState["kind"], q: string, c: string = collection) {
+    pendingPage.current = null;
     writeState({ sport: s, kind: k, query: q, collection: c, page: 1 });
   }
   function updatePage(nextPage: number) {
+    if (nextPage === safePage) return;
+    pendingPage.current = nextPage;
     writeState({ ...state, page: nextPage });
   }
   const collectionIds = collectionMemberIds(collection);
   const matched = filterLibrary(entries, sport, kind, query, collectionIds), pages = Math.max(1, Math.ceil(matched.length / 12)), safePage = page <= pages ? page : 1, visible = matched.slice((safePage - 1) * 12, safePage * 12);
+  useEffect(() => {
+    if (pendingPage.current !== safePage) return;
+    pendingPage.current = null;
+    firstResult.current?.focus({ preventScroll: true });
+    firstResult.current?.scrollIntoView({ block: "start", behavior: "instant" });
+  }, [safePage]);
   const derived = entries.filter(e => e.kind === "derived"), sources = entries.filter(e => e.kind === "source");
   return <div className="cv-workspace library-page"><div className="cv-workspace-inner">
     <header className="library-hero"><div><p className="cv-eyebrow">CourtVision / Intelligence library</p><h1>Sports analyses<br /><em>and their source data.</em></h1><p>Choose an analysis, inspect its calculation, and download its rows.</p><a href="#library-results" className="library-hero-action">Explore the library <ArrowDown size={17} /></a></div>
@@ -63,7 +74,7 @@ export default function LibraryExplorer({ entries }: { entries: LibraryEntry[] }
       <div className="library-question-collections" aria-label="Question-led collections">{readingCollections.map(item => <button key={item.id} aria-pressed={collection === item.id} onClick={() => update(sport, kind, query, collection === item.id ? "all" : item.id)}><span>{item.title}</span><small>{collectionMemberIds(item.id).length} readings</small><p>{item.description}</p></button>)}</div>
       <div className="library-filters"><div className="cv-sports" aria-label="Library sport">{SPORTS.map(s => <button key={s.id} aria-pressed={sport === s.id} onClick={() => update(s.id, kind, query)}>{s.label}</button>)}</div><label>Entry type<select value={kind} onChange={e => update(sport, e.target.value as LibraryViewState["kind"], query)}><option value="all">All entries</option><option value="derived">Derived analyses</option><option value="source">Source modules</option><option value="finding">Findings</option><option value="inspector">Inspectors</option><option value="explainer">Explainers</option><option value="paper">Research papers</option></select></label></div>
       <div className="library-count"><p role="status">{matched.length} {matched.length === 1 ? "entry" : "entries"}{collection !== "all" ? " in this question" : ""}{sport !== "all" ? " including checks used across sports" : ""}{query ? ` matching "${query}"` : ""}</p><span>Derived analyses use published snapshots; methods remain inspectable.</span></div>
-      {visible.length ? <div className="library-grid">{visible.map(e => <Link href={e.href} key={`${e.kind}-${e.id}`} className={`library-card library-card-${e.kind}`}><div className="library-card-meta"><span>{e.sport === "all" ? "Shared / cross-sport" : e.sport.toUpperCase()}</span><span>{e.kindLabel}</span></div><h3>{e.title}</h3>{e.integrityNotice && <p className="library-integrity-notice">{e.integrityNotice}</p>}<p>{e.description}</p>{e.kind === "source" ? <SourceEvidence entry={e} /> : e.kind === "derived" ? <><DerivedEvidence entry={e} /><MeasurementPreview values={e.preview} label={e.previewLabel} /></> : <DerivedEvidence entry={e} />}<div className="library-card-footer"><span>{e.rows === null ? e.status.replace(/_/g, " ") : `${e.rows.toLocaleString("en-US")} rows / ${e.fields} fields`}</span><ArrowUpRight size={19} /></div></Link>)}</div> : <div className="cv-empty">No analytics match these filters. Try fewer search terms or another collection.<button onClick={() => update("all", "all", "", "all")}>Reset filters</button></div>}
+      {visible.length ? <div className="library-grid">{visible.map((e, index) => <Link ref={index === 0 ? firstResult : null} href={e.href} key={`${e.kind}-${e.id}`} className={`library-card library-card-${e.kind}`}><div className="library-card-meta"><span>{e.sport === "all" ? "Shared / cross-sport" : e.sport.toUpperCase()}</span><span>{e.kindLabel}</span></div><h3>{e.title}</h3>{e.integrityNotice && <p className="library-integrity-notice">{e.integrityNotice}</p>}<p>{e.description}</p>{e.kind === "source" ? <SourceEvidence entry={e} /> : e.kind === "derived" ? <><DerivedEvidence entry={e} /><MeasurementPreview values={e.preview} label={e.previewLabel} /></> : <DerivedEvidence entry={e} />}<div className="library-card-footer"><span>{e.rows === null ? e.status.replace(/_/g, " ") : `${e.rows.toLocaleString("en-US")} rows / ${e.fields} fields`}</span><ArrowUpRight size={19} /></div></Link>)}</div> : <div className="cv-empty">No analytics match these filters. Try fewer search terms or another collection.<button onClick={() => update("all", "all", "", "all")}>Reset filters</button></div>}
       <nav className="library-pagination" aria-label="Library pages"><button onClick={() => updatePage(Math.max(1, safePage - 1))} disabled={safePage === 1}>Previous</button><span>Page {safePage} of {pages}</span><button onClick={() => updatePage(Math.min(pages, safePage + 1))} disabled={safePage >= pages}>Next</button></nav>
     </section>
   </div></div>;
