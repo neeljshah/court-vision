@@ -8,14 +8,14 @@ export function DataIntegrityNotice({ notices, moduleIds }: { notices: readonly 
   return <>
     {notices.map(notice => {
       const artifacts = moduleIds ? notice.affectedModules.filter(id => current.has(id)) : notice.affectedModules;
-      return <aside className={`${styles.notice} ${styles[notice.status]}`} aria-label={`Data integrity: ${notice.title}`} data-status={notice.status} key={notice.id}>
+      return <div role="note" className={`${styles.notice} ${styles[notice.status]}`} aria-label={`Data integrity: ${notice.title}`} data-status={notice.status} key={notice.id}>
         <p className={`overline ${styles.label}`}>Data integrity</p>
         <p className={styles.summary}>{notice.summary}</p>
         <ul className={`mono ${styles.artifacts}`} aria-label="Affected artifacts">
           {artifacts.map(id => <li key={id}>{id}</li>)}
         </ul>
         <Link className={styles.link} href={notice.detailRoute}>Read the full finding</Link>
-      </aside>;
+      </div>;
     })}
   </>;
 }

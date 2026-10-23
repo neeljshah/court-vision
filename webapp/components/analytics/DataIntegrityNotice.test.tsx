@@ -4,10 +4,23 @@ import { dataIntegrityNotices, noticesForModules } from "@/lib/analytics/dataInt
 import { DataIntegrityNotice } from "./DataIntegrityNotice";
 
 describe("DataIntegrityNotice", () => {
+  it("provides a labeled note within a main section without a nested complementary landmark", () => {
+    const moduleIds = ["state_conditioned_calibration"];
+    render(<main><section aria-labelledby="reliability-h"><h2 id="reliability-h">Reliability</h2>
+      <DataIntegrityNotice notices={noticesForModules(moduleIds)} moduleIds={moduleIds} />
+    </section></main>);
+    const section = screen.getByRole("region", { name: "Reliability" });
+    const note = within(section).getByRole("note", { name: /^Data integrity/ });
+    expect(note).toHaveAttribute("data-status", "regenerated");
+    expect(within(note).getByText("state_conditioned_calibration")).toBeInTheDocument();
+    expect(within(note).getByRole("link", { name: "Read the full finding" })).toBeInTheDocument();
+    expect(within(screen.getByRole("main")).queryByRole("complementary")).not.toBeInTheDocument();
+  });
+
   it("renders the revision-2 wording with the full finding route", () => {
     const moduleIds = ["state_conditioned_calibration"];
     render(<DataIntegrityNotice notices={noticesForModules(moduleIds)} moduleIds={moduleIds} />);
-    const notices = screen.getAllByRole("complementary", { name: /^Data integrity/ });
+    const notices = screen.getAllByRole("note", { name: /^Data integrity/ });
     expect(notices).toHaveLength(1);
     expect(notices[0]).toHaveAttribute("data-status", "regenerated");
     expect(within(notices[0]).getByText(/These MLB\/soccer numbers are revision 2, computed on the segment-clean corpus \(2026-09-16\)\./)).toBeInTheDocument();
@@ -22,7 +35,7 @@ describe("DataIntegrityNotice", () => {
   it("renders the timing revision-2 wording for a regenerated timing artifact", () => {
     const moduleIds = ["blowout_dynamics"];
     render(<DataIntegrityNotice notices={noticesForModules(moduleIds)} moduleIds={moduleIds} />);
-    const notices = screen.getAllByRole("complementary", { name: /^Data integrity/ });
+    const notices = screen.getAllByRole("note", { name: /^Data integrity/ });
     expect(notices).toHaveLength(1);
     expect(notices[0]).toHaveAttribute("data-status", "regenerated");
     expect(within(notices[0]).getByText(/rebuilt on the segment-clean corpus \(2026-09-17\)/)).toBeInTheDocument();
@@ -32,7 +45,7 @@ describe("DataIntegrityNotice", () => {
   it("renders the under-review wording for an artifact composed from a rebuilt input", () => {
     const moduleIds = ["ess_ledger"];
     render(<DataIntegrityNotice notices={noticesForModules(moduleIds)} moduleIds={moduleIds} />);
-    const notices = screen.getAllByRole("complementary", { name: /^Data integrity/ });
+    const notices = screen.getAllByRole("note", { name: /^Data integrity/ });
     expect(notices).toHaveLength(1);
     expect(notices[0]).toHaveAttribute("data-status", "under-review");
     expect(within(notices[0]).getByText(/Stale input: residual_autocorrelation\./)).toBeInTheDocument();
@@ -41,13 +54,13 @@ describe("DataIntegrityNotice", () => {
 
   it("does not render without an applicable notice", () => {
     render(<DataIntegrityNotice notices={[]} moduleIds={["blowout_dynamics"]} />);
-    expect(screen.queryByRole("complementary", { name: /^Data integrity/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("note", { name: /^Data integrity/ })).not.toBeInTheDocument();
   });
 
   it("renders the schedule-unit correction with its own paper route", () => {
     const moduleIds = ["novel_schedule_fatigue_tax"];
     render(<DataIntegrityNotice notices={noticesForModules(moduleIds)} moduleIds={moduleIds} />);
-    const notice = screen.getByRole("complementary", { name: /^Data integrity/ });
+    const notice = screen.getByRole("note", { name: /^Data integrity/ });
     expect(notice).toHaveAttribute("data-status", "under-review");
     expect(within(notice).getByText(/scoring margin \(no-rest minus rested\)/)).toBeInTheDocument();
     expect(within(notice).getByRole("link", { name: "Read the full finding" })).toHaveAttribute("href", expect.stringMatching(/^\/analytics\/papers\/rest-load-and-outcomes-nba\/?$/));

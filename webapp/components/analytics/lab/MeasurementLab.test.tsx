@@ -30,13 +30,13 @@ describe("MeasurementLab sport filtering and inspection", () => {
   it("updates source integrity notices when the selected dataset changes", () => {
     const integrityFixture: LabData = { ...fixture, datasets: [fixture.datasets[0], { ...fixture.datasets[1], id: "live-clock", title: "Live Clock", sport: "all", source: "novel_live_clock_fraction" }] };
     render(<MeasurementLab data={integrityFixture} />);
-    expect(screen.queryByRole("complementary", { name: /^Data integrity/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("note", { name: /^Data integrity/ })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /Live Clock/ }));
-    const notice = screen.getByRole("complementary", { name: /^Data integrity/ });
+    const notice = screen.getByRole("note", { name: /^Data integrity/ });
     expect(notice).toHaveTextContent(/revision 2.*novel_live_clock_fraction/);
     expect(notice.compareDocumentPosition(screen.getByText("Primary measurement")) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: /Cross-sport metric/ }));
-    expect(screen.queryByRole("complementary", { name: /^Data integrity/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("note", { name: /^Data integrity/ })).not.toBeInTheDocument();
   });
 
   it("defaults incompatible definitions to one cohort and never renders a pooled median", () => {

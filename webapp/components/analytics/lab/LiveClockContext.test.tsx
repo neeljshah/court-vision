@@ -26,7 +26,7 @@ describe("live-clock source context", () => {
     expect(card).toHaveTextContent("LCF 0.5994 at 1 goals");
     expect(card).toHaveTextContent("these values do not rank sports");
     expect(card).not.toHaveTextContent("0.833");
-    expect(within(card).getByRole("complementary", { name: /^Data integrity/ })).toHaveTextContent("stored corpus contains 178 MLB and 27");
+    expect(within(card).getByRole("note", { name: /^Data integrity/ })).toHaveTextContent("stored corpus contains 178 MLB and 27");
     const foresightCard = screen.getByRole("heading", { name: "Market Foresight Premium", level: 3 }).closest("article")!;
     expect(foresightCard).toHaveTextContent("MFP 0.411 (46 checkpoint observations)");
     expect(foresightCard).toHaveTextContent("do not establish an in-game trend");

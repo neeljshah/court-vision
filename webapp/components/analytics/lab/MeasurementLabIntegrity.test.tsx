@@ -23,9 +23,9 @@ describe("MeasurementLab novel integrity notices", () => {
     const clear = screen.getByRole("heading", { name: "Clear card" }).closest("article");
     expect(affected).not.toBeNull();
     expect(clear).not.toBeNull();
-    const notice = within(affected!).getByRole("complementary", { name: /^Data integrity/ });
+    const notice = within(affected!).getByRole("note", { name: /^Data integrity/ });
     expect(notice).toHaveTextContent("revision 2");
     expect(notice.compareDocumentPosition(within(affected!).getByRole("heading", { name: "Live Clock Fraction" })) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(within(clear!).queryByRole("complementary", { name: /^Data integrity/ })).not.toBeInTheDocument();
+    expect(within(clear!).queryByRole("note", { name: /^Data integrity/ })).not.toBeInTheDocument();
   });
 });
