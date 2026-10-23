@@ -208,7 +208,7 @@ export default function EntityPage({ params }: { params: { pack: string; slug: s
 
   return (
     <div className="wrap" style={{ paddingBottom: 8 }}>
-      <nav aria-label="Breadcrumb" style={{ fontSize: 13, color: "var(--ink-3)", padding: "22px 0 6px" }}>
+      <nav aria-label="Profile" style={{ fontSize: 13, color: "var(--ink-3)", padding: "22px 0 6px" }}>
         <Link href="/analytics/players" style={{ color: "var(--ink-3)" }}>Entities</Link>
         {" \u203A "}
         <Link href={`/analytics/players#${display.anchor}`} style={{ color: "var(--ink-3)" }}>{display.label}</Link>

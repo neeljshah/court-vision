@@ -13,7 +13,7 @@ describe("entity detail cohort navigation", () => {
     render(<EntityPage params={params} />);
 
     expect(generateMetadata({ params }).title).toContain(` -- ${label}`);
-    expect(within(screen.getByRole("navigation", { name: "Breadcrumb" }))
+    expect(within(screen.getByRole("navigation", { name: "Profile" }))
       .getByRole("link", { name: label }))
       .toHaveAttribute("href", `/analytics/players#${anchor}`);
     expect(document.body).toHaveTextContent(`these are ${slug === "ch" ? noun : `measured pitch data for ${noun}`}, not projections.`);
@@ -29,7 +29,7 @@ describe("entity detail cohort navigation", () => {
     render(<EntityPage params={params} />);
 
     expect(generateMetadata({ params }).title).toMatch(/ -- Probability-band calibration$/);
-    expect(within(screen.getByRole("navigation", { name: "Breadcrumb" }))
+    expect(within(screen.getByRole("navigation", { name: "Profile" }))
       .getByRole("link", { name: "Probability-band calibration" }))
       .toHaveAttribute("href", "/analytics/players#calibration-probability-bands");
     expect(document.body).toHaveTextContent("these are measured probability-band outcomes, not projections.");
@@ -49,7 +49,7 @@ describe("entity detail cohort navigation", () => {
     render(<EntityPage params={params} />);
 
     expect(generateMetadata({ params }).title).toMatch(/ -- Calibration checkpoints$/);
-    expect(within(screen.getByRole("navigation", { name: "Breadcrumb" }))
+    expect(within(screen.getByRole("navigation", { name: "Profile" }))
       .getByRole("link", { name: "Calibration checkpoints" }))
       .toHaveAttribute("href", "/analytics/players#calibration");
     expect(document.body).toHaveTextContent("these are measured calibration checkpoints, not projections.");
@@ -64,7 +64,7 @@ describe("entity detail cohort navigation", () => {
     render(<EntityPage params={params} />);
 
     expect(generateMetadata({ params }).title).toMatch(/ -- NBA players$/);
-    expect(within(screen.getByRole("navigation", { name: "Breadcrumb" }))
+    expect(within(screen.getByRole("navigation", { name: "Profile" }))
       .getByRole("link", { name: "NBA players" }))
       .toHaveAttribute("href", "/analytics/players#nba_players");
     expect(document.body).toHaveTextContent("these are measured per-36 rates, not projections.");
