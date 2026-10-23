@@ -71,8 +71,13 @@ export function JoinedFindings({ pack, items, coverage }: JoinedFindingsProps) {
               {withheld ? "The historical value is under review. Read the analysis for the published schedule counts and frequencies." : item.confound}
             </div>
             {withheld && <DataIntegrityNotice notices={[scheduleFatigueNotice]} />}
-            <Receipt sourceArtifact={item.source_artifact} verdict="descriptive_only" label={withheld ? "historical source" : "descriptive_only"} value={displayedValue} />
-            {target ? <Link href={target.href} prefetch={false} style={{ display: "inline-block", marginLeft: 12, fontSize: 12, fontWeight: 600 }}>Read {target.kind === "analysis" ? "analysis" : "source module"}</Link> : null}
+            <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 12 }}>
+              {/* Reserve the receipt's negative-margin hit area before actions wrap. */}
+              <div style={{ minWidth: 0, maxWidth: "100%", padding: "10px 3px" }}>
+                <Receipt sourceArtifact={item.source_artifact} verdict="descriptive_only" label={withheld ? "historical source" : "descriptive_only"} value={displayedValue} />
+              </div>
+              {target ? <Link href={target.href} prefetch={false} style={{ display: "inline-flex", alignItems: "center", minHeight: 44, fontSize: 12, fontWeight: 600 }}>Read {target.kind === "analysis" ? "analysis" : "source module"}</Link> : null}
+            </div>
           </div>
           );
         })}
