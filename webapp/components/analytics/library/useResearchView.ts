@@ -2,17 +2,18 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { matchesResearchPopulation, researchComparisonPolicy } from "@/lib/analytics/researchComparisonPolicy";
 import type { ResearchAnalysis } from "@/lib/analytics/researchTypes";
+import { LAB_TABLE_PAGE_SIZE } from "@/components/analytics/lab/LabTable";
 
-type View = { metric: string; second: string; group: string; population: string; query: string; ascending: boolean; view: string; row: string };
+type View = { metric: string; second: string; group: string; population: string; query: string; ascending: boolean; view: string; row: string; page: number };
 function defaultChartView(comparison: ReturnType<typeof researchComparisonPolicy>, population: string): string {
   return comparison.compatible || comparison.populations.some(item => item.key === population && item.compatibility === "compatible") ? "rank" : "table";
 }
 const defaults = (a: ResearchAnalysis): View => {
   const comparison = researchComparisonPolicy(a.rows, a);
   const population = comparison.compatible ? "all" : comparison.populations.find(item => item.compatibility === "compatible")?.key || "all";
-  return { metric: a.fields[0].key, second: a.fields[1]?.key || a.fields[0].key, group: "all", population, query: "", ascending: false, view: defaultChartView(comparison, population), row: "" };
+  return { metric: a.fields[0].key, second: a.fields[1]?.key || a.fields[0].key, group: "all", population, query: "", ascending: false, view: defaultChartView(comparison, population), row: "", page: 1 };
 };
-const parameters = { metric: "metric", second: "y", group: "group", population: "population", query: "q", ascending: "order", view: "view", row: "row" } as const;
+const parameters = { metric: "metric", second: "y", group: "group", population: "population", query: "q", ascending: "order", view: "view", row: "row", page: "page" } as const;
 
 function legacyComebackGroup(group: string): string | null {
   if (group === "lead_00") return "Tied score";
@@ -35,8 +36,12 @@ function validateRow(a: ResearchAnalysis, next: View): View {
   if (!comparison.compatible && next.population !== "all" && !comparison.populations.some(item => item.key === next.population)) next.population = initial.population;
   const terms = next.query.toLowerCase().trim().split(/\s+/).filter(Boolean);
   const aggregateIds = new Set(comparison.aggregateRows.map(row => row.id));
-  const selected = visibleRows(a, next).find(r => r.id === next.row && (aggregateIds.has(r.id) || terms.every(t => `${r.label} ${r.group} ${r.note || ""}`.toLowerCase().includes(t))));
-  return { ...next, row: selected?.id || "" };
+  const published = visibleRows(a, next);
+  const matches = (r: ResearchAnalysis["rows"][number]) => terms.every(t => `${r.label} ${r.group} ${r.note || ""}`.toLowerCase().includes(t));
+  const selected = published.find(r => r.id === next.row && (aggregateIds.has(r.id) || matches(r)));
+  const total = published.filter(r => !aggregateIds.has(r.id) && matches(r)).length;
+  const requestedPage = Number.isSafeInteger(next.page) && next.page > 0 ? next.page : 1;
+  return { ...next, row: selected?.id || "", page: Math.min(requestedPage, Math.max(1, Math.ceil(total / LAB_TABLE_PAGE_SIZE))) };
 }
 
 function readView(a: ResearchAnalysis): View {
@@ -56,6 +61,8 @@ function readView(a: ResearchAnalysis): View {
   const hasRequestedView = requestedView !== null && ["rank", "scatter", "table", "distribution"].includes(requestedView);
   if (hasRequestedView) next.view = requestedView;
   next.row = p.get("row") || "";
+  const requestedPage = p.get("page") || "";
+  if (/^[1-9]\d*$/.test(requestedPage)) next.page = Number(requestedPage);
   const restored = validateRow(a, next);
   if (!hasRequestedView) {
     restored.view = defaultChartView(researchComparisonPolicy(a.rows, a), restored.population);
@@ -97,6 +104,7 @@ export function useResearchView(a: ResearchAnalysis) {
     change: (patch: Partial<View>) => {
       const current = latest.current?.analysis === a ? latest.current.view : readView(a);
       const next = { ...current, ...patch };
+      if ((["metric", "second", "group", "population", "query", "ascending", "view"] as const).some(key => patch[key] !== undefined && patch[key] !== current[key])) next.page = 1;
       if (patch.population !== undefined && patch.population !== current.population && patch.view === undefined) {
         const comparison = researchComparisonPolicy(a.rows, a);
         if ((patch.population === "all" || comparison.populations.some(item => item.key === patch.population))
