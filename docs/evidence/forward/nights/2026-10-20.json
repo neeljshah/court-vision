@@ -1,0 +1,466 @@
+{
+  "admission": {
+    "path": "C:\\Users\\neelj\\nba-ai-system\\scripts\\platformkit\\execution\\paper_night_admission.json",
+    "sha256": "2c61dff7363c357279d03776921e100b118ce785a0f6cdaa705aa88217ca37ff"
+  },
+  "as_of": "2026-10-21T06:00:00Z",
+  "budget": {
+    "path": "C:\\Users\\neelj\\nba-ai-system\\scripts\\platformkit\\execution\\paper_night_budget.json",
+    "sha256": "9ad3e25140287f728ad47237d50258f541a2d7a39267374c67c3f9c6386ab391"
+  },
+  "date": "2026-10-20",
+  "input_window": {
+    "as_of": "2026-10-21T06:00:00Z",
+    "days": [
+      "2026-10-20",
+      "2026-10-21"
+    ],
+    "window": [
+      "2026-10-20T00:00:00Z",
+      "2026-10-22T00:00:00Z"
+    ],
+    "window_complete": false
+  },
+  "inputs": {
+    "assumption": "junctions_not_retargeted_during_night",
+    "books_root": "data/cache/ingame_books_local",
+    "capture_root": "data/cache/ingame_capture_view_v2",
+    "state_root": "data/cache/ingame_state_local_v2"
+  },
+  "python_executable": "C:\\Users\\neelj\\AppData\\Local\\Programs\\Python\\Python310\\python.exe",
+  "qualification_inputs": {
+    "capture_root": "data/cache/ingame_capture_view_v2",
+    "days": [
+      "2026-10-20",
+      "2026-10-21"
+    ],
+    "global_refusal_expected": null,
+    "missing_day_d_state": [],
+    "per_sport": {
+      "mlb": {
+        "kalshi": {
+          "2026-10-20": true,
+          "2026-10-21": true
+        },
+        "state": {
+          "2026-10-20": true,
+          "2026-10-21": false
+        }
+      },
+      "nba": {
+        "kalshi": {
+          "2026-10-20": true,
+          "2026-10-21": true
+        },
+        "state": {
+          "2026-10-20": true,
+          "2026-10-21": true
+        }
+      },
+      "ncaaf": {
+        "kalshi": {
+          "2026-10-20": true,
+          "2026-10-21": true
+        },
+        "state": {
+          "2026-10-20": true,
+          "2026-10-21": true
+        }
+      }
+    },
+    "step": {
+      "reason": null,
+      "step_status": "RAN"
+    }
+  },
+  "reasons": [
+    "child_nonzero_exit"
+  ],
+  "rerun_reason": null,
+  "sport_dispatch": [
+    {
+      "dispatched": true,
+      "fill_step": {
+        "reason": null,
+        "step_status": "RAN"
+      },
+      "planner_reason": null,
+      "scheduled_games": 1,
+      "scoreboard_dispatch_reason": "child_nonzero_exit",
+      "scoreboard_step": {
+        "reason": "child_nonzero_exit",
+        "step_status": "RAN"
+      },
+      "shards": {
+        "kalshi": {
+          "2026-10-20": true,
+          "2026-10-21": true
+        },
+        "state": {
+          "2026-10-20": true,
+          "2026-10-21": false
+        }
+      },
+      "sport": "mlb"
+    },
+    {
+      "dispatched": true,
+      "fill_step": {
+        "reason": null,
+        "step_status": "RAN"
+      },
+      "planner_reason": null,
+      "scheduled_games": 2,
+      "scoreboard_dispatch_reason": "child_nonzero_exit",
+      "scoreboard_step": {
+        "reason": "child_nonzero_exit",
+        "step_status": "RAN"
+      },
+      "shards": {
+        "kalshi": {
+          "2026-10-20": true,
+          "2026-10-21": true
+        },
+        "state": {
+          "2026-10-20": true,
+          "2026-10-21": true
+        }
+      },
+      "sport": "nba"
+    },
+    {
+      "dispatched": true,
+      "fill_step": {
+        "reason": null,
+        "step_status": "RAN"
+      },
+      "planner_reason": null,
+      "scheduled_games": 1,
+      "scoreboard_dispatch_reason": "child_nonzero_exit",
+      "scoreboard_step": {
+        "reason": "child_nonzero_exit",
+        "step_status": "RAN"
+      },
+      "shards": {
+        "kalshi": {
+          "2026-10-20": true,
+          "2026-10-21": true
+        },
+        "state": {
+          "2026-10-20": true,
+          "2026-10-21": true
+        }
+      },
+      "sport": "ncaaf"
+    }
+  ],
+  "status": "PARTIAL",
+  "steps": [
+    {
+      "admission_floor_bytes": 1282965504,
+      "argv": [
+        "C:\\Users\\neelj\\AppData\\Local\\Programs\\Python\\Python310\\python.exe",
+        "-m",
+        "scripts.platformkit.ops.forward_qualification_daily",
+        "--schedule",
+        "docs/evidence/forward/schedules/2026-10-20_maker_forward_full_selection.json",
+        "--served-schedule",
+        "docs/evidence/forward/schedules/2026-10-20_maker_forward.json",
+        "--families",
+        "docs/evidence/forward/families_maker_forward.json",
+        "--capture-root",
+        "data/cache/ingame_capture_view_v2",
+        "--supervisor-log-dir",
+        "data/cache/capture_supervisor",
+        "--global-cap",
+        "1",
+        "--max-order-qty",
+        "1",
+        "--date",
+        "2026-10-20",
+        "--as-of",
+        "2026-10-21T06:00:00Z",
+        "--run-nonce",
+        "paper-night-2026-10-20",
+        "--out",
+        "docs/evidence/forward/qualification/2026-10-20.json"
+      ],
+      "artifacts": [
+        {
+          "bytes": 12390,
+          "path": "docs/evidence/forward/qualification/2026-10-20.json",
+          "present": true,
+          "sha256": "32dbfde7e2524bd9d370db4479516b36ce2c634ab8c098755b998a3c9e96d8cf"
+        }
+      ],
+      "ceiling_bytes": 1572864000,
+      "errors": 0,
+      "exit_code": 0,
+      "free_ram_at_start_bytes": 2697445376,
+      "name": "qualification",
+      "peak_method": "windows_peak_wset_polled+post_exit",
+      "peak_working_set_bytes": 492158976,
+      "processes_already_exited": 1,
+      "reason": null,
+      "started_utc": "2026-10-22T14:53:52.695598+00:00",
+      "stdout_last_line": "{\"artifact\": \"docs\\\\evidence\\\\forward\\\\qualification\\\\2026-10-20.json\", \"qualified_games\": 0, \"refused\": 0, \"scheduled_games_total\": 4}",
+      "step_status": "RAN",
+      "wall_s": "457.047"
+    },
+    {
+      "admission_floor_bytes": 1282965504,
+      "argv": [
+        "C:\\Users\\neelj\\AppData\\Local\\Programs\\Python\\Python310\\python.exe",
+        "-m",
+        "scripts.platformkit.execution.fill_realism",
+        "--books",
+        "data/cache/ingame_books_local/kalshi/mlb/2026-10-20.jsonl",
+        "data/cache/ingame_books_local/kalshi/mlb/2026-10-21.jsonl",
+        "data/cache/ingame_books_local/kalshi/nba/2026-10-20.jsonl",
+        "data/cache/ingame_books_local/kalshi/nba/2026-10-21.jsonl",
+        "data/cache/ingame_books_local/kalshi/ncaaf/2026-10-20.jsonl",
+        "data/cache/ingame_books_local/kalshi/ncaaf/2026-10-21.jsonl",
+        "--trades",
+        "data/cache/ingame_books_local/kalshi/mlb/2026-10-20.jsonl",
+        "data/cache/ingame_books_local/kalshi/mlb/2026-10-21.jsonl",
+        "data/cache/ingame_books_local/kalshi/nba/2026-10-20.jsonl",
+        "data/cache/ingame_books_local/kalshi/nba/2026-10-21.jsonl",
+        "data/cache/ingame_books_local/kalshi/ncaaf/2026-10-20.jsonl",
+        "data/cache/ingame_books_local/kalshi/ncaaf/2026-10-21.jsonl",
+        "--state",
+        "data/cache/ingame_state_local_v2/state/mlb/2026-10-20.jsonl",
+        "data/cache/ingame_state_local_v2/state/nba/2026-10-20.jsonl",
+        "data/cache/ingame_state_local_v2/state/nba/2026-10-21.jsonl",
+        "data/cache/ingame_state_local_v2/state/ncaaf/2026-10-20.jsonl",
+        "data/cache/ingame_state_local_v2/state/ncaaf/2026-10-21.jsonl",
+        "--ttl-s",
+        "5",
+        "--window-s",
+        "30",
+        "--repo-root",
+        "C:\\Users\\neelj\\nba-ai-system",
+        "--schedule",
+        "docs/evidence/forward/schedules/2026-10-20_maker_forward_full_selection.json",
+        "--as-of",
+        "2026-10-21T06:00:00Z",
+        "--night-date",
+        "2026-10-20",
+        "--out",
+        "docs/evidence/forward/fill_realism/2026-10-20.json"
+      ],
+      "artifacts": [
+        {
+          "bytes": 1053191,
+          "path": "docs/evidence/forward/fill_realism/2026-10-20.json",
+          "present": true,
+          "sha256": "246a68c0e6047fb3696bd5ddb8c06dd314b5ee88828d5385c1ef2e63fa2020da"
+        },
+        {
+          "bytes": 135,
+          "path": "docs/evidence/forward/fill_realism/2026-10-20.json.resources.json",
+          "present": true,
+          "sha256": "46ba3ae2646fc7d0d89b99b39aec91ad39f042a6ddc2d0d69204a25ab8941937"
+        }
+      ],
+      "ceiling_bytes": 1572864000,
+      "errors": 0,
+      "exit_code": 0,
+      "free_ram_at_start_bytes": 3137183744,
+      "name": "fill_realism",
+      "peak_method": "windows_peak_wset_polled+post_exit",
+      "peak_working_set_bytes": 474624000,
+      "processes_already_exited": 1,
+      "reason": null,
+      "started_utc": "2026-10-22T15:01:29.745194+00:00",
+      "stdout_last_line": "{\"artifact\": \"docs/evidence/forward/fill_realism/2026-10-20.json\", \"artifact_bytes\": 1053191, \"fills_credited_by_ttl_s\": {\"30\": 108, \"5\": 20}, \"row_count\": 549300}",
+      "step_status": "RAN",
+      "wall_s": "521.031"
+    },
+    {
+      "admission_floor_bytes": 1282965504,
+      "argv": [
+        "C:\\Users\\neelj\\AppData\\Local\\Programs\\Python\\Python310\\python.exe",
+        "-m",
+        "scripts.platformkit.ops.forward_week_report",
+        "--ledger",
+        "data/cache/forward/family_week_ledger.jsonl",
+        "--families",
+        "docs/evidence/forward/families_maker_forward.json",
+        "--daily-dir",
+        "docs/evidence/forward/qualification",
+        "--as-of",
+        "2026-10-21T06:00:00Z",
+        "--out",
+        "docs/evidence/forward/weeks/2026-W42_maker_forward.json"
+      ],
+      "artifacts": [
+        {
+          "bytes": 17262,
+          "path": "docs/evidence/forward/weeks/2026-W42_maker_forward.json",
+          "present": true,
+          "sha256": "518e5845e0e093e867cda52f57989dcadc31b8350cad269325c2f56f5a9e6c55"
+        }
+      ],
+      "ceiling_bytes": 1572864000,
+      "errors": 0,
+      "exit_code": 3,
+      "free_ram_at_start_bytes": 3069423616,
+      "name": "week",
+      "peak_method": "windows_peak_wset_polled+post_exit",
+      "peak_working_set_bytes": 21131264,
+      "processes_already_exited": 1,
+      "reason": null,
+      "started_utc": "2026-10-22T15:10:10.765930+00:00",
+      "stdout_last_line": "{\"families\": 6, \"missing_dates\": [\"2026-10-15\", \"2026-10-17\", \"2026-10-18\"], \"status\": \"INCOMPLETE\"}",
+      "step_status": "RAN",
+      "wall_s": "0.515",
+      "week_status": "INCOMPLETE"
+    },
+    {
+      "admission_floor_bytes": 1282965504,
+      "argv": [
+        "C:\\Users\\neelj\\AppData\\Local\\Programs\\Python\\Python310\\python.exe",
+        "-m",
+        "scripts.platformkit.execution.ingame_scoreboard_night",
+        "--books-root",
+        "data/cache/ingame_books_local/kalshi",
+        "--state-root",
+        "data/cache/ingame_state_local_v2/state",
+        "--schedule",
+        "docs/evidence/forward/schedules/2026-10-20_maker_forward.json",
+        "--prereg",
+        "docs/evidence/forward/scoreboard/PREREG_2026-09-24.json",
+        "--out",
+        "docs/evidence/forward/scoreboard/2026-10-20.json",
+        "--date",
+        "2026-10-20",
+        "--sports",
+        "mlb",
+        "nba",
+        "ncaaf",
+        "--as-of",
+        "2026-10-21T06:00:00Z",
+        "--history",
+        "data/cache/forward/scoreboard/training/2026-10-20.jsonl"
+      ],
+      "artifacts": [
+        {
+          "bytes": 0,
+          "path": "docs/evidence/forward/scoreboard/2026-10-20.json",
+          "present": false,
+          "sha256": null
+        }
+      ],
+      "ceiling_bytes": 1572864000,
+      "errors": 0,
+      "exit_code": 1,
+      "free_ram_at_start_bytes": 3172982784,
+      "history_refusal_fallback_skipped": {},
+      "history_refusal_own_absent": 0,
+      "history_refusal_reason": null,
+      "history_refusal_source_day": "2026-10-20",
+      "history_refused": 0,
+      "name": "scoreboard",
+      "peak_method": "windows_peak_wset_polled+post_exit",
+      "peak_working_set_bytes": 95535104,
+      "processes_already_exited": 1,
+      "reason": "child_nonzero_exit",
+      "started_utc": "2026-10-22T15:10:11.286778+00:00",
+      "stdout_last_line": "ValueError: amendment_not_prospective",
+      "step_status": "RAN",
+      "wall_s": "1.547"
+    },
+    {
+      "admission_floor_bytes": 1282965504,
+      "argv": [
+        "C:\\Users\\neelj\\AppData\\Local\\Programs\\Python\\Python310\\python.exe",
+        "-m",
+        "scripts.platformkit.execution.scoreboard_history",
+        "--for-night",
+        "2026-10-21",
+        "--as-of",
+        "2026-10-21T06:00:00Z",
+        "--capture-root",
+        "data/cache/ingame_capture_view_v2",
+        "--served-schedule",
+        "docs/evidence/forward/schedules/{date}_maker_forward.json",
+        "--training-rows",
+        "data/cache/forward/scoreboard/training/{date}.jsonl",
+        "--prereg",
+        "docs/evidence/forward/scoreboard/PREREG_2026-09-24.json",
+        "--lookback",
+        "7"
+      ],
+      "artifacts": [
+        {
+          "bytes": 83948,
+          "path": "docs/evidence/forward/scoreboard/training/2026-10-21.manifest.json",
+          "present": true,
+          "sha256": "7da937f79cc77f77742037da71594bc8d5a6a693608e2ab6b3ae1356e9cd4025"
+        }
+      ],
+      "ceiling_bytes": 1572864000,
+      "errors": 0,
+      "exit_code": 0,
+      "free_ram_at_start_bytes": 3063353344,
+      "name": "history",
+      "peak_method": "windows_peak_wset_polled+post_exit",
+      "peak_working_set_bytes": 142409728,
+      "processes_already_exited": 1,
+      "reason": null,
+      "started_utc": "2026-10-22T15:10:12.838624+00:00",
+      "stdout_last_line": "{\"boundary\":\"2026-10-18T00:00:00.000000Z\",\"complete\":false,\"for_night\":\"2026-10-21\",\"incomplete\":11,\"nights_skipped\":{},\"reason\":null,\"rows\":40277,\"slice_reused\":35,\"slice_source_changed\":0,\"slice_written\":0,\"snapshot\":\"2026-10-17T23:59:59.999999Z\",\"state\":\"published\"}",
+      "step_status": "RAN",
+      "wall_s": "59.688"
+    },
+    {
+      "admission_floor_bytes": 1282965504,
+      "argv": [
+        "C:\\Users\\neelj\\AppData\\Local\\Programs\\Python\\Python310\\python.exe",
+        "-m",
+        "scripts.platformkit.execution.registry_scorer_e_night",
+        "--for-night",
+        "2026-10-20",
+        "--as-of",
+        "2026-10-21T06:00:00Z",
+        "--capture-root",
+        "data/cache/ingame_capture_view_v2",
+        "--served-schedule",
+        "docs/evidence/forward/schedules/{date}_maker_forward.json",
+        "--prereg-e",
+        "docs/evidence/forward/scoreboard/PREREG_E_2026-09-25.json",
+        "--block-config-e",
+        "docs/evidence/forward/scoreboard/BLOCK_CONFIG_E_2026-09-30.json",
+        "--caller-policy-e",
+        "docs/evidence/forward/scoreboard/CALLER_POLICY_E_2026-09-30.json",
+        "--lookback",
+        "7",
+        "--input-root",
+        "data/cache/forward/registry_e",
+        "--out",
+        "docs/evidence/forward/registry_e/2026-10-20.json"
+      ],
+      "artifacts": [
+        {
+          "bytes": 0,
+          "path": "docs/evidence/forward/registry_e/2026-10-20.json",
+          "present": false,
+          "sha256": null
+        }
+      ],
+      "ceiling_bytes": 629145600,
+      "errors": 0,
+      "exit_code": 2,
+      "free_ram_at_start_bytes": 3363418112,
+      "name": "e",
+      "peak_method": "windows_peak_wset_polled+post_exit",
+      "peak_working_set_bytes": 80719872,
+      "processes_already_exited": 1,
+      "reason": "child_nonzero_exit",
+      "started_utc": "2026-10-22T15:11:12.523975+00:00",
+      "stdout_last_line": "{\"state\": \"REFUSED\", \"reason\": \"caller_policy_not_prospective\", \"counts\": {\"refused\": 1}}",
+      "step_status": "RAN",
+      "wall_s": "1.047"
+    }
+  ]
+}

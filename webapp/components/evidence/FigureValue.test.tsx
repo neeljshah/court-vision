@@ -19,7 +19,7 @@ describe("FigureValue", () => {
   it("formats a large count with separators and renders a string figure verbatim", () => {
     expect(figureText({ k: "public_commit_count" })).toBe("6,556");
     expect(figureText({ k: "g6_status" })).toBe("has not started as of 2026-10-19 (zero weeks collected)");
-    expect(figureText({ k: "forward_window_end" })).toBe("2026-10-16");
+    expect(figureText({ k: "forward_window_end" })).toBe("2026-10-22");
   });
 
   it("renders one named field of a comparison figure with the kit formats", () => {

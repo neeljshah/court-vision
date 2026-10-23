@@ -105,13 +105,13 @@ def test_module_count_drift_caught():
 
 def test_findings_count_drift_caught():
     assert _kinds(scan_counts("f.md", "29 papers, 18 findings", CFG)) == ["COUNT"]
-    assert scan_counts("f.md", "17 titled findings", CFG) == []
+    assert scan_counts("f.md", "16 titled findings", CFG) == []
 
 
 def test_forward_window_drift_caught():
     assert _kinds(scan_counts("w.md", "## 5. Forward paper record 2026-10-06 .. 2026-10-18", CFG)) == ["COUNT"]
     assert _kinds(scan_counts("w.md", "(PACKET.md#5-forward-paper-record-2026-10-06--2026-10-18-as-of)", CFG)) == ["COUNT"]
-    assert scan_counts("w.md", "Forward paper record 2026-10-06 to 2026-10-16", CFG) == []
+    assert scan_counts("w.md", "Forward paper record 2026-10-06 to 2026-10-22", CFG) == []
 
 
 def test_g6_zero_qualifying_weeks_is_forbidden():
@@ -133,7 +133,8 @@ def test_counts_match_their_sources():
     import json
     man = json.loads((ROOT / "webapp/public/data/showcase/site_manifest.json").read_text(encoding="utf-8"))
     assert man["module_count"] == by["published_module_count"]["value"]
-    pages = list((ROOT / "webapp/app/(analytics)/analytics/findings").glob("*/page.tsx"))
+    pages = [p for p in (ROOT / "webapp/app/(analytics)/analytics/findings").glob("*/page.tsx")
+             if "RedirectStub" not in p.read_text(encoding="utf-8")]  # same rule as webapp/lib/figures.test.ts
     assert len(pages) == by["titled_findings_count"]["value"]
 
 
@@ -142,7 +143,7 @@ def test_explain_prints_every_figure_with_source(capsys):
     keys = [f["key"] for f in CFG["canonical_counts"]["figures"] + CFG["figures"]]
     assert all(any(l.startswith(k + " = ") and " <- " in l for l in lines) for k in keys)
     assert main(["--repo-root", str(ROOT), "--explain"]) == 0
-    assert "public_commit_count = 6508" in capsys.readouterr().out
+    assert "public_commit_count = 6556" in capsys.readouterr().out
 
 
 def test_real_repo_is_green(capsys):

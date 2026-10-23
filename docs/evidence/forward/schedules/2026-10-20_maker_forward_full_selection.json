@@ -1,0 +1,48 @@
+[
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXMLBGAME-26OCT192008CLETB",
+    "game_key": "849815",
+    "scheduled_start": "2026-10-20T00:08:00.000000Z",
+    "selected_at": "2026-10-19T15:31:53.846799+00:00",
+    "sport": "mlb",
+    "ticker": "KXMLBGAME-26OCT192008CLETB-TB"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXNBAGAME-26OCT20BOSDET",
+    "game_key": "401909088",
+    "scheduled_start": "2026-10-20T19:00:00.000000Z",
+    "season_reason": null,
+    "season_type": 2,
+    "season_year": 2027,
+    "selected_at": "2026-10-19T15:31:53.846799+00:00",
+    "sport": "nba",
+    "ticker": "KXNBAGAME-26OCT20BOSDET-DET"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXNBAGAME-26OCT20PHINYK",
+    "game_key": "401909089",
+    "scheduled_start": "2026-10-20T23:00:00.000000Z",
+    "season_reason": null,
+    "season_type": 2,
+    "season_year": 2027,
+    "selected_at": "2026-10-19T15:31:53.846799+00:00",
+    "sport": "nba",
+    "ticker": "KXNBAGAME-26OCT20PHINYK-NYK"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXNCAAFGAME-26OCT20USAMRSH",
+    "game_key": "401871092",
+    "scheduled_start": "2026-10-20T23:30:00.000000Z",
+    "selected_at": "2026-10-19T15:31:53.846799+00:00",
+    "sport": "ncaaf",
+    "ticker": "KXNCAAFGAME-26OCT20USAMRSH-MRSH"
+  }
+]

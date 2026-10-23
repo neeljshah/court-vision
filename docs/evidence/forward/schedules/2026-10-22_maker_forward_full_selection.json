@@ -1,0 +1,45 @@
+[
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXNBAGAME-26OCT22CLEPHI",
+    "game_key": "401909093",
+    "scheduled_start": "2026-10-22T23:00:00.000000Z",
+    "season_reason": null,
+    "season_type": 2,
+    "season_year": 2027,
+    "selected_at": "2026-10-22T14:44:55.015429+00:00",
+    "sport": "nba",
+    "ticker": "KXNBAGAME-26OCT22CLEPHI-PHI"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXNCAAFGAME-26OCT22JMUAPP",
+    "game_key": "401869845",
+    "scheduled_start": "2026-10-22T23:00:00.000000Z",
+    "selected_at": "2026-10-22T14:44:55.015429+00:00",
+    "sport": "ncaaf",
+    "ticker": "KXNCAAFGAME-26OCT22JMUAPP-APP"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXNCAAFGAME-26OCT22LIBKENN",
+    "game_key": "401871056",
+    "scheduled_start": "2026-10-22T23:00:00.000000Z",
+    "selected_at": "2026-10-22T14:44:55.015429+00:00",
+    "sport": "ncaaf",
+    "ticker": "KXNCAAFGAME-26OCT22LIBKENN-KENN"
+  },
+  {
+    "capacity_rule": "live_concurrency",
+    "family": "maker_forward",
+    "game_id": "KXNCAAFGAME-26OCT22ECUMEM",
+    "game_key": "401862807",
+    "scheduled_start": "2026-10-22T23:30:00.000000Z",
+    "selected_at": "2026-10-22T14:44:55.015429+00:00",
+    "sport": "ncaaf",
+    "ticker": "KXNCAAFGAME-26OCT22ECUMEM-MEM"
+  }
+]

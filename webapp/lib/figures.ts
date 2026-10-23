@@ -92,9 +92,9 @@ export const COUNT_FIGURES = {
   "forward_window_end": {
     "kind": "count",
     "key": "forward_window_end",
-    "value": "2026-10-16",
-    "as_of": "2026-10-19",
-    "source": "docs/JOB_EVIDENCE_PACKET.md section 5: last served night 2026-10-16 (no schedule on 10-17 or 10-18); window starts 2026-10-06"
+    "value": "2026-10-22",
+    "as_of": "2026-10-23",
+    "source": "docs/JOB_EVIDENCE_PACKET.md section 5: last night with a receipt 2026-10-22 (nights/2026-10-22.json; no schedule on 10-11, 10-17 or 10-18); window starts 2026-10-06"
   },
   "g6_status": {
     "kind": "count",
@@ -265,7 +265,7 @@ export const COMPARISON_FIGURES = {
     "qualified_of_judged": "0 of 44",
     "window_end": "2026-10-16",
     "verdict": "INSUFFICIENT",
-    "source": "docs/JOB_EVIDENCE_PACKET.md section 5 (Forward paper record 2026-10-06 .. 2026-10-16)",
+    "source": "docs/JOB_EVIDENCE_PACKET.md",
     "as_of": "2026-10-19",
     "licenses": "Through 2026-10-16 the paper desk served 113 games over 9 receipt nights (2 COMPLETE, 7 PARTIAL); 0 of 44 judged games qualified and every pooled cell is INSUFFICIENT. Counts only; not a verdict on the model and never execution quality."
   }

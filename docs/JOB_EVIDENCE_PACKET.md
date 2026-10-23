@@ -265,7 +265,7 @@ the repo will catch each one. Do not cite them as current results.
 | **"+18.38% ROI on 1,535 walk-forward bets vs real closing lines"** (also +15.04% flat, and per-stat splits BLK +26% / STL +17% / etc.) | **Market-follow artifact, confirmed at the source-code level.** The grader picks bet direction from `devig(over_odds, under_odds)` — the market's own lean — and never reads the model (the eval CSV has no prediction column); prices at a flat -110 fiction; filters tuned in-sample on the same file. At real odds ~-4%; the model's own number is -2.00%. | "Roughly break-even-minus-vig vs real closing lines; every candidate edge, including assists, was ultimately rejected or retracted by my own gates." |
 | **"endQ3 in-play Brier 0.1191, inside Pinnacle's range"** | **Leak-inflated AND mis-sourced.** Fed two Q4-derived features (peeks at the predicted quarter); cited file actually reports 0.1354. | "Leak-free walk-forward endQ3 Brier ~0.141, after I removed a Q4 feature leak I found in my own pipeline." |
 | **"+54.57% ROI / 78.11% hit on 55,073 in-play bets"** | Graded against an **L5 line proxy**, not real closing lines. A model-quality ceiling, not a tradeable result. | "On a soft L5 proxy the in-play backtest hits 78%/+54% — I treat that strictly as a model-quality ceiling, never as realized edge." |
-| **"Aggregate CLV +8.94pp"** | Circular — computed on the same model-unused, devig-direction corpus. No real Pinnacle-close CLV exists yet; first reading dated Oct 2026 (section 5: as of 2026-10-19 the forward paper series computes no markout or CLV). Full-season backtest shows CLV ≈ 0 vs real closes. | Don't quote a CLV figure. "Real closing-line CLV can't be measured yet; I built the methodology that will measure it." |
+| **"Aggregate CLV +8.94pp"** | Circular — computed on the same model-unused, devig-direction corpus. No real Pinnacle-close CLV exists yet; first reading dated Oct 2026 (section 5: as of 2026-10-23 the forward paper series computes no markout or CLV). Full-season backtest shows CLV ≈ 0 vs real closes. | Don't quote a CLV figure. "Real closing-line CLV can't be measured yet; I built the methodology that will measure it." |
 | **"Re-ID accuracy ~91%, homography RMSE ~4.2px, 28 FPS, ball-valid 87%"** | **Unbacked.** The referenced benchmark test does not exist. | Present as roadmap targets, never achieved metrics. Cite the **self-consistency tracking-quality gates** instead. |
 | **"Tracks 10 players at 15 fps"** | Observed ~1.6–2.6 tracked players/frame (max 4) on real broadcast footage; ~7–11 fps. | "The detector finds all 10 players; the tracker maintains up to ~5–6 stable slots on the calibration clip; reliable 10-player broadcast tracking is not yet demonstrated." |
 | **"Position accuracy ±12–18 inches" / "0 ID switches" / "track stability 1.0"** | No ground-truth labels exist; `evaluate.py` returns `self_evaluation: True`, not validated MOT metrics. | "Outputs court coordinates via homography; positional accuracy and MOT metrics are not yet benchmarked against labeled ground truth." |
@@ -280,8 +280,8 @@ the repo will catch each one. Do not cite them as current results.
 | **"Run my verify scripts to reproduce the headlines"** | **AMENDED 2026-07-23:** the historical failures (`verify_production_mae.py` feature mismatch; `verify_winprob.py` uncommitted cache) were fixed 2026-07-20 (`eb95e13b8`), and fresh-clone reproducibility is now **measured, not assumed**: `check_all.py` passes 52/52 on a bare clone (8 data-dependent modules verify their committed artifacts in a labeled recorded-artifact mode) and runs green in public CI (`proof.yml`, first green run 2026-07-23; the first run honestly FAILED 46/52 on a path-portability bug, fixed in `03c4ce398` -- the red run stays in Actions history). | "Clone the repo and run `check_all.py` -- 52 module self-checks pass on a bare clone and in public CI ([REPRODUCE.md](../REPRODUCE.md)). The CI trail includes the first red run and its fix -- that is the discipline, not an embarrassment." |
 | **Any "quant alpha / P&L track record" framing** | There is **no verified leak-free profitable edge.** Zero real money placed. | Apply as an ML-infra/modeling/CV hire. "I built the full quant toolchain — devig, Kelly, CLV, calibration, walk-forward backtesting — and ran the validation that proved the apparent edge was an artifact." |
 | **"85 trained signals" / "0/85 candidate signals" / "80-artifact intelligence layer"** | **CORRECTED 2026-09-03 (S56).** No artifact holds 85 signals: 85 is the per-row `n_trials` multiplicity constant, while `scripts/platformkit/eval_gate/spa_catalog_report.txt` and `retro_correction_report.txt` both enumerate **60** catalog classes (NBA 16 / soccer 15 / tennis 15 / MLB 14), 0 surviving. The disjoint `data/registry/signal_registry.parquet` holds **86** rows (72 folded / 14 deferred, `coverage_pct` null 86/86, no market-relative verdict). `data/intelligence/` holds **151** files on disk and the 80-subset is not enumerable by any script. Memo: `docs/evidence/harness/SIGNAL_INVENTORY_REDTEAM_2026-09-03.md`. | "0 of 60 candidate signal classes survived the multiplicity correction; 86 registry signals carry no market-relative test; the intelligence layer is 151 files on disk." |
-| **"A forward track record" / "N weeks of forward paper trading" / any forward-series Brier as a model verdict** (added 2026-10-19) | Through 2026-10-18 every scoreboard cell is INSUFFICIENT (1 to 6 games against the 30-game floor), 0 of 44 judged games passed qualification, 7 of 9 night receipts are PARTIAL, and the fitted arms scored ticks on two nights only. Arm A is the venue mid's own Brier, not the model's. Section 5. | "A prospective, receipt-backed paper series has run since 2026-10-06. It has no calibration verdict yet, and the receipts say why: scorer wall time, laptop sleeps and recorder uptime." |
-| **"Simulated fills" as execution quality or P&L** (added 2026-10-19) | fill_realism is `COUNTS ONLY` on unqualified tape with zero assumed latency. It reports no markout, no fee netting and no money figure. | "The fill-realism step counts which paper quotes would have been touched (106 at a 5 s quote life, 452 at 30 s, 10-08 to 10-14). It is a count, not a result." |
+| **"A forward track record" / "N weeks of forward paper trading" / any forward-series Brier as a model verdict** (added 2026-10-19) | Through 2026-10-22 every scoreboard cell is INSUFFICIENT (1 to 6 games against the 30-game floor), 0 of 61 judged games passed qualification, 9 of 13 night receipts are PARTIAL, and the fitted arms scored ticks on two nights only (10-06 and 10-09), none since. Arm A is the venue mid's own Brier, not the model's. Section 5. | "A prospective, receipt-backed paper series has run since 2026-10-06. It has no calibration verdict yet, and the receipts say why: scorer wall time, laptop sleeps and recorder uptime." |
+| **"Simulated fills" as execution quality or P&L** (added 2026-10-19) | fill_realism is `COUNTS ONLY` on unqualified tape with zero assumed latency. It reports no markout, no fee netting and no money figure. | "The fill-realism step counts which paper quotes would have been touched (188 at a 5 s quote life, 732 at 30 s, 10-08 to 10-22). It is a count, not a result." |
 | **"The NBA season is pre-registered forward"** (added 2026-10-19) | No NBA-specific pre-registration document exists. NBA cells are scored under the general `PREREG_2026-10-07.json` seal (arm A and B_lag only so far, every cell INSUFFICIENT) and the fitted NBA arms are in warmup until about 20 regular-season games settle. Say "scored under the 2026-10-07 seal, fitted arms warmup", never "a pre-registered NBA season" or any NBA forward verdict. | "NBA is served and scored against the mid from the opener. A fitted NBA arm needs a new dated seal." |
 
 **Pre-outreach housekeeping (status as of 2026-06-11):**
@@ -301,14 +301,17 @@ during the audit. Last reconciled: 2026-06-11.*
 
 ---
 
-## 5. Forward paper record 2026-10-06 .. 2026-10-16 (as of 2026-10-19)
+## 5. Forward paper record 2026-10-06 .. 2026-10-22 (as of 2026-10-23)
 
 PAPER ONLY. No order was placed, nothing here is a return figure, and every number below is
 transcribed from a receipt under `docs/evidence/forward/` (path beside it; committed unless noted).
 This section adds to the record. It does not replace any earlier text. The forward series is an
 **operations and calibration record**. It is **not yet a verdict on the model**: no scored cell has
 reached the sealed 30-game floor, and no game has passed qualification. That is the result so far,
-and it is reported here as it stands.
+and it is reported here as it stands. The 2026-10-19 version of this section covered 10-06 to 10-16
+(113 games served, 9 night receipts with 2 COMPLETE and 7 PARTIAL, 0 of 44 judged games qualified);
+those counts are the first rows of each table below, and they are still the dated canonical
+`forward_window_counts` figure (as of 2026-10-19) in `docs/evidence/CANONICAL_FIGURES.json`.
 
 **What the series is.** Each day a prospective schedule (`schedules/<D>_maker_forward.json`, rows
 selected before the games start) names the games served on Kalshi in-game markets. The night after,
@@ -336,14 +339,18 @@ floor.
 | 10-15 | 8 | 2 | 3 | - | - | - | 3 |
 | 10-16 | 9 | 2 | 2 | 1 | 2 | - | 2 |
 | 10-17, 10-18 | no schedule (laptop dark 10-16 03:56Z to 10-19 15:15Z, about 83 h; `daily/2026-10-19.md`) | | | | | | |
-| **Total** | **113** | 15 | 32 | 4 | 18 | 30 | 14 |
+| 10-19 | 3 | - | - | - | 3 | - | - |
+| 10-20 | 4 | 1 | 2 | - | - | - | 1 |
+| 10-21 | 7 | - | 4 | - | 3 | - | - |
+| 10-22 | 3 | - | 1 | - | - | - | 2 |
+| **Total** | **130** | 16 | 39 | 4 | 24 | 30 | 17 |
 
 Tennis left the served tuple from 10-11 by a recorded desk decision (`docs/operations/DESK_STATE.md`,
-10-09 status). The schedule files for 10-14, 10-15 and 10-16 are on the desk but were not yet
-committed at this writing. The NBA rows served so far are preseason games (`season_type` 1 in the
-schedule rows).
+10-09 status). Every schedule file in this window is committed. The NBA rows through 10-16 are
+preseason games (`season_type` 1 in the schedule rows); the 7 NBA rows from 10-20 on are
+regular-season games (`season_type` 2).
 
-**Nights** (from `nights/<D>.json`; 9 receipts, 2 COMPLETE, 7 PARTIAL, 4 calendar days without a scored night):
+**Nights** (from `nights/<D>.json`; 13 receipts, 4 COMPLETE, 9 PARTIAL, 4 calendar days without a night receipt):
 
 | Night | Status | Reason (step status from the receipt) |
 |---|---|---|
@@ -359,70 +366,114 @@ schedule rows).
 | 10-15 | not run | laptop dark from 10-16 03:56Z; after the 10-19 relaunch, free RAM was 0.4 to 1.5 GB against the 2.5 GB night floor (`docs/operations/DESK_STATE.md`, 10-19 status) |
 | 10-16 | COMPLETE | all six steps RAN, run after the 10-19 relaunch (as_of 2026-10-17T06:00Z; qualification 13 games judged, 0 qualified; week report INCOMPLETE) |
 | 10-17, 10-18 | missing | no schedule (unrecoverable) |
+| 10-19 | PARTIAL | qualification refused `step_budget_exceeded` (exit 3, no game judged); the other five steps RAN (run from 15:37Z 10-20) |
+| 10-20 | PARTIAL | scoreboard exited 1 and wrote no receipt, and registry E was refused `caller_policy_not_prospective`: the checkout was a shallow clone (register row S832, below); qualification, fill_realism, week and history RAN (run from 14:53Z 10-22) |
+| 10-21 | COMPLETE | all six steps RAN (run from 15:26Z 10-22); 6 of the 7 served games unsettled (`counts.unsettled_games` in `scoreboard/2026-10-21.json`) |
+| 10-22 | COMPLETE | all six steps RAN (run from 15:42Z 10-23, after the desk was dark 00:05Z to 15:35Z 10-23); all 3 served games unsettled (`scoreboard/2026-10-22.json`) |
 
-The 2026-10-19 night (`nights/2026-10-19.json`, PARTIAL, as_of 2026-10-20T06:00Z, qualification refused `step_budget_exceeded`) is committed but lies outside this window; it will be absorbed at the next packet refresh.
+**Measurement gaps, stated plainly.** The desk was dark (no ticks; the host laptop off or asleep for
+most of each interval) at least 10-10 01:56Z to 10-12 13:26Z, 10-16 03:56Z to 10-19 15:15Z, 10-20
+00:26Z to 14:37Z, 10-21 04:56Z to 10-22 14:35Z and 10-23 00:05Z to 15:35Z (`daily/2026-10-12.md`,
+`daily/2026-10-19.md`, `daily/2026-10-20.md`, `daily/2026-10-22.md`, `daily/2026-10-23.md`). The
+cost: no schedule on 10-11, 10-17 or 10-18; night 10-15 never ran; and a served game that finished
+while the desk was dark has no settlement, so it is not scored (6 of 7 on 10-21 and 3 of 3 on 10-22,
+`counts.unsettled_games` in `scoreboard/<D>.json`). Separately, the main checkout was a shallow clone
+from 17:18Z 10-20 until its repair on 10-22 (register row S832; commit bd95b24f4). Every
+sealed-artifact prospectivity check refused on it, so night 10-20 has no scoreboard and no registry E
+receipt. Its rerun is owed and had not run at this writing. These are gaps in the record, not results.
 
 The scoreboard kills have a measured cause. The sealed scorer refits once per history row, so its
 wall time grows about quadratically with the cumulative history: 1,443 s measured at 29k rows (`docs/operations/DESK_STATE.md`, 10-15 status; register row S825).
-S824 (landed a6075f5c5, 10-15) raised the step deadline to 3,600 s as a stopgap. Its first live
-check is the next night to run. The real fix is S825, which is **open** (register
+S824 (landed a6075f5c5, 10-15) raised the step deadline to 3,600 s as a stopgap. No scoreboard step
+has been killed since: 25.7 s on 10-16, 65.5 s on 10-19, 18.6 s on 10-21 and 22.6 s on 10-22
+(`nights/<D>.json`). Each of those steps records `no_fitted_arm: true`, so no fitted arm was trained
+and these times do not yet test the refit cost. The real fix is S825, which is still **open** (register
 `docs/evidence/HARNESS_GAPS_2026-09-03.md`). The earlier kills on 10-06 to 10-09 were memory and
-time ceilings on qualification and fill_realism. They were bounded by S805 and S806 on 10-09, and
-the nights from 10-12 on ran both steps.
+time ceilings on qualification and fill_realism. They were bounded by S805 and S806 on 10-09; from
+10-12 on both steps ran, and qualification refused once (`step_budget_exceeded`, 10-19).
 
 **Scoreboard cells** (from `scoreboard/<D>.json`, outcome target; scoreboards exist for 10-06 to 10-10,
-10-12 and 10-16 (10-16 not summarized below); every cell in every file is **INSUFFICIENT**, with a null 95% interval):
+10-12, 10-16, 10-19, 10-21 and 10-22, and 10-13, 10-14 and 10-20 have none; every cell in every file is
+**INSUFFICIENT**. The 95% interval is null in every cell except on 10-08, where the NBA arm A and
+B_lag cells on 5 or 6 games carry one; those cells are INSUFFICIENT all the same):
 
 - Games with arm A scored per night: 10-06 mlb 2, nfl 1; 10-07 mlb 3, nba 3; 10-08 mlb 2, nba 6;
-  10-09 mlb 1, nba 1, nfl 1, soccer 2; 10-10 none (all unsettled); 10-12 mlb 1, soccer 3. Arm A is
-  the market mid's own Brier. It describes the reference, not the model.
+  10-09 mlb 1, nba 1, nfl 1, soccer 2; 10-10 none (all unsettled); 10-12 mlb 1, soccer 3; 10-16
+  mlb 1, nfl 1; 10-19 soccer 3; 10-21 nba 1; 10-22 none (all unsettled). Arm A is the market mid's
+  own Brier. It describes the reference, not the model.
 - The fitted arms B and C scored ticks on two nights only: 10-06 (mlb 2 games, nfl 1 game, under the
   earlier seal) and 10-09 (mlb 1 game). On every other night B, C and D scored zero ticks: the fitted
-  arms were dark (fit `config_mismatch`, row S809, per the 10-09 status in `docs/operations/DESK_STATE.md`; `model_not_reconstructible` on 10-12 per `daily/2026-10-13.md`). One or two
-  games per cell carries no interval, so these per-night arm values are not quoted as model quality.
-- Pooled C-minus-A on the outcome target, through 10-14 (`cumulative/2026-10-14.md`; the S721
+  arms were dark (fit `config_mismatch`, row S809, per the 10-09 status in `docs/operations/DESK_STATE.md`; `model_not_reconstructible` on 10-12 per `daily/2026-10-13.md`, and on every tick of the
+  10-16, 10-19, 10-21 and 10-22 scoreboards). The desk reads the last four as no sport at the
+  training floor of 20 settled games (register row S746; `daily/2026-10-23.md`). One or two games per
+  cell carries no interval, so these per-night arm values are not quoted as model quality.
+- Pooled C-minus-A on the outcome target, through 10-22 (`cumulative/2026-10-22.md`; the S721
   descriptive reader, a development population with no interval and no verdict; positive means C
-  trails the mid), mlb only: seal 6abb1a85 4 games, Brier +0.2073 (log loss +1.2649); seal 801af61b
-  3 games, Brier -0.0648 (log loss -0.1665); seal 806fa58a 1 game, Brier +0.0283 (log loss
-  +0.1925). All are INSUFFICIENT. The current seal has 1 of the 30 games its floor needs (projected
-  2027-05-05). nba and soccer have 0 C-and-A outcome games.
-- Registry arm E (`cumulative/2026-10-14.md`): 967 ticks scored on 10-12 and 401 on 10-13. Every
-  E row on 10-14 was refused `training_class_refused`. All INSUFFICIENT.
+  trails the mid), mlb only and unchanged since 10-14: seal 6abb1a85 4 games, Brier +0.2073 (log loss
+  +1.2649); seal 801af61b 3 games, Brier -0.0648 (log loss -0.1665); seal 806fa58a 1 game, Brier
+  +0.0283 (log loss +0.1925). All are INSUFFICIENT. The current seal has 1 of the 30 games its floor
+  needs, and the reader now makes no projection (rate 0 under this seal). nba and soccer have 0
+  C-and-A outcome games.
+- Registry arm E (`cumulative/2026-10-22.md`): 967 ticks scored on 10-12 and 401 on 10-13, none
+  since. Every E row was refused on 10-14 (`training_class_refused`) and on 10-16
+  (`training_history_absent`); 10-19, 10-21 and 10-22 produced 0 E rows, and the 10-20 E step was
+  refused (`caller_policy_not_prospective`, the shallow checkout). All INSUFFICIENT.
 
-**Qualification** (from `qualification/<D>.json`): **0 PASS of 44 games judged** (10-06 0/3, 10-12
-0/8, 10-13 0/14, 10-14 0/6, 10-16 0/13). 10-07, 10-08 and 10-09 were killed before writing a receipt, and 10-10
-was refused (`undeclared_sport`). All 44 failing games carry COVERAGE_LOW and LINKAGE_INVALID. Other
-causes counted per game: STATE_GAP 34, DECISIONS_LOW 33, TAPE_INCOMPLETE 27, RESERVATION_INVALID 25,
-NOT_LIVE 19, STATE_STALE 16 and BOOK_CADENCE 25. Qualified decisions are 0 on every sport, to date
-(`cumulative/2026-10-14.md`). These are data-completeness and linkage checks, and the receipts do not attribute them to one cause. Known contributors in the same period: overnight capture holes,
-laptop sleeps, and a live shadow recorder that has been **down since 2026-10-13 01:08Z** (adoption of
-S823 still owed; `daily/2026-10-19.md`). Qualification grades the tape, not the model.
+**Qualification** (from `qualification/<D>.json`; a receipt judges every selected game, served or
+not): **0 PASS of 61 games judged** (10-06 0/3, 10-12 0/8, 10-13 0/14, 10-14 0/6, 10-16 0/13, 10-20
+0/4, 10-21 0/9, 10-22 0/4). 10-07, 10-08 and 10-09 were killed before writing a receipt, 10-10 was
+refused (`undeclared_sport`) and 10-19 was refused (`step_budget_exceeded`). All 61 failing games
+carry COVERAGE_LOW and LINKAGE_INVALID. Other causes counted per game: STATE_GAP 51, DECISIONS_LOW
+46, TAPE_INCOMPLETE 42, BOOK_CADENCE 35, RESERVATION_INVALID 33, NOT_LIVE 26 and STATE_STALE 23. No
+game has qualified in any sport, to date (`cumulative/2026-10-22.md`). These are data-completeness
+and linkage checks. A read-only replay of one game (LAD at MIL, 10-12;
+`docs/evidence/harness/S831_PATH_PROOF_2026-10-22.md`, register row S831) traced part of COVERAGE_LOW
+to the replay's own reservation rule: each RESERVATION_INVALID decision cuts the coverage credited to
+the decision before it. Without those cuts that game would still cover 87.9 pct of its window, under
+the 90 pct floor (arithmetic on the replay log, not a result); changing the rule needs a dated
+re-seal, which has not happened. Other contributors in the period: overnight capture holes, laptop
+sleeps, and a live shadow recorder that was **down 2026-10-13 01:08Z to 10-19 20:06Z and again from
+00:49Z 10-20** (`daily/2026-10-20.md`), and that has had **no heartbeat since 04:58Z 10-21**
+(`daily/2026-10-22.md`, `daily/2026-10-23.md`). Qualification grades the tape, not the model.
 
-**Fill realism** (from `fill_realism/<D>.json`, mode `COUNTS ONLY` on unqualified tape; the 10-14 receipt declares 1 unit and
-zero assumed latency): fills credited at a 5 s / 30 s quote life were 10 / 77 (10-08), 3 / 20
-(10-10), 35 / 111 (10-12), 36 / 139 (10-13), 22 / 105 (10-14) and 24 / 61 (10-16, from `fill_realism/2026-10-16.json`). The 10-08 to 10-14 totals are
-106 / 452, which matches the last-7 count in `cumulative/2026-10-14.md`; with 10-16 the 10-08 to 10-16 totals are 130 / 513. These count simulated
-fills. They are not markouts, and no fee-netted markout or P&L is computed from them.
+**Fill realism** (from `fill_realism/<D>.json`, mode `COUNTS ONLY` on unqualified tape; every receipt
+from 10-14 on declares 1 unit and zero assumed latency): fills credited at a 5 s / 30 s quote life
+were 10 / 77 (10-08), 3 / 20 (10-10), 35 / 111 (10-12), 36 / 139 (10-13), 22 / 105 (10-14), 24 / 61
+(10-16), 24 / 49 (10-19), 20 / 108 (10-20), 3 / 25 (10-21) and 11 / 37 (10-22). The 10-08 to 10-22
+totals are 188 / 732. The last seven days (10-16 to 10-22) sum to 82 / 280, which matches the last-7
+count in `cumulative/2026-10-22.md`. These count simulated fills. They are not markouts, and no
+fee-netted markout or P&L is computed from them.
 
-**Feed latency** (`cumulative/2026-10-14.md`, S663 ledger): MLB statsapi receipt-minus-play-clock p50
-was 17.0 to 19.5 s on the nights 10-06 to 10-14 that carry an MLB row (none on 10-10).
+**Feed latency** (`cumulative/2026-10-22.md`, S663 ledger): MLB statsapi receipt-minus-play-clock p50
+was 15.5 to 19.5 s on the nights 10-06 to 10-20 that carry an MLB row. The NBA rows (ESPN scoreboard
+feed) carry no p50 on any night; the 10-21 NBA ledger matched no play event and is flagged
+UNDERPOWERED (`daily/2026-10-23.md`).
 
-**NBA forward test from 2026-10-20.** The NBA regular season opens 2026-10-20. NBA games have been
-served on every scheduled day since 10-07, and NBA is scored under the current seal: `PREREG_2026-10-07.json`
-(effective 2026-10-07, before the regular season) covers every served sport, and the night-10-12 scoreboard
-holds NBA arm A (the mid) and B_lag cells over 3 games / 3,431 ticks, all INSUFFICIENT
-(`docs/evidence/forward/scoreboard/2026-10-12.json`; readiness audit
-`docs/evidence/forward/daily/NBA_READINESS_2026-10-19.md`). The fitted arms B / C / D are in warmup for NBA:
-their training uses regular-season games only, so every NBA fit on disk is `fit_warmup` and the 10-20 quotes
-are arm A plus the mid (`fit_missing`); roughly 20 settled regular-season games are needed before a fitted
-NBA arm scores. NBA is not in `model_optional_sports` (`mlb`, `nfl`, `soccer`), which governs arm D's
-model requirement, not whether NBA is scored. No NBA-specific pre-registration document exists: the NBA
-forward series runs under the sealed 2026-10-07 pre-registration, fitted arms warmup until the
-regular-season history exists.
+**NBA forward test from 2026-10-20.** The NBA regular season opened 2026-10-20. NBA games were
+served on every scheduled day from 10-07 except 10-19, and NBA is scored under the current seal:
+`PREREG_2026-10-07.json` (effective 2026-10-07, before the regular season) covers every served sport,
+and the night-10-12 scoreboard holds NBA arm A (the mid) and B_lag cells over 3 games / 3,431 ticks,
+all INSUFFICIENT (`docs/evidence/forward/scoreboard/2026-10-12.json`; readiness audit
+`docs/evidence/forward/daily/NBA_READINESS_2026-10-19.md`). Seven regular-season games were served
+from 10-20 to 10-22 (2, 4 and 1). One has scored cells: on 10-21, arm A and B_lag on 1 settled game,
+every cell INSUFFICIENT; one game is not a result. The two 10-20 games are unscored because night
+10-20 has no scoreboard (the shallow checkout), and the other four were unsettled because the desk
+was dark when they finished. The fitted arms B / C / D are in warmup for NBA: their training uses
+regular-season games only, so every NBA fit on disk is `fit_warmup` (`live_shadow_fit` nba 10-22,
+`daily/2026-10-23.md`), and no NBA tick on 10-21 or 10-22 carries a B, C or D value; roughly 20
+settled regular-season games are needed before a fitted NBA arm scores. NBA is not in
+`model_optional_sports` (`mlb`, `nfl`, `soccer`), which governs arm D's model requirement, not whether
+NBA is scored. No NBA-specific pre-registration document exists: the NBA forward series runs under
+the sealed 2026-10-07 pre-registration, fitted arms warmup until the regular-season history exists.
+The live shadow recorder has had no heartbeat since 04:58Z 10-21 and had not been relaunched by the
+10-23 morning report, so the opening regular-season week has no recorded in-game paper quotes after
+that time; the newest shadow-fills receipt is `fills/2026-10-19.jsonl` (a partial day).
 
-**Reading.** The desk wrote a prospective schedule on 10 of 13 calendar days and a night receipt on 9 of them. The receipts also record its operational limits: scorer wall time, laptop sleeps and recorder
-uptime. In the same period no cell reached its floor and no game qualified. As of
-2026-10-19 the forward series has no calibration verdict, either for or against the model.
+**Reading.** The desk wrote a prospective schedule on 14 of 17 calendar days and a night receipt on
+13 of them, 4 COMPLETE. The receipts also record its operational limits: laptop uptime, scorer wall
+time, a shallow checkout and recorder uptime. In the same period no cell reached its floor and no
+game qualified. As of 2026-10-23 the forward series has no calibration verdict, either for or
+against the model.
 
 ---
 

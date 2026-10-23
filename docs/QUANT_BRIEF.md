@@ -86,35 +86,44 @@ REB 1.92, AST 1.39, FG3M 0.89. Accuracy only; no market comparison exists for th
 - **An honesty CI:** the build fails when a retracted figure appears outside retraction framing
   ([HONESTY_SYSTEM.md](HONESTY_SYSTEM.md)).
 
-## Forward record update (2026-10-19)
+## Forward record update (2026-10-23)
 
 The forward paper series has run daily since 2026-10-06 (the 2026-10-05 version of this page said it had
 not started). All numbers come from
-[JOB_EVIDENCE_PACKET.md section 5](JOB_EVIDENCE_PACKET.md#5-forward-paper-record-2026-10-06--2026-10-16-as-of-2026-10-19), which carries the receipt paths under
+[JOB_EVIDENCE_PACKET.md section 5](JOB_EVIDENCE_PACKET.md#5-forward-paper-record-2026-10-06--2026-10-22-as-of-2026-10-23), which carries the receipt paths under
 `docs/evidence/forward/`. PAPER ONLY.
 
-- **Served:** 113 Kalshi in-game games on prospective schedules over 2026-10-06 to 2026-10-16 (mlb 15,
-  nba 32, nfl 4, soccer 18, tennis 30, ncaaf 14). There was no schedule on 10-11, 10-17 or 10-18:
+- **Served:** 130 Kalshi in-game games on prospective schedules over 2026-10-06 to 2026-10-22 (mlb 16,
+  nba 39, nfl 4, soccer 24, tennis 30, ncaaf 17). There was no schedule on 10-11, 10-17 or 10-18:
   the laptop was dark.
-- **Nights:** 9 receipts, 2 COMPLETE (10-12, 10-16) and 7 PARTIAL. 10-13 and 10-14 lost their scoreboard
-  at the 900 s step deadline, because the sealed scorer's refit grows with the history. The
-  deadline was raised to 3,600 s (S824, 10-15); the real fix (S825) is open. Night 10-15 was not run;
-  10-16 ran COMPLETE after the 10-19 relaunch (packet section 5).
+- **Nights:** 13 receipts, 4 COMPLETE (10-12, 10-16, 10-21, 10-22) and 9 PARTIAL. 10-13 and 10-14 lost
+  their scoreboard at the 900 s step deadline, because the sealed scorer's refit grows with the history.
+  The deadline was raised to 3,600 s (S824, 10-15) and no scoreboard step has been killed since, but no
+  fitted arm was trained on those nights, so the refit cost is untested; the real fix (S825) is open.
+  Night 10-15 was not run. Night 10-20 has no scoreboard: the checkout was a shallow clone (repaired
+  10-22, S832) and its rerun is owed. Games that finished while the desk was dark (no ticks) are unsettled
+  and unscored (6 of 7 on 10-21, 3 of 3 on 10-22).
 - **Scoreboard:** every cell is INSUFFICIENT against the 30-game floor. Arm A is the venue mid, not
-  a devigged price. The fitted arms scored ticks on two nights only. Pooled C-minus-A Brier for MLB
-  (descriptive, no interval; positive means the model trails the mid): +0.2073 on 4 games, -0.0648
-  on 3 and +0.0283 on 1, across three seals. That is no verdict in either direction.
-- **Qualification:** 0 of 44 judged games passed (through 2026-10-16). Every one failed the coverage and linkage checks. The receipts name no single cause; the contributors in the period were
-  tape and state gaps, laptop sleeps and a live shadow recorder down since 10-13.
-- **Fill realism:** counts only, unqualified tape: 106 fills credited at a 5 s quote life and 452 at
-  30 s (10-08 to 10-14). There is no markout and no fee netting.
+  a devigged price. The fitted arms scored ticks on two nights only (10-06 and 10-09), none since.
+  Pooled C-minus-A Brier for MLB (descriptive, no interval; positive means the model trails the mid):
+  +0.2073 on 4 games, -0.0648 on 3 and +0.0283 on 1, across three seals, unchanged through 10-22.
+  That is no verdict in either direction.
+- **Qualification:** 0 of 61 judged games passed (through 2026-10-22). Every one failed the coverage and
+  linkage checks. A replay of one game traced part of the coverage failure to the replay's own
+  reservation rule (S831; without those cuts that game still covers only 87.9 pct, under the 90 pct
+  floor, and changing the rule needs a dated re-seal); the other contributors were tape and state gaps, laptop sleeps and
+  live shadow recorder outages (no heartbeat since 04:58Z 10-21).
+- **Fill realism:** counts only, unqualified tape: 188 fills credited at a 5 s quote life and 732 at
+  30 s (10-08 to 10-22). There is no markout and no fee netting.
 - **NBA from 2026-10-20:** NBA is served and scored under the sealed 2026-10-07 pre-registration (arm A
-  and B_lag cells so far, every cell INSUFFICIENT); the fitted arms B / C / D are in warmup until about 20
-  regular-season games settle, so opening-week quotes are the mid and arm A only. No NBA-specific
-  pre-registration document exists.
+  and B_lag cells so far, every cell INSUFFICIENT). Seven regular-season games were served 10-20 to
+  10-22; one settled game has scored cells (10-21), which is not a result. The fitted arms B / C / D
+  are in warmup until about 20 regular-season games settle, so opening-week quotes are the mid and
+  arm A only, and with the recorder down since 04:58Z 10-21 the opening week has no recorded paper
+  quotes after that time. No NBA-specific pre-registration document exists.
 - **Gate G6** (eight weeks of fee-netted shadow markout) has not started as of 2026-10-19 (zero weeks collected): the
-  desk runs, but fill realism is counts-only and no markout series exists. Qualified decisions are 0 on
-  every sport.
+  desk runs, but fill realism is counts-only and no markout series exists. No game has qualified in
+  any sport.
 
 ## 3. What is not shown -- read before the call
 
@@ -125,8 +134,8 @@ not started). All numbers come from
   earlier headline figures were retracted after the project's own instruments traced each one to
   a leak, a grading artifact, an overfit or regime dependence
   ([the retraction record](evidence/retraction-story.md)).
-- **Forward record: running since 2026-10-06, no verdict yet.** 113 prospective games served through
-  2026-10-16, every scored cell below its 30-game floor (details in the update above). The consolidated
+- **Forward record: running since 2026-10-06, no verdict yet.** 130 prospective games served through
+  2026-10-22, every scored cell below its 30-game floor (details in the update above). The consolidated
   scoreboard pre-registration, `PREREG_2026-10-07.json`, was sealed 2026-10-07 and covers every served
   sport, NBA included. Six go-live gates were pre-registered on 2026-09-17
   ([GO_LIVE_GATES.md](GO_LIVE_GATES.md)). Gate G6 requires at least eight consecutive weeks of
@@ -148,7 +157,7 @@ not started). All numbers come from
   the 30-game floor). The NBA-specific draft ([S382 draft r1](evidence/ingame/S382_NBA_PREREG_DRAFT_r1_2026-09-21.md))
   was not sealed on its own.
 - The G6 maker-quoting series (eight weeks, fee-netted markout) has not started as of 2026-10-19 (zero weeks collected): a
-  markout series needs qualified tape, and 0 of 44 judged games have qualified (through 2026-10-16). Its verdict is published on
+  markout series needs qualified tape, and 0 of 61 judged games have qualified (through 2026-10-22). Its verdict is published on
   schedule whether or not the gate is met; the pre-registered expected year-end outcome is
   "G6 not met, N weeks collected" ([GO_LIVE_GATES.md](GO_LIVE_GATES.md)).
 

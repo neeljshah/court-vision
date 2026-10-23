@@ -38,9 +38,9 @@ agentic loop that re-validates every stage. Each stage refines the one above it.
 
 ---
 
-## October 19 forward-record update
+## October 23 forward-record update
 
-- Forward paper record 2026-10-06 to 2026-10-16 (PAPER ONLY; no schedule on 10-17 or 10-18; as of 2026-10-19): 113 games served on prospective schedules, 2 COMPLETE and 7 PARTIAL nights, every scoreboard cell INSUFFICIENT against the 30-game floor, 0 of 44 games qualified. There is no calibration verdict yet. See [JOB_EVIDENCE_PACKET.md section 5](JOB_EVIDENCE_PACKET.md#5-forward-paper-record-2026-10-06--2026-10-16-as-of-2026-10-19).
+- Forward paper record 2026-10-06 to 2026-10-22 (PAPER ONLY; no schedule on 10-11, 10-17 or 10-18; as of 2026-10-23): 130 games served on prospective schedules, 4 COMPLETE and 9 PARTIAL nights, every scoreboard cell INSUFFICIENT against the 30-game floor, 0 of 61 judged games qualified. Night 10-20 has no scoreboard (a shallow checkout), and games that finished while the desk was dark (no ticks; the host laptop off or asleep) are unscored. There is no calibration verdict yet. See [JOB_EVIDENCE_PACKET.md section 5](JOB_EVIDENCE_PACKET.md#5-forward-paper-record-2026-10-06--2026-10-22-as-of-2026-10-23).
 
 ---
 

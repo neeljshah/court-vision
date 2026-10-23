@@ -1,0 +1,133 @@
+{
+  "D1": "2026-10-22",
+  "argv": [
+    "--target-date",
+    "2026-10-22",
+    "--now",
+    "2026-10-22T14:44:53.173811Z",
+    "--books-root",
+    "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame_books_local",
+    "--state-root",
+    "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame_state_local_v2",
+    "--out-dir",
+    "C:\\Users\\neelj\\nba-ai-system\\docs\\evidence\\forward\\schedules",
+    "--sports",
+    "mlb,nba,ncaaf,nfl,soccer",
+    "--write-pointer",
+    "--capacity-rule",
+    "live_concurrency",
+    "--local-date-tz",
+    "America/Chicago"
+  ],
+  "capacity_subset_selected_at": "2026-10-22T14:53:51.275815+00:00",
+  "completed_at": "2026-10-22T14:53:51.276812+00:00",
+  "files": {
+    "C:/Users/neelj/nba-ai-system/docs/evidence/forward/schedules/2026-10-22_maker_forward.json": {
+      "bytes": 1067,
+      "sha256": "b2aeb2562928eef5937fa927cde67a68db4b90bebe318f5419cd23cd4588ecc5"
+    },
+    "C:/Users/neelj/nba-ai-system/docs/evidence/forward/schedules/2026-10-22_maker_forward.json.capacity_note.json": {
+      "bytes": 1689,
+      "sha256": "a5bd9303d620e808637c0bb5981473e7f0c6cc828a40498770654e938fe70558"
+    },
+    "C:/Users/neelj/nba-ai-system/docs/evidence/forward/schedules/2026-10-22_maker_forward_full_selection.json": {
+      "bytes": 1398,
+      "sha256": "b4ffeda9e07996c5f525d4c9bb821af17b5b5df5ca1e08bb2e2ec2ec3f4ff628"
+    },
+    "C:/Users/neelj/nba-ai-system/docs/evidence/forward/schedules/2026-10-22_maker_forward_full_selection.json.census.json": {
+      "bytes": 19081,
+      "sha256": "74a8897123bc1459f02380f14553fa71a3ae8d8f89b7f271ac38fdad8f622eac"
+    }
+  },
+  "now": "2026-10-22T14:44:53.173811Z",
+  "per_sport": {
+    "mlb": {
+      "full": 0,
+      "not_served": 0,
+      "record_counts": {
+        "derivative_series_ignored": 2234,
+        "ignored_record_type": 1739645
+      },
+      "refused_by_reason": {},
+      "served": 0
+    },
+    "nba": {
+      "full": 1,
+      "not_served": 0,
+      "record_counts": {
+        "derivative_series_ignored": 6804,
+        "espn_minute_precision_normalized": 13,
+        "future_records": 206,
+        "ignored_record_type": 956301,
+        "listed_on_previous_us_date": 6,
+        "local_date_from_declared_tz": 1,
+        "previous_us_date_other_day": 5
+      },
+      "refused_by_reason": {
+        "not_pregame": 6,
+        "outside_utc_date": 1
+      },
+      "served": 1
+    },
+    "ncaaf": {
+      "full": 3,
+      "not_served": 1,
+      "record_counts": {
+        "espn_minute_precision_normalized": 4,
+        "future_records": 353,
+        "ignored_record_type": 148282,
+        "listed_on_previous_us_date": 1,
+        "local_date_from_declared_tz": 3
+      },
+      "refused_by_reason": {
+        "not_pregame": 1
+      },
+      "served": 2
+    },
+    "nfl": {
+      "full": 0,
+      "not_served": 0,
+      "record_counts": {
+        "derivative_series_ignored": 1958,
+        "espn_minute_precision_normalized": 1,
+        "future_records": 120,
+        "ignored_record_type": 852744
+      },
+      "refused_by_reason": {
+        "outside_utc_date": 1
+      },
+      "served": 0
+    },
+    "soccer": {
+      "full": 0,
+      "not_served": 0,
+      "record_counts": {
+        "derivative_series_ignored": 132,
+        "espn_minute_precision_normalized": 10,
+        "ignored_record_type": 608709,
+        "previous_us_date_other_day": 10
+      },
+      "refused_by_reason": {},
+      "served": 0
+    }
+  },
+  "refused_by_reason": {},
+  "rewrite_reason": null,
+  "schedule_receipts_sha256": {
+    "mlb/mlb": "e945970d3a4d1b17afde3ecfc6a444e395dceb14f2c9e4a35d1e06837d79f9b0",
+    "nba/nba": "831885e23f74baf53ff72bfa3e099eebc3e13065ccb16d8d30ec802fe34acfbe",
+    "ncaaf/ncaaf": "1e86646b8b68ba2b6221400892515a621b7605b3897f205c66ec407993bd803a",
+    "nfl/nfl": "4185d08105b31a39249cd312ea1208d28970adbd3456c00246eb09e7d4259625",
+    "soccer/eng.1": "8b854fabc74442b8e8e1807b0efcdd3d92137e82a71d621a9a7fdd83654d9483",
+    "soccer/esp.1": "693380b4bd19014b0de6d93e0e428f419ecd6df60a084bfe52dfc77c30d567a2",
+    "soccer/fra.1": "7b471fdc42f4a7f0ab77a55f6fb9c3cefc75f3297cb491f4ce8329a2458471b9",
+    "soccer/ger.1": "5024345334f53ad151b1400af0ba34b0d56deb5f7d6859a5380d3639547cd788",
+    "soccer/ita.1": "2048ebfe872d9a0cca6236e6397c9e0a3044969672cee3a2dfa21cf34c450d5b",
+    "soccer/uefa.champions": "0a74e0ff565268e9bba896aa280e4e1327015cfae3f09087c2f944aa70dfe321"
+  },
+  "started_at": "2026-10-22T14:44:53.401389+00:00",
+  "superseded": {},
+  "writer_selected_at": [
+    "2026-10-22T14:44:55.015429+00:00"
+  ]
+}

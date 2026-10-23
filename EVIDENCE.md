@@ -96,8 +96,8 @@ Read this section with its caveat: these rows show *discipline*, not a working t
 The execution modules below are published as readable source; their wider import closure lives in the
 private tree, so they are not runnable from this repository.
 The forward paper series has run since 2026-10-06 (last row below and
-[JOB_EVIDENCE_PACKET.md section 5](docs/JOB_EVIDENCE_PACKET.md#5-forward-paper-record-2026-10-06--2026-10-16-as-of-2026-10-19)); it has no
-calibration verdict as of 2026-10-19, and it skips days when the host laptop is off. The in-game models trail the live
+[JOB_EVIDENCE_PACKET.md section 5](docs/JOB_EVIDENCE_PACKET.md#5-forward-paper-record-2026-10-06--2026-10-22-as-of-2026-10-23)); it has no
+calibration verdict as of 2026-10-23, and it skips days when the host laptop is off. The in-game models trail the live
 market reference (section C). Both facts are part of the record.
 
 | Claim | Number | Verdict | Artifact | Reproduce |
@@ -111,7 +111,7 @@ market reference (section C). Both facts are part of the record.
 | A check-then-append race in the ledger writer, closed and proven by a test that races two real OS processes | test passes | engineering control | [clv_ledger_io.py](scripts/platformkit/clv_ledger_io.py), [test_clv_ledger_io.py](scripts/platformkit/test_clv_ledger_io.py) | `python -m pytest scripts/platformkit/test_clv_ledger_io.py -q` |
 | The bar for any real order is fixed in advance: six gates, including 8 weeks of fee-netted shadow markout with an interval excluding 0 on two market families; no gate may be weakened after its own result | pre-registered 2026-09-17; G6 has not started as of 2026-10-19 (zero weeks collected: the paper desk runs, but fill realism is counts-only and no fee-netted markout series exists yet; last row of this table) | pre-registration | [docs/GO_LIVE_GATES.md](docs/GO_LIVE_GATES.md) | read the page |
 | An integrity checker that fails the project's own headline in-game corpus, shipped with the finding it produced | exit 1 on the original corpus | engineering control | [check_ingame_join_integrity.py](scripts/platformkit/check_ingame_join_integrity.py) | [live: join-integrity finding](https://neeljshah.github.io/court-vision/analytics/findings/ingame-join-integrity/) |
-| Forward paper record 2026-10-06 to 2026-10-16 (no schedule on 10-17 or 10-18): 113 games served on prospective schedules, 9 night receipts (2 COMPLETE, 7 PARTIAL), every scoreboard cell INSUFFICIENT, 0 of 44 games qualified | as of 2026-10-19 | descriptive (no verdict) | [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md) section 5, [cumulative/2026-10-14.md](docs/evidence/forward/cumulative/2026-10-14.md) | recorded |
+| Forward paper record 2026-10-06 to 2026-10-22 (no schedule on 10-11, 10-17 or 10-18): 130 games served on prospective schedules, 13 night receipts (4 COMPLETE, 9 PARTIAL), every scoreboard cell INSUFFICIENT, 0 of 61 judged games qualified | as of 2026-10-23 | descriptive (no verdict) | [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md) section 5, [cumulative/2026-10-22.md](docs/evidence/forward/cumulative/2026-10-22.md) | recorded |
 
 ---
 

@@ -110,3 +110,43 @@ DECLINED: adversarial (4) cached arrays flags.writeable = False -- it adds a rai
 the byte-identity proof did not cover; the arrays stay read-only by convention (P5 found no writer).
 
 (c) One identity change. No NBA-specific prereg and no ncaaf (S821) in this seal (dispatcher decision 10-19).
+
+## AMENDMENT 2 (seal A re-cut 2026-10-22)
+
+(a) Why. The laptop was off 05:08Z-15:31Z 10-21 and asleep 20:56Z 10-21 - 14:27Z 10-22; nights 10-20 and 10-21
+never ran (no nights/2026-10-20.json or 2026-10-21.json), so the commit-B window of AMENDMENT 1 (10-21, before
+05:00Z 10-22) lapsed. Documented default (DESK_STATE section 2, S625 precedent): the whole chain shifts; the
+lapsed seal PREREG_2026-10-21.json stays an unreferenced file forever and is never reused; a NEW dated seal A is cut.
+
+(b) The new seal. SEAL A RE-CUT 2ee92e7e9411168429ebbb65ba976617cc3ee9a9 (2026-10-22, the JSON alone):
+docs/evidence/forward/scoreboard/PREREG_2026-10-23.json, effective 2026-10-23, generated from the candidate tree
+(lead/s825) with --model-optional-sport mlb / nfl / soccer. File sha256
+0b86200da126c530ab6c848f228abc9fda233f1fb8298b8b0cf276c262faeab0, payload sha256
+2c6689613cef0a5d1bd8c3602e45de5ac5594b76fd62a0bc0199b3500f798bf9. 8 of 8 implementation entries equal the
+LF-normalised candidate files and are identical to PREREG_2026-10-21.json; the payload differs from it only in
+effective_from and sha256. Commit-B candidate: lead/s825 (SEALS line PREREG_2026-10-23 + pin re-targets).
+
+(c) COMMIT-B GATE (replaces the AMENDMENT 1 / memo section 9 gate):
+(1) every night with day < 2026-10-23 that has a served schedule (10-20, 10-21, 10-22) has a terminal scoreboard
+step (receipt written, or KILLED / refused recorded in nights/<day>.json) BEFORE commit B, because after commit B
+those days refuse amendment_mismatch;
+(2) `git diff 2ee92e7e9..master` EMPTY over the 8 hashed files, ingame_scoreboard_night.py,
+ingame_scoreboard_amendment.py, scoreboard_history*.py and PREREG_2026-10-23.json;
+(3) rebase lead/s825 onto master, `git merge --ff-only lead/s825` on master, push private master:trunk;
+(4) the run set green on master one file at a time (test_system_fault_matrix case 11 excepted, pre-existing);
+(5) selection rehearsal on master: 10-23 -> PREREG_2026-10-23.json; 10-22 -> PREREG_2026-10-07.json raising
+amendment_mismatch (cause invalid_payload); 8 of 8 hashes;
+(6) the next tick is tick_ok;
+(7) commit B lands BEFORE the tick attempts night 10-23 (06:05Z 10-24 if the box is up); if night 10-23 ever runs
+under the old identity first, the seal is re-dated again by this same procedure; never the same night as S721,
+S613 or S625.
+
+(d) FINDING 2026-10-22 (not fixed here): master no longer contains cf4dd7d86 or 6f463ebbb as ancestors (a
+10-20 15:36Z cherry-pick sequence put a parentless commit 25f9ba76b on master's first-parent line; the tree
+kept PREREG_2026-10-21.json byte-identical). Since then `git log -1 HEAD -- <seal>` returns 25f9ba76b
+(2026-10-20) for every older seal, so on master code select(day) for any day raises amendment_not_prospective
+(PREREG_2026-10-07: effective 10-07 <= commit day 10-20). Expected effect: the scoreboard steps of nights 10-20,
+10-21 and 10-22 refuse (terminal, satisfies gate (1) as refused, but scores nothing), and the real-git asserts
+in test_s492_landing.py (commit days 09-29 / 10-02 / 10-06) are red on master and the branch. PREREG_2026-10-23
+is unaffected (its last commit is the genuine 2ee92e7e9). The old seal commits are kept reachable by the local
+branch archive/s825-seal-a-2026-10-21 (6f463ebbb, not pushed). Needs an owner / dispatcher decision.
