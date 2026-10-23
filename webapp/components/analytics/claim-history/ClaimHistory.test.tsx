@@ -28,6 +28,17 @@ function mockScrollIntoView() {
   return scrollIntoView;
 }
 
+function activateLink(element: HTMLElement, options: MouseEventInit = {}, handled = false) {
+  let defaultPrevented = false;
+  // Observe the component's decision before canceling navigation unsupported by JSDOM.
+  document.addEventListener("click", event => {
+    defaultPrevented = event.defaultPrevented;
+    event.preventDefault();
+  }, { once: true });
+  fireEvent.click(element, options);
+  expect(defaultPrevented).toBe(handled);
+}
+
 describe("ClaimHistory", () => {
   it("filters the family count", () => {
     render(<ClaimHistory ledger={ledger()} />);
@@ -117,6 +128,58 @@ describe("ClaimHistory", () => {
     const scrollIntoView = mockScrollIntoView();
     window.history.replaceState(null, "", "#claim-family-missing");
     render(<ClaimHistory ledger={ledger()} />);
+    expect(scrollIntoView).not.toHaveBeenCalled();
+  });
+
+  it.each(["fragment", "absolute", "keyboard"])("reopens a filtered family when its current %s link is activated again", async kind => {
+    const scrollIntoView = mockScrollIntoView();
+    const hash = "#claim-family-mlb-family_25";
+    window.history.replaceState(null, "", `/analytics/the-loop/?source=recent${hash}`);
+    const href = kind === "absolute" ? window.location.href : hash;
+    render(<><a href={href}><span>Recent verdict</span></a><ClaimHistory ledger={ledger()} /></>);
+    expect(screen.getByRole("button", { name: /family 25/i })).toHaveFocus();
+    fireEvent.change(screen.getByLabelText("Search families"), { target: { value: "zz-nothing-matches" } });
+    fireEvent.change(screen.getByLabelText("Sport filter"), { target: { value: "basketball_nba" } });
+    fireEvent.change(screen.getByLabelText("Current status filter"), { target: { value: "null" } });
+    fireEvent.click(screen.getByLabelText("Changed verdict only"));
+    expect(screen.queryByRole("button", { name: /family 25/i })).not.toBeInTheDocument();
+    scrollIntoView.mockClear();
+    activateLink(screen.getByText("Recent verdict"), { detail: kind === "keyboard" ? 0 : 1 }, true);
+    await waitFor(() => expect(screen.getByLabelText("Search families")).toHaveValue(""));
+    const target = screen.getByRole("button", { name: /family 25/i });
+    expect(target).toHaveAttribute("aria-expanded", "true");
+    expect(target).toHaveFocus();
+    expect(scrollIntoView).toHaveBeenCalledWith({ block: "start" });
+    expect(screen.getByLabelText("Sport filter")).toHaveValue("all");
+    expect(screen.getByLabelText("Current status filter")).toHaveValue("all");
+    expect(screen.getByLabelText("Changed verdict only")).not.toBeChecked();
+    expect(window.location.hash).toBe(hash);
+    expect(window.location.search).toBe("?source=recent");
+  });
+
+  it.each([
+    { name: "control click", event: { ctrlKey: true } },
+    { name: "command click", event: { metaKey: true } },
+    { name: "shift click", event: { shiftKey: true } },
+    { name: "alt click", event: { altKey: true } },
+    { name: "middle click", event: { button: 1 } },
+    { name: "new tab", target: "_blank" },
+    { name: "download", download: "history" },
+    { name: "other path", href: "/analytics/other/#claim-family-mlb-family_25" },
+    { name: "other search", href: "?other=1#claim-family-mlb-family_25" },
+    { name: "other origin", href: "https://example.com/#claim-family-mlb-family_25" },
+    { name: "different family", href: "#claim-family-basketball_nba-family_24" },
+    { name: "invalid family", href: "#claim-family-missing" },
+    { name: "unrelated section", href: "#method" },
+  ])("keeps filters for $name", ({ event, target, download, href }) => {
+    const scrollIntoView = mockScrollIntoView();
+    const hash = "#claim-family-mlb-family_25";
+    window.history.replaceState(null, "", `/analytics/the-loop/${hash}`);
+    render(<><a href={href || hash} target={target} download={download}>Other activation</a><ClaimHistory ledger={ledger()} /></>);
+    fireEvent.change(screen.getByLabelText("Search families"), { target: { value: "zz-nothing-matches" } });
+    scrollIntoView.mockClear();
+    activateLink(screen.getByRole("link", { name: "Other activation" }), event);
+    expect(screen.getByLabelText("Search families")).toHaveValue("zz-nothing-matches");
     expect(scrollIntoView).not.toHaveBeenCalled();
   });
 });

@@ -89,9 +89,26 @@ export function ClaimHistory({ ledger }: { ledger: ClaimHistoryLedger }) {
       setExpanded(new Set([target]));
       setPendingHashFamily(target);
     };
+    const reopenHashFamily = (event: MouseEvent) => {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const link = event.target instanceof Element ? event.target.closest("a[href]") : null;
+      if (!(link instanceof HTMLAnchorElement) || link.hasAttribute("download") || (link.target && link.target !== "_self")) return;
+      const current = window.location;
+      // Reusing the current fragment does not emit hashchange after filters hide it.
+      if (link.origin === current.origin && link.pathname === current.pathname && link.search === current.search
+        && link.hash === current.hash && ledger.families.some(family => `#${claimFamilyId(family)}` === link.hash)) {
+        // Native fragment navigation would override the restored button focus.
+        event.preventDefault();
+        openHashFamily();
+      }
+    };
     openHashFamily();
     window.addEventListener("hashchange", openHashFamily);
-    return () => window.removeEventListener("hashchange", openHashFamily);
+    document.addEventListener("click", reopenHashFamily);
+    return () => {
+      window.removeEventListener("hashchange", openHashFamily);
+      document.removeEventListener("click", reopenHashFamily);
+    };
   }, [ledger.families]);
 
   useEffect(() => {
