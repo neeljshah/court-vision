@@ -154,18 +154,18 @@ describe("LibraryExplorer", () => {
   it("moves keyboard focus to the first new result after Next and Previous", () => {
     const paged = Array.from({ length: 25 }, (_, index) => entry(`paged-${index}`, `Paged entry ${index + 1}`, "nba", "derived", "paged"));
     render(<LibraryExplorer entries={paged} />);
-    const next = screen.getByRole("button", { name: "Next", exact: true });
+    const next = screen.getByRole("button", { name: "Next" });
     next.focus();
     fireEvent.click(next);
-    expect(screen.getByRole("heading", { name: "Paged entry 13", exact: true }).closest("a")).toHaveFocus();
+    expect(screen.getByRole("heading", { name: "Paged entry 13" }).closest("a")).toHaveFocus();
     expect(window.location.search).toBe("?page=2");
     fireEvent.click(next);
-    expect(screen.getByRole("heading", { name: "Paged entry 25", exact: true }).closest("a")).toHaveFocus();
+    expect(screen.getByRole("heading", { name: "Paged entry 25" }).closest("a")).toHaveFocus();
     expect(next).toBeDisabled();
-    const previous = screen.getByRole("button", { name: "Previous", exact: true });
+    const previous = screen.getByRole("button", { name: "Previous" });
     previous.focus();
     fireEvent.click(previous);
-    expect(screen.getByRole("heading", { name: "Paged entry 13", exact: true }).closest("a")).toHaveFocus();
+    expect(screen.getByRole("heading", { name: "Paged entry 13" }).closest("a")).toHaveFocus();
   });
 
   it("does not move focus when restoring a URL or typing a filter", async () => {
@@ -173,7 +173,7 @@ describe("LibraryExplorer", () => {
     window.history.replaceState(null, "", "/analytics/browse/?page=2");
     render(<LibraryExplorer entries={paged} />);
     await waitFor(() => expect(screen.getByText("Page 2 of 3")).toBeInTheDocument());
-    expect(screen.getByRole("heading", { name: "Paged entry 13", exact: true }).closest("a")).not.toHaveFocus();
+    expect(screen.getByRole("heading", { name: "Paged entry 13" }).closest("a")).not.toHaveFocus();
     const search = screen.getByRole("textbox", { name: "Search analytics library" });
     search.focus();
     fireEvent.change(search, { target: { value: "paged" } });
