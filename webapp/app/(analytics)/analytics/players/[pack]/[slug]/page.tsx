@@ -257,7 +257,7 @@ export default function EntityPage({ params }: { params: { pack: string; slug: s
           {cmpPack?.entities[params.slug] ? <Comparables pack={params.pack} fieldsUsed={cmpPack.fields_used} similar={cmpPack.entities[params.slug].similar} antipode={cmpPack.entities[params.slug].antipode} /> : null}
           {entry.floors ? (
             <div style={box}>
-              <h3 className="serif" style={{ fontWeight: 500, fontSize: 20, marginBottom: 10 }}>Floors</h3>
+              <h2 className="serif" style={{ fontWeight: 500, fontSize: 20, marginBottom: 10 }}>Floors</h2>
               <div className="mono" style={{ fontSize: 12, color: "var(--ink-3)", lineHeight: 1.55, wordBreak: "break-word" }}>{entry.floors}</div>
             </div>
           ) : null}
@@ -265,7 +265,7 @@ export default function EntityPage({ params }: { params: { pack: string; slug: s
             {/* Pack-scoped, not entity-specific: pack.related is a fixed list shared
                 by every entity in the pack. "Related analytics" reads honestly;
                 "Where this appears" over-promised per-entity placement. */}
-            <h3 className="serif" style={{ fontWeight: 500, fontSize: 20, marginBottom: 8 }}>Related analytics</h3>
+            <h2 className="serif" style={{ fontWeight: 500, fontSize: 20, marginBottom: 8 }}>Related analytics</h2>
             {pack.related.map((id) => (
               <Link key={id} href={`/analytics/m/${id}`} style={{ display: "block", padding: "9px 0", borderBottom: "1px solid var(--rule)", fontSize: 14 }}>
                 {moduleTitle(id)}
