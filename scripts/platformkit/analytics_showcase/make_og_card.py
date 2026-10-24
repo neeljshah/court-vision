@@ -138,6 +138,8 @@ def check():
         assert os.path.exists(p), "%s not built" % os.path.basename(p)
         im = Image.open(p)
         assert im.size == (W, H), "%s: expected 1200x630, got %s" % (os.path.basename(p), im.size)
+        if p == OUT_PNG:
+            continue  # ponytail: the root card is a hand-captured hero (palette PNG since 83a46af45); size only
         assert im.mode == "RGB"
         px = im.getpixel((40, 300))
         assert abs(px[0] - PAPER[0]) < 20, "%s: background not paper: %s" % (os.path.basename(p), px)

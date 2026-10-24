@@ -112,15 +112,15 @@ not started). All numbers come from
   linkage checks. A replay of one game traced part of the coverage failure to the replay's own
   reservation rule (S831; without those cuts that game still covers only 87.9 pct, under the 90 pct
   floor, and changing the rule needs a dated re-seal); the other contributors were tape and state gaps, laptop sleeps and
-  live shadow recorder outages (no heartbeat since 04:58Z 10-21).
+  live shadow recorder outages (no heartbeat 04:58Z 10-21 to 19:55Z 10-23).
 - **Fill realism:** counts only, unqualified tape: 188 fills credited at a 5 s quote life and 732 at
   30 s (10-08 to 10-22). There is no markout and no fee netting.
 - **NBA from 2026-10-20:** NBA is served and scored under the sealed 2026-10-07 pre-registration (arm A
   and B_lag cells so far, every cell INSUFFICIENT). Seven regular-season games were served 10-20 to
   10-22; one settled game has scored cells (10-21), which is not a result. The fitted arms B / C / D
   are in warmup until about 20 regular-season games settle, so opening-week quotes are the mid and
-  arm A only, and with the recorder down since 04:58Z 10-21 the opening week has no recorded paper
-  quotes after that time. No NBA-specific pre-registration document exists.
+  arm A only, and with the recorder down 04:58Z 10-21 to 19:55Z 10-23 the opening week has no recorded
+  paper quotes in that interval. No NBA-specific pre-registration document exists.
 - **Gate G6** (eight weeks of fee-netted shadow markout) has not started as of 2026-10-19 (zero weeks collected): the
   desk runs, but fill realism is counts-only and no markout series exists. No game has qualified in
   any sport.

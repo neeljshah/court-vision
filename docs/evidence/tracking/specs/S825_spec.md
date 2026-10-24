@@ -150,3 +150,10 @@ kept PREREG_2026-10-21.json byte-identical). Since then `git log -1 HEAD -- <sea
 in test_s492_landing.py (commit days 09-29 / 10-02 / 10-06) are red on master and the branch. PREREG_2026-10-23
 is unaffected (its last commit is the genuine 2ee92e7e9). The old seal commits are kept reachable by the local
 branch archive/s825-seal-a-2026-10-21 (6f463ebbb, not pushed). Needs an owner / dispatcher decision.
+
+(e) COMMIT B LANDED 88192a004883d430e6ef36f351941d994b043939 2026-10-23 22:11Z (ff-only of lead/s825 onto master 5aad0526d; gate (c) items 1-5 and 7 verified
+before the merge, item 6 at the next tick; run set 34 files on master one per process: 34 files, 1,262 passed, 1 failed, 0 not run (22:12Z-22:25Z; the same set on the candidate tree 21:10Z-21:23Z: 33 files exit 0 + the same single red); reds: test_system_fault_matrix case 14 only (pre-existing: red on master before the merge; its control select hard-codes day 2026-10-03, whose seal no longer matches the post-10-07 identity files; case 11 green on both runs); memo section
+11). Finding (d) is RESOLVED by the S832 repair (`git fetch --unshallow private`, 10-22): the old seal commits are
+ancestors of master again and select() picks PREREG_2026-10-07 for 10-07..10-22 without raising. Night 10-20 was re-run
+by the go session BEFORE the merge (r1 COMPLETE 22:08Z; scoreboard 2,783.9 s with history = the pre-S825 wall). The S824
+3,600 s deadline is revisited against the first S825 wall as its own row.

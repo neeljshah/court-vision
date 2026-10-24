@@ -433,8 +433,8 @@ the decision before it. Without those cuts that game would still cover 87.9 pct 
 the 90 pct floor (arithmetic on the replay log, not a result); changing the rule needs a dated
 re-seal, which has not happened. Other contributors in the period: overnight capture holes, laptop
 sleeps, and a live shadow recorder that was **down 2026-10-13 01:08Z to 10-19 20:06Z and again from
-00:49Z 10-20** (`daily/2026-10-20.md`), and that has had **no heartbeat since 04:58Z 10-21**
-(`daily/2026-10-22.md`, `daily/2026-10-23.md`). Qualification grades the tape, not the model.
+00:49Z 10-20** (`daily/2026-10-20.md`), and that had **no heartbeat from 04:58Z 10-21 until its 19:55Z 10-23 relaunch**
+(`daily/2026-10-22.md`, `daily/2026-10-23.md`; relaunched by the paper-desk watchdog before the 10-23 slate). Qualification grades the tape, not the model.
 
 **Fill realism** (from `fill_realism/<D>.json`, mode `COUNTS ONLY` on unqualified tape; every receipt
 from 10-14 on declares 1 unit and zero assumed latency): fills credited at a 5 s / 30 s quote life
@@ -465,9 +465,9 @@ settled regular-season games are needed before a fitted NBA arm scores. NBA is n
 `model_optional_sports` (`mlb`, `nfl`, `soccer`), which governs arm D's model requirement, not whether
 NBA is scored. No NBA-specific pre-registration document exists: the NBA forward series runs under
 the sealed 2026-10-07 pre-registration, fitted arms warmup until the regular-season history exists.
-The live shadow recorder has had no heartbeat since 04:58Z 10-21 and had not been relaunched by the
-10-23 morning report, so the opening regular-season week has no recorded in-game paper quotes after
-that time; the newest shadow-fills receipt is `fills/2026-10-19.jsonl` (a partial day).
+The live shadow recorder had no heartbeat from 04:58Z 10-21 until its 19:55Z 10-23 relaunch, so the
+opening regular-season week has no recorded in-game paper quotes in that interval (the late 10-20
+games through the 10-23 afternoon); the newest shadow-fills receipt is `fills/2026-10-19.jsonl` (a partial day).
 
 **Reading.** The desk wrote a prospective schedule on 14 of 17 calendar days and a night receipt on
 13 of them, 4 COMPLETE. The receipts also record its operational limits: laptop uptime, scorer wall

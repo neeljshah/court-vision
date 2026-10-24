@@ -6,8 +6,7 @@
   "calendar_days_without_receipt": 2,
   "complete": 3,
   "coverage_refusals": {
-   "qualification_refused_upstream": 1,
-   "scoreboard_missing": 1
+   "qualification_refused_upstream": 1
   },
   "fills_counts_only": {
    "ttl_30_fills_credited": {
@@ -21,22 +20,28 @@
   },
   "nights": 5,
   "pooled": {
-   "groups": [],
+   "groups": [
+    {
+     "C_minus_A": {
+      "brier": "0.1695604674151370849658183192",
+      "logloss": "0.3433833733967085669075315031"
+     },
+     "n_games": 1,
+     "n_ticks": 259,
+     "seal_sha256": "806fa58a3517d28b4f320e89c26f32a73ad6d1a5fe1f153aa5bf0aa9db7f85ea",
+     "sport": "mlb",
+     "support": "INSUFFICIENT"
+    }
+   ],
    "outside_corpus": {},
-   "refusals": {
-    "no_paired_support": 1
-   },
+   "refusals": {},
    "seal_last_night": {
     "806fa58a3517d28b4f320e89c26f32a73ad6d1a5fe1f153aa5bf0aa9db7f85ea": "2026-10-22"
    },
-   "sources": 4,
-   "status": "ATTENTION"
+   "sources": 5,
+   "status": "OK"
   },
-  "refusals": {
-   "latency_absent": 1,
-   "registry_e_absent": 1,
-   "scoreboard_absent": 1
-  },
+  "refusals": {},
   "scoreboard_sports": [
    "mlb",
    "nba",
@@ -48,23 +53,23 @@
    "mlb": {
     "game_nights_scored": {
      "A": {
-      "nights_missing": 1,
-      "sum": 2
+      "nights_missing": 0,
+      "sum": 3
      },
      "B": {
-      "nights_missing": 1,
-      "sum": 0
+      "nights_missing": 0,
+      "sum": 1
      },
      "B_lag": {
-      "nights_missing": 1,
-      "sum": 2
+      "nights_missing": 0,
+      "sum": 3
      },
      "C": {
-      "nights_missing": 1,
-      "sum": 0
+      "nights_missing": 0,
+      "sum": 1
      },
      "D": {
-      "nights_missing": 1,
+      "nights_missing": 0,
       "sum": 0
      }
     },
@@ -89,28 +94,28 @@
      "sum": 3
     },
     "settled_games": {
-     "nights_missing": 1,
-     "sum": 1
+     "nights_missing": 0,
+     "sum": 2
     },
     "ticks": {
      "A": {
-      "nights_missing": 1,
-      "sum": 1238
+      "nights_missing": 0,
+      "sum": 1497
      },
      "B": {
-      "nights_missing": 1,
-      "sum": 0
+      "nights_missing": 0,
+      "sum": 259
      },
      "B_lag": {
-      "nights_missing": 1,
-      "sum": 1109
+      "nights_missing": 0,
+      "sum": 1368
      },
      "C": {
-      "nights_missing": 1,
-      "sum": 0
+      "nights_missing": 0,
+      "sum": 259
      },
      "D": {
-      "nights_missing": 1,
+      "nights_missing": 0,
       "sum": 0
      }
     }
@@ -118,23 +123,23 @@
    "nba": {
     "game_nights_scored": {
      "A": {
-      "nights_missing": 1,
-      "sum": 2
+      "nights_missing": 0,
+      "sum": 4
      },
      "B": {
-      "nights_missing": 1,
+      "nights_missing": 0,
       "sum": 0
      },
      "B_lag": {
-      "nights_missing": 1,
-      "sum": 2
+      "nights_missing": 0,
+      "sum": 4
      },
      "C": {
-      "nights_missing": 1,
+      "nights_missing": 0,
       "sum": 0
      },
      "D": {
-      "nights_missing": 1,
+      "nights_missing": 0,
       "sum": 0
      }
     },
@@ -159,28 +164,28 @@
      "sum": 9
     },
     "settled_games": {
-     "nights_missing": 1,
-     "sum": 1
+     "nights_missing": 0,
+     "sum": 3
     },
     "ticks": {
      "A": {
-      "nights_missing": 1,
-      "sum": 1827
+      "nights_missing": 0,
+      "sum": 4678
      },
      "B": {
-      "nights_missing": 1,
+      "nights_missing": 0,
       "sum": 0
      },
      "B_lag": {
-      "nights_missing": 1,
-      "sum": 1782
+      "nights_missing": 0,
+      "sum": 4547
      },
      "C": {
-      "nights_missing": 1,
+      "nights_missing": 0,
       "sum": 0
      },
      "D": {
-      "nights_missing": 1,
+      "nights_missing": 0,
       "sum": 0
      }
     }
@@ -188,23 +193,23 @@
    "ncaaf": {
     "game_nights_scored": {
      "A": {
-      "nights_missing": 1,
+      "nights_missing": 0,
       "sum": 0
      },
      "B": {
-      "nights_missing": 1,
+      "nights_missing": 0,
       "sum": 0
      },
      "B_lag": {
-      "nights_missing": 1,
+      "nights_missing": 0,
       "sum": 0
      },
      "C": {
-      "nights_missing": 1,
+      "nights_missing": 0,
       "sum": 0
      },
      "D": {
-      "nights_missing": 1,
+      "nights_missing": 0,
       "sum": 0
      }
     },
@@ -229,28 +234,28 @@
      "sum": 5
     },
     "settled_games": {
-     "nights_missing": 1,
+     "nights_missing": 0,
      "sum": 0
     },
     "ticks": {
      "A": {
-      "nights_missing": 1,
+      "nights_missing": 0,
       "sum": 0
      },
      "B": {
-      "nights_missing": 1,
+      "nights_missing": 0,
       "sum": 0
      },
      "B_lag": {
-      "nights_missing": 1,
+      "nights_missing": 0,
       "sum": 0
      },
      "C": {
-      "nights_missing": 1,
+      "nights_missing": 0,
       "sum": 0
      },
      "D": {
-      "nights_missing": 1,
+      "nights_missing": 0,
       "sum": 0
      }
     }
@@ -258,23 +263,23 @@
    "nfl": {
     "game_nights_scored": {
      "A": {
-      "nights_missing": 1,
+      "nights_missing": 0,
       "sum": 1
      },
      "B": {
-      "nights_missing": 1,
+      "nights_missing": 0,
       "sum": 0
      },
      "B_lag": {
-      "nights_missing": 1,
+      "nights_missing": 0,
       "sum": 1
      },
      "C": {
-      "nights_missing": 1,
+      "nights_missing": 0,
       "sum": 0
      },
      "D": {
-      "nights_missing": 1,
+      "nights_missing": 0,
       "sum": 0
      }
     },
@@ -299,28 +304,28 @@
      "sum": 1
     },
     "settled_games": {
-     "nights_missing": 1,
+     "nights_missing": 0,
      "sum": 1
     },
     "ticks": {
      "A": {
-      "nights_missing": 1,
+      "nights_missing": 0,
       "sum": 1087
      },
      "B": {
-      "nights_missing": 1,
+      "nights_missing": 0,
       "sum": 0
      },
      "B_lag": {
-      "nights_missing": 1,
+      "nights_missing": 0,
       "sum": 1087
      },
      "C": {
-      "nights_missing": 1,
+      "nights_missing": 0,
       "sum": 0
      },
      "D": {
-      "nights_missing": 1,
+      "nights_missing": 0,
       "sum": 0
      }
     }
@@ -328,23 +333,23 @@
    "soccer": {
     "game_nights_scored": {
      "A": {
-      "nights_missing": 1,
+      "nights_missing": 0,
       "sum": 5
      },
      "B": {
-      "nights_missing": 1,
+      "nights_missing": 0,
       "sum": 0
      },
      "B_lag": {
-      "nights_missing": 1,
+      "nights_missing": 0,
       "sum": 5
      },
      "C": {
-      "nights_missing": 1,
+      "nights_missing": 0,
       "sum": 0
      },
      "D": {
-      "nights_missing": 1,
+      "nights_missing": 0,
       "sum": 0
      }
     },
@@ -369,28 +374,28 @@
      "sum": 8
     },
     "settled_games": {
-     "nights_missing": 1,
+     "nights_missing": 0,
      "sum": 3
     },
     "ticks": {
      "A": {
-      "nights_missing": 1,
+      "nights_missing": 0,
       "sum": 4097
      },
      "B": {
-      "nights_missing": 1,
+      "nights_missing": 0,
       "sum": 0
      },
      "B_lag": {
-      "nights_missing": 1,
+      "nights_missing": 0,
       "sum": 3897
      },
      "C": {
-      "nights_missing": 1,
+      "nights_missing": 0,
       "sum": 0
      },
      "D": {
-      "nights_missing": 1,
+      "nights_missing": 0,
       "sum": 0
      }
     }
@@ -400,17 +405,17 @@
    "COMPLETE": 3,
    "PARTIAL": 2
   },
-  "untracked_receipts": 6
+  "untracked_receipts": 1
  },
  "not_sealed": "S503 cumulative window: no sealed window file exists, so the sealed cumulative evaluator has never run; S721 pooled prereg: PROPOSED only (S721_PREREG_POOLED_PROPOSED_2026-10-02.json).",
  "open_floors": [
   {
    "floor": "pooled C-and-A outcome games across early/middle/late, one seal (descriptive; the sealed floor of 30 games applies per cell)",
-   "have": 1,
-   "need": 29,
-   "note": "no projection: rate 0 under this seal",
-   "per_day_rate_last7": 0.0,
-   "projected": null,
+   "have": 2,
+   "need": 28,
+   "note": null,
+   "per_day_rate_last7": 0.143,
+   "projected": "2027-05-06",
    "seal": "806fa58a3517",
    "sport": "mlb"
   },
@@ -418,7 +423,7 @@
    "floor": "pooled C-and-A outcome games across early/middle/late, one seal (descriptive; the sealed floor of 30 games applies per cell)",
    "have": 0,
    "need": 30,
-   "note": "no C-and-A outcome pairs in 16 read receipts",
+   "note": "no C-and-A outcome pairs in 17 read receipts",
    "projected": null,
    "seal": null,
    "sport": "nba"
@@ -445,7 +450,7 @@
    "floor": "pooled C-and-A outcome games across early/middle/late, one seal (descriptive; the sealed floor of 30 games applies per cell)",
    "have": 0,
    "need": 30,
-   "note": "no C-and-A outcome pairs in 16 read receipts",
+   "note": "no C-and-A outcome pairs in 17 read receipts",
    "projected": null,
    "seal": null,
    "sport": "soccer"
@@ -3010,10 +3015,10 @@
    "untracked": []
   },
   {
-   "cell_verdicts": null,
-   "coverage_refusals": {
-    "scoreboard_missing": 1
+   "cell_verdicts": {
+    "INSUFFICIENT": 144
    },
+   "coverage_refusals": {},
    "date": "2026-10-20",
    "fills": {
     "by_ttl": {
@@ -3044,58 +3049,149 @@
      "sport": "nba"
     }
    ],
-   "refusals": {
-    "registry_e_absent": 1,
-    "scoreboard_absent": 1
+   "refusals": {},
+   "registry_e": {
+    "blocks": [
+     "mid",
+     "team_state",
+     "microstructure",
+     "player_pitcher_workload",
+     "half_inning",
+     "base_occupancy",
+     "ball_strike_count"
+    ],
+    "complete": false,
+    "e_refusals": {
+     "block_incomplete": 53
+    },
+    "e_scored": 206,
+    "max_train_games": 4,
+    "rows": 259
    },
-   "registry_e": null,
-   "scoreboard_sports": [],
-   "settled": null,
+   "scoreboard_sports": [
+    "mlb",
+    "nba",
+    "ncaaf"
+   ],
+   "settled": [
+    [
+     "mlb",
+     "849815"
+    ],
+    [
+     "nba",
+     "401909088"
+    ],
+    [
+     "nba",
+     "401909089"
+    ]
+   ],
    "sports": {
     "mlb": {
-     "games_scored": null,
+     "games_scored": {
+      "A": 1,
+      "B": 1,
+      "B_lag": 1,
+      "C": 1,
+      "D": 0
+     },
      "listed": 1,
      "qualified": 0,
      "qualified_decisions": 0,
      "selected": 1,
      "served": 1,
-     "ticks": null
+     "ticks": {
+      "A": 259,
+      "B": 259,
+      "B_lag": 259,
+      "C": 259,
+      "D": 0
+     }
     },
     "nba": {
-     "games_scored": null,
+     "games_scored": {
+      "A": 2,
+      "B": 0,
+      "B_lag": 2,
+      "C": 0,
+      "D": 0
+     },
      "listed": 2,
      "qualified": 0,
      "qualified_decisions": 0,
      "selected": 2,
      "served": 2,
-     "ticks": null
+     "ticks": {
+      "A": 2851,
+      "B": 0,
+      "B_lag": 2765,
+      "C": 0,
+      "D": 0
+     }
     },
     "ncaaf": {
-     "games_scored": null,
+     "games_scored": {
+      "A": 0,
+      "B": 0,
+      "B_lag": 0,
+      "C": 0,
+      "D": 0
+     },
      "listed": 3,
      "qualified": 0,
      "qualified_decisions": 0,
      "selected": 1,
      "served": 1,
-     "ticks": null
+     "ticks": {
+      "A": 0,
+      "B": 0,
+      "B_lag": 0,
+      "C": 0,
+      "D": 0
+     }
     },
     "nfl": {
-     "games_scored": null,
+     "games_scored": {
+      "A": 0,
+      "B": 0,
+      "B_lag": 0,
+      "C": 0,
+      "D": 0
+     },
      "listed": 1,
      "qualified": 0,
      "qualified_decisions": 0,
      "selected": 0,
      "served": 0,
-     "ticks": null
+     "ticks": {
+      "A": 0,
+      "B": 0,
+      "B_lag": 0,
+      "C": 0,
+      "D": 0
+     }
     },
     "soccer": {
-     "games_scored": null,
+     "games_scored": {
+      "A": 0,
+      "B": 0,
+      "B_lag": 0,
+      "C": 0,
+      "D": 0
+     },
      "listed": 9,
      "qualified": 0,
      "qualified_decisions": 0,
      "selected": 0,
      "served": 0,
-     "ticks": null
+     "ticks": {
+      "A": 0,
+      "B": 0,
+      "B_lag": 0,
+      "C": 0,
+      "D": 0
+     }
     }
    },
    "status": "PARTIAL",
@@ -3264,9 +3360,7 @@
     }
    },
    "status": "COMPLETE",
-   "untracked": [
-    "docs/evidence/forward/latency/2026-10-21_2026-10-21_latency_ledger.json"
-   ]
+   "untracked": []
   },
   {
    "cell_verdicts": {
@@ -3287,10 +3381,16 @@
     },
     "mode": "COUNTS ONLY"
    },
-   "latency": null,
-   "refusals": {
-    "latency_absent": 1
-   },
+   "latency": [
+    {
+     "book_moved_first_share": null,
+     "feed": "espn_scoreboard",
+     "games": 1,
+     "receipt_minus_event_p50_s": null,
+     "sport": "nba"
+    }
+   ],
+   "refusals": {},
    "registry_e": {
     "blocks": [
      "mid",
@@ -3421,11 +3521,7 @@
    },
    "status": "COMPLETE",
    "untracked": [
-    "docs/evidence/forward/fill_realism/2026-10-22.json",
-    "docs/evidence/forward/nights/2026-10-22.json",
-    "docs/evidence/forward/qualification/2026-10-22.json",
-    "docs/evidence/forward/registry_e/2026-10-22.json",
-    "docs/evidence/forward/scoreboard/2026-10-22.json"
+    "docs/evidence/forward/latency/2026-10-22_2026-10-22_latency_ledger.json"
    ]
   }
  ],
@@ -3440,7 +3536,7 @@
    "qualification_refused_upstream": 2,
    "qualification_unreadable": 4,
    "run_missing": 3,
-   "scoreboard_missing": 8
+   "scoreboard_missing": 7
   },
   "fills_counts_only": {
    "ttl_30_fills_credited": {
@@ -3479,11 +3575,11 @@
     },
     {
      "C_minus_A": {
-      "brier": "0.0283015402945335291693650104",
-      "logloss": "0.1924766815849266245457455153"
+      "brier": "0.0989310038548353070675916648",
+      "logloss": "0.2679300274908175957266385092"
      },
-     "n_games": 1,
-     "n_ticks": 608,
+     "n_games": 2,
+     "n_ticks": 867,
      "seal_sha256": "806fa58a3517d28b4f320e89c26f32a73ad6d1a5fe1f153aa5bf0aa9db7f85ea",
      "sport": "mlb",
      "support": "INSUFFICIENT"
@@ -3500,17 +3596,17 @@
     "806fa58a3517d28b4f320e89c26f32a73ad6d1a5fe1f153aa5bf0aa9db7f85ea": "2026-10-22",
     "a74e955e2fb37825e9249ed5b6280421a7c7a450b71a8239f34d6e8322a3d588": "2026-10-02"
    },
-   "sources": 16,
+   "sources": 17,
    "status": "OK"
   },
   "refusals": {
    "fill_realism_absent": 7,
-   "latency_absent": 2,
+   "latency_absent": 1,
    "nights_absent": 1,
    "qualification_absent": 4,
    "qualification_unreadable": 4,
-   "registry_e_absent": 10,
-   "scoreboard_absent": 8
+   "registry_e_absent": 9,
+   "scoreboard_absent": 7
   },
   "scoreboard_sports": [
    "mlb",
@@ -3524,23 +3620,23 @@
    "mlb": {
     "game_nights_scored": {
      "A": {
-      "nights_missing": 8,
-      "sum": 24
+      "nights_missing": 7,
+      "sum": 25
      },
      "B": {
-      "nights_missing": 8,
-      "sum": 11
+      "nights_missing": 7,
+      "sum": 12
      },
      "B_lag": {
-      "nights_missing": 8,
-      "sum": 24
+      "nights_missing": 7,
+      "sum": 25
      },
      "C": {
-      "nights_missing": 8,
-      "sum": 11
+      "nights_missing": 7,
+      "sum": 12
      },
      "D": {
-      "nights_missing": 8,
+      "nights_missing": 7,
       "sum": 0
      }
     },
@@ -3565,28 +3661,28 @@
      "sum": 44
     },
     "settled_games": {
-     "nights_missing": 8,
-     "sum": 17
+     "nights_missing": 7,
+     "sum": 18
     },
     "ticks": {
      "A": {
-      "nights_missing": 8,
-      "sum": 26387
+      "nights_missing": 7,
+      "sum": 26646
      },
      "B": {
-      "nights_missing": 8,
-      "sum": 8887
+      "nights_missing": 7,
+      "sum": 9146
      },
      "B_lag": {
-      "nights_missing": 8,
-      "sum": 26032
+      "nights_missing": 7,
+      "sum": 26291
      },
      "C": {
-      "nights_missing": 8,
-      "sum": 8783
+      "nights_missing": 7,
+      "sum": 9042
      },
      "D": {
-      "nights_missing": 8,
+      "nights_missing": 7,
       "sum": 0
      }
     }
@@ -3594,23 +3690,23 @@
    "nba": {
     "game_nights_scored": {
      "A": {
-      "nights_missing": 15,
-      "sum": 19
+      "nights_missing": 14,
+      "sum": 21
      },
      "B": {
-      "nights_missing": 15,
+      "nights_missing": 14,
       "sum": 0
      },
      "B_lag": {
-      "nights_missing": 15,
-      "sum": 19
+      "nights_missing": 14,
+      "sum": 21
      },
      "C": {
-      "nights_missing": 15,
+      "nights_missing": 14,
       "sum": 0
      },
      "D": {
-      "nights_missing": 15,
+      "nights_missing": 14,
       "sum": 0
      }
     },
@@ -3635,28 +3731,28 @@
      "sum": 36
     },
     "settled_games": {
-     "nights_missing": 8,
-     "sum": 11
+     "nights_missing": 7,
+     "sum": 13
     },
     "ticks": {
      "A": {
-      "nights_missing": 15,
-      "sum": 17241
+      "nights_missing": 14,
+      "sum": 20092
      },
      "B": {
-      "nights_missing": 15,
+      "nights_missing": 14,
       "sum": 0
      },
      "B_lag": {
-      "nights_missing": 15,
-      "sum": 16758
+      "nights_missing": 14,
+      "sum": 19523
      },
      "C": {
-      "nights_missing": 15,
+      "nights_missing": 14,
       "sum": 0
      },
      "D": {
-      "nights_missing": 15,
+      "nights_missing": 14,
       "sum": 0
      }
     }
@@ -3664,23 +3760,23 @@
    "ncaaf": {
     "game_nights_scored": {
      "A": {
-      "nights_missing": 18,
+      "nights_missing": 17,
       "sum": 2
      },
      "B": {
-      "nights_missing": 18,
+      "nights_missing": 17,
       "sum": 0
      },
      "B_lag": {
-      "nights_missing": 18,
+      "nights_missing": 17,
       "sum": 1
      },
      "C": {
-      "nights_missing": 18,
+      "nights_missing": 17,
       "sum": 0
      },
      "D": {
-      "nights_missing": 18,
+      "nights_missing": 17,
       "sum": 0
      }
     },
@@ -3705,28 +3801,28 @@
      "sum": 14
     },
     "settled_games": {
-     "nights_missing": 8,
+     "nights_missing": 7,
      "sum": 0
     },
     "ticks": {
      "A": {
-      "nights_missing": 18,
+      "nights_missing": 17,
       "sum": 350
      },
      "B": {
-      "nights_missing": 18,
+      "nights_missing": 17,
       "sum": 0
      },
      "B_lag": {
-      "nights_missing": 18,
+      "nights_missing": 17,
       "sum": 91
      },
      "C": {
-      "nights_missing": 18,
+      "nights_missing": 17,
       "sum": 0
      },
      "D": {
-      "nights_missing": 18,
+      "nights_missing": 17,
       "sum": 0
      }
     }
@@ -3734,23 +3830,23 @@
    "nfl": {
     "game_nights_scored": {
      "A": {
-      "nights_missing": 8,
+      "nights_missing": 7,
       "sum": 6
      },
      "B": {
-      "nights_missing": 8,
+      "nights_missing": 7,
       "sum": 3
      },
      "B_lag": {
-      "nights_missing": 8,
+      "nights_missing": 7,
       "sum": 6
      },
      "C": {
-      "nights_missing": 8,
+      "nights_missing": 7,
       "sum": 3
      },
      "D": {
-      "nights_missing": 8,
+      "nights_missing": 7,
       "sum": 0
      }
     },
@@ -3775,28 +3871,28 @@
      "sum": 9
     },
     "settled_games": {
-     "nights_missing": 8,
+     "nights_missing": 7,
      "sum": 4
     },
     "ticks": {
      "A": {
-      "nights_missing": 8,
+      "nights_missing": 7,
       "sum": 3302
      },
      "B": {
-      "nights_missing": 8,
+      "nights_missing": 7,
       "sum": 909
      },
      "B_lag": {
-      "nights_missing": 8,
+      "nights_missing": 7,
       "sum": 2923
      },
      "C": {
-      "nights_missing": 8,
+      "nights_missing": 7,
       "sum": 909
      },
      "D": {
-      "nights_missing": 8,
+      "nights_missing": 7,
       "sum": 0
      }
     }
@@ -3804,23 +3900,23 @@
    "soccer": {
     "game_nights_scored": {
      "A": {
-      "nights_missing": 15,
+      "nights_missing": 14,
       "sum": 12
      },
      "B": {
-      "nights_missing": 15,
+      "nights_missing": 14,
       "sum": 0
      },
      "B_lag": {
-      "nights_missing": 15,
+      "nights_missing": 14,
       "sum": 12
      },
      "C": {
-      "nights_missing": 15,
+      "nights_missing": 14,
       "sum": 0
      },
      "D": {
-      "nights_missing": 15,
+      "nights_missing": 14,
       "sum": 0
      }
     },
@@ -3845,28 +3941,28 @@
      "sum": 24
     },
     "settled_games": {
-     "nights_missing": 8,
+     "nights_missing": 7,
      "sum": 8
     },
     "ticks": {
      "A": {
-      "nights_missing": 15,
+      "nights_missing": 14,
       "sum": 10535
      },
      "B": {
-      "nights_missing": 15,
+      "nights_missing": 14,
       "sum": 0
      },
      "B_lag": {
-      "nights_missing": 15,
+      "nights_missing": 14,
       "sum": 10041
      },
      "C": {
-      "nights_missing": 15,
+      "nights_missing": 14,
       "sum": 0
      },
      "D": {
-      "nights_missing": 15,
+      "nights_missing": 14,
       "sum": 0
      }
     }
@@ -3915,7 +4011,7 @@
      "sum": 30
     },
     "settled_games": {
-     "nights_missing": 8,
+     "nights_missing": 7,
      "sum": 0
     },
     "ticks": {
@@ -3947,6 +4043,6 @@
    "None": 1,
    "PARTIAL": 16
   },
-  "untracked_receipts": 6
+  "untracked_receipts": 1
  }
 }

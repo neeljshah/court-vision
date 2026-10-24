@@ -24,7 +24,7 @@ from __future__ import annotations
 import copy
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import Callable, Dict, List, Sequence, Tuple
+from typing import Callable, Dict, List, Optional, Sequence, Tuple
 
 from scripts.platformkit.eval_gate.state_key_guard import assert_unique_state_keys
 
@@ -118,7 +118,7 @@ def assert_vintage(s: dict) -> None:
 class WalkForwardResult:
     records: List[dict]          # per-state {game_id, ts, p_model, p_close, y}
     select_inside: bool          # recorded; False -> the gate must FAIL the run
-    n_train_sizes: List[int]     # train-set size at each step (for diagnostics)
+    n_train_sizes: List[Optional[int]]  # train-set size at each step (for diagnostics)
 
 
 def walk_forward(states: List[dict],
@@ -126,30 +126,44 @@ def walk_forward(states: List[dict],
                  select_inside: bool = True,
                  *, strict_redaction: bool = False,
                  allow_keys: Sequence[str] = (),
-                 guard_state_keys: bool = False) -> WalkForwardResult:
-    """Expanding-window walk-forward with purge + embargo + vintage. Returns per-state records."""
+                 guard_state_keys: bool = False,
+                 lazy_train: bool = False) -> WalkForwardResult:
+    """Expanding-window walk-forward with purge + embargo + vintage. Returns per-state records.
+
+    lazy_train=True (S825): predict_fn receives a zero-argument callable that builds (once)
+    the identical train list instead of the list itself, so a predictor that can prove it
+    does not need the list skips the O(n) scan per row; n_train_sizes then holds None for
+    rows whose list was never built.
+    """
     if guard_state_keys:
         assert_unique_state_keys(states)
     # Deep copy: predictor-side mutation of train/test dicts must never reach the
     # caller's states (cross-invocation plant attack -- red-team 2026-09-01).
     states = copy.deepcopy(sorted(states, key=lambda s: s["state_ts"]))
     records: List[dict] = []
-    sizes: List[int] = []
+    sizes: List[int | None] = []
     for i, test in enumerate(states):
         t = datetime.fromisoformat(test["state_ts"])
-        train: List[dict] = []
-        for s in states[:i]:
-            ts = datetime.fromisoformat(s["state_ts"])
-            if ts >= t:                                   # never look ahead (tie-safe)
-                continue
-            if _same_matchup(s, test) and (t - ts) < timedelta(days=EMBARGO_DAYS):
-                continue                                  # embargo same matchup near boundary
-            if _same_team(s, test) and (t - ts) < timedelta(hours=PURGE_HOURS):
-                continue                                  # purge same-team back-to-back
-            train.append(s)
+        def build(i: int = i, t: datetime = t, test: dict = test) -> List[dict]:
+            train: List[dict] = []
+            for s in states[:i]:
+                ts = datetime.fromisoformat(s["state_ts"])
+                if ts >= t:                               # never look ahead (tie-safe)
+                    continue
+                if _same_matchup(s, test) and (t - ts) < timedelta(days=EMBARGO_DAYS):
+                    continue                              # embargo same matchup near boundary
+                if _same_team(s, test) and (t - ts) < timedelta(hours=PURGE_HOURS):
+                    continue                              # purge same-team back-to-back
+                train.append(s)
+            return train
+        built: List[List[dict]] = [] if lazy_train else [build()]
+        def train_fn(built: List[List[dict]] = built, build=build) -> List[dict]:
+            if not built:
+                built.append(build())
+            return built[0]
         assert_vintage(test)                              # defense in depth (schema also checks)
         test_view = redact_test_view(test, allow_keys=allow_keys, strict=strict_redaction)
-        p = predict_fn(train, test_view, select_inside)
+        p = predict_fn(train_fn if lazy_train else built[0], test_view, select_inside)
         if not 0.0 <= p <= 1.0:
             raise ValueError(f"predict_fn returned {p} out of [0,1]")
         records.append({
@@ -157,5 +171,5 @@ def walk_forward(states: List[dict],
             "p_model": float(p), "p_close": test.get("devig_close_prob"),
             "y": int(test["outcome"]),
         })
-        sizes.append(len(train))
+        sizes.append(len(built[0]) if built else None)
     return WalkForwardResult(records, bool(select_inside), sizes)
