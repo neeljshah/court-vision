@@ -7,7 +7,7 @@ const captions = [
   `1. Win frequency by days of rest -- ${artifact.panels.rest_buckets.n_starts.toLocaleString("en-US")} team-starts`,
   `2. Contrast against standard ${artifact.panels.rest_buckets.cells.find(cell => cell.cell === "4")?.cell} days of rest -- ${artifact.panels.rest_buckets.n_starts.toLocaleString("en-US")} team-starts`,
   `3. Observed frequency minus reference forecast by forecast band -- ${artifact.panels.by_forecast_band.n_starts.toLocaleString("en-US")} team-starts`,
-  `4. Season stability of the short-rest minus long-rest gradient -- ${artifact.panels.rest_buckets.n_starts.toLocaleString("en-US")} team-starts`,
+  `4. Season stability of the short-rest minus long-rest residual gap -- ${artifact.panels.rest_buckets.n_starts.toLocaleString("en-US")} team-starts`,
   `5. Doubleheader nightcap against first game -- ${artifact.panels.doubleheader_nightcap.n_games.toLocaleString("en-US")} games`,
 ];
 

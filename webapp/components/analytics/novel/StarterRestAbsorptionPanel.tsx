@@ -95,10 +95,10 @@ export function StarterRestAbsorptionPanel({ artifact = loadStarterRestAbsorptio
       note={by_forecast_band.note}
     />
     <Grid
-      caption={figure(4, "Season stability of the short-rest minus long-rest gradient", rest_buckets.n_starts, "team-starts")}
-      columns={["Season", "Starts (n)", "Short rest: n; frequency; interval", "Long rest: n; frequency; interval", "Gradient", "Gradient sign"]}
+      caption={figure(4, "Season stability of the short-rest minus long-rest residual gap", rest_buckets.n_starts, "team-starts")}
+      columns={["Season", "Starts (n)", "Short rest: n; frequency; interval", "Long rest: n; frequency; interval", "Residual gap", "Residual gap sign"]}
       rows={season_stability.map(row => [row.season, count(row.n_starts), seasonCell(row.cells[0], method.mask_rule), seasonCell(row.cells[1], method.mask_rule), rate(row.short_minus_long), sign(row.short_minus_long)])}
-      note="The gradient is short rest minus long rest within each published season."
+      note="Residual = observed win frequency minus the mean recorded reference forecast. The residual gap is the short-rest residual minus the long-rest residual within each published season; it is not the difference between the raw frequency columns."
     />
     {doubleheader_nightcap.cells.length ? <Grid
       caption={figure(5, "Doubleheader nightcap against first game", doubleheader_nightcap.n_games, "games")}
