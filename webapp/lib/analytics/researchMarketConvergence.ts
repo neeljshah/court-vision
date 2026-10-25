@@ -12,7 +12,11 @@ const REFERENCES: ResearchReference[] = [{
 const finite = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value);
 const probability = (value: unknown): value is number => finite(value) && value >= 0 && value <= 1;
 const sportLabel = (sport: string) => sport === "soccer_intl" ? "International soccer" : sport.toUpperCase();
-const checkpointLabel = (sport: string, checkpoint: string) => sport === "mlb" ? `Inning ${checkpoint}` : `${checkpoint}'`;
+const checkpointLabel = (sport: string, checkpoint: string) => {
+  if (sport === "mlb") return `Inning ${checkpoint}`;
+  if (sport === "soccer_intl") return checkpoint === "90" ? "90+ min" : `${checkpoint}-${Number(checkpoint) + 4} min`;
+  return `${checkpoint}'`;
+};
 
 function rows(source: MarketConvergenceSource): ResearchRow[] {
   if (!source.checkpoints || typeof source.checkpoints !== "object" || Array.isArray(source.checkpoints)) return [];
@@ -46,7 +50,7 @@ export function buildMarketConvergenceResearch(source: MarketConvergenceSource):
     question: "How do published model-market probability gaps and uncertainty change across game checkpoints?",
     method: "Restate every published sport-checkpoint row with absolute probability gaps, entropy measurements, mean probabilities, and support.",
     description: "Published checkpoints retain model-market probability gaps, uncertainty in bits, mean probabilities, and scored-row support.",
-    scope: `${analysisRows.length} published MLB-inning and international-soccer-minute checkpoints${minimum === null ? "." : ` with a source minimum of ${minimum} rows.`} ${sourceDate ? `Published source as of ${sourceDate}. This date does not identify the observation window.` : "Source as-of date not published."}`,
+    scope: `${analysisRows.length} published MLB inning checkpoints and international soccer five-minute buckets${minimum === null ? "." : ` with a source minimum of ${minimum} rows.`} Soccer buckets span 0-4 through 85-89 minutes; 90+ combines all recorded minutes from 90 onward. ${sourceDate ? `Published source as of ${sourceDate}. This date does not identify the observation window.` : "Source as-of date not published."}`,
     caveat: "The source describes agreement and uncertainty at repeated in-game checkpoints, not independent forecasts. Entropy declines as outcomes resolve and does not by itself establish model quality.",
     status: "Descriptive checkpoint subset",
     fields: [f("mean_gap", "Mean absolute probability gap", "percent", 2), f("median_gap", "Median absolute probability gap", "percent", 2), f("market_entropy_bits", "Market entropy", "number", 3), f("model_entropy_bits", "Model entropy", "number", 3), f("mean_market_probability", "Mean market probability", "percent", 2), f("mean_model_probability", "Mean model probability", "percent", 2), f("scored_rows", "Scored rows", "number", 0)],

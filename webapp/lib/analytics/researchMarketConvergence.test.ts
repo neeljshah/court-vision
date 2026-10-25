@@ -29,9 +29,14 @@ describe("market convergence research", () => {
     expect(analysis.rows[0].sourcePaths).toContain("checkpoints.mlb.2.mean_gap");
   });
 
-  it("orders sport rows and checkpoint labels deterministically", () => {
-    const rows = buildMarketConvergenceResearch({ checkpoints: { soccer_intl: { 15: checkpoint() }, mlb: { 2: checkpoint(), 10: checkpoint() } } })[0].rows;
-    expect(rows.map(item => item.label)).toEqual(["International soccer | 15'", "MLB | Inning 2", "MLB | Inning 10"]);
+  it("labels soccer bucket boundaries while retaining source keys and deterministic order", () => {
+    const analysis = buildMarketConvergenceResearch({ checkpoints: { soccer_intl: { 0: checkpoint(), 15: checkpoint(), 85: checkpoint(), 90: checkpoint() }, mlb: { 2: checkpoint(), 10: checkpoint() } } })[0];
+    const rows = analysis.rows;
+    expect(rows.map(item => item.label)).toEqual(["International soccer | 0-4 min", "International soccer | 15-19 min", "International soccer | 85-89 min", "International soccer | 90+ min", "MLB | Inning 2", "MLB | Inning 10"]);
+    expect(rows[3].id).toBe("market-convergence-soccer_intl-90");
+    expect(rows[3].sourcePaths).toContain("checkpoints.soccer_intl.90.mean_gap");
+    expect(buildLabCSV(analysis, rows)).toContain("International soccer | 90+ min");
+    expect(analysis.scope).toContain("90+ combines all recorded minutes from 90 onward.");
   });
 
   it("returns no rows for missing or malformed checkpoints", () => {

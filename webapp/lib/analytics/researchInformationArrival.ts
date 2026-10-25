@@ -11,7 +11,11 @@ const REFERENCES: ResearchReference[] = [{
 }];
 const finite = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value);
 const sportLabel = (sport: string) => sport === "soccer_intl" ? "International soccer" : sport.toUpperCase();
-const checkpointLabel = (sport: string, checkpoint: string) => sport === "mlb" ? `Inning ${checkpoint}` : `${checkpoint}'`;
+const checkpointLabel = (sport: string, checkpoint: string) => {
+  if (sport === "mlb") return `Inning ${checkpoint}`;
+  if (sport === "soccer_intl") return checkpoint === "90" ? "90+ min" : `${checkpoint}-${Number(checkpoint) + 4} min`;
+  return `${checkpoint}'`;
+};
 
 function rows(source: InformationArrivalSource): ResearchRow[] {
   if (!source.checkpoints || typeof source.checkpoints !== "object" || Array.isArray(source.checkpoints)) return [];
@@ -45,7 +49,7 @@ export function buildInformationArrivalResearch(source: InformationArrivalSource
     question: "How do the published model, market, and naive Brier scores change across game checkpoints?",
     method: "Restate every published sport-checkpoint row with its model, market, naive, and market-minus-model Brier measurements.",
     description: "Published checkpoint rows compare model, market, and naive Brier scores with the market-minus-model Brier difference.",
-    scope: `${analysisRows.length} published MLB-inning and international-soccer-minute checkpoints. ${sourceDate ? `Published source as of ${sourceDate}. This date does not identify the observation window.` : "Source as-of date not published."}`,
+    scope: `${analysisRows.length} published MLB inning checkpoints and international soccer five-minute buckets. Soccer buckets span 0-4 through 85-89 minutes; 90+ combines all recorded minutes from 90 onward. ${sourceDate ? `Published source as of ${sourceDate}. This date does not identify the observation window.` : "Source as-of date not published."}`,
     caveat: "Checkpoint rows are repeated observations within games, so scored rows are not an independent-game count. Rows with fewer than 30 scored observations remain visible and are flagged for review.",
     status: "Descriptive calibration subset",
     fields: [f("market_minus_model_brier", "Market Brier minus Model Brier", "number", 4), f("model_brier", "Model Brier", "number", 4), f("market_brier", "Market Brier", "number", 4), f("naive_brier", "Naive Brier", "number", 4), f("scored_rows", "Scored rows", "number", 0)],

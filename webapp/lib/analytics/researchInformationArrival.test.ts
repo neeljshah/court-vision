@@ -29,10 +29,15 @@ describe("information arrival research", () => {
     expect(analysis.rows[0].sourcePaths).toContain("checkpoints.mlb.2.model_brier");
   });
 
-  it("orders sport rows and flags small support without dropping it", () => {
-    const rows = buildInformationArrivalResearch({ checkpoints: { soccer_intl: { 5: checkpoint(18) }, mlb: { 2: checkpoint() } } })[0].rows;
-    expect(rows.map(item => item.label)).toEqual(["International soccer | 5'", "MLB | Inning 2"]);
+  it("labels soccer bucket boundaries while retaining source keys, order and small support", () => {
+    const analysis = buildInformationArrivalResearch({ checkpoints: { soccer_intl: { 0: checkpoint(), 5: checkpoint(18), 85: checkpoint(), 90: checkpoint() }, mlb: { 2: checkpoint() } } })[0];
+    const rows = analysis.rows;
+    expect(rows.map(item => item.label)).toEqual(["International soccer | 5-9 min", "International soccer | 0-4 min", "International soccer | 85-89 min", "International soccer | 90+ min", "MLB | Inning 2"]);
     expect(rows[0].note).toContain("Small support");
+    expect(rows[3].id).toBe("information-arrival-soccer_intl-90");
+    expect(rows[3].sourcePaths).toContain("checkpoints.soccer_intl.90.model_brier");
+    expect(buildLabCSV(analysis, rows)).toContain("International soccer | 90+ min");
+    expect(analysis.scope).toContain("90+ combines all recorded minutes from 90 onward.");
   });
 
   it("returns no rows for missing or malformed checkpoints", () => {
