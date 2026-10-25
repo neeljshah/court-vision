@@ -98,14 +98,14 @@ export default function ReceiptDrillPage({ params }: { params: { row: string } }
 
   if (!r) {
     return (
-      <main className="mx-auto flex max-w-3xl flex-col gap-4 p-6">
+      <div className="mx-auto flex max-w-3xl flex-col gap-4 p-6">
         <Link href="/receipts" className="microlabel text-primary hover:underline">
           &larr; receipts
         </Link>
         <Panel className="p-6 text-center text-sm text-muted-foreground">
           No ledger row with id <span className="font-data">{params.row}</span>.
         </Panel>
-      </main>
+      </div>
     );
   }
 
@@ -125,7 +125,7 @@ export default function ReceiptDrillPage({ params }: { params: { row: string } }
   ];
 
   return (
-    <main className="mx-auto flex max-w-3xl flex-col gap-6 p-6">
+    <div className="mx-auto flex max-w-3xl flex-col gap-6 p-6">
       <header>
         <Link href="/receipts" className="microlabel text-primary hover:underline">
           &larr; receipts / scoreboard
@@ -144,7 +144,7 @@ export default function ReceiptDrillPage({ params }: { params: { row: string } }
           <div><dt className="microlabel">delta (95% ci)</dt><dd className="tabular">{r.delta_ci}</dd></div>
           <div><dt className="microlabel">n</dt><dd className="tabular"><Num>{r.n}</Num></dd></div>
         </dl>
-        <p className="mt-2 text-[11px] font-mono uppercase tracking-wide text-stale">
+        <p className="mt-2 break-words text-[11px] font-mono uppercase tracking-wide text-stale">
           verdict {r.verdict} -- source {r.src}
         </p>
       </header>
@@ -203,7 +203,12 @@ export default function ReceiptDrillPage({ params }: { params: { row: string } }
               asOf={calib?.as_of as string ?? null}
               right={<ReceiptChip {...receiptChip(calib)} />}
             />
-            <div className="overflow-x-auto">
+            <div
+              role="region"
+              aria-label="Model calibration confidence intervals"
+              tabIndex={0}
+              className="overflow-x-auto focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            >
               <table className="w-full border-collapse text-sm">
                 <thead>
                   <tr className="border-b border-border text-left">
@@ -251,6 +256,6 @@ export default function ReceiptDrillPage({ params }: { params: { row: string } }
           </Panel>
         </>
       )}
-    </main>
+    </div>
   );
 }
