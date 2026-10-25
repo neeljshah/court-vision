@@ -82,10 +82,9 @@ export function receiptVerdict(v: string): string {
 export type ReceiptInput = { index: number; sportMarket: string; checkpoint: string; verdict: string; src?: string | null };
 /** /receipts/<i>/ -- one ledger row, named by its market, checkpoint and packet verdict. */
 export function receiptMeta(r: ReceiptInput): Metadata {
-  const source = (r.src || "").split("/").pop() || "the receipts ledger";
   return pageMeta(`/receipts/${r.index}/`, {
     title: `Receipt ${r.index}: ${r.sportMarket} at ${r.checkpoint}`,
-    description: fitDescription(`Ledger row ${r.index}: ${r.sportMarket} at the ${r.checkpoint} checkpoint`, `, ${receiptVerdict(r.verdict)}. Descriptive model-vs-market calibration; source ${source}.`),
+    description: fitDescription(`Receipt ${r.index}: ${r.sportMarket}, ${r.checkpoint}`, `. ${receiptVerdict(r.verdict)}. Descriptive calibration.`),
   });
 }
 

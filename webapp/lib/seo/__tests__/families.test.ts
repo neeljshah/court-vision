@@ -95,7 +95,28 @@ describe("receipts", () => {
     const m = receiptMeta({ index: 3, sportMarket: "mlb/moneyline", checkpoint: "pregame", verdict: "MATCHES_CLOSE", src: "scripts/x/last_run_mlb.json" });
     const d = rails(m, "/receipts/3/");
     expect(m.title).toBe("Receipt 3: mlb/moneyline at pregame");
-    expect(d).toBe("Ledger row 3: mlb/moneyline at the pregame checkpoint, verdict MATCHES_CLOSE (underpowered). Descriptive model-vs-market calibration; source last_run_mlb.json.");
+    expect(d).toBe("Receipt 3: mlb/moneyline, pregame. verdict MATCHES_CLOSE (underpowered). Descriptive calibration.");
+  });
+
+  it("keeps distinct late-inning receipt identities beside the complete provisional qualifier", () => {
+    const descriptions = [6, 7, 8].map((inning, offset) => {
+      const index = offset + 8;
+      const checkpoint = `total_runs|end_inning_${inning}`;
+      const d = rails(receiptMeta({ index, sportMarket: "mlb", checkpoint, verdict: "MODEL_SHARPER_PROVISIONAL", src: "scripts/platformkit/benchmarks/crps_market/last_run_ingame_mlb.json" }), `/receipts/${index}/`);
+      expect(d).toContain(`Receipt ${index}: mlb, ${checkpoint}.`);
+      expect(d).toContain("MODEL_SHARPER_PROVISIONAL (small-sample retrospective diagnostic)");
+      expect(d).toContain("Descriptive calibration.");
+      expect(d).not.toContain("...");
+      return d;
+    });
+    expect(new Set(descriptions).size).toBe(3);
+  });
+
+  it("keeps the full walk-forward identity and non-packet qualification", () => {
+    const d = rails(receiptMeta({ index: 17, sportMarket: "nba/pregame_winprob", checkpoint: "3-fold walk-forward (mean)", verdict: "NO_MARKET_COMPARISON_IN_ARTIFACT" }), "/receipts/17/");
+    expect(d).toContain("Receipt 17: nba/pregame_winprob, 3-fold walk-forward (mean).");
+    expect(d).toContain("ledger status: no market comparison in artifact (not a packet verdict)");
+    expect(d).not.toContain("...");
   });
 });
 
