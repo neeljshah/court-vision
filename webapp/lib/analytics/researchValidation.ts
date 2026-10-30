@@ -8,7 +8,7 @@ type Bin = { n: number; n_games: number; mean_p: number; mean_y: number; gap_ci:
 type Side = { brier: number; bins: Bin[] };
 type Stability = { as_of: string; sports: Record<string, { n_rows: number; n_games: number; sides: Record<string, Side> }> };
 const scoring: ResearchReference = { title: "Gneiting & Raftery (2007), Strictly Proper Scoring Rules, Prediction, and Estimation", url: "https://doi.org/10.1198/016214506000001437" };
-const calibration: ResearchReference = { title: "Nixon et al. (2019), Measuring Calibration in Deep Learning", url: "https://openaccess.thecvf.com/content_CVPRW_2019/html/Nixon_Measuring_Calibration_in_Deep_Learning_CVPRW_2019_paper.html" };
+const calibration: ResearchReference = { title: "Nixon et al. (2019), Measuring Calibration in Deep Learning", url: "https://openaccess.thecvf.com/content_CVPRW_2019/html/Uncertainty_and_Robustness_in_Deep_Visual_Learning/Nixon_Measuring_Calibration_in_Deep_Learning_CVPRW_2019_paper.html" };
 const shannon: ResearchReference = { title: "Shannon (1948), A Mathematical Theory of Communication", url: "https://doi.org/10.1002/j.1538-7305.1948.tb00917.x" };
 const rounded = (value: number): number => Number(value.toFixed(6));
 const safeDivide = (a: number, b: number) => Number.isFinite(a) && Number.isFinite(b) && b !== 0 ? rounded(a / b) : null;
